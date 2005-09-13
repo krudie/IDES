@@ -133,7 +133,7 @@ public class SystemVariables
 	{
 		// calcualte the application path
 		String class_paths = System.getProperty("java.class.path");
-		if (class_paths.indexOf(";") > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(";")); }
+		if (class_paths.indexOf(";") > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(":")); }
 		if (class_paths.endsWith(".jar")) { class_paths = class_paths.substring(0,class_paths.lastIndexOf(File.separator)); }
 		if (class_paths.length()>0 && !class_paths.endsWith(File.separator)) { class_paths = class_paths + File.separator; }
 		application_path = class_paths;
@@ -195,6 +195,7 @@ public class SystemVariables
 	{
 	    try 
 		{ 
+	    	File file = new File(system_path + settings_file_name);
 	    	PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(system_path + settings_file_name))); 
 	    	
 	    	out.println("grid="                   + grid);

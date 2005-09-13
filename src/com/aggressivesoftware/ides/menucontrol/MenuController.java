@@ -16,7 +16,6 @@ import com.aggressivesoftware.ides.menucontrol.listeners.EditListener;
 import com.aggressivesoftware.ides.menucontrol.listeners.FileListener;
 import com.aggressivesoftware.ides.menucontrol.listeners.GraphicListener;
 import com.aggressivesoftware.ides.menucontrol.listeners.HelpListener;
-import com.aggressivesoftware.ides.menucontrol.listeners.MachineListener;
 import com.aggressivesoftware.ides.menucontrol.listeners.OptionListener;
 
 /**
@@ -73,11 +72,7 @@ public class MenuController
      */
 	public EditListener edit_listener = null;	
 	
-	/**
-     * This object houses all the listeners for the RS232 Interface
-     */
-	public MachineListener machine_listener = null;
-	
+		
 	/**
      * This object houses all the listeners for the Graph
      */
@@ -118,13 +113,6 @@ public class MenuController
 					   edit_paste = null,
 					   edit_delete = null;		
 	
-	/**
-     * Machine System.
-     */
-	public UnifiedMenu machine_connect = null,
-					   machine_trace = null,
-	 				   machine_alpha = null;	
-		
 	/**
      * Help System.
      */
@@ -191,7 +179,6 @@ public class MenuController
 		
 		file_listener = new FileListener(gp);
 		edit_listener = new EditListener(gp);
-		machine_listener = new MachineListener(gp);
 		graphic_listener = new GraphicListener(gp);
 		help_listener = new HelpListener(gp);
 		option_listener = new OptionListener(gp);
@@ -289,27 +276,7 @@ public class MenuController
 
 		advanced_coolbar.addToolBar(tbr_edit);				
 		
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Machine System /////////////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
-
-		// create the UnifiedMenus
-		machine_connect = new UnifiedMenu(gp,machine_listener,gp.rm.MACHINE_CONNECT);
-		machine_trace = new UnifiedMenu(gp,machine_listener,gp.rm.MACHINE_TRACE);
-		machine_alpha = new UnifiedMenu(gp,machine_listener,gp.rm.MACHINE_ALPHA);
 		
-	    // set up main menu structures and add the MenuItems (order matters)
-
-		// setup the toolbar structures and add the ToolItems (order matters)		
-
-		tbr_machine = new ToolBar(advanced_coolbar.coolbar, SWT.FLAT | SWT.WRAP);
-
-		machine_connect.addTitm(tbr_machine, SWT.CHECK);
-		machine_trace.addTitm(tbr_machine, SWT.CHECK);
-		machine_alpha.addTitm(tbr_machine);
-
-		advanced_coolbar.addToolBar(tbr_machine);
-
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Graphic System /////////////////////////////////////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
@@ -455,7 +422,7 @@ public class MenuController
 		option_pstricks.setSelection(gp.sv.use_pstricks);
 		setGridDropdownState(gp.sv.grid);
 		
-		advanced_coolbar.setWrapIndices(new int[] {3});
+		advanced_coolbar.setWrapIndices(new int[] {2});
 	}
 
     /**
@@ -463,7 +430,6 @@ public class MenuController
      */
 	public void dispose()
 	{
-		machine_listener.dispose();
 		help_listener.dispose();
 	}
 	

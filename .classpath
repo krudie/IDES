@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/IDES/jars/Acme.zip"/>
-	<classpathentry kind="lib" path="C:/IDES/jars/comm.jar"/>
-	<classpathentry kind="lib" path="C:/IDES/jars/j2d4swt.jar"/>
-	<classpathentry kind="lib" path="C:/IDES/jars/jimi.jar"/>
-	<classpathentry kind="lib" path="C:/IDES/jars/swt.jar"/>
+	<classpathentry kind="lib" path="/home/edlund/uni/runtime/jars/swt.jar"/>
+	<classpathentry kind="lib" path="/home/edlund/uni/runtime/jars/jimi.jar"/>
+	<classpathentry kind="lib" path="/home/edlund/uni/runtime/jars/Acme.zip"/>
+	<classpathentry kind="lib" path="/home/edlund/uni/runtime/jars/comm.jar"/>
+	<classpathentry kind="lib" path="/home/edlund/uni/runtime/jars/j2d4swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
