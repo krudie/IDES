@@ -293,10 +293,6 @@ public class Drawer
 		if (scale == 1) { g2d.fillPolygon(xcoords, ycoords, 4); }
 		else 
 		{ 
-			Line2D.Float l1 = new Line2D.Float(xcoords[0]*scale,xcoords[1]*scale,ycoords[0]*scale,ycoords[1]*scale);
-			Line2D.Float l2 = new Line2D.Float(xcoords[1]*scale,xcoords[2]*scale,ycoords[1]*scale,ycoords[2]*scale);
-			Line2D.Float l3 = new Line2D.Float(xcoords[2]*scale,xcoords[3]*scale,ycoords[2]*scale,ycoords[3]*scale);
-			Line2D.Float l4 = new Line2D.Float(xcoords[3]*scale,xcoords[0]*scale,ycoords[3]*scale,ycoords[0]*scale);
 			GeneralPath p = new GeneralPath(GeneralPath.WIND_EVEN_ODD,4);
 			p.moveTo(xcoords[0]*scale,ycoords[0]*scale);
 			p.lineTo(xcoords[1]*scale,ycoords[1]*scale);
