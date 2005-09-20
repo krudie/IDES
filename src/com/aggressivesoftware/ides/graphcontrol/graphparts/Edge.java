@@ -846,7 +846,6 @@ public class Edge extends GraphObject
 			boolean X1=false, Y1=false, CTRLX1=false, CTRLY1=false, CTRLX2=false, CTRLY2=false, X2=false, Y2=false, DX=false, DY=false, SOURCE=false, TARGET=false;
 			String transition_data_indicies = "";
 
-			int i=0;
 			StringTokenizer tdi_tokenizer = null;
 			
 			String last_token = "";

@@ -973,7 +973,6 @@ public class Curve
 														 + (curve.ctrlx1-box.x1()) + "," + (box.y2()-curve.ctrly1) + ")(" 
 												         + (curve.ctrlx2-box.x1()) + "," + (box.y2()-curve.ctrly2) + ")(" 
 												         + (curve.x2-box.x1()) + "," + (box.y2()-curve.y2) + ")");
-			float t = (float)0.9;
 			// we create a direction from nock to tip along the end point and a near point on the curve.
 			UnitVector d = arrowhead.direction();
 			// pict2e requires vector XY to be intergers on -1000 .. 1000
@@ -1069,10 +1068,6 @@ public class Curve
 		UnitVector d = new UnitVector(tail_node.origin(),head_node.origin());
 		UnitVector dperp = d.newPerpendicular();
 
-		// create rotated copies of the vector.
-		UnitVector d1 = d.newRotatedByDegrees(angle);
-		UnitVector d2 = d.newRotatedByDegrees(-angle);
-		
 		// create the start and end points, by moving along d1 and d2 away from the centers of the nodes
 		Point p1 = tail_node.origin();
 		Point p4 = head_node.origin(); 
