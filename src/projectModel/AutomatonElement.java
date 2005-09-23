@@ -12,9 +12,9 @@ import java.util.*;
  *
  */
 public class AutomatonElement {
-	private Hashtable attributeList;
+	private Hashtable<String,Object> attributeList;
 	public AutomatonElement(){
-		attributeList = new Hashtable();
+		attributeList = new Hashtable<String,Object>();
 	}
 	public Object getAttribute(String aName) throws NullPointerException{
 		return attributeList.get(aName);
