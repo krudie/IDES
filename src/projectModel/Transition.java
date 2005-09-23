@@ -20,17 +20,17 @@ public class Transition extends AutomatonElement{
 		this.e = e;
 	}
 
-	public void setSourceState(State s){
+	public void setSource(State s){
 		this.sourceS = s;
 	}
-	public State getSourceState(){
+	public State getSource(){
 		return this.sourceS;
 	}
 	
-	public void setTargetState(State s){
+	public void setTarget(State s){
 		this.targetS = s;
 	}
-	public State getTargetState(State s){
+	public State getTarget(){
 		return this.targetS;
 	}
 	

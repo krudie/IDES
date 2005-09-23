@@ -8,7 +8,7 @@ import java.util.*;
  *
  */
 public class State extends AutomatonElement{
-	private LinkedList sourceT, targetT;
+	private LinkedList<Transition> sourceT, targetT;
 
 	public State(){
 		sourceT = new LinkedList<Transition>();
