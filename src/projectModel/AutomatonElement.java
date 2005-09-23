@@ -1,5 +1,38 @@
 package projectModel;
 
-public class AutomatonElement {
+import java.util.*;
 
+public class AutomatonElement {
+	private Hashtable attributeList;
+	
+	public AutomatonElement(){
+		attributeList = new Hashtable();
+	}
+	
+	public Object getAttribute(String aName) throws NullPointerException{
+		return attributeList.get(aName);
+	}
+	
+	public void setAttribute(String aName, Object attr) throws NullPointerException{
+		attributeList.put(aName, attr);
+	}
+	
+	public void removeAttribute(String aName) throws NullPointerException{
+		attributeList.remove(aName);
+	}
+	
+	public void hasAttribute(String aName){
+		attributeList.containsKey(aName);
+	}
+	
+	public static void main(String args[]){
+		AutomatonElement ae = new AutomatonElement();
+		ae.setAttribute("integer", new Integer(42));
+		ae.setAttribute("text"," is the answer to the universe, and all that: ");
+		ae.setAttribute("bool", new Boolean(true));
+
+		System.out.println((Integer)ae.getAttribute("integer")
+				+(String)ae.getAttribute("text")
+				+(Boolean)ae.getAttribute("bool"));
+	}
 }
