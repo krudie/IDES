@@ -6,9 +6,12 @@ package userinterface;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
+
+import userinterface.geometric.Point;
 
 /**
  * This class handles the creation and destruction of system resources. It also provides a standardized
@@ -68,7 +71,7 @@ public class ResourceManager {
      * Only the above String constants may be entered into this array.
      * It is okay to change the ordering.  It won't break the code.
      */
-	private final String[] resources_with_images = {
+	private final String[] resourcesWithImages = {
 		FILE_EXPORT_LATEX,
 		FILE_EXPORT_GIF,
 		FILE_EXPORT_PNG,
@@ -95,7 +98,7 @@ public class ResourceManager {
      * Every simple image constant declared above must be listed here.
      * It is okay to change the ordering.  It won't break the code.
      */
-	private final String[] simple_images = 
+	private final String[] simpleImages = 
 	{
 		BIG_LOGO,
 		DRAG
@@ -103,12 +106,73 @@ public class ResourceManager {
 	
 	
 	/**
+     * The array where all preloaded cursors (offered by this ResourceManager) are stored.
+     */
+	private Cursor cursors[];
+	
+	/**
+     * Labeled indexes for the cursors[] array.
+     */
+	public final int
+		GRID_CURSOR = 0,
+		ERROR_CURSOR = 1,
+		CROSS_CURSOR = 2,
+		UPDOWN_CURSOR = 3,
+		LEFTRIGHT_CURSOR = 4,
+		DIAGONAL_CURSOR = 5,
+		WAIT_CURSOR = 6, 
+		ARROW_CURSOR = 7, 
+		ZOOM_CURSOR = 8,
+		GRAB_CURSOR = 9,
+		CREATE_CURSOR = 10,
+		MODIFY_CURSOR = 11;
+	
+	/**
+     * System cursors for preloading.
+     * Their indexes here correspond to indexes in the cursors[] array, and the cursor index labels.
+     */
+	private final int[] systemCursors = 
+	{
+		SWT.CURSOR_CROSS,
+		SWT.CURSOR_NO,
+		SWT.CURSOR_SIZEALL,
+		SWT.CURSOR_SIZENS,
+		SWT.CURSOR_SIZEWE,
+		SWT.CURSOR_SIZENWSE,
+		SWT.CURSOR_WAIT,
+		SWT.CURSOR_ARROW
+	};
+
+	/**
+     * Custom cursors for preloading.
+     * Their indexes here correspond to indexes in the cursors[] array offset by the number of system_cursors.
+     * 
+     * note: for "create" the center is at 7,10 and the arrowtip is at 7,0
+     */
+	private final String[] customCursors = 
+	{
+		"zoom",
+		"hand",
+		"create",
+		"modify"
+	};
+	
+	/**
+     * The hotspots of the custom cursors for preloading.
+     */
+	private final Point[] customCursorHotspots = 
+	{
+		new Point(9,9),
+		new Point(8,8),
+		new Point(7,10),
+		new Point(7,19)
+	};
+	
+	/**
      * The array where all preloaded images (offered by this ResourceManager) are stored.
      */
 	private static Image images[] = null;
-	private static Image icons[] = null;
-	private static Image cursors[] = null;
-	
+		
 	private static ResourceBundle resourceBundle = null;
 	
 	
@@ -119,14 +183,28 @@ public class ResourceManager {
 		ImageData iconData = null;
 				
 		// load the images
-		images = new Image[resources_with_images.length*3 + simple_images.length];
-		for (int i = 0; i < resources_with_images.length; i++) 
-		{
-			iconData = safeDataStream("/images/icons/" + resources_with_images[i] + ".gif");
+		images = new Image[resourcesWithImages.length*3 + simpleImages.length];
+		for (int i = 0; i < resourcesWithImages.length; i++) {
+			iconData = safeDataStream("/images/icons/" + resourcesWithImages[i] + ".gif");
 			images[(i*3)+1] = new Image(Display.getDefault(), iconData, iconData.getTransparencyMask());
 			images[(i*3)]   = new Image(Display.getDefault(), images[(i*3)+1], SWT.IMAGE_GRAY);
 			images[(i*3)+2] = new Image(Display.getDefault(), images[(i*3)+1], SWT.IMAGE_DISABLE);
 		}
+		
+		int anchor = resourcesWithImages.length*3;
+		for (int i = 0; i < simpleImages.length; i++) {
+			iconData = safeDataStream("/images/graphics/" + simpleImages[i] + ".gif");
+			images[anchor+i] = new Image(Display.getDefault(), iconData, iconData.getTransparencyMask());
+		}
+		//create the cursors
+		cursors = new Cursor[systemCursors.length + customCursors.length];
+		for (int i = 0; i < systemCursors.length; i++){
+			cursors[i] = new Cursor(Display.getDefault(),systemCursors[i]);
+		}
+		for (int i = 0; i < customCursors.length; i++){
+			cursors[i + systemCursors.length] = new Cursor(Display.getDefault(),safeDataStream("/images/cursors/" + customCursors[i] + ".gif"),customCursorHotspots[i].x,customCursorHotspots[i].y); 
+		}
+		
 	
 	}
 	
