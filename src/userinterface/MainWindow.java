@@ -5,9 +5,13 @@ import java.io.StringWriter;
 import java.net.URLEncoder;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+
+import userinterface.menu.MenuController;
 
 public class MainWindow {
 
@@ -33,14 +37,16 @@ public class MainWindow {
 	                           NULL_RESOURCE = "The resource bundle was null.  \nThis component requires the resource bundle.",
 							   LOST_RESOURCE = "The resource bundle [resource_bundle.properties] did not load.  \nIt should be located at the root of the source code.";
 	
-	private ResourceManager rm = null;
+	private ResourceManager rm;
+	private MenuController menu;
+
 	
 	
 	public MainWindow(Splash splash){
 		try{
 			display = Display.getDefault();
+			shell = new Shell(display, SWT.SHELL_TRIM);
 			rm = new ResourceManager();
-			
 			initComponents();
 			shell.layout();
 			shell.open();
@@ -55,16 +61,16 @@ public class MainWindow {
 			if (display != null)     { display.dispose(); }
 			
 			Display error_display = Display.getDefault();
-			Shell error_shell = new Shell(error_display, SWT.NO_TRIM);
-			MessageBox message_box = new MessageBox(error_shell, SWT.ICON_ERROR | SWT.CLOSE); 
+			Shell errorShell = new Shell(error_display, SWT.NO_TRIM);
+			MessageBox messageBox = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE); 
 			
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			String stacktrace = sw.toString();
 				
-			message_box.setMessage(e.getMessage() + "\n\n" + stacktrace);
-			message_box.setText(FATAL_ERROR);
-			message_box.open();			
+			messageBox.setMessage(e.getMessage() + "\n\n" + stacktrace);
+			messageBox.setText(FATAL_ERROR);
+			messageBox.open();			
 				
 			try {
 				Runtime.getRuntime().exec ("rundll32 url.dll,FileProtocolHandler http://www.aggressivesoftware.com/research/ides/bugs/default.asp?bug=" + URLEncoder.encode(e.getMessage() + "\n\n" + stacktrace,"UTF-8")); 
@@ -82,13 +88,20 @@ public class MainWindow {
 		errorShell = new Shell(display, SWT.NO_TRIM);
 		
 		// the window
-		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setText(ResourceManager.getString("window.title"));
-		//shell.setImage(ResourceManager.getHotImage(rm.LOGO));
+		shell.setImage(ResourceManager.getHotImage(ResourceManager.LOGO));
 		shell.setSize(800,620);
 		
+		// the base layout
+		GridLayout gl_base = new GridLayout();
+		gl_base.marginHeight = 0;
+		gl_base.marginWidth = 0;
+		gl_base.verticalSpacing = 0;
+		gl_base.horizontalSpacing = 1;
+		gl_base.numColumns = 1;
+		shell.setLayout(gl_base); // attach it to the shell
 		
-		
+		menu = new MenuController(shell);		
 	}	
 	
 	

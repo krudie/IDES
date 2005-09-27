@@ -10,7 +10,6 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
-
 import userinterface.geometric.Point;
 
 /**
@@ -31,7 +30,7 @@ public class ResourceManager {
 	 * If this resource has associated tool-tip-text in the resource_bundle, it must be named: "handle.ttext".
 	 * If this resource has an associated image, it must exist as: "images/icons/handle.gif"
 	 */
-	public final String FILE_EXPORT_LATEX = "file_export_latex",
+	public final static String FILE_EXPORT_LATEX = "file_export_latex",
 						FILE_EXPORT_GIF = "file_export_gif",
 						FILE_EXPORT_PNG = "file_export_png",
 						FILE_NEW = "file_new",
@@ -71,7 +70,7 @@ public class ResourceManager {
      * Only the above String constants may be entered into this array.
      * It is okay to change the ordering.  It won't break the code.
      */
-	private final String[] resourcesWithImages = {
+	private final static String[] resourcesWithImages = {
 		FILE_EXPORT_LATEX,
 		FILE_EXPORT_GIF,
 		FILE_EXPORT_PNG,
@@ -98,7 +97,7 @@ public class ResourceManager {
      * Every simple image constant declared above must be listed here.
      * It is okay to change the ordering.  It won't break the code.
      */
-	private final String[] simpleImages = 
+	private final static String[] simpleImages = 
 	{
 		BIG_LOGO,
 		DRAG
@@ -113,7 +112,7 @@ public class ResourceManager {
 	/**
      * Labeled indexes for the cursors[] array.
      */
-	public final int
+	public final static int
 		GRID_CURSOR = 0,
 		ERROR_CURSOR = 1,
 		CROSS_CURSOR = 2,
@@ -131,7 +130,7 @@ public class ResourceManager {
      * System cursors for preloading.
      * Their indexes here correspond to indexes in the cursors[] array, and the cursor index labels.
      */
-	private final int[] systemCursors = 
+	private final static int[] systemCursors = 
 	{
 		SWT.CURSOR_CROSS,
 		SWT.CURSOR_NO,
@@ -149,7 +148,7 @@ public class ResourceManager {
      * 
      * note: for "create" the center is at 7,10 and the arrowtip is at 7,0
      */
-	private final String[] customCursors = 
+	private static final String[] customCursors = 
 	{
 		"zoom",
 		"hand",
@@ -160,7 +159,7 @@ public class ResourceManager {
 	/**
      * The hotspots of the custom cursors for preloading.
      */
-	private final Point[] customCursorHotspots = 
+	private final static Point[] customCursorHotspots = 
 	{
 		new Point(9,9),
 		new Point(8,8),
@@ -224,6 +223,31 @@ public class ResourceManager {
 		}
 		return null;
 	}
+
+	/**
+	 * Cleanup and dispose all images and cursors.
+	 */	
+	public void dispose() 
+	{
+		if (images != null) 
+		{
+			for (int i = 0; i < images.length; ++i) 
+			{
+				final Image image = images[i];
+				if (image != null) { image.dispose(); } 
+			}
+			images = null;
+		}
+		if (cursors != null) 
+		{
+			for (int i = 0; i < cursors.length; ++i) 
+			{
+				final Cursor cursor = cursors[i];
+				if (cursor != null) { cursor.dispose(); } 
+			}
+			cursors = null;
+		}
+	}		
 	
 	/**
 	 * Return a string from the resource bundle.  Return the key on failure.
@@ -231,7 +255,7 @@ public class ResourceManager {
 	 * @param	key		The key for the message string.  
 	 * @return	The message string.
 	 */	
-	public String getMenuText(String key) {
+	public static String getMenuText(String key) {
 		try { return resourceBundle.getString(key + ".mtext"); }
 		catch (Exception e) { return "[" + key + ".mtext]"; }			
 	}
@@ -242,7 +266,7 @@ public class ResourceManager {
 	 * @param	key		The key for the message string.  
 	 * @return	The message string.
 	 */	
-	public String getToolTipText(String key) {
+	public static String getToolTipText(String key) {
 		try { return resourceBundle.getString(key + ".ttext"); }
 		catch (Exception e) { return "[" + key + ".ttext]"; }			
 	}
@@ -267,8 +291,79 @@ public class ResourceManager {
 	 * @return	The formatted message.
 	 */	
 	public static String getMessage(String msg, String arg0) {
-		return MessageFormat.format(getString(msg), new String[] {arg0}); 
+		return MessageFormat.format(getString(msg), (Object[]) new String[] {arg0}); 
 	}
 		
+	public static boolean hasImage(String resourceHandle){
+		for (int i=0; i<resourcesWithImages.length; i++){
+			if (resourceHandle.equals(resourcesWithImages[i])) {
+				return true;
+				}
+			}
+		return false;
+	}
 	
+	/**
+	 * Return an Image from the images[] array.
+	 * 
+	 * @param resourceHandle	The identifier for this Image.
+	 * @param offset			Used to select between variants of this image.
+	 * @return The desired Image.
+	 */	
+	private static Image getImage(String resourceHandle, int offset){
+		try{
+			// find the index of this resource within the images specifications array
+			int tag;
+			// try tristate images
+			for (tag=0; tag<resourcesWithImages.length; tag++){
+				if (resourceHandle.equals(resourcesWithImages[tag])) {
+					tag = 3*tag + offset;
+					return images[tag];
+				}
+			}
+				
+			//try simple images
+			for (tag=0; tag<simpleImages.length; tag++){
+				if (resourceHandle.equals(simpleImages[tag])) {
+					tag = tag + 3*resourcesWithImages.length;
+					return images[tag];
+				}
+			}
+		} catch(Exception e){
+			//Ignore that we have an error an continue to the final part of the method
+		}
+		// if we haven't returned yet then we have failed
+		MainWindow.fatalErrorPopup(getString("error.fatal_title"), getString("error.null_image") + "\n" + resourceHandle);
+		return null;
+	}
+	
+	/**
+	 * Return the normal variant of an Image from the images[] array.
+	 * 
+	 * @param resourceHandle	The identifier for this Image.
+	 * @return The desired Image.
+	 */	
+	public static Image getImage(String resourceHandle) {
+		return getImage(resourceHandle,0);
+	}
+	
+	/**
+	 * Return the hot variant of an Image from the images[] array.
+	 * 
+	 * @param resourceHandle	The identifier for this Image.
+	 * @return The desired Image.
+	 */	
+	public static Image getHotImage(String resourceHandle) {
+		return getImage(resourceHandle,1);
+	}
+
+	/**
+	 * Return the disabled variant of an Image from the images[] array.
+	 * 
+	 * @param resourceHandle	The identifier for this Image.
+	 * @return The desired Image.
+	 */	
+	public static Image getDisabledImage(String resourceHandle) {
+		return getImage(resourceHandle,2);
+	}	
 }
