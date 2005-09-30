@@ -55,10 +55,7 @@ public class MenuController {
 	/**
      * File System.
      */
-	public UnifiedMenu file_export_latex = null,
-					   file_export_gif = null,
-					   file_export_png = null,
-					   file_new_project = null,
+	public UnifiedMenu file_new_project = null,
 					   file_new_automaton = null,
 					   file_open = null,
 					   file_save = null,
@@ -90,10 +87,7 @@ public class MenuController {
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 						
 		// create the UnifiedMenus
-		file_export_latex = new UnifiedMenu(ResourceManager.FILE_EXPORT_LATEX, fileListener);
-		file_export_gif = new UnifiedMenu(ResourceManager.FILE_EXPORT_GIF, fileListener);
-		file_export_png = new UnifiedMenu(ResourceManager.FILE_EXPORT_PNG, fileListener);
-	    file_new_project = new UnifiedMenu(ResourceManager.FILE_NEW_PROJECT, fileListener);
+		file_new_project = new UnifiedMenu(ResourceManager.FILE_NEW_PROJECT, fileListener);
 	    file_new_automaton = new UnifiedMenu(ResourceManager.FILE_NEW_AUTOMATON, fileListener,SWT.CTRL+'n');
 	    file_open = new UnifiedMenu(ResourceManager.FILE_OPEN, fileListener,SWT.CTRL+'o');
 	    file_save = new UnifiedMenu(ResourceManager.FILE_SAVE, fileListener,SWT.CTRL+'s');
@@ -118,17 +112,6 @@ public class MenuController {
 		file_save.addMitm(mnu_file);
 		file_saveas.addMitm(mnu_file);
 		new MenuItem(mnu_file, SWT.SEPARATOR);
-		
-		
-		MenuItem mitm_file_export = new MenuItem(mnu_file, SWT.CASCADE);
-		mitm_file_export.setText(ResourceManager.getString("file_export.mtext"));
-		Menu mnu_file_export = new Menu(mitm_file_export);
-		mitm_file_export.setMenu(mnu_file_export);
-		
-		file_export_latex.addMitm(mnu_file_export);
-	    file_export_gif.addMitm(mnu_file_export);
-	    file_export_png.addMitm(mnu_file_export);
-		new MenuItem(mnu_file, SWT.SEPARATOR);
 		file_exit.addMitm(mnu_file);
 						
 		// setup the toolbar structures and add the ToolItems (order matters)		
@@ -139,10 +122,6 @@ public class MenuController {
 	    file_open.addTitm(tbr_file);
 	    file_save.addTitm(tbr_file);
 	    file_saveas.addTitm(tbr_file);
-	    new ToolItem(tbr_file, SWT.SEPARATOR);
-	    file_export_latex.addTitm(tbr_file);
-	    file_export_gif.addTitm(tbr_file);
-	    file_export_png.addTitm(tbr_file);
 
 		advanced_coolbar.addToolBar(tbr_file);
 	}

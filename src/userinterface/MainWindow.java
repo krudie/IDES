@@ -39,6 +39,7 @@ public class MainWindow {
 	private ResourceManager rm;
 	private MenuController menu;
 	private ProjectExplorer pe;
+	private ObjectExplorer oe;
 
 	
 	
@@ -123,13 +124,10 @@ public class MainWindow {
 		mainSash.setLayout(new FillLayout());
 				
 		pe = new ProjectExplorer(leftSash);
+		oe = new ObjectExplorer(leftSash);
 		
 		
 		//dummycode
-		Composite child2 = new Composite(leftSash,SWT.NONE);
-		child2.setLayout(new FillLayout());
-		new Label(child2,SWT.NONE).setText("Object explorer");
-		
 		Composite child3 = new Composite(mainSash,SWT.NONE);
 		child3.setLayout(new FillLayout());
 		new Label(child3,SWT.NONE).setText("Main window");

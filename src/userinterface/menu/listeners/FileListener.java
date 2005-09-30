@@ -53,11 +53,7 @@ public class FileListener extends AbstractListener{
 	 * @param   resource_handle		The constant identification for a concept in the ResourceManager.
 	 * @return	The appropriate Listener for this resource.
 	 */
-	public SelectionListener getListener(String resource_handle)
-	{
-		if (resource_handle.equals(ResourceManager.FILE_EXPORT_LATEX)) { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportLatex(e); } }; }
-		if (resource_handle.equals(ResourceManager.FILE_EXPORT_GIF))   { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportGifPng(e,"gif"); } }; }
-		if (resource_handle.equals(ResourceManager.FILE_EXPORT_PNG))   { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportGifPng(e,"png"); } }; }
+	public SelectionListener getListener(String resource_handle){
 		if (resource_handle.equals(ResourceManager.FILE_NEW_PROJECT))  { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProject(e);   } }; }
 		if (resource_handle.equals(ResourceManager.FILE_NEW_AUTOMATON)){ return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newAutomaton(e);   } }; }
 		if (resource_handle.equals(ResourceManager.FILE_OPEN))         { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { open(e);        } }; }
@@ -72,26 +68,7 @@ public class FileListener extends AbstractListener{
 	// listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 	
-    /**
-     * Export the selection area to latex.
-     * 
-     * @param	e	The SelectionEvent that initiated this action.
-     */
-	public void exportLatex(org.eclipse.swt.events.SelectionEvent e){
-
-	}	
-		
-    /**
-     * Export the selection area to gif or png.
-     * 
-     * @param	e			The SelectionEvent that initiated this action.
-     * @param	extenstion	Must be "gif" or "png"
-     */
-	public void exportGifPng(org.eclipse.swt.events.SelectionEvent e, String extension){		
-		
-	}	
-	
-    /**
+	/**
      * Create a new Project
      * 
      * @param	e	The SelectionEvent that initiated this action.

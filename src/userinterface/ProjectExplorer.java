@@ -18,7 +18,7 @@ public class ProjectExplorer {
 	
 	
 	public ProjectExplorer(Composite parent){
-		treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION);
+		treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
 			
 	
 		//testcode for trees
