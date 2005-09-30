@@ -11,7 +11,7 @@ public class IDES2 {
 	 */
 	public static void main(String[] args) {
 		SystemVariables sv = new SystemVariables();
-		userinterface.Userinterface gui = new userinterface.Userinterface();
+		new userinterface.Userinterface();
 		sv.saveValues();
 	}
 

@@ -12,14 +12,14 @@ import java.util.*;
  *
  */
 public class AutomatonElement {
-	private Hashtable<String,Object> attributeList;
+	private Hashtable<String,String> attributeList;
 	public AutomatonElement(){
-		attributeList = new Hashtable<String,Object>();
+		attributeList = new Hashtable<String,String>();
 	}
-	public Object getAttribute(String aName) throws NullPointerException{
+	public String getAttribute(String aName) throws NullPointerException{
 		return attributeList.get(aName);
 	}
-	public void setAttribute(String aName, Object attr) throws NullPointerException{
+	public void setAttribute(String aName, String attr) throws NullPointerException{
 		attributeList.put(aName, attr);
 	}
 	public void removeAttribute(String aName) throws NullPointerException{
@@ -34,12 +34,12 @@ public class AutomatonElement {
 	 */
 	public static void main(String args[]){
 		AutomatonElement ae = new AutomatonElement();
-		ae.setAttribute("integer", new Integer(42));
+		ae.setAttribute("integer", "42");
 		ae.setAttribute("text"," is the answer to the universe, and all that: ");
-		ae.setAttribute("bool", new Boolean(true));
+		ae.setAttribute("bool", new Boolean(true).toString());
 
-		System.out.println((Integer)ae.getAttribute("integer")
-				+(String)ae.getAttribute("text")
-				+(Boolean)ae.getAttribute("bool"));
+		System.out.println(ae.getAttribute("integer")
+				+ae.getAttribute("text")
+				+ae.getAttribute("bool"));
 	}
 }
