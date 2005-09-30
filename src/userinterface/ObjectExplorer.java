@@ -5,10 +5,14 @@ package userinterface;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -18,36 +22,42 @@ import org.eclipse.swt.widgets.Text;
 public class ObjectExplorer {
 
 	ScrolledComposite scrollComposite;
-	Composite objectPanel;
+	Composite objectComposite;
 	
 	public ObjectExplorer(Composite parent){
-		scrollComposite = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL| SWT.BORDER);
-				
-		objectPanel = new Composite(scrollComposite, SWT.NONE);
 		
+		scrollComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		
-		scrollComposite.setContent(objectPanel);
+		objectComposite = new Composite(scrollComposite, SWT.BORDER);
 		
+	
 
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		objectPanel.setLayout(layout);
 		
-		for(int i = 0; i < 15; i++){
-			Label label = new Label(objectPanel, SWT.LEFT);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		objectComposite.setLayout(gridLayout);
+	    
+	    for(int i = 0; i < 15; i++){
+			Label label = new Label(objectComposite, SWT.LEFT);
 			label.setText("Property " + i + ":");
 		
-			Text textbox = new Text(objectPanel, SWT.SINGLE | SWT.BORDER);
-			GridData gridData = new GridData(GridData.
-					HORIZONTAL_ALIGN_FILL);
+			Text textbox = new Text(objectComposite, SWT.SINGLE | SWT.BORDER);
+			GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 			gridData.grabExcessHorizontalSpace = true;
-			gridData.widthHint = 200;
 			textbox.setLayoutData(gridData);
-			
 		}
-		objectPanel.setSize(objectPanel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+	    
+	    objectComposite.layout();
+	    
+	    scrollComposite.setContent(objectComposite);
+		
+	    scrollComposite.setExpandHorizontal(true);
+	    scrollComposite.setExpandVertical(true);
+	    scrollComposite.setMinSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT)); 
+	    
 		
 	}
+	
 	
 	
 	
