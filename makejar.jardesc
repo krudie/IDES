@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="D:/coding/eclipse/distribution/IDES/IDES.jar"/>
-<options buildIfNeeded="true" compress="true" descriptionLocation="/IDES/makejar.jardesc" exportErrors="true" exportWarnings="true" overwrite="false" saveDescription="true" useSourceFolders="false"/>
+<jar path="/home/edlund/IDES.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/IDES/makejar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" useSourceFolders="false"/>
 <manifest generateManifest="false" mainClassHandleIdentifier="=IDES/src&lt;com.aggressivesoftware.ides{Main.java[Main" manifestLocation="/IDES/manifest" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
 <sealing sealJar="false">
 <packagesToSeal/>

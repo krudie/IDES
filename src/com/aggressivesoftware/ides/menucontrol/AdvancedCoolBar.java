@@ -94,4 +94,6 @@ public class AdvancedCoolBar
 	{
 		coolbar.setWrapIndices(indices);
 	}
+
+
 }
