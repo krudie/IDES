@@ -4,7 +4,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLEncoder;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
 import userinterface.menu.MenuController;
@@ -35,6 +38,7 @@ public class MainWindow {
 	
 	private ResourceManager rm;
 	private MenuController menu;
+	private ProjectExplorer pe;
 
 	
 	
@@ -105,8 +109,34 @@ public class MainWindow {
 		gl_base.marginWidth = 0;
 		gl_base.numColumns = 3;
 		shell.setLayout(gl_base); // attach it to the shell
-		
+
 		menu = new MenuController(shell);
+		
+		SashForm mainSash = new SashForm(shell,SWT.HORIZONTAL);
+		
+		GridData gd_tab_folder = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);
+		gd_tab_folder.horizontalSpan = 3;
+		mainSash.setLayoutData(gd_tab_folder);	
+		mainSash.setLayout(new FillLayout());
+		
+		SashForm leftSash = new SashForm(mainSash, SWT.VERTICAL);
+		mainSash.setLayout(new FillLayout());
+				
+		pe = new ProjectExplorer(leftSash);
+		
+		
+		//dummycode
+		Composite child2 = new Composite(leftSash,SWT.NONE);
+		child2.setLayout(new FillLayout());
+		new Label(child2,SWT.NONE).setText("Object explorer");
+		
+		Composite child3 = new Composite(mainSash,SWT.NONE);
+		child3.setLayout(new FillLayout());
+		new Label(child3,SWT.NONE).setText("Main window");
+		
+		
+		
+		mainSash.setWeights(new int[] {30,70});
 		
 			
 	}	

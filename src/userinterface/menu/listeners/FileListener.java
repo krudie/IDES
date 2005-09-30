@@ -3,6 +3,8 @@
  */
 package userinterface.menu.listeners;
  
+import ides2.SystemVariables;
+
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -111,6 +113,16 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void open(org.eclipse.swt.events.SelectionEvent e){
+		FileDialog openDialog = new FileDialog(shell, SWT.OPEN); 
+		openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN)); 
+		openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"}); 
+		if (SystemVariables.last_used_path != null && SystemVariables.last_used_path.length() > 0){
+			openDialog.setFilterPath(SystemVariables.last_used_path);
+		}
+		String openLocation = openDialog.open();
+		if(openLocation != null){
+			SystemVariables.last_used_path = openDialog.getFilterPath();
+		}
 	}	
 	
     /**
@@ -119,6 +131,7 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void save(org.eclipse.swt.events.SelectionEvent e) {
+		getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVE), new String[] {"*.xml", "*.*"});
 	} 
 	
     /**
@@ -127,6 +140,7 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void saveAs(org.eclipse.swt.events.SelectionEvent e) {
+		getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVEAS), new String[] {"*.xml", "*.*"});
 	}
 
     /**
@@ -136,6 +150,23 @@ public class FileListener extends AbstractListener{
      */
 	public void exit(org.eclipse.swt.events.SelectionEvent e){
 			shell.dispose();
-	}	
+	}
+	
+	
+	
+	private String getSaveLocation(String dialogTitle, String[] filterExtensions){
+		FileDialog saveDialog = new FileDialog(shell, SWT.SAVE); 
+		saveDialog.setText(dialogTitle); 
+		saveDialog.setFilterExtensions(filterExtensions); 
+		String saveLocation = saveDialog.open();
+		if (SystemVariables.last_used_path != null && SystemVariables.last_used_path.length() > 0){
+			saveDialog.setFilterPath(SystemVariables.last_used_path);
+		}
+		if(saveLocation != null){
+			SystemVariables.last_used_path = saveDialog.getFilterPath();
+		}
+		
+		return saveLocation;
+	}
 
 }
