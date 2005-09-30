@@ -3,24 +3,29 @@ package projectPresentation;
 import java.io.*;
 import org.xml.sax.*;
 import javax.xml.parsers.*;
+import projectModel.*;
 
 public class XmlParser implements ContentHandler{
     private XMLReader xr;
+    private Automaton a;
+    private AutomatonElement le;
+    
     public XmlParser(){
-	try{
-	    xr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-	    xr.setContentHandler(this);
-	}
-	catch(ParserConfigurationException pce){
-	    System.err.println("XmlParser: could not configure parser, message: "+ pce.getMessage());
-	}
-	catch(SAXException se){
-	    System.err.println("XmlParser: could not do something, message: "+se.getMessage());
-	}
+        try{
+            xr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            xr.setContentHandler(this);
+        }
+        catch(ParserConfigurationException pce){
+            System.err.println("XmlParser: could not configure parser, message: "+ pce.getMessage());
+        }
+        catch(SAXException se){
+            System.err.println("XmlParser: could not do something, message: "+se.getMessage());
+        }
     }
 
-    public void parse(File f) throws FileNotFoundException, IOException, SAXException{
-	xr.parse(new InputSource(new FileInputStream(f)));
+    public Automaton parse(File f) throws FileNotFoundException, IOException, SAXException{
+        xr.parse(new InputSource(new FileInputStream(f)));
+        return a;
     }
 
     private String attribute = null;
@@ -45,18 +50,28 @@ public class XmlParser implements ContentHandler{
     public void skippedEntity(String name){
     }
     public void startDocument(){
+            a = new Automaton();
     }
     public void startElement(String uri, String localName, String qName, Attributes atts){
-        System.out.println("uri: "+uri
-                +", localName: "+localName
-                +"qName "+qName);
+        if(qName.equals(State.class.getName())){
+            if(atts.getQName(1).equals("id"))
+                a.addState((State)(le = new State(Integer.getInteger(atts.getValue(1)))));
+        }
+        System.out.println("qName "+qName);        
         for(int i = 0; i < atts.getLength(); i++){
             System.out.println("attribute: "+atts.getQName(i)
                     +" value: "+atts.getValue(i));
         }
     }
     public void endElement(String uri, String localName, String qName){
-        if(attribute != null) System.out.println("text: ["+attribute+"]");
+        if(attribute != null){
+            if(le == null){
+                System.out.println("fejl!");
+                return;
+            }
+            if(le.getClass().getName().equals(qName));
+            System.out.println("text: ["+attribute+"]");
+        }
         attribute = null;
     }
     public void startPrefixMapping(String prefix, String uri){
@@ -68,8 +83,11 @@ public class XmlParser implements ContentHandler{
         try{
             x.parse(new File("/home/agmi02/code/test.xml"));
         }
-        catch(Exception e){
-            System.out.println("hov! "+e);
+        catch(SAXException SAXE){
+        }
+        catch(FileNotFoundException fnfe){            
+        }
+        catch(IOException ioe){   
         }
         System.out.println("done!");
     }

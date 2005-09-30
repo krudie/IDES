@@ -6,7 +6,8 @@ package projectModel;
  *
  */
 public class Event extends AutomatonElement{
-	public Event(){
-		
+	private int id;
+    public Event(int id){
+		this.id = id;
 	}
 }

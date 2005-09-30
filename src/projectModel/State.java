@@ -9,8 +9,10 @@ import java.util.*;
  */
 public class State extends AutomatonElement{
 	private LinkedList<Transition> sourceT, targetT;
-
-	public State(){
+	private int id;
+    
+	public State(int id){
+        this.id = id;
 		sourceT = new LinkedList<Transition>();
 		targetT = new LinkedList<Transition>();
 	}

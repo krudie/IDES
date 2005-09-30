@@ -8,14 +8,17 @@ package projectModel;
 public class Transition extends AutomatonElement{
 	private State sourceS, targetS;
 	private Event e;
-	
-	public Transition(State sourceS, State targetS){
-		this.sourceS = sourceS;
+	private int id;
+    
+	public Transition(int id, State sourceS, State targetS){
+        this.id = id;
+        this.sourceS = sourceS;
 		this.targetS = targetS;
 	}
 
-	public Transition(State sourceS, State targetS, Event e){
-		this.sourceS = sourceS;
+	public Transition(int id, State sourceS, State targetS, Event e){
+        this.id = id;
+        this.sourceS = sourceS;
 		this.targetS = targetS;
 		this.e = e;
 	}
