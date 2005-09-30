@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import userinterface.ResourceManager;
+import userinterface.menu.listeners.AbstractListener;
 
 /**
  * This class allows unification between common menu actions that are represented in various locations
@@ -26,6 +27,13 @@ import userinterface.ResourceManager;
  * @author Michael Wood
  */
 public class UnifiedMenu {	
+	
+	
+	/**
+     * The Listener that will handle this UnifiedMenu's selection events.
+     */
+	private AbstractListener listener = null;
+	
 	/**
 	 * The constant identification for this UnifiedMenu's concept in the ResourceManager.
      */
@@ -44,7 +52,6 @@ public class UnifiedMenu {
 	/**
 	 * A list of popup MenuItem representations of this concept.
 	 */
-	//TODO: add type to the vector to conform to java 1.5.0
 	public Vector<MenuItem> popup_items = null;
 
 	/**
@@ -62,8 +69,8 @@ public class UnifiedMenu {
      * 
    	 * @param resource_handle	The constant identification for this UnifiedMenu's concept in the ResourceManager.
      */
-	public UnifiedMenu(String resource_handle){
-		constructUnifiedMenu(resource_handle, 0);	
+	public UnifiedMenu(String resource_handle, AbstractListener listener){
+		constructUnifiedMenu(resource_handle,listener, 0);	
 	}
 	
     /**
@@ -72,8 +79,8 @@ public class UnifiedMenu {
      * @param resource_handle	The constant identification for this UnifiedMenu's concept in the ResourceManager.
 	 * @param accelerator		An accelerator value for the MenuItems.
      */
-	public UnifiedMenu(String resource_handle, int accelerator){ 
-		constructUnifiedMenu(resource_handle, accelerator);
+	public UnifiedMenu(String resource_handle, AbstractListener listener, int accelerator){ 
+		constructUnifiedMenu(resource_handle,listener, accelerator);
 	}
 	
     /**
@@ -82,7 +89,8 @@ public class UnifiedMenu {
      * @param resource_handle	The constant identification for this UnifiedMenu's concept in the ResourceManager.
 	 * @param accelerator		An accelerator value for the MenuItems.
      */
-	private void constructUnifiedMenu(String resource_handle, int accelerator){
+	private void constructUnifiedMenu(String resource_handle, AbstractListener listener, int accelerator){
+		this.listener = listener;
 		this.resource_handle = resource_handle;
 		this.accelerator = accelerator;
 		popup_items = new Vector<MenuItem>();
@@ -113,6 +121,7 @@ public class UnifiedMenu {
 		if (accelerator != 0) {
 			mitm.setAccelerator(accelerator);
 		}
+		mitm.addSelectionListener(listener.getListener(resource_handle));
 		if (ResourceManager.hasImage(resource_handle)) {
 			mitm.setImage(ResourceManager.getHotImage(resource_handle));
 		}
@@ -138,6 +147,7 @@ public class UnifiedMenu {
 	 */
 	public void addTitm(ToolBar parent, int style){
 		titm = new ToolItem(parent, style);
+		titm.addSelectionListener(listener.getListener(resource_handle));
 		titm.setToolTipText(ResourceManager.getToolTipText(resource_handle));
 		if (ResourceManager.hasImage(resource_handle)) {
 			titm.setImage(ResourceManager.getImage(resource_handle));
@@ -171,6 +181,7 @@ public class UnifiedMenu {
 	 */
 	public MenuItem addPopupMitm(Menu parent, boolean custom_listener, boolean custom_behaviour){
 		MenuItem popup = new MenuItem(parent, SWT.CASCADE);
+		if (!custom_listener) { popup.addSelectionListener(listener.getListener(resource_handle)); }
 		popup.setText(ResourceManager.getMenuText(resource_handle));
 		popup.setData(resource_handle);
 		if (accelerator != 0) { popup.setAccelerator(accelerator); }

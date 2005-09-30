@@ -3,14 +3,10 @@ package userinterface;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLEncoder;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.*;
 import userinterface.menu.MenuController;
 
 public class MainWindow {
@@ -45,9 +41,21 @@ public class MainWindow {
 	public MainWindow(Splash splash){
 		try{
 			display = Display.getDefault();
+			// Shell for showing error messages
+			errorShell = new Shell(display, SWT.NO_TRIM);
 			shell = new Shell(display, SWT.SHELL_TRIM);
 			rm = new ResourceManager();
 			initComponents();
+			
+			shell.addListener (
+				SWT.Close, 
+				new Listener (){
+					public void handleEvent (Event event){
+						event.doit = false;
+						if (menu != null && menu.getFileListener() != null) { menu.getFileListener().exit(new SelectionEvent(event)); }
+					}
+				}
+			);
 			shell.layout();
 			shell.open();
 			splash.dispose();
@@ -84,24 +92,23 @@ public class MainWindow {
 		
 	private void initComponents(){
 
-		// Shell for showing error messages
-		errorShell = new Shell(display, SWT.NO_TRIM);
-		
 		// the window
 		shell.setText(ResourceManager.getString("window.title"));
 		shell.setImage(ResourceManager.getHotImage(ResourceManager.LOGO));
 		shell.setSize(800,620);
 		
+		
 		// the base layout
 		GridLayout gl_base = new GridLayout();
+		gl_base.verticalSpacing = 0;
 		gl_base.marginHeight = 0;
 		gl_base.marginWidth = 0;
-		gl_base.verticalSpacing = 0;
-		gl_base.horizontalSpacing = 1;
-		gl_base.numColumns = 1;
+		gl_base.numColumns = 3;
 		shell.setLayout(gl_base); // attach it to the shell
 		
-		menu = new MenuController(shell);		
+		menu = new MenuController(shell);
+		
+			
 	}	
 	
 	

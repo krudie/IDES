@@ -8,7 +8,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
@@ -23,12 +25,15 @@ public class AdvancedCoolBar{
      * The horizontal span of the GridData in which the CoolBar exists.
      * This should be equal to the number of columns in the GridLayout of the Shell of the GraphingPlatform
      */
-	private final int horizontal_span = 1;
+	private final int horizontal_span = 3;
 	
 	/**
      * The actual CoolBar object.
      */
-	public CoolBar coolbar = null;
+	private CoolBar coolbar = null;
+	
+	private Shell shell;
+	
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// AdvancedCoolBar construction ///////////////////////////////////////////////////////////////////////////////////
@@ -39,12 +44,19 @@ public class AdvancedCoolBar{
      * 
      * @param	graphing_platform	The GraphingPlatform in which this AdvancedCoolBar will exist.
      */
-	public AdvancedCoolBar(Shell shell){
+	public AdvancedCoolBar(Shell parentShell){
+		this.shell = parentShell;
 		addHorizontalSeperator(shell);
 		coolbar = new CoolBar(shell, SWT.FLAT);
 		GridData griddata = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		griddata.grabExcessHorizontalSpace = true;
 		griddata.horizontalSpan = horizontal_span;
-		coolbar.setLayoutData(griddata);		
+		coolbar.setLayoutData(griddata);
+		coolbar.addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event event) {
+				shell.layout();
+			}
+		});
 		addHorizontalSeperator(shell);
 	}
 
@@ -79,5 +91,13 @@ public class AdvancedCoolBar{
 	 */
 	public void setWrapIndices(int[] indices){
 		coolbar.setWrapIndices(indices);
+	}
+	
+	/**
+	 * Returns the coolbar of the object
+	 * @return the coolbar
+	 */
+	public CoolBar getCoolbar(){
+		return coolbar;
 	}
 }
