@@ -44,6 +44,7 @@ public class ObjectExplorer {
 			Text textbox = new Text(objectComposite, SWT.SINGLE | SWT.BORDER);
 			GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 			gridData.grabExcessHorizontalSpace = true;
+			gridData.widthHint = 200;
 			textbox.setLayoutData(gridData);
 		}
 	    
@@ -53,7 +54,7 @@ public class ObjectExplorer {
 		
 	    scrollComposite.setExpandHorizontal(true);
 	    scrollComposite.setExpandVertical(true);
-	    scrollComposite.setMinSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT)); 
+	    scrollComposite.setMinSize(objectComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT)); 
 	    
 		
 	}
