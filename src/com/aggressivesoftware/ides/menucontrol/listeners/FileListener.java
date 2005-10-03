@@ -408,7 +408,9 @@ public class FileListener extends AbstractListener
 		{ save_dialog.setFilterPath(gp.sv.last_used_path); }
 		save_dialog.setFilterExtensions(filter_extensions); 
 		String save_location = save_dialog.open();
-		gp.sv.last_used_path = save_location;
+		if(save_location != null){
+			gp.sv.last_used_path = save_dialog.getFilterPath();
+		}
 		
 		if (save_location != null)
 		{
@@ -448,7 +450,11 @@ public class FileListener extends AbstractListener
 		{ open_dialog.setFilterPath(gp.sv.last_used_path); }
 		open_dialog.setFilterExtensions(new String[] {"*.gml", "*.*"}); 
 		String open_location = open_dialog.open();
-		gp.sv.last_used_path = open_location;
+		
+		if(open_location != null){
+			gp.sv.last_used_path = open_dialog.getFilterPath();
+		}
+		
 		return open_location;
 	}
 	
