@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
+
 import userinterface.menu.MenuController;
 
 public class MainWindow {
@@ -38,8 +39,8 @@ public class MainWindow {
 	
 	private ResourceManager rm;
 	private MenuController menu;
-	private ProjectExplorer pe;
-	private ObjectExplorer oe;
+	private static ProjectExplorer pe;
+	private static ObjectExplorer oe;
 
 	
 	
@@ -147,6 +148,10 @@ public class MainWindow {
 		error_popup.setText(error_title);
 		error_popup.open();			
 		throw new RuntimeException(error_title + "\n" + error_message); 
-	}	
+    }
+    
+    public static ProjectExplorer getProjectExplorer(){
+        return pe;
+    }
 }
 	

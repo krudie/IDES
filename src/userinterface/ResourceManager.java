@@ -76,6 +76,7 @@ public class ResourceManager {
 		FILE_EXPORT_GIF,
 		FILE_EXPORT_PNG,
 		FILE_NEW_AUTOMATON,
+        FILE_NEW_PROJECT,
 		FILE_OPEN,
 		FILE_SAVE,
 		FILE_SAVEAS,

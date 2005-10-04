@@ -18,7 +18,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import userinterface.MainWindow;
 import userinterface.ResourceManager;
+import userinterface.Userinterface;
 
 
 /**
@@ -74,7 +76,9 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void newProject(org.eclipse.swt.events.SelectionEvent e){
-	}
+	    Userinterface.getProjectPresentation().newProject(ResourceManager.getString("new_project_untitled"));
+        MainWindow.getProjectExplorer().updateProject();
+    }
 	
     /**
      * Create a new Automaton in the project
@@ -92,14 +96,18 @@ public class FileListener extends AbstractListener{
 	public void open(org.eclipse.swt.events.SelectionEvent e){
 		FileDialog openDialog = new FileDialog(shell, SWT.OPEN); 
 		openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN)); 
-		openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"}); 
+		openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"});
 		if (SystemVariables.last_used_path != null && SystemVariables.last_used_path.length() > 0){
 			openDialog.setFilterPath(SystemVariables.last_used_path);
 		}
 		String openLocation = openDialog.open();
 		if(openLocation != null){
 			SystemVariables.last_used_path = openDialog.getFilterPath();
+            Userinterface.getProjectPresentation().openProject(new File(openLocation));
+            MainWindow.getProjectExplorer().updateProject();
 		}
+        
+
 	}	
 	
     /**

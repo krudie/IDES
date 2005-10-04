@@ -1,11 +1,18 @@
 package projectPresentation;
 
-import projectModel.Project;
+import java.io.File;
+
 
 public interface ProjectPresentation { 
-     public void setProjectName(String name);
      
-     public String getProjectName();
+    public void newProject(String name);
+
+    public void setProjectName(String name);
+ 
+    public String getProjectName();
     
+    public void openProject(File file);
+    
+    public String[] getAutomataNames();
     
 }

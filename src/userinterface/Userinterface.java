@@ -2,13 +2,18 @@ package userinterface;
 
 import org.eclipse.swt.widgets.*;
 
+import projectPresentation.ProjectPresentation;
+
 public class Userinterface {
 
 	private Display display = null;
-	private MainWindow mw; 
+	private MainWindow mw;
+    private static ProjectPresentation pj;
 	
-	public Userinterface(){
+	public Userinterface(ProjectPresentation projectPresentation){
 		
+        pj = projectPresentation;
+        
 		Splash splash = null;
 		try	{ 
 			display = Display.getDefault();
@@ -23,4 +28,9 @@ public class Userinterface {
 			e.printStackTrace(); 
 		}
 	}
+    
+    public static ProjectPresentation getProjectPresentation(){
+        return pj;
+    }
+    
 }

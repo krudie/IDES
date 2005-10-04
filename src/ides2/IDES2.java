@@ -16,7 +16,7 @@ public class IDES2 {
 		SystemVariables sv = new SystemVariables();
         ProjectPresentation projectPresentation = new ProjectManager(); 
         
-        new userinterface.Userinterface();
+        new userinterface.Userinterface(projectPresentation);
 		sv.saveValues();
 	}
 
