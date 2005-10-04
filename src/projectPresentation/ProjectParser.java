@@ -25,6 +25,7 @@ public class ProjectParser implements ContentHandler{
     private static final String ATTRIBUTE_FILE = "file",
         ATTRIBUTE_NAME = "name";
         
+    private String dir = null;
     
     public ProjectParser(){
         try{
@@ -41,6 +42,7 @@ public class ProjectParser implements ContentHandler{
     }
 
     public Project parse(File f) throws FileNotFoundException, IOException, SAXException{
+        dir = f.getParent();
         state = STATE_IDLE;
         p = null;
         xr.parse(new InputSource(new FileInputStream(f)));
@@ -87,7 +89,7 @@ public class ProjectParser implements ContentHandler{
             if(atts.getValue(ATTRIBUTE_FILE)!=null){
                 state = STATE_AUTOMATON;
                 try{
-                    p.addAutomaton(ap.parse(new File(atts.getValue(ATTRIBUTE_FILE))));    
+                    p.addAutomaton(ap.parse(new File(dir+File.separator+atts.getValue(ATTRIBUTE_FILE))));    
                 }
                 catch(Exception e){
                     System.err.println("XmlParser: Exception occured while parsing automaton. message: "+e.getMessage());
