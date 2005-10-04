@@ -15,13 +15,14 @@ public class ProjectParser implements ContentHandler{
     private int projectState = PROJECT_IDLE;
     
     private static final int PROJECT_IDLE = 0,
-        PROJECT_DOCUMENT = 1,
-        PROJECT_PROJECT = 2,
-        PROJECT_AUTOMATON = 3;
+                             PROJECT_DOCUMENT = 1,
+                             PROJECT_PROJECT = 2,
+                             PROJECT_AUTOMATON = 3;
     
     private static final String ELEMENT_AUTOMATON = "automaton",
-        ELEMENT_PROJECT = "project",
-        ATTRIBUTE_FILE = "file";
+                                ELEMENT_PROJECT = "project";
+
+    private static final String ATTRIBUTE_FILE = "file";
         
     
     public ProjectParser(){
