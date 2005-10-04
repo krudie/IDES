@@ -22,8 +22,8 @@ public class Project {
         automata.add(a);
     }
     
-    public Iterator<Automaton> getAutomata(){
-        return automata.iterator();
+    public LinkedList<Automaton> getAutomata(){
+        return automata;
     }
     
     public String getName(){

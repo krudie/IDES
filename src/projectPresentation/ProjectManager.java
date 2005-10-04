@@ -4,6 +4,9 @@
 package projectPresentation;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import projectModel.*;
 
 /**
@@ -44,7 +47,13 @@ public class ProjectManager implements ProjectPresentation {
     }
     
     public String[] getAutomataNames(){
-        
-        return new String[3];
+        LinkedList<Automaton> al = project.getAutomata();
+        String[] sa = new String[al.size()];
+        Iterator<Automaton> ai = al.iterator();
+        int i = 0;
+        while(ai.hasNext()){
+            sa[i++] = ai.next().getName();            
+        }
+        return sa;
     }
 }

@@ -151,7 +151,7 @@ public class ProjectParser implements ContentHandler{
         catch(IOException ioe){   
         }
         System.out.println("Automata in project "+project.getName()+":");
-        Iterator<Automaton> i = project.getAutomata();
+        Iterator<Automaton> i = project.getAutomata().iterator();
         while(i.hasNext()){
             Automaton a = i.next();
             System.out.println(a);
