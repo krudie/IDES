@@ -22,7 +22,8 @@ public class ProjectParser implements ContentHandler{
     private static final String ELEMENT_AUTOMATON = "automaton",
                                 ELEMENT_PROJECT = "project";
 
-    private static final String ATTRIBUTE_FILE = "file";
+    private static final String ATTRIBUTE_FILE = "file",
+        ATTRIBUTE_NAME = "name";
         
     
     public ProjectParser(){
@@ -41,7 +42,7 @@ public class ProjectParser implements ContentHandler{
 
     public Project parse(File f) throws FileNotFoundException, IOException, SAXException{
         projectState = PROJECT_IDLE;
-        p = new Project();
+        p = null;
         xr.parse(new InputSource(new FileInputStream(f)));
         return p;
     }
@@ -64,7 +65,6 @@ public class ProjectParser implements ContentHandler{
             return;
         }
         projectState = PROJECT_DOCUMENT;
-        p = new Project();
     }
     public void endDocument(){
         if(projectState != PROJECT_DOCUMENT){
@@ -84,21 +84,21 @@ public class ProjectParser implements ContentHandler{
                 System.err.println("XmlParser: encountered wrong element in state project.");    
                 
             }
-            for(int i = 0; i < atts.getLength(); i++){
-                if(atts.getQName(i).equals(ATTRIBUTE_FILE)){
-                    projectState = PROJECT_AUTOMATON;
-                    try{
-                        p.addAutomaton(ap.parse(new File(atts.getValue(i))));
-                        
-                    }
-                    catch(Exception e){
-                        System.err.println("XmlParser: Exception occured while parsing automaton. message: "+e.getMessage());
-                    }
+            if(atts.getValue(ATTRIBUTE_FILE)!=null){
+                projectState = PROJECT_AUTOMATON;
+                try{
+                    p.addAutomaton(ap.parse(new File(atts.getValue(ATTRIBUTE_FILE))));    
+                }
+                catch(Exception e){
+                    System.err.println("XmlParser: Exception occured while parsing automaton. message: "+e.getMessage());
                 }
             }
             break;
         case PROJECT_DOCUMENT:
-            if(qName.equals(ELEMENT_PROJECT)) projectState = PROJECT_PROJECT;
+            if(qName.equals(ELEMENT_PROJECT)){
+                projectState = PROJECT_PROJECT;
+                p = new Project(atts.getValue(ATTRIBUTE_NAME));
+            }
             else System.err.println("XmlParser: encountered wrong element while in state document.");
             break;
         case PROJECT_AUTOMATON:
