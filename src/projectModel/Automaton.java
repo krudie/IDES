@@ -26,6 +26,14 @@ public class Automaton {
 	public ListIterator getStateIterator(){
 		return states.listIterator();
 	}
+    public State getState(int id){
+        ListIterator<State> si = states.listIterator();
+        while(si.hasNext()){
+            State s = si.next();
+            if(s.getId() == id) return s;
+        }
+        return null;
+    }
 	
 	public void addTransition(Transition t){
 		transitions.add(t);
@@ -46,6 +54,14 @@ public class Automaton {
 	public ListIterator getEventIterator(){
 		return events.listIterator();
 	}
+    public Event getEvent(int id){
+        ListIterator<Event> ei = events.listIterator();
+        while(ei.hasNext()){
+            Event e = ei.next();
+            if(e.getId() == id) return e;
+        }
+        return null;
+    }
 
 	public boolean isLegal(){
 		ListIterator<State> si = states.listIterator();

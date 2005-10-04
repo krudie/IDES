@@ -10,4 +10,8 @@ public class Event extends AutomatonElement{
     public Event(int id){
 		this.id = id;
 	}
+    
+    public int getId(){
+        return id;
+    }
 }

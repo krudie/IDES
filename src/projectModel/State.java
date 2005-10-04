@@ -37,4 +37,7 @@ public class State extends AutomatonElement{
 		return targetT.listIterator();
 	}
 
+    public int getId(){
+        return id;
+    }
 }

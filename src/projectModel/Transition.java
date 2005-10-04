@@ -43,4 +43,7 @@ public class Transition extends AutomatonElement{
 	public Event getEvent(){
 		return e;
 	}
+    public int getId(){
+        return id;
+    }
 }
