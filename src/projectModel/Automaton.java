@@ -11,12 +11,18 @@ public class Automaton {
 	private LinkedList<Transition> transitions;
 	private LinkedList<Event> events;
 	
-	public Automaton(){
+    private String name = null;
+    
+	public Automaton(String name){
 		states = new LinkedList<State>();
 		transitions = new LinkedList<Transition>();
 		events = new LinkedList<Event>();
+        this.name = name; 
 	}
 	
+    public String getName(){
+        return name;
+    }
 	public void addState(State s){
 		states.add(s);
 	}

@@ -37,7 +37,8 @@ public class AutomatonParser implements ContentHandler{
     private static final String ATTRIBUTE_ID = "id",
                                 ATTRIBUTE_SOURCE_ID = "source",
                                 ATTRIBUTE_TARGET_ID = "target",
-                                ATTRIBUTE_EVENT = "event";
+                                ATTRIBUTE_EVENT = "event",
+                                ATTRIBUTE_NAME = "name";
     
     private XMLReader xr;
 
@@ -105,32 +106,35 @@ public class AutomatonParser implements ContentHandler{
                 break;
             }
             else{
-                a = new Automaton();
+                a = new Automaton(atts.getValue(ATTRIBUTE_NAME));
                 state = STATE_AUTOMATON;
             }
             break;
         case(STATE_AUTOMATON):
             if(qName.equals(ELEMENT_STATE)){
-                a.addState((State)(ae = new State(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)))));
+                ae = new State(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
+                a.addState((State)ae);
                 state = STATE_STATE;
             }
             else if(qName.equals(ELEMENT_EVENT)){
-                a.addEvent((Event)(ae = new Event(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)))));
+                ae = new Event(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
+                a.addEvent((Event)ae);
                 state = STATE_EVENT;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
                 //test code..... make it better!
                 if(atts.getValue(ATTRIBUTE_EVENT) == null){
-                    a.addTransition((Transition)(ae = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
-                        a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
-                        a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))))));
+                    ae = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
+                            a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
+                            a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))));
                 }
                 else{
-                    a.addTransition((Transition)(ae = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
+                    ae = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))),
-                            a.getEvent(Integer.parseInt(atts.getValue(ATTRIBUTE_EVENT))))));
+                            a.getEvent(Integer.parseInt(atts.getValue(ATTRIBUTE_EVENT))));
                 }
+                a.addTransition((Transition)ae);
                 state = STATE_TRANSITION;
             }
             break;
