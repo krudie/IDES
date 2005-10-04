@@ -8,10 +8,14 @@ import java.util.*;
  *
  */
 public class Project {
+
+    private String name = null;
+    
     private LinkedList<Automaton> automata;
     
-    public Project(){
+    public Project(String name){
         automata = new LinkedList<Automaton>();
+        this.name = name;
     }
     
     public void addAutomaton(Automaton a){
@@ -20,5 +24,13 @@ public class Project {
     
     public Iterator<Automaton> getAutomata(){
         return automata.iterator();
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
+    public void setName(String name){
+        this.name = name;
     }
 }

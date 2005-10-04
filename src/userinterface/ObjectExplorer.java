@@ -44,7 +44,7 @@ public class ObjectExplorer {
 			Text textbox = new Text(objectComposite, SWT.SINGLE | SWT.BORDER);
 			GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 			gridData.grabExcessHorizontalSpace = true;
-			gridData.widthHint = 200;
+			gridData.widthHint = 150;
 			textbox.setLayoutData(gridData);
 		}
 	    
