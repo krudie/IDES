@@ -59,12 +59,10 @@ public class ProjectExplorer {
                         public void handleEvent (final Event e) {
                             switch (e.type) {
                                 case SWT.FocusOut:
-                                   if(item.equals(project)){
-                                       Userinterface.getProjectPresentation().setProjectName(text.getText());
-                                   }
+                                    setName();
                                  
                                     composite.dispose ();
-                                    updateProject();
+                                    
                                     break;
                                 case SWT.Verify:
                                     String newText = text.getText ();
@@ -85,7 +83,7 @@ public class ProjectExplorer {
                                 case SWT.Traverse:
                                     switch (e.detail) {
                                         case SWT.TRAVERSE_RETURN:
-                                            item.setText (text.getText ());
+                                            setName();
                                             //FALL THROUGH
                                         case SWT.TRAVERSE_ESCAPE:
                                             composite.dispose ();
@@ -93,6 +91,16 @@ public class ProjectExplorer {
                                     }
                                     break;
                             }
+                        }
+                        
+                        private void setName(){
+                            if(item.equals(project)){
+                                Userinterface.getProjectPresentation().setProjectName(text.getText());
+                            } else{
+                                 //todo: Set the new name of the automaton                               
+                            }
+                            
+                            updateProject();                      
                         }
                     };
                     text.addListener (SWT.FocusOut, textListener);
@@ -119,15 +127,25 @@ public class ProjectExplorer {
         project = new TreeItem(treeWindow, SWT.NONE);
         project.setText(Userinterface.getProjectPresentation().getProjectName());
         project.setImage(ResourceManager.getHotImage(ResourceManager.FILE_NEW_PROJECT));
+ 
         
         String[] automataNames = Userinterface.getProjectPresentation().getAutomataNames();
-        automaton = new TreeItem[automataNames.length];
         
-        for(int i = 0; i < automataNames.length; i++){
-            automaton[i] = new TreeItem(project, SWT.NONE);
-            automaton[i].setText(automataNames[i]);
-            automaton[i].setImage(ResourceManager.getHotImage(ResourceManager.FILE_NEW_AUTOMATON));
+        if(automataNames != null){
+            automaton = new TreeItem[automataNames.length];
+        
+            for(int i = 0; i < automataNames.length; i++){
+                automaton[i] = new TreeItem(project, SWT.NONE);
+                if(automataNames[i] != null){
+                    automaton[i].setText(automataNames[i]);
+                } else{
+                    automaton[i].setText(ResourceManager.getString("automaton_untitled"));
+                }
+                
+                automaton[i].setImage(ResourceManager.getHotImage(ResourceManager.FILE_NEW_AUTOMATON));
+            }
         }
+        project.setExpanded(true);
         
     }
     
