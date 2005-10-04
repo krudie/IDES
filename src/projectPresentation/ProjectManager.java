@@ -52,7 +52,11 @@ public class ProjectManager implements ProjectPresentation {
         Iterator<Automaton> ai = al.iterator();
         int i = 0;
         while(ai.hasNext()){
-            sa[i++] = ai.next().getName();            
+            Automaton a = ai.next();
+            if(a != null){
+                sa[i++] = a.getName();
+            }
+            else i++;
         }
         return sa;
     }
