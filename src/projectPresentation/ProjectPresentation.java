@@ -15,4 +15,6 @@ public interface ProjectPresentation {
     
     public String[] getAutomataNames();
     
+    public void setAutomatonName(String oldName, String newName);
+    
 }

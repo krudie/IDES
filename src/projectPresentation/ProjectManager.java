@@ -60,4 +60,8 @@ public class ProjectManager implements ProjectPresentation {
         }
         return sa;
     }
+    
+    public void setAutomatonName(String oldName, String newName){
+        
+    }
 }
