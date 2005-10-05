@@ -16,15 +16,10 @@ public class ProjectParser extends AbstractParser{
     
     private int state = STATE_IDLE;
     
-    private static final int STATE_IDLE = 0,
-                             STATE_DOCUMENT = 1,
-                             STATE_PROJECT = 2,
-                             STATE_AUTOMATON = 3;
-    
-    private static final String ELEMENT_AUTOMATON = "automaton",
-                                ELEMENT_PROJECT = "project";
-
-    private static final String ATTRIBUTE_FILE = "file";
+    protected static final int STATE_IDLE = 0,
+                               STATE_DOCUMENT = 1,
+                               STATE_PROJECT = 2,
+                               STATE_AUTOMATON = 3;
         
     private File file;
     
@@ -143,11 +138,11 @@ public class ProjectParser extends AbstractParser{
 
         project = p.parse(new File("/home/agmi02/code/test.xml"));
 
-        System.out.println("Automata in project "+project.getName()+":");
+        System.out.println("Automata in project: "+project.getName()+":");
         Iterator<Automaton> i = project.getAutomata().iterator();
         while(i.hasNext()){
             Automaton a = i.next();
-            System.out.println(a);
+            System.out.println("Automata: "+a.getName());
             if(a != null){
                 Iterator<State> si = a.getStateIterator();
                 while(si.hasNext()){

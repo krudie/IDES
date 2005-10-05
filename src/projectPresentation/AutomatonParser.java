@@ -2,15 +2,16 @@ package projectPresentation;
 
 import projectModel.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -20,7 +21,7 @@ import org.xml.sax.XMLReader;
  *
  */
 public class AutomatonParser extends AbstractParser{
-    private int state = 0;
+    private int state = STATE_IDLE;
     
     private static final int STATE_IDLE = 0,
                              STATE_DOCUMENT = 1,
@@ -28,16 +29,6 @@ public class AutomatonParser extends AbstractParser{
                              STATE_STATE = 3,
                              STATE_TRANSITION = 4,
                              STATE_EVENT = 5;
-    
-    private static final String ELEMENT_AUTOMATON = "automaton",
-                                ELEMENT_STATE = "state",
-                                ELEMENT_TRANSITION = "transition",
-                                ELEMENT_EVENT = "event";
-    
-    private static final String ATTRIBUTE_ID = "id",
-                                ATTRIBUTE_SOURCE_ID = "source",
-                                ATTRIBUTE_TARGET_ID = "target",
-                                ATTRIBUTE_EVENT = "event";
     
     private XMLReader xr;
 
