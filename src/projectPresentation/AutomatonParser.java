@@ -94,7 +94,7 @@ public class AutomatonParser extends AbstractFileParser{
                 state = STATE_EVENT;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
-                //test code..... make it better!
+                //TODO test code..... make it better!
                 if(atts.getValue(ATTRIBUTE_EVENT) == null){
                     sec = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),

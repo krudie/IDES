@@ -22,7 +22,6 @@ public class SubElementParser extends AbstractParser{
         this.xmlr = xmlr;
         ch = xmlr.getContentHandler();
         xmlr.setContentHandler(this);
-        parsingErrors = "";
         this.se = se;
     }
 
