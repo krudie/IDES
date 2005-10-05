@@ -7,7 +7,7 @@ import projectModel.*;
 
 import java.util.*;
 
-public class ProjectParser implements ContentHandler{
+public class ProjectParser extends AbstractParser{
     private XMLReader xr;
     private Project p;
     private AutomatonParser ap;
@@ -22,10 +22,9 @@ public class ProjectParser implements ContentHandler{
     private static final String ELEMENT_AUTOMATON = "automaton",
                                 ELEMENT_PROJECT = "project";
 
-    private static final String ATTRIBUTE_FILE = "file",
-        ATTRIBUTE_NAME = "name";
+    private static final String ATTRIBUTE_FILE = "file";
         
-    private String dir = null;
+    private File file;
     
     public ProjectParser(){
         try{
@@ -42,7 +41,7 @@ public class ProjectParser implements ContentHandler{
     }
 
     public Project parse(File f) throws FileNotFoundException, IOException, SAXException{
-        dir = f.getParent();
+        file = f;
         state = STATE_IDLE;
         p = null;
         xr.parse(new InputSource(new FileInputStream(f)));
@@ -89,7 +88,7 @@ public class ProjectParser implements ContentHandler{
             if(atts.getValue(ATTRIBUTE_FILE)!=null){
                 state = STATE_AUTOMATON;
                 try{
-                    p.addAutomaton(ap.parse(new File(dir+File.separator+atts.getValue(ATTRIBUTE_FILE))));    
+                    p.addAutomaton(ap.parse(new File(file.getParent()+File.separator+atts.getValue(ATTRIBUTE_FILE))));    
                 }
                 catch(Exception e){
                     System.err.println("XmlParser: Exception occured while parsing automaton. message: "+e.getMessage());
@@ -99,7 +98,7 @@ public class ProjectParser implements ContentHandler{
         case STATE_DOCUMENT:
             if(qName.equals(ELEMENT_PROJECT)){
                 state = STATE_PROJECT;
-                p = new Project(atts.getValue(ATTRIBUTE_NAME));
+                p = new Project(ParsingToolbox.removeFileType(file.getName()));
             }
             else System.err.println("XmlParser: encountered wrong element while in state document.");
             break;

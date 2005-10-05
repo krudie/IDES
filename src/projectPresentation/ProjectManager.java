@@ -42,7 +42,9 @@ public class ProjectManager implements ProjectPresentation {
         try{
             project = pp.parse(file);
         } catch(Exception e){
-         System.out.println(e.getMessage());  
+         System.out.println("ProjectManager: unable to parse file: "+file.getName()
+                 +"\n\t exception: "+e
+                 +" message: "+e.getMessage());  
         }      
     }
     

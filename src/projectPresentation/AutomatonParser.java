@@ -19,7 +19,7 @@ import org.xml.sax.XMLReader;
  * @author agmi02
  *
  */
-public class AutomatonParser implements ContentHandler{
+public class AutomatonParser extends AbstractParser{
     private int state = 0;
     
     private static final int STATE_IDLE = 0,
@@ -37,11 +37,11 @@ public class AutomatonParser implements ContentHandler{
     private static final String ATTRIBUTE_ID = "id",
                                 ATTRIBUTE_SOURCE_ID = "source",
                                 ATTRIBUTE_TARGET_ID = "target",
-                                ATTRIBUTE_EVENT = "event",
-                                ATTRIBUTE_NAME = "name";
+                                ATTRIBUTE_EVENT = "event";
     
     private XMLReader xr;
 
+    private File file;
     private Automaton a;
     private AutomatonElement ae;
     
@@ -58,32 +58,15 @@ public class AutomatonParser implements ContentHandler{
         }
     }
     
-    public Automaton parse(File f){
+    public Automaton parse(File f) throws FileNotFoundException, IOException, SAXException{
         state = STATE_IDLE;
         a = null;
-        try{
-            xr.parse(new InputSource(new FileInputStream(f)));
-        }
-        catch(Exception e){
-            System.err.println("AutomatonParser: could not parse file: "+f.getName()
-                    +"\n\tmessage: "+e.getMessage());
-        }
+        file = f;
+        xr.parse(new InputSource(new FileInputStream(f)));
         state = STATE_IDLE;
         return a;
     }
     
-    public void characters(char[] ch, int start, int length){
-    }
-    public void endPrefixMapping(String prefix){
-    }
-    public void ignorableWhitespace(char[] ch, int start, int length){
-    }
-    public void processingInstruction(String target, String data){
-    }
-    public void setDocumentLocator(Locator locator){
-    }
-    public void skippedEntity(String name){
-    }
     public void startDocument(){
         if(state != STATE_IDLE)
             System.err.println("AutomatonParser: wrong state at start of document.");
@@ -106,7 +89,7 @@ public class AutomatonParser implements ContentHandler{
                 break;
             }
             else{
-                a = new Automaton(atts.getValue(ATTRIBUTE_NAME));
+                a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
                 state = STATE_AUTOMATON;
             }
             break;
@@ -175,10 +158,7 @@ public class AutomatonParser implements ContentHandler{
             System.err.println("AutomatonParser: encountered wrong state at end of element.");
             break;
         }
-    }
-
-    public void startPrefixMapping(String prefix, String uri){
-    }
+    }    
 
     public void parseSubElement(){
     }
