@@ -116,6 +116,7 @@ public class HelpListener extends AbstractListener
 		gd_message.horizontalSpan = 2;
 		message.setLayoutData(gd_message);
 
+		about_shell.pack();
 		about_shell.open();	
 	}	
 }

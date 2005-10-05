@@ -55,8 +55,7 @@ public class MenuController
      */
 	public ToolBar tbr_graphic = null,
 				   tbr_file = null,
-				   tbr_edit = null,
-				   tbr_machine = null;
+				   tbr_edit = null;
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,10 +182,7 @@ public class MenuController
 		help_listener = new HelpListener(gp);
 		option_listener = new OptionListener(gp);
 		
-		// declare temp objects
-		MenuItem mitm_seperator = null;
-		ToolItem titm_seperator = null;
-		
+	
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// File System ////////////////////////////////////////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
@@ -216,12 +212,12 @@ public class MenuController
 	    file_export_latex.addMitm(mnu_file_export);
 	    file_export_gif.addMitm(mnu_file_export);
 	    file_export_png.addMitm(mnu_file_export);
-	    mitm_seperator = new MenuItem(mnu_file, SWT.SEPARATOR);
+	    new MenuItem(mnu_file, SWT.SEPARATOR);
 	    file_new.addMitm(mnu_file);
 		file_open.addMitm(mnu_file);
 		file_save.addMitm(mnu_file);
 		file_saveas.addMitm(mnu_file);
-		mitm_seperator = new MenuItem(mnu_file, SWT.SEPARATOR);
+		new MenuItem(mnu_file, SWT.SEPARATOR);
 		file_exit.addMitm(mnu_file);
 						
 		// setup the toolbar structures and add the ToolItems (order matters)		
@@ -232,7 +228,7 @@ public class MenuController
 	    file_open.addTitm(tbr_file);
 	    file_save.addTitm(tbr_file);
 	    file_saveas.addTitm(tbr_file);
-	    titm_seperator = new ToolItem(tbr_file, SWT.SEPARATOR);
+	   new ToolItem(tbr_file, SWT.SEPARATOR);
 	    file_export_latex.addTitm(tbr_file);
 	    file_export_gif.addTitm(tbr_file);
 	    file_export_png.addTitm(tbr_file);
@@ -259,7 +255,7 @@ public class MenuController
 						
 	    edit_undo.addMitm(mnu_edit);
 	    edit_redo.addMitm(mnu_edit);
-	    mitm_seperator = new MenuItem(mnu_edit, SWT.SEPARATOR);
+	    new MenuItem(mnu_edit, SWT.SEPARATOR);
 	    edit_copy.addMitm(mnu_edit);
 	    edit_paste.addMitm(mnu_edit);
 	    edit_delete.addMitm(mnu_edit);
@@ -303,7 +299,7 @@ public class MenuController
 		graphic_modify.addMitm(mnu_graphic, SWT.RADIO);
 		graphic_printarea.addMitm(mnu_graphic, SWT.RADIO);
 		graphic_grab.addMitm(mnu_graphic, SWT.RADIO);
-	    mitm_seperator = new MenuItem(mnu_graphic, SWT.SEPARATOR);
+	    new MenuItem(mnu_graphic, SWT.SEPARATOR);
 		graphic_alledges.addMitm(mnu_graphic, SWT.CHECK);
 		graphic_alllabels.addMitm(mnu_graphic, SWT.CHECK);
 
@@ -314,7 +310,7 @@ public class MenuController
 		graphic_grid.addTitm(tbr_graphic, SWT.DROP_DOWN);
 		graphic_alledges.addTitm(tbr_graphic, SWT.CHECK);
 		graphic_alllabels.addTitm(tbr_graphic, SWT.CHECK);
-	    titm_seperator = new ToolItem(tbr_graphic, SWT.SEPARATOR);
+	   new ToolItem(tbr_graphic, SWT.SEPARATOR);
 		graphic_zoom.addTitm(tbr_graphic, SWT.RADIO);
 		graphic_create.addTitm(tbr_graphic, SWT.RADIO);
 		graphic_modify.addTitm(tbr_graphic, SWT.RADIO);
@@ -393,7 +389,7 @@ public class MenuController
 		mitm_help.setMenu(mnu_help);	
 
 		help_helptopics.addMitm(mnu_help);
-		mitm_seperator = new MenuItem(mnu_help, SWT.SEPARATOR);
+		new MenuItem(mnu_help, SWT.SEPARATOR);
 		help_about.addMitm(mnu_help);
 
 		// setup the toolbar structures and add the ToolItems (order matters)		
