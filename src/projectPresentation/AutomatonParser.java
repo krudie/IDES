@@ -51,10 +51,10 @@ public class AutomatonParser extends AbstractParser{
             xr.setContentHandler(this);
         }
         catch(ParserConfigurationException pce){
-            System.err.println("XmlParser: could not configure parser, message: "+ pce.getMessage());
+            System.err.println("AutomatonParser: could not configure parser, message: "+ pce.getMessage());
         }
         catch(SAXException se){
-            System.err.println("XmlParser: could not do something, message: "+se.getMessage());
+            System.err.println("AutomatonParser: could not do something, message: "+se.getMessage());
         }
     }
     
@@ -67,13 +67,13 @@ public class AutomatonParser extends AbstractParser{
             xr.parse(new InputSource(new FileInputStream(f)));
         }
         catch(FileNotFoundException fnfe){
-            parsingErrors += fnfe.getMessage()+"\n";
+            parsingErrors += file.getName()+": "+fnfe.getMessage()+"\n";
         }
         catch(IOException ioe){
-            parsingErrors += ioe.getMessage()+"\n";
+            parsingErrors += file.getName()+": "+ioe.getMessage()+"\n";
         }
         catch(SAXException saxe){
-            parsingErrors += saxe.getMessage()+"\n";
+            parsingErrors += file.getName()+": "+saxe.getMessage()+"\n";
         }            
         state = STATE_IDLE;
         return a;
@@ -81,23 +81,23 @@ public class AutomatonParser extends AbstractParser{
     
     public void startDocument(){
         if(state != STATE_IDLE)
-            parsingErrors += "AutomatonParser: wrong state at start of document.";
+            parsingErrors += file.getName()+": wrong state at start of document.";
         state = STATE_DOCUMENT;
     }
     public void endDocument(){
         if(state != STATE_DOCUMENT)
-            parsingErrors += "AutomatonParser: wrong state at end of document.\n";
+            parsingErrors += file.getName()+": wrong state at end of document.\n";
         state = STATE_IDLE;
     }
     
     public void startElement(String uri, String localName, String qName, Attributes atts){
         switch(state){
         case(STATE_IDLE):
-            parsingErrors += "AutomatonParser: in state idle at start of element.\n";
+            parsingErrors += file.getName()+": in state idle at start of element.\n";
             break;
         case(STATE_DOCUMENT):
             if(!qName.equals(ELEMENT_AUTOMATON)){
-                parsingErrors += "AutomatonParser: encountered wrong start of element in state document.\n";
+                parsingErrors += file.getName()+": encountered wrong start of element in state document.\n";
                 break;
             }
             else{
@@ -139,7 +139,7 @@ public class AutomatonParser extends AbstractParser{
             parseSubElement();
             break;
         default:
-            parsingErrors += "AutomatonParser: encountered wrong state at beginning of element.\n";
+            parsingErrors += file.getName()+": encountered wrong state at beginning of element.\n";
             break;
         }
     }
@@ -151,23 +151,23 @@ public class AutomatonParser extends AbstractParser{
                 state = STATE_DOCUMENT;
             }
             else{
-                parsingErrors += "AutomatonParser: Wrong element endend while in state automaton.\n";
+                parsingErrors += file.getName()+": Wrong element endend while in state automaton.\n";
             }
             break;
         case(STATE_STATE):
             if(qName.equals(ELEMENT_STATE)) state = STATE_AUTOMATON;
-            else parsingErrors += "AutomatonParser: Wrong element endend while in state state.\n";
+            else parsingErrors += file.getName()+": Wrong element endend while in state state.\n";
             break;
         case(STATE_TRANSITION):
             if(qName.equals(ELEMENT_TRANSITION)) state = STATE_AUTOMATON;
-            else parsingErrors += "AutomatonParser: Wrong element endend while in state transition.\n";
+            else parsingErrors += file.getName()+": Wrong element endend while in state transition.\n";
             break;
         case(STATE_EVENT):
             if(qName.equals(ELEMENT_EVENT)) state = STATE_AUTOMATON;
-            else parsingErrors += "AutomatonParser: Wrong element endend while in state event.\n";
+            else parsingErrors += file.getName()+": Wrong element endend while in state event.\n";
             break;
         default:
-            parsingErrors += "AutomatonParser: encountered wrong state at end of element.\n";
+            parsingErrors += file.getName()+": encountered wrong state at end of element.\n";
             break;
         }
     }    
