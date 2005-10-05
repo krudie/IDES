@@ -159,9 +159,17 @@ public class ProjectParser extends AbstractFileParser{
                                        +t.getEvent().getId());
                 }
             }
-            
+          
         }    
         System.out.println("Errors while parsing\n"+p.getParsingErrors());
+        File outputFile = new File("/home/agmi02/code/output.xml");
+        try{
+            System.out.println(outputFile.createNewFile());
+        }
+        catch(Exception e){
+            System.err.println("test: message: "+e.getMessage());
+        }
+        project.getAutomata().getFirst().toXML(outputFile);
     }
     public static void printSubElements(SubElementContainer sec){
         Enumeration<SubElement> see = sec.getSubElements();

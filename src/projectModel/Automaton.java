@@ -1,5 +1,9 @@
 package projectModel;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 /**
  * 
@@ -74,6 +78,37 @@ public class Automaton {
         return null;
     }
 
+    public void toXML(File f){
+        if(!f.canWrite()){
+            System.err.println("Automaton: unable to write to file.");
+            return;
+        }
+        PrintStream ps = null;
+        try{
+            ps = new PrintStream(f);
+        }
+        catch(FileNotFoundException fnfe){
+            System.err.println("Automaton: unable to print to file, message: "+fnfe.getMessage());
+        }
+        
+        ps.println("<automaton>");
+        Iterator<State> si = states.iterator();
+        while(si.hasNext()){
+            si.next().toXML(ps, "   ");
+        }
+        
+        Iterator<Event> ei = events.iterator();
+        while(ei.hasNext()){
+            ei.next().toXML(ps, "   ");
+        }
+        
+        Iterator<Transition> ti = transitions.iterator();
+        while(ti.hasNext()){
+            ti.next().toXML(ps, "   ");
+        }
+        ps.println("</automaton>");
+    }
+    
 	public boolean isLegal(){
 		ListIterator<State> si = states.listIterator();
 		ListIterator<Transition> ti = transitions.listIterator();

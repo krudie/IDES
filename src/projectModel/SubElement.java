@@ -1,8 +1,9 @@
 package projectModel;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 public class SubElement extends SubElementContainer{
     private Hashtable<String,String> attributeList;
@@ -48,6 +49,28 @@ public class SubElement extends SubElementContainer{
     public Enumeration<String> getAttributeNames(){
         return attributeList.keys();
     }
+    
+    public void toXML(PrintStream ps, String indent){
+        ps.print(indent+"<"+name);
+        Enumeration<String> av = attributeList.elements();
+        Enumeration<String> an = attributeList.keys();
+        while(an.hasMoreElements()){
+            ps.print(" "+an.nextElement()+"=\""+av.nextElement()+"\"");
+        }
+        if(super.isEmpty() && ((chars==null)?true:chars.trim().equals(""))){
+            ps.println("/>");
+            return;
+        }
+        ps.println(">");
+        if(!super.isEmpty()){
+            super.toXML(ps, indent+" ");
+        }
+        if(!chars.trim().equals("")){
+            ps.println(chars);
+        }
+        ps.println(indent+"</"+name+">");
+    }
+    
     
     /**
      * Test

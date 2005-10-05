@@ -1,5 +1,7 @@
 package projectModel;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -40,5 +42,16 @@ public class State extends SubElementContainer{
 
     public int getId(){
         return id;
+    }
+    
+    public void toXML(PrintStream ps, String indent){
+        if(isEmpty()){
+            ps.println(indent+"<state" + " id=\""+id+"\"/>");
+        }
+        else{
+            ps.println(indent+"<state" + " id=\""+id+"\">");
+            super.toXML(ps, indent+"  ");
+            ps.println(indent+"</state>");
+        }
     }
 }

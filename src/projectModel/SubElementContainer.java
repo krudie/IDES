@@ -1,5 +1,7 @@
 package projectModel;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -33,5 +35,15 @@ public class SubElementContainer {
     }   
     public void hasSubElement(String aName){
         subElementList.containsKey(aName);
+    }
+    public boolean isEmpty(){
+        return subElementList.isEmpty();
+    }
+    
+    public void toXML(PrintStream ps, String indent){
+        Enumeration<SubElement> see = subElementList.elements();
+        while(see.hasMoreElements()){
+            see.nextElement().toXML(ps, indent+"\t");
+        }
     }
 }

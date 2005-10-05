@@ -1,5 +1,7 @@
 package projectModel;
 
+import java.io.PrintStream;
+
 /**
  * 
  * @author Axel Gottlieb Michelsen
@@ -14,4 +16,16 @@ public class Event extends SubElementContainer{
     public int getId(){
         return id;
     }
+    
+    public void toXML(PrintStream ps, String indent){
+        if(isEmpty()){
+            ps.println(indent+"<event" + " id=\""+id+"\"/>");
+        }
+        else{
+            ps.println(indent+"<event" + " id=\""+id+"\">");
+            super.toXML(ps, indent+"  ");
+            ps.println(indent+"</event>");
+        }
+    }
+
 }
