@@ -18,13 +18,8 @@ public class SubElementContainer {
         subElementList = new Hashtable<String,SubElement>();
     }
     
-    public SubElement[] getSubElements(){
-        SubElement[] s = new SubElement[subElementList.size()];
-        Iterator<SubElement> sei = subElementList.values().iterator();
-        for(int i = 0; i < subElementList.size(); i++){
-            s[i] = sei.next();
-        }
-        return s;
+    public Enumeration<SubElement> getSubElements(){
+        return subElementList.elements();
     }
     
     public SubElement getSubElement(String aName) throws NullPointerException{

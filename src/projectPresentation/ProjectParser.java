@@ -164,14 +164,18 @@ public class ProjectParser extends AbstractFileParser{
         System.out.println("Errors while parsing\n"+p.getParsingErrors());
     }
     public static void printSubElements(SubElementContainer sec){
-        SubElement[] s = sec.getSubElements();
-        for(int i = 0; i < s.length; i++){
-            System.out.println(s[i].getName());
-            if(s[i].getSubElements().length != 0){
-                System.out.println(s[i].getName()+"'s subelements:{");
-                printSubElements(s[i]);
-                System.out.println("}");
+        Enumeration<SubElement> see = sec.getSubElements();
+        while(see.hasMoreElements()){
+            SubElement se = see.nextElement();
+            System.out.print(se.getName());
+            Enumeration<String> ane = se.getAttributeNames();
+            Enumeration<String> ave = se.getAttributeValues();
+            while(ane.hasMoreElements()){
+                System.out.print(" "+ane.nextElement() +"="+ ave.nextElement());
             }
+            System.out.println();
+            printSubElements(se);
+            
         }
     }
 }

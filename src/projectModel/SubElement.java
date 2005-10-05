@@ -1,5 +1,6 @@
 package projectModel;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -40,6 +41,12 @@ public class SubElement extends SubElementContainer{
     
     public void hasAttribute(String aName){
         attributeList.containsKey(aName);
+    }
+    public Enumeration<String> getAttributeValues(){
+        return attributeList.elements();
+    }
+    public Enumeration<String> getAttributeNames(){
+        return attributeList.keys();
     }
     
     /**
