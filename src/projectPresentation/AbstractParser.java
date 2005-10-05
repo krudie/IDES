@@ -21,7 +21,7 @@ public class AbstractParser implements ContentHandler{
                                   ATTRIBUTE_FILE = "file";
 
     protected String parsingErrors = "";
-    protected XMLReader xr;   
+    protected XMLReader xmlr;   
     
     public String getParsingErrors(){
         return parsingErrors;

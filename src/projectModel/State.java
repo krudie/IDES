@@ -12,6 +12,7 @@ public class State extends SubElementContainer{
 	private int id;
     
 	public State(int id){
+        super();
         this.id = id;
 		sourceT = new LinkedList<Transition>();
 		targetT = new LinkedList<Transition>();

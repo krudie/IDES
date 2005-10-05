@@ -15,8 +15,8 @@ import javax.xml.parsers.SAXParserFactory;
 public abstract class AbstractFileParser extends AbstractParser{   
     public AbstractFileParser(){
         try{
-            xr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            xr.setContentHandler(this);
+            xmlr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            xmlr.setContentHandler(this);
         }
         catch(ParserConfigurationException pce){
             System.err.println("AbstractParser: could not configure parser, message: "+ pce.getMessage());

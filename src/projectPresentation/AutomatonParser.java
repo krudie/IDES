@@ -41,7 +41,7 @@ public class AutomatonParser extends AbstractFileParser{
         file = f;
         parsingErrors = "";
         try{
-            xr.parse(new InputSource(new FileInputStream(f)));
+            xmlr.parse(new InputSource(new FileInputStream(f)));
         }
         catch(FileNotFoundException fnfe){
             parsingErrors += file.getName()+": "+fnfe.getMessage()+"\n";
@@ -113,7 +113,13 @@ public class AutomatonParser extends AbstractFileParser{
         case(STATE_STATE):
         case(STATE_TRANSITION):
         case(STATE_EVENT):
-            parseSubElement();
+            SubElement nse = new SubElement(qName);
+            for(int i = 0; i < atts.getLength(); i++){
+                nse.setAttribute(atts.getQName(i), atts.getValue(i));
+            }
+            sec.addSubElement(qName, nse);
+            SubElementParser sep = new SubElementParser();
+            sep.fill(nse, xmlr, parsingErrors);
             break;
         default:
             parsingErrors += file.getName()+": encountered wrong state at beginning of element.\n";
@@ -148,7 +154,4 @@ public class AutomatonParser extends AbstractFileParser{
             break;
         }
     }    
-
-    public void parseSubElement(){
-    }
 }

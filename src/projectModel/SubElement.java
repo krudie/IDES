@@ -1,12 +1,29 @@
 package projectModel;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 
 public class SubElement extends SubElementContainer{
     private Hashtable<String,String> attributeList;
+    private String name;
+    private String chars;
     
-    public SubElement(){
+    public SubElement(String name){
+        this.name = name;
         attributeList = new Hashtable<String,String>();
+    }
+    
+    public String getName(){
+        return name;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public String getChars(){
+        return chars;
+    }
+    public void setChars(String chars){
+        this.chars = chars;
     }
     
     public String getAttribute(String aName) throws NullPointerException{
@@ -24,13 +41,12 @@ public class SubElement extends SubElementContainer{
     public void hasAttribute(String aName){
         attributeList.containsKey(aName);
     }
-
     
     /**
      * Test
      */
     public static void main(String args[]){
-        SubElement ae = new SubElement();
+        SubElement ae = new SubElement("subelement?");
         ae.setAttribute("integer", "42");
         ae.setAttribute("text"," is the answer to the universe, and all that: ");
         ae.setAttribute("bool", new Boolean(true).toString());

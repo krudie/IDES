@@ -18,10 +18,19 @@ public class SubElementContainer {
         subElementList = new Hashtable<String,SubElement>();
     }
     
+    public SubElement[] getSubElements(){
+        SubElement[] s = new SubElement[subElementList.size()];
+        Iterator<SubElement> sei = subElementList.values().iterator();
+        for(int i = 0; i < subElementList.size(); i++){
+            s[i] = sei.next();
+        }
+        return s;
+    }
+    
     public SubElement getSubElement(String aName) throws NullPointerException{
         return subElementList.get(aName);
     }
-    public void setSubElement(String aName, SubElement s) throws NullPointerException{
+    public void addSubElement(String aName, SubElement s) throws NullPointerException{
         subElementList.put(aName, s);
     }
     public void removeSubElement(String aName) throws NullPointerException{

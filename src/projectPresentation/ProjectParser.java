@@ -34,7 +34,7 @@ public class ProjectParser extends AbstractFileParser{
         p = null;
         parsingErrors = "";
         try{
-            xr.parse(new InputSource(new FileInputStream(f)));
+            xmlr.parse(new InputSource(new FileInputStream(f)));
         }
         catch(FileNotFoundException fnfe){
             parsingErrors += fnfe.getMessage()+"\n";
@@ -137,7 +137,9 @@ public class ProjectParser extends AbstractFileParser{
             if(a != null){
                 Iterator<State> si = a.getStateIterator();
                 while(si.hasNext()){
-                    System.out.println("\tstate     : "+si.next().getId());
+                    State s = si.next();
+                    System.out.println("\tstate     : "+s.getId());
+                    printSubElements(s);
                 }
                 System.out.println();
                 Iterator<Event> ei = a.getEventIterator();
@@ -160,5 +162,16 @@ public class ProjectParser extends AbstractFileParser{
             
         }    
         System.out.println("Errors while parsing\n"+p.getParsingErrors());
+    }
+    public static void printSubElements(SubElementContainer sec){
+        SubElement[] s = sec.getSubElements();
+        for(int i = 0; i < s.length; i++){
+            System.out.println(s[i].getName());
+            if(s[i].getSubElements().length != 0){
+                System.out.println(s[i].getName()+"'s subelements:{");
+                printSubElements(s[i]);
+                System.out.println("}");
+            }
+        }
     }
 }
