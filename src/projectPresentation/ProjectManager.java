@@ -17,9 +17,11 @@ public class ProjectManager implements ProjectPresentation {
 
     private Project project = null;
     private ProjectParser pp = null;
+    private boolean unsaved = false;
     
     public void newProject(String name){
-       project = new Project(name); 
+       project = new Project(name);
+       unsaved = true;
     }
     
     public boolean isProjectOpen(){
@@ -29,7 +31,8 @@ public class ProjectManager implements ProjectPresentation {
     public void setProjectName(String name){
         if(project != null){
             project.setName(name);
-        }        
+        }
+        unsaved = true;
     }
     
     public String getProjectName(){
@@ -65,10 +68,20 @@ public class ProjectManager implements ProjectPresentation {
     
     public void setAutomatonName(String oldName, String newName){
         project.getAutomatonByName(oldName).setName(newName);
+        unsaved = true;
     }
     
     public void addAutomaton(String name){
         project.addAutomaton(new Automaton(name));
+        unsaved = true;
+    }
+    
+    public boolean hasUnsavedData(){
+        return unsaved;
+    }
+    
+    public void setUnsavedData(boolean state){
+        unsaved = state;
     }
     
     

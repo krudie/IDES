@@ -21,4 +21,8 @@ public interface ProjectPresentation {
     
     public void addAutomaton(String name);
     
+    public boolean hasUnsavedData();
+    
+    public void setUnsavedData(boolean state);
+    
 }
