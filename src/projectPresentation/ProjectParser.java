@@ -1,7 +1,9 @@
 package projectPresentation;
 
 import java.io.*;
+
 import org.xml.sax.*;
+
 import javax.xml.parsers.*;
 import projectModel.*;
 
@@ -40,36 +42,36 @@ public class ProjectParser extends AbstractParser{
         ap = new AutomatonParser();
     }
 
-    public Project parse(File f) throws FileNotFoundException, IOException, SAXException{
+    public Project parse(File f){
         file = f;
         state = STATE_IDLE;
         p = null;
-        xr.parse(new InputSource(new FileInputStream(f)));
+        parsingErrors = "";
+        try{
+            xr.parse(new InputSource(new FileInputStream(f)));
+        }
+        catch(FileNotFoundException fnfe){
+            parsingErrors += fnfe.getMessage()+"\n";
+        }
+        catch(IOException ioe){
+            parsingErrors += ioe.getMessage()+"\n";
+        }
+        catch(SAXException saxe){
+            parsingErrors += saxe.getMessage()+"\n";
+        }
         return p;
     }
-    
-    public void	characters(char[] ch, int start, int length){
-    }
-    public void	endPrefixMapping(String prefix){
-    }
-    public void ignorableWhitespace(char[] ch, int start, int length){
-    }
-    public void processingInstruction(String target, String data){
-    }
-    public void setDocumentLocator(Locator locator){
-    }
-    public void skippedEntity(String name){
-    }
+
     public void startDocument(){
         if(state != STATE_IDLE){
-            System.err.println("XmlParser: in wrong state at beginning of document.");
+            parsingErrors += "XmlParser: in wrong state at beginning of document.";
             return;
         }
         state = STATE_DOCUMENT;
     }
     public void endDocument(){
         if(state != STATE_DOCUMENT){
-            System.err.println("XmlParser: wrong state at end of document.");
+            parsingErrors += "XmlParser: wrong state at end of document.";
             return;            
         }
         state = STATE_IDLE;
@@ -78,21 +80,17 @@ public class ProjectParser extends AbstractParser{
     public void startElement(String uri, String localName, String qName, Attributes atts){
         switch(state){
         case STATE_IDLE:
-            System.err.println("XmlParser: wrong state at beginning of element.");
+            parsingErrors += "XmlParser: wrong state at beginning of element.";
             break;
         case STATE_PROJECT:
             if(!qName.equals(ELEMENT_AUTOMATON)){
-                System.err.println("XmlParser: encountered wrong element in state project.");    
+                parsingErrors += "XmlParser: encountered wrong element in state project.";    
                 
             }
             if(atts.getValue(ATTRIBUTE_FILE)!=null){
                 state = STATE_AUTOMATON;
-                try{
-                    p.addAutomaton(ap.parse(new File(file.getParent()+File.separator+atts.getValue(ATTRIBUTE_FILE))));    
-                }
-                catch(Exception e){
-                    System.err.println("XmlParser: Exception occured while parsing automaton. message: "+e.getMessage());
-                }
+                p.addAutomaton(ap.parse(new File(file.getParent()+File.separator+atts.getValue(ATTRIBUTE_FILE))));    
+                parsingErrors += ap.getParsingErrors();
             }
             break;
         case STATE_DOCUMENT:
@@ -100,12 +98,13 @@ public class ProjectParser extends AbstractParser{
                 state = STATE_PROJECT;
                 p = new Project(ParsingToolbox.removeFileType(file.getName()));
             }
-            else System.err.println("XmlParser: encountered wrong element while in state document.");
+            else parsingErrors += "XmlParser: encountered wrong element while in state document.\n";
             break;
         case STATE_AUTOMATON:
-            System.err.println("XmlParser: encountered wrong element while in state automaton.");
+            parsingErrors += "XmlParser: encountered wrong element while in state automaton.\n";
+            break;
         default:
-            System.err.println("XmlParser: beginElement(): panic! parser in unknown state.");
+            parsingErrors += "XmlParser: beginElement(): panic! parser in unknown state.\n";
             break;
         }
     }
@@ -114,21 +113,21 @@ public class ProjectParser extends AbstractParser{
     public void endElement(String uri, String localName, String qName){
         switch(state){
         case STATE_IDLE:
-            System.err.println("XmlParser: encountered wrong end of element while in state idle.");
+            parsingErrors += "XmlParser: encountered wrong end of element while in state idle.\n";
             break;
         case STATE_PROJECT:
             if(qName.equals(ELEMENT_PROJECT)) state = STATE_DOCUMENT;
-            else System.err.println("XmlParser: encountered wrong end of element while in state project");
+            else parsingErrors += "XmlParser: encountered wrong end of element while in state project\n";
             break;
         case STATE_DOCUMENT:
-            System.err.println("XmlParser: encountered end of element while in state document.");
+            parsingErrors += "XmlParser: encountered end of element while in state document.\n";
             break;
         case STATE_AUTOMATON:
             if(qName.equals(ELEMENT_AUTOMATON)) state = STATE_PROJECT;
-            else System.err.println("XmlParser: encountered wrong end of element while in state automaton");
+            else parsingErrors += "XmlParser: encountered wrong end of element while in state automaton\n";
             break;
         default:
-            System.err.println("XmlParser: endElement(): panic! parser in unknown state.");
+            parsingErrors += "XmlParser: endElement(): panic! parser in unknown state.\n";
             break;
         
         }
@@ -140,15 +139,9 @@ public class ProjectParser extends AbstractParser{
     public static void main(String args[]){
         ProjectParser p = new ProjectParser();
         Project project = null;
-        try{
-            project = p.parse(new File("/home/agmi02/code/test.xml"));
-        }
-        catch(SAXException saxe){
-        }
-        catch(FileNotFoundException fnfe){
-        }
-        catch(IOException ioe){   
-        }
+
+        project = p.parse(new File("/home/agmi02/code/test.xml"));
+
         System.out.println("Automata in project "+project.getName()+":");
         Iterator<Automaton> i = project.getAutomata().iterator();
         while(i.hasNext()){
@@ -179,6 +172,6 @@ public class ProjectParser extends AbstractParser{
             }
             
         }    
-        System.out.println("test done!");
+        System.out.println("Errors while parsing\n"+p.getParsingErrors());
     }
 }

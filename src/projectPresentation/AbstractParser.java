@@ -10,13 +10,13 @@ import java.io.IOException;
 
 public abstract class AbstractParser implements ContentHandler {
 
-    private String parsingErrors = "";
+    protected String parsingErrors = "";
 
     public String getParsingErrors(){
         return parsingErrors;
     }
     
-    public abstract Object parse(File f) throws FileNotFoundException, IOException, SAXException;
+    public abstract Object parse(File f);
     
    
     public void setDocumentLocator(Locator locator){

@@ -58,34 +58,46 @@ public class AutomatonParser extends AbstractParser{
         }
     }
     
-    public Automaton parse(File f) throws FileNotFoundException, IOException, SAXException{
+    public Automaton parse(File f){
         state = STATE_IDLE;
         a = null;
         file = f;
-        xr.parse(new InputSource(new FileInputStream(f)));
+        parsingErrors = "";
+        try{
+            xr.parse(new InputSource(new FileInputStream(f)));
+        }
+        catch(FileNotFoundException fnfe){
+            parsingErrors += fnfe.getMessage()+"\n";
+        }
+        catch(IOException ioe){
+            parsingErrors += ioe.getMessage()+"\n";
+        }
+        catch(SAXException saxe){
+            parsingErrors += saxe.getMessage()+"\n";
+        }            
         state = STATE_IDLE;
         return a;
     }
     
     public void startDocument(){
         if(state != STATE_IDLE)
-            System.err.println("AutomatonParser: wrong state at start of document.");
+            parsingErrors += "AutomatonParser: wrong state at start of document.";
         state = STATE_DOCUMENT;
     }
     public void endDocument(){
         if(state != STATE_DOCUMENT)
-            System.err.println("AutomatonParser: wrong state at end of document.");
+            parsingErrors += "AutomatonParser: wrong state at end of document.\n";
         state = STATE_IDLE;
     }
     
     public void startElement(String uri, String localName, String qName, Attributes atts){
         switch(state){
         case(STATE_IDLE):
-            System.err.println("AutomatonParser: in state idle at start of element.");
+            parsingErrors += "AutomatonParser: in state idle at start of element.\n";
             break;
         case(STATE_DOCUMENT):
             if(!qName.equals(ELEMENT_AUTOMATON)){
-                System.err.println("AutomatonParser: encountered wrong start of element in state document.");
+                parsingErrors += "AutomatonParser: encountered wrong start of element in state document.\n";
                 break;
             }
             else{
@@ -127,7 +139,7 @@ public class AutomatonParser extends AbstractParser{
             parseSubElement();
             break;
         default:
-            System.err.println("AutomatonParser: encountered wrong state at beginning of element.");
+            parsingErrors += "AutomatonParser: encountered wrong state at beginning of element.\n";
             break;
         }
     }
@@ -139,23 +151,23 @@ public class AutomatonParser extends AbstractParser{
                 state = STATE_DOCUMENT;
             }
             else{
-                System.err.println("AutomatonParser: Wrong element endend while in state automaton.");
+                parsingErrors += "AutomatonParser: Wrong element endend while in state automaton.\n";
             }
             break;
         case(STATE_STATE):
             if(qName.equals(ELEMENT_STATE)) state = STATE_AUTOMATON;
-            else System.err.println("AutomatonParser: Wrong element endend while in state state.");
+            else parsingErrors += "AutomatonParser: Wrong element endend while in state state.\n";
             break;
         case(STATE_TRANSITION):
             if(qName.equals(ELEMENT_TRANSITION)) state = STATE_AUTOMATON;
-            else System.err.println("AutomatonParser: Wrong element endend while in state transition.");
+            else parsingErrors += "AutomatonParser: Wrong element endend while in state transition.\n";
             break;
         case(STATE_EVENT):
             if(qName.equals(ELEMENT_EVENT)) state = STATE_AUTOMATON;
-            else System.err.println("AutomatonParser: Wrong element endend while in state event.");
+            else parsingErrors += "AutomatonParser: Wrong element endend while in state event.\n";
             break;
         default:
-            System.err.println("AutomatonParser: encountered wrong state at end of element.");
+            parsingErrors += "AutomatonParser: encountered wrong state at end of element.\n";
             break;
         }
     }    
