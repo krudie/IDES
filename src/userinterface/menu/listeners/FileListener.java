@@ -103,7 +103,12 @@ public class FileListener extends AbstractListener{
 		String openLocation = openDialog.open();
 		if(openLocation != null){
 			SystemVariables.last_used_path = openDialog.getFilterPath();
-            Userinterface.getProjectPresentation().openProject(new File(openLocation));
+            String error = Userinterface.getProjectPresentation().openProject(new File(openLocation));
+
+            if(!error.trim().equals("")){
+                MainWindow.errorPopup(ResourceManager.getString("parsing_error"), error);
+            }
+            
             MainWindow.getProjectExplorer().updateProject();
 		}
         

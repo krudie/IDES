@@ -11,7 +11,7 @@ public interface ProjectPresentation {
  
     public String getProjectName();
     
-    public void openProject(File file);
+    public String openProject(File file);
     
     public String[] getAutomataNames();
     

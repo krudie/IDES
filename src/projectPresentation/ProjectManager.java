@@ -35,18 +35,14 @@ public class ProjectManager implements ProjectPresentation {
         return null;
     } 
     
-    public void openProject(File file){
+    public String openProject(File file){
         if(pp == null){
             pp = new ProjectParser();
         }
-        try{
-            project = pp.parse(file);
-        } catch(Exception e){
-         System.out.println("ProjectManager: unable to parse file: "+file.getName()
-                 +"\n\t exception: "+e
-                 +" message: "+e.getMessage());  
-        }      
+        project = pp.parse(file);      
+        return pp.getParsingErrors();  
     }
+    
     
     public String[] getAutomataNames(){
         LinkedList<Automaton> al = project.getAutomata();

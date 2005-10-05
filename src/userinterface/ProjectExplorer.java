@@ -173,12 +173,7 @@ public class ProjectExplorer {
         
             for(int i = 0; i < automataNames.length; i++){
                 automata[i] = new TreeItem(project, SWT.NONE);
-                if(automataNames[i] != null){
-                    automata[i].setText(automataNames[i]);
-                } else{
-                    automata[i].setText(ResourceManager.getString("automaton_untitled"));
-                }
-                
+                automata[i].setText(automataNames[i]);              
                 automata[i].setImage(ResourceManager.getHotImage(ResourceManager.FILE_NEW_AUTOMATON));
             }
         }

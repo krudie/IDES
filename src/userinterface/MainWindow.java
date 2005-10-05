@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
 
@@ -155,10 +156,11 @@ public class MainWindow {
     }
     
     public static void errorPopup(String errorTitle, String errorMessage){
-        MessageBox errorPopup = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE); 
-        errorPopup.setMessage(errorMessage);
-        errorPopup.setText(errorTitle);
-        errorPopup.open();             
+            MessageBox errorPopup = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE); 
+            errorPopup.setMessage(errorMessage);
+            errorPopup.setText(errorTitle);
+            errorPopup.open();      
     }
+    
 }
 	
