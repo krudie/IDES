@@ -739,7 +739,7 @@ public class GraphController
 								// an edge was found
 								menued_object.addAttribute(GraphObject.HOT_SELECTED);
 								pc.mnu_edge.setData(new Point(e.x,e.y));
-								j2dcanvas.setMenu(pc.mnu_edge);
+								pc.mnu_edge.setVisible(true);
 							}
 							else
 							{
@@ -751,20 +751,20 @@ public class GraphController
 									menued_object.addAttribute(GraphObject.HOT_SELECTED);
 									if (((Node)menued_object).isStartState())  { pc.mitm_node_startstate.setSelection(true);  } else { pc.mitm_node_startstate.setSelection(false);  }
 									if (((Node)menued_object).isMarkedState()) { pc.mitm_node_markedstate.setSelection(true); } else { pc.mitm_node_markedstate.setSelection(false); }
-									j2dcanvas.setMenu(pc.mnu_node);
+									pc.mnu_node.setVisible(true);
 								}
 								else if (selected_tool == MODIFY_TOOL && group_area.isVisible() && group_area.isInBounds(hot_mouse.x,hot_mouse.y))
 								{
 									// it is the modify area tool, 
 									// and no particular graphpart was selected
 									// and they clicked inside a visible bounding box
-									j2dcanvas.setMenu(pc.mnu_internal); 
+									pc.mnu_internal.setVisible(true); 
 								}
 								else
 								{
 									// rightclick on blank space.
 									pc.mnu_external.setData(gm.snapToGrid(hot_mouse));
-									j2dcanvas.setMenu(pc.mnu_external);
+									pc.mnu_external.setVisible(true);
 								}
 							}
 						}

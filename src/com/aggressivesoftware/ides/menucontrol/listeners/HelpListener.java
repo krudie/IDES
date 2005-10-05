@@ -112,7 +112,8 @@ public class HelpListener extends AbstractListener
 
 		Label message = new Label(about_shell, SWT.WRAP);
 		message.setText(gp.rm.getString("help.about.message"));
-		GridData gd_message = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);  
+		GridData gd_message = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL); 
+		gd_message.widthHint = 400;
 		gd_message.horizontalSpan = 2;
 		message.setLayoutData(gd_message);
 
