@@ -21,7 +21,7 @@ public class Project {
     public void addAutomaton(Automaton a){
         automata.add(a);
     }
-    
+        
     public LinkedList<Automaton> getAutomata(){
         return automata;
     }

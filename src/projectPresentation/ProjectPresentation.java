@@ -17,4 +17,8 @@ public interface ProjectPresentation {
     
     public void setAutomatonName(String oldName, String newName);
     
+    public boolean isProjectOpen();
+    
+    public void addAutomaton(String name);
+    
 }

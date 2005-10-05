@@ -7,8 +7,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
 
+
 import userinterface.ResourceManager;
 import userinterface.menu.listeners.FileListener;
+import userinterface.menu.listeners.HelpListener;
 
 /**
  * This class is the top level controller for all menu related concepts.  
@@ -46,6 +48,11 @@ public class MenuController {
      * This object houses all the listeners for the File System
      */
 	public FileListener fileListener = null;
+    
+    /**
+     * This object houses all the listeners for the Help System
+     */
+    public HelpListener helpListener = null;
 
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +68,12 @@ public class MenuController {
 					   file_save = null,
 					   file_saveas = null,
 					   file_exit = null;
+    
+    /**
+     * Help System.
+     */
+    public UnifiedMenu help_helptopics = null,
+                       help_about = null;
 	
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,6 +93,7 @@ public class MenuController {
 		advanced_coolbar = new AdvancedCoolBar(shell);
 		
 		fileListener = new FileListener(shell);
+        helpListener = new HelpListener(shell);
 		
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +138,33 @@ public class MenuController {
 	    file_saveas.addTitm(tbr_file);
 
 		advanced_coolbar.addToolBar(tbr_file);
+        
+        
+        
+        
+        
+        
+        
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Help System ////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////         
+
+        // create the UnifiedMenus
+        help_helptopics = new UnifiedMenu(ResourceManager.HELP_HELPTOPICS, helpListener);
+        help_about = new UnifiedMenu(ResourceManager.HELP_ABOUT, helpListener);
+
+        // set up main menu structures and add the MenuItems (order matters)
+
+        MenuItem mitm_help = new MenuItem(menu, SWT.CASCADE);
+        mitm_help.setText(ResourceManager.getString("help.mtext"));
+        Menu mnu_help = new Menu(mitm_help);
+        mitm_help.setMenu(mnu_help);    
+
+        help_helptopics.addMitm(mnu_help);
+        new MenuItem(mnu_help, SWT.SEPARATOR);
+        help_about.addMitm(mnu_help);
+        
+        
 	}
 
     /**
@@ -137,5 +178,9 @@ public class MenuController {
 	public FileListener getFileListener(){
 		return fileListener;
 	}
+    
+    public HelpListener getHelpListener(){
+        return helpListener;
+    }
 	
 }

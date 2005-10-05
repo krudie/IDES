@@ -15,11 +15,15 @@ import projectModel.*;
  */
 public class ProjectManager implements ProjectPresentation {
 
-    Project project = null;
-    ProjectParser pp = null;
+    private Project project = null;
+    private ProjectParser pp = null;
     
     public void newProject(String name){
        project = new Project(name); 
+    }
+    
+    public boolean isProjectOpen(){
+        return (project != null);
     }
     
     public void setProjectName(String name){
@@ -62,4 +66,10 @@ public class ProjectManager implements ProjectPresentation {
     public void setAutomatonName(String oldName, String newName){
         project.getAutomatonByName(oldName).setName(newName);
     }
+    
+    public void addAutomaton(String name){
+        project.addAutomaton(new Automaton(name));
+    }
+    
+    
 }

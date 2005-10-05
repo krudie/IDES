@@ -108,21 +108,21 @@ public class ProjectExplorer {
                             //Testing if the name is empty
                             if(text.getText().trim().equals("")){
                                 looseFocus = true;
-                                MainWindow.errorPopup(ResourceManager.getString("naming_error_title"), ResourceManager.getString("naming_error_empty"));
+                                MainWindow.errorPopup(ResourceManager.getString("naming_error.title"), ResourceManager.getString("naming_error.empty"));
                                 return false; 
                             }
                             
                             //testing if the name is already used
                             if(!item.equals(project) && project.getText().equals(text.getText())){
                                 looseFocus = true;
-                                MainWindow.errorPopup(ResourceManager.getString("naming_error_title"), ResourceManager.getString("naming_error_used"));
+                                MainWindow.errorPopup(ResourceManager.getString("naming_error.title"), ResourceManager.getString("naming_error.used"));
                                 return false; 
                             }
                             
                             for(int i = 0; i<automata.length; i++){
                                 if((!item.equals(automata[i])) && (automata[i].getText().equals(text.getText()))){
                                     looseFocus = true;
-                                    MainWindow.errorPopup(ResourceManager.getString("naming_error_title"), ResourceManager.getString("naming_error_used"));                                 
+                                    MainWindow.errorPopup(ResourceManager.getString("naming_error.title"), ResourceManager.getString("naming_error.used"));                                 
                                     return false;
                                 }
                             }
@@ -179,6 +179,33 @@ public class ProjectExplorer {
         }
         project.setExpanded(true);
         
+    }
+    
+    public String getNewTitle(){
+        
+        boolean free = false;
+        int i = 1;
+        String title = null;
+        while(!free){
+            free = true;
+            title = ResourceManager.getString("new_automaton_untitled") + i;
+            
+            if(project.getText().equals(title)){              
+                free = false;
+                i++;
+                continue;
+            }
+            for(int j = 0; j < automata.length; j++){
+                if(automata[j].getText().equals(title)){
+                    free = false;
+                    break;
+                }
+            }
+            
+            i++;
+        }
+        
+        return title;
     }
     
 }
