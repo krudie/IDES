@@ -124,7 +124,7 @@ public class MainWindow {
 		SashForm leftSash = new SashForm(mainSash, SWT.VERTICAL);
 		mainSash.setLayout(new FillLayout());
 				
-		pe = new ProjectExplorer(leftSash);
+		pe = new ProjectExplorer(leftSash, shell);
 		oe = new ObjectExplorer(leftSash);
 		
 		

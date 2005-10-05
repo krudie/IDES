@@ -132,7 +132,8 @@ public class MenuController {
 
 		tbr_file = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT | SWT.WRAP);
 
-	    file_new_automaton.addTitm(tbr_file);
+	    file_new_project.addTitm(tbr_file);
+        file_new_automaton.addTitm(tbr_file);
 	    file_open.addTitm(tbr_file);
 	    file_save.addTitm(tbr_file);
 	    file_saveas.addTitm(tbr_file);

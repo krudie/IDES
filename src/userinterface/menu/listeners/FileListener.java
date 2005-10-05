@@ -73,7 +73,24 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void newProject(org.eclipse.swt.events.SelectionEvent e){
-        if(!checkSaved(e)) return;
+        if(Userinterface.getProjectPresentation().hasUnsavedData()){
+            MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
+            unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
+            unsaved_changes.setMessage(ResourceManager.getString("file_sys.unsaved_changes"));
+            int response = unsaved_changes.open();
+            switch(response){
+                case SWT.YES: 
+                    // call the save listener
+                    save(e);
+                    newProject(e);
+                    return;
+                case SWT.NO: 
+                    break;
+                case SWT.CANCEL:
+                    // do nothing
+                    return;
+            }
+        }
         
         Userinterface.getProjectPresentation().newProject(ResourceManager.getString("new_project_untitled"));
         MainWindow.getProjectExplorer().updateProject();
@@ -98,7 +115,24 @@ public class FileListener extends AbstractListener{
      */
 	public void open(org.eclipse.swt.events.SelectionEvent e){
 		
-        if(!checkSaved(e)) return;
+        if(Userinterface.getProjectPresentation().hasUnsavedData()){
+            MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
+            unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
+            unsaved_changes.setMessage(ResourceManager.getString("file_sys.unsaved_changes"));
+            int response = unsaved_changes.open();
+            switch(response){
+                case SWT.YES: 
+                    // call the save listener
+                    save(e);
+                    open(e);
+                    return;  
+                case SWT.NO: 
+                    break;
+                case SWT.CANCEL:
+                    // do nothing
+                    return;
+            }
+        }
        
         FileDialog openDialog = new FileDialog(shell, SWT.OPEN); 
 		openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN)); 
@@ -127,8 +161,8 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void save(org.eclipse.swt.events.SelectionEvent e) {
-		getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVE), new String[] {"*.xml", "*.*"});
-        
+        String saveLocation = getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVE), new String[] {"*.xml", "*.*"});
+        if(saveLocation == null) return;
         Userinterface.getProjectPresentation().setUnsavedData(false);
 	} 
 	
@@ -138,7 +172,8 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void saveAs(org.eclipse.swt.events.SelectionEvent e) {
-		getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVEAS), new String[] {"*.xml", "*.*"});
+		String saveLocation = getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVEAS), new String[] {"*.xml", "*.*"});
+        if(saveLocation == null) return;
         Userinterface.getProjectPresentation().setUnsavedData(false);
 	}
 
@@ -148,8 +183,25 @@ public class FileListener extends AbstractListener{
      * @param	e	The SelectionEvent that initiated this action.
      */
 	public void exit(org.eclipse.swt.events.SelectionEvent e){
-        if(!checkSaved(e)) return;
-        shell.dispose();
+        if(Userinterface.getProjectPresentation().hasUnsavedData()){
+            MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
+            unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
+            unsaved_changes.setMessage(ResourceManager.getString("file_sys.unsaved_changes"));
+            int response = unsaved_changes.open();
+            switch(response){
+                case SWT.YES: 
+                    // call the save listener
+                    save(e);
+                    exit(e);
+                    return;  
+                case SWT.NO: 
+                    break;
+                case SWT.CANCEL:
+                    // do nothing
+                    return;
+            }
+        }
+        shell.dispose();       
 	}
 	
 	
@@ -169,32 +221,5 @@ public class FileListener extends AbstractListener{
 		return saveLocation;
 	}
     
-    /**
-     * Checks if there are unsaved stuff and asks the user to save it
-     * @param e
-     * @return a boolean indicating wheter or not to continue
-     */
-    
-    private boolean checkSaved(org.eclipse.swt.events.SelectionEvent e){
-        if(Userinterface.getProjectPresentation().hasUnsavedData()){
-            MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
-            unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
-            unsaved_changes.setMessage(ResourceManager.getString("file_sys.unsaved_changes"));
-            int response = unsaved_changes.open();
-            switch(response)
-            {
-                case SWT.YES: 
-                    // call the save listener
-                    save(e);
-                    break;  
-                case SWT.NO: 
-                    break;
-                case SWT.CANCEL:
-                    // do nothing
-                    return false;
-            }
-        }
-           return true;
-    }
 
 }
