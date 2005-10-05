@@ -7,20 +7,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
+
 
 /**
  * 
  * @author agmi02
  *
  */
-public class AutomatonParser extends AbstractParser{
+public class AutomatonParser extends AbstractFileParser{
     private int state = STATE_IDLE;
     
     private static final int STATE_IDLE = 0,
@@ -29,24 +26,13 @@ public class AutomatonParser extends AbstractParser{
                              STATE_STATE = 3,
                              STATE_TRANSITION = 4,
                              STATE_EVENT = 5;
-    
-    private XMLReader xr;
 
     private File file;
     private Automaton a;
-    private AutomatonElement ae;
+    private SubElementContainer sec;
     
     public AutomatonParser(){
-        try{
-            xr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            xr.setContentHandler(this);
-        }
-        catch(ParserConfigurationException pce){
-            System.err.println("AutomatonParser: could not configure parser, message: "+ pce.getMessage());
-        }
-        catch(SAXException se){
-            System.err.println("AutomatonParser: could not do something, message: "+se.getMessage());
-        }
+        super();
     }
     
     public Automaton parse(File f){
@@ -65,7 +51,7 @@ public class AutomatonParser extends AbstractParser{
         }
         catch(SAXException saxe){
             parsingErrors += file.getName()+": "+saxe.getMessage()+"\n";
-        }            
+        }
         state = STATE_IDLE;
         return a;
     }
@@ -98,29 +84,29 @@ public class AutomatonParser extends AbstractParser{
             break;
         case(STATE_AUTOMATON):
             if(qName.equals(ELEMENT_STATE)){
-                ae = new State(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
-                a.addState((State)ae);
+                sec = new State(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
+                a.addState((State)sec);
                 state = STATE_STATE;
             }
             else if(qName.equals(ELEMENT_EVENT)){
-                ae = new Event(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
-                a.addEvent((Event)ae);
+                sec = new Event(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
+                a.addEvent((Event)sec);
                 state = STATE_EVENT;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
                 //test code..... make it better!
                 if(atts.getValue(ATTRIBUTE_EVENT) == null){
-                    ae = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
+                    sec = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))));
                 }
                 else{
-                    ae = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
+                    sec = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
                             a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))),
                             a.getEvent(Integer.parseInt(atts.getValue(ATTRIBUTE_EVENT))));
                 }
-                a.addTransition((Transition)ae);
+                a.addTransition((Transition)sec);
                 state = STATE_TRANSITION;
             }
             break;

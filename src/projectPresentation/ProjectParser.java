@@ -2,15 +2,15 @@ package projectPresentation;
 
 import java.io.*;
 
-import org.xml.sax.*;
-
-import javax.xml.parsers.*;
 import projectModel.*;
 
 import java.util.*;
 
-public class ProjectParser extends AbstractParser{
-    private XMLReader xr;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+public class ProjectParser extends AbstractFileParser{
     private Project p;
     private AutomatonParser ap;
     
@@ -24,16 +24,7 @@ public class ProjectParser extends AbstractParser{
     private File file;
     
     public ProjectParser(){
-        try{
-            xr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            xr.setContentHandler(this);
-        }
-        catch(ParserConfigurationException pce){
-            System.err.println("ProjectParser: could not configure parser, message: "+ pce.getMessage());
-        }
-        catch(SAXException se){
-            System.err.println("ProjectParser: could not do something, message: "+se.getMessage());
-        }
+        super();
         ap = new AutomatonParser();
     }
 
@@ -142,7 +133,7 @@ public class ProjectParser extends AbstractParser{
         Iterator<Automaton> i = project.getAutomata().iterator();
         while(i.hasNext()){
             Automaton a = i.next();
-            System.out.println("Automata: "+a.getName());
+            System.out.println("Automaton: "+a.getName());
             if(a != null){
                 Iterator<State> si = a.getStateIterator();
                 while(si.hasNext()){

@@ -7,7 +7,7 @@ import java.util.*;
  * @author Axel Gottlieb Michelsen
  *
  */
-public class State extends AutomatonElement{
+public class State extends SubElementContainer{
 	private LinkedList<Transition> sourceT, targetT;
 	private int id;
     

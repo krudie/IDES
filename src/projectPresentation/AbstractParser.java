@@ -4,11 +4,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import java.io.File;
+import org.xml.sax.XMLReader;
 
+public class AbstractParser implements ContentHandler{
 
-public abstract class AbstractParser implements ContentHandler {
-    
     protected static final String ELEMENT_AUTOMATON = "automaton",
                                   ELEMENT_PROJECT = "project",
                                   ELEMENT_STATE = "state",    
@@ -20,16 +19,14 @@ public abstract class AbstractParser implements ContentHandler {
                                   ATTRIBUTE_TARGET_ID = "target",
                                   ATTRIBUTE_EVENT = "event",
                                   ATTRIBUTE_FILE = "file";
-    
-    protected String parsingErrors = "";
 
+    protected String parsingErrors = "";
+    protected XMLReader xr;   
+    
     public String getParsingErrors(){
         return parsingErrors;
     }
-    
-    public abstract Object parse(File f);
-    
-   
+       
     public void setDocumentLocator(Locator locator){
     }
     public void startDocument() throws SAXException {

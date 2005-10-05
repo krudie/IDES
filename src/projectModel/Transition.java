@@ -5,7 +5,7 @@ package projectModel;
  * @author Axel Gottlieb Michelsen
  *
  */
-public class Transition extends AutomatonElement{
+public class Transition extends SubElementContainer{
 	private State sourceS, targetS;
 	private Event e;
 	private int id;
