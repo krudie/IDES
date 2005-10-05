@@ -31,7 +31,7 @@ public class ProjectExplorer {
     
     
     TreeItem project = null;
-    TreeItem automaton[] = null;
+    TreeItem automata[] = null;
     
 
 	
@@ -39,7 +39,11 @@ public class ProjectExplorer {
 		treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
         editor = new TreeEditor(treeWindow);
         
+        //This piece of code is stolen from www.eclipse.org/swt and then modified
         treeWindow.addListener (SWT.Selection, new Listener () {
+            
+            boolean looseFocus = false;
+            
             public void handleEvent (Event event) {
                 final TreeItem item = (TreeItem) event.item;
                 if (item != null && item == lastItem) {
@@ -54,15 +58,18 @@ public class ProjectExplorer {
                             text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
                         }
                     });
-                   
+                    
                     Listener textListener = new Listener () {
                         public void handleEvent (final Event e) {
                             switch (e.type) {
                                 case SWT.FocusOut:
-                                    setName();
-                                 
-                                    composite.dispose ();
-                                    
+                                        if(!looseFocus){
+                                            looseFocus = false;
+                                            if(!setName()){
+                                                break;
+                                            }
+                                            composite.dispose ();
+                                        }
                                     break;
                                 case SWT.Verify:
                                     String newText = text.getText ();
@@ -80,10 +87,13 @@ public class ProjectExplorer {
                                     editor.minimumHeight = size.y + inset * 2;
                                     editor.layout ();
                                     break;
+                                
                                 case SWT.Traverse:
                                     switch (e.detail) {
                                         case SWT.TRAVERSE_RETURN:
-                                            setName();
+                                            if(!setName()){
+                                                break;
+                                            }
                                             //FALL THROUGH
                                         case SWT.TRAVERSE_ESCAPE:
                                             composite.dispose ();
@@ -91,18 +101,43 @@ public class ProjectExplorer {
                                     }
                                     break;
                             }
-                        }
                         
-                        private void setName(){
+                        }
+                                                
+                        private boolean setName(){
+                            //Testing if the name is empty
+                            if(text.getText().trim().equals("")){
+                                looseFocus = true;
+                                MainWindow.errorPopup(ResourceManager.getString("naming_error_title"), ResourceManager.getString("naming_error_empty"));
+                                return false; 
+                            }
+                            
+                            //testing if the name is already used
+                            if(!item.equals(project) && project.getText().equals(text.getText())){
+                                looseFocus = true;
+                                MainWindow.errorPopup(ResourceManager.getString("naming_error_title"), ResourceManager.getString("naming_error_used"));
+                                return false; 
+                            }
+                            
+                            for(int i = 0; i<automata.length; i++){
+                                if((!item.equals(automata[i])) && (automata[i].getText().equals(text.getText()))){
+                                    looseFocus = true;
+                                    MainWindow.errorPopup(ResourceManager.getString("naming_error_title"), ResourceManager.getString("naming_error_used"));                                 
+                                    return false;
+                                }
+                            }
+                            
+                                                        
                             if(item.equals(project)){
                                 Userinterface.getProjectPresentation().setProjectName(text.getText());
                             } else{
-                                 //todo: Set the new name of the automaton                               
+                                 Userinterface.getProjectPresentation().setAutomatonName(item.getText(),text.getText());                               
                             }
-                            
-                            updateProject();                      
+                            updateProject();
+                            return true;
                         }
                     };
+                    
                     text.addListener (SWT.FocusOut, textListener);
                     text.addListener (SWT.Traverse, textListener);
                     text.addListener (SWT.Verify, textListener);
@@ -112,7 +147,9 @@ public class ProjectExplorer {
                     text.setFocus ();
                 }
                 lastItem = item;
-            }
+            
+              }
+                
         });
         
 	}
@@ -132,17 +169,17 @@ public class ProjectExplorer {
         String[] automataNames = Userinterface.getProjectPresentation().getAutomataNames();
         
         if(automataNames != null){
-            automaton = new TreeItem[automataNames.length];
+            automata = new TreeItem[automataNames.length];
         
             for(int i = 0; i < automataNames.length; i++){
-                automaton[i] = new TreeItem(project, SWT.NONE);
+                automata[i] = new TreeItem(project, SWT.NONE);
                 if(automataNames[i] != null){
-                    automaton[i].setText(automataNames[i]);
+                    automata[i].setText(automataNames[i]);
                 } else{
-                    automaton[i].setText(ResourceManager.getString("automaton_untitled"));
+                    automata[i].setText(ResourceManager.getString("automaton_untitled"));
                 }
                 
-                automaton[i].setImage(ResourceManager.getHotImage(ResourceManager.FILE_NEW_AUTOMATON));
+                automata[i].setImage(ResourceManager.getHotImage(ResourceManager.FILE_NEW_AUTOMATON));
             }
         }
         project.setExpanded(true);

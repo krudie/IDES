@@ -33,4 +33,20 @@ public class Project {
     public void setName(String name){
         this.name = name;
     }
+    
+    public Automaton getAutomatonByName(String name){
+   
+        Iterator<Automaton> ai = automata.iterator();
+        int i = 0;
+        while(ai.hasNext()){
+            Automaton a = ai.next();
+            if((a != null) && (a.getName().equals(name))
+                    ){
+                return a;
+            }
+            else i++;
+        }
+        
+        return null;
+    }
 }

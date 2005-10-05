@@ -153,5 +153,12 @@ public class MainWindow {
     public static ProjectExplorer getProjectExplorer(){
         return pe;
     }
+    
+    public static void errorPopup(String errorTitle, String errorMessage){
+        MessageBox errorPopup = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE); 
+        errorPopup.setMessage(errorMessage);
+        errorPopup.setText(errorTitle);
+        errorPopup.open();             
+    }
 }
 	

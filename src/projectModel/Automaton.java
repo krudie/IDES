@@ -23,6 +23,11 @@ public class Automaton {
     public String getName(){
         return name;
     }
+    
+    public void setName(String name){
+        this.name = name;
+    }
+    
 	public void addState(State s){
 		states.add(s);
 	}

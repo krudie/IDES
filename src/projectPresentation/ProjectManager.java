@@ -62,6 +62,6 @@ public class ProjectManager implements ProjectPresentation {
     }
     
     public void setAutomatonName(String oldName, String newName){
-        
+        project.getAutomatonByName(oldName).setName(newName);
     }
 }
