@@ -39,7 +39,7 @@ public class SubElementParser extends AbstractParser{
             parsingErrors += "received end of element "+qName+" while parsing "+se.getName();
         }
         if(chars != null){
-            se.setChars(chars);
+            se.setChars(chars.trim());
         }
         xmlr.setContentHandler(ch);
     }

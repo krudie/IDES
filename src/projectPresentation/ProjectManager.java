@@ -4,6 +4,9 @@
 package projectPresentation;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -70,6 +73,54 @@ public class ProjectManager implements ProjectPresentation {
         project.getAutomatonByName(oldName).setName(newName);
         unsaved = true;
     }
+
+    private PrintStream getPrintStream(File file){
+        PrintStream ps = null;
+        if(!file.exists()){
+            try{
+                file.createNewFile();
+            }
+            catch(IOException ioe){
+                System.err.println("ProjectManager: unable to create file, message: "+ioe.getMessage());
+                return null;
+            }
+        }
+        if(!file.isFile()){
+            System.err.println("ProjectManager: "+file.getName()+" is no file. ");
+            return null;
+        }
+        if(!file.canWrite()){
+            System.err.println("ProjectManager: can not write to file: "+file.getName());
+            return null;
+        }
+        try{
+            ps = new PrintStream(file);
+        }
+        catch(FileNotFoundException fnfe){
+            System.out.println("ProjectManager: file disapeared, message: " +fnfe.getMessage());
+            return null;
+        }
+        return ps;
+    }
+    
+    public void saveProject(String path){
+        File file = new File(path+File.separator+project.getName()+".xml");
+        PrintStream ps = getPrintStream(file);
+        if(ps == null) return;
+        project.toXML(ps);
+        Iterator<Automaton> ai = project.getAutomata().iterator();
+        while(ai.hasNext()){
+            Automaton a = ai.next();
+            saveAutomaton(a, path);
+        }
+    }
+    
+    public void saveAutomaton(Automaton a, String path){
+        File file = new File(path+File.separator+a.getName()+".xml");
+        PrintStream ps = getPrintStream(file);
+        if(ps == null) return;
+        a.toXML(ps);
+    }
     
     public void addAutomaton(String name){
         project.addAutomaton(new Automaton(name));
@@ -88,14 +139,7 @@ public class ProjectManager implements ProjectPresentation {
         project.removeAutomaton(project.getAutomatonByName(name));
     }
     
-    public void saveProject(){
-        
-    }
-    
     public String removeFileName(String name){
         return ParsingToolbox.removeFileType(name);
     }
-    
-    
-    
 }

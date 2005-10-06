@@ -1,6 +1,8 @@
 package projectModel;
 
 import java.util.*;
+import java.io.*;
+
 
 /**
  * 
@@ -34,19 +36,25 @@ public class Project {
         this.name = name;
     }
     
-    public Automaton getAutomatonByName(String name){
-   
+    public void toXML(PrintStream ps){
+        ps.println("<project>");
         Iterator<Automaton> ai = automata.iterator();
-        int i = 0;
         while(ai.hasNext()){
             Automaton a = ai.next();
-            if((a != null) && (a.getName().equals(name))
-                    ){
+            ps.println("  <automaton file=\""+a.getName()+".xml\"/>");
+        }
+        ps.println("</project>");
+    }
+
+    
+    public Automaton getAutomatonByName(String name){
+        Iterator<Automaton> ai = automata.iterator();
+        while(ai.hasNext()){
+            Automaton a = ai.next();
+            if((a != null) && (a.getName().equals(name))){
                 return a;
             }
-            else i++;
         }
-        
         return null;
     }
     

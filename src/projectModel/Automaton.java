@@ -1,8 +1,5 @@
 package projectModel;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 /**
@@ -21,8 +18,8 @@ public class Automaton {
 		states = new LinkedList<State>();
 		transitions = new LinkedList<Transition>();
 		events = new LinkedList<Event>();
-        this.name = name; 
-	}
+        this.name = name;
+    }
 	
     public String getName(){
         return name;
@@ -78,19 +75,7 @@ public class Automaton {
         return null;
     }
 
-    public void toXML(File f){
-        if(!f.canWrite()){
-            System.err.println("Automaton: unable to write to file.");
-            return;
-        }
-        PrintStream ps = null;
-        try{
-            ps = new PrintStream(f);
-        }
-        catch(FileNotFoundException fnfe){
-            System.err.println("Automaton: unable to print to file, message: "+fnfe.getMessage());
-        }
-        
+    public void toXML(PrintStream ps){
         ps.println("<automaton>");
         Iterator<State> si = states.iterator();
         while(si.hasNext()){

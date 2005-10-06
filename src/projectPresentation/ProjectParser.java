@@ -124,66 +124,8 @@ public class ProjectParser extends AbstractFileParser{
     }
     
     public static void main(String args[]){
-        ProjectParser p = new ProjectParser();
-        Project project = null;
-
-        project = p.parse(new File("/home/agmi02/code/test.xml"));
-
-        System.out.println("Automata in project: "+project.getName()+":");
-        Iterator<Automaton> i = project.getAutomata().iterator();
-        while(i.hasNext()){
-            Automaton a = i.next();
-            System.out.println("Automaton: "+a.getName());
-            if(a != null){
-                Iterator<State> si = a.getStateIterator();
-                while(si.hasNext()){
-                    State s = si.next();
-                    System.out.println("\tstate     : "+s.getId());
-                    printSubElements(s);
-                }
-                System.out.println();
-                Iterator<Event> ei = a.getEventIterator();
-                while(ei.hasNext()){
-                    System.out.println("\tevent     : "+ei.next().getId());
-                }
-                System.out.println();
-                Iterator<Transition> ti = a.getTransitionIterator();
-                while(ti.hasNext()){
-                    Transition t = ti.next();
-                    System.out.print("\ttransition: "+t.getId());
-                    System.out.println("\t"
-                                       +t.getSource().getId()
-                                       +" -> "
-                                       +t.getTarget().getId()
-                                       +" : "
-                                       +t.getEvent().getId());
-                }
-            }
-          
-        }    
-        System.out.println("Errors while parsing\n"+p.getParsingErrors());
-        File outputFile = new File("/home/agmi02/code/output.xml");
-        try{
-            System.out.println(outputFile.createNewFile());
-        }
-        catch(Exception e){
-            System.err.println("test: message: "+e.getMessage());
-        }
-        project.getAutomata().getFirst().toXML(outputFile);
-    }
-    public static void printSubElements(SubElementContainer sec){
-        Enumeration<SubElement> see = sec.getSubElements();
-        while(see.hasMoreElements()){
-            SubElement se = see.nextElement();
-            System.out.print(se.getName());
-            Enumeration<String> ane = se.getAttributeNames();
-            Enumeration<String> ave = se.getAttributeValues();
-            while(ane.hasMoreElements()){
-                System.out.print(" "+ane.nextElement() +"="+ ave.nextElement());
-            }
-            System.out.println();
-            printSubElements(se);
-            
-        }
+        ProjectManager p = new ProjectManager();
+        p.openProject(new File("/home/agmi02/des/test.xml"));
+        p.saveProject("/home/agmi02/");
     }
 }

@@ -9,7 +9,7 @@ import java.io.PrintStream;
  */
 public class Transition extends SubElementContainer{
 	private State sourceS, targetS;
-	private Event e;
+	private Event e = null;
 	private int id;
     
 	public Transition(int id, State sourceS, State targetS){
@@ -55,6 +55,7 @@ public class Transition extends SubElementContainer{
                     +" id=\""+id+"\""
                     +" source=\""+sourceS.getId()+"\""
                     +" target=\""+targetS.getId()+"\""
+                    +e!=null?" event=\""+e.getId()+"\"":""
                     +"/>");
         }
         else{
@@ -62,6 +63,7 @@ public class Transition extends SubElementContainer{
                     +" id=\""+id+"\""
                     +" source=\""+sourceS.getId()+"\""
                     +" target=\""+targetS.getId()+"\""
+                    +e!=null?" event=\""+e.getId()+"\"":""
                     +">");
             super.toXML(ps, indent+"  ");
             ps.println(indent+"</transition>");

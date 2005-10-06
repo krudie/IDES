@@ -27,7 +27,7 @@ public interface ProjectPresentation {
     
     public void deleteAutomatonByName(String name);
     
-    public void saveProject();
+    public void saveProject(String path);
     
     public String removeFileName(String name);
     

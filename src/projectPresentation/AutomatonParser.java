@@ -77,36 +77,56 @@ public class AutomatonParser extends AbstractFileParser{
                 parsingErrors += file.getName()+": encountered wrong start of element in state document.\n";
                 break;
             }
-            else{
-                a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
-                state = STATE_AUTOMATON;
-            }
+            a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
+            state = STATE_AUTOMATON;
             break;
         case(STATE_AUTOMATON):
             if(qName.equals(ELEMENT_STATE)){
-                sec = new State(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
+                if(atts.getValue(ATTRIBUTE_ID) == null){
+                    parsingErrors += file.getName()+ " Unable to parse state with no id.\n";
+                    break;
+                }
+                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
+                sec = new State(id);
                 a.addState((State)sec);
                 state = STATE_STATE;
             }
             else if(qName.equals(ELEMENT_EVENT)){
-                sec = new Event(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)));
+                if(atts.getValue(ATTRIBUTE_ID) == null){
+                    parsingErrors += file.getName()+ " Unable to parse event with no id.\n";
+                    break;
+                }
+                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
+                sec = new Event(id);
                 a.addEvent((Event)sec);
                 state = STATE_EVENT;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
-                //TODO test code..... make it better!
-                if(atts.getValue(ATTRIBUTE_EVENT) == null){
-                    sec = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
-                            a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
-                            a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))));
+                State s = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)));
+                State t = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)));
+                Event e = a.getEvent(Integer.parseInt(atts.getValue(ATTRIBUTE_EVENT)));
+                if(atts.getValue(ATTRIBUTE_ID) == null){
+                    parsingErrors += file.getName()+ " Unable to parse transition with no id.\n";
+                    break;
+                }
+                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
+
+                if(s == null || t == null){                   
+                    parsingErrors += file.getName()+ " Unable to parse transition "+id+".\n";
+                    parsingErrors += "\tstate "
+                        +Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))
+                        +" or "
+                        +a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)))
+                        +"does not exist, or have not been parsed yet.";
+                }
+                else if(e == null){
+                    sec = new Transition(id,s,t);
+                    a.addTransition((Transition)sec);
                 }
                 else{
-                    sec = new Transition(Integer.parseInt(atts.getValue(ATTRIBUTE_ID)),
-                            a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID))),
-                            a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID))),
-                            a.getEvent(Integer.parseInt(atts.getValue(ATTRIBUTE_EVENT))));
+                    sec = new Transition(id ,s,t,e);
+                    a.addTransition((Transition)sec);
                 }
-                a.addTransition((Transition)sec);
                 state = STATE_TRANSITION;
             }
             break;
@@ -122,7 +142,7 @@ public class AutomatonParser extends AbstractFileParser{
             sep.fill(nse, xmlr, parsingErrors);
             break;
         default:
-            parsingErrors += file.getName()+": encountered wrong state at beginning of element.\n";
+            parsingErrors += file.getName()+": encountered wrong beginning of element.\n";
             break;
         }
     }
