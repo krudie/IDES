@@ -40,11 +40,11 @@ public class ProjectExplorerPopup {
     private void initAutomatonMenu(){
         automatonMenu = new Menu (shell, SWT.POP_UP);
         MenuItem renameItem = new MenuItem (automatonMenu, SWT.PUSH);
-        renameItem.setText ("Rename\tF2");
+        renameItem.setText (ResourceManager.getToolTipText("projectexplorer_rename"));
         renameItem.addSelectionListener(rl);
         
         MenuItem deleteItem = new MenuItem(automatonMenu, SWT.PUSH);
-        deleteItem.setText("Delete\t Del");
+        deleteItem.setText(ResourceManager.getToolTipText("projectexplorer_delete"));
         
         deleteItem.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent arg0) {
@@ -58,7 +58,7 @@ public class ProjectExplorerPopup {
     private void initProjectMenu(){
         projectMenu = new Menu (shell, SWT.POP_UP);
         MenuItem renameItem = new MenuItem (projectMenu, SWT.PUSH);
-        renameItem.setText ("Rename\tF2");
+        renameItem.setText (ResourceManager.getToolTipText("projectexplorer_rename"));
         renameItem.addSelectionListener(rl);
     }
     
