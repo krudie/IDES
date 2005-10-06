@@ -37,6 +37,7 @@ public class Project {
     }
     
     public void toXML(PrintStream ps){
+        ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
         ps.println("<project>");
         Iterator<Automaton> ai = automata.iterator();
         while(ai.hasNext()){

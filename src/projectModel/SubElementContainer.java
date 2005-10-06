@@ -43,7 +43,7 @@ public class SubElementContainer {
     public void toXML(PrintStream ps, String indent){
         Enumeration<SubElement> see = subElementList.elements();
         while(see.hasMoreElements()){
-            see.nextElement().toXML(ps, indent+"\t");
+            see.nextElement().toXML(ps, indent);
         }
     }
 }

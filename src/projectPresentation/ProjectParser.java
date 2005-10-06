@@ -128,6 +128,7 @@ public class ProjectParser extends AbstractFileParser{
     public static void main(String args[]){
         ProjectManager p = new ProjectManager();
         p.openProject(new File("/home/agmi02/des/test.xml"));
-        p.saveProject("/home/agmi02");
+        p.setProjectName("hmm.");
+        p.saveProject("/home/agmi02/des/");
     }
 }

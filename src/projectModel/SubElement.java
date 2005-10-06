@@ -62,7 +62,7 @@ public class SubElement extends SubElementContainer{
         }
         ps.println(">");
         if(!super.isEmpty()){
-            super.toXML(ps, indent+" ");
+            super.toXML(ps, indent+"  ");
         }
         if(!chars.trim().equals("")){
             ps.println(chars);
