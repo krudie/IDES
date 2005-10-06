@@ -88,6 +88,10 @@ public class ProjectManager implements ProjectPresentation {
         project.removeAutomaton(project.getAutomatonByName(name));
     }
     
+    public void saveProject(){
+        
+    }
+    
     
     
 }

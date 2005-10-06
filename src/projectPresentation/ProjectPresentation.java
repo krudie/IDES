@@ -27,4 +27,6 @@ public interface ProjectPresentation {
     
     public void deleteAutomatonByName(String name);
     
+    public void saveProject();
+    
 }
