@@ -164,8 +164,7 @@ public class FileListener extends AbstractListener{
 	public void save(org.eclipse.swt.events.SelectionEvent e) {
         String saveLocation = getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVE), new String[] {"*.xml", "*.*"});
         if(saveLocation == null) return;
-        
-        Userinterface.getProjectPresentation().saveProject();
+        Userinterface.getProjectPresentation().saveProject(saveLocation);
         MainWindow.getProjectExplorer().updateProject();
         Userinterface.getProjectPresentation().setUnsavedData(false);
 	} 
