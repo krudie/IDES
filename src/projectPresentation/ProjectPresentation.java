@@ -25,4 +25,6 @@ public interface ProjectPresentation {
     
     public void setUnsavedData(boolean state);
     
+    public void deleteAutomatonByName(String name);
+    
 }

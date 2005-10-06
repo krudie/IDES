@@ -114,6 +114,7 @@ public class HelpListener extends AbstractListener {
 		message.setText(ResourceManager.getString("help.about.message"));
 		GridData gd_message = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);  
 		gd_message.horizontalSpan = 2;
+        gd_message.widthHint = 400;
 		message.setLayoutData(gd_message);
 		about_shell.pack();
 		about_shell.open();	

@@ -49,4 +49,8 @@ public class Project {
         
         return null;
     }
+    
+    public void removeAutomaton(Automaton a){
+        automata.remove(a);
+    }
 }

@@ -84,5 +84,10 @@ public class ProjectManager implements ProjectPresentation {
         unsaved = state;
     }
     
+    public void deleteAutomatonByName(String name){
+        project.removeAutomaton(project.getAutomatonByName(name));
+    }
+    
+    
     
 }
