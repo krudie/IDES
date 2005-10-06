@@ -55,7 +55,7 @@ public class Transition extends SubElementContainer{
                     +" id=\""+id+"\""
                     +" source=\""+sourceS.getId()+"\""
                     +" target=\""+targetS.getId()+"\""
-                    +e!=null?" event=\""+e.getId()+"\"":""
+                    +((e!=null)?" event=\""+e.getId()+"\"":"")
                     +"/>");
         }
         else{
@@ -63,7 +63,7 @@ public class Transition extends SubElementContainer{
                     +" id=\""+id+"\""
                     +" source=\""+sourceS.getId()+"\""
                     +" target=\""+targetS.getId()+"\""
-                    +e!=null?" event=\""+e.getId()+"\"":""
+                    +((e!=null)?" event=\""+e.getId()+"\"":"")
                     +">");
             super.toXML(ps, indent+"  ");
             ps.println(indent+"</transition>");
