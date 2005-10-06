@@ -92,6 +92,10 @@ public class ProjectManager implements ProjectPresentation {
         
     }
     
+    public String removeFileName(String name){
+        return ParsingToolbox.removeFileType(name);
+    }
+    
     
     
 }

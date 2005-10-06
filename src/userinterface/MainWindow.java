@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
 
 import userinterface.menu.MenuController;
+import username.drawingArea.DrawingArea;
 
 public class MainWindow {
 
@@ -41,6 +42,7 @@ public class MainWindow {
 	private MenuController menu;
 	private static ProjectExplorer pe;
 	private static ObjectExplorer oe;
+    private static DrawingArea da;
 
 	
 	
@@ -127,14 +129,8 @@ public class MainWindow {
 		pe = new ProjectExplorer(leftSash, shell);
 		oe = new ObjectExplorer(leftSash);
 		
-		
-		//dummycode
-		Composite child3 = new Composite(mainSash,SWT.NONE);
-		child3.setLayout(new FillLayout());
-		new Label(child3,SWT.NONE).setText("Main window");
-		
-		
-		
+		da = new DrawingArea(mainSash, shell);
+        
 		mainSash.setWeights(new int[] {30,70});
 		
 			

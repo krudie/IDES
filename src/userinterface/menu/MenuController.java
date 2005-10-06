@@ -66,7 +66,6 @@ public class MenuController {
 					   file_new_automaton = null,
 					   file_open = null,
 					   file_save = null,
-					   file_saveas = null,
 					   file_exit = null;
     
     /**
@@ -105,7 +104,6 @@ public class MenuController {
 	    file_new_automaton = new UnifiedMenu(ResourceManager.FILE_NEW_AUTOMATON, fileListener,SWT.CTRL+'n');
 	    file_open = new UnifiedMenu(ResourceManager.FILE_OPEN, fileListener,SWT.CTRL+'o');
 	    file_save = new UnifiedMenu(ResourceManager.FILE_SAVE, fileListener,SWT.CTRL+'s');
-	    file_saveas = new UnifiedMenu(ResourceManager.FILE_SAVEAS, fileListener);
 	    file_exit = new UnifiedMenu(ResourceManager.FILE_EXIT, fileListener);
 		
 	    // set up main menu structures and add the MenuItems (order matters)
@@ -124,7 +122,6 @@ public class MenuController {
 	    file_new_automaton.addMitm(mnu_new);
 		file_open.addMitm(mnu_file);
 		file_save.addMitm(mnu_file);
-		file_saveas.addMitm(mnu_file);
 		new MenuItem(mnu_file, SWT.SEPARATOR);
 		file_exit.addMitm(mnu_file);
 						
@@ -136,7 +133,6 @@ public class MenuController {
         file_new_automaton.addTitm(tbr_file);
 	    file_open.addTitm(tbr_file);
 	    file_save.addTitm(tbr_file);
-	    file_saveas.addTitm(tbr_file);
 
 		advanced_coolbar.addToolBar(tbr_file);
         

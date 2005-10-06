@@ -43,6 +43,8 @@ public class ProjectExplorer {
         ProjectListener projectListener = new ProjectListener();
         treeWindow.addListener(SWT.MouseDown, projectListener);  
         treeWindow.addListener(SWT.KeyDown, projectListener);
+        treeWindow.addListener(SWT.MouseDoubleClick, projectListener);
+        
 	}
 	
     /**
@@ -245,11 +247,12 @@ public class ProjectExplorer {
          */
         public void handleEvent(Event event){
             TreeItem item ; 
+            Point point;
             
             switch(event.type){
             case SWT.MouseDown:
             
-                Point point = new Point (event.x, event.y);
+                point = new Point (event.x, event.y);
                 item = treeWindow.getItem(point);    
                 if(event.button == 3 && item != null && !item.equals(project)){
                     pep.getAutomatonMenu(item).setVisible(true);
@@ -257,6 +260,15 @@ public class ProjectExplorer {
                     pep.getProjectMenu(item).setVisible(true);
                 }
                 break;
+            case SWT.MouseDoubleClick:
+                point = new Point (event.x, event.y);
+                item = treeWindow.getItem(point);    
+                if(event.button == 1 && item != null && !item.equals(project)){
+                    System.out.println("I should really open an automaton");
+                    //MainWindow.getDrawingArea.
+                }
+                break;
+                
                 
             case SWT.KeyDown:
                 switch(event.keyCode){

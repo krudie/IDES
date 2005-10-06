@@ -29,4 +29,6 @@ public interface ProjectPresentation {
     
     public void saveProject();
     
+    public String removeFileName(String name);
+    
 }
