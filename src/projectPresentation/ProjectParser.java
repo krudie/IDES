@@ -1,14 +1,16 @@
 package projectPresentation;
 
-import java.io.*;
-
-import projectModel.*;
-
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import projectModel.Automaton;
+import projectModel.Project;
 
 public class ProjectParser extends AbstractFileParser{
     private Project p;
@@ -126,6 +128,6 @@ public class ProjectParser extends AbstractFileParser{
     public static void main(String args[]){
         ProjectManager p = new ProjectManager();
         p.openProject(new File("/home/agmi02/des/test.xml"));
-        p.saveProject("/home/agmi02/");
+        p.saveProject("/home/agmi02");
     }
 }

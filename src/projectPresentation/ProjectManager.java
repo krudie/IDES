@@ -104,7 +104,7 @@ public class ProjectManager implements ProjectPresentation {
     }
     
     public void saveProject(String path){
-        File file = new File(path+File.separator+project.getName()+".xml");
+        File file = new File(path, project.getName()+".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) return;
         project.toXML(ps);
@@ -116,7 +116,7 @@ public class ProjectManager implements ProjectPresentation {
     }
     
     public void saveAutomaton(Automaton a, String path){
-        File file = new File(path+File.separator+a.getName()+".xml");
+        File file = new File(path, a.getName()+".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) return;
         a.toXML(ps);
