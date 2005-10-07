@@ -618,30 +618,19 @@ public class Node extends GraphObject{
      * @return The EdgeGroup of the new Edge.
      */
     public EdgeGroup join(Edge new_edge, Node new_neighbour){
-        EdgeGroup edge_group = null;
-        boolean found_match = false;
+        EdgeGroup e = null;
         for(int i = 0; i < edge_group_list.size(); i++){
-            edge_group = (EdgeGroup) edge_group_list.elementAt(i);
-            if(new_neighbour == this && edge_group.hasNodes(this, this)){
-                    found_match = true;
-                    break;
-            }
-            else if(edge_group.hasNode(new_neighbour)){
-                    found_match = true;
-                    break;
+            e = (EdgeGroup) edge_group_list.elementAt(i);
+            if(e.hasNodes(this, new_neighbour)){
+                e.addEdge(new_edge);
+                return e;
             }
         }
-        if(found_match){
-            edge_group.addEdge(new_edge);
-        }
-        else{
-            edge_group = new EdgeGroup(this, new_neighbour, new_edge);
-            edge_group_list.addElement(edge_group);
-            if(this != new_neighbour){
-                new_neighbour.addEdgeGroup(edge_group);
-            }
-        }
-        return edge_group;
+
+        e = new EdgeGroup(this, new_neighbour, new_edge);
+        edge_group_list.addElement(e);
+        if(this != new_neighbour) new_neighbour.addEdgeGroup(e);
+        return e;
     }
 
     /**

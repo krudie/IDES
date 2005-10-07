@@ -448,8 +448,6 @@ public class Edge extends GraphObject{
         if(hasUncontrollableLabel()) curve.drawCurve(drawer, Drawer.DASHED);
         else curve.drawCurve(drawer, Drawer.SOLID);
 
-        // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         if(!labelDataIsNull()){
             selectedLabel().drawData(drawer, label_data);
 
@@ -464,33 +462,17 @@ public class Edge extends GraphObject{
             }
         }
 
-        // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         if(all_anchors || selectionState == Edge.EXCLUSIVE){
-            drawer.setColor(GraphModel.ANCHORS);
-            if(isSelfLoop()){
-                if(isHotSelected() && lastHitRegion == Edge.R_LOOP) drawer
-                        .setColor(GraphModel.CUSTOM);
+            drawer.setColor((isHotSelected() && lastHitRegion != R_NONE && lastHitRegion != R_LABEL) ?
+                    GraphModel.CUSTOM
+                    : GraphModel.ANCHORS);
 
-                curve.drawSelfLoopAnchor(drawer);
-            }
-            else if(isHotSelected()
-                    && (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL
-                            || lastHitRegion == Edge.R_HEAD_ANCHOR
-                            || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_ARROWHEAD)){
-                drawer.setColor(GraphModel.CUSTOM);
-                curve.drawHeadAnchors(drawer);
-                curve.drawTailAnchors(drawer);
-            }
+            if(isSelfLoop()) curve.drawSelfLoopAnchor(drawer);
             else{
-                curve.drawTailAnchors(drawer);
                 curve.drawHeadAnchors(drawer);
+                curve.drawTailAnchors(drawer);
             }
-
         }
-
-        // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         drawer.setColor(GraphModel.NORMAL);
     }
 
