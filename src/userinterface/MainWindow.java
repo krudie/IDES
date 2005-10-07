@@ -38,7 +38,7 @@ public class MainWindow {
 							   LOST_RESOURCE = "The resource bundle [resource_bundle.properties] did not load.  \nIt should be located at the root of the source code.";
 	
 	private ResourceManager rm;
-	private MenuController menu;
+	private static MenuController menu;
 	private static ProjectExplorer pe;
 	private static ObjectExplorer oe;
     private static GraphingPlatform gp;
@@ -150,6 +150,10 @@ public class MainWindow {
     
     public static GraphingPlatform getGraphingPlatform(){
         return gp;
+    }
+    
+    public static MenuController getMenu(){
+        return menu;
     }
     
     

@@ -80,7 +80,9 @@ public class FileListener extends AbstractListener{
         if(Userinterface.getProjectPresentation().isProjectOpen()){
             Userinterface.getProjectPresentation().addAutomaton(MainWindow.getProjectExplorer().getNewTitle());
             MainWindow.getProjectExplorer().updateProject();
+
         }
+        
 	}	
 	
     /**
@@ -134,6 +136,9 @@ public class FileListener extends AbstractListener{
             }
         }
         
+        MainWindow.getMenu().file_save_project.enable();
+        MainWindow.getMenu().file_new_automaton.enable();
+        MainWindow.getMenu().file_open_automaton.enable();
         Userinterface.getProjectPresentation().newProject(ResourceManager.getString("new_project_untitled"));
         MainWindow.getProjectExplorer().updateProject();
     }
@@ -179,6 +184,9 @@ public class FileListener extends AbstractListener{
                 MainWindow.errorPopup(ResourceManager.getString("parsing_error"), error);
             }
             
+            MainWindow.getMenu().file_save_project.enable();
+            MainWindow.getMenu().file_new_automaton.enable();
+            MainWindow.getMenu().file_open_automaton.enable();
             MainWindow.getProjectExplorer().updateProject();
         }
         

@@ -360,7 +360,15 @@ public class MenuController {
         edit_copy.disable();
         edit_paste.disable();
         edit_delete.disable();
-        tbr_graphic.setEnabled(false);
+        
+        graphic_zoom.disable();
+        graphic_create.disable();
+        graphic_modify.disable();
+        graphic_grab.disable();
+        graphic_grid.disable();
+        graphic_alledges.disable();
+        graphic_alllabels.disable();
+        
         
 	}
 
