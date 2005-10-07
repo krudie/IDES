@@ -94,34 +94,18 @@ public class SelectionArea {
     public SelectionArea(GraphingPlatform gp, int option, String coords) {
         this.gp = gp;
         this.option = option;
-        selection_area = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+        selection_area = new int[] { 0, 0, 0, 1, 0, 0, 0 };
         StringTokenizer s = new StringTokenizer(coords, ",");
-        if (s.hasMoreTokens()) {
-            selection_area[0] = Integer.parseInt(s.nextToken());
-        } else {
-            selection_area[0] = 0;
+        
+        int i = 0;
+        while(s.hasMoreTokens()){
+            selection_area[i] = Integer.parseInt(s.nextToken());
+            i++;
         }
-        if (s.hasMoreTokens()) {
-            selection_area[1] = Integer.parseInt(s.nextToken());
-        } else {
-            selection_area[1] = 0;
-        }
-        if (s.hasMoreTokens()) {
-            selection_area[2] = Integer.parseInt(s.nextToken());
-        } else {
-            selection_area[2] = 0;
-        }
-        if (s.hasMoreTokens()) {
-            selection_area[3] = Integer.parseInt(s.nextToken());
-        } else {
-            selection_area[3] = 0;
-        }
-        selection_area[4] = 1;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Mousing
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Mousing ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -327,8 +311,7 @@ public class SelectionArea {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // miscellaneous
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
+    // miscellaneous //////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -375,8 +358,7 @@ public class SelectionArea {
     /**
      * Draw this SelectionArea
      * 
-     * @param drawer
-     *            The Drawer that will handle the drawing.
+     * @param drawer The Drawer that will handle the drawing.
      */
     public void draw(Drawer drawer) {
         if (selection_area[4] > 0) {
@@ -412,10 +394,10 @@ public class SelectionArea {
      *            The translation to be performed.
      */
     public void translateAll(Point displacement) {
-        selection_area[0] = selection_area[0] + displacement.x;
-        selection_area[1] = selection_area[1] + displacement.y;
-        selection_area[2] = selection_area[2] + displacement.x;
-        selection_area[3] = selection_area[3] + displacement.y;
+        selection_area[0] += displacement.x;
+        selection_area[1] += displacement.y;
+        selection_area[2] += displacement.x;
+        selection_area[3] += displacement.y;
     }
 
     /**
@@ -424,8 +406,7 @@ public class SelectionArea {
      * @return A comma delimited string of the four points of this SelectionArea
      */
     public String toString() {
-        return selection_area[0] + "," + selection_area[1] + ","
-                + selection_area[2] + "," + selection_area[3];
+        return selection_area[0] + "," + selection_area[1] + "," + selection_area[2] + "," + selection_area[3];
     }
 
     /**
@@ -458,8 +439,7 @@ public class SelectionArea {
      * Test if the cursor is currently hovering over the selection area
      * interior.
      * 
-     * @return true If the cursor is currently hovering over the selection area
-     *         interior.
+     * @return true If the cursor is currently hovering over the selection area interior.
      */
     public boolean cursorIsOverArea() {
         return (selection_area[5] == 3);
@@ -471,19 +451,14 @@ public class SelectionArea {
      * @return true if this SelectionArea is visible.
      */
     public boolean isVisible() {
-        if (selection_area[4] == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return (selection_area[4] == 1);
     }
 
     /**
      * Set the visibility of this SelectionArea. If it is set to invisible, then
      * the cursor bit (remembers state) is also reset.
      * 
-     * @param visible
-     *            The new visiblity status.
+     * @param visible The new visiblity status.
      */
     public void setVisible(boolean visible) {
         if (visible) {
@@ -494,46 +469,22 @@ public class SelectionArea {
             // this happens for instance when we delete a group.
             if (selection_area[5] != 0) {
                 selection_area[5] = 0;
-                gp.gc.j2dcanvas.setCursor(ResourceManager
-                        .getCursor(ResourceManager.MODIFY_CURSOR));
+                gp.gc.j2dcanvas.setCursor(ResourceManager.getCursor(ResourceManager.MODIFY_CURSOR));
             }
         }
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // private helper methods
-    // /////////////////////////////////////////////////////////////////////////////////////////
+    // private helper methods /////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private boolean isOnVerticle(int x, int y) {
-        int factor = 4;
-        boolean answer = false;
-
-        // check if inside bounds
-        if (y < selection_area[3] + factor && y > selection_area[1] - factor) {
-            // check if near a line
-            if (Math.abs(x - selection_area[2]) < factor
-                    || Math.abs(x - selection_area[0]) < factor) {
-                answer = true;
-            }
-        }
-
-        return answer;
+        int factor = 4;  
+        return ((y < selection_area[3] + factor && y > selection_area[1] - factor)) && (Math.abs(x - selection_area[2]) < factor || Math.abs(x - selection_area[0]) < factor);
     }
 
     private boolean isOnHorizontal(int x, int y) {
         int factor = 4;
-        boolean answer = false;
-
-        // check if inside bounds
-        if (x < selection_area[2] + factor && x > selection_area[0] - factor) {
-            // check if near a line
-            if (Math.abs(y - selection_area[3]) < factor
-                    || Math.abs(y - selection_area[1]) < factor) {
-                answer = true;
-            }
-        }
-
-        return answer;
+        return (x < selection_area[2] + factor && x > selection_area[0] - factor) && (Math.abs(y - selection_area[3]) < factor || Math.abs(y - selection_area[1]) < factor);
     }
 }
