@@ -22,8 +22,7 @@ public class UnitVector {
     public float y = Float.MIN_VALUE;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // UnitVector construction
-    // ////////////////////////////////////////////////////////////////////////////////////////
+    // UnitVector construction ////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -37,10 +36,8 @@ public class UnitVector {
     /**
      * Construct the UnitVector.
      * 
-     * @param x
-     *            The run.
-     * @param y
-     *            The rise.
+     * @param x The run.
+     * @param y The rise.
      */
     public UnitVector(int x, int y) {
         unitize(x, y);
@@ -49,10 +46,8 @@ public class UnitVector {
     /**
      * Construct the UnitVector.
      * 
-     * @param x
-     *            The run.
-     * @param y
-     *            The rise.
+     * @param x The run.
+     * @param y The rise.
      */
     public UnitVector(float x, float y) {
         unitize(x, y);
@@ -61,10 +56,8 @@ public class UnitVector {
     /**
      * Construct the UnitVector.
      * 
-     * @param p1
-     *            The starting point.
-     * @param p2
-     *            The ending point.
+     * @param p1 The starting point.
+     * @param p2 The ending point.
      */
     public UnitVector(Point p1, Point p2) {
         unitize(p2.x - p1.x, p2.y - p1.y);
@@ -73,10 +66,8 @@ public class UnitVector {
     /**
      * Construct the UnitVector.
      * 
-     * @param x
-     *            The run.
-     * @param y
-     *            The rise.
+     * @param x The run.
+     * @param y The rise.
      */
     private void unitize(float x, float y) {
         float mag = Geometric.magnitude(x, y);
@@ -85,8 +76,7 @@ public class UnitVector {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Manipulation
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Manipulation ///////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -109,9 +99,7 @@ public class UnitVector {
 
     /**
      * Change this to a new UnitVector, rotated angle degrees to the origional.
-     * 
-     * @param angle
-     *            The number of degrees to rotate this UnitVector.
+     * @param angle The number of degrees to rotate this UnitVector.
      */
     public void rotateByDegrees(float angle) {
         rotateByRadians((float) Math.toRadians(angle));
@@ -120,8 +108,7 @@ public class UnitVector {
     /**
      * Change this to a new UnitVector, rotated angle radians to the origional.
      * 
-     * @param angle
-     *            The number of radians to rotate this UnitVector.
+     * @param angle The number of radians to rotate this UnitVector.
      */
     public void rotateByRadians(float angle) {
         float x = (float) (Math.cos(angle) * this.x + Math.sin(angle) * this.y);
@@ -130,13 +117,11 @@ public class UnitVector {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Creation
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Creation ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Create a new UnitVector, perpendicular to the origional.
-     * 
      * @return A new UnitVector, perpendicular to the origional.
      */
     public UnitVector newPerpendicular() {
@@ -145,7 +130,6 @@ public class UnitVector {
 
     /**
      * Create a new UnitVector, in the reverse direction to the origional.
-     * 
      * @return A new UnitVector, in the reverse direction to the origional.
      */
     public UnitVector newReversed() {
@@ -155,9 +139,7 @@ public class UnitVector {
     /**
      * Create a new UnitVector, rotated angle degrees to the origional.
      * 
-     * @param angle
-     *            The angle (in degrees) by which to rotate the new UnitVector
-     *            from the origional.
+     * @param angle The angle (in degrees) by which to rotate the new UnitVector from the origional.
      * @return A new UnitVector, rotated angle degrees to the origional.
      */
     public UnitVector newRotatedByDegrees(float angle) {
@@ -169,9 +151,7 @@ public class UnitVector {
     /**
      * Create a new UnitVector, rotated angle radians to the origional.
      * 
-     * @param angle
-     *            The angle (in radians) by which to rotate the new UnitVector
-     *            from the origional.
+     * @param angle The angle (in radians) by which to rotate the new UnitVector from the origional.
      * @return A new UnitVector, rotated angle radians to the origional.
      */
     public UnitVector newRotatedByRadians(float angle) {
@@ -184,28 +164,22 @@ public class UnitVector {
      * Create a new Point the given distance from the given origin along this
      * direction.
      * 
-     * @param distance
-     *            The distance to move along this direction.
-     * @param origin
-     *            The origion to move from.
+     * @param distance The distance to move along this direction.
+     * @param origin The origion to move from.
      * @return A point the given distance from the given origin along this
      *         direction.
      */
     public Point newPoint(float distance, Point origin) {
-        return new Point(origin.x + distance * this.x, origin.y + distance
-                * this.y);
+        return new Point(origin.x + distance * this.x, origin.y + distance * this.y);
     }
 
     /**
      * Create a new Point the given distance from the given origin along this
      * direction rotated by angle degrees.
      * 
-     * @param distance
-     *            The distance to move along this direction.
-     * @param origin
-     *            The origin to move from.
-     * @param angle
-     *            The angle (in degrees) by which to rotate this direction
+     * @param distance The distance to move along this direction.
+     * @param origin The origin to move from.
+     * @param angle The angle (in degrees) by which to rotate this direction
      *            before movement
      * @return A point the given distance from the given origin along this
      *         direction rotated by angle degrees.
@@ -225,13 +199,11 @@ public class UnitVector {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Misc
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Misc ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Return a String representation of this Object.
-     * 
+     * Return a String representation of this Object. 
      * @return the rise and run of this vector in the form: (x,y)
      */
     public String toString() {

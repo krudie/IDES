@@ -48,10 +48,6 @@ import userinterface.graphcontrol.graphparts.Node;
  * @author Michael Wood
  */
 public class GraphController {
-    /**
-     * Used to print debug messages.
-     */
-    private final boolean DEBUGGING = false;
 
     /**
      * The platform in which this GraphController will exist.
@@ -91,8 +87,12 @@ public class GraphController {
     /**
      * Constants for reference to the various ToolItems.
      */
-    public final int CREATE_TOOL = 1, MODIFY_TOOL = 3, GRAB_TOOL = 7,
-            GRID_TOOL = 8, PRINT_AREA_TOOL = 9, ZOOM_TOOL = 10;
+    public final int CREATE_TOOL = 1,
+                     MODIFY_TOOL = 3,
+                     GRAB_TOOL = 7,
+                     GRID_TOOL = 8,
+                     PRINT_AREA_TOOL = 9,
+                     ZOOM_TOOL = 10;
 
     /**
      * This objects facilitates the painting on the J2DCanvas
@@ -139,9 +139,12 @@ public class GraphController {
     /**
      * Colours for objects to be drawn in the graph.
      */
-    public final Color black = new Color(0, 0, 0), red = new Color(255, 0, 0),
-            blue = new Color(0, 0, 255), green = new Color(0, 64, 0),
-            dark_red = new Color(128, 0, 0), grey = new Color(180, 180, 180);
+    public final Color black = new Color(0, 0, 0),
+                       red = new Color(255, 0, 0),
+                       blue = new Color(0, 0, 255),
+                       green = new Color(0, 64, 0),
+                       dark_red = new Color(128, 0, 0),
+                       grey = new Color(180, 180, 180);
 
     /**
      * Colours for objects to be drawn in the graph. Indices correspond to the
@@ -183,8 +186,7 @@ public class GraphController {
     private boolean is_selection_area_click = false;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Special Nodes and Edges
-    // ////////////////////////////////////////////////////////////////////////////////////////
+    // Special Nodes and Edges ////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -353,14 +355,12 @@ public class GraphController {
      */
     private void initializeCanvas() {
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Mouse Clicks
-        // ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // Mouse Clicks  ///////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         j2dcanvas.addMouseListener(new MouseListener() {
             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // Double Click
-            // ///////////////////////////////////////////////////////////////////////////////////////////////////
+            // Double Click ///////////////////////////////////////////////////////////////////////////////////////////////////
             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /**
              * Process a doubleclick of the mouse button. If using the edge
@@ -374,13 +374,8 @@ public class GraphController {
              *            The initiating MouseEvent.
              */
             public void mouseDoubleClick(MouseEvent e){
-                Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10)
-                        / gm.scale); // allows two hotspots on the create
-                                        // tool
-
-                if (DEBUGGING) {
-                    System.out.println("double");
-                }
+                Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10)/ gm.scale);
+                // allows two hotspots on the create tool
 
                 if (e.button == 1) {
                     is_double_click = true;
@@ -393,8 +388,7 @@ public class GraphController {
                     // that occur shortly after downs.
                     // hence for a double click to create a self loop we really
                     // do have to use the double click event.
-                    if (selected_tool == CREATE_TOOL
-                            && last_up_finished_an_edge == false) {
+                    if (selected_tool == CREATE_TOOL && last_up_finished_an_edge == false) {
                         // further note that double click on a node should
                         // create a self loop
                         // but a double click on blank space should create a
@@ -403,8 +397,7 @@ public class GraphController {
                         // starting an edge)
                         // and the second up started this edge, then we
                         // shouldn't complete the edge, but leave it open ended.
-                        if (edge_creation_origin != null
-                                && last_down_created_an_edge == false) {
+                        if (edge_creation_origin != null && last_down_created_an_edge == false) {
                             Node n = gm.findNode(edge_mouse, false); // search
                             if (n == null) {
                                 n = gm.findNode(edge_mouse, true);
@@ -453,13 +446,10 @@ public class GraphController {
              */
             public void mouseUp(MouseEvent e) {
                 Point mouse = new Point(e.x / gm.scale, e.y / gm.scale);
-                Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10)
-                        / gm.scale); // allows two hotspots on the create
-                                        // tool
+                Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10)/ gm.scale);
+                // allows two hotspots on the create tool
 
-                if (DEBUGGING) {
-                    System.out.println("up");
-                }
+
 
                 gpc.new_last_grabbed_object = false;
                 last_up_finished_an_edge = false;
@@ -578,10 +568,6 @@ public class GraphController {
                 Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10)
                         / gm.scale); // allows two hotspots on the create
                                         // tool
-
-                if (DEBUGGING) {
-                    System.out.println("down");
-                }
 
                 last_down_created_an_edge = false;
 
@@ -1015,8 +1001,7 @@ public class GraphController {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // toolbar
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // toolbar ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -1058,8 +1043,7 @@ public class GraphController {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // miscellaneous
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
+    // miscellaneous //////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void refreshScrollbars() {
@@ -1194,33 +1178,6 @@ public class GraphController {
         drawer.setColor(GraphModel.GROUPED);
         group_area.draw(drawer);
         drawer.setColor(GraphModel.NORMAL);
-    }
-
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // tracing
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Begin a trace at the start state node
-     */
-    public void startTrace() {
-        trace_node = start_state_node;
-        if (trace_node != null) {
-            trace_node.addAttribute(GraphObject.TRACE_OBJECT);
-            j2dcanvas.repaint();
-        }
-    }
-
-    /**
-     * Stop a trace
-     */
-    public void stopTrace() {
-        if (trace_node != null) {
-            trace_node.removeAttribute(GraphObject.TRACE_OBJECT);
-            j2dcanvas.repaint();
-        }
-        trace_node = null;
     }
 
 }

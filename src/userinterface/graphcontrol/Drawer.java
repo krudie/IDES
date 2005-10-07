@@ -37,8 +37,11 @@ public class Drawer {
     /**
      * Optional line styles.
      */
-    public static final int SOLID = 0, DASHED = 1, SMALL_SOLID = 2,
-            SMALL_DASHED = 3, TINY_DASHED = 4;
+    public static final int SOLID = 0,
+                            DASHED = 1,
+                            SMALL_SOLID = 2,
+                            SMALL_DASHED = 3,
+                            TINY_DASHED = 4;
 
     /**
      * The Graphics2D which will actually do the drawing.
@@ -53,24 +56,22 @@ public class Drawer {
     /**
      * The scale at which drawing should be done.
      */
-    private BasicStroke solid_stroke = null, dashed_stroke[] = null,
-            small_solid_stroke = null, small_dashed_stroke[] = null,
-            tiny_dashed_stroke[] = null;
+    private BasicStroke solid_stroke = null,
+                        dashed_stroke[] = null,
+                        small_solid_stroke = null,
+                        small_dashed_stroke[] = null,
+                        tiny_dashed_stroke[] = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Drawer Construction
-    // ////////////////////////////////////////////////////////////////////////////////////////////
+    // Drawer Construction ////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Construct the Drawer.
      * 
-     * @param gp
-     *            The GraphingPlatform which this Drawer will service.
-     * @param g2d
-     *            The Graphics2D which will actually do the drawing.
-     * @param scale
-     *            The scale at which drawing should be done.
+     * @param gp The GraphingPlatform which this Drawer will service.
+     * @param g2d The Graphics2D which will actually do the drawing.
+     * @param scale The scale at which drawing should be done.
      */
     public Drawer(GraphingPlatform gp, Graphics2D g2d, float scale) {
         this.gp = gp;
@@ -142,8 +143,7 @@ public class Drawer {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Settings
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Settings ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -227,12 +227,9 @@ public class Drawer {
     /**
      * Draw a circle.
      * 
-     * @param origin
-     *            The origin of the circle.
-     * @param r
-     *            The radius of the circle.
-     * @param style
-     *            Optional styles, such as solid or dashed.
+     * @param origin The origin of the circle.
+     * @param r The radius of the circle.
+     * @param style Optional styles, such as solid or dashed.
      */
     public void drawCircle(Point origin, int r, int style) {
         drawCircle(origin.x, origin.y, r, style);
@@ -241,14 +238,10 @@ public class Drawer {
     /**
      * Draw a circle.
      * 
-     * @param x
-     *            The x co-ordinate of the origin of the circle.
-     * @param y
-     *            The y co-ordinate of the origin of the circle.
-     * @param r
-     *            The radius of the circle.
-     * @param style
-     *            Optional styles, such as solid or dashed.
+     * @param x The x co-ordinate of the origin of the circle.
+     * @param y The y co-ordinate of the origin of the circle.
+     * @param r The radius of the circle.
+     * @param style Optional styles, such as solid or dashed.
      */
     public void drawCircle(int x, int y, int r, int style) {
         if (style == SMALL_SOLID) {
@@ -257,8 +250,7 @@ public class Drawer {
         if (scale == 1) {
             g2d.drawOval(x - r, y - r, 2 * r, 2 * r);
         } else {
-            g2d.draw(new Ellipse2D.Float((x - r) * scale, (y - r) * scale, 2
-                    * r * scale, 2 * r * scale));
+            g2d.draw(new Ellipse2D.Float((x - r) * scale, (y - r) * scale, 2 * r * scale, 2 * r * scale));
         }
         if (style == SMALL_SOLID) {
             g2d.setStroke(solid_stroke);
@@ -268,16 +260,11 @@ public class Drawer {
     /**
      * Draw a line.
      * 
-     * @param x1
-     *            The x co-ordinate of the start of the line.
-     * @param y1
-     *            The y co-ordinate of the start of the line.
-     * @param x2
-     *            The x co-ordinate of the end of the line.
-     * @param y2
-     *            The y co-ordinate of the end of the line.
-     * @param style
-     *            Optional styles, such as solid or dashed.
+     * @param x1 The x co-ordinate of the start of the line.
+     * @param y1 The y co-ordinate of the start of the line.
+     * @param x2 The x co-ordinate of the end of the line.
+     * @param y2 The y co-ordinate of the end of the line.
+     * @param style Optional styles, such as solid or dashed.
      */
     public void drawLine(int x1, int y1, int x2, int y2, int style) {
         if (style == DASHED) {
@@ -290,8 +277,7 @@ public class Drawer {
         if (scale == 1) {
             g2d.drawLine(x1, y1, x2, y2);
         } else {
-            g2d.draw(new Line2D.Float(x1 * scale, y1 * scale, x2 * scale, y2
-                    * scale));
+            g2d.draw(new Line2D.Float(x1 * scale, y1 * scale, x2 * scale, y2 * scale));
         }
         if (style != SOLID) {
             g2d.setStroke(solid_stroke);
@@ -301,12 +287,9 @@ public class Drawer {
     /**
      * Draw a line.
      * 
-     * @param p1
-     *            The start point.
-     * @param p2
-     *            The end point.
-     * @param style
-     *            Optional styles, such as solid or dashed.
+     * @param p1 The start point.
+     * @param p2 The end point.
+     * @param style Optional styles, such as solid or dashed.
      */
     public void drawLine(Point p1, Point p2, int style) {
         drawLine(p1.x, p1.y, p2.x, p2.y, style);
@@ -315,16 +298,11 @@ public class Drawer {
     /**
      * Draw a box.
      * 
-     * @param x
-     *            The x co-ordinate of the top left corner of the box.
-     * @param y
-     *            The y co-ordinate of the top left corner of the box.
-     * @param width
-     *            The width of the box.
-     * @param height
-     *            The height of the box.
-     * @param style
-     *            Optional styles, such as solid or dashed.
+     * @param x The x co-ordinate of the top left corner of the box.
+     * @param y The y co-ordinate of the top left corner of the box.
+     * @param width The width of the box.
+     * @param height The height of the box.
+     * @param style Optional styles, such as solid or dashed.
      */
     public void drawBoxWH(int x, int y, int width, int height, int style) {
         if (style == DASHED) {
@@ -346,16 +324,11 @@ public class Drawer {
     /**
      * Draw a box.
      * 
-     * @param x1
-     *            The x co-ordinate of the top left corner of the box.
-     * @param y1
-     *            The y co-ordinate of the top left corner of the box.
-     * @param x2
-     *            The x co-ordinate of the bottom right corner of the box.
-     * @param y2
-     *            The y co-ordinate of the bottom right corner of the box.
-     * @param style
-     *            Optional styles, such as solid or dashed.
+     * @param x1 The x co-ordinate of the top left corner of the box.
+     * @param y1 The y co-ordinate of the top left corner of the box.
+     * @param x2 The x co-ordinate of the bottom right corner of the box.
+     * @param y2 The y co-ordinate of the bottom right corner of the box.
+     * @param style Optional styles, such as solid or dashed.
      */
     public void drawBoxXY(int x1, int y1, int x2, int y2, int style) {
         drawBoxWH(x1, y1, x2 - x1, y2 - y1, style);
@@ -364,10 +337,8 @@ public class Drawer {
     /**
      * Draw a curve.
      * 
-     * @param curve
-     *            The curve to be drawn.
-     * @param style
-     *            The style for the Drawer (i.e. solid/dashed).
+     * @param curve The curve to be drawn.
+     * @param style The style for the Drawer (i.e. solid/dashed).
      */
     public void drawCurve(CubicCurve2Dex curve, int style) {
         if (style == DASHED) {
@@ -389,8 +360,7 @@ public class Drawer {
     /**
      * Draw a filled in Shape.
      * 
-     * @param shape
-     *            The Shape to be drawn.
+     * @param shape The Shape to be drawn.
      */
     public void drawShape(Shape shape) {
         if (scale != 1) {
@@ -405,12 +375,9 @@ public class Drawer {
     /**
      * Draw a filled Polygon.
      * 
-     * @param xcoords
-     *            The x co-ordinates of the points in the polygon.
-     * @param ycoords
-     *            The y co-ordinates of the points in the polygon.
-     * @param size
-     *            The number of points in the polygon.
+     * @param xcoords The x co-ordinates of the points in the polygon.
+     * @param ycoords The y co-ordinates of the points in the polygon.
+     * @param size The number of points in the polygon.
      */
     public void drawPolygon(int[] xcoords, int[] ycoords, int size) {
         if (scale == 1) {
@@ -429,27 +396,18 @@ public class Drawer {
     /**
      * Draw a BufferedImage
      * 
-     * @param buffered_image
-     *            The BufferedImage to be drawn
-     * @param x
-     *            Important, this is the scaled location, no modification will
+     * @param buffered_image The BufferedImage to be drawn
+     * @param x Important, this is the scaled location, no modification will
      *            be made to this co-ordinate.
-     * @param y
-     *            Important, this is the scaled location, no modification will
+     * @param y Important, this is the scaled location, no modification will
      *            be made to this co-ordinate.
      */
     public void draw(BufferedImage buffered_image, int x, int y) {
         if (scale == 1) {
             g2d.drawImage(buffered_image, null, x, y);
-        } else {
-            if (Math.round(buffered_image.getWidth() * scale) != 0
-                    && Math.round(buffered_image.getHeight() * scale) != 0) {
-                Image image = buffered_image.getScaledInstance(Math
-                        .round(buffered_image.getWidth() * scale), Math
-                        .round(buffered_image.getHeight() * scale), 0);
-                g2d.drawImage(image, Math.round(x * scale), Math.round(y
-                        * scale), null);
-            }
+        } else if (Math.round(buffered_image.getWidth() * scale) != 0 && Math.round(buffered_image.getHeight() * scale) != 0) {
+                Image image = buffered_image.getScaledInstance(Math.round(buffered_image.getWidth() * scale), Math.round(buffered_image.getHeight() * scale), 0);
+                g2d.drawImage(image, Math.round(x * scale), Math.round(y* scale), null);
         }
     }
 

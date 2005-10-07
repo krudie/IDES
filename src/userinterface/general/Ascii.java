@@ -12,8 +12,11 @@ public final class Ascii {
     /**
      * Integer representations of ascii characters.
      */
-    public static final int a = 97, DELETE = 127, BACKSPACE = 8, RETURN = 13,
-            NULL = 0;
+    public static final int a = 97,
+                            DELETE = 127,
+                            BACKSPACE = 8,
+                            RETURN = 13,
+                            NULL = 0;
 
     /**
      * Standard symbol for RETURN
@@ -35,16 +38,12 @@ public final class Ascii {
             int slash_position = path.lastIndexOf(File.separator);
             if (slash_position > 0 && slash_position < path.length() - 1) {
                 return path.substring(slash_position + 1);
-            } else {
-                return "";
             }
-        } else {
-            return "";
         }
+        return "";
     }
 
-    public static String getFileNameFromPathWithNewExtension(String path,
-            String extension) {
+    public static String getFileNameFromPathWithNewExtension(String path, String extension) {
         String file_name = getFileNameFromPath(path);
         int dot_position = file_name.lastIndexOf(".");
         if (dot_position > 0) {
@@ -65,21 +64,18 @@ public final class Ascii {
     /**
      * Cast the given character into a String.
      * 
-     * @param c
-     *            The character to be cast into a String.
+     * @param c The character to be cast into a String.
      * @return A String representation of the input character.
      */
     public static String string(int c) {
-        return "" + (char) c;
+        return String.valueOf((char) c);
     }
 
     /**
      * Count the number of occurances of the character c in the String s.
      * 
-     * @param s
-     *            The String to be tested.
-     * @param c
-     *            The character to be counted.
+     * @param s The String to be tested.
+     * @param c The character to be counted.
      * @return The number of occurances of the character c in the String s.
      */
     public static int occurrances(String s, int c) {
@@ -102,10 +98,7 @@ public final class Ascii {
      */
     public static boolean isSafe(char c) {
         int i = (int) c;
-        if ((i > 31 && i < 127) || i == 13) {
-            return true;
-        }
-        return false;
+        return ((i > 31 && i < 127) || i == 13);
     }
 
     /**
@@ -114,12 +107,9 @@ public final class Ascii {
      * modified. Use this when String.replaceAll is too complicated (i.e.
      * replace < with $<$)
      * 
-     * @param source
-     *            The source string.
-     * @param find
-     *            The substring to be found.
-     * @param replace
-     *            The substring to replace all occurences of find.
+     * @param source The source string.
+     * @param find The substring to be found.
+     * @param replace The substring to replace all occurences of find.
      * @return A modified version of "source" will all occurences of "find"
      *         replaced with "replace".
      */
@@ -150,20 +140,16 @@ public final class Ascii {
     }
 
     public static int safeInt(String value) {
-        int i = 0;
         try {
-            i = Integer.parseInt(value);
-            return i;
+            return Integer.parseInt(value);
         } catch (Exception e) {
             return 0;
         }
     }
 
     public static float safeFloat(String value) {
-        float f = 0;
         try {
-            f = Float.parseFloat(value);
-            return f;
+            return Float.parseFloat(value);
         } catch (Exception e) {
             return 0;
         }

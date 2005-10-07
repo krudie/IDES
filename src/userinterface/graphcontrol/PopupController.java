@@ -3,8 +3,6 @@
  */
 package userinterface.graphcontrol;
 
-import ides2.SystemVariables;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MenuListener;
@@ -36,14 +34,18 @@ public class PopupController {
     /**
      * Popup menus for graph parts on the j2d canvas
      */
-    public Menu mnu_node = null, mnu_edge = null, mnu_internal = null,
-            mnu_external = null;
+    public Menu mnu_node = null,
+                mnu_edge = null,
+                mnu_internal = null,
+                mnu_external = null;
 
     /**
      * Menu items for the popup menu
      */
-    public MenuItem mitm_node_startstate = null, mitm_node_markedstate = null,
-            mitm_node_label = null, mitm_sperator = null;
+    public MenuItem mitm_node_startstate = null,
+                    mitm_node_markedstate = null,
+                    mitm_node_label = null;
+                    
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // PopupController construction
@@ -53,8 +55,7 @@ public class PopupController {
     /**
      * Construct the PopupController.
      * 
-     * @param gp
-     *            The platform in which this PopupController will exist.
+     * @param gp The platform in which this PopupController will exist.
      */
     public PopupController(GraphingPlatform gp) {
         this.gp = gp;
@@ -64,8 +65,7 @@ public class PopupController {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Node Popup
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Node Popup /////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -76,26 +76,22 @@ public class PopupController {
         mnu_node = new Menu(gp.shell, SWT.POP_UP);
 
         mitm_node_startstate = new MenuItem(mnu_node, SWT.CHECK);
-        mitm_node_startstate.setText(ResourceManager
-                .getString("node_startstate.mtext"));
+        mitm_node_startstate.setText(ResourceManager.getString("node_startstate.mtext"));
         mitm_node_markedstate = new MenuItem(mnu_node, SWT.CHECK);
-        mitm_node_markedstate.setText(ResourceManager
-                .getString("node_markedstate.mtext"));
-        mitm_sperator = new MenuItem(mnu_node, SWT.SEPARATOR);
+        mitm_node_markedstate.setText(ResourceManager.getString("node_markedstate.mtext"));
+         new MenuItem(mnu_node, SWT.SEPARATOR);
         mitm_node_label = new MenuItem(mnu_node, SWT.PUSH);
         mitm_node_label.setText(ResourceManager.getString("node_label.mtext"));
-        mitm_sperator = new MenuItem(mnu_node, SWT.SEPARATOR);
+        new MenuItem(mnu_node, SWT.SEPARATOR);
         MenuItem mitm_node_reset = new MenuItem(mnu_node, SWT.PUSH);
         mitm_node_reset.setText(ResourceManager.getString("node_reset.mtext"));
-        mitm_sperator = new MenuItem(mnu_node, SWT.SEPARATOR);
-        MenuItem mitm_node_delete = gp.mc.edit_delete.addPopupMitm(mnu_node,
-                true, true);
+        new MenuItem(mnu_node, SWT.SEPARATOR);
+        MenuItem mitm_node_delete = gp.mc.edit_delete.addPopupMitm(mnu_node, true, true);
 
         mnu_node.addMenuListener(new MenuListener() {
             public void menuHidden(MenuEvent e) {
                 if (gp.gc.menued_object != null) {
-                    gp.gc.menued_object
-                            .removeAttribute(GraphObject.HOT_SELECTED);
+                    gp.gc.menued_object.removeAttribute(GraphObject.HOT_SELECTED);
                     gp.gc.j2dcanvas.repaint();
                 }
                 gp.gc.j2dcanvas.setMenu(null);
@@ -110,15 +106,12 @@ public class PopupController {
                 if (gp.gc.menued_object != null) {
                     if (mitm_node_startstate.getSelection()) {
                         if (gp.gc.start_state_node != null) {
-                            gp.gc.start_state_node
-                                    .removeAttribute(GraphObject.START_STATE);
+                            gp.gc.start_state_node.removeAttribute(GraphObject.START_STATE);
                         }
-                        gp.gc.menued_object
-                                .addAttribute(GraphObject.START_STATE);
+                        gp.gc.menued_object.addAttribute(GraphObject.START_STATE);
                         gp.gc.start_state_node = ((Node) gp.gc.menued_object);
                     } else {
-                        gp.gc.menued_object
-                                .removeAttribute(GraphObject.START_STATE);
+                        gp.gc.menued_object.removeAttribute(GraphObject.START_STATE);
                         gp.gc.start_state_node = null;
                     }
                     gp.gc.io.markUnsavedChanges();
@@ -131,11 +124,9 @@ public class PopupController {
             public void handleEvent(Event e) {
                 if (gp.gc.menued_object != null) {
                     if (mitm_node_markedstate.getSelection()) {
-                        gp.gc.menued_object
-                                .addAttribute(GraphObject.MARKED_STATE);
+                        gp.gc.menued_object.addAttribute(GraphObject.MARKED_STATE);
                     } else {
-                        gp.gc.menued_object
-                                .removeAttribute(GraphObject.MARKED_STATE);
+                        gp.gc.menued_object.removeAttribute(GraphObject.MARKED_STATE);
                     }
                     gp.gc.menued_object.accomodateLabel();
                     gp.gc.io.markUnsavedChanges();
@@ -147,8 +138,8 @@ public class PopupController {
         mitm_node_label.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 if (gp.gc.menued_object != null) {
-                    gp.gc.floating_text.initialize(((Node) gp.gc.menued_object)
-                            .origin(), ((Node) gp.gc.menued_object).origin(),
+                    gp.gc.floating_text.initialize(((Node) gp.gc.menued_object).origin(),
+                            ((Node) gp.gc.menued_object).origin(),
                             ((Node) gp.gc.menued_object).glyph_label);
                     gp.gc.floating_text.setVisible(true);
                 }
@@ -190,30 +181,24 @@ public class PopupController {
 
         MenuItem mitm_edge_label = new MenuItem(mnu_edge, SWT.PUSH);
         mitm_edge_label.setText(ResourceManager.getString("edge_label.mtext"));
-        mitm_sperator = new MenuItem(mnu_edge, SWT.SEPARATOR);
+        new MenuItem(mnu_edge, SWT.SEPARATOR);
         MenuItem mitm_edge_reset = new MenuItem(mnu_edge, SWT.PUSH);
         mitm_edge_reset.setText(ResourceManager.getString("edge_reset.mtext"));
         MenuItem mitm_edge_straighten = new MenuItem(mnu_edge, SWT.PUSH);
-        mitm_edge_straighten.setText(ResourceManager
-                .getString("edge_straighten.mtext"));
+        mitm_edge_straighten.setText(ResourceManager.getString("edge_straighten.mtext"));
         MenuItem mitm_edge_arcmore = new MenuItem(mnu_edge, SWT.PUSH);
-        mitm_edge_arcmore.setText(ResourceManager
-                .getString("edge_arcmore.mtext"));
+        mitm_edge_arcmore.setText(ResourceManager.getString("edge_arcmore.mtext"));
         MenuItem mitm_edge_arcless = new MenuItem(mnu_edge, SWT.PUSH);
-        mitm_edge_arcless.setText(ResourceManager
-                .getString("edge_arcless.mtext"));
+        mitm_edge_arcless.setText(ResourceManager.getString("edge_arcless.mtext"));
         MenuItem mitm_edge_reverse = new MenuItem(mnu_edge, SWT.PUSH);
-        mitm_edge_reverse.setText(ResourceManager
-                .getString("edge_reverse.mtext"));
-        mitm_sperator = new MenuItem(mnu_edge, SWT.SEPARATOR);
-        MenuItem mitm_edge_delete = gp.mc.edit_delete.addPopupMitm(mnu_edge,
-                true, true);
+        mitm_edge_reverse.setText(ResourceManager.getString("edge_reverse.mtext"));
+        new MenuItem(mnu_edge, SWT.SEPARATOR);
+        MenuItem mitm_edge_delete = gp.mc.edit_delete.addPopupMitm(mnu_edge, true, true);
 
         mnu_edge.addMenuListener(new MenuListener() {
             public void menuHidden(MenuEvent e) {
                 if (gp.gc.menued_object != null) {
-                    gp.gc.menued_object
-                            .removeAttribute(GraphObject.HOT_SELECTED);
+                    gp.gc.menued_object.removeAttribute(GraphObject.HOT_SELECTED);
                     gp.gc.j2dcanvas.repaint();
                 }
                 gp.gc.j2dcanvas.setMenu(null);
@@ -227,12 +212,10 @@ public class PopupController {
             public void handleEvent(Event e) {
                 if (gp.gc.menued_object != null) {
                     if (gp.td.edges_table.getItems().length > 0) {
-                        gp.gc.floating_toggles.initialize((Point) mnu_edge
-                                .getData(), (Edge) gp.gc.menued_object);
+                        gp.gc.floating_toggles.initialize((Point) mnu_edge.getData(), (Edge) gp.gc.menued_object);
                         gp.gc.floating_toggles.setVisible(true);
                     } else {
-                        gp.tabFolder
-                                .setSelection(GraphingPlatform.SPECIFICATIONS_TAB);
+                        gp.tabFolder.setSelection(GraphingPlatform.SPECIFICATIONS_TAB);
                     }
                 }
             }
@@ -318,9 +301,9 @@ public class PopupController {
         MenuItem mitm_internal_reset = new MenuItem(mnu_internal, SWT.PUSH);
         mitm_internal_reset.setText(ResourceManager
                 .getString("internal_reset.mtext"));
-        mitm_sperator = new MenuItem(mnu_internal, SWT.SEPARATOR);
+        new MenuItem(mnu_internal, SWT.SEPARATOR);
         gp.mc.edit_copy.addPopupMitm(mnu_internal);
-        mitm_sperator = new MenuItem(mnu_internal, SWT.SEPARATOR);
+        new MenuItem(mnu_internal, SWT.SEPARATOR);
         gp.mc.edit_delete.addPopupMitm(mnu_internal);
         mnu_internal.addMenuListener(new MenuListener() {
             public void menuHidden(MenuEvent e) {
@@ -349,7 +332,7 @@ public class PopupController {
 
         // create the external popup menu.
         mnu_external = new Menu(gp.shell, SWT.POP_UP);
-        mitm_sperator = new MenuItem(mnu_external, SWT.SEPARATOR);
+        new MenuItem(mnu_external, SWT.SEPARATOR);
         MenuItem mitm_external_paste = gp.mc.edit_paste.addPopupMitm(
                 mnu_external, true, false);
         mnu_external.addMenuListener(new MenuListener() {

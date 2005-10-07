@@ -25,14 +25,10 @@ public class Box {
     /**
      * Construct the Box.
      * 
-     * @param x1
-     *            The x co-ordinate of the top left corner of the box.
-     * @param y1
-     *            The y co-ordinate of the top left corner of the box.
-     * @param x2
-     *            The x co-ordinate of the bottom right corner of the box.
-     * @param y2
-     *            The y co-ordinate of the bottom right corner of the box.
+     * @param x1 The x co-ordinate of the top left corner of the box.
+     * @param y1 The y co-ordinate of the top left corner of the box.
+     * @param x2 The x co-ordinate of the bottom right corner of the box.
+     * @param y2  The y co-ordinate of the bottom right corner of the box.
      */
     public Box(int x1, int y1, int x2, int y2) {
         this.x1 = x1;
@@ -44,16 +40,11 @@ public class Box {
     /**
      * Construct the Box.
      * 
-     * @param x
-     *            The x co-ordinate of the top left corner of the box.
-     * @param y
-     *            The y co-ordinate of the top left corner of the box.
-     * @param width
-     *            The width of the box.
-     * @param height
-     *            The height of the box.
-     * @param nothing
-     *            Unused. Prevents identical signatures.
+     * @param x The x co-ordinate of the top left corner of the box.
+     * @param y The y co-ordinate of the top left corner of the box.
+     * @param width The width of the box.
+     * @param height The height of the box.
+     * @param nothing Unused. Prevents identical signatures.
      */
     public Box(int x, int y, int width, int height, int nothing) {
         this.x1 = x;
@@ -65,8 +56,7 @@ public class Box {
     /**
      * Construct the Box.
      * 
-     * @param rectangle
-     *            A Rectangle that defines the Box.
+     * @param rectangle A Rectangle that defines the Box.
      */
     public Box(Rectangle rectangle) {
         this.x1 = rectangle.x;
@@ -83,8 +73,7 @@ public class Box {
     /**
      * Set the x1 value.
      * 
-     * @param n
-     *            The new x1 value.
+     * @param n  The new x1 value.
      */
     public void x1(int n) {
         x1 = n;
@@ -93,8 +82,7 @@ public class Box {
     /**
      * Set the y1 value.
      * 
-     * @param n
-     *            The new y1 value.
+     * @param n The new y1 value.
      */
     public void y1(int n) {
         y1 = n;
@@ -103,8 +91,7 @@ public class Box {
     /**
      * Set the x2 value.
      * 
-     * @param n
-     *            The new x2 value.
+     * @param n The new x2 value.
      */
     public void x2(int n) {
         x2 = n;
@@ -113,8 +100,7 @@ public class Box {
     /**
      * Set the y2 value.
      * 
-     * @param n
-     *            The new y2 value.
+     * @param n The new y2 value.
      */
     public void y2(int n) {
         y2 = n;
@@ -123,8 +109,7 @@ public class Box {
     /**
      * Set the width by adjusting the x2 value.
      * 
-     * @param n
-     *            The new width value.
+     * @param n The new width value.
      */
     public void w(int n) {
         x2 = x1 + n;
@@ -133,8 +118,7 @@ public class Box {
     /**
      * Set the height by adjusting the y2 value.
      * 
-     * @param n
-     *            The new height value.
+     * @param n The new height value.
      */
     public void h(int n) {
         y2 = y1 + n;
@@ -143,10 +127,8 @@ public class Box {
     /**
      * Set (x1,y1) to the given (x,y) while maintaining the origional (w,h)
      * 
-     * @param x
-     *            The new x1 value.
-     * @param y
-     *            The new y1 value.
+     * @param x The new x1 value.
+     * @param y The new y1 value.
      */
     public void moveTo(int x, int y) {
         int w = w();
@@ -160,21 +142,19 @@ public class Box {
     /**
      * Grow by n in each direction, outward from the center.
      * 
-     * @param n
-     *            The ammount to grow.
+     * @param n The ammount to grow.
      */
     public void grow(int n) {
-        x1 = x1 - n;
-        y1 = y1 - n;
-        x2 = x2 + n;
-        y2 = y2 + n;
+        x1 -= n;
+        y1 -= n;
+        x2 += n;
+        y2 += n;
     }
 
     /**
      * Scale the Box parameters by the given factor.
      * 
-     * @param scale
-     *            The factor by which to scale the Box's parameters.
+     * @param scale The factor by which to scale the Box's parameters.
      */
     public void scale(float scale) {
         x1 = (int) Math.round(scale * x1);
@@ -261,8 +241,7 @@ public class Box {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Misc
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Misc ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

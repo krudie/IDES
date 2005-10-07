@@ -73,8 +73,7 @@ public class Point {
         try {
             int comma = coords.indexOf(',');
             this.x = Integer.parseInt(coords.substring(1, comma));
-            this.y = Integer.parseInt(coords.substring(comma + 1, coords
-                    .length() - 1));
+            this.y = Integer.parseInt(coords.substring(comma + 1, coords.length() - 1));
         } catch (Exception e) {
             this.x = 0;
             this.y = 0;
@@ -85,12 +84,9 @@ public class Point {
      * Construct a Point the given distance along the given direction from the
      * given Point.
      * 
-     * @param starting_point
-     *            A starting point.
-     * @param direction
-     *            A direction.
-     * @param distance
-     *            A distance.
+     * @param starting_point A starting point.
+     * @param direction A direction.
+     * @param distance A distance.
      */
     public Point(Point starting_point, UnitVector direction, float distance) {
         this.x = (int) Math.round(starting_point.x + distance * direction.x);
@@ -105,8 +101,7 @@ public class Point {
     /**
      * Change the co-ordinates of this Point to equal those of the given Point.
      * 
-     * @param p
-     *            The Point to copy.
+     * @param p The Point to copy.
      */
     public void copy(Point p) {
         x = p.x;
@@ -131,10 +126,8 @@ public class Point {
      * Create a new Point the given distance along the given direction from this
      * Point.
      * 
-     * @param direction
-     *            A direction.
-     * @param distance
-     *            A distance.
+     * @param direction A direction.
+     * @param distance A distance.
      * @return A new Point the given distance along the given direction from
      *         this Point.
      */
@@ -147,10 +140,8 @@ public class Point {
      * Create a new point modified by the difference between the two given
      * points.
      * 
-     * @param p1
-     *            A first point.
-     * @param p2
-     *            A second point.
+     * @param p1 A first point.
+     * @param p2 A second point.
      * @return A clone of this point modified by the difference between the two
      *         given points.
      */
@@ -161,8 +152,7 @@ public class Point {
     /**
      * Create a new point that is the addition of the two.
      * 
-     * @param p
-     *            Another point.
+     * @param p Another point.
      * @return A new point.
      */
     public Point plus(Point p) {
@@ -172,8 +162,7 @@ public class Point {
     /**
      * Create a new point that is the subtraction of the two.
      * 
-     * @param p
-     *            Another point.
+     * @param p Another point.
      * @return A new point.
      */
     public Point minus(Point p) {
@@ -181,35 +170,26 @@ public class Point {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Queries
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Queries ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Tests if the given point is inside the circle defined by this point and
      * the given radius.
      * 
-     * @param radius
-     *            The radius of the circle centered at this point.
-     * @param p
-     *            The point to be tested for inside/outside.
+     * @param radius The radius of the circle centered at this point.
+     * @param p The point to be tested for inside/outside.
      * @return true if p is inside the circle centered at this point with the
      *         given radius.
      */
     public boolean isInsideCircle(int radius, Point p) {
-        if (Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2) < Math.pow(
-                radius, 2)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2) < Math.pow(radius, 2));
     }
 
     /**
      * Test if this Point is at the same location as the given Point.
      * 
-     * @param test_point
-     *            The point to test.
+     * @param test_point The point to test.
      * @return true If this Point is at the same location as the given Point.
      */
     public boolean isSameAs(Point test_point) {
@@ -218,7 +198,6 @@ public class Point {
 
     /**
      * Provide a String representation of this Point in the form "(x,y)".
-     * 
      * @return A String representation of this Point in the form "(x,y)".
      */
     public String toString() {
