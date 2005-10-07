@@ -475,16 +475,12 @@ public class Edge extends GraphObject{
                 curve.drawSelfLoopAnchor(drawer);
             }
             else if(isHotSelected()
-                    && (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL)){
-                curve.drawHeadAnchors(drawer);
-                drawer.setColor(GraphModel.CUSTOM);
-                curve.drawTailAnchors(drawer);
-            }
-            else if(isHotSelected()
-                    && (lastHitRegion == Edge.R_HEAD_ANCHOR || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_ARROWHEAD)){
-                curve.drawTailAnchors(drawer);
+                    && (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL
+                            || lastHitRegion == Edge.R_HEAD_ANCHOR
+                            || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_ARROWHEAD)){
                 drawer.setColor(GraphModel.CUSTOM);
                 curve.drawHeadAnchors(drawer);
+                curve.drawTailAnchors(drawer);
             }
             else{
                 curve.drawTailAnchors(drawer);
@@ -577,18 +573,18 @@ public class Edge extends GraphObject{
             switch(lastHitRegion){
             case Edge.R_TAIL_ANCHOR:
                 selection_target = curve.tailAnchor();
-            break;
+                break;
             case Edge.R_TAIL_CTRL:
                 selection_target = curve.tailCtrl();
-            break;
+                break;
             case Edge.R_HEAD_CTRL:
                 selection_target = curve.headCtrl();
-            break;
+                break;
             default:
                 selection_target = curve.headAnchor();
             }
         }
-        
+
         origional_configuration = new Configuration(origin, curve.tailAnchor(), curve.tailCtrl(),
                 curve.headCtrl(), curve.headAnchor(), label_displacement, mouse, selection_target,
                 state_mask);
@@ -616,9 +612,9 @@ public class Edge extends GraphObject{
                 break;
             case Edge.R_LABEL:
                 label_displacement.x = origional_configuration.label_displacement.x
-                + (mouse.x - origional_configuration.movement_origin.x);
+                        + (mouse.x - origional_configuration.movement_origin.x);
                 label_displacement.y = origional_configuration.label_displacement.y
-                + (mouse.y - origional_configuration.movement_origin.y);
+                        + (mouse.y - origional_configuration.movement_origin.y);
                 break;
             }
         }
@@ -708,10 +704,10 @@ public class Edge extends GraphObject{
      */
     private String getLabelDataString(){
         if(labelDataIsNull()) return "";
-        
-        int column = selectedLabel().isLatexLabel() ?
-                TransitionData.SPEC_LATEX : TransitionData.SPEC_SYMBOL;
-        
+
+        int column = selectedLabel().isLatexLabel() ? TransitionData.SPEC_LATEX
+                : TransitionData.SPEC_SYMBOL;
+
         String representation = ((TableItem) label_data.elementAt(0)).getText(column);
         for(int i = 1; i < label_data.size(); i++){
             representation += ", " + ((TableItem) label_data.elementAt(i)).getText(column);
@@ -726,7 +722,7 @@ public class Edge extends GraphObject{
      */
     public Vector getLabelDataVector(){
         if(labelDataIsNull()) return new Vector();
-        
+
         Vector ldv = new Vector();
         for(int i = 0; i < label_data.size(); i++){
             ldv.add(label_data.elementAt(i));
