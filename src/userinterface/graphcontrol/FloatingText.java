@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.general.Ascii;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.graphparts.Label;

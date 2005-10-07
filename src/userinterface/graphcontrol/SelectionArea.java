@@ -8,8 +8,8 @@ import ides2.SystemVariables;
 
 import java.util.StringTokenizer;
 
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.geometric.Box;
 import userinterface.geometric.Point;
 

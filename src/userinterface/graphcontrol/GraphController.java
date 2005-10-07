@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.TableItem;
 import org.holongate.j2d.J2DCanvas;
 
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.geometric.Box;
 import userinterface.geometric.Point;
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
 import ides2.SystemVariables;
 import userinterface.graphcontrol.graphparts.Edge;

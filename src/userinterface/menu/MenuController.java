@@ -6,10 +6,7 @@ package userinterface.menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
-
-
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.menu.listeners.EditListener;
 import userinterface.menu.listeners.FileListener;
 import userinterface.menu.listeners.GraphicListener;
@@ -55,7 +52,7 @@ public class MenuController {
      * This object houses all the listeners for the File System
      */
 	public FileListener fileListener = null;
-    
+        
     /**
      * This object houses all the listeners for the Help System
      */
@@ -77,8 +74,10 @@ public class MenuController {
      */
 	public UnifiedMenu file_new_project = null,
 					   file_new_automaton = null,
-					   file_open = null,
-					   file_save = null,
+					   file_open_project = null,
+					   file_save_project = null,
+                       file_open_automaton = null,
+                       file_save_automaton = null,
 					   file_exit = null;
     
     /**
@@ -100,7 +99,6 @@ public class MenuController {
     public UnifiedMenu graphic_zoom = null,
                        graphic_create = null,
                        graphic_modify = null,
-                       graphic_printarea = null,
                        graphic_grab = null,
                        graphic_grid = null,
                        graphic_alledges = null,
@@ -140,7 +138,7 @@ public class MenuController {
      * 
      * @param	gp		The GraphingPlatform in which this MenuController will exist.
      */
-	public MenuController(Shell shell, GraphingPlatform gp)
+	public MenuController(Shell shell)
 	{
 		// setup the container objects       
         menu = new Menu(shell, SWT.BAR);
@@ -149,39 +147,45 @@ public class MenuController {
 		
 		fileListener = new FileListener(shell);
         helpListener = new HelpListener(shell);
-        editListener = new EditListener(shell, gp);
-        optionListener = new OptionListener(shell, gp);
-        graphicListener = new GraphicListener(shell, gp);
+        editListener = new EditListener(shell);
+        optionListener = new OptionListener(shell);
+        graphicListener = new GraphicListener(shell);
 		
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// File System ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// File  PROJECT System ///////////////////////////////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
-						
-		// create the UnifiedMenus
+
+        
+        
+        
+        
+        
+		// create the UnifiedMenus 
 		file_new_project = new UnifiedMenu(ResourceManager.FILE_NEW_PROJECT, fileListener);
-	    file_new_automaton = new UnifiedMenu(ResourceManager.FILE_NEW_AUTOMATON, fileListener,SWT.CTRL+'n');
-	    file_open = new UnifiedMenu(ResourceManager.FILE_OPEN, fileListener,SWT.CTRL+'o');
-	    file_save = new UnifiedMenu(ResourceManager.FILE_SAVE, fileListener,SWT.CTRL+'s');
+	    file_open_project = new UnifiedMenu(ResourceManager.FILE_OPEN_PROJECT, fileListener,SWT.CTRL+'o');
+	    file_save_project = new UnifiedMenu(ResourceManager.FILE_SAVE_PROJECT, fileListener,SWT.CTRL+'s');
 	    file_exit = new UnifiedMenu(ResourceManager.FILE_EXIT, fileListener);
 		
+        file_new_automaton = new UnifiedMenu(ResourceManager.FILE_NEW_AUTOMATON, fileListener,SWT.CTRL+'n');
+        file_open_automaton = new UnifiedMenu(ResourceManager.FILE_OPEN_AUTOMATON, fileListener);
+        file_save_automaton = new UnifiedMenu(ResourceManager.FILE_SAVE_AUTOMATON, fileListener);
+        
 	    // set up main menu structures and add the MenuItems (order matters)
-	    
 		MenuItem mitm_file = new MenuItem(menu, SWT.CASCADE); 
 		mitm_file.setText(ResourceManager.getString("file.mtext"));
 		Menu mnu_file = new Menu(mitm_file); 
 		mitm_file.setMenu(mnu_file);
-		
-		MenuItem mitm_new = new MenuItem(mnu_file, SWT.CASCADE);
-		mitm_new.setText(ResourceManager.getString("file_new.mtext"));
-		Menu mnu_new = new Menu(mitm_new);
-		mitm_new.setMenu(mnu_new);
+
 	    
-		file_new_project.addMitm(mnu_new);
-	    file_new_automaton.addMitm(mnu_new);
-		file_open.addMitm(mnu_file);
-		file_save.addMitm(mnu_file);
-		new MenuItem(mnu_file, SWT.SEPARATOR);
+		file_new_project.addMitm(mnu_file);
+        file_open_project.addMitm(mnu_file);
+        file_save_project.addMitm(mnu_file);
+        new MenuItem(mnu_file, SWT.SEPARATOR);
+		file_new_automaton.addMitm(mnu_file);
+        file_open_automaton.addMitm(mnu_file);
+        file_save_automaton.addMitm(mnu_file);
+        new MenuItem(mnu_file, SWT.SEPARATOR);
 		file_exit.addMitm(mnu_file);
 						
 		// setup the toolbar structures and add the ToolItems (order matters)		
@@ -189,10 +193,13 @@ public class MenuController {
 		tbr_file = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT | SWT.WRAP);
 
 	    file_new_project.addTitm(tbr_file);
+        file_open_project.addTitm(tbr_file);
+        file_save_project.addTitm(tbr_file);
+        new ToolItem(tbr_file, SWT.SEPARATOR);
         file_new_automaton.addTitm(tbr_file);
-	    file_open.addTitm(tbr_file);
-	    file_save.addTitm(tbr_file);
-
+        file_open_automaton.addTitm(tbr_file);
+        file_save_automaton.addTitm(tbr_file);
+        
 		advanced_coolbar.addToolBar(tbr_file);
         
         
@@ -236,7 +243,6 @@ public class MenuController {
         graphic_zoom = new UnifiedMenu(ResourceManager.GRAPHIC_ZOOM,graphicListener);
         graphic_create = new UnifiedMenu(ResourceManager.GRAPHIC_CREATE,graphicListener);
         graphic_modify = new UnifiedMenu(ResourceManager.GRAPHIC_MODIFY,graphicListener);
-        graphic_printarea = new UnifiedMenu(ResourceManager.GRAPHIC_PRINTAREA,graphicListener);
         graphic_grab = new UnifiedMenu(ResourceManager.GRAPHIC_GRAB,graphicListener);
         graphic_grid = new UnifiedMenu(ResourceManager.GRAPHIC_GRID,graphicListener);
         graphic_alledges = new UnifiedMenu(ResourceManager.GRAPHIC_ALLEDGES,graphicListener);
@@ -252,7 +258,6 @@ public class MenuController {
         graphic_zoom.addMitm(mnu_graphic, SWT.RADIO);
         graphic_create.addMitm(mnu_graphic, SWT.RADIO);
         graphic_modify.addMitm(mnu_graphic, SWT.RADIO);
-        graphic_printarea.addMitm(mnu_graphic, SWT.RADIO);
         graphic_grab.addMitm(mnu_graphic, SWT.RADIO);
         new MenuItem(mnu_graphic, SWT.SEPARATOR);
         graphic_alledges.addMitm(mnu_graphic, SWT.CHECK);
@@ -265,16 +270,14 @@ public class MenuController {
         graphic_grid.addTitm(tbr_graphic, SWT.DROP_DOWN);
         graphic_alledges.addTitm(tbr_graphic, SWT.CHECK);
         graphic_alllabels.addTitm(tbr_graphic, SWT.CHECK);
-       new ToolItem(tbr_graphic, SWT.SEPARATOR);
+        new ToolItem(tbr_graphic, SWT.SEPARATOR);
         graphic_zoom.addTitm(tbr_graphic, SWT.RADIO);
         graphic_create.addTitm(tbr_graphic, SWT.RADIO);
         graphic_modify.addTitm(tbr_graphic, SWT.RADIO);
-        graphic_printarea.addTitm(tbr_graphic, SWT.RADIO);
         graphic_grab.addTitm(tbr_graphic, SWT.RADIO);
         
         // dropdown menu
         mnu_graphic_grid = new Menu(shell, SWT.POP_UP);
-        MenuItem menuitem = null;
         mitm_grid00 = new MenuItem(mnu_graphic_grid, SWT.RADIO);
         mitm_grid00.setText(ResourceManager.getString("graphic_grid.nogrid"));
         mitm_grid00.setData(new Integer(0));
@@ -341,7 +344,19 @@ public class MenuController {
         new MenuItem(mnu_help, SWT.SEPARATOR);
         help_about.addMitm(mnu_help);
         
+        advanced_coolbar.setWrapIndices(new int[] {2});
         
+      
+        
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Initial States /////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////         
+
+        file_save_automaton.disable();
+        edit_copy.disable();
+        edit_paste.disable();
+        edit_delete.disable();
 	}
 
     /**

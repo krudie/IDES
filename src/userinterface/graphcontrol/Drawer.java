@@ -14,7 +14,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import userinterface.drawingArea.GraphingPlatform;
+import userinterface.GraphingPlatform;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.graphparts.CubicCurve2Dex;
 

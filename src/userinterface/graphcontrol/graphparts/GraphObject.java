@@ -1,8 +1,8 @@
 package userinterface.graphcontrol.graphparts;
 
+import userinterface.GraphingPlatform;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.GraphModel;
-import userinterface.drawingArea.GraphingPlatform;
 
 /**
  * GraphObject is the parent class for both Nodes and Edges.

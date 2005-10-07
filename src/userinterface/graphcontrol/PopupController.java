@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.MenuItem;
 
 
 
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.graphparts.Edge;
 import userinterface.graphcontrol.graphparts.GraphObject;

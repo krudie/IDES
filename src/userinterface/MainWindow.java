@@ -11,7 +11,6 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
 
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.menu.MenuController;
 
 public class MainWindow {
@@ -114,7 +113,7 @@ public class MainWindow {
 		gl_base.numColumns = 3;
 		shell.setLayout(gl_base); // attach it to the shell
 
-		menu = new MenuController(shell, gp);
+		menu = new MenuController(shell);
 		
 		SashForm mainSash = new SashForm(shell,SWT.HORIZONTAL);
 		
@@ -147,6 +146,12 @@ public class MainWindow {
     public static ProjectExplorer getProjectExplorer(){
         return pe;
     }
+    
+    public static GraphingPlatform getGraphingPlatform(){
+        return gp;
+    }
+    
+    
     
     public static void errorPopup(String errorTitle, String errorMessage){
             MessageBox errorPopup = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE); 

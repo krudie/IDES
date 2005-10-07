@@ -38,8 +38,8 @@ import org.eclipse.swt.widgets.Text;
 import org.holongate.j2d.IPaintable;
 import org.holongate.j2d.J2DCanvas;
 
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.general.Ascii;
 import userinterface.general.ImageSupport;
 

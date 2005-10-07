@@ -8,8 +8,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Shell;
 
+import userinterface.GraphingPlatform;
+import userinterface.MainWindow;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 
 
 /**
@@ -20,16 +21,16 @@ import userinterface.drawingArea.GraphingPlatform;
 public class EditListener extends AbstractListener
 {		
 
-    GraphingPlatform gp = null;
+    Shell shell;
      
     /**
      * Construct the ListenersEdit.
      * 
      * @param   graphing_platform       The platform in which this ListenersEdit will exist.
      */
-    public EditListener(Shell shell, GraphingPlatform graphing_platform)
+    public EditListener(Shell shell)
     {
-        gp = graphing_platform;
+        this.shell = shell;
     }
     
     
@@ -61,13 +62,12 @@ public class EditListener extends AbstractListener
      * 
      * @param	e	The SelectionEvent that initiated this action.
      */
-	public void copy(org.eclipse.swt.events.SelectionEvent e)
-	{
+	public void copy(org.eclipse.swt.events.SelectionEvent e){
 		// these actions should only occur when the canvas tab is showing.
-		if (gp.tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB)
+		if (MainWindow.getGraphingPlatform().tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB)
 		{
-			gp.gc.eb.copyCollection();
-			gp.mc.edit_paste.enable();
+			MainWindow.getGraphingPlatform().gc.eb.copyCollection();
+            MainWindow.getGraphingPlatform().mc.edit_paste.enable();
 		}
 	}	
 
@@ -79,8 +79,8 @@ public class EditListener extends AbstractListener
 	public void paste(org.eclipse.swt.events.SelectionEvent e)
 	{
 		// these actions should only occur when the canvas tab is showing.
-		if (gp.tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB)
-		{ gp.gc.eb.pasteCollection(e.x,e.y); }
+		if (MainWindow.getGraphingPlatform().tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB)
+		{ MainWindow.getGraphingPlatform().gc.eb.pasteCollection(e.x,e.y); }
 	}	
 
     /**
@@ -91,10 +91,10 @@ public class EditListener extends AbstractListener
 	public void delete(org.eclipse.swt.events.SelectionEvent e)
 	{
 		// these actions should only occur when the canvas tab is showing.
-		if (gp.tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB)
+		if (MainWindow.getGraphingPlatform().tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB)
 		{
-			gp.gc.gpc.deleteGroup();
-			gp.gc.group_area.setVisible(false);
+            MainWindow.getGraphingPlatform().gc.gpc.deleteGroup();
+            MainWindow.getGraphingPlatform().gc.group_area.setVisible(false);
 		}
 	}	
 }

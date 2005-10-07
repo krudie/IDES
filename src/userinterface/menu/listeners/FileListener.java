@@ -55,11 +55,13 @@ public class FileListener extends AbstractListener{
 	 * @return	The appropriate Listener for this resource.
 	 */
 	public SelectionListener getListener(String resource_handle){
-		if (resource_handle.equals(ResourceManager.FILE_NEW_PROJECT))  { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProject(e);   } }; }
-		if (resource_handle.equals(ResourceManager.FILE_NEW_AUTOMATON)){ return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newAutomaton(e);   } }; }
-		if (resource_handle.equals(ResourceManager.FILE_OPEN))         { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { open(e);        } }; }
-		if (resource_handle.equals(ResourceManager.FILE_SAVE))         { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { save(e);        } }; }
-		if (resource_handle.equals(ResourceManager.FILE_EXIT))         { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exit(e);        } }; }		
+        if (resource_handle.equals(ResourceManager.FILE_NEW_PROJECT))  { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProject(e);   } }; }
+        if (resource_handle.equals(ResourceManager.FILE_OPEN_PROJECT)) { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openProject(e);        } }; }
+        if (resource_handle.equals(ResourceManager.FILE_SAVE_PROJECT)) { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveProject(e);        } }; }
+        if (resource_handle.equals(ResourceManager.FILE_EXIT))         { return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exit(e);        } }; }  
+        if (resource_handle.equals(ResourceManager.FILE_NEW_AUTOMATON)){ return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newAutomaton(e);   } }; }
+		if (resource_handle.equals(ResourceManager.FILE_OPEN_AUTOMATON)){ return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openAutomaton(e);        } }; }
+		if (resource_handle.equals(ResourceManager.FILE_SAVE_AUTOMATON)){ return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveAutomaton(e);        } }; }
 		System.out.println("Error: no match for resource_handle = " + resource_handle);
 		return new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { } };
 	}
@@ -68,34 +70,6 @@ public class FileListener extends AbstractListener{
 	// listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 	
-	/**
-     * Create a new Project
-     * 
-     * @param	e	The SelectionEvent that initiated this action.
-     */
-	public void newProject(org.eclipse.swt.events.SelectionEvent e){
-        if(Userinterface.getProjectPresentation().hasUnsavedData()){
-            MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
-            unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
-            unsaved_changes.setMessage(ResourceManager.getString("file_sys.unsaved_changes"));
-            int response = unsaved_changes.open();
-            switch(response){
-                case SWT.YES: 
-                    // call the save listener
-                    save(e);
-                    newProject(e);
-                    return;
-                case SWT.NO: 
-                    break;
-                case SWT.CANCEL:
-                    // do nothing
-                    return;
-            }
-        }
-        
-        Userinterface.getProjectPresentation().newProject(ResourceManager.getString("new_project_untitled"));
-        MainWindow.getProjectExplorer().updateProject();
-    }
 	
     /**
      * Create a new Automaton in the project
@@ -114,8 +88,33 @@ public class FileListener extends AbstractListener{
      * 
      * @param	e	The SelectionEvent that initiated this action.
      */
-	public void open(org.eclipse.swt.events.SelectionEvent e){
-		
+	public void openAutomaton(org.eclipse.swt.events.SelectionEvent e){
+       
+
+	}	
+	
+    /**
+     * Save the current data.
+     * 
+     * @param	e	The SelectionEvent that initiated this action.
+     */
+	public void saveAutomaton(org.eclipse.swt.events.SelectionEvent e) {
+       
+	} 
+	
+	
+
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////         
+    
+    /**
+     * Create a new Project
+     * 
+     * @param   e   The SelectionEvent that initiated this action.
+     */
+    public void newProject(org.eclipse.swt.events.SelectionEvent e){
         if(Userinterface.getProjectPresentation().hasUnsavedData()){
             MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
             unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
@@ -124,8 +123,38 @@ public class FileListener extends AbstractListener{
             switch(response){
                 case SWT.YES: 
                     // call the save listener
-                    save(e);
-                    open(e);
+                    saveProject(e);
+                    newProject(e);
+                    return;
+                case SWT.NO: 
+                    break;
+                case SWT.CANCEL:
+                    // do nothing
+                    return;
+            }
+        }
+        
+        Userinterface.getProjectPresentation().newProject(ResourceManager.getString("new_project_untitled"));
+        MainWindow.getProjectExplorer().updateProject();
+    }
+    
+    /**
+     * Opens a project
+     * 
+     * @param   e   The SelectionEvent that initiated this action.
+     */
+    public void openProject(org.eclipse.swt.events.SelectionEvent e){
+        
+        if(Userinterface.getProjectPresentation().hasUnsavedData()){
+            MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
+            unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
+            unsaved_changes.setMessage(ResourceManager.getString("file_sys.unsaved_changes"));
+            int response = unsaved_changes.open();
+            switch(response){
+                case SWT.YES: 
+                    // call the save listener
+                    saveProject(e);
+                    openProject(e);
                     return;  
                 case SWT.NO: 
                     break;
@@ -136,14 +165,14 @@ public class FileListener extends AbstractListener{
         }
        
         FileDialog openDialog = new FileDialog(shell, SWT.OPEN); 
-		openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN)); 
-		openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"});
-		if (SystemVariables.last_used_path != null && SystemVariables.last_used_path.length() > 0){
-			openDialog.setFilterPath(SystemVariables.last_used_path);
-		}
-		String openLocation = openDialog.open();
-		if(openLocation != null){
-			SystemVariables.last_used_path = openDialog.getFilterPath();
+        openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN_PROJECT)); 
+        openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"});
+        if (SystemVariables.last_used_path != null && SystemVariables.last_used_path.length() > 0){
+            openDialog.setFilterPath(SystemVariables.last_used_path);
+        }
+        String openLocation = openDialog.open();
+        if(openLocation != null){
+            SystemVariables.last_used_path = openDialog.getFilterPath();
             String error = Userinterface.getProjectPresentation().openProject(new File(openLocation));
 
             if(!error.trim().equals("")){
@@ -151,31 +180,31 @@ public class FileListener extends AbstractListener{
             }
             
             MainWindow.getProjectExplorer().updateProject();
-		}
+        }
         
 
-	}	
-	
+    }   
+    
     /**
-     * Save the current data.
+     * Save the project
      * 
-     * @param	e	The SelectionEvent that initiated this action.
+     * @param   e   The SelectionEvent that initiated this action.
      */
-	public void save(org.eclipse.swt.events.SelectionEvent e) {
-        String saveLocation = getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVE), new String[] {"*.xml", "*.*"});
+    public void saveProject(org.eclipse.swt.events.SelectionEvent e) {
+        String saveLocation = getSaveLocation(ResourceManager.getToolTipText(ResourceManager.FILE_SAVE_PROJECT), new String[] {"*.xml", "*.*"});
         if(saveLocation == null) return;
         Userinterface.getProjectPresentation().saveProject(saveLocation);
         MainWindow.getProjectExplorer().updateProject();
         Userinterface.getProjectPresentation().setUnsavedData(false);
-	} 
-	
+    } 
+    
 
     /**
      * Exit the system.
      * 
-     * @param	e	The SelectionEvent that initiated this action.
+     * @param   e   The SelectionEvent that initiated this action.
      */
-	public void exit(org.eclipse.swt.events.SelectionEvent e){
+    public void exit(org.eclipse.swt.events.SelectionEvent e){
         if(Userinterface.getProjectPresentation().hasUnsavedData()){
             MessageBox unsaved_changes = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL); 
             unsaved_changes.setText(ResourceManager.getString("file_sys.warning"));
@@ -184,7 +213,7 @@ public class FileListener extends AbstractListener{
             switch(response){
                 case SWT.YES: 
                     // call the save listener
-                    save(e);
+                    saveProject(e);
                     exit(e);
                     return;  
                 case SWT.NO: 
@@ -195,17 +224,18 @@ public class FileListener extends AbstractListener{
             }
         }
         shell.dispose();       
-	}
-	
-	
-	/**
+    }
+    
+    
+ 
+    /**
      * 
      * @param dialogTitle The title of the dialog box
      * @param filterExtensions The filters that the user can choose from in the save dialog
      * @return The file location to save to, null if the user cancels
-	 */
-	private String getSaveLocation(String dialogTitle, String[] filterExtensions){
-		
+     */
+    private String getSaveLocation(String dialogTitle, String[] filterExtensions){
+        
         
         FileDialog saveDialog = new FileDialog(shell, SWT.SAVE); 
         saveDialog.setText(dialogTitle); 
@@ -266,7 +296,7 @@ public class FileListener extends AbstractListener{
         Userinterface.getProjectPresentation().setProjectName(projectName);  
         return saveDialog.getFilterPath();
         
-	}
+    }  
     
 
 }

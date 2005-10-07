@@ -11,8 +11,8 @@ import java.awt.font.GlyphVector;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.general.Ascii;
 import userinterface.geometric.Geometric;
 import userinterface.geometric.Point;

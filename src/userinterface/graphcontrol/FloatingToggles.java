@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
-import userinterface.drawingArea.GraphingPlatform;
+import userinterface.GraphingPlatform;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.graphparts.Edge;
 

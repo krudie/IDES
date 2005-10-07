@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import userinterface.drawingArea.GraphingPlatform;
+import userinterface.GraphingPlatform;
 import userinterface.general.Ascii;
 import userinterface.geometric.Box;
 import userinterface.geometric.Point;

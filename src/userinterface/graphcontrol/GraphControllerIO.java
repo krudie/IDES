@@ -17,8 +17,8 @@ import java.util.StringTokenizer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 
+import userinterface.GraphingPlatform;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 import userinterface.geometric.Box;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.graphparts.Edge;
@@ -69,7 +69,7 @@ public class GraphControllerIO
      */
 	public void markUnsavedChanges()
 	{
-		gp.mc.file_save.enable();
+		gp.mc.file_save_automaton.enable();
 		unsaved_changes = true;
 	}
 	
@@ -79,6 +79,6 @@ public class GraphControllerIO
 	public void resetState()
 	{
 		unsaved_changes = false;			
-		gp.mc.file_save.disable();
+		gp.mc.file_save_automaton.disable();
 	}
 }

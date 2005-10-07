@@ -10,8 +10,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Shell;
 
+import userinterface.GraphingPlatform;
+import userinterface.MainWindow;
 import userinterface.ResourceManager;
-import userinterface.drawingArea.GraphingPlatform;
 
 
 /**
@@ -23,7 +24,6 @@ public class OptionListener extends AbstractListener
 	// OptionListener construction /////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
-    GraphingPlatform gp = null;
     Shell shell = null;
     
     /**
@@ -31,10 +31,9 @@ public class OptionListener extends AbstractListener
      * 
      * @param	graphing_platform	The platform in which this OptionListener will exist.
      */
-	public OptionListener(Shell shell, GraphingPlatform graphing_platform)
+	public OptionListener(Shell shell)
 	{
 	    this.shell = shell;
-        gp = graphing_platform;
 	}
 		
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +65,7 @@ public class OptionListener extends AbstractListener
      */
 	public void errorReport(org.eclipse.swt.events.SelectionEvent e)
 	{
-		SystemVariables.use_error_reporting = gp.mc.option_errorreport.getSelection();
+		SystemVariables.use_error_reporting = MainWindow.getGraphingPlatform().mc.option_errorreport.getSelection();
 	}	
 	
 	
@@ -77,9 +76,9 @@ public class OptionListener extends AbstractListener
      */
 	public void node(org.eclipse.swt.events.SelectionEvent e)
 	{
-		SystemVariables.use_standard_node_size = gp.mc.option_node.getSelection();
-		gp.gc.gm.accomodateLabels();
-		gp.gc.repaint();
+		SystemVariables.use_standard_node_size = MainWindow.getGraphingPlatform().mc.option_node.getSelection();
+        MainWindow.getGraphingPlatform().gc.gm.accomodateLabels();
+        MainWindow.getGraphingPlatform().gc.repaint();
 	}	
 
 }

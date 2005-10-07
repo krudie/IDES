@@ -5,7 +5,7 @@ package userinterface.graphcontrol.graphparts;
 
 import java.util.Vector;
 
-import userinterface.drawingArea.GraphingPlatform;
+import userinterface.GraphingPlatform;
 import userinterface.geometric.Point;
 import userinterface.graphcontrol.Drawer;
 

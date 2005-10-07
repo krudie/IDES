@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import org.eclipse.swt.graphics.Rectangle;
 
-import userinterface.drawingArea.GraphingPlatform;
+import userinterface.GraphingPlatform;
 import userinterface.geometric.Box;
 import userinterface.geometric.Line;
 import userinterface.geometric.Point;

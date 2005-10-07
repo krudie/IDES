@@ -1,4 +1,4 @@
-package userinterface.drawingArea;
+package userinterface;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 
-import userinterface.ResourceManager;
 import userinterface.graphcontrol.GraphController;
 import userinterface.graphcontrol.TransitionData;
 import userinterface.menu.MenuController;
