@@ -268,9 +268,7 @@ public class Edge extends GraphObject{
     public Edge newClone(){
         if(n1.getLastClone() != null && n2.getLastClone() != null){
             int clone_attribute = GraphObject.NULL;
-            if(isSimple()){
-                clone_attribute = GraphObject.SIMPLE;
-            }
+            if(isSimple()) clone_attribute = GraphObject.SIMPLE;
             return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(), curve.newClone(n1
                     .getLastClone(), n2.getLastClone()), label_displacement.getCopy(),
                     clone_attribute, getLabelDataVector(), glyph_label);
@@ -709,22 +707,16 @@ public class Edge extends GraphObject{
      * @return The string to be displayed.
      */
     private String getLabelDataString(){
-        if(!labelDataIsNull()){
-            int column = TransitionData.SPEC_SYMBOL;
-            if(selectedLabel().isLatexLabel()){
-                column = TransitionData.SPEC_LATEX;
-            }
-
-            String representation = ((TableItem) label_data.elementAt(0)).getText(column);
-            for(int i = 1; i < label_data.size(); i++){
-                representation = representation + ", "
-                        + ((TableItem) label_data.elementAt(i)).getText(column);
-            }
-            return representation;
+        if(labelDataIsNull()) return "";
+        
+        int column = selectedLabel().isLatexLabel() ?
+                TransitionData.SPEC_LATEX : TransitionData.SPEC_SYMBOL;
+        
+        String representation = ((TableItem) label_data.elementAt(0)).getText(column);
+        for(int i = 1; i < label_data.size(); i++){
+            representation += ", " + ((TableItem) label_data.elementAt(i)).getText(column);
         }
-        else{
-            return "";
-        }
+        return representation;
     }
 
     /**
@@ -733,11 +725,11 @@ public class Edge extends GraphObject{
      * @return A copy of the label_data Vector of this Edge.
      */
     public Vector getLabelDataVector(){
+        if(labelDataIsNull()) return new Vector();
+        
         Vector ldv = new Vector();
-        if(!labelDataIsNull()){
-            for(int i = 0; i < label_data.size(); i++){
-                ldv.add(label_data.elementAt(i));
-            }
+        for(int i = 0; i < label_data.size(); i++){
+            ldv.add(label_data.elementAt(i));
         }
         return ldv;
     }
@@ -809,9 +801,7 @@ public class Edge extends GraphObject{
                 curve.reverseDirection(false);
                 autoConfigureCurve();
             }
-            else{
-                curve.reverseDirection(true);
-            }
+            else curve.reverseDirection(true);
         }
     }
 

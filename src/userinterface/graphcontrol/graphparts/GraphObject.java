@@ -81,9 +81,7 @@ public abstract class GraphObject {
      *            The GraphModel of which this GraphObject should be a part.
      */
     public void confirm(GraphModel gm) {
-        if (this.gm != gm) {
-            this.gm = gm;
-        }
+        this.gm = gm;
     }
 
     /**
@@ -108,7 +106,7 @@ public abstract class GraphObject {
      *            The attribute to be added.
      */
     public void addAttribute(int attribute) {
-        attributes = attributes | attribute;
+        attributes |= attribute;
     }
 
     /**
@@ -118,7 +116,7 @@ public abstract class GraphObject {
      *            The attribute to be removed.
      */
     public void removeAttribute(int attribute) {
-        attributes = attributes & ~attribute;
+        attributes &= ~attribute;
     }
 
     /**
@@ -149,11 +147,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isStartState() {
-        if ((attributes & START_STATE) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & START_STATE) > 0;
     }
 
     /**
@@ -162,11 +156,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isMarkedState() {
-        if ((attributes & MARKED_STATE) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & MARKED_STATE) > 0;
     }
 
     /**
@@ -176,11 +166,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isStartArrowSelected() {
-        if ((attributes & START_ARROW_SELECTED) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & START_ARROW_SELECTED) > 0;
     }
 
     /**
@@ -189,11 +175,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isTraceObject() {
-        if ((attributes & TRACE_OBJECT) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & TRACE_OBJECT) > 0;
     }
 
     /**
@@ -202,11 +184,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isGrouped() {
-        if ((attributes & GROUPED) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & GROUPED) > 0;
     }
 
     /**
@@ -216,11 +194,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isHotSelected() {
-        if ((attributes & HOT_SELECTED) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & HOT_SELECTED) > 0;
     }
 
     /**
@@ -230,11 +204,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isSimple() {
-        if ((attributes & SIMPLE) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & SIMPLE) > 0;
     }
 
     /**
@@ -245,11 +215,7 @@ public abstract class GraphObject {
      * @return true if this GraphObject has the specified attribute.
      */
     public boolean isSafeGrouping() {
-        if ((attributes & SAFE_GROUPING) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return (attributes & SAFE_GROUPING) > 0;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
