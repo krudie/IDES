@@ -12,117 +12,132 @@ import org.xml.sax.SAXException;
 import projectModel.Automaton;
 import projectModel.Project;
 
-public class ProjectParser extends AbstractFileParser{
+public class ProjectParser extends AbstractFileParser {
     private Project p;
+
     private AutomatonParser ap;
-    
+
     private int state = STATE_IDLE;
-    
-    protected static final int STATE_IDLE = 0,
-                               STATE_DOCUMENT = 1,
-                               STATE_PROJECT = 2,
-                               STATE_AUTOMATON = 3;
-        
+
+    protected static final int STATE_IDLE = 0, STATE_DOCUMENT = 1,
+            STATE_PROJECT = 2, STATE_AUTOMATON = 3;
+
     private File file;
-    
-    public ProjectParser(){
+
+    public ProjectParser() {
         super();
         ap = new AutomatonParser();
     }
 
-    public Project parse(File f){
+    public Project parse(File f) {
         file = f;
         state = STATE_IDLE;
         p = null;
         parsingErrors = "";
-        try{
+        try {
             xmlr.parse(new InputSource(new FileInputStream(f)));
-        }
-        catch(FileNotFoundException fnfe){
-            parsingErrors += fnfe.getMessage()+"\n";
-        }
-        catch(IOException ioe){
-            parsingErrors += ioe.getMessage()+"\n";
-        }
-        catch(SAXException saxe){
-            parsingErrors += saxe.getMessage()+"\n";
+        } catch (FileNotFoundException fnfe) {
+            parsingErrors += fnfe.getMessage() + "\n";
+        } catch (IOException ioe) {
+            parsingErrors += ioe.getMessage() + "\n";
+        } catch (SAXException saxe) {
+            parsingErrors += saxe.getMessage() + "\n";
         }
         return p;
     }
 
-    public void startDocument(){
-        if(state != STATE_IDLE){
-            parsingErrors += file.getName()+": in wrong state at beginning of document.";
+    public void startDocument() {
+        if (state != STATE_IDLE) {
+            parsingErrors += file.getName()
+                    + ": in wrong state at beginning of document.";
             return;
         }
         state = STATE_DOCUMENT;
     }
-    public void endDocument(){
-        if(state != STATE_DOCUMENT){
-            parsingErrors += file.getName()+": wrong state at end of document.";
-            return;            
+
+    public void endDocument() {
+        if (state != STATE_DOCUMENT) {
+            parsingErrors += file.getName()
+                    + ": wrong state at end of document.";
+            return;
         }
         state = STATE_IDLE;
     }
 
-    public void startElement(String uri, String localName, String qName, Attributes atts){
-        switch(state){
+    public void startElement(String uri, String localName, String qName,
+            Attributes atts) {
+        switch (state) {
         case STATE_IDLE:
-            parsingErrors += file.getName()+": wrong state at beginning of element.";
+            parsingErrors += file.getName()
+                    + ": wrong state at beginning of element.";
             break;
         case STATE_PROJECT:
-            if(!qName.equals(ELEMENT_AUTOMATON)){
-                parsingErrors += file.getName()+": encountered wrong element in state project.";    
-                
+            if (!qName.equals(ELEMENT_AUTOMATON)) {
+                parsingErrors += file.getName()
+                        + ": encountered wrong element in state project.";
+
             }
-            if(atts.getValue(ATTRIBUTE_FILE)!=null){
+            if (atts.getValue(ATTRIBUTE_FILE) != null) {
                 state = STATE_AUTOMATON;
-                Automaton a = ap.parse(new File(file.getParent()+File.separator+atts.getValue(ATTRIBUTE_FILE)));
-                if(a!= null) p.addAutomaton(a);    
+                Automaton a = ap.parse(new File(file.getParent()
+                        + File.separator + atts.getValue(ATTRIBUTE_FILE)));
+                if (a != null)
+                    p.addAutomaton(a);
                 parsingErrors += ap.getParsingErrors();
             }
             break;
         case STATE_DOCUMENT:
-            if(qName.equals(ELEMENT_PROJECT)){
+            if (qName.equals(ELEMENT_PROJECT)) {
                 state = STATE_PROJECT;
                 p = new Project(ParsingToolbox.removeFileType(file.getName()));
-            }
-            else parsingErrors += file.getName()+": encountered wrong element while in state document.\n";
+            } else
+                parsingErrors += file.getName()
+                        + ": encountered wrong element while in state document.\n";
             break;
         case STATE_AUTOMATON:
-            parsingErrors += file.getName()+": encountered wrong element while in state automaton.\n";
+            parsingErrors += file.getName()
+                    + ": encountered wrong element while in state automaton.\n";
             break;
         default:
-            parsingErrors += file.getName()+": beginElement(): panic! parser in unknown state.\n";
+            parsingErrors += file.getName()
+                    + ": beginElement(): panic! parser in unknown state.\n";
             break;
         }
     }
 
-    
-    public void endElement(String uri, String localName, String qName){
-        switch(state){
+    public void endElement(String uri, String localName, String qName) {
+        switch (state) {
         case STATE_IDLE:
-            parsingErrors += file.getName()+": encountered wrong end of element while in state idle.\n";
+            parsingErrors += file.getName()
+                    + ": encountered wrong end of element while in state idle.\n";
             break;
         case STATE_PROJECT:
-            if(qName.equals(ELEMENT_PROJECT)) state = STATE_DOCUMENT;
-            else parsingErrors += file.getName()+": encountered wrong end of element while in state project\n";
+            if (qName.equals(ELEMENT_PROJECT))
+                state = STATE_DOCUMENT;
+            else
+                parsingErrors += file.getName()
+                        + ": encountered wrong end of element while in state project\n";
             break;
         case STATE_DOCUMENT:
-            parsingErrors += file.getName()+": encountered end of element while in state document.\n";
+            parsingErrors += file.getName()
+                    + ": encountered end of element while in state document.\n";
             break;
         case STATE_AUTOMATON:
-            if(qName.equals(ELEMENT_AUTOMATON)) state = STATE_PROJECT;
-            else parsingErrors += file.getName()+": encountered wrong end of element while in state automaton\n";
+            if (qName.equals(ELEMENT_AUTOMATON))
+                state = STATE_PROJECT;
+            else
+                parsingErrors += file.getName()
+                        + ": encountered wrong end of element while in state automaton\n";
             break;
         default:
-            parsingErrors += file.getName()+": endElement(): panic! parser in unknown state.\n";
+            parsingErrors += file.getName()
+                    + ": endElement(): panic! parser in unknown state.\n";
             break;
-        
+
         }
     }
 
-    public static void main(String args[]){
+    public static void main(String args[]) {
         ProjectManager p = new ProjectManager();
         p.openProject(new File("/home/agmi02/des/test.xml"));
         p.setProjectName("hmm");

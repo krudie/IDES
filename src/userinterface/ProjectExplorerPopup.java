@@ -14,74 +14,74 @@ import org.eclipse.swt.widgets.TreeItem;
 
 /**
  * @author edlund
- *
+ * 
  */
 public class ProjectExplorerPopup {
 
-    
     private Shell shell;
+
     private Menu automatonMenu, projectMenu;
+
     private TreeItem lastItem;
+
     private RenameListener rl;
+
     private ProjectExplorer pe;
-    
-    
-    
-    public ProjectExplorerPopup(Shell shell, ProjectExplorer pe){
+
+    public ProjectExplorerPopup(Shell shell, ProjectExplorer pe) {
         this.pe = pe;
         this.shell = shell;
         rl = new RenameListener();
-        
+
         initAutomatonMenu();
         initProjectMenu();
     }
-    
-    
-    private void initAutomatonMenu(){
-        automatonMenu = new Menu (shell, SWT.POP_UP);
-        MenuItem renameItem = new MenuItem (automatonMenu, SWT.PUSH);
-        renameItem.setText (ResourceManager.getToolTipText("projectexplorer_rename"));
+
+    private void initAutomatonMenu() {
+        automatonMenu = new Menu(shell, SWT.POP_UP);
+        MenuItem renameItem = new MenuItem(automatonMenu, SWT.PUSH);
+        renameItem.setText(ResourceManager
+                .getToolTipText("projectexplorer_rename"));
         renameItem.addSelectionListener(rl);
-        
+
         MenuItem deleteItem = new MenuItem(automatonMenu, SWT.PUSH);
-        deleteItem.setText(ResourceManager.getToolTipText("projectexplorer_delete"));
-        
-        deleteItem.addSelectionListener(new SelectionAdapter(){
+        deleteItem.setText(ResourceManager
+                .getToolTipText("projectexplorer_delete"));
+
+        deleteItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent arg0) {
                 pe.delete();
             }
         });
-        
 
     }
-    
-    private void initProjectMenu(){
-        projectMenu = new Menu (shell, SWT.POP_UP);
-        MenuItem renameItem = new MenuItem (projectMenu, SWT.PUSH);
-        renameItem.setText (ResourceManager.getToolTipText("projectexplorer_rename"));
+
+    private void initProjectMenu() {
+        projectMenu = new Menu(shell, SWT.POP_UP);
+        MenuItem renameItem = new MenuItem(projectMenu, SWT.PUSH);
+        renameItem.setText(ResourceManager
+                .getToolTipText("projectexplorer_rename"));
         renameItem.addSelectionListener(rl);
     }
-    
-    public Menu getAutomatonMenu(TreeItem last){
+
+    public Menu getAutomatonMenu(TreeItem last) {
         this.lastItem = last;
         return automatonMenu;
     }
-    
-    public Menu getProjectMenu(TreeItem last){
+
+    public Menu getProjectMenu(TreeItem last) {
         this.lastItem = last;
         return projectMenu;
     }
-    
-    
-    private class RenameListener implements SelectionListener{
+
+    private class RenameListener implements SelectionListener {
 
         public void widgetSelected(SelectionEvent arg0) {
             pe.rename(lastItem);
         }
 
-        public void widgetDefaultSelected(SelectionEvent arg0) {           
-        }     
+        public void widgetDefaultSelected(SelectionEvent arg0) {
+        }
     }
-    
-    
+
 }

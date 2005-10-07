@@ -17,21 +17,24 @@ import org.holongate.j2d.IPaintable;
  * 
  * @author Michael Wood
  */
-public class PaintingController implements IPaintable 
-{
-	private GraphController controller = null;
-	
-	public PaintingController(GraphController graph_controller) 
-	{ controller = graph_controller; }
-	
-	public void redraw(Control control, GC gc) { }
-	
-	public Rectangle2D getBounds(Control control) { return null; }
+public class PaintingController implements IPaintable {
+    private GraphController controller = null;
 
-	public void paint(Control control, Graphics2D g2d) 
-	{
-	    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-	    g2d.setStroke(new BasicStroke(controller.line_width));
-	    controller.draw(g2d);
-	}
+    public PaintingController(GraphController graph_controller) {
+        controller = graph_controller;
+    }
+
+    public void redraw(Control control, GC gc) {
+    }
+
+    public Rectangle2D getBounds(Control control) {
+        return null;
+    }
+
+    public void paint(Control control, Graphics2D g2d) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setStroke(new BasicStroke(controller.line_width));
+        controller.draw(g2d);
+    }
 }

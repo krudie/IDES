@@ -6,51 +6,55 @@ import java.util.*;
 /**
  * 
  * @author Axel Gottlieb Michelsen
- *
+ * 
  */
-public class State extends SubElementContainer{
-	private LinkedList<Transition> sourceT, targetT;
-	private int id;
-    
-	public State(int id){
+public class State extends SubElementContainer {
+    private LinkedList<Transition> sourceT, targetT;
+
+    private int id;
+
+    public State(int id) {
         super();
         this.id = id;
-		sourceT = new LinkedList<Transition>();
-		targetT = new LinkedList<Transition>();
-	}
-	
-	public void addSourceTransition(Transition t){
-		sourceT.add(t);
-	}
-	public void removeSourceTransition(Transition t){
-		sourceT.remove(t);
-	}
-	public ListIterator<Transition> getSourceTransitionsListIterator(){
-		return sourceT.listIterator();
-	}
-	
-	public void addTargetTransition(Transition t){
-		targetT.add(t);
-	}
-	public void removeTargetTransition(Transition t){
-		targetT.remove(t);
-	}
-	public ListIterator<Transition> getTargetTransitionListIterator(){
-		return targetT.listIterator();
-	}
+        sourceT = new LinkedList<Transition>();
+        targetT = new LinkedList<Transition>();
+    }
 
-    public int getId(){
+    public void addSourceTransition(Transition t) {
+        sourceT.add(t);
+    }
+
+    public void removeSourceTransition(Transition t) {
+        sourceT.remove(t);
+    }
+
+    public ListIterator<Transition> getSourceTransitionsListIterator() {
+        return sourceT.listIterator();
+    }
+
+    public void addTargetTransition(Transition t) {
+        targetT.add(t);
+    }
+
+    public void removeTargetTransition(Transition t) {
+        targetT.remove(t);
+    }
+
+    public ListIterator<Transition> getTargetTransitionListIterator() {
+        return targetT.listIterator();
+    }
+
+    public int getId() {
         return id;
     }
-    
-    public void toXML(PrintStream ps, String indent){
-        if(isEmpty()){
-            ps.println(indent+"<state" + " id=\""+id+"\"/>");
-        }
-        else{
-            ps.println(indent+"<state" + " id=\""+id+"\">");
-            super.toXML(ps, indent+"  ");
-            ps.println(indent+"</state>");
+
+    public void toXML(PrintStream ps, String indent) {
+        if (isEmpty()) {
+            ps.println(indent + "<state" + " id=\"" + id + "\"/>");
+        } else {
+            ps.println(indent + "<state" + " id=\"" + id + "\">");
+            super.toXML(ps, indent + "  ");
+            ps.println(indent + "</state>");
         }
     }
 }

@@ -16,32 +16,42 @@ import org.eclipse.swt.widgets.Shell;
  * 
  * @author Michael Wood
  */
-public class Splash 
-{
-	private Shell shell = null;
-	private GC gc = null;
-	private Image image = null;
-	
-	public Splash(Display display){	
-		String path = "/images/graphics/splash.gif";
-		try{
-			shell = new Shell(display, SWT.NO_TRIM);
-			ImageData splash_data = new ImageData(getClass().getResourceAsStream(path));
-			image = new Image(display, splash_data);
-			shell.setSize(splash_data.width, splash_data.height);
-			Rectangle splash_rectangle = display.getBounds();
-			shell.setLocation(((splash_rectangle.width - splash_data.width) / 2), ((splash_rectangle.height - splash_data.height) / 2));
-			shell.open();
-			GC gc = new GC(shell); 
-			gc.drawImage(image, 0, 0);
-		}
-		catch (Exception e) { System.out.println("The splash image [" + path + "] did not load."); }
-	}
+public class Splash {
+    private Shell shell = null;
 
-	public void dispose()
-	{	
-		if (shell != null) { shell.dispose(); }
-		if (gc != null)    { gc.dispose(); }
-		if (image != null) { image.dispose(); }
-	}
+    private GC gc = null;
+
+    private Image image = null;
+
+    public Splash(Display display) {
+        String path = "/images/graphics/splash.gif";
+        try {
+            shell = new Shell(display, SWT.NO_TRIM);
+            ImageData splash_data = new ImageData(getClass()
+                    .getResourceAsStream(path));
+            image = new Image(display, splash_data);
+            shell.setSize(splash_data.width, splash_data.height);
+            Rectangle splash_rectangle = display.getBounds();
+            shell.setLocation(
+                    ((splash_rectangle.width - splash_data.width) / 2),
+                    ((splash_rectangle.height - splash_data.height) / 2));
+            shell.open();
+            GC gc = new GC(shell);
+            gc.drawImage(image, 0, 0);
+        } catch (Exception e) {
+            System.out.println("The splash image [" + path + "] did not load.");
+        }
+    }
+
+    public void dispose() {
+        if (shell != null) {
+            shell.dispose();
+        }
+        if (gc != null) {
+            gc.dispose();
+        }
+        if (image != null) {
+            image.dispose();
+        }
+    }
 }
