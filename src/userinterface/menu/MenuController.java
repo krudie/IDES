@@ -353,10 +353,15 @@ public class MenuController {
         // Initial States /////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////         
 
+        file_new_automaton.disable();
         file_save_automaton.disable();
+        file_open_automaton.disable();
+        file_save_project.disable();
         edit_copy.disable();
         edit_paste.disable();
         edit_delete.disable();
+        tbr_graphic.setEnabled(false);
+        
 	}
 
     /**

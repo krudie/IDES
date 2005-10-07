@@ -135,6 +135,10 @@ public class GraphingPlatform {
 
     }
     
+    public void setEnabled(boolean state){
+        tabFolder.setEnabled(state);
+    }
+    
     
     public void open(){
         
