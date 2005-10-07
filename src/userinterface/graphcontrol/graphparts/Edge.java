@@ -26,7 +26,7 @@ import userinterface.graphcontrol.TransitionData;
  * 
  * @author Michael Wood
  */
-public class Edge extends GraphObject {
+public class Edge extends GraphObject{
     /**
      * possible values for selection_state
      */
@@ -56,7 +56,7 @@ public class Edge extends GraphObject {
      */
     private Node n1 = null;
 
-    public Node getSource() {
+    public Node getSource(){
         return n1;
     }
 
@@ -65,7 +65,7 @@ public class Edge extends GraphObject {
      */
     private Node n2 = null;
 
-    public Node getTarget() {
+    public Node getTarget(){
         return n2;
     }
 
@@ -80,11 +80,11 @@ public class Edge extends GraphObject {
      */
     private int selectionState = 0;
 
-    public int getSelectionState() {
+    public int getSelectionState(){
         return selectionState;
     }
 
-    public void setSelectionState(int selectionState) {
+    public void setSelectionState(int selectionState){
         this.selectionState = selectionState;
     }
 
@@ -99,11 +99,11 @@ public class Edge extends GraphObject {
      */
     private int lastHitRegion = Edge.R_NONE;
 
-    public int getLastHitRegion() {
+    public int getLastHitRegion(){
         return lastHitRegion;
     }
 
-    public void setLastHitRegion(int lhr) {
+    public void setLastHitRegion(int lhr){
         lastHitRegion = lhr;
     }
 
@@ -136,14 +136,15 @@ public class Edge extends GraphObject {
      *            The Node where the Edge terminates.
      */
     public Edge(GraphingPlatform gp, GraphModel gm, Node start_node,
-            Node end_node) {
+            Node end_node){
         super(gp, gm, GraphObject.SIMPLE);
         constructEdge(start_node, end_node);
         initializeLabels(DEFAULT_LABEL_DISPLACEMENT, DEFAULT_LABEL_DISPLACEMENT);
 
-        if (isSelfLoop()) {
+        if(isSelfLoop()){
             curve = new Curve(n1, n2, edge_group.newUnitVector(this));
-        } else {
+        }
+        else{
             curve = new Curve(n1, n2);
         }
 
@@ -177,7 +178,7 @@ public class Edge extends GraphObject {
      */
     private Edge(GraphingPlatform gp, GraphModel gm, Node start_node,
             Node end_node, Curve curve, Point label_displacement, int a,
-            Vector label_data, GlyphLabel glyph_label) {
+            Vector label_data, GlyphLabel glyph_label){
         super(gp, gm, a);
         constructEdge(start_node, end_node);
 
@@ -228,7 +229,7 @@ public class Edge extends GraphObject {
     public Edge(GraphingPlatform gp, GraphModel gm, Node start_node,
             Node end_node, float x1, float y1, float ctrlx1, float ctrly1,
             float ctrlx2, float ctrly2, float x2, float y2, float dx, float dy,
-            int gtx, int gty, int a) {
+            int gtx, int gty, int a){
         super(gp, gm, a);
         constructEdge(start_node, end_node);
         initializeLabels(gtx, gty);
@@ -245,7 +246,7 @@ public class Edge extends GraphObject {
      * @param end_node
      *            The node where the edge terminates.
      */
-    private void constructEdge(Node start_node, Node end_node) {
+    private void constructEdge(Node start_node, Node end_node){
         n1 = start_node;
         n2 = end_node;
         edge_group = n1.join(this, n2);
@@ -259,7 +260,7 @@ public class Edge extends GraphObject {
      * @param gty
      *            y parameter for the label_displacement object
      */
-    private void initializeLabels(int gtx, int gty) {
+    private void initializeLabels(int gtx, int gty){
         label_displacement = new Point(gtx, gty);
         label_data = new Vector();
         glyph_label = new GlyphLabel(gp, this);
@@ -272,16 +273,16 @@ public class Edge extends GraphObject {
      * 
      * @return A clone of this Edge.
      */
-    public Edge newClone() {
-        if (n1.getLastClone() != null && n2.getLastClone() != null) {
+    public Edge newClone(){
+        if(n1.getLastClone() != null && n2.getLastClone() != null){
             int clone_attribute = GraphObject.NULL;
-            if (isSimple()) {
+            if(isSimple()){
                 clone_attribute = GraphObject.SIMPLE;
             }
-            return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(), curve
-                    .newClone(n1.getLastClone(), n2.getLastClone()), label_displacement
-                    .getCopy(), clone_attribute, getLabelDataVector(),
-                    glyph_label);
+            return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(),
+                    curve.newClone(n1.getLastClone(), n2.getLastClone()),
+                    label_displacement.getCopy(), clone_attribute,
+                    getLabelDataVector(), glyph_label);
         }
         return null;
     }
@@ -294,7 +295,7 @@ public class Edge extends GraphObject {
     /**
      * Initiate for movement by node position.
      */
-    public void initiateNodeMovement(int attribute) {
+    public void initiateNodeMovement(int attribute){
         curve.initiateNodeMovement();
         addAttribute(attribute);
     }
@@ -311,22 +312,13 @@ public class Edge extends GraphObject {
      *            The current mouse position.
      */
     public void updateNodeMovement(Node n,
-            Configuration origional_configuration, Point mouse) {
-        if (isSimple()) {
-            autoConfigureCurve();
-        } else {
-            if (isSelfLoop()) {
-                curve.recalculateSelfLoop();
-            } else if (n == n1) {
-                curve
-                        .updateNodeMovement(origional_configuration, mouse, n2,
-                                n1);
-            } else {
-                curve
-                        .updateNodeMovement(origional_configuration, mouse, n1,
-                                n2);
-            }
-        }
+            Configuration origional_configuration, Point mouse){
+        if(isSimple()) autoConfigureCurve();
+        else if(isSelfLoop()) curve.recalculateSelfLoop();
+        else if(n == n1) curve.updateNodeMovement(origional_configuration,
+                mouse, n2, n1);
+        else curve.updateNodeMovement(origional_configuration, mouse, n1, n2);
+
         selectedLabel().setAnchor(
                 label_displacement
                         .plus(curve.calculateBezierPoint((float) 0.5)),
@@ -336,17 +328,18 @@ public class Edge extends GraphObject {
     /**
      * Terminate movement by node position.
      */
-    public void terminateNodeMovement(int attribute) {
+    public void terminateNodeMovement(int attribute){
         removeAttribute(attribute);
     }
 
     /**
      * Recalculate the parameters of this Edge using an automatic algorithm.
      */
-    public void autoConfigureCurve() {
-        if (isSelfLoop()) {
+    public void autoConfigureCurve(){
+        if(isSelfLoop()){
             curve.recalculateSelfLoop();
-        } else {
+        }
+        else{
             int edge_position = edge_group.indexOf(this);
             int edge_group_levels = edge_group.levels();
             boolean odd_number_in_group = edge_group.hasOddEdges();
@@ -354,37 +347,39 @@ public class Edge extends GraphObject {
             boolean against_group_direction = edge_group.isStartNode(n2);
             int level = 0;
             float angle = 120 / (edge_group_levels + 1);
-            if (odd_number_in_group && !intersects_node) {
-                if (edge_position == 0) {
+            if(odd_number_in_group && !intersects_node){
+                if(edge_position == 0){
                     curve.calculateCurve(0, 0); // strait edge
-                } else {
+                }
+                else{
                     level = (int) Math.ceil(edge_position / 2.0);
-                    if (edge_position % 2 == 0) {
+                    if(edge_position % 2 == 0){
                         level = -level;
                     }
                     // swap side if our assumption of direction was false
-                    if (against_group_direction) {
+                    if(against_group_direction){
                         level = -level;
                     }
                     curve.calculateCurve(level * 8, level * angle);
                 }
-            } else {
+            }
+            else{
                 level = (int) Math.ceil((edge_position + 1) / 2.0);
-                if (intersects_node) {
+                if(intersects_node){
                     level = level + 2;
                     angle = 120 / (edge_group_levels + 3);
                 }
-                if (edge_position % 2 == 1) {
+                if(edge_position % 2 == 1){
                     level = -level;
                 }
                 // swap side if our assumption of direction was false
-                if (against_group_direction) {
+                if(against_group_direction){
                     level = -level;
                 }
                 float adjust = angle / 2; // because there is no center edge,
-                                            // we want all angles to be less by
-                                            // one half increment
-                if (level < 0) {
+                // we want all angles to be less by
+                // one half increment
+                if(level < 0){
                     adjust = -adjust;
                 } // because we want a decrease in magnitude
                 curve.calculateCurve(level * 8, level * angle - adjust);
@@ -392,27 +387,20 @@ public class Edge extends GraphObject {
         }
     }
 
-    public void autoStraightenCurve() {
+    public void autoStraightenCurve(){
         curve.calculateCurve(0, 0); // strait edge
         removeAttribute(GraphObject.SIMPLE);
     }
 
-    public void autoArcMore() {
+    public void autoArcMore(){
         float angle = (float) Math.toDegrees(curve.headAnchorAngle());
         // force angle to -180 ... 180 (it represents the angle from the
         // bisector)
-        if (angle > 180) {
-            angle = 360 - angle;
-        }
-        if (angle < -180) {
-            angle = 360 + angle;
-        }
+        if(angle > 180) angle = 360 - angle;
+        if(angle < -180) angle = 360 + angle;
         // increase the size to a maximum of +-90
-        if (angle >= 0 && angle < 90) {
-            angle = angle + 10;
-        } else if (angle < 0 && angle > -90) {
-            angle = angle - 10;
-        }
+        if(angle >= 0 && angle < 90) angle = angle + 10;
+        else if(angle < 0 && angle > -90) angle = angle - 10;
         // fix the angle for convention of calculateCurve
         angle = angle * -1;
 
@@ -421,7 +409,7 @@ public class Edge extends GraphObject {
         float rise = bisector.perpendicularDistance(curve.headCtrl());
         rise = (float) (rise * 1.1);
         // fix the rise for convention of calculateCurve
-        if (angle < 0) {
+        if(angle < 0){
             rise = rise * -1;
         }
 
@@ -429,22 +417,15 @@ public class Edge extends GraphObject {
         removeAttribute(GraphObject.SIMPLE);
     }
 
-    public void autoArcLess() {
+    public void autoArcLess(){
         float angle = (float) Math.toDegrees(curve.headAnchorAngle());
         // force angle to -180 ... 180 (it represents the angle from the
         // bisector)
-        if (angle > 180) {
-            angle = 360 - angle;
-        }
-        if (angle < -180) {
-            angle = 360 + angle;
-        }
+        if(angle > 180) angle = 360 - angle;
+        if(angle < -180) angle = 360 + angle;
         // decrease the size
-        if (angle > 0) {
-            angle = angle - 10;
-        } else {
-            angle = angle + 10;
-        }
+        if(angle > 0) angle = angle - 10;
+        else angle = angle + 10;
         // fix the angle for convention of calculateCurve
         angle = angle * -1;
 
@@ -454,9 +435,7 @@ public class Edge extends GraphObject {
         float factor = (float) ((100 - Math.abs(angle)) / 100);
         rise = rise - (float) (rise * factor);
         // fix the rise for convention of calculateCurve
-        if (angle < 0) {
-            rise = rise * -1;
-        }
+        if(angle < 0) rise = rise * -1;
 
         curve.calculateCurve(rise, angle);
         removeAttribute(GraphObject.SIMPLE);
@@ -480,35 +459,25 @@ public class Edge extends GraphObject {
      *            True if all edges in the graph should draw their tethers
      *            (which define the label positions).
      */
-    public void draw(Drawer drawer, boolean all_anchors, boolean all_tethers) {
-        if (isGrouped()) {
-            drawer.setColor(GraphModel.GROUPED);
-        }
-        if (isTraceObject()) {
-            drawer.setColor(GraphModel.TRACE);
-        }
-        if (isHotSelected()) {
-            drawer.setColor(GraphModel.HOT_SELECTED);
-        }
+    public void draw(Drawer drawer, boolean all_anchors, boolean all_tethers){
+        if(isGrouped()) drawer.setColor(GraphModel.GROUPED);
+        if(isTraceObject()) drawer.setColor(GraphModel.TRACE);
+        if(isHotSelected()) drawer.setColor(GraphModel.HOT_SELECTED);
 
-        if (hasUncontrollableLabel()) {
-            curve.drawCurve(drawer, Drawer.DASHED);
-        } else {
-            curve.drawCurve(drawer, Drawer.SOLID);
-        }
+        if(hasUncontrollableLabel()) curve.drawCurve(drawer, Drawer.DASHED);
+        else curve.drawCurve(drawer, Drawer.SOLID);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (!labelDataIsNull()) {
+        if(!labelDataIsNull()){
             selectedLabel().drawData(drawer, label_data);
 
-            if (all_tethers || selectionState == Edge.EXCLUSIVE) {
+            if(all_tethers || selectionState == Edge.EXCLUSIVE){
                 Point destination = curve.calculateBezierPoint((float) 0.5);
-                if (isHotSelected() && lastHitRegion == Edge.R_LABEL) {
-                    drawer.setColor(GraphModel.CUSTOM);
-                } else {
-                    drawer.setColor(GraphModel.TETHERS);
-                }
+                if(isHotSelected() && lastHitRegion == Edge.R_LABEL) drawer
+                        .setColor(GraphModel.CUSTOM);
+                else drawer.setColor(GraphModel.TETHERS);
+
                 selectedLabel().drawBox(drawer);
                 selectedLabel().drawTether(drawer, destination);
             }
@@ -516,30 +485,32 @@ public class Edge extends GraphObject {
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (all_anchors || selectionState == Edge.EXCLUSIVE) {
+        if(all_anchors || selectionState == Edge.EXCLUSIVE){
             drawer.setColor(GraphModel.ANCHORS);
-            if (isSelfLoop()) {
-                if (isHotSelected() && lastHitRegion == Edge.R_LOOP) {
-                    drawer.setColor(GraphModel.CUSTOM);
-                }
+            if(isSelfLoop()){
+                if(isHotSelected() && lastHitRegion == Edge.R_LOOP) drawer
+                        .setColor(GraphModel.CUSTOM);
+
                 curve.drawSelfLoopAnchor(drawer);
-            } else {
-                if (isHotSelected()
-                        && (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL)) {
-                    curve.drawHeadAnchors(drawer);
-                    drawer.setColor(GraphModel.CUSTOM);
-                    curve.drawTailAnchors(drawer);
-                } else if (isHotSelected()
-                        && (lastHitRegion == Edge.R_HEAD_ANCHOR
-                                || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_ARROWHEAD)) {
-                    curve.drawTailAnchors(drawer);
-                    drawer.setColor(GraphModel.CUSTOM);
-                    curve.drawHeadAnchors(drawer);
-                } else {
-                    curve.drawTailAnchors(drawer);
-                    curve.drawHeadAnchors(drawer);
-                }
             }
+            else if(isHotSelected()
+                    && (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL)){
+                curve.drawHeadAnchors(drawer);
+                drawer.setColor(GraphModel.CUSTOM);
+                curve.drawTailAnchors(drawer);
+            }
+            else if(isHotSelected()
+                    && (lastHitRegion == Edge.R_HEAD_ANCHOR
+                            || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_ARROWHEAD)){
+                curve.drawTailAnchors(drawer);
+                drawer.setColor(GraphModel.CUSTOM);
+                curve.drawHeadAnchors(drawer);
+            }
+            else{
+                curve.drawTailAnchors(drawer);
+                curve.drawHeadAnchors(drawer);
+            }
+
         }
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -570,22 +541,23 @@ public class Edge extends GraphObject {
      *            allowed to OR multiple constants.
      * @return true if this edge should be selected by this mouse click.
      */
-    public boolean isLocated(int x, int y, int options) {
+    public boolean isLocated(int x, int y, int options){
         boolean all_anchors = ((options & Edge.L_ALL_ANCHORS) > 0);
         boolean padded = ((options & Edge.L_PADDED) > 0);
         Point mouse = new Point(x, y);
 
         // anchors
-        if ((options & Edge.L_NO_ANCHORS) == 0) {
-            if (all_anchors || selectionState == Edge.EXCLUSIVE) {
-                if (isSelfLoop()) {
+        if((options & Edge.L_NO_ANCHORS) == 0){
+            if(all_anchors || selectionState == Edge.EXCLUSIVE){
+                if(isSelfLoop()){
                     lastHitRegion = curve.isLocatedSelfLoop(mouse, padded);
-                    if (lastHitRegion != Edge.R_NONE) {
+                    if(lastHitRegion != Edge.R_NONE){
                         return true;
                     }
-                } else {
+                }
+                else{
                     lastHitRegion = curve.isLocatedAnchors(mouse, padded);
-                    if (lastHitRegion != Edge.R_NONE) {
+                    if(lastHitRegion != Edge.R_NONE){
                         return true;
                     }
                 }
@@ -593,27 +565,27 @@ public class Edge extends GraphObject {
         }
 
         // arrowhead
-        if ((options & Edge.L_ALL_TETHERS) == 0) {
+        if((options & Edge.L_ALL_TETHERS) == 0){
             lastHitRegion = curve.isLocatedArrowhead(mouse, padded);
-            if (lastHitRegion != Edge.R_NONE) {
+            if(lastHitRegion != Edge.R_NONE){
                 return true;
             }
         }
 
         // tethers
-        if (!labelDataIsNull() && ((options & Edge.L_NO_TETHERS) == 0)) {
+        if(!labelDataIsNull() && ((options & Edge.L_NO_TETHERS) == 0)){
             // vary the selection area based on whether or not the bounding box
             // is being displayed.
             int adjustment = Label.BOUNDING_BOX_FACTOR;
-            if (padded) {
+            if(padded){
                 adjustment = 2 * adjustment;
             }
-            if (((options & Edge.L_ALL_TETHERS) > 0)
-                    || selectionState == Edge.EXCLUSIVE) {
+            if(((options & Edge.L_ALL_TETHERS) > 0)
+                    || selectionState == Edge.EXCLUSIVE){
                 adjustment = 0;
             }
 
-            if (selectedLabel().isLocated(new Point(x, y))) {
+            if(selectedLabel().isLocated(new Point(x, y))){
                 lastHitRegion = Edge.R_LABEL;
                 return true;
             }
@@ -628,27 +600,32 @@ public class Edge extends GraphObject {
     // //////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void initiateMovement(Point mouse, int attribute, int state_mask) {
+    public void initiateMovement(Point mouse, int attribute, int state_mask){
         removeAttribute(GraphObject.SIMPLE);
 
         Point origin = null;
-        if (lastHitRegion == Edge.R_TAIL_ANCHOR
-                || lastHitRegion == Edge.R_TAIL_CTRL) {
+        if(lastHitRegion == Edge.R_TAIL_ANCHOR
+                || lastHitRegion == Edge.R_TAIL_CTRL){
             origin = n1.origin();
-        } else {
+        }
+        else{
             origin = n2.origin();
         }
 
         Point selection_target = null;
-        if (isSelfLoop()) {
+        if(isSelfLoop()){
             selection_target = curve.selfLoopAnchor();
-        } else if (lastHitRegion == Edge.R_TAIL_ANCHOR) {
+        }
+        else if(lastHitRegion == Edge.R_TAIL_ANCHOR){
             selection_target = curve.tailAnchor();
-        } else if (lastHitRegion == Edge.R_TAIL_CTRL) {
+        }
+        else if(lastHitRegion == Edge.R_TAIL_CTRL){
             selection_target = curve.tailCtrl();
-        } else if (lastHitRegion == Edge.R_HEAD_CTRL) {
+        }
+        else if(lastHitRegion == Edge.R_HEAD_CTRL){
             selection_target = curve.headCtrl();
-        } else {
+        }
+        else{
             selection_target = curve.headAnchor();
         }
 
@@ -658,29 +635,34 @@ public class Edge extends GraphObject {
         addAttribute(attribute);
     }
 
-    public void updateMovement(Point mouse) {
-        if (isSelfLoop()
-                && (lastHitRegion == Edge.R_LOOP || lastHitRegion == Edge.R_ARROWHEAD)) {
+    public void updateMovement(Point mouse){
+        if(isSelfLoop()
+                && (lastHitRegion == Edge.R_LOOP || lastHitRegion == Edge.R_ARROWHEAD)){
             curve.moveSelfLoop(origional_configuration, mouse);
-        } else if (lastHitRegion == Edge.R_TAIL_ANCHOR
+        }
+        else if(lastHitRegion == Edge.R_TAIL_ANCHOR
                 || lastHitRegion == Edge.R_TAIL_CTRL
                 || lastHitRegion == Edge.R_HEAD_CTRL
                 || lastHitRegion == Edge.R_HEAD_ANCHOR
-                || lastHitRegion == Edge.R_ARROWHEAD) {
+                || lastHitRegion == Edge.R_ARROWHEAD){
             UnitVector bisector = new UnitVector(n1.origin(), n2.origin());
-            if (lastHitRegion == Edge.R_TAIL_ANCHOR) {
+            if(lastHitRegion == Edge.R_TAIL_ANCHOR){
                 curve.moveTailAnchor(origional_configuration, mouse);
-            } else if (lastHitRegion == Edge.R_TAIL_CTRL) {
+            }
+            else if(lastHitRegion == Edge.R_TAIL_CTRL){
                 curve.moveTailCtrl(origional_configuration, mouse);
-            } else if (lastHitRegion == Edge.R_HEAD_CTRL) {
+            }
+            else if(lastHitRegion == Edge.R_HEAD_CTRL){
                 bisector.reverse();
                 curve.moveHeadCtrl(origional_configuration, mouse);
-            } else if (lastHitRegion == Edge.R_HEAD_ANCHOR
-                    || lastHitRegion == Edge.R_ARROWHEAD) {
+            }
+            else if(lastHitRegion == Edge.R_HEAD_ANCHOR
+                    || lastHitRegion == Edge.R_ARROWHEAD){
                 bisector.reverse();
                 curve.moveHeadAnchor(origional_configuration, mouse);
             }
-        } else if (lastHitRegion == Edge.R_LABEL) {
+        }
+        else if(lastHitRegion == Edge.R_LABEL){
             label_displacement.x = origional_configuration.label_displacement.x
                     + (mouse.x - origional_configuration.movement_origin.x);
             label_displacement.y = origional_configuration.label_displacement.y
@@ -694,7 +676,7 @@ public class Edge extends GraphObject {
                 Label.CORNER);
     }
 
-    public void terminateMovement(int attribute) {
+    public void terminateMovement(int attribute){
         origional_configuration = null;
         removeAttribute(attribute);
         lastHitRegion = Edge.R_NONE;
@@ -704,14 +686,14 @@ public class Edge extends GraphObject {
      * Adjust settings of this GraphObject to take into consideration recent
      * changes to it's label.
      */
-    public void accomodateLabel() {
+    public void accomodateLabel(){
         selectedLabel().setAnchor(
                 label_displacement
                         .plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
 
         String representation = getLabelDataString();
-        if (!selectedLabel().string_representation.equals(representation)) {
+        if(!selectedLabel().string_representation.equals(representation)){
             // the label has changed we must render it.
             selectedLabel().string_representation = representation;
             selectedLabel().render();
@@ -731,7 +713,7 @@ public class Edge extends GraphObject {
      * @param new_label_data
      *            The label to be added to this Edge
      */
-    public void addLabel(TableItem new_label_data) {
+    public void addLabel(TableItem new_label_data){
         label_data.add(new_label_data);
     }
 
@@ -741,7 +723,7 @@ public class Edge extends GraphObject {
      * @param new_label_data
      *            The label to be removed from this Edge
      */
-    public void removeLabel(TableItem new_label_data) {
+    public void removeLabel(TableItem new_label_data){
         label_data.remove(new_label_data);
     }
 
@@ -752,14 +734,16 @@ public class Edge extends GraphObject {
      *            A test value.
      * @return true if the test value matches the text in the label_data.
      */
-    public boolean checkLabel(Object label) {
-        if (!labelDataIsNull()) {
-            if (label_data.contains(label)) {
+    public boolean checkLabel(Object label){
+        if(!labelDataIsNull()){
+            if(label_data.contains(label)){
                 return true;
-            } else {
+            }
+            else{
                 return false;
             }
-        } else {
+        }
+        else{
             return false;
         }
     }
@@ -769,12 +753,13 @@ public class Edge extends GraphObject {
      * 
      * @return true if the label_data object should be null
      */
-    public boolean labelDataIsNull() {
+    public boolean labelDataIsNull(){
         int i = 0;
-        while (i < label_data.size()) {
-            if (((TableItem) label_data.elementAt(i)).isDisposed()) {
+        while(i < label_data.size()){
+            if(((TableItem) label_data.elementAt(i)).isDisposed()){
                 label_data.removeElementAt(i);
-            } else {
+            }
+            else{
                 i++;
             }
         }
@@ -787,21 +772,22 @@ public class Edge extends GraphObject {
      * 
      * @return The string to be displayed.
      */
-    private String getLabelDataString() {
-        if (!labelDataIsNull()) {
+    private String getLabelDataString(){
+        if(!labelDataIsNull()){
             int column = TransitionData.SPEC_SYMBOL;
-            if (selectedLabel().isLatexLabel()) {
+            if(selectedLabel().isLatexLabel()){
                 column = TransitionData.SPEC_LATEX;
             }
 
             String representation = ((TableItem) label_data.elementAt(0))
                     .getText(column);
-            for (int i = 1; i < label_data.size(); i++) {
+            for(int i = 1; i < label_data.size(); i++){
                 representation = representation + ", "
                         + ((TableItem) label_data.elementAt(i)).getText(column);
             }
             return representation;
-        } else {
+        }
+        else{
             return "";
         }
     }
@@ -811,10 +797,10 @@ public class Edge extends GraphObject {
      * 
      * @return A copy of the label_data Vector of this Edge.
      */
-    public Vector getLabelDataVector() {
+    public Vector getLabelDataVector(){
         Vector ldv = new Vector();
-        if (!labelDataIsNull()) {
-            for (int i = 0; i < label_data.size(); i++) {
+        if(!labelDataIsNull()){
+            for(int i = 0; i < label_data.size(); i++){
                 ldv.add(label_data.elementAt(i));
             }
         }
@@ -831,17 +817,18 @@ public class Edge extends GraphObject {
      *            The node from which the edge should start
      * @return true if this edge bears the given machine code
      */
-    public boolean hasMachineCode(int machine_code, Node start_node) {
-        if (n1 != start_node) {
+    public boolean hasMachineCode(int machine_code, Node start_node){
+        if(n1 != start_node){
             return false;
         }
-        if (labelDataIsNull()) {
+        if(labelDataIsNull()){
             return false;
-        } else {
-            for (int i = 0; i < label_data.size(); i++) {
-                if (((TableItem) label_data.elementAt(i)).getText(
+        }
+        else{
+            for(int i = 0; i < label_data.size(); i++){
+                if(((TableItem) label_data.elementAt(i)).getText(
                         TransitionData.SPEC_MACHINE_CODE).equals(
-                        "" + machine_code)) {
+                        "" + machine_code)){
                     return true;
                 }
             }
@@ -854,14 +841,15 @@ public class Edge extends GraphObject {
      * 
      * @return true if this edge bears any uncontrollable transitions.
      */
-    private boolean hasUncontrollableLabel() {
-        if (labelDataIsNull()) {
+    private boolean hasUncontrollableLabel(){
+        if(labelDataIsNull()){
             return false;
-        } else {
-            for (int i = 0; i < label_data.size(); i++) {
-                if (((TableItem) label_data.elementAt(i)).getText(
+        }
+        else{
+            for(int i = 0; i < label_data.size(); i++){
+                if(((TableItem) label_data.elementAt(i)).getText(
                         TransitionData.SPEC_CONTROLLABLE).equals(
-                        TransitionData.BOOLEAN_COMBO_FALSE)) {
+                        TransitionData.BOOLEAN_COMBO_FALSE)){
                     return true;
                 }
             }
@@ -869,11 +857,11 @@ public class Edge extends GraphObject {
         return false;
     }
 
-    public Point getLabelDisplacement() {
+    public Point getLabelDisplacement(){
         return label_displacement;
     }
 
-    public void setLabelDisplacement(Point label_displacement) {
+    public void setLabelDisplacement(Point label_displacement){
         this.label_displacement = label_displacement;
     }
 
@@ -887,22 +875,23 @@ public class Edge extends GraphObject {
      * 
      * @return A copy of the midpoint of the curve.
      */
-    public Point midpoint() {
+    public Point midpoint(){
         return curve.midpoint();
     }
 
     /**
      * Put the arrowhead on the other end.
      */
-    public void reverseDirection() {
-        if (!isSelfLoop()) {
+    public void reverseDirection(){
+        if(!isSelfLoop()){
             Node n = n1;
             n1 = n2;
             n2 = n;
-            if (isSimple()) {
+            if(isSimple()){
                 curve.reverseDirection(false);
                 autoConfigureCurve();
-            } else {
+            }
+            else{
                 curve.reverseDirection(true);
             }
         }
@@ -911,7 +900,7 @@ public class Edge extends GraphObject {
     /**
      * Delete this Edge from it's EdgeGroup
      */
-    public void delete() {
+    public void delete(){
         n1 = null;
         n2 = null;
         curve.dispose();
@@ -932,7 +921,7 @@ public class Edge extends GraphObject {
      * 
      * @return true if it is a self loop edge.
      */
-    public boolean isSelfLoop() {
+    public boolean isSelfLoop(){
         return (n1 == n2);
     }
 
@@ -944,7 +933,7 @@ public class Edge extends GraphObject {
      * @param y
      *            Translation in the y direction.
      */
-    public void translateAll(int x, int y) {
+    public void translateAll(int x, int y){
         curve.translateAll(x, y);
         selectedLabel().setAnchor(
                 label_displacement
