@@ -81,14 +81,32 @@ public class ProjectExplorer {
      * Finds the first availble name for a new automaton
      * @return the name of the new automaton
      */
-    public String getNewTitle(){
+    public String getTitle(String prefix){
         
         boolean free = false;
         int i = 1;
         String title = null;
+        
+        
+        //Tests if the name itself is free
+        free = true;
+        title = prefix;
+        
+        if(project.getText().equals(title)){              
+            free = false;
+        }
+        for(int j = 0; j < automata.length; j++){
+            if(automata[j].getText().equals(title)){
+                free = false;
+                break;
+            }
+        }
+        
+        //loops until it finds a free number as a suffix
+        
         while(!free){
             free = true;
-            title = ResourceManager.getString("new_automaton_untitled") + i;
+            title = prefix +"_" + i;
             
             if(project.getText().equals(title)){              
                 free = false;

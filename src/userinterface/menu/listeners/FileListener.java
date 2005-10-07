@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import projectPresentation.ParsingToolbox;
+
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
 import userinterface.Userinterface;
@@ -201,9 +203,8 @@ public class FileListener extends AbstractListener{
      */
 	public void newAutomaton(org.eclipse.swt.events.SelectionEvent e){
         if(Userinterface.getProjectPresentation().isProjectOpen()){
-            Userinterface.getProjectPresentation().addAutomaton(MainWindow.getProjectExplorer().getNewTitle());
+            Userinterface.getProjectPresentation().addAutomaton(MainWindow.getProjectExplorer().getTitle(ResourceManager.getString("new_automaton_untitled")));
             MainWindow.getProjectExplorer().updateProject();
-
         }
         
 	}	
@@ -224,7 +225,9 @@ public class FileListener extends AbstractListener{
         String openLocation = openDialog.open();
         if(openLocation != null){
             SystemVariables.last_used_path = openDialog.getFilterPath();
-            String error = Userinterface.getProjectPresentation().openAutomaton(new File(openLocation));
+            
+            String filename = MainWindow.getProjectExplorer().getTitle(ParsingToolbox.removeFileType(openDialog.getFileName()));
+            String error = Userinterface.getProjectPresentation().openAutomaton(new File(openLocation),filename);
 
             if(!error.trim().equals("")){
                 MainWindow.errorPopup(ResourceManager.getString("parsing_error"), error);

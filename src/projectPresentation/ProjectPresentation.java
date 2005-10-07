@@ -12,7 +12,7 @@ public interface ProjectPresentation {
     public String getProjectName();
     
     public String openProject(File file);
-    public String openAutomaton(File file);
+    public String openAutomaton(File file, String name);
     
     public String[] getAutomataNames();
     

@@ -51,9 +51,10 @@ public class ProjectManager implements ProjectPresentation {
         return pp.getParsingErrors();  
     }
     
-    public String openAutomaton(File file){
+    public String openAutomaton(File file, String name){
         AutomatonParser ap = new AutomatonParser(); 
         Automaton automaton = ap.parse(file);
+        automaton.setName(name);
         project.addAutomaton(automaton);
         return ap.getParsingErrors();  
        
