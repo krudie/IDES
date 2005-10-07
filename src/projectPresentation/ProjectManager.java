@@ -19,7 +19,6 @@ import projectModel.*;
 public class ProjectManager implements ProjectPresentation {
 
     private Project project = null;
-    private ProjectParser pp = null;
     private boolean unsaved = false;
     
     public void newProject(String name){
@@ -46,13 +45,19 @@ public class ProjectManager implements ProjectPresentation {
     } 
     
     public String openProject(File file){
-        if(pp == null){
-            pp = new ProjectParser();
-        }
+        ProjectParser pp = new ProjectParser();
+        
         project = pp.parse(file);      
         return pp.getParsingErrors();  
     }
     
+    public String openAutomaton(File file){
+        AutomatonParser ap = new AutomatonParser(); 
+        Automaton automaton = ap.parse(file);
+        project.addAutomaton(automaton);
+        return ap.getParsingErrors();  
+       
+    }
     
     public String[] getAutomataNames(){
         LinkedList<Automaton> al = project.getAutomata();

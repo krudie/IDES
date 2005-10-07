@@ -70,46 +70,6 @@ public class FileListener extends AbstractListener{
 	// listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 	
-	
-    /**
-     * Create a new Automaton in the project
-     * 
-     * @param	e	The SelectionEvent that initiated this action.
-     */
-	public void newAutomaton(org.eclipse.swt.events.SelectionEvent e){
-        if(Userinterface.getProjectPresentation().isProjectOpen()){
-            Userinterface.getProjectPresentation().addAutomaton(MainWindow.getProjectExplorer().getNewTitle());
-            MainWindow.getProjectExplorer().updateProject();
-
-        }
-        
-	}	
-	
-    /**
-     * Open a gml file and load the graph.
-     * 
-     * @param	e	The SelectionEvent that initiated this action.
-     */
-	public void openAutomaton(org.eclipse.swt.events.SelectionEvent e){
-       
-
-	}	
-	
-    /**
-     * Save the current data.
-     * 
-     * @param	e	The SelectionEvent that initiated this action.
-     */
-	public void saveAutomaton(org.eclipse.swt.events.SelectionEvent e) {
-       
-	} 
-	
-	
-
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////         
     
     /**
      * Create a new Project
@@ -233,6 +193,57 @@ public class FileListener extends AbstractListener{
         }
         shell.dispose();       
     }
+	
+    /**
+     * Create a new Automaton in the project
+     * 
+     * @param	e	The SelectionEvent that initiated this action.
+     */
+	public void newAutomaton(org.eclipse.swt.events.SelectionEvent e){
+        if(Userinterface.getProjectPresentation().isProjectOpen()){
+            Userinterface.getProjectPresentation().addAutomaton(MainWindow.getProjectExplorer().getNewTitle());
+            MainWindow.getProjectExplorer().updateProject();
+
+        }
+        
+	}	
+	
+    /**
+     * Open a gml file and load the graph.
+     * 
+     * @param	e	The SelectionEvent that initiated this action.
+     */
+	public void openAutomaton(org.eclipse.swt.events.SelectionEvent e){
+       
+        FileDialog openDialog = new FileDialog(shell, SWT.OPEN); 
+        openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN_AUTOMATON)); 
+        openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"});
+        if (SystemVariables.last_used_path != null && SystemVariables.last_used_path.length() > 0){
+            openDialog.setFilterPath(SystemVariables.last_used_path);
+        }
+        String openLocation = openDialog.open();
+        if(openLocation != null){
+            SystemVariables.last_used_path = openDialog.getFilterPath();
+            String error = Userinterface.getProjectPresentation().openAutomaton(new File(openLocation));
+
+            if(!error.trim().equals("")){
+                MainWindow.errorPopup(ResourceManager.getString("parsing_error"), error);
+            }
+            MainWindow.getProjectExplorer().updateProject();
+        }
+
+	}	
+	
+    /**
+     * Save the current data.
+     * 
+     * @param	e	The SelectionEvent that initiated this action.
+     */
+	public void saveAutomaton(org.eclipse.swt.events.SelectionEvent e) {
+       
+	} 
+	
+
     
     
  

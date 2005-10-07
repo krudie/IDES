@@ -12,6 +12,7 @@ public interface ProjectPresentation {
     public String getProjectName();
     
     public String openProject(File file);
+    public String openAutomaton(File file);
     
     public String[] getAutomataNames();
     
@@ -30,5 +31,7 @@ public interface ProjectPresentation {
     public void saveProject(String path);
     
     public String removeFileName(String name);
+    
+
     
 }
