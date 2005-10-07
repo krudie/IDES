@@ -5,7 +5,6 @@ package userinterface.graphcontrol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.File;
 import java.util.Date;
 import java.util.Vector;
 
@@ -17,7 +16,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
@@ -375,8 +373,7 @@ public class GraphController {
              * @param e
              *            The initiating MouseEvent.
              */
-            public void mouseDoubleClick(MouseEvent e) {
-                Point mouse = new Point(e.x / gm.scale, e.y / gm.scale);
+            public void mouseDoubleClick(MouseEvent e){
                 Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10)
                         / gm.scale); // allows two hotspots on the create
                                         // tool
@@ -866,8 +863,8 @@ public class GraphController {
                     // repaint
                     j2dcanvas.repaint();
                 } else if (edge_creation_origin != null) {
-                    edge_creation_origin.partial_edge_endpoint.x = edge_mouse.x;
-                    edge_creation_origin.partial_edge_endpoint.y = edge_mouse.y;
+                    edge_creation_origin.getPartialEdgeEndpoint().x = edge_mouse.x;
+                    edge_creation_origin.getPartialEdgeEndpoint().y = edge_mouse.y;
                     j2dcanvas.repaint();
                 } else if (hot_selected_object != null) {
                     hot_selected_object.updateMovement(mouse);
@@ -935,7 +932,7 @@ public class GraphController {
     private void startEdgeCreation(Node n, Point mouse) {
         edge_creation_origin = n;
         edge_creation_origin.addAttribute(GraphObject.HOT_SELECTED);
-        edge_creation_origin.partial_edge_endpoint = mouse.getCopy();
+        edge_creation_origin.setPartialEdgeEndpoint(mouse.getCopy());
         click_time = new Date().getTime();
         last_down_created_an_edge = true;
     }
@@ -973,7 +970,7 @@ public class GraphController {
      */
     private void cleanupEdgeCreation() {
         edge_creation_origin.removeAttribute(GraphObject.HOT_SELECTED);
-        edge_creation_origin.partial_edge_endpoint = null;
+        edge_creation_origin.setPartialEdgeEndpoint(null);
         edge_creation_origin = null;
         click_time = 0;
         last_up_finished_an_edge = true;

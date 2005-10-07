@@ -432,7 +432,7 @@ public class GraphPartCollection {
             for (int i = 0; i < parts.size(); i++) {
                 part = (GraphObject) parts.elementAt(i);
                 if (part instanceof Node) {
-                    ((Node) part).last_clone = null;
+                    ((Node) part).setLastClone(null);
                 }
             }
         }

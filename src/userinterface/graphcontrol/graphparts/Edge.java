@@ -273,18 +273,17 @@ public class Edge extends GraphObject {
      * @return A clone of this Edge.
      */
     public Edge newClone() {
-        if (n1.last_clone != null && n2.last_clone != null) {
+        if (n1.getLastClone() != null && n2.getLastClone() != null) {
             int clone_attribute = GraphObject.NULL;
             if (isSimple()) {
                 clone_attribute = GraphObject.SIMPLE;
             }
-            return new Edge(gp, null, n1.last_clone, n2.last_clone, curve
-                    .newClone(n1.last_clone, n2.last_clone), label_displacement
+            return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(), curve
+                    .newClone(n1.getLastClone(), n2.getLastClone()), label_displacement
                     .getCopy(), clone_attribute, getLabelDataVector(),
                     glyph_label);
-        } else {
-            return null;
         }
+        return null;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

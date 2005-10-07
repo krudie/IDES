@@ -5,13 +5,9 @@ package userinterface.graphcontrol.graphparts;
 
 import ides2.SystemVariables;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import userinterface.GraphingPlatform;
-import userinterface.general.Ascii;
 import userinterface.geometric.Box;
 import userinterface.geometric.Point;
 import userinterface.geometric.UnitVector;
@@ -27,11 +23,6 @@ import userinterface.graphcontrol.GraphModel;
  * @author Michael Wood
  */
 public class Node extends GraphObject {
-
-    /**
-     * Used to print debug messages.
-     */
-    private final boolean DEBUGGING = false;
 
     /**
      * The default radius of the circle which represents this Node, and the
@@ -67,12 +58,25 @@ public class Node extends GraphObject {
     /**
      * The endpoint for a partial edge. This is used when creating an edge.
      */
-    public Point partial_edge_endpoint = null;
+    private Point partialEdgeEndpoint = null;
+    public Point getPartialEdgeEndpoint(){
+        return partialEdgeEndpoint;
+    }
+    public void setPartialEdgeEndpoint(Point partialEdgeEndpoint){
+        this.partialEdgeEndpoint = partialEdgeEndpoint;
+    }
 
     /**
      * Temporarily rembers the last created clone, for use in graph cloning.
      */
-    public Node last_clone = null;
+    private Node lastClone = null;
+    
+    public Node getLastClone(){
+        return lastClone;
+    }
+    public void setLastClone(Node n){
+        lastClone = n;
+    }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Node construction
@@ -210,9 +214,9 @@ public class Node extends GraphObject {
         if (isMarkedState()) {
             attributes = GraphObject.MARKED_STATE;
         }
-        last_clone = new Node(gp, null, x, y, r, attributes,
+        lastClone = new Node(gp, null, x, y, r, attributes,
                 start_arrow_direction.x, start_arrow_direction.y, glyph_label);
-        return last_clone;
+        return lastClone;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,15 +268,15 @@ public class Node extends GraphObject {
                                     * start_arrow_direction.y), Drawer.SOLID);
         }
 
-        if (partial_edge_endpoint != null) {
-            UnitVector d = new UnitVector(partial_edge_endpoint, origin());
+        if (partialEdgeEndpoint != null) {
+            UnitVector d = new UnitVector(partialEdgeEndpoint, origin());
             drawer.drawLine(this.x, this.y, (int) Math
-                    .round(partial_edge_endpoint.x + ArrowHead.HEAD_LENGTH
-                            * d.x), (int) Math.round(partial_edge_endpoint.y
+                    .round(partialEdgeEndpoint.x + ArrowHead.HEAD_LENGTH
+                            * d.x), (int) Math.round(partialEdgeEndpoint.y
                     + ArrowHead.HEAD_LENGTH * d.y), Drawer.SOLID);
             d.reverse();
             ArrowHead partial_edge_arrow = new ArrowHead(d,
-                    partial_edge_endpoint);
+                    partialEdgeEndpoint);
             partial_edge_arrow.draw(drawer);
         }
 
@@ -305,10 +309,6 @@ public class Node extends GraphObject {
      *            exclusive edges are modified.
      */
     public void initiateMovement(Point mouse, int attribute, boolean exclusive) {
-        if (DEBUGGING) {
-            System.out.println("initiate");
-        }
-
         EdgeGroup edge_group = null;
         origional_configuration = new Configuration(this.origin(), arrowhead
                 .tip(), mouse, this.r);
@@ -340,10 +340,6 @@ public class Node extends GraphObject {
      *            exclusive edges are modified.
      */
     public void updateMovement(Point mouse, boolean exclusive) {
-        if (DEBUGGING) {
-            System.out.println("update");
-        }
-
         if (origional_configuration != null) {
             if (!exclusive) {
                 Point displacement = new Point(mouse.x
@@ -393,10 +389,6 @@ public class Node extends GraphObject {
      *            exclusive edges are modified.
      */
     public void terminateMovement(int attribute, boolean exclusive) {
-        if (DEBUGGING) {
-            System.out.println("terminate");
-        }
-
         EdgeGroup edge_group = null;
         origional_configuration = null;
         removeAttribute(attribute);
