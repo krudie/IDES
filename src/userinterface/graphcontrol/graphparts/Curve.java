@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 
 import org.eclipse.swt.SWT;
 
-import userinterface.geometric.Box;
 import userinterface.geometric.Geometric;
 import userinterface.geometric.Line;
 import userinterface.geometric.Point;
@@ -47,7 +46,7 @@ public class Curve {
     /**
      * The head Node.
      */
-    public Node head_node = null;
+    private Node head_node = null;
 
     /**
      * The curve object used for rendering to the screen.
