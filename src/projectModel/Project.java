@@ -47,7 +47,6 @@ public class Project {
         ps.println("</project>");
     }
 
-    
     public Automaton getAutomatonByName(String name){
         Iterator<Automaton> ai = automata.iterator();
         while(ai.hasNext()){

@@ -122,13 +122,10 @@ public class ProjectParser extends AbstractFileParser{
         }
     }
 
-    public void startPrefixMapping(String prefix, String uri){
-    }
-    
     public static void main(String args[]){
         ProjectManager p = new ProjectManager();
         p.openProject(new File("/home/agmi02/des/test.xml"));
-        p.setProjectName("hmm.");
+        p.setProjectName("hmm");
         p.saveProject("/home/agmi02/des/");
     }
 }
