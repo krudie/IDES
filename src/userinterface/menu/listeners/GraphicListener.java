@@ -146,8 +146,7 @@ public class GraphicListener extends AbstractListener {
     public void zoom(org.eclipse.swt.events.SelectionEvent e) {
         deselect();
         MainWindow.getGraphingPlatform().mc.graphic_zoom.setSelection(true);
-        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow
-                .getGraphingPlatform().gc.ZOOM_TOOL;
+        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow.getGraphingPlatform().gc.ZOOM_TOOL;
         MainWindow.getGraphingPlatform().gc.abandonGefTool();
         MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager
                 .getCursor(ResourceManager.ZOOM_CURSOR));
@@ -162,11 +161,9 @@ public class GraphicListener extends AbstractListener {
     public void create(org.eclipse.swt.events.SelectionEvent e) {
         deselect();
         MainWindow.getGraphingPlatform().mc.graphic_create.setSelection(true);
-        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow
-                .getGraphingPlatform().gc.CREATE_TOOL;
+        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow.getGraphingPlatform().gc.CREATE_TOOL;
         MainWindow.getGraphingPlatform().gc.abandonGefTool();
-        MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager
-                .getCursor(ResourceManager.CREATE_CURSOR));
+        MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager.getCursor(ResourceManager.CREATE_CURSOR));
     }
 
     /**
@@ -178,11 +175,9 @@ public class GraphicListener extends AbstractListener {
     public void modify(org.eclipse.swt.events.SelectionEvent e) {
         deselect();
         MainWindow.getGraphingPlatform().mc.graphic_modify.setSelection(true);
-        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow
-                .getGraphingPlatform().gc.MODIFY_TOOL;
+        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow.getGraphingPlatform().gc.MODIFY_TOOL;
         MainWindow.getGraphingPlatform().gc.abandonGefTool();
-        MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager
-                .getCursor(ResourceManager.MODIFY_CURSOR));
+        MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager.getCursor(ResourceManager.MODIFY_CURSOR));
     }
 
     /**
@@ -194,11 +189,9 @@ public class GraphicListener extends AbstractListener {
     public void grab(org.eclipse.swt.events.SelectionEvent e) {
         deselect();
         MainWindow.getGraphingPlatform().mc.graphic_grab.setSelection(true);
-        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow
-                .getGraphingPlatform().gc.GRAB_TOOL;
+        MainWindow.getGraphingPlatform().gc.selected_tool = MainWindow.getGraphingPlatform().gc.GRAB_TOOL;
         MainWindow.getGraphingPlatform().gc.abandonGefTool();
-        MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager
-                .getCursor(ResourceManager.GRAB_CURSOR));
+        MainWindow.getGraphingPlatform().gc.j2dcanvas.setCursor(ResourceManager.getCursor(ResourceManager.GRAB_CURSOR));
     }
 
     /**
@@ -211,15 +204,11 @@ public class GraphicListener extends AbstractListener {
      */
     public void grid(org.eclipse.swt.events.SelectionEvent e) {
         if (e.detail == SWT.ARROW) {
-            Rectangle rectangle = MainWindow.getGraphingPlatform().mc.graphic_grid.titm
-                    .getBounds();
+            Rectangle rectangle = MainWindow.getGraphingPlatform().mc.graphic_grid.titm.getBounds();
             Point point = new Point(rectangle.x, rectangle.y + rectangle.height);
-            point = MainWindow.getGraphingPlatform().mc.tbr_graphic
-                    .toDisplay(point);
-            MainWindow.getGraphingPlatform().mc.mnu_graphic_grid
-                    .setLocation(point);
-            MainWindow.getGraphingPlatform().mc.mnu_graphic_grid
-                    .setVisible(true);
+            point = MainWindow.getGraphingPlatform().mc.tbr_graphic.toDisplay(point);
+            MainWindow.getGraphingPlatform().mc.mnu_graphic_grid.setLocation(point);
+            MainWindow.getGraphingPlatform().mc.mnu_graphic_grid.setVisible(true);
         } else {
             MainWindow.getGraphingPlatform().gc.toggleGrid();
         }
@@ -232,8 +221,7 @@ public class GraphicListener extends AbstractListener {
      *            The Dropdown MenuItem that has the selected grid size.
      */
     public void gridDropdown(MenuItem mitm) {
-        MainWindow.getGraphingPlatform().mc.graphic_grid.titm.setText(mitm
-                .getText());
+        MainWindow.getGraphingPlatform().mc.graphic_grid.titm.setText(mitm.getText());
         SystemVariables.grid = ((Integer) mitm.getData()).intValue();
         MainWindow.getGraphingPlatform().gc.repaint();
     }

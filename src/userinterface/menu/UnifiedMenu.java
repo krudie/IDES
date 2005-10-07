@@ -235,32 +235,18 @@ public class UnifiedMenu {
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Enable all Items within this Object.
-     */
-    public void enable() {
-        enableMitm(mitm);
+    
+    public void setEnabled(boolean state){
+        setEnabledMitm(mitm,state);
         if (titm != null) {
-            titm.setEnabled(true);
+            titm.setEnabled(state);
         }
         for (int i = 0; i < popup_items.size(); i++) {
-            enableMitm((MenuItem) popup_items.elementAt(i));
+            setEnabledMitm((MenuItem) popup_items.elementAt(i), state);
         }
+        
     }
-
-    /**
-     * Disable all Items within this Object.
-     */
-    public void disable() {
-        disableMitm(mitm);
-        if (titm != null) {
-            titm.setEnabled(false);
-        }
-        for (int i = 0; i < popup_items.size(); i++) {
-            disableMitm((MenuItem) popup_items.elementAt(i));
-        }
-    }
-
+    
     /**
      * Get the selection of this Object.
      */
@@ -269,9 +255,8 @@ public class UnifiedMenu {
             return titm.getSelection();
         } else if (mitm != null) {
             return mitm.getSelection();
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -306,9 +291,7 @@ public class UnifiedMenu {
      */
     public void defaultToolTipText() {
         if (titm != null) {
-            titm
-                    .setToolTipText(ResourceManager
-                            .getToolTipText(resource_handle));
+            titm.setToolTipText(ResourceManager.getToolTipText(resource_handle));
         }
     }
 
@@ -323,54 +306,16 @@ public class UnifiedMenu {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Helper Methods
-    // /////////////////////////////////////////////////////////////////////////////////////////////////
+    // Helper Methods /////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Enable the given MenuItem. It is safe to give null input.
-     * 
-     * @param menuitem
-     *            The MenuItem to be enabled.
-     */
-    public void enableMitm(MenuItem menuitem) {
-        if (menuitem != null) {
-            menuitem.setEnabled(true);
-            if (ResourceManager.hasImage(resource_handle)) {
-                menuitem.setImage(ResourceManager.getHotImage(resource_handle));
-            }
+    
+    public void setEnabledMitm(MenuItem menuitem, boolean state){
+        if(menuitem != null){
+            menuitem.setEnabled(state);
         }
-    }
-
-    /**
-     * Disable the given MenuItem. It is safe to give null input.
-     * 
-     * @param menuitem
-     *            The MenuItem to be disabled.
-     */
-    public void disableMitm(MenuItem menuitem) {
-        if (menuitem != null) {
-            menuitem.setEnabled(false);
-            if (ResourceManager.hasImage(resource_handle)) {
-                menuitem.setImage(ResourceManager
-                        .getDisabledImage(resource_handle));
-            }
-        }
-    }
-
-    /**
-     * Enable or Disable the given MenuItem. It is safe to give null input.
-     * 
-     * @param menuitem
-     *            The MenuItem to be enabled or disabled.
-     * @param enabled
-     *            True if it is to be enabled.
-     */
-    public void setEnabledMitm(MenuItem menuitem, boolean enabled) {
-        if (enabled) {
-            enableMitm(menuitem);
-        } else {
-            disableMitm(menuitem);
+        if(ResourceManager.hasImage(resource_handle)){
+            menuitem.setImage((state)? ResourceManager.getHotImage(resource_handle) : ResourceManager.getHotImage(resource_handle));            
         }
     }
 }

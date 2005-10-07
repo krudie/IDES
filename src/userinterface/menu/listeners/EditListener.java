@@ -89,7 +89,7 @@ public class EditListener extends AbstractListener {
         // these actions should only occur when the canvas tab is showing.
         if (MainWindow.getGraphingPlatform().tabFolder.getSelectionIndex() == GraphingPlatform.GRAPH_CANVAS_TAB) {
             MainWindow.getGraphingPlatform().gc.eb.copyCollection();
-            MainWindow.getGraphingPlatform().mc.edit_paste.enable();
+            MainWindow.getGraphingPlatform().mc.edit_paste.setEnabled(true);
         }
     }
 

@@ -371,21 +371,21 @@ public class MenuController {
         // /////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        file_new_automaton.disable();
-        file_save_automaton.disable();
-        file_open_automaton.disable();
-        file_save_project.disable();
-        edit_copy.disable();
-        edit_paste.disable();
-        edit_delete.disable();
+        file_new_automaton.setEnabled(false);
+        file_save_automaton.setEnabled(false);
+        file_open_automaton.setEnabled(false);
+        file_save_project.setEnabled(false);
+        edit_copy.setEnabled(false);
+        edit_paste.setEnabled(false);
+        edit_delete.setEnabled(false);
 
-        graphic_zoom.disable();
-        graphic_create.disable();
-        graphic_modify.disable();
-        graphic_grab.disable();
-        graphic_grid.disable();
-        graphic_alledges.disable();
-        graphic_alllabels.disable();
+        graphic_zoom.setEnabled(false);
+        graphic_create.setEnabled(false);
+        graphic_modify.setEnabled(false);
+        graphic_grab.setEnabled(false);
+        graphic_grid.setEnabled(false);
+        graphic_alledges.setEnabled(false);
+        graphic_alllabels.setEnabled(false);
 
     }
 

@@ -138,13 +138,13 @@ public class GraphingPlatform {
 
     public void open() {
         setEnabled(true);
-        MainWindow.getMenu().graphic_zoom.enable();
-        MainWindow.getMenu().graphic_create.enable();
-        MainWindow.getMenu().graphic_modify.enable();
-        MainWindow.getMenu().graphic_grab.enable();
-        MainWindow.getMenu().graphic_grid.enable();
-        MainWindow.getMenu().graphic_alledges.enable();
-        MainWindow.getMenu().graphic_alllabels.enable();
+        MainWindow.getMenu().graphic_zoom.setEnabled(true);
+        MainWindow.getMenu().graphic_create.setEnabled(true);
+        MainWindow.getMenu().graphic_modify.setEnabled(true);
+        MainWindow.getMenu().graphic_grab.setEnabled(true);
+        MainWindow.getMenu().graphic_grid.setEnabled(true);
+        MainWindow.getMenu().graphic_alledges.setEnabled(true);
+        MainWindow.getMenu().graphic_alllabels.setEnabled(true);
 
     }
 

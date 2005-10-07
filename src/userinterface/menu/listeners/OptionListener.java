@@ -10,7 +10,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Shell;
 
-import userinterface.GraphingPlatform;
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
 

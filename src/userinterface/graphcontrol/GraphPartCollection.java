@@ -124,8 +124,8 @@ public class GraphPartCollection {
             updateTheCollection(graph_part);
             new_last_grabbed_object = true;
         }
-        gp.mc.edit_copy.enable();
-        gp.mc.edit_delete.enable();
+        gp.mc.edit_copy.setEnabled(true);
+        gp.mc.edit_delete.setEnabled(true);
     }
 
     /**
@@ -142,8 +142,8 @@ public class GraphPartCollection {
             updateTheCollection(graph_part);
             // note: [new_last_grabbed_object] doesn't care about the grouping
             // actions.
-            gp.mc.edit_copy.enable();
-            gp.mc.edit_delete.enable();
+            gp.mc.edit_copy.setEnabled(true);
+            gp.mc.edit_delete.setEnabled(true);
         }
     }
 
@@ -160,8 +160,8 @@ public class GraphPartCollection {
         if (parts != null) {
             parts.remove(object);
             if (parts.size() == 0) {
-                gp.mc.edit_copy.disable();
-                gp.mc.edit_delete.disable();
+                gp.mc.edit_copy.setEnabled(false);
+                gp.mc.edit_delete.setEnabled(false);
             }
         }
     }
@@ -174,8 +174,8 @@ public class GraphPartCollection {
             emptyTheCollection();
             parts = null;
         }
-        gp.mc.edit_copy.disable();
-        gp.mc.edit_delete.disable();
+        gp.mc.edit_copy.setEnabled(false);
+        gp.mc.edit_delete.setEnabled(false);
         gp.gc.group_area.setVisible(false);
     }
 
@@ -257,8 +257,8 @@ public class GraphPartCollection {
         }
         gp.gc.io.markUnsavedChanges();
         gp.gc.j2dcanvas.repaint();
-        gp.mc.edit_copy.disable();
-        gp.mc.edit_delete.disable();
+        gp.mc.edit_copy.setEnabled(false);
+        gp.mc.edit_delete.setEnabled(false);
     }
 
     /**

@@ -65,7 +65,7 @@ public class GraphControllerIO {
      * use is enable/disable of save, etc buttons.
      */
     public void markUnsavedChanges() {
-        gp.mc.file_save_automaton.enable();
+        gp.mc.file_save_automaton.setEnabled(true);
         unsaved_changes = true;
     }
 
@@ -74,6 +74,6 @@ public class GraphControllerIO {
      */
     public void resetState() {
         unsaved_changes = false;
-        gp.mc.file_save_automaton.disable();
+        gp.mc.file_save_automaton.setEnabled(false);
     }
 }
