@@ -211,8 +211,7 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isNode()) 
-				{
+				if (part instanceof Node){
 					n = (Node)part;
 					if (x1 == x2) 
 					{ 
@@ -291,8 +290,7 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i);
-				if (part.isNode()) 
-				{
+				if (part instanceof Node){
 					n = (Node)part;
 					n.initiateMovement(n.origin(),GraphObject.NULL,0);
 					n.updateMovement(n.origin());
@@ -315,8 +313,7 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i);
-				if (part.isEdge())
-				{
+				if (part instanceof Edge){
 					e = (Edge)part;
 					e.addAttribute(GraphObject.SIMPLE);
 					e.autoConfigureCurve();
@@ -342,8 +339,7 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isNode())
-				{ 
+				if (part instanceof Node){ 
 					n = (Node)part;
 					n.initiateMovement(mouse,GraphObject.HOT_SELECTED,true); 
 					n.addAttribute(GraphObject.SAFE_GROUPING);
@@ -357,10 +353,9 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isEdge())
-				{ 
+				if (part instanceof Edge){ 
 					e = (Edge)part; 
-					if (e.n1.isGrouped() && e.n2.isGrouped()) { e.addAttribute(GraphObject.SAFE_GROUPING); }
+					if (e.getSource().isGrouped() && e.getTarget().isGrouped()) { e.addAttribute(GraphObject.SAFE_GROUPING); }
 					else { e.removeAttribute(GraphObject.SAFE_GROUPING); }
 				}
 			}
@@ -380,8 +375,9 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isNode())
-				{ ((Node)part).updateMovement(mouse,true); }
+				if (part instanceof Node){
+                    ((Node)part).updateMovement(mouse,true);
+                }
 			}
 		}
 	}			
@@ -394,11 +390,11 @@ public class GraphPartCollection
 		if (parts != null) 
 		{ 
 			GraphObject part = null;
-			for (int i=0; i<parts.size(); i++)
-			{ 
+			for (int i=0; i<parts.size(); i++){ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isNode())
-				{ ((Node)part).terminateMovement(GraphObject.HOT_SELECTED,true); }
+				if (part instanceof Node){
+                    ((Node)part).terminateMovement(GraphObject.HOT_SELECTED,true);
+                }
 			}
 		}
 	}		
@@ -406,16 +402,17 @@ public class GraphPartCollection
 	/**
 	 * Create a new list of cloned nodes.
 	 */	
-	public void cloneCollection(Vector node_list, Vector edge_list)
-	{
+	public void cloneCollection(Vector node_list, Vector edge_list){
 		if (parts != null) 
 		{ 
 			GraphObject part = null;
 			// clone the nodes
 			for (int i=0; i<parts.size(); i++)
 			{ 
-				part = (GraphObject)parts.elementAt(i); 
-				if (part.isNode()) { node_list.add(((Node)part).newClone()); }
+				part = (GraphObject)parts.elementAt(i);
+				if (part instanceof Node){
+                    node_list.add(((Node)part).newClone());
+                }
 				// this causes all origional nodes to have valid pointers to their newest clones
 			}
 			// clone the edges
@@ -423,8 +420,7 @@ public class GraphPartCollection
 			for (int i=0; i<parts.size(); i++)
 			{ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isEdge()) 
-				{ 
+				if(part instanceof Edge){ 
 					// note, edges without both nodes in the grouping will be weeded out by this process.
 					e = ((Edge)part).newClone();
 					if (e != null) { edge_list.add(e); }
@@ -432,10 +428,11 @@ public class GraphPartCollection
 				// the edge can do this because it's associated nodes have valid pointers to their newest clones
 			}
 			// clean up
-			for (int i=0; i<parts.size(); i++)
-			{ 
+			for (int i=0; i<parts.size(); i++){ 
 				part = (GraphObject)parts.elementAt(i); 
-				if (part.isNode()) { ((Node)part).last_clone = null; }
+				if (part instanceof Node){
+                    ((Node)part).last_clone = null;
+                }
 			}
 		}
 	}		

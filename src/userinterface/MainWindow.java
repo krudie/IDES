@@ -128,7 +128,7 @@ public class MainWindow {
 		pe = new ProjectExplorer(leftSash, shell);
 		oe = new ObjectExplorer(leftSash);
 		gp = new GraphingPlatform(mainSash, shell, menu);
-        gp.setEnabled(false);
+        gp.setEnabled(true);
         
 		mainSash.setWeights(new int[] {30,70});
 		

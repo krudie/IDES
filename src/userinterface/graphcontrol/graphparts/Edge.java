@@ -4,15 +4,11 @@
 package userinterface.graphcontrol.graphparts;
 
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.eclipse.swt.widgets.TableItem;
 
 import userinterface.GraphingPlatform;
-import userinterface.geometric.Box;
 import userinterface.geometric.Line;
 import userinterface.geometric.Point;
 import userinterface.geometric.UnitVector;
@@ -31,11 +27,7 @@ import userinterface.graphcontrol.TransitionData;
  * 
  * @author Michael Wood
  */
-public class Edge extends GraphObject
-{
- 
-	private static final int ANCHOR_RADIUS = 5;
-
+public class Edge extends GraphObject{
 	/**
      * possible values for selection_state
      */
@@ -73,12 +65,18 @@ public class Edge extends GraphObject
 	/**
      * The Node where this Edge originates.
      */
-	public Node n1 = null; 
+	private Node n1 = null;
+    public Node getSource(){
+        return n1;
+    }
  
 	/**
      * The Node where this Edge terminates.
      */
-	public Node n2 = null;
+	private Node n2 = null;
+    public Node getTarget(){
+        return n2;
+    }
 	
     /**
      * The EdgeGroup that contains this Edge.
@@ -88,8 +86,14 @@ public class Edge extends GraphObject
     /**
      * Determines edge behaviour, such as visibility, colour, etc of anchors and the tether.
      */
-	public int selection_state = 0;
-	
+	private int selectionState = 0;
+	public int getSelectionState(){
+	    return selectionState;
+    }
+    public void setSelectionState(int selectionState){
+        this.selectionState = selectionState;
+    }
+    
     /**
      * Visual representation of the edge.
      */	
@@ -99,8 +103,14 @@ public class Edge extends GraphObject
      * records which region was last hit by the mouse.
      * uses region constants from Edge as valid values.
      */
-	public int last_hit_region = Edge.R_NONE;
-
+	private int lastHitRegion = Edge.R_NONE;
+	public int getLastHitRegion(){
+	    return lastHitRegion;
+    }
+    public void setLastHitRegion(int lhr){
+        lastHitRegion = lhr;
+    }
+    
 	/**
      * The label data for this Edge
      */
@@ -405,10 +415,10 @@ public class Edge extends GraphObject
 		{ 					
 			selectedLabel().drawData(drawer, label_data);
 			
-			if (all_tethers || selection_state == Edge.EXCLUSIVE)
+			if (all_tethers || selectionState == Edge.EXCLUSIVE)
 			{
 				Point destination = curve.calculateBezierPoint((float)0.5);
-				if (isHotSelected() && last_hit_region == Edge.R_LABEL) { drawer.setColor(GraphModel.CUSTOM); }	
+				if (isHotSelected() && lastHitRegion == Edge.R_LABEL) { drawer.setColor(GraphModel.CUSTOM); }	
 				else { drawer.setColor(GraphModel.TETHERS); }
 				selectedLabel().drawBox(drawer);
 				selectedLabel().drawTether(drawer,destination);
@@ -417,23 +427,23 @@ public class Edge extends GraphObject
 		
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		if (all_anchors || selection_state == Edge.EXCLUSIVE)
+		if (all_anchors || selectionState == Edge.EXCLUSIVE)
 		{
 			drawer.setColor(GraphModel.ANCHORS); 
 			if (isSelfLoop())
 			{
-				if (isHotSelected() && last_hit_region == Edge.R_LOOP) { drawer.setColor(GraphModel.CUSTOM); }	
+				if (isHotSelected() && lastHitRegion == Edge.R_LOOP) { drawer.setColor(GraphModel.CUSTOM); }	
 				curve.drawSelfLoopAnchor(drawer);
 			}
 			else 
 			{
-				if (isHotSelected() && (last_hit_region == Edge.R_TAIL_ANCHOR || last_hit_region == Edge.R_TAIL_CTRL))
+				if (isHotSelected() && (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL))
 				{
 					curve.drawHeadAnchors(drawer);				
 					drawer.setColor(GraphModel.CUSTOM);
 					curve.drawTailAnchors(drawer);				
 				}
-				else if (isHotSelected() && (last_hit_region == Edge.R_HEAD_ANCHOR || last_hit_region == Edge.R_HEAD_CTRL || last_hit_region == Edge.R_ARROWHEAD))
+				else if (isHotSelected() && (lastHitRegion == Edge.R_HEAD_ANCHOR || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_ARROWHEAD))
 				{
 					curve.drawTailAnchors(drawer);				
 					drawer.setColor(GraphModel.CUSTOM);
@@ -477,17 +487,17 @@ public class Edge extends GraphObject
 		// anchors
 		if ((options & Edge.L_NO_ANCHORS) == 0) 
 		{
-			if (all_anchors || selection_state == Edge.EXCLUSIVE)
+			if (all_anchors || selectionState == Edge.EXCLUSIVE)
 			{
 				if (isSelfLoop())
 				{
-					last_hit_region = curve.isLocatedSelfLoop(mouse,padded);
-					if (last_hit_region != Edge.R_NONE) { return true; }
+					lastHitRegion = curve.isLocatedSelfLoop(mouse,padded);
+					if (lastHitRegion != Edge.R_NONE) { return true; }
 				}
 				else 
 				{
-					last_hit_region = curve.isLocatedAnchors(mouse,padded);
-					if (last_hit_region != Edge.R_NONE) { return true; }
+					lastHitRegion = curve.isLocatedAnchors(mouse,padded);
+					if (lastHitRegion != Edge.R_NONE) { return true; }
 				}
 			}			
 		}
@@ -495,8 +505,8 @@ public class Edge extends GraphObject
 		// arrowhead
 		if ((options & Edge.L_ALL_TETHERS) == 0)
 		{
-	  		last_hit_region = curve.isLocatedArrowhead(mouse,padded);
-			if (last_hit_region != Edge.R_NONE) { return true; }
+	  		lastHitRegion = curve.isLocatedArrowhead(mouse,padded);
+			if (lastHitRegion != Edge.R_NONE) { return true; }
 		}
 		
 		// tethers
@@ -505,16 +515,16 @@ public class Edge extends GraphObject
 			// vary the selection area based on whether or not the bounding box is being displayed.
 			int adjustment = Label.BOUNDING_BOX_FACTOR;
 			if (padded) { adjustment = 2*adjustment; }
-			if (((options & Edge.L_ALL_TETHERS) > 0) || selection_state == Edge.EXCLUSIVE) { adjustment = 0; }
+			if (((options & Edge.L_ALL_TETHERS) > 0) || selectionState == Edge.EXCLUSIVE) { adjustment = 0; }
 			
 			if (selectedLabel().isLocated(new Point(x,y)))
 			{
-				last_hit_region = Edge.R_LABEL;
+				lastHitRegion = Edge.R_LABEL;
 				return true;
 			}
 		}
 
-		last_hit_region = Edge.R_NONE; 
+		lastHitRegion = Edge.R_NONE; 
 		return false; 
 	}
 	
@@ -527,14 +537,14 @@ public class Edge extends GraphObject
 		removeAttribute(GraphObject.SIMPLE);
 		
 		Point origin = null;
-		if (last_hit_region == Edge.R_TAIL_ANCHOR || last_hit_region == Edge.R_TAIL_CTRL) { origin = n1.origin(); }
+		if (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL) { origin = n1.origin(); }
 		else { origin = n2.origin(); }
 		
 		Point selection_target = null;
 		if (isSelfLoop()) { selection_target = curve.selfLoopAnchor(); }
-		else if (last_hit_region == Edge.R_TAIL_ANCHOR) { selection_target = curve.tailAnchor(); }
-		else if (last_hit_region == Edge.R_TAIL_CTRL) { selection_target = curve.tailCtrl(); }
-		else if (last_hit_region == Edge.R_HEAD_CTRL) { selection_target = curve.headCtrl(); }
+		else if (lastHitRegion == Edge.R_TAIL_ANCHOR) { selection_target = curve.tailAnchor(); }
+		else if (lastHitRegion == Edge.R_TAIL_CTRL) { selection_target = curve.tailCtrl(); }
+		else if (lastHitRegion == Edge.R_HEAD_CTRL) { selection_target = curve.headCtrl(); }
 		else { selection_target = curve.headAnchor(); }
 		
 		origional_configuration = new Configuration(origin,curve.tailAnchor(),curve.tailCtrl(),curve.headCtrl(),curve.headAnchor(),label_displacement,mouse,selection_target,state_mask);
@@ -543,33 +553,33 @@ public class Edge extends GraphObject
 
 	public void updateMovement(Point mouse)
 	{
-		if (isSelfLoop() && (last_hit_region == Edge.R_LOOP || last_hit_region == Edge.R_ARROWHEAD))
+		if (isSelfLoop() && (lastHitRegion == Edge.R_LOOP || lastHitRegion == Edge.R_ARROWHEAD))
 		{
 			curve.moveSelfLoop(origional_configuration,mouse); 
 		}
-		else if (last_hit_region == Edge.R_TAIL_ANCHOR || last_hit_region == Edge.R_TAIL_CTRL || last_hit_region == Edge.R_HEAD_CTRL || last_hit_region == Edge.R_HEAD_ANCHOR || last_hit_region == Edge.R_ARROWHEAD)
+		else if (lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_HEAD_ANCHOR || lastHitRegion == Edge.R_ARROWHEAD)
 		{
 			UnitVector bisector = new UnitVector(n1.origin(),n2.origin());
-			if (last_hit_region == Edge.R_TAIL_ANCHOR) 
+			if (lastHitRegion == Edge.R_TAIL_ANCHOR) 
 			{
 				curve.moveTailAnchor(origional_configuration,mouse);
 			}
-			else if (last_hit_region == Edge.R_TAIL_CTRL) 
+			else if (lastHitRegion == Edge.R_TAIL_CTRL) 
 			{ 
 				curve.moveTailCtrl(origional_configuration,mouse);
 			}
-			else if (last_hit_region == Edge.R_HEAD_CTRL) 
+			else if (lastHitRegion == Edge.R_HEAD_CTRL) 
 			{ 
 				bisector.reverse();
 				curve.moveHeadCtrl(origional_configuration,mouse);
 			}
-			else if (last_hit_region == Edge.R_HEAD_ANCHOR || last_hit_region == Edge.R_ARROWHEAD) 
+			else if (lastHitRegion == Edge.R_HEAD_ANCHOR || lastHitRegion == Edge.R_ARROWHEAD) 
 			{
 				bisector.reverse();
 				curve.moveHeadAnchor(origional_configuration,mouse);
 			}
 		}
-		else if (last_hit_region == Edge.R_LABEL)
+		else if (lastHitRegion == Edge.R_LABEL)
 		{
 			label_displacement.x = origional_configuration.label_displacement.x + (mouse.x - origional_configuration.movement_origin.x);
 			label_displacement.y = origional_configuration.label_displacement.y + (mouse.y - origional_configuration.movement_origin.y);
@@ -583,7 +593,7 @@ public class Edge extends GraphObject
 	{
 		origional_configuration = null;	
 		removeAttribute(attribute);
-		last_hit_region = Edge.R_NONE;	
+		lastHitRegion = Edge.R_NONE;	
 	}
 	
 	/**

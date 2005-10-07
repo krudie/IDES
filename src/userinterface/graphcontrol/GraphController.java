@@ -392,24 +392,20 @@ public class GraphController
 								if (n==null) { n = gm.findNode(edge_mouse, true); } // padded search
 								if (n != null) { finishEdgeCreation(n);	}
 							}
-						}	
-						
-						if (gpc.new_last_grabbed_object) 
-						{
-							if (gpc.lastGrabbedObject().isNode()){
+						}
+						if(gpc.new_last_grabbed_object){
+							if (gpc.lastGrabbedObject() instanceof Node){
 							    floating_text.initialize(new Point(e.x,e.y), ((Node)gpc.lastGrabbedObject()).origin(), gpc.lastGrabbedObject().glyph_label); 									
 								floating_text.setVisible(true);
 							}
-							else if (gpc.lastGrabbedObject().isEdge())
-							{
-								if (((Edge)gpc.lastGrabbedObject()).last_hit_region == Edge.R_LABEL || ((Edge)gpc.lastGrabbedObject()).last_hit_region == Edge.R_ARROWHEAD  || ((Edge)gpc.lastGrabbedObject()).last_hit_region == Edge.R_HEAD_ANCHOR)
-								{
-									floating_toggles.initialize(new Point(e.x,e.y+8), (Edge)gpc.lastGrabbedObject());
-									floating_toggles.setVisible(true);
-								}
+							else if(gpc.lastGrabbedObject() instanceof Edge
+                                    && ((Edge)gpc.lastGrabbedObject()).getLastHitRegion() == Edge.R_LABEL 
+                                    || ((Edge)gpc.lastGrabbedObject()).getLastHitRegion() == Edge.R_ARROWHEAD  
+                                    || ((Edge)gpc.lastGrabbedObject()).getLastHitRegion() == Edge.R_HEAD_ANCHOR){
+    							floating_toggles.initialize(new Point(e.x,e.y+8), (Edge)gpc.lastGrabbedObject());
+    							floating_toggles.setVisible(true);
 							}
 						}
-						
 						j2dcanvas.repaint();
 					}
 				}
@@ -571,7 +567,7 @@ public class GraphController
 									Edge broken_edge = gm.findEdge(edge_mouse, Edge.L_NO_TETHERS);
 									if (broken_edge != null)
 									{
-										Node start_node = broken_edge.n1;
+										Node start_node = broken_edge.getSource();
 										broken_edge_labels = broken_edge.getLabelDataVector();
 										broken_edge_label_displacement = broken_edge.getLabelDisplacement();
 										broken_edge.delete();
@@ -643,12 +639,13 @@ public class GraphController
 									if (hot_selected_object != null)
 									{
 										// an edge was found
-										if (((Edge)hot_selected_object).selection_state != Edge.EXCLUSIVE)
-										{
+										if (((Edge)hot_selected_object).getSelectionState() != Edge.EXCLUSIVE){
 											// this edge was not painting its anchors
 											// this was an arrow hit, mark it as the exclusive edge
-											if (last_exclusive_edge != null) { last_exclusive_edge.selection_state = Edge.NO_ANCHORS; }
-											((Edge)hot_selected_object).selection_state = Edge.EXCLUSIVE;
+											if (last_exclusive_edge != null){
+                                                last_exclusive_edge.setSelectionState(Edge.NO_ANCHORS); 
+                                            }
+											((Edge)hot_selected_object).setSelectionState(Edge.EXCLUSIVE);
 											last_exclusive_edge = ((Edge)hot_selected_object);
 										}
 										hot_selected_object.initiateMovement(mouse,GraphObject.HOT_SELECTED, e.stateMask);
@@ -849,7 +846,7 @@ public class GraphController
 			// there weren't any edges even near by the click.
 			if (last_exclusive_edge != null)
 			{
-				last_exclusive_edge.selection_state = Edge.NO_ANCHORS;
+				last_exclusive_edge.setSelectionState(Edge.NO_ANCHORS);
 				gpc.abandonGroupHistory();
 			}									
 		}
@@ -986,8 +983,9 @@ public class GraphController
 			cleanupEdgeCreation();
 		}
 		
-		if (last_exclusive_edge != null)
-		{ last_exclusive_edge.selection_state = Edge.NO_ANCHORS; }
+		if (last_exclusive_edge != null){
+            last_exclusive_edge.setSelectionState(Edge.NO_ANCHORS);
+        }
 
 		if (selected_tool != MODIFY_TOOL)
 		{ 
