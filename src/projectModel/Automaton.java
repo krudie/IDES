@@ -107,34 +107,4 @@ public class Automaton {
         }
         ps.println("</automaton>");
     }
-
-    public boolean isLegal() {
-        ListIterator<State> si = states.listIterator();
-        ListIterator<Transition> ti = transitions.listIterator();
-        Transition t;
-
-        while (si.hasNext()) {
-            State s = si.next();
-            ListIterator<Transition> i = s.getSourceTransitionsListIterator();
-            while (i.hasNext()) {
-                t = i.next();
-                if (!transitions.contains(t) && t.getSource() == s)
-                    return false;
-            }
-            i = s.getTargetTransitionListIterator();
-            while (i.hasNext()) {
-                t = i.next();
-                if (!transitions.contains(t) && t.getTarget() == s)
-                    return false;
-            }
-        }
-        while (ti.hasNext()) {
-            t = ti.next();
-            if (states.contains(t.getSource())
-                    && states.contains(t.getTarget()))
-                return false;
-        }
-
-        return true;
-    }
 }
