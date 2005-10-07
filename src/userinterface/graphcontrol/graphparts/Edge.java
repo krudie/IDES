@@ -139,12 +139,8 @@ public class Edge extends GraphObject{
         constructEdge(start_node, end_node);
         initializeLabels(DEFAULT_LABEL_DISPLACEMENT, DEFAULT_LABEL_DISPLACEMENT);
 
-        if(isSelfLoop()){
-            curve = new Curve(n1, n2, edge_group.newUnitVector(this));
-        }
-        else{
-            curve = new Curve(n1, n2);
-        }
+        if(isSelfLoop()) curve = new Curve(n1, n2, edge_group.newUnitVector(this));
+        else curve = new Curve(n1, n2);
 
         edge_group.recalculate();
     }
@@ -329,53 +325,49 @@ public class Edge extends GraphObject{
     public void autoConfigureCurve(){
         if(isSelfLoop()){
             curve.recalculateSelfLoop();
+            return;
         }
-        else{
-            int edge_position = edge_group.indexOf(this);
-            int edge_group_levels = edge_group.levels();
-            boolean odd_number_in_group = edge_group.hasOddEdges();
-            boolean intersects_node = gm.findNode(n1, n2);
-            boolean against_group_direction = edge_group.isStartNode(n2);
-            int level = 0;
-            float angle = 120 / (edge_group_levels + 1);
-            if(odd_number_in_group && !intersects_node){
-                if(edge_position == 0){
-                    curve.calculateCurve(0, 0); // strait edge
-                }
-                else{
-                    level = (int) Math.ceil(edge_position / 2.0);
-                    if(edge_position % 2 == 0){
-                        level = -level;
-                    }
-                    // swap side if our assumption of direction was false
-                    if(against_group_direction){
-                        level = -level;
-                    }
-                    curve.calculateCurve(level * 8, level * angle);
-                }
+        int edge_position = edge_group.indexOf(this);
+        int edge_group_levels = edge_group.levels();
+        boolean odd_number_in_group = edge_group.hasOddEdges();
+        boolean intersects_node = gm.findNode(n1, n2);
+        boolean against_group_direction = edge_group.isStartNode(n2);
+        int level = 0;
+        float angle = 120 / (edge_group_levels + 1);
+
+        if(odd_number_in_group && !intersects_node){
+            if(edge_position == 0){
+                curve.calculateCurve(0, 0); // strait edge
+                return;
             }
-            else{
-                level = (int) Math.ceil((edge_position + 1) / 2.0);
-                if(intersects_node){
-                    level = level + 2;
-                    angle = 120 / (edge_group_levels + 3);
-                }
-                if(edge_position % 2 == 1){
-                    level = -level;
-                }
-                // swap side if our assumption of direction was false
-                if(against_group_direction){
-                    level = -level;
-                }
-                float adjust = angle / 2; // because there is no center edge,
-                // we want all angles to be less by
-                // one half increment
-                if(level < 0){
-                    adjust = -adjust;
-                } // because we want a decrease in magnitude
-                curve.calculateCurve(level * 8, level * angle - adjust);
-            }
+            level = (int) Math.ceil(edge_position / 2.0);
+            if(edge_position % 2 == 0) level = -level;
+            // swap side if our assumption of direction was false
+            if(against_group_direction) level = -level;
+
+            curve.calculateCurve(level * 8, level * angle);
+            return;
         }
+
+        level = (int) Math.ceil((edge_position + 1) / 2.0);
+        if(intersects_node){
+            level = level + 2;
+            angle = 120 / (edge_group_levels + 3);
+        }
+        if(edge_position % 2 == 1){
+            level = -level;
+        }
+        // swap side if our assumption of direction was false
+        if(against_group_direction){
+            level = -level;
+        }
+        float adjust = angle / 2; // because there is no center edge,
+        // we want all angles to be less by
+        // one half increment
+        if(level < 0){
+            adjust = -adjust;
+        } // because we want a decrease in magnitude
+        curve.calculateCurve(level * 8, level * angle - adjust);
     }
 
     public void autoStraightenCurve(){
@@ -537,21 +529,10 @@ public class Edge extends GraphObject{
         Point mouse = new Point(x, y);
 
         // anchors
-        if((options & Edge.L_NO_ANCHORS) == 0){
-            if(all_anchors || selectionState == Edge.EXCLUSIVE){
-                if(isSelfLoop()){
-                    lastHitRegion = curve.isLocatedSelfLoop(mouse, padded);
-                    if(lastHitRegion != Edge.R_NONE){
-                        return true;
-                    }
-                }
-                else{
-                    lastHitRegion = curve.isLocatedAnchors(mouse, padded);
-                    if(lastHitRegion != Edge.R_NONE){
-                        return true;
-                    }
-                }
-            }
+        if((options & Edge.L_NO_ANCHORS) == 0 && (all_anchors || selectionState == Edge.EXCLUSIVE)){
+            if(isSelfLoop()) lastHitRegion = curve.isLocatedSelfLoop(mouse, padded);
+            else lastHitRegion = curve.isLocatedAnchors(mouse, padded);
+            if(lastHitRegion != Edge.R_NONE) return true;
         }
 
         // arrowhead
@@ -594,11 +575,22 @@ public class Edge extends GraphObject{
 
         Point selection_target = null;
         if(isSelfLoop()) selection_target = curve.selfLoopAnchor();
-        else if(lastHitRegion == Edge.R_TAIL_ANCHOR) selection_target = curve.tailAnchor();
-        else if(lastHitRegion == Edge.R_TAIL_CTRL) selection_target = curve.tailCtrl();
-        else if(lastHitRegion == Edge.R_HEAD_CTRL) selection_target = curve.headCtrl();
-        else selection_target = curve.headAnchor();
-
+        else{
+            switch(lastHitRegion){
+            case Edge.R_TAIL_ANCHOR:
+                selection_target = curve.tailAnchor();
+            break;
+            case Edge.R_TAIL_CTRL:
+                selection_target = curve.tailCtrl();
+            break;
+            case Edge.R_HEAD_CTRL:
+                selection_target = curve.headCtrl();
+            break;
+            default:
+                selection_target = curve.headAnchor();
+            }
+        }
+        
         origional_configuration = new Configuration(origin, curve.tailAnchor(), curve.tailCtrl(),
                 curve.headCtrl(), curve.headAnchor(), label_displacement, mouse, selection_target,
                 state_mask);
@@ -609,33 +601,29 @@ public class Edge extends GraphObject{
         if(isSelfLoop() && (lastHitRegion == Edge.R_LOOP || lastHitRegion == Edge.R_ARROWHEAD)){
             curve.moveSelfLoop(origional_configuration, mouse);
         }
-        else if(lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL
-                || lastHitRegion == Edge.R_HEAD_CTRL || lastHitRegion == Edge.R_HEAD_ANCHOR
-                || lastHitRegion == Edge.R_ARROWHEAD){
-            UnitVector bisector = new UnitVector(n1.origin(), n2.origin());
-            if(lastHitRegion == Edge.R_TAIL_ANCHOR){
+        else{
+            switch(lastHitRegion){
+            case Edge.R_TAIL_ANCHOR:
                 curve.moveTailAnchor(origional_configuration, mouse);
-            }
-            else if(lastHitRegion == Edge.R_TAIL_CTRL){
+                break;
+            case Edge.R_TAIL_CTRL:
                 curve.moveTailCtrl(origional_configuration, mouse);
-            }
-            else if(lastHitRegion == Edge.R_HEAD_CTRL){
-                bisector.reverse();
+                break;
+            case Edge.R_HEAD_CTRL:
                 curve.moveHeadCtrl(origional_configuration, mouse);
-            }
-            else if(lastHitRegion == Edge.R_HEAD_ANCHOR || lastHitRegion == Edge.R_ARROWHEAD){
-                bisector.reverse();
+                break;
+            case Edge.R_HEAD_ANCHOR:
+            case Edge.R_ARROWHEAD:
                 curve.moveHeadAnchor(origional_configuration, mouse);
+                break;
+            case Edge.R_LABEL:
+                label_displacement.x = origional_configuration.label_displacement.x
+                + (mouse.x - origional_configuration.movement_origin.x);
+                label_displacement.y = origional_configuration.label_displacement.y
+                + (mouse.y - origional_configuration.movement_origin.y);
+                break;
             }
         }
-        else if(lastHitRegion == Edge.R_LABEL){
-            label_displacement.x = origional_configuration.label_displacement.x
-                    + (mouse.x - origional_configuration.movement_origin.x);
-            label_displacement.y = origional_configuration.label_displacement.y
-                    + (mouse.y - origional_configuration.movement_origin.y);
-
-        }
-
         selectedLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
     }
