@@ -2,6 +2,8 @@ package projectPresentation;
 
 import java.io.File;
 
+import projectModel.Automaton;
+
 public interface ProjectPresentation {
 
     public void newProject(String name);
@@ -31,5 +33,7 @@ public interface ProjectPresentation {
     public void saveProject(String path);
 
     public String removeFileName(String name);
+    
+    public Automaton getAutomatonByName(String name);
 
 }

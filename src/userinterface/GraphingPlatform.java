@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
+import projectModel.Automaton;
+
 import userinterface.graphcontrol.GraphController;
 import userinterface.graphcontrol.TransitionData;
 import userinterface.menu.MenuController;
@@ -29,6 +31,8 @@ public class GraphingPlatform {
     public Shell shell;
 
     public MenuController mc;
+    
+    private Automaton automaton;
 
     /**
      * The object that contains the transition data and exists in the info in
@@ -51,8 +55,7 @@ public class GraphingPlatform {
         tabFolder = new TabFolder(parent, SWT.NONE);
 
         graphFolderItem = new TabItem(tabFolder, SWT.NONE);
-        graphFolderItem.setText(ResourceManager
-                .getString("window.graph_tab.text"));
+        graphFolderItem.setText(ResourceManager.getString("window.graph_tab.text"));
 
         languageSpec = new TabItem(tabFolder, SWT.NONE);
         languageSpec.setText(ResourceManager
@@ -136,7 +139,7 @@ public class GraphingPlatform {
         tabFolder.setEnabled(state);
     }
 
-    public void open() {
+    public void open(String automatonName) {
         setEnabled(true);
         MainWindow.getMenu().graphic_zoom.setEnabled(true);
         MainWindow.getMenu().graphic_create.setEnabled(true);
@@ -145,7 +148,14 @@ public class GraphingPlatform {
         MainWindow.getMenu().graphic_grid.setEnabled(true);
         MainWindow.getMenu().graphic_alledges.setEnabled(true);
         MainWindow.getMenu().graphic_alllabels.setEnabled(true);
-
+        
+        automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
+        
+        graphFolderItem.setText(automaton.getName());
+        
     }
-
+    
+    public void updateTitle(){
+        graphFolderItem.setText(automaton.getName());
+    }
 }

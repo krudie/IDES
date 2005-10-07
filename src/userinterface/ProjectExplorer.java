@@ -220,48 +220,34 @@ public class ProjectExplorer {
                     // Testing if the name is empty
                     if (text.getText().trim().equals("")) {
                         looseFocus = true;
-                        MainWindow
-                                .errorPopup(
-                                        ResourceManager
-                                                .getString("naming_error.title"),
-                                        ResourceManager
-                                                .getString("naming_error.empty"));
+                        MainWindow.errorPopup(ResourceManager.getString("naming_error.title"),
+                                        ResourceManager.getString("naming_error.empty"));
                         looseFocus = false;
                         return false;
                     }
 
                     // testing if the name is already used
-                    if (!item.equals(project)
-                            && project.getText().equals(text.getText())) {
+                    if (!item.equals(project) && project.getText().equals(text.getText())) {
                         looseFocus = true;
-                        MainWindow.errorPopup(ResourceManager
-                                .getString("naming_error.title"),
-                                ResourceManager.getString("naming_error.used"));
+                        MainWindow.errorPopup(ResourceManager.getString("naming_error.title"),ResourceManager.getString("naming_error.used"));
                         looseFocus = false;
                         return false;
                     }
 
                     for (int i = 0; i < automata.length; i++) {
-                        if ((!item.equals(automata[i]))
-                                && (automata[i].getText()
-                                        .equals(text.getText()))) {
+                        if ((!item.equals(automata[i])) && (automata[i].getText().equals(text.getText()))) {
                             looseFocus = true;
-                            MainWindow.errorPopup(ResourceManager
-                                    .getString("naming_error.title"),
-                                    ResourceManager
-                                            .getString("naming_error.used"));
+                            MainWindow.errorPopup(ResourceManager.getString("naming_error.title"), ResourceManager.getString("naming_error.used"));
                             looseFocus = false;
                             return false;
                         }
                     }
 
                     if (item.equals(project)) {
-                        Userinterface.getProjectPresentation().setProjectName(
-                                text.getText());
+                        Userinterface.getProjectPresentation().setProjectName(text.getText());
                     } else {
-                        Userinterface.getProjectPresentation()
-                                .setAutomatonName(item.getText(),
-                                        text.getText());
+                        Userinterface.getProjectPresentation().setAutomatonName(item.getText(),text.getText());
+                        MainWindow.getGraphingPlatform().updateTitle();
                     }
                     updateProject();
                     return true;
@@ -317,7 +303,7 @@ public class ProjectExplorer {
                 item = treeWindow.getItem(point);
                 if (event.button == 1 && item != null && !item.equals(project)) {
                     System.out.println("I should really open an automaton");
-                    MainWindow.getGraphingPlatform().open();
+                    MainWindow.getGraphingPlatform().open(item.getText());
                 }
                 break;
 
