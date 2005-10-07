@@ -18,7 +18,7 @@ import userinterface.geometric.UnitVector;
  * 
  * @author Michael Wood
  */
-public class EdgeGroup {
+public class EdgeGroup{
     /**
      * List of the Edges between two Nodes. Usually there is just one edge per
      * EdgeGroup, but there can be many. Each Edge knows in which Node it
@@ -58,7 +58,7 @@ public class EdgeGroup {
      *            The Edge between n1 and n2. The Edge knows in which Node it
      *            originates and in which Node it terminates.
      */
-    public EdgeGroup(Node n1, Node n2, Edge e) {
+    public EdgeGroup(Node n1, Node n2, Edge e){
         edge_list = new Vector();
         edge_list.addElement(e);
         node1 = n1;
@@ -77,7 +77,7 @@ public class EdgeGroup {
      * @param e
      *            The Edge to be added.
      */
-    public void addEdge(Edge e) {
+    public void addEdge(Edge e){
         edge_list.addElement(e);
     }
 
@@ -85,8 +85,8 @@ public class EdgeGroup {
      * Recalculate all Edges in this EdgeGroup. This is used, for example, when
      * a Node is moved.
      */
-    public void recalculate() {
-        for (int i = 0; i < edge_list.size(); i++) {
+    public void recalculate(){
+        for(int i = 0; i < edge_list.size(); i++){
             ((Edge) edge_list.elementAt(i)).addAttribute(GraphObject.SIMPLE);
             ((Edge) edge_list.elementAt(i)).autoConfigureCurve();
         }
@@ -95,8 +95,8 @@ public class EdgeGroup {
     /**
      * Tell all edges to accomodiate their labels.
      */
-    public void accomodateLabels() {
-        for (int i = 0; i < edge_list.size(); i++) {
+    public void accomodateLabels(){
+        for(int i = 0; i < edge_list.size(); i++){
             ((Edge) edge_list.elementAt(i)).accomodateLabel();
         }
     }
@@ -104,8 +104,8 @@ public class EdgeGroup {
     /**
      * Initiate all edges for movement by node position.
      */
-    public void initiateNodeMovement(int attribute) {
-        for (int i = 0; i < edge_list.size(); i++) {
+    public void initiateNodeMovement(int attribute){
+        for(int i = 0; i < edge_list.size(); i++){
             ((Edge) edge_list.elementAt(i)).initiateNodeMovement(attribute);
         }
     }
@@ -120,19 +120,17 @@ public class EdgeGroup {
      * @param mouse
      *            The current mouse position.
      */
-    public void updateNodeMovement(Node n,
-            Configuration origional_configuration, Point mouse) {
-        for (int i = 0; i < edge_list.size(); i++) {
-            ((Edge) edge_list.elementAt(i)).updateNodeMovement(n,
-                    origional_configuration, mouse);
+    public void updateNodeMovement(Node n, Configuration origional_configuration, Point mouse){
+        for(int i = 0; i < edge_list.size(); i++){
+            ((Edge) edge_list.elementAt(i)).updateNodeMovement(n, origional_configuration, mouse);
         }
     }
 
     /**
      * Terminate movement by node position for all edges.
      */
-    public void terminateNodeMovement(int attribute) {
-        for (int i = 0; i < edge_list.size(); i++) {
+    public void terminateNodeMovement(int attribute){
+        for(int i = 0; i < edge_list.size(); i++){
             ((Edge) edge_list.elementAt(i)).terminateNodeMovement(attribute);
         }
     }
@@ -144,9 +142,9 @@ public class EdgeGroup {
      * @param edge
      *            The Edge to be deleted.
      */
-    public void removeEdge(Edge edge) {
+    public void removeEdge(Edge edge){
         edge_list.remove(edge);
-        if (edge_list.size() < 1) {
+        if(edge_list.size() < 1){
             edge_list = null;
             node1.removeEdgeGroup(this);
             node2.removeEdgeGroup(this);
@@ -158,24 +156,23 @@ public class EdgeGroup {
     /**
      * Delete this EdgeGroup.
      */
-    public void delete() {
-        if (edge_list != null) {
+    public void delete(){
+        if(edge_list != null){
             ((Edge) edge_list.elementAt(0)).delete();
             delete();
         }
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Miscelaneous
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Miscelaneous ///////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public UnitVector newUnitVector(Edge this_edge) {
+    public UnitVector newUnitVector(Edge this_edge){
         UnitVector d = new UnitVector(0, -1);
         Edge e = null;
-        for (int i = 0; i < edge_list.size(); i++) {
+        for(int i = 0; i < edge_list.size(); i++){
             e = (Edge) edge_list.elementAt(i);
-            if (e.isSelfLoop() && e != this_edge) {
+            if(e.isSelfLoop() && e != this_edge){
                 d = new UnitVector();
                 break;
             }
@@ -183,10 +180,9 @@ public class EdgeGroup {
         return d;
     }
 
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // EdgeGroup information
-    // //////////////////////////////////////////////////////////////////////////////////////////
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // EdgeGroup information //////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Test to see if a given Node is node1. This provides an arbitrary and
@@ -196,12 +192,8 @@ public class EdgeGroup {
      *            The Node being tested.
      * @return true if node1 is n.
      */
-    public boolean isStartNode(Node n) {
-        if (node1 == n) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean isStartNode(Node n){
+        return node1 == n;
     }
 
     /**
@@ -211,12 +203,8 @@ public class EdgeGroup {
      *            The Node being tested.
      * @return true if n is involved in this EdgeGroup.
      */
-    public boolean hasNode(Node n) {
-        if (node1 == n || node2 == n) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean hasNode(Node n){
+        return node1 == n || node2 == n;
     }
 
     /**
@@ -228,12 +216,8 @@ public class EdgeGroup {
      *            A Node being tested.
      * @return true if n1 and n2 are involved in this EdgeGroup.
      */
-    public boolean hasNodes(Node n1, Node n2) {
-        if ((node1 == n1 && node2 == n2) || (node1 == n2 && node2 == n1)) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean hasNodes(Node n1, Node n2){
+        return (node1 == n1 && node2 == n2) || (node1 == n2 && node2 == n1);
     }
 
     /**
@@ -241,12 +225,8 @@ public class EdgeGroup {
      * 
      * @return true if there are an odd number of edges in this edge group.
      */
-    public boolean hasOddEdges() {
-        if (edge_list.size() % 2 == 1) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean hasOddEdges(){
+        return edge_list.size() % 2 == 1;
     }
 
     /**
@@ -256,7 +236,7 @@ public class EdgeGroup {
      *            The Edge being tested.
      * @return The order of e in this EdgeGroup.
      */
-    public int indexOf(Edge e) {
+    public int indexOf(Edge e){
         return edge_list.indexOf(e);
     }
 
@@ -270,11 +250,11 @@ public class EdgeGroup {
      *            The node from which the edge should start
      * @return An edge bearing the given machine code, or null.
      */
-    public Edge getEdge(int machine_code, Node start_node) {
+    public Edge getEdge(int machine_code, Node start_node){
         Edge e = null;
-        for (int i = 0; i < edge_list.size(); i++) {
+        for(int i = 0; i < edge_list.size(); i++){
             e = (Edge) edge_list.elementAt(i);
-            if (e.hasMachineCode(machine_code, start_node)) {
+            if(e.hasMachineCode(machine_code, start_node)){
                 return e;
             }
         }
@@ -288,7 +268,7 @@ public class EdgeGroup {
      * 
      * @return The largest level number.
      */
-    public int levels() {
+    public int levels(){
         return (int) Math.ceil(edge_list.size() - 1 / 2.0);
     }
 
@@ -298,8 +278,8 @@ public class EdgeGroup {
      * @param valid_edges
      *            A list of edges.
      */
-    public void addToList(Vector valid_edges) {
-        for (int i = 0; i < edge_list.size(); i++) {
+    public void addToList(Vector valid_edges){
+        for(int i = 0; i < edge_list.size(); i++){
             valid_edges.add(edge_list.elementAt(i));
         }
     }
