@@ -11,8 +11,8 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.*;
 
+import userinterface.drawingArea.GraphingPlatform;
 import userinterface.menu.MenuController;
-import username.drawingArea.DrawingArea;
 
 public class MainWindow {
 
@@ -42,7 +42,7 @@ public class MainWindow {
 	private MenuController menu;
 	private static ProjectExplorer pe;
 	private static ObjectExplorer oe;
-    private static DrawingArea da;
+    private static GraphingPlatform gp;
 
 	
 	
@@ -114,7 +114,7 @@ public class MainWindow {
 		gl_base.numColumns = 3;
 		shell.setLayout(gl_base); // attach it to the shell
 
-		menu = new MenuController(shell);
+		menu = new MenuController(shell, gp);
 		
 		SashForm mainSash = new SashForm(shell,SWT.HORIZONTAL);
 		
@@ -128,12 +128,10 @@ public class MainWindow {
 				
 		pe = new ProjectExplorer(leftSash, shell);
 		oe = new ObjectExplorer(leftSash);
-		
-		da = new DrawingArea(mainSash, shell);
+		gp = new GraphingPlatform(mainSash, shell, menu);
         
 		mainSash.setWeights(new int[] {30,70});
 		
-			
 	}	
 	
 	

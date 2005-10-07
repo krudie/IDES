@@ -109,7 +109,7 @@ public class ResourceManager {
 	/**
      * The array where all preloaded cursors (offered by this ResourceManager) are stored.
      */
-	private Cursor cursors[];
+	private static Cursor cursors[];
 	
 	/**
      * Labeled indexes for the cursors[] array.
@@ -368,4 +368,17 @@ public class ResourceManager {
 	public static Image getDisabledImage(String resourceHandle) {
 		return getImage(resourceHandle,2);
 	}	
+    
+    
+    /**
+     * Return a Cursor from the cursors[] array.
+     * 
+     * @param   tag     A label indicating the index of the cursor.
+     * @return  The desired cursor.
+     */ 
+    public static Cursor getCursor(int tag) {
+        if (tag >= 0 && tag < cursors.length) { if (cursors[tag] != null) { return cursors[tag]; } }
+        MainWindow.fatalErrorPopup(getString("error.fatal_title"), getString("error.null_cursor"));
+        return null; 
+    }   
 }
