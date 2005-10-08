@@ -53,7 +53,7 @@ public class Node extends GraphObject{
     /**
      * The list of EdgeGroups in which this Node participates.
      */
-    private Vector edge_group_list = null;
+    private Vector<EdgeGroup> edge_group_list = null;
 
     /**
      * The endpoint for a partial edge. This is used when creating an edge.
@@ -187,7 +187,7 @@ public class Node extends GraphObject{
         if(r > 0){
             this.r = r;
         }
-        edge_group_list = new Vector();
+        edge_group_list = new Vector<EdgeGroup>();
         start_arrow_direction = new UnitVector(arrow_x, arrow_y);
         arrowhead = new ArrowHead(start_arrow_direction, x
                 - (int) Math.round(this.r * start_arrow_direction.x), y
@@ -270,8 +270,8 @@ public class Node extends GraphObject{
 
         if(partialEdgeEndpoint != null){
             UnitVector d = new UnitVector(partialEdgeEndpoint, origin());
-            drawer.drawLine(this.x, this.y, (int) Math.round(partialEdgeEndpoint.x
-                    + ArrowHead.HEAD_LENGTH * d.x), (int) Math.round(partialEdgeEndpoint.y
+            drawer.drawLine(this.x, this.y, (int) Math.round(partialEdgeEndpoint.getX()
+                    + ArrowHead.HEAD_LENGTH * d.x), (int) Math.round(partialEdgeEndpoint.getY()
                     + ArrowHead.HEAD_LENGTH * d.y), Drawer.SOLID);
             d.reverse();
             ArrowHead partial_edge_arrow = new ArrowHead(d, partialEdgeEndpoint);
@@ -339,17 +339,17 @@ public class Node extends GraphObject{
     public void updateMovement(Point mouse, boolean exclusive){
         if(origional_configuration != null){
             if(!exclusive){
-                Point displacement = new Point(mouse.x - origional_configuration.movement_origin.x,
-                        mouse.y - origional_configuration.movement_origin.y);
-                this.x = origional_configuration.origin.x + displacement.x;
-                this.y = origional_configuration.origin.y + displacement.y;
+                Point displacement = new Point(mouse.getX() - origional_configuration.movement_origin.getX(),
+                        mouse.getY() - origional_configuration.movement_origin.getY());
+                this.x = origional_configuration.origin.getX() + displacement.getX();
+                this.y = origional_configuration.origin.getY() + displacement.getY();
 
                 snapToGrid();
 
-                arrowhead.update(start_arrow_direction, origional_configuration.arrow_tip.x
-                        + this.x - origional_configuration.origin.x,
-                        origional_configuration.arrow_tip.y + this.y
-                                - origional_configuration.origin.y);
+                arrowhead.update(start_arrow_direction, origional_configuration.arrow_tip.getX()
+                        + this.x - origional_configuration.origin.getX(),
+                        origional_configuration.arrow_tip.getY() + this.y
+                                - origional_configuration.origin.getY());
             }
             // edges
             EdgeGroup edge_group = null;
@@ -457,8 +457,8 @@ public class Node extends GraphObject{
     private void snapToGrid(){
         // snap to grid
         Point snaped = gm.snapToGrid(origin());
-        this.x = snaped.x;
-        this.y = snaped.y;
+        this.x = snaped.getX();
+        this.y = snaped.getY();
     }
 
     /**
@@ -569,7 +569,7 @@ public class Node extends GraphObject{
      * @return true if the start arrow should be selected by this mouse click.
      */
     public boolean isLocatedStartArrow(Point mouse){
-        if(isStartState()) return arrowhead.isLocated(mouse.x, mouse.y);
+        if(isStartState()) return arrowhead.isLocated(mouse.getX(), mouse.getY());
         return false;
     }
 
@@ -681,14 +681,14 @@ public class Node extends GraphObject{
      * @return A Vector of edges that join this Node to Nodes in the given
      *         node_list
      */
-    public Vector fetchEdges(Vector node_list){
+    public Vector fetchEdges(Vector<Node> node_list){
         EdgeGroup edge_group = null;
-        Vector valid_edges = new Vector();
+        Vector<Edge> valid_edges = new Vector<Edge>();
         for(int i = 0; i < edge_group_list.size(); i++){
-            edge_group = (EdgeGroup) edge_group_list.elementAt(i);
+            edge_group = edge_group_list.elementAt(i);
             edge_group.exclusive = false;
             for(int j = 0; j < node_list.size(); j++){
-                if(edge_group.hasNodes(this, (Node) node_list.elementAt(j))){
+                if(edge_group.hasNodes(this, node_list.elementAt(j))){
                     edge_group.addToList(valid_edges);
                     edge_group.exclusive = true;
                     break;

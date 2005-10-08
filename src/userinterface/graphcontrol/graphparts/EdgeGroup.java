@@ -24,7 +24,7 @@ public class EdgeGroup{
      * EdgeGroup, but there can be many. Each Edge knows in which Node it
      * originates and in which Node it terminates.
      */
-    private Vector edge_list = null;
+    private Vector<Edge> edge_list = null;
 
     /**
      * The nodes. These may be equal for the purpose of a self loop. node1 is
@@ -59,7 +59,7 @@ public class EdgeGroup{
      *            originates and in which Node it terminates.
      */
     public EdgeGroup(Node n1, Node n2, Edge e){
-        edge_list = new Vector();
+        edge_list = new Vector<Edge>();
         edge_list.addElement(e);
         node1 = n1;
         node2 = n2;
@@ -278,7 +278,7 @@ public class EdgeGroup{
      * @param valid_edges
      *            A list of edges.
      */
-    public void addToList(Vector valid_edges){
+    public void addToList(Vector<Edge> valid_edges){
         for(int i = 0; i < edge_list.size(); i++){
             valid_edges.add(edge_list.elementAt(i));
         }

@@ -51,8 +51,8 @@ public class Line {
      */
     public Line(Point p, UnitVector d) {
         this.p1 = p.getCopy();
-        float x = p.x + 100 * d.x;
-        float y = p.y + 100 * d.y;
+        float x = p.getX() + 100 * d.x;
+        float y = p.getY() + 100 * d.y;
         this.p2 = new Point(x, y);
         constructLine();
     }
@@ -94,12 +94,12 @@ public class Line {
         int size = 100;
 
         if (point == 1) {
-            p2 = new Point(p1.x + d.x * size, p1.y + d.y * size);
+            p2 = new Point(p1.getX() + d.x * size, p1.getY() + d.y * size);
         } else {
             p1 = p2;
-            p2 = new Point(p1.x + d.x * size, p1.y + d.y * size);
+            p2 = new Point(p1.getX() + d.x * size, p1.getY() + d.y * size);
         }
-        p1 = new Point(p1.x - d.x * size, p1.y - d.y * size);
+        p1 = new Point(p1.getX() - d.x * size, p1.getY() - d.y * size);
 
         constructLine();
     }
@@ -113,8 +113,8 @@ public class Line {
     public void rotate(float degrees) {
         float mag = Geometric.distance(p1, p2);
         d.rotateByDegrees(degrees);
-        p2.x = p1.x + (int) Math.round(mag * d.x);
-        p2.y = p1.y + (int) Math.round(mag * d.y);
+        p2.setX(p1.getX() + (int) Math.round(mag * d.x));
+        p2.setY(p1.getY() + (int) Math.round(mag * d.y));
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,8 +175,8 @@ public class Line {
         Point result = new Point(0, 0);
         UnitVector d_perp = d.newPerpendicular();
 
-        result.x = solveDirectionEquation(o, q, d, d_perp);
-        result.y = solveDirectionEquation(q, o, d_perp, d);
+        result.setX(solveDirectionEquation(o, q, d, d_perp));
+        result.setY(solveDirectionEquation(q, o, d_perp, d));
 
         return result;
     }
@@ -234,7 +234,7 @@ public class Line {
         if (term2 == Float.NEGATIVE_INFINITY) {
             term2 = -Float.MAX_VALUE;
         }
-        float k = (p2.x - p1.x + term1 * (p1.y - p2.y)) / term2;
+        float k = (p2.getX() - p1.getX() + term1 * (p1.getY() - p2.getY())) / term2;
         return k;
     }
 

@@ -232,7 +232,7 @@ public class Drawer {
      * @param style Optional styles, such as solid or dashed.
      */
     public void drawCircle(Point origin, int r, int style) {
-        drawCircle(origin.x, origin.y, r, style);
+        drawCircle(origin.getX(), origin.getY(), r, style);
     }
 
     /**
@@ -292,7 +292,7 @@ public class Drawer {
      * @param style Optional styles, such as solid or dashed.
      */
     public void drawLine(Point p1, Point p2, int style) {
-        drawLine(p1.x, p1.y, p2.x, p2.y, style);
+        drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY(), style);
     }
 
     /**

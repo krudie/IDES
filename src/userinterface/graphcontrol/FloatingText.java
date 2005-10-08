@@ -65,8 +65,8 @@ public class FloatingText {
 
         shell = new Shell(gp.shell, SWT.ON_TOP | SWT.RESIZE);
         shell.setLayout(new FillLayout());
-        shell.setSize(SystemVariables.floating_text_size.x,
-                SystemVariables.floating_text_size.y);
+        shell.setSize(SystemVariables.floating_text_size.getX(),
+                SystemVariables.floating_text_size.getY());
 
         Composite cmp = new Composite(shell, SWT.NULL);
 
@@ -152,10 +152,10 @@ public class FloatingText {
         Rectangle display_bounds = shell.getDisplay().getBounds();
         Rectangle shell_bounds = shell.getBounds();
         shell_bounds.x = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(
-                scaled_origin.x, scaled_origin.y).x, display_bounds.width
+                scaled_origin.getX(), scaled_origin.getY()).x, display_bounds.width
                 - shell_bounds.width), 0);
         shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(
-                scaled_origin.x, scaled_origin.y).y, display_bounds.height
+                scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height
                 - shell_bounds.height), 0);
         shell.setBounds(shell_bounds);
 

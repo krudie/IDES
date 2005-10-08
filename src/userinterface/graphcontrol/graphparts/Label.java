@@ -228,7 +228,7 @@ public abstract class Label {
      * @return true If this Label is centered at the given Point.
      */
     public boolean isAnchoredAt(Point origin) {
-        return (origin.isSameAs(anchor));
+        return (origin.equals(anchor));
     }
 
     /**

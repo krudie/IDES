@@ -150,7 +150,7 @@ public class ResourceManager {
             cursors[i + systemCursors.length] = new Cursor(
                     Display.getDefault(), safeDataStream("/images/cursors/"
                             + customCursors[i] + ".gif"),
-                    customCursorHotspots[i].x, customCursorHotspots[i].y);
+                    customCursorHotspots[i].getX(), customCursorHotspots[i].getY());
         }
 
     }

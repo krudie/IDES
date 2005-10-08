@@ -3,8 +3,6 @@
  */
 package userinterface.graphcontrol.graphparts;
 
-import java.io.PrintWriter;
-
 import org.eclipse.swt.SWT;
 
 import userinterface.geometric.Geometric;
@@ -284,12 +282,12 @@ public class Curve{
             y = (int) curve.y2;
         }
         Point b = calculateBezierPoint(t);
-        float distance = (float) Math.sqrt((x - b.x) * (x - b.x) + (y - b.y) * (y - b.y)) - radius;
+        float distance = (float) Math.sqrt((x - b.getX()) * (x - b.getX()) + (y - b.getY()) * (y - b.getY())) - radius;
         while(Math.round(distance) > 0){
             if(startPoint) t -= distance / curve.maxLength();
             else t += distance / curve.maxLength();
             b = calculateBezierPoint(t);
-            distance = (float) (Math.sqrt((x - b.x) * (x - b.x) + (y - b.y) * (y - b.y)) - radius);
+            distance = (float) (Math.sqrt((x - b.getX()) * (x - b.getX()) + (y - b.getY()) * (y - b.getY())) - radius);
         }
         if(t < 0) t = 0;
         else if(t > 1) t = 1;
@@ -328,13 +326,13 @@ public class Curve{
         }
         Point b = calculateBezierPoint(t);
         float d = distance
-                - (float) Math.sqrt((s.x - b.x) * (s.x - b.x) + (s.y - b.y) * (s.y - b.y));
+                - (float) Math.sqrt((s.getX() - b.getX()) * (s.getX() - b.getX()) + (s.getY() - b.getY()) * (s.getY() - b.getY()));
         while(Math.round(d) > 0){
             if(startToEnd) t += d / curve.maxLength();
             else t -= d / curve.maxLength();
             b = calculateBezierPoint(t);
             d = (float) (distance - Math
-                    .sqrt((s.x - b.x) * (s.x - b.x) + (s.y - b.y) * (s.y - b.y)));
+                    .sqrt((s.getX() - b.getX()) * (s.getX() - b.getX()) + (s.getY() - b.getY()) * (s.getY() - b.getY())));
         }
         if(t < 0) t = 0;
         else if(t > 1) t = 1;
@@ -360,20 +358,20 @@ public class Curve{
         // update the anchor
         Line line = new Line(tail_node.origin(), mouse);
         line.rotate(origional_configuration.selection_error_fix);
-        curve.x1 = tail_node.origin().x + tail_node.r() * line.d.x;
-        curve.y1 = tail_node.origin().y + tail_node.r() * line.d.y;
+        curve.x1 = tail_node.origin().getX() + tail_node.r() * line.d.x;
+        curve.y1 = tail_node.origin().getY() + tail_node.r() * line.d.y;
 
         if((origional_configuration.state_mask & SWT.CTRL) != SWT.CTRL){
             // update the ctrl point
             line = new Line(tail_node.origin(), tailAnchor());
             Point directions = line.findDirections(tailCtrl());
-            if(directions.x < 0){
+            if(directions.getX() < 0){
                 // only move the ctrl point if it has fallen past the
                 // perpendicular of the radial arm.
                 float mag = Geometric.distance(origional_configuration.tail_anchor,
                         origional_configuration.tail_ctrl);
                 UnitVector d = line.d.newPerpendicular();
-                if(directions.y > 0){
+                if(directions.getY() > 0){
                     d.reverse();
                 } // make sure we position it in the proper direction.
                 curve.ctrlx1 = curve.x1 + mag * d.x;
@@ -394,16 +392,16 @@ public class Curve{
      */
     public void moveTailCtrl(Configuration origional_configuration, Point mouse){
         // update the ctrl point
-        curve.ctrlx1 = origional_configuration.tail_ctrl.x
-                + (mouse.x - origional_configuration.movement_origin.x);
-        curve.ctrly1 = origional_configuration.tail_ctrl.y
-                + (mouse.y - origional_configuration.movement_origin.y);
+        curve.ctrlx1 = origional_configuration.tail_ctrl.getX()
+                + (mouse.getX() - origional_configuration.movement_origin.getX());
+        curve.ctrly1 = origional_configuration.tail_ctrl.getY()
+                + (mouse.getY() - origional_configuration.movement_origin.getY());
 
         if((origional_configuration.state_mask & SWT.CTRL) != SWT.CTRL){
             // update the anchor
             Line line = new Line(tail_node.origin(), tailAnchor());
             Point directions = line.findDirections(tailCtrl());
-            if(directions.x < 0){
+            if(directions.getX() < 0){
                 // only move the anchor point if the ctrl has been moved past
                 // the perpendicular of the radial arm.
                 float mag = (float) (2 * Math.PI * tail_node.r() / 20);
@@ -413,8 +411,8 @@ public class Curve{
                 // update the anchor (this forces the location back onto the
                 // circle)
                 line = new Line(tail_node.origin(), new_anchor);
-                curve.x1 = tail_node.origin().x + tail_node.r() * line.d.x;
-                curve.y1 = tail_node.origin().y + tail_node.r() * line.d.y;
+                curve.x1 = tail_node.origin().getX() + tail_node.r() * line.d.x;
+                curve.y1 = tail_node.origin().getY() + tail_node.r() * line.d.y;
             }
         }
     }
@@ -434,16 +432,16 @@ public class Curve{
         int padded_radius = head_node.r() + ArrowHead.SHORT_HEAD_LENGTH;
 
         // update the ctrl point
-        curve.ctrlx2 = origional_configuration.head_ctrl.x
-                + (mouse.x - origional_configuration.movement_origin.x);
-        curve.ctrly2 = origional_configuration.head_ctrl.y
-                + (mouse.y - origional_configuration.movement_origin.y);
+        curve.ctrlx2 = origional_configuration.head_ctrl.getX()
+                + (mouse.getX() - origional_configuration.movement_origin.getX());
+        curve.ctrly2 = origional_configuration.head_ctrl.getY()
+                + (mouse.getY() - origional_configuration.movement_origin.getY());
 
         if((origional_configuration.state_mask & SWT.CTRL) != SWT.CTRL){
             // update the anchor
             Line line = new Line(head_node.origin(), headAnchor());
             Point directions = line.findDirections(headCtrl());
-            if(directions.x < 0){
+            if(directions.getX() < 0){
                 // only move the anchor point if the ctrl has been moved past
                 // the perpendicular of the radial arm.
                 float mag = (float) (2 * Math.PI * padded_radius / 20);
@@ -453,8 +451,8 @@ public class Curve{
                 // update the anchor (this forces the location back onto the
                 // circle)
                 line = new Line(head_node.origin(), new_anchor);
-                curve.x2 = head_node.origin().x + padded_radius * line.d.x;
-                curve.y2 = head_node.origin().y + padded_radius * line.d.y;
+                curve.x2 = head_node.origin().getX() + padded_radius * line.d.x;
+                curve.y2 = head_node.origin().getY() + padded_radius * line.d.y;
             }
 
             updateArrowhead();
@@ -482,20 +480,20 @@ public class Curve{
         // update the anchor
         Line line = new Line(head_node.origin(), mouse);
         line.rotate(origional_configuration.selection_error_fix);
-        curve.x2 = head_node.origin().x + padded_radius * line.d.x;
-        curve.y2 = head_node.origin().y + padded_radius * line.d.y;
+        curve.x2 = head_node.origin().getX() + padded_radius * line.d.x;
+        curve.y2 = head_node.origin().getY() + padded_radius * line.d.y;
 
         if((origional_configuration.state_mask & SWT.CTRL) != SWT.CTRL){
             // update the ctrl point
             line = new Line(head_node.origin(), headAnchor());
             Point directions = line.findDirections(headCtrl());
-            if(directions.x < 0){
+            if(directions.getX() < 0){
                 // only move the ctrl point if it has fallen past the
                 // perpendicular of the radial arm.
                 float mag = Geometric.distance(origional_configuration.head_anchor,
                         origional_configuration.head_ctrl);
                 UnitVector d = line.d.newPerpendicular();
-                if(directions.y > 0){
+                if(directions.getY() > 0){
                     d.reverse();
                 } // make sure we position it in the proper direction.
                 curve.ctrlx2 = curve.x2 + mag * d.x;
@@ -558,7 +556,7 @@ public class Curve{
     private void updateArrowhead(){
         // reposition the arrowhead radially
         UnitVector d = new UnitVector(head_node.origin(), headAnchor());
-        Point tip = new Point(head_node.origin().x + head_node.r() * d.x, head_node.origin().y
+        Point tip = new Point(head_node.origin().getX() + head_node.r() * d.x, head_node.origin().getY()
                 + head_node.r() * d.y);
         d.reverse();
         arrowhead.update(d, tip);
@@ -713,18 +711,18 @@ public class Curve{
         Line ctrl_adjust = null;
         if(Geometric.distance(tail_node.origin(), tailCtrl()) < tail_node.r() + 2 * ANCHOR_RADIUS){
             ctrl_adjust = new Line(tail_node.origin(), tailCtrl());
-            curve.ctrlx1 = tail_node.origin().x + (tail_node.r() + 2 * ANCHOR_RADIUS)
+            curve.ctrlx1 = tail_node.origin().getX() + (tail_node.r() + 2 * ANCHOR_RADIUS)
                     * ctrl_adjust.d.x;
-            curve.ctrly1 = tail_node.origin().y + (tail_node.r() + 2 * ANCHOR_RADIUS)
+            curve.ctrly1 = tail_node.origin().getY() + (tail_node.r() + 2 * ANCHOR_RADIUS)
                     * ctrl_adjust.d.y;
         }
         if(Geometric.distance(head_node.origin(), headCtrl()) < head_node.r() + 2 * ANCHOR_RADIUS
                 + ArrowHead.SHORT_HEAD_LENGTH){
             ctrl_adjust = new Line(head_node.origin(), headCtrl());
-            curve.ctrlx2 = head_node.origin().x
+            curve.ctrlx2 = head_node.origin().getX()
                     + (head_node.r() + 4 * ANCHOR_RADIUS + ArrowHead.SHORT_HEAD_LENGTH)
                     * ctrl_adjust.d.x;
-            curve.ctrly2 = head_node.origin().y
+            curve.ctrly2 = head_node.origin().getY()
                     + (head_node.r() + 4 * ANCHOR_RADIUS + ArrowHead.SHORT_HEAD_LENGTH)
                     * ctrl_adjust.d.y;
         }
@@ -769,10 +767,10 @@ public class Curve{
             // create the control points, by moving run in the d direction and
             // rise in the dperp direction from the origin anchors
             float run = Geometric.distance(tailAnchor(), headAnchor()) / 3;
-            setTailCtrl(new Point((int) Math.round(tailAnchor().x + run * d.x - rise * dperp.x),
-                    (int) Math.round(tailAnchor().y + run * d.y - rise * dperp.y)));
-            setHeadCtrl(new Point((int) Math.round(headAnchor().x - run * d.x - rise * dperp.x),
-                    (int) Math.round(headAnchor().y - run * d.y - rise * dperp.y)));
+            setTailCtrl(new Point((int) Math.round(tailAnchor().getX() + run * d.x - rise * dperp.x),
+                    (int) Math.round(tailAnchor().getY() + run * d.y - rise * dperp.y)));
+            setHeadCtrl(new Point((int) Math.round(headAnchor().getX() - run * d.x - rise * dperp.x),
+                    (int) Math.round(headAnchor().getY() - run * d.y - rise * dperp.y)));
 
             updateArrowhead();
         }
@@ -838,14 +836,14 @@ public class Curve{
 
             // snap the tail to the node
             line = new Line(tail_node.origin(), tailAnchor());
-            curve.x1 = tail_node.origin().x + tail_node.r() * line.d.x;
-            curve.y1 = tail_node.origin().y + tail_node.r() * line.d.y;
+            curve.x1 = tail_node.origin().getX() + tail_node.r() * line.d.x;
+            curve.y1 = tail_node.origin().getY() + tail_node.r() * line.d.y;
 
             // pad the head for the arrowhead
             int padded_radius = head_node.r() + ArrowHead.SHORT_HEAD_LENGTH;
             line = new Line(head_node.origin(), headAnchor());
-            curve.x2 = head_node.origin().x + padded_radius * line.d.x;
-            curve.y2 = head_node.origin().y + padded_radius * line.d.y;
+            curve.x2 = head_node.origin().getX() + padded_radius * line.d.x;
+            curve.y2 = head_node.origin().getY() + padded_radius * line.d.y;
             updateArrowhead();
         }
     }
@@ -939,8 +937,8 @@ public class Curve{
      *            A new value for the tail anchor point.
      */
     public void setTailAnchor(Point p){
-        curve.x1 = p.x;
-        curve.y1 = p.y;
+        curve.x1 = p.getX();
+        curve.y1 = p.getY();
     }
 
     /**
@@ -950,8 +948,8 @@ public class Curve{
      *            A new value for the tail ctrl point.
      */
     public void setTailCtrl(Point p){
-        curve.ctrlx1 = p.x;
-        curve.ctrly1 = p.y;
+        curve.ctrlx1 = p.getX();
+        curve.ctrly1 = p.getY();
     }
 
     /**
@@ -961,8 +959,8 @@ public class Curve{
      *            A new value for the head ctrl point.
      */
     public void setHeadCtrl(Point p){
-        curve.ctrlx2 = p.x;
-        curve.ctrly2 = p.y;
+        curve.ctrlx2 = p.getX();
+        curve.ctrly2 = p.getY();
     }
 
     /**
@@ -972,8 +970,8 @@ public class Curve{
      *            A new value for the head anchor point.
      */
     public void setHeadAnchor(Point p){
-        curve.x2 = p.x;
-        curve.y2 = p.y;
+        curve.x2 = p.getX();
+        curve.y2 = p.getY();
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1093,7 +1091,7 @@ public class Curve{
         // create the control points, by moving along d1 and d2 away from the
         // centers of the nodes and perpendicular to these directions to achieve
         // rise
-        float mag = (float) Math.sqrt(Math.pow(p1.x - p4.x, 2) + Math.pow(p1.y - p4.y, 2)) / 3; // one
+        float mag = (float) Math.sqrt(Math.pow(p1.getX() - p4.getX(), 2) + Math.pow(p1.getY() - p4.getY(), 2)) / 3; // one
         // third
         // of
         // the

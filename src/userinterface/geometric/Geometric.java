@@ -55,19 +55,19 @@ public final class Geometric {
      */
     public static float absoluteRadians(Point vertex, Point arm) {
         float a = 0;
-        if (arm.x == vertex.x) {
-            a = (arm.y > vertex.y) ? 0 : (float) Math.PI;
-        } else if (arm.y == vertex.y) {
-            a =  (arm.x < vertex.x) ? (float) (Math.PI / 2) : (float) (3 * Math.PI / 2);
+        if (arm.getX() == vertex.getX()) {
+            a = (arm.getY() > vertex.getY()) ? 0 : (float) Math.PI;
+        } else if (arm.getY() == vertex.getY()) {
+            a =  (arm.getX() < vertex.getX()) ? (float) (Math.PI / 2) : (float) (3 * Math.PI / 2);
         } else {
-            a = (float) Math.atan((float) Math.abs(arm.y - vertex.y) / (float) Math.abs(arm.x - vertex.x));
-            if (arm.y > vertex.y && arm.x > vertex.x) {
+            a = (float) Math.atan((float) Math.abs(arm.getY() - vertex.getY()) / (float) Math.abs(arm.getX() - vertex.getX()));
+            if (arm.getY() > vertex.getY() && arm.getX() > vertex.getX()) {
                 a += (float) (3 * Math.PI / 2);
-            } else if (arm.y > vertex.y && arm.x < vertex.x) {
+            } else if (arm.getY() > vertex.getY() && arm.getX() < vertex.getX()) {
                 a = (float) (Math.PI / 2) - a;
-            } else if (arm.y < vertex.y && arm.x > vertex.x) {
+            } else if (arm.getY() < vertex.getY() && arm.getX() > vertex.getX()) {
                 a = (float) (3 * Math.PI / 2) - a;
-            } else if (arm.y < vertex.y && arm.x < vertex.x) {
+            } else if (arm.getY() < vertex.getY() && arm.getX() < vertex.getX()) {
                 a += (float) (Math.PI / 2);
             }
         }
@@ -113,7 +113,7 @@ public final class Geometric {
      *         length).
      */
     public static float magnitude(Point p) {
-        return magnitude(p.x, p.y);
+        return magnitude(p.getX(), p.getY());
     }
 
     /**
@@ -142,7 +142,7 @@ public final class Geometric {
      * @return The distance between the two points.
      */
     public static float distance(Point p1, Point p2) {
-        return distance(p1.x, p1.y, p2.x, p2.y);
+        return distance(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
     /**
@@ -153,7 +153,7 @@ public final class Geometric {
      * @return The dot product of the two vectors.
      */
     public static float dotProduct(Point p, UnitVector u) {
-        return p.x * u.x + p.y * u.y;
+        return p.getX() * u.x + p.getY() * u.y;
     }
 
     /**

@@ -14,12 +14,12 @@ public class Point {
     /**
      * The x co-ordinate of this Point.
      */
-    public int x = 0;
+    private int x = 0;
 
     /**
      * The y co-ordinate of this Point.
      */
-    public int y = 0;
+    private int y = 0;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Point construction
@@ -37,6 +37,11 @@ public class Point {
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+    
+    public Point(Point p){
+        this.x = p.x;
+        this.y = p.y;
     }
 
     /**
@@ -108,6 +113,19 @@ public class Point {
         y = p.y;
     }
 
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
+    }
+    public void setX(int x){
+        this.x = x;
+    }
+    public void setY(int y){
+        this.y = y;
+    }
+    
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // creation
     // ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +210,7 @@ public class Point {
      * @param test_point The point to test.
      * @return true If this Point is at the same location as the given Point.
      */
-    public boolean isSameAs(Point test_point) {
+    public boolean equals(Point test_point) {
         return (test_point.x == x && test_point.y == y);
     }
 

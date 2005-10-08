@@ -177,15 +177,15 @@ public class GraphModel {
         if (gp.gc.draw_grid && SystemVariables.grid > 0) {
             drawer.setColor(GraphModel.GREY);
             Point offset = new Point(
-                    grid_displacement.x % SystemVariables.grid,
-                    grid_displacement.y % SystemVariables.grid);
+                    grid_displacement.getX() % SystemVariables.grid,
+                    grid_displacement.getY() % SystemVariables.grid);
             int width = gp.gc.j2dcanvas.getSize().x;
             int height = gp.gc.j2dcanvas.getSize().y;
             int i = 0;
-            while (i + offset.x < width || i + offset.y < height) {
-                drawer.drawLine(i + offset.x, 0, i + offset.x, height,
+            while (i + offset.getX() < width || i + offset.getY() < height) {
+                drawer.drawLine(i + offset.getX(), 0, i + offset.getX(), height,
                         Drawer.TINY_DASHED);
-                drawer.drawLine(0, i + offset.y, width, i + offset.y,
+                drawer.drawLine(0, i + offset.getY(), width, i + offset.getY(),
                         Drawer.TINY_DASHED);
                 i = i + SystemVariables.grid;
             }
@@ -254,8 +254,8 @@ public class GraphModel {
         }
         print_area.translateAll(new Point(x, y));
         gp.gc.group_area.translateAll(new Point(x, y));
-        grid_displacement.x = grid_displacement.x + x;
-        grid_displacement.y = grid_displacement.y + y;
+        grid_displacement.setX(grid_displacement.getX() + x);
+        grid_displacement.setY(grid_displacement.getY() + y);
     }
 
     /**
@@ -378,17 +378,17 @@ public class GraphModel {
         for (int i = 0; i < edge_list.size(); i++) {
             e = (Edge) edge_list.elementAt(i);
             // grow
-            if (e.midpoint().x < bounds.x1()) {
-                bounds.x1(e.midpoint().x);
+            if (e.midpoint().getX() < bounds.x1()) {
+                bounds.x1(e.midpoint().getX());
             }
-            if (e.midpoint().y < bounds.y1()) {
-                bounds.y1(e.midpoint().y);
+            if (e.midpoint().getY() < bounds.y1()) {
+                bounds.y1(e.midpoint().getY());
             }
-            if (e.midpoint().x > bounds.x2()) {
-                bounds.x2(e.midpoint().x);
+            if (e.midpoint().getX() > bounds.x2()) {
+                bounds.x2(e.midpoint().getX());
             }
-            if (e.midpoint().y > bounds.y2()) {
-                bounds.y2(e.midpoint().y);
+            if (e.midpoint().getY() > bounds.y2()) {
+                bounds.y2(e.midpoint().getY());
             }
         }
 
@@ -460,24 +460,24 @@ public class GraphModel {
         if (SystemVariables.grid > 0) {
             int difference = 0;
             Point offset = new Point(
-                    grid_displacement.x % SystemVariables.grid,
-                    grid_displacement.y % SystemVariables.grid);
+                    grid_displacement.getX() % SystemVariables.grid,
+                    grid_displacement.getY() % SystemVariables.grid);
 
-            difference = (p.x - offset.x) % SystemVariables.grid;
+            difference = (p.getX() - offset.getX()) % SystemVariables.grid;
             if (difference != 0) {
                 if (difference > SystemVariables.grid / 2) {
-                    r.x = p.x + SystemVariables.grid - difference;
+                    r.setX(p.getX() + SystemVariables.grid - difference);
                 } else {
-                    r.x = p.x - difference;
+                    r.setX(p.getX() - difference);
                 }
             }
 
-            difference = (p.y - offset.y) % SystemVariables.grid;
+            difference = (p.getY() - offset.getY()) % SystemVariables.grid;
             if (difference != 0) {
                 if (difference > SystemVariables.grid / 2) {
-                    r.y = p.y + SystemVariables.grid - difference;
+                    r.setY(p.getY() + SystemVariables.grid - difference);
                 } else {
-                    r.y = p.y - difference;
+                    r.setY(p.getY() - difference);
                 }
             }
         }
@@ -507,7 +507,7 @@ public class GraphModel {
 
         for (int i = last_found_edge_index + 1; i < edge_list.size(); i++) {
             e = (Edge) edge_list.elementAt(i);
-            if (e.isLocated(mouse.x, mouse.y, options)) {
+            if (e.isLocated(mouse.getX(), mouse.getY(), options)) {
                 last_found_edge_index = i;
                 break;
             } else {
@@ -518,7 +518,7 @@ public class GraphModel {
             // not found yet, search other portion
             for (int i = 0; (i <= last_found_edge_index && i < edge_list.size()); i++) {
                 e = (Edge) edge_list.elementAt(i);
-                if (e.isLocated(mouse.x, mouse.y, options)) {
+                if (e.isLocated(mouse.getX(), mouse.getY(), options)) {
                     last_found_edge_index = i;
                     break;
                 } else {
@@ -553,24 +553,24 @@ public class GraphModel {
         if (SystemVariables.grid > 0) {
             int difference = 0;
             Point offset = new Point(
-                    grid_displacement.x % SystemVariables.grid,
-                    grid_displacement.y % SystemVariables.grid);
+                    grid_displacement.getX() % SystemVariables.grid,
+                    grid_displacement.getY() % SystemVariables.grid);
 
-            difference = (p.x - offset.x) % SystemVariables.grid;
+            difference = (p.getX() - offset.getX()) % SystemVariables.grid;
             if (difference != 0) {
                 if (difference > SystemVariables.grid / 2) {
-                    snaped.x = p.x + SystemVariables.grid - difference;
+                    snaped.setX(p.getX() + SystemVariables.grid - difference);
                 } else {
-                    snaped.x = p.x - difference;
+                    snaped.setX(p.getX() - difference);
                 }
             }
 
-            difference = (p.y - offset.y) % SystemVariables.grid;
+            difference = (p.getY() - offset.getY()) % SystemVariables.grid;
             if (difference != 0) {
                 if (difference > SystemVariables.grid / 2) {
-                    snaped.y = p.y + SystemVariables.grid - difference;
+                    snaped.setY(p.getY() + SystemVariables.grid - difference);
                 } else {
-                    snaped.y = p.y - difference;
+                    snaped.setY(p.getY() - difference);
                 }
             }
         }

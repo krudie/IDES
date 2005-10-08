@@ -733,8 +733,8 @@ public class GraphController {
                     }
 
                     else if (selected_tool == GRAB_TOOL) {
-                        grab_origin[0] = mouse.x;
-                        grab_origin[1] = mouse.y;
+                        grab_origin[0] = mouse.getX();
+                        grab_origin[1] = mouse.getY();
                         grab_origin[2] = 1; // mark as "in mid grab"
                     }
                 }
@@ -783,8 +783,8 @@ public class GraphController {
                                 pc.mnu_node.setVisible(true);
                             } else if (selected_tool == MODIFY_TOOL
                                     && group_area.isVisible()
-                                    && group_area.isInBounds(hot_mouse.x,
-                                            hot_mouse.y)) {
+                                    && group_area.isInBounds(hot_mouse.getX(),
+                                            hot_mouse.getY())) {
                                 // it is the modify area tool,
                                 // and no particular graphpart was selected
                                 // and they clicked inside a visible bounding
@@ -840,17 +840,17 @@ public class GraphController {
 
                 else if (grab_origin[2] == 1) {
                     // marked as "in mid grab"
-                    gm.translateAll(mouse.x - grab_origin[0], mouse.y
+                    gm.translateAll(mouse.getX() - grab_origin[0], mouse.getY()
                             - grab_origin[1]);
 
-                    grab_origin[0] = mouse.x;
-                    grab_origin[1] = mouse.y;
+                    grab_origin[0] = mouse.getX();
+                    grab_origin[1] = mouse.getY();
 
                     // repaint
                     j2dcanvas.repaint();
                 } else if (edge_creation_origin != null) {
-                    edge_creation_origin.getPartialEdgeEndpoint().x = edge_mouse.x;
-                    edge_creation_origin.getPartialEdgeEndpoint().y = edge_mouse.y;
+                    edge_creation_origin.getPartialEdgeEndpoint().setX(edge_mouse.getX());
+                    edge_creation_origin.getPartialEdgeEndpoint().setY(edge_mouse.getY());
                     j2dcanvas.repaint();
                 } else if (hot_selected_object != null) {
                     hot_selected_object.updateMovement(mouse);
@@ -860,7 +860,7 @@ public class GraphController {
                 // while the others are true.
                 else if (start_state_node != null) {
                     if (start_state_node.isStartArrowSelected()) {
-                        start_state_node.updateConfiguration(mouse.x, mouse.y);
+                        start_state_node.updateConfiguration(mouse.getX(), mouse.getY());
                         j2dcanvas.repaint();
                     }
                 }
@@ -975,7 +975,7 @@ public class GraphController {
      *            The mouse co-ordinates
      */
     private Node createNode(Point mouse) {
-        Node n = new Node(gp, gm, mouse.x, mouse.y);
+        Node n = new Node(gp, gm, mouse.getX(), mouse.getY());
         gm.addNode(n);
         io.markUnsavedChanges();
         return n;

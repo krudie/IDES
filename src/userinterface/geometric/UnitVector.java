@@ -60,7 +60,7 @@ public class UnitVector {
      * @param p2 The ending point.
      */
     public UnitVector(Point p1, Point p2) {
-        unitize(p2.x - p1.x, p2.y - p1.y);
+        unitize(p2.getX() - p1.getX(), p2.getY() - p1.getY());
     }
 
     /**
@@ -170,7 +170,7 @@ public class UnitVector {
      *         direction.
      */
     public Point newPoint(float distance, Point origin) {
-        return new Point(origin.x + distance * this.x, origin.y + distance * this.y);
+        return new Point(origin.getX() + distance * this.x, origin.getY() + distance * this.y);
     }
 
     /**
@@ -186,7 +186,7 @@ public class UnitVector {
      */
     public Point newPoint(float distance, Point origin, float angle) {
         UnitVector d = this.newRotatedByDegrees(angle);
-        return new Point(origin.x + distance * d.x, origin.y + distance * d.y);
+        return new Point(origin.getX() + distance * d.x, origin.getY() + distance * d.y);
     }
 
     /**

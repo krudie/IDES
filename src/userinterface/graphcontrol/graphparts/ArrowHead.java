@@ -155,14 +155,14 @@ public class ArrowHead{
      */
     public void update(UnitVector d, Point tip){
         UnitVector d_perp = d.newPerpendicular();
-        xcoords[0] = tip.x;
-        ycoords[0] = tip.y;
-        xcoords[2] = tip.x - (int) Math.round(ArrowHead.HEAD_LENGTH * d.x);
-        ycoords[2] = tip.y - (int) Math.round(ArrowHead.HEAD_LENGTH * d.y);
-        xcoords[1] = (int) Math.round(tip.x - ArrowHead.TANG_X * d.x + ArrowHead.TANG_Y * d_perp.x);
-        ycoords[1] = (int) Math.round(tip.y - ArrowHead.TANG_X * d.y + ArrowHead.TANG_Y * d_perp.y);
-        xcoords[3] = (int) Math.round(tip.x - ArrowHead.TANG_X * d.x - ArrowHead.TANG_Y * d_perp.x);
-        ycoords[3] = (int) Math.round(tip.y - ArrowHead.TANG_X * d.y - ArrowHead.TANG_Y * d_perp.y);
+        xcoords[0] = tip.getX();
+        ycoords[0] = tip.getY();
+        xcoords[2] = tip.getX() - (int) Math.round(ArrowHead.HEAD_LENGTH * d.x);
+        ycoords[2] = tip.getY() - (int) Math.round(ArrowHead.HEAD_LENGTH * d.y);
+        xcoords[1] = (int) Math.round(tip.getX() - ArrowHead.TANG_X * d.x + ArrowHead.TANG_Y * d_perp.x);
+        ycoords[1] = (int) Math.round(tip.getY() - ArrowHead.TANG_X * d.y + ArrowHead.TANG_Y * d_perp.y);
+        xcoords[3] = (int) Math.round(tip.getX() - ArrowHead.TANG_X * d.x - ArrowHead.TANG_Y * d_perp.x);
+        ycoords[3] = (int) Math.round(tip.getY() - ArrowHead.TANG_X * d.y - ArrowHead.TANG_Y * d_perp.y);
         visible = true;
     }
 
@@ -224,7 +224,7 @@ public class ArrowHead{
         if(!visible) return false;
         int test_radius = padded ? 2*ArrowHead.HEAD_LENGTH : ArrowHead.HEAD_LENGTH;
         // this is a simple circle test
-        return (Math.pow(xcoords[ArrowHead.NOCK] - mouse.x, 2)
-                    + Math.pow(ycoords[ArrowHead.NOCK] - mouse.y, 2) < Math.pow(test_radius, 2));
+        return (Math.pow(xcoords[ArrowHead.NOCK] - mouse.getX(), 2)
+                    + Math.pow(ycoords[ArrowHead.NOCK] - mouse.getY(), 2) < Math.pow(test_radius, 2));
     }
 }

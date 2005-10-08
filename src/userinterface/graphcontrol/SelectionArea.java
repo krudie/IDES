@@ -170,14 +170,14 @@ public class SelectionArea {
     public void mouseDown(Point mouse) {
         if (selection_area[5] == 0) {
             // creating a new selection area
-            selection_area[0] = mouse.x;
-            selection_area[1] = mouse.y;
-            selection_area[2] = mouse.x;
-            selection_area[3] = mouse.y;
+            selection_area[0] = mouse.getX();
+            selection_area[1] = mouse.getY();
+            selection_area[2] = mouse.getX();
+            selection_area[3] = mouse.getY();
         } else if (selection_area[5] == 1) {
             // modifying an existing selection area in the lr direction
             // record which index we will be modifying
-            if (Math.abs(mouse.x - selection_area[0]) > Math.abs(mouse.x
+            if (Math.abs(mouse.getX() - selection_area[0]) > Math.abs(mouse.getX()
                     - selection_area[2])) {
                 selection_area[6] = 2;
             } else {
@@ -186,7 +186,7 @@ public class SelectionArea {
         } else if (selection_area[5] == 2) {
             // modifying an existing selection area in the ud direction
             // record which index we will be modifying
-            if (Math.abs(mouse.y - selection_area[1]) > Math.abs(mouse.y
+            if (Math.abs(mouse.getY() - selection_area[1]) > Math.abs(mouse.getY()
                     - selection_area[3])) {
                 selection_area[6] = 3;
             } else {
@@ -212,17 +212,17 @@ public class SelectionArea {
         if (selection_area[4] == 2) {
             // marked as "in mid modify"
             if (selection_area[5] == 0) {
-                selection_area[2] = mouse.x;
-                selection_area[3] = mouse.y;
+                selection_area[2] = mouse.getX();
+                selection_area[3] = mouse.getY();
             } else if (selection_area[5] == 1) {
-                selection_area[selection_area[6]] = mouse.x;
+                selection_area[selection_area[6]] = mouse.getX();
             } else if (selection_area[5] == 2) {
-                selection_area[selection_area[6]] = mouse.y;
+                selection_area[selection_area[6]] = mouse.getY();
             }
 
             else if (selection_area[5] == 3) {
-                Point displacement = new Point(mouse.x - previous.x, mouse.y
-                        - previous.y);
+                Point displacement = new Point(mouse.getX() - previous.getX(), mouse.getY()
+                        - previous.getY());
                 if (option == MARKING_OUT_AN_AREA) {
                     translateAll(displacement);
                     previous = previous.plus(displacement);
@@ -231,8 +231,8 @@ public class SelectionArea {
                     // if there is a grid, only perform translations in grid
                     // increments.
                     if (SystemVariables.grid > 0) {
-                        if (Math.abs(mouse.x - previous.x) >= SystemVariables.grid
-                                || Math.abs(mouse.y - previous.y) >= SystemVariables.grid) {
+                        if (Math.abs(mouse.getX() - previous.getX()) >= SystemVariables.grid
+                                || Math.abs(mouse.getY() - previous.getY()) >= SystemVariables.grid) {
                             Point origin = gp.gc.gm.snapToGrid(previous
                                     .getCopy());
                             Point destination = gp.gc.gm.snapToGrid(mouse
@@ -243,7 +243,7 @@ public class SelectionArea {
                         }
                     }
                     if (move_area) {
-                        gp.gc.gpc.translateAll(displacement.x, displacement.y,
+                        gp.gc.gpc.translateAll(displacement.getX(), displacement.getY(),
                                 false);
                         translateAll(displacement);
                         gp.gc.gpc.updateNodeMovement(mouse);
@@ -258,14 +258,14 @@ public class SelectionArea {
                 // marked as "visible"
 
                 if (option == MARKING_OUT_AN_AREA) {
-                    if (isOnHorizontal(mouse.x, mouse.y)) {
+                    if (isOnHorizontal(mouse.getX(), mouse.getY())) {
                         // mousing over horizontal border
                         if (selection_area[5] != 2) {
                             selection_area[5] = 2;
                             gp.gc.j2dcanvas.setCursor(ResourceManager
                                     .getCursor(ResourceManager.UPDOWN_CURSOR));
                         }
-                    } else if (isOnVerticle(mouse.x, mouse.y)) {
+                    } else if (isOnVerticle(mouse.getX(), mouse.getY())) {
                         // mousing over vertical border
                         if (selection_area[5] != 1) {
                             selection_area[5] = 1;
@@ -273,7 +273,7 @@ public class SelectionArea {
                                     .setCursor(ResourceManager
                                             .getCursor(ResourceManager.LEFTRIGHT_CURSOR));
                         }
-                    } else if (isInBounds(mouse.x, mouse.y)) {
+                    } else if (isInBounds(mouse.getX(), mouse.getY())) {
                         // mousing over the area
                         if (selection_area[5] != 3) {
                             selection_area[5] = 3;
@@ -289,10 +289,10 @@ public class SelectionArea {
                         }
                     }
                 } else if (option == SELECTING_OBJECTS_INSIDE_AN_AREA) {
-                    if (mouse.x > selection_area[0]
-                            && mouse.x < selection_area[2]
-                            && mouse.y > selection_area[1]
-                            && mouse.y < selection_area[3]) {
+                    if (mouse.getX() > selection_area[0]
+                            && mouse.getX() < selection_area[2]
+                            && mouse.getY() > selection_area[1]
+                            && mouse.getY() < selection_area[3]) {
                         if (selection_area[5] != 3) {
                             selection_area[5] = 3;
                             gp.gc.j2dcanvas.setCursor(ResourceManager
@@ -394,10 +394,10 @@ public class SelectionArea {
      *            The translation to be performed.
      */
     public void translateAll(Point displacement) {
-        selection_area[0] += displacement.x;
-        selection_area[1] += displacement.y;
-        selection_area[2] += displacement.x;
-        selection_area[3] += displacement.y;
+        selection_area[0] += displacement.getX();
+        selection_area[1] += displacement.getY();
+        selection_area[2] += displacement.getX();
+        selection_area[3] += displacement.getY();
     }
 
     /**

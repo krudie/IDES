@@ -138,7 +138,7 @@ public class EditBuffer {
                     canvas.height / 2 - (area.cy()));
         }
 
-        gp.gc.gpc.translateAll(displacement.x, displacement.y, true);
+        gp.gc.gpc.translateAll(displacement.getX(), displacement.getY(), true);
         gp.gc.group_area.translateAll(displacement);
         gp.gc.repaint();
 

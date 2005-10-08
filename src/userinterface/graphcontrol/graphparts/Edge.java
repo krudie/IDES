@@ -109,7 +109,7 @@ public class Edge extends GraphObject{
     /**
      * The label data for this Edge
      */
-    private Vector label_data = null;
+    private Vector<TableItem> label_data = null;
 
     /**
      * Represents the displacement from the t=0.5 point of the bezier curve to
@@ -171,7 +171,7 @@ public class Edge extends GraphObject{
      *            A Label to be cloned for the latex label of this Edge.
      */
     private Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, Curve curve,
-            Point label_displacement, int a, Vector label_data, GlyphLabel glyph_label){
+            Point label_displacement, int a, Vector<TableItem> label_data, GlyphLabel glyph_label){
         super(gp, gm, a);
         constructEdge(start_node, end_node);
 
@@ -254,7 +254,7 @@ public class Edge extends GraphObject{
      */
     private void initializeLabels(int gtx, int gty){
         label_displacement = new Point(gtx, gty);
-        label_data = new Vector();
+        label_data = new Vector<TableItem>();
         glyph_label = new GlyphLabel(gp, this);
     }
 
@@ -593,10 +593,10 @@ public class Edge extends GraphObject{
                 curve.moveHeadAnchor(origional_configuration, mouse);
                 break;
             case Edge.R_LABEL:
-                label_displacement.x = origional_configuration.label_displacement.x
-                        + (mouse.x - origional_configuration.movement_origin.x);
-                label_displacement.y = origional_configuration.label_displacement.y
-                        + (mouse.y - origional_configuration.movement_origin.y);
+                label_displacement.setX(origional_configuration.label_displacement.getX()
+                        + (mouse.getX() - origional_configuration.movement_origin.getX()));
+                label_displacement.setY(origional_configuration.label_displacement.getY()
+                        + (mouse.getY() - origional_configuration.movement_origin.getY()));
                 break;
             }
         }
@@ -702,14 +702,9 @@ public class Edge extends GraphObject{
      * 
      * @return A copy of the label_data Vector of this Edge.
      */
-    public Vector getLabelDataVector(){
-        if(labelDataIsNull()) return new Vector();
-
-        Vector ldv = new Vector();
-        for(int i = 0; i < label_data.size(); i++){
-            ldv.add(label_data.elementAt(i));
-        }
-        return ldv;
+    public Vector<TableItem> getLabelDataVector(){
+        if(labelDataIsNull()) return new Vector<TableItem>();
+        return new Vector<TableItem>(label_data);
     }
 
     /**

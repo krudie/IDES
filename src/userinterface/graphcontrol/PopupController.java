@@ -351,8 +351,8 @@ public class PopupController {
                     public void widgetSelected(
                             org.eclipse.swt.events.SelectionEvent e) {
                         Point offset = (Point) mnu_external.getData();
-                        e.x = offset.x;
-                        e.y = offset.y;
+                        e.x = offset.getX();
+                        e.y = offset.getY();
                         gp.mc.editListener.paste(e);
                     }
                 });
