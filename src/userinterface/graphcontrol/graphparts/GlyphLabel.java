@@ -138,7 +138,7 @@ public class GlyphLabel extends Label{
      * 
      * @return A clone of the Vector of GlyphVectors.
      */
-    public Vector cloneRenderedGlyphVectors(){
+    public Vector<GlyphVector> cloneRenderedGlyphVectors(){
         // the shapes are derived from the vectors without modifying the vectors
         // it is therefore okay to have both clones pointint to the same vectors
         // if ever either change their string representation, they will drop the

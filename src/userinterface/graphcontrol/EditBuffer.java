@@ -28,12 +28,12 @@ public class EditBuffer {
     /**
      * A list of cloned nodes currently held by this buffer.
      */
-    private Vector node_list = null;
+    private Vector<Node> node_list = null;
 
     /**
      * A list of cloned edges currently held by this buffer.
      */
-    private Vector edge_list = null;
+    private Vector<Edge> edge_list = null;
 
     /**
      * Records if the buffer is holding anything to paste.
@@ -61,8 +61,8 @@ public class EditBuffer {
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void copyCollection() {
-        node_list = new Vector();
-        edge_list = new Vector();
+        node_list = new Vector<Node>();
+        edge_list = new Vector<Edge>();
         gp.gc.gpc.cloneCollection(node_list, edge_list);
         has_contents = true;
     }
@@ -142,8 +142,8 @@ public class EditBuffer {
         gp.gc.group_area.translateAll(displacement);
         gp.gc.repaint();
 
-        node_list = new Vector();
-        edge_list = new Vector();
+        node_list = new Vector<Node>();
+        edge_list = new Vector<Edge>();
         gp.gc.gpc.cloneCollection(node_list, edge_list);
         gp.gc.io.markUnsavedChanges();
         gp.gc.refreshScrollbars();

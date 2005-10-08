@@ -3,25 +3,7 @@
  */
 package userinterface.graphcontrol;
 
-import ides2.SystemVariables;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.StringTokenizer;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
-
 import userinterface.GraphingPlatform;
-import userinterface.ResourceManager;
-import userinterface.geometric.Box;
-import userinterface.geometric.Point;
-import userinterface.graphcontrol.graphparts.Edge;
-import userinterface.graphcontrol.graphparts.Node;
 
 /**
  * This class handles all the IO for the GraphController. This includes: file

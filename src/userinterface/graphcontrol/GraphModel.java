@@ -7,8 +7,6 @@ import ides2.SystemVariables;
 
 import java.util.Vector;
 
-import org.eclipse.swt.graphics.Rectangle;
-
 import userinterface.GraphingPlatform;
 import userinterface.geometric.Box;
 import userinterface.geometric.Line;
@@ -20,13 +18,12 @@ import userinterface.graphcontrol.graphparts.Node;
 /**
  * @author Michael Wood
  */
-public class GraphModel {
+public class GraphModel{
     /**
      * The different styles that parts of this GraphModel may have.
      */
-    public static final int NORMAL = 0, SELECTED = 1, HOT_SELECTED = 1,
-            CUSTOM = 2, ANCHORS = 3, TETHERS = 3, TRACE = 2, GROUPED = 4,
-            GREY = 5;
+    public static final int NORMAL = 0, SELECTED = 1, HOT_SELECTED = 1, CUSTOM = 2, ANCHORS = 3,
+            TETHERS = 3, TRACE = 2, GROUPED = 4, GREY = 5;
 
     /**
      * The platform in which this GraphModel will exist.
@@ -41,12 +38,12 @@ public class GraphModel {
     /**
      * An unordered list of all Nodes in this GraphModel.
      */
-    private Vector node_list = null;
+    private Vector<Node> node_list = null;
 
     /**
      * An unordered list of all Edges in this GraphModel.
      */
-    private Vector edge_list = null;
+    private Vector<Edge> edge_list = null;
 
     /**
      * Rememberst the last edge search index so overlapping edges can be
@@ -63,8 +60,7 @@ public class GraphModel {
     /**
      * Bounds for the scale variable used in Zoom in/out control.
      */
-    public static final float MAXIMUM_SCALE = 32,
-            MINIMUM_SCALE = (float) 1 / 32;
+    public static final float MAXIMUM_SCALE = 32, MINIMUM_SCALE = (float) 1 / 32;
 
     /**
      * Zoom in/out control. Normal is 1
@@ -75,12 +71,6 @@ public class GraphModel {
      * Used to offer a standard radius size amongst the nodes.
      */
     public int max_node_size = 0;
-
-    /**
-     * The last recorded system time. This is used to gather performance
-     * statistics.
-     */
-    private long last_system_time = 0;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // GraphModel construction
@@ -93,10 +83,10 @@ public class GraphModel {
      * @param gp
      *            The GraphingPlatform in which this GraphModel will exist.
      */
-    public GraphModel(GraphingPlatform gp) {
+    public GraphModel(GraphingPlatform gp){
         this.gp = gp;
-        node_list = new Vector();
-        edge_list = new Vector();
+        node_list = new Vector<Node>();
+        edge_list = new Vector<Edge>();
         print_area = new SelectionArea(gp, SelectionArea.MARKING_OUT_AN_AREA);
         grid_displacement = new Point(0, 0);
     }
@@ -112,7 +102,7 @@ public class GraphModel {
      * @param new_node
      *            The Node to be added to this GraphModel.
      */
-    public void addNode(Node new_node) {
+    public void addNode(Node new_node){
         node_list.addElement(new_node);
         new_node.confirm(this);
     }
@@ -123,7 +113,7 @@ public class GraphModel {
      * @param new_edge
      *            The Edge to be added to this GraphModel.
      */
-    public void addEdge(Edge new_edge) {
+    public void addEdge(Edge new_edge){
         edge_list.addElement(new_edge);
         new_edge.confirm(this);
     }
@@ -134,7 +124,7 @@ public class GraphModel {
      * @param node
      *            The Node to be removed from this GraphModel.
      */
-    public void removeNode(Node node) {
+    public void removeNode(Node node){
         node_list.removeElement(node);
     }
 
@@ -144,7 +134,7 @@ public class GraphModel {
      * @param edge
      *            The Edge to be removed from this GraphModel.
      */
-    public void removeEdge(Edge edge) {
+    public void removeEdge(Edge edge){
         edge_list.removeElement(edge);
     }
 
@@ -154,7 +144,7 @@ public class GraphModel {
      * @param dead_object
      *            The GraphObject that has been deleted.
      */
-    public void safeNull(GraphObject dead_object) {
+    public void safeNull(GraphObject dead_object){
         gp.gc.safeNull(dead_object);
     }
 
@@ -169,24 +159,23 @@ public class GraphModel {
      * @param drawer
      *            The Drawer that will handle the drawing.
      */
-    public void draw(Drawer drawer) {
+    public void draw(Drawer drawer){
         // System.out.println(getSize() + "\t" + (System.currentTimeMillis() -
         // last_system_time));
         // last_system_time = System.currentTimeMillis();
 
-        if (gp.gc.draw_grid && SystemVariables.grid > 0) {
+        if(gp.gc.draw_grid && SystemVariables.grid > 0){
             drawer.setColor(GraphModel.GREY);
-            Point offset = new Point(
-                    grid_displacement.getX() % SystemVariables.grid,
+            Point offset = new Point(grid_displacement.getX() % SystemVariables.grid,
                     grid_displacement.getY() % SystemVariables.grid);
             int width = gp.gc.j2dcanvas.getSize().x;
             int height = gp.gc.j2dcanvas.getSize().y;
             int i = 0;
-            while (i + offset.getX() < width || i + offset.getY() < height) {
-                drawer.drawLine(i + offset.getX(), 0, i + offset.getX(), height,
-                        Drawer.TINY_DASHED);
-                drawer.drawLine(0, i + offset.getY(), width, i + offset.getY(),
-                        Drawer.TINY_DASHED);
+            while(i + offset.getX() < width || i + offset.getY() < height){
+                drawer
+                        .drawLine(i + offset.getX(), 0, i + offset.getX(), height,
+                                Drawer.TINY_DASHED);
+                drawer.drawLine(0, i + offset.getY(), width, i + offset.getY(), Drawer.TINY_DASHED);
                 i = i + SystemVariables.grid;
             }
             drawer.setColor(GraphModel.NORMAL);
@@ -194,12 +183,12 @@ public class GraphModel {
 
         Node n = null;
         Edge e = null;
-        for (int i = 0; i < node_list.size(); i++) {
-            n = (Node) node_list.elementAt(i);
+        for(int i = 0; i < node_list.size(); i++){
+            n = node_list.elementAt(i);
             n.draw(drawer);
         }
-        for (int i = 0; i < edge_list.size(); i++) {
-            e = (Edge) edge_list.elementAt(i);
+        for(int i = 0; i < edge_list.size(); i++){
+            e = edge_list.elementAt(i);
             boolean ok_tool = (gp.gc.selected_tool == gp.gc.MODIFY_TOOL || gp.gc.selected_tool == gp.gc.ZOOM_TOOL);
             e.draw(drawer, (SystemVariables.show_all_edges && ok_tool),
                     (SystemVariables.show_all_labels && ok_tool));
@@ -213,14 +202,14 @@ public class GraphModel {
     /**
      * Cause all GraphObjects to accomodate any recent changes in their Labels.
      */
-    public void accomodateLabels() {
-        for (int i = 0; i < node_list.size(); i++) {
-            ((Node) node_list.elementAt(i)).accomodateLabel();
+    public void accomodateLabels(){
+        for(int i = 0; i < node_list.size(); i++){
+            node_list.elementAt(i).accomodateLabel();
         }
-        for (int i = 0; i < edge_list.size(); i++) {
-            ((Edge) edge_list.elementAt(i)).accomodateLabel();
+        for(int i = 0; i < edge_list.size(); i++){
+            edge_list.elementAt(i).accomodateLabel();
         }
-        if (gp.gc != null) {
+        if(gp.gc != null){
             gp.gc.floating_toggles.populate();
         }
     }
@@ -230,9 +219,9 @@ public class GraphModel {
      * abandoned label type into the new label type, whenever the new values are
      * empty.
      */
-    public void fillBlankLabels() {
-        for (int i = 0; i < node_list.size(); i++) {
-            ((Node) node_list.elementAt(i)).fillBlankLabels();
+    public void fillBlankLabels(){
+        for(int i = 0; i < node_list.size(); i++){
+            node_list.elementAt(i).fillBlankLabels();
         }
         gp.td.fillBlankLabels();
     }
@@ -245,12 +234,12 @@ public class GraphModel {
      * @param y
      *            Translation in the y direction.
      */
-    public void translateAll(int x, int y) {
-        for (int i = 0; i < node_list.size(); i++) {
-            ((Node) node_list.elementAt(i)).translateAll(x, y);
+    public void translateAll(int x, int y){
+        for(int i = 0; i < node_list.size(); i++){
+            node_list.elementAt(i).translateAll(x, y);
         }
-        for (int i = 0; i < edge_list.size(); i++) {
-            ((Edge) edge_list.elementAt(i)).translateAll(x, y);
+        for(int i = 0; i < edge_list.size(); i++){
+            edge_list.elementAt(i).translateAll(x, y);
         }
         print_area.translateAll(new Point(x, y));
         gp.gc.group_area.translateAll(new Point(x, y));
@@ -265,46 +254,36 @@ public class GraphModel {
      *            The bounding area for inclusion into the grouping.
      * @return The minimized bounding area of the grouping.
      */
-    public Box addToGrouping(Box area) {
+    public Box addToGrouping(Box area){
         Box new_area = null;
-        Vector list1 = new Vector();
-        Vector list2 = new Vector();
+        Vector<Node> list1 = new Vector<Node>();
+        Vector<Node> list2 = new Vector<Node>();
         Vector valid_edges = new Vector();
         Node n = null;
-        for (int i = 0; i < node_list.size(); i++) {
-            n = (Node) node_list.elementAt(i);
-            if (n.isBoundBy(area)) {
+        for(int i = 0; i < node_list.size(); i++){
+            n = node_list.elementAt(i);
+            if(n.isBoundBy(area)){
                 gp.gc.gpc.addToGrouping(n);
                 list1.add(n);
                 list2.add(n);
-                if (new_area == null) {
-                    new_area = new Box(n.x(), n.y(), n.x(), n.y());
-                }
-                if (n.x() - n.r() < new_area.x1()) {
-                    new_area.x1(n.x() - n.r());
-                }
-                if (n.y() - n.r() < new_area.y1()) {
-                    new_area.y1(n.y() - n.r());
-                }
-                if (n.x() + n.r() > new_area.x2()) {
-                    new_area.x2(n.x() + n.r());
-                }
-                if (n.y() + n.r() > new_area.y2()) {
-                    new_area.y2(n.y() + n.r());
-                }
+                if(new_area == null) new_area = new Box(n.x(), n.y(), n.x(), n.y());
+                if(n.x() - n.r() < new_area.x1()) new_area.x1(n.x() - n.r());
+                if(n.y() - n.r() < new_area.y1()) new_area.y1(n.y() - n.r());
+                if(n.x() + n.r() > new_area.x2()) new_area.x2(n.x() + n.r());
+                if(n.y() + n.r() > new_area.y2()) new_area.y2(n.y() + n.r());
             }
         }
-        for (int i = 0; i < list1.size(); i++) {
+        for(int i = 0; i < list1.size(); i++){
             // for each node, test it's edge groups and add them to the grouping
             // if their destination node is in list2
             n = (Node) list1.elementAt(i);
             valid_edges = n.fetchEdges(list2);
             list2.remove(n);
-            for (int j = 0; j < valid_edges.size(); j++) {
+            for(int j = 0; j < valid_edges.size(); j++){
                 gp.gc.gpc.addToGrouping((Edge) valid_edges.elementAt(j));
             }
         }
-        if (new_area != null) {
+        if(new_area != null){
             new_area.grow(SelectionArea.PADDING);
         }
         return new_area;
@@ -319,12 +298,8 @@ public class GraphModel {
      *            The id of the requested Node.
      * @return The Node if it was found, else null.
      */
-    public Node getNodeById(int id) {
-        if (id >= 0 && id < node_list.size()) {
-            return (Node) node_list.elementAt(id);
-        } else {
-            return null;
-        }
+    public Node getNodeById(int id){
+        return id >= 0 && id < node_list.size() ? node_list.elementAt(id) : null;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -337,59 +312,43 @@ public class GraphModel {
      * 
      * @return The number of nodes and edges in the model.
      */
-    public int getSize() {
+    public int getSize(){
         return node_list.size() + edge_list.size();
     }
 
     /**
      * Get a bounding box for this graph model.
      */
-    public Box getBounds() {
-        Rectangle canvas = gp.gc.j2dcanvas.getBounds();
+    public Box getBounds(){
         Box bounds = new Box(50, 50, 51, 51);
 
         Node n = null;
-        for (int i = 0; i < node_list.size(); i++) {
-            n = (Node) node_list.elementAt(i);
-            if (i == 0) {
+        for(int i = 0; i < node_list.size(); i++){
+            n = node_list.elementAt(i);
+            if(i == 0){
                 // first node
                 bounds.x1(n.x() - n.r());
                 bounds.y1(n.y() - n.r());
                 bounds.x2(n.x() + n.r());
                 bounds.y2(n.y() + n.r());
-            } else {
+            }
+            else{
                 // grow
-                if (n.x() - n.r() < bounds.x1()) {
-                    bounds.x1(n.x() - n.r());
-                }
-                if (n.y() - n.r() < bounds.y1()) {
-                    bounds.y1(n.y() - n.r());
-                }
-                if (n.x() + n.r() > bounds.x2()) {
-                    bounds.x2(n.x() + n.r());
-                }
-                if (n.y() + n.r() > bounds.y2()) {
-                    bounds.y2(n.y() + n.r());
-                }
+                if(n.x() - n.r() < bounds.x1()) bounds.x1(n.x() - n.r());
+                if(n.y() - n.r() < bounds.y1()) bounds.y1(n.y() - n.r());
+                if(n.x() + n.r() > bounds.x2()) bounds.x2(n.x() + n.r());
+                if(n.y() + n.r() > bounds.y2()) bounds.y2(n.y() + n.r());
             }
         }
 
         Edge e = null;
-        for (int i = 0; i < edge_list.size(); i++) {
-            e = (Edge) edge_list.elementAt(i);
+        for(int i = 0; i < edge_list.size(); i++){
+            e = edge_list.elementAt(i);
             // grow
-            if (e.midpoint().getX() < bounds.x1()) {
-                bounds.x1(e.midpoint().getX());
-            }
-            if (e.midpoint().getY() < bounds.y1()) {
-                bounds.y1(e.midpoint().getY());
-            }
-            if (e.midpoint().getX() > bounds.x2()) {
-                bounds.x2(e.midpoint().getX());
-            }
-            if (e.midpoint().getY() > bounds.y2()) {
-                bounds.y2(e.midpoint().getY());
-            }
+            if(e.midpoint().getX() < bounds.x1()) bounds.x1(e.midpoint().getX());
+            if(e.midpoint().getY() < bounds.y1()) bounds.y1(e.midpoint().getY());
+            if(e.midpoint().getX() > bounds.x2()) bounds.x2(e.midpoint().getX());
+            if(e.midpoint().getY() > bounds.y2()) bounds.y2(e.midpoint().getY());
         }
 
         bounds.grow(SelectionArea.PADDING * 4);
@@ -407,16 +366,11 @@ public class GraphModel {
      * @return true if any third Node lise near the connectin line of the two
      *         input nodes.
      */
-    public boolean findNode(Node n1, Node n2) {
-        Node n = null;
+    public boolean findNode(Node n1, Node n2){
         Line line = new Line(n1.origin(), n2.origin());
-        for (int i = 0; i < node_list.size(); i++) {
-            n = (Node) node_list.elementAt(i);
-            if (n != n1 && n != n2) {
-                if (line.isNear(n.origin(), n.r())) {
-                    return true;
-                }
-            }
+        for(int i = 0; i < node_list.size(); i++){
+            Node n = node_list.elementAt(i);
+            if(n != n1 && n != n2 && line.isNear(n.origin(), n.r())) return true;
         }
         return false;
     }
@@ -433,55 +387,12 @@ public class GraphModel {
      * @return The first Node that contains the given query point within its
      *         bounding circle. Null otherwise.
      */
-    public Node findNode(Point mouse, boolean padded) {
-        Node n = null;
-        for (int i = 0; i < node_list.size(); i++) {
-            n = (Node) node_list.elementAt(i);
-            if (n.isLocated(mouse, padded)) {
-                break;
-            } else {
-                n = null;
-            }
+    public Node findNode(Point mouse, boolean padded){
+        for(int i = 0; i < node_list.size(); i++){
+            Node n = node_list.elementAt(i);
+            if(n.isLocated(mouse, padded)) return n;
         }
-        return n;
-    }
-
-    /**
-     * Find where the input co-ordinates would lie if they were snapped to the
-     * grid.
-     * 
-     * @param p
-     *            The input co-ordinates.
-     * @return Where the input co-ordinates would lie if they were snapped to
-     *         the grid.
-     */
-    private Point snappedToGrid(Point p) {
-        Point r = p.getCopy();
-        if (SystemVariables.grid > 0) {
-            int difference = 0;
-            Point offset = new Point(
-                    grid_displacement.getX() % SystemVariables.grid,
-                    grid_displacement.getY() % SystemVariables.grid);
-
-            difference = (p.getX() - offset.getX()) % SystemVariables.grid;
-            if (difference != 0) {
-                if (difference > SystemVariables.grid / 2) {
-                    r.setX(p.getX() + SystemVariables.grid - difference);
-                } else {
-                    r.setX(p.getX() - difference);
-                }
-            }
-
-            difference = (p.getY() - offset.getY()) % SystemVariables.grid;
-            if (difference != 0) {
-                if (difference > SystemVariables.grid / 2) {
-                    r.setY(p.getY() + SystemVariables.grid - difference);
-                } else {
-                    r.setY(p.getY() - difference);
-                }
-            }
-        }
-        return r;
+        return null;
     }
 
     /**
@@ -499,34 +410,26 @@ public class GraphModel {
      * @return The first Edge that contains the given query point within its
      *         bounding area. Null otherwise.
      */
-    public Edge findEdge(Point mouse, int options) {
-        Edge e = null;
-        if (edge_list.size() - 1 < last_found_edge_index + 1) {
-            last_found_edge_index = 0;
-        }
+    public Edge findEdge(Point mouse, int options){
+        if(edge_list.size() - 1 < last_found_edge_index + 1) last_found_edge_index = 0;
 
-        for (int i = last_found_edge_index + 1; i < edge_list.size(); i++) {
-            e = (Edge) edge_list.elementAt(i);
-            if (e.isLocated(mouse.getX(), mouse.getY(), options)) {
+        for(int i = last_found_edge_index + 1; i < edge_list.size(); i++){
+            Edge e = edge_list.elementAt(i);
+            if(e.isLocated(mouse.getX(), mouse.getY(), options)){
                 last_found_edge_index = i;
-                break;
-            } else {
-                e = null;
+                return e;
             }
         }
-        if (e == null) {
-            // not found yet, search other portion
-            for (int i = 0; (i <= last_found_edge_index && i < edge_list.size()); i++) {
-                e = (Edge) edge_list.elementAt(i);
-                if (e.isLocated(mouse.getX(), mouse.getY(), options)) {
-                    last_found_edge_index = i;
-                    break;
-                } else {
-                    e = null;
-                }
+        // not found yet, search other portion
+        for(int i = 0; i <= last_found_edge_index && i < edge_list.size(); i++){
+            Edge e = edge_list.elementAt(i);
+            if(e.isLocated(mouse.getX(), mouse.getY(), options)){
+                last_found_edge_index = i;
+                return e;
             }
         }
-        return e;
+        // no luck
+        return null;
     }
 
     /**
@@ -537,7 +440,7 @@ public class GraphModel {
      *            The node whose id is requested.
      * @return The id of the given node.
      */
-    public int getId(Node n) {
+    public int getId(Node n){
         return node_list.indexOf(n);
     }
 
@@ -548,30 +451,23 @@ public class GraphModel {
      *            The query Point.
      * @return Where the query Point would lie if it were snapped to the grid.
      */
-    public Point snapToGrid(Point p) {
+    public Point snapToGrid(Point p){
         Point snaped = p.getCopy();
-        if (SystemVariables.grid > 0) {
+        if(SystemVariables.grid > 0){
             int difference = 0;
-            Point offset = new Point(
-                    grid_displacement.getX() % SystemVariables.grid,
+            Point offset = new Point(grid_displacement.getX() % SystemVariables.grid,
                     grid_displacement.getY() % SystemVariables.grid);
 
             difference = (p.getX() - offset.getX()) % SystemVariables.grid;
-            if (difference != 0) {
-                if (difference > SystemVariables.grid / 2) {
-                    snaped.setX(p.getX() + SystemVariables.grid - difference);
-                } else {
-                    snaped.setX(p.getX() - difference);
-                }
+            if(difference != 0){
+                snaped.setX(difference > SystemVariables.grid / 2 ? p.getX() + SystemVariables.grid
+                        - difference : p.getX() - difference);
             }
 
             difference = (p.getY() - offset.getY()) % SystemVariables.grid;
-            if (difference != 0) {
-                if (difference > SystemVariables.grid / 2) {
-                    snaped.setY(p.getY() + SystemVariables.grid - difference);
-                } else {
-                    snaped.setY(p.getY() - difference);
-                }
+            if(difference != 0){
+                snaped.setY(difference > SystemVariables.grid / 2 ? p.getY() + SystemVariables.grid
+                        - difference : p.getY() - difference);
             }
         }
         return snaped;
