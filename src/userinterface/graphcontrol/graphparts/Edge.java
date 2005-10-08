@@ -707,8 +707,9 @@ public class Edge extends GraphObject{
      */
     private boolean hasUncontrollableLabel(){
         if(labelDataIsNull()) return false;
+        
         for(int i = 0; i < label_data.size(); i++){
-            if(((TableItem) label_data.elementAt(i)).getText(TransitionData.SPEC_CONTROLLABLE)
+            if(label_data.elementAt(i).getText(TransitionData.SPEC_CONTROLLABLE)
                     .equals(TransitionData.BOOLEAN_COMBO_FALSE)) return true;
         }
         return false;
