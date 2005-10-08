@@ -126,18 +126,18 @@ public class Node extends GraphObject{
      *            The x component of the start arrow direction.
      * @param arrow_y
      *            The y component of the start arrow direction.
-     * @param glyph_label
+     * @param glyphLabel
      *            A Label to be cloned for the glyph label of this Node.
      * @param latex_label
      *            A Label to be cloned for the latex label of this Node.
      */
     private Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes,
-            float arrow_x, float arrow_y, GlyphLabel glyph_label){
+            float arrow_x, float arrow_y, GlyphLabel glyphLabel){
         super(gp, gm, attributes);
         this.x = x;
         this.y = y;
         constructNode(r, arrow_x, arrow_y);
-        this.glyph_label = new GlyphLabel(gp, this, glyph_label);
+        this.setGlyphLabel(new GlyphLabel(gp, this, glyphLabel));
     }
 
     /**
@@ -203,7 +203,7 @@ public class Node extends GraphObject{
      *            The string representation of the latex label.
      */
     private void initializeLabels(String glyph_string){
-        glyph_label = new GlyphLabel(gp, this, glyph_string, origin(), Label.CENTER);
+        setGlyphLabel(new GlyphLabel(gp, this, glyph_string, origin(), Label.CENTER));
     }
 
     /**
@@ -217,7 +217,7 @@ public class Node extends GraphObject{
             attributes = GraphObject.MARKED_STATE;
         }
         lastClone = new Node(gp, null, x, y, r, attributes, start_arrow_direction.x,
-                start_arrow_direction.y, glyph_label);
+                start_arrow_direction.y, getGlyphLabel());
         return lastClone;
     }
 
@@ -233,32 +233,20 @@ public class Node extends GraphObject{
      *            The Drawer that will handle the drawing.
      */
     public void draw(Drawer drawer){
-        if(isGrouped()){
-            drawer.setColor(GraphModel.GROUPED);
-        }
-        if(isTraceObject()){
-            drawer.setColor(GraphModel.TRACE);
-        }
-        if(isHotSelected()){
-            drawer.setColor(GraphModel.HOT_SELECTED);
-        }
+        if(isGrouped()) drawer.setColor(GraphModel.GROUPED);
+        if(isTraceObject()) drawer.setColor(GraphModel.TRACE);
+        if(isHotSelected()) drawer.setColor(GraphModel.HOT_SELECTED);
 
         drawer.drawCircle(x, y, r, Drawer.SOLID);
 
-        if(isMarkedState()){
-            drawer.drawCircle(x, y, r - RDIF, Drawer.SOLID);
-        }
+        if(isMarkedState()) drawer.drawCircle(x, y, r - RDIF, Drawer.SOLID);
 
-        selectedLabel().drawLabel(drawer);
+        getGlyphLabel().drawLabel(drawer);
 
         if(isStartState()){
             drawer.setColor(GraphModel.NORMAL);
-            if(isGrouped()){
-                drawer.setColor(GraphModel.GROUPED);
-            }
-            if(isStartArrowSelected() || isHotSelected()){
-                drawer.setColor(GraphModel.SELECTED);
-            }
+            if(isGrouped()) drawer.setColor(GraphModel.GROUPED);
+            if(isStartArrowSelected() || isHotSelected()) drawer.setColor(GraphModel.SELECTED);
             arrowhead.draw(drawer);
             drawer.drawLine(arrowhead.xcoords[ArrowHead.NOCK], arrowhead.ycoords[ArrowHead.NOCK],
                     arrowhead.xcoords[ArrowHead.NOCK]
@@ -339,8 +327,9 @@ public class Node extends GraphObject{
     public void updateMovement(Point mouse, boolean exclusive){
         if(origional_configuration != null){
             if(!exclusive){
-                Point displacement = new Point(mouse.getX() - origional_configuration.movement_origin.getX(),
-                        mouse.getY() - origional_configuration.movement_origin.getY());
+                Point displacement = new Point(mouse.getX()
+                        - origional_configuration.movement_origin.getX(), mouse.getY()
+                        - origional_configuration.movement_origin.getY());
                 this.x = origional_configuration.origin.getX() + displacement.getX();
                 this.y = origional_configuration.origin.getY() + displacement.getY();
 
@@ -361,7 +350,7 @@ public class Node extends GraphObject{
             }
         }
 
-        selectedLabel().setAnchor(origin(), Label.CENTER);
+        getGlyphLabel().setAnchor(origin(), Label.CENTER);
     }
 
     /**
@@ -403,25 +392,21 @@ public class Node extends GraphObject{
      * may need to be resized.
      */
     public void accomodateLabel(){
-        selectedLabel().setAnchor(origin(), Label.CENTER);
+        getGlyphLabel().setAnchor(origin(), Label.CENTER);
 
-        selectedLabel().renderIfNeeded();
+        getGlyphLabel().renderIfNeeded();
 
-        int new_radius = selectedLabel().rendered_radius;
-        if(selectedLabel().isntEmpty() && isMarkedState()){
+        int new_radius = getGlyphLabel().rendered_radius;
+        if(getGlyphLabel().isntEmpty() && isMarkedState()){
             new_radius = new_radius + RDIF;
         }
         if(gm.max_node_size < new_radius){
             gm.max_node_size = new_radius;
             // because we changed the node size, we need to tell all the other
             // nodes to update.
-            if(SystemVariables.use_standard_node_size){
-                gm.accomodateLabels();
-            }
+            if(SystemVariables.use_standard_node_size) gm.accomodateLabels();
         }
-        if(SystemVariables.use_standard_node_size){
-            new_radius = gm.max_node_size;
-        }
+        if(SystemVariables.use_standard_node_size) new_radius = gm.max_node_size;
 
         if(new_radius != r){
             initiateMovement(origin(), GraphObject.NULL, 0);
@@ -441,8 +426,8 @@ public class Node extends GraphObject{
      * label type providing that the new type has an empty value.
      */
     public void fillBlankLabels(){
-        if(selectedLabel().string_representation.length() < 1){
-            glyph_label.string_representation = " ";
+        if(getGlyphLabel().string_representation.length() < 1){
+            getGlyphLabel().string_representation = " ";
         }
     }
 
@@ -487,21 +472,21 @@ public class Node extends GraphObject{
     /**
      * @return The x co-ordinate for this node.
      */
-    public int x(){
+    public int getX(){
         return x;
     }
 
     /**
      * @return The y co-ordinate for this node.
      */
-    public int y(){
+    public int getY(){
         return y;
     }
 
     /**
      * @return The radius for this node.
      */
-    public int r(){
+    public int getR(){
         return r;
     }
 
@@ -516,16 +501,13 @@ public class Node extends GraphObject{
      * Delete this node and all its edges.
      */
     public void delete(){
-        if(edge_group_list.size() > 0){
-            ((EdgeGroup) edge_group_list.elementAt(0)).delete();
-            delete();
+        while(edge_group_list.size() > 0){
+            edge_group_list.elementAt(0).delete();
         }
-        else{
-            edge_group_list = null;
-            gm.safeNull(this);
-            gm.removeNode(this);
-            gm = null;
-        }
+        edge_group_list = null;
+        gm.safeNull(this);
+        gm.removeNode(this);
+        gm = null;
     }
 
     /**
@@ -552,7 +534,7 @@ public class Node extends GraphObject{
      */
     public boolean isLocated(Point mouse, boolean padded){
         int padding = padded ? ArrowHead.HEAD_LENGTH : 0;
-        return origin().isInsideCircle(r() + padding, mouse);
+        return origin().isInsideCircle(r + padding, mouse);
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -569,8 +551,7 @@ public class Node extends GraphObject{
      * @return true if the start arrow should be selected by this mouse click.
      */
     public boolean isLocatedStartArrow(Point mouse){
-        if(isStartState()) return arrowhead.isLocated(mouse.getX(), mouse.getY());
-        return false;
+        return isStartState() ? arrowhead.isLocated(mouse.getX(), mouse.getY()) : false;
     }
 
     /**
@@ -599,8 +580,8 @@ public class Node extends GraphObject{
      */
     public void resetEdges(){
         for(int i = 0; i < edge_group_list.size(); i++){
-            ((EdgeGroup) edge_group_list.elementAt(i)).recalculate();
-            ((EdgeGroup) edge_group_list.elementAt(i)).accomodateLabels();
+            edge_group_list.elementAt(i).recalculate();
+            edge_group_list.elementAt(i).accomodateLabels();
         }
     }
 
@@ -618,16 +599,14 @@ public class Node extends GraphObject{
      * @return The EdgeGroup of the new Edge.
      */
     public EdgeGroup join(Edge new_edge, Node new_neighbour){
-        EdgeGroup e = null;
         for(int i = 0; i < edge_group_list.size(); i++){
-            e = (EdgeGroup) edge_group_list.elementAt(i);
+            EdgeGroup e = edge_group_list.elementAt(i);
             if(e.hasNodes(this, new_neighbour)){
                 e.addEdge(new_edge);
                 return e;
             }
         }
-
-        e = new EdgeGroup(this, new_neighbour, new_edge);
+        EdgeGroup e = new EdgeGroup(this, new_neighbour, new_edge);
         edge_group_list.addElement(e);
         if(this != new_neighbour) new_neighbour.addEdgeGroup(e);
         return e;
@@ -654,48 +633,27 @@ public class Node extends GraphObject{
     }
 
     /**
-     * Look for an edge attached to this node, that has a label associated with
-     * the given machine code.
+     * Look for edges that join this Node to a node in the given nodeList
      * 
-     * @param machine_code
-     *            The machine_code that will identify the edge
-     * @return An edge attached to this node bearing the given machine code, or
-     *         null.
-     */
-    public Edge getEdge(int machine_code){
-        Edge e = null;
-        for(int i = 0; i < edge_group_list.size(); i++){
-            e = ((EdgeGroup) edge_group_list.elementAt(i)).getEdge(machine_code, this);
-            if(e != null){
-                break;
-            }
-        }
-        return e;
-    }
-
-    /**
-     * Look for edges that join this Node to a node in the given node_list
-     * 
-     * @param node_list
+     * @param nodeList
      *            The list of valid nodes
      * @return A Vector of edges that join this Node to Nodes in the given
-     *         node_list
+     *         nodeList
      */
-    public Vector fetchEdges(Vector<Node> node_list){
-        EdgeGroup edge_group = null;
-        Vector<Edge> valid_edges = new Vector<Edge>();
+    public Vector<Edge> fetchEdges(Vector<Node> nodeList){
+        Vector<Edge> validEdges = new Vector<Edge>();
         for(int i = 0; i < edge_group_list.size(); i++){
-            edge_group = edge_group_list.elementAt(i);
-            edge_group.exclusive = false;
-            for(int j = 0; j < node_list.size(); j++){
-                if(edge_group.hasNodes(this, node_list.elementAt(j))){
-                    edge_group.addToList(valid_edges);
-                    edge_group.exclusive = true;
+            EdgeGroup edgeGroup = edge_group_list.elementAt(i);
+            edgeGroup.exclusive = false;
+            for(int j = 0; j < nodeList.size(); j++){
+                if(edgeGroup.hasNodes(this, nodeList.elementAt(j))){
+                    edgeGroup.addToList(validEdges);
+                    edgeGroup.exclusive = true;
                     break;
                 }
             }
         }
-        return valid_edges;
+        return validEdges;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -715,11 +673,6 @@ public class Node extends GraphObject{
         this.x = this.x + x;
         this.y = this.y + y;
         arrowhead.translateAll(x, y);
-        selectedLabel().setAnchor(origin(), Label.CENTER);
+        getGlyphLabel().setAnchor(origin(), Label.CENTER);
     }
-
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Export to custom formats
-    // ///////////////////////////////////////////////////////////////////////////////////////
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

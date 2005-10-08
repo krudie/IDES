@@ -241,27 +241,6 @@ public class EdgeGroup{
     }
 
     /**
-     * Look for an edge (origination at the start node) that has a label
-     * associated with the given machine code.
-     * 
-     * @param machine_code
-     *            The machine_code that will identify the edge
-     * @param start_node
-     *            The node from which the edge should start
-     * @return An edge bearing the given machine code, or null.
-     */
-    public Edge getEdge(int machine_code, Node start_node){
-        Edge e = null;
-        for(int i = 0; i < edge_list.size(); i++){
-            e = (Edge) edge_list.elementAt(i);
-            if(e.hasMachineCode(machine_code, start_node)){
-                return e;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Check out how many levels there are in this edge group. edges = 1 ->
      * populated levels: 0. edges = 2 -> populated levels: 1. edges = 3 ->
      * populated levels: 0,1. edges = 4 -> populated levels: 1,2.

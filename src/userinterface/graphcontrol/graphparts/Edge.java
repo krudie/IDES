@@ -139,8 +139,8 @@ public class Edge extends GraphObject{
         constructEdge(start_node, end_node);
         initializeLabels(DEFAULT_LABEL_DISPLACEMENT, DEFAULT_LABEL_DISPLACEMENT);
 
-        if(isSelfLoop()) curve = new Curve(n1, n2, edge_group.newUnitVector(this));
-        else curve = new Curve(n1, n2);
+        curve = isSelfLoop() ? new Curve(n1, n2, edge_group.newUnitVector(this))
+                : new Curve(n1, n2);
 
         edge_group.recalculate();
     }
@@ -171,14 +171,14 @@ public class Edge extends GraphObject{
      *            A Label to be cloned for the latex label of this Edge.
      */
     private Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, Curve curve,
-            Point label_displacement, int a, Vector<TableItem> label_data, GlyphLabel glyph_label){
+            Point label_displacement, int a, Vector<TableItem> label_data, GlyphLabel glyphLabel){
         super(gp, gm, a);
         constructEdge(start_node, end_node);
 
         this.curve = curve;
         this.label_displacement = label_displacement;
         this.label_data = label_data;
-        this.glyph_label = new GlyphLabel(gp, this, glyph_label);
+        this.setGlyphLabel(new GlyphLabel(gp, this, glyphLabel));
     }
 
     /**
@@ -255,7 +255,7 @@ public class Edge extends GraphObject{
     private void initializeLabels(int gtx, int gty){
         label_displacement = new Point(gtx, gty);
         label_data = new Vector<TableItem>();
-        glyph_label = new GlyphLabel(gp, this);
+        setGlyphLabel(new GlyphLabel(gp, this));
     }
 
     /**
@@ -266,14 +266,12 @@ public class Edge extends GraphObject{
      * @return A clone of this Edge.
      */
     public Edge newClone(){
-        if(n1.getLastClone() != null && n2.getLastClone() != null){
-            int clone_attribute = GraphObject.NULL;
-            if(isSimple()) clone_attribute = GraphObject.SIMPLE;
-            return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(), curve.newClone(n1
-                    .getLastClone(), n2.getLastClone()), label_displacement.getCopy(),
-                    clone_attribute, getLabelDataVector(), glyph_label);
-        }
-        return null;
+        if(n1.getLastClone() == null || n2.getLastClone() == null) return null;
+        int clone_attribute = GraphObject.NULL;
+        if(isSimple()) clone_attribute = GraphObject.SIMPLE;
+        return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(), curve.newClone(n1
+                .getLastClone(), n2.getLastClone()), label_displacement.getCopy(), clone_attribute,
+                getLabelDataVector(), getGlyphLabel());
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,7 +304,7 @@ public class Edge extends GraphObject{
         else if(n == n1) curve.updateNodeMovement(origional_configuration, mouse, n2, n1);
         else curve.updateNodeMovement(origional_configuration, mouse, n1, n2);
 
-        selectedLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
+        getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
     }
 
@@ -352,19 +350,15 @@ public class Edge extends GraphObject{
             level = level + 2;
             angle = 120 / (edge_group_levels + 3);
         }
-        if(edge_position % 2 == 1){
-            level = -level;
-        }
+        if(edge_position % 2 == 1) level = -level;
         // swap side if our assumption of direction was false
-        if(against_group_direction){
-            level = -level;
-        }
-        float adjust = angle / 2; // because there is no center edge,
+        if(against_group_direction) level = -level;
+        float adjust = angle / 2;
+        // because there is no center edge,
         // we want all angles to be less by
         // one half increment
-        if(level < 0){
-            adjust = -adjust;
-        } // because we want a decrease in magnitude
+        if(level < 0) adjust = -adjust;
+        // because we want a decrease in magnitude
         curve.calculateCurve(level * 8, level * angle - adjust);
     }
 
@@ -377,22 +371,21 @@ public class Edge extends GraphObject{
         float angle = (float) Math.toDegrees(curve.headAnchorAngle());
         // force angle to -180 ... 180 (it represents the angle from the
         // bisector)
+
         if(angle > 180) angle = 360 - angle;
         if(angle < -180) angle = 360 + angle;
         // increase the size to a maximum of +-90
         if(angle >= 0 && angle < 90) angle = angle + 10;
         else if(angle < 0 && angle > -90) angle = angle - 10;
         // fix the angle for convention of calculateCurve
-        angle = angle * -1;
+        angle = -angle;
 
         // compute and increase the rise
         Line bisector = new Line(n1.origin(), n2.origin());
         float rise = bisector.perpendicularDistance(curve.headCtrl());
         rise = (float) (rise * 1.1);
         // fix the rise for convention of calculateCurve
-        if(angle < 0){
-            rise = rise * -1;
-        }
+        if(angle < 0) rise = -rise;
 
         curve.calculateCurve(rise, angle);
         removeAttribute(GraphObject.SIMPLE);
@@ -405,18 +398,17 @@ public class Edge extends GraphObject{
         if(angle > 180) angle = 360 - angle;
         if(angle < -180) angle = 360 + angle;
         // decrease the size
-        if(angle > 0) angle = angle - 10;
-        else angle = angle + 10;
+        angle += angle > 0 ? -10 : 10;
         // fix the angle for convention of calculateCurve
-        angle = angle * -1;
+        angle *= -1;
 
         // compute and decrease the rise
         Line bisector = new Line(n1.origin(), n2.origin());
         float rise = bisector.perpendicularDistance(curve.headCtrl());
         float factor = (float) ((100 - Math.abs(angle)) / 100);
-        rise = rise - (float) (rise * factor);
+        rise -= rise * factor;
         // fix the rise for convention of calculateCurve
-        if(angle < 0) rise = rise * -1;
+        if(angle < 0) rise *= -1;
 
         curve.calculateCurve(rise, angle);
         removeAttribute(GraphObject.SIMPLE);
@@ -449,7 +441,7 @@ public class Edge extends GraphObject{
         else curve.drawCurve(drawer, Drawer.SOLID);
 
         if(!labelDataIsNull()){
-            selectedLabel().drawData(drawer, label_data);
+            getGlyphLabel().drawData(drawer, label_data);
 
             if(all_tethers || selectionState == Edge.EXCLUSIVE){
                 Point destination = curve.calculateBezierPoint((float) 0.5);
@@ -457,15 +449,15 @@ public class Edge extends GraphObject{
                         .setColor(GraphModel.CUSTOM);
                 else drawer.setColor(GraphModel.TETHERS);
 
-                selectedLabel().drawBox(drawer);
-                selectedLabel().drawTether(drawer, destination);
+                getGlyphLabel().drawBox(drawer);
+                getGlyphLabel().drawTether(drawer, destination);
             }
         }
 
         if(all_anchors || selectionState == Edge.EXCLUSIVE){
-            drawer.setColor((isHotSelected() && lastHitRegion != R_NONE && lastHitRegion != R_LABEL) ?
-                    GraphModel.CUSTOM
-                    : GraphModel.ANCHORS);
+            drawer
+                    .setColor((isHotSelected() && lastHitRegion != R_NONE && lastHitRegion != R_LABEL) ? GraphModel.CUSTOM
+                            : GraphModel.ANCHORS);
 
             if(isSelfLoop()) curve.drawSelfLoopAnchor(drawer);
             else{
@@ -526,7 +518,7 @@ public class Edge extends GraphObject{
 
             if(((options & Edge.L_ALL_TETHERS) > 0) || selectionState == Edge.EXCLUSIVE) adjustment = 0;
 
-            if(selectedLabel().isLocated(new Point(x, y))){
+            if(getGlyphLabel().isLocated(new Point(x, y))){
                 lastHitRegion = Edge.R_LABEL;
                 return true;
             }
@@ -600,7 +592,7 @@ public class Edge extends GraphObject{
                 break;
             }
         }
-        selectedLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
+        getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
     }
 
@@ -615,17 +607,17 @@ public class Edge extends GraphObject{
      * changes to it's label.
      */
     public void accomodateLabel(){
-        selectedLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
+        getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
 
         String representation = getLabelDataString();
-        if(!selectedLabel().string_representation.equals(representation)){
+        if(!getGlyphLabel().string_representation.equals(representation)){
             // the label has changed we must render it.
-            selectedLabel().string_representation = representation;
-            selectedLabel().render();
+            getGlyphLabel().string_representation = representation;
+            getGlyphLabel().render();
         }
 
-        selectedLabel().renderIfNeeded();
+        getGlyphLabel().renderIfNeeded();
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -672,7 +664,7 @@ public class Edge extends GraphObject{
     public boolean labelDataIsNull(){
         int i = 0;
         while(i < label_data.size()){
-            if(((TableItem) label_data.elementAt(i)).isDisposed()) label_data.removeElementAt(i);
+            if(label_data.elementAt(i).isDisposed()) label_data.removeElementAt(i);
             else i++;
         }
         return label_data.size() == 0;
@@ -687,7 +679,7 @@ public class Edge extends GraphObject{
     private String getLabelDataString(){
         if(labelDataIsNull()) return "";
 
-        int column = selectedLabel().isLatexLabel() ? TransitionData.SPEC_LATEX
+        int column = getGlyphLabel().isLatexLabel() ? TransitionData.SPEC_LATEX
                 : TransitionData.SPEC_SYMBOL;
 
         String representation = ((TableItem) label_data.elementAt(0)).getText(column);
@@ -703,28 +695,10 @@ public class Edge extends GraphObject{
      * @return A copy of the label_data Vector of this Edge.
      */
     public Vector<TableItem> getLabelDataVector(){
-        if(labelDataIsNull()) return new Vector<TableItem>();
+        labelDataIsNull();
         return new Vector<TableItem>(label_data);
     }
 
-    /**
-     * Test if this edge has any labels that contain the given machine code,
-     * providing this edge starts at the given start node
-     * 
-     * @param machine_code
-     *            The machine_code that will identify the edge
-     * @param start_node
-     *            The node from which the edge should start
-     * @return true if this edge bears the given machine code
-     */
-    public boolean hasMachineCode(int machine_code, Node start_node){
-        if(n1 != start_node || labelDataIsNull()) return false;
-        for(int i = 0; i < label_data.size(); i++){
-            if(((TableItem) label_data.elementAt(i)).getText(TransitionData.SPEC_MACHINE_CODE)
-                    .equals("" + machine_code)) return true;
-        }
-        return false;
-    }
 
     /**
      * Test if this edge has any labels that are uncontrollable transitions.
@@ -787,7 +761,7 @@ public class Edge extends GraphObject{
         curve.dispose();
         curve = null;
         label_data = null;
-        glyph_label = null;
+        setGlyphLabel(null);
 
         edge_group.removeEdge(this);
         edge_group = null;
@@ -816,7 +790,7 @@ public class Edge extends GraphObject{
      */
     public void translateAll(int x, int y){
         curve.translateAll(x, y);
-        selectedLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
+        getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
     }
 }

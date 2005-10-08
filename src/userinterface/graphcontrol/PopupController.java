@@ -140,7 +140,7 @@ public class PopupController {
                 if (gp.gc.menued_object != null) {
                     gp.gc.floating_text.initialize(((Node) gp.gc.menued_object).origin(),
                             ((Node) gp.gc.menued_object).origin(),
-                            ((Node) gp.gc.menued_object).glyph_label);
+                            ((Node) gp.gc.menued_object).getGlyphLabel());
                     gp.gc.floating_text.setVisible(true);
                 }
             }

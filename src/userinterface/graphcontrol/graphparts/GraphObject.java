@@ -41,7 +41,14 @@ public abstract class GraphObject {
     /**
      * The label for this GraphObject
      */
-    public GlyphLabel glyph_label = null;
+    private GlyphLabel glyphLabel = null;
+    
+    public GlyphLabel getGlyphLabel(){
+        return glyphLabel;
+    }
+    public void setGlyphLabel(GlyphLabel glyphLabel){
+        this.glyphLabel = glyphLabel;
+    }
 
     /**
      * The platform in which this GraphObject exists.
@@ -82,16 +89,6 @@ public abstract class GraphObject {
      */
     public void confirm(GraphModel gm) {
         this.gm = gm;
-    }
-
-    /**
-     * Get the Label that is currently being used by this Node.
-     * 
-     * @return An instance of the implementation of Label currently being used
-     *         by this Node.
-     */
-    protected Label selectedLabel() {
-        return glyph_label;
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

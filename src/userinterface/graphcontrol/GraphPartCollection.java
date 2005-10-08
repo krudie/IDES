@@ -202,17 +202,17 @@ public class GraphPartCollection{
                     Node n = (Node) part;
                     if(x1 == x2){
                         // first node
-                        x1 = n.x() - n.r();
-                        y1 = n.y() - n.r();
-                        x2 = n.x() + n.r();
-                        y2 = n.y() + n.r();
+                        x1 = n.getX() - n.getR();
+                        y1 = n.getY() - n.getR();
+                        x2 = n.getX() + n.getR();
+                        y2 = n.getY() + n.getR();
                     }
                     else{
                         // grow
-                        if(n.x() - n.r() < x1) x1 = n.x() - n.r();
-                        if(n.y() - n.r() < y1) y1 = n.y() - n.r();
-                        if(n.x() + n.r() > x2) x2 = n.x() + n.r();
-                        if(n.y() + n.r() > y2) y2 = n.y() + n.r();
+                        if(n.getX() - n.getR() < x1) x1 = n.getX() - n.getR();
+                        if(n.getY() - n.getR() < y1) y1 = n.getY() - n.getR();
+                        if(n.getX() + n.getR() > x2) x2 = n.getX() + n.getR();
+                        if(n.getY() + n.getR() > y2) y2 = n.getY() + n.getR();
                     }
                 }
             }

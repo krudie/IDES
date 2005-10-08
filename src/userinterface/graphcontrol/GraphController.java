@@ -401,7 +401,7 @@ public class GraphController{
                         if(gpc.lastGrabbedObject() instanceof Node){
                             floating_text.initialize(new Point(e.x, e.y), ((Node) gpc
                                     .lastGrabbedObject()).origin(),
-                                    gpc.lastGrabbedObject().glyph_label);
+                                    gpc.lastGrabbedObject().getGlyphLabel());
                             floating_text.setVisible(true);
                         }
                         else if(gpc.lastGrabbedObject() instanceof Edge

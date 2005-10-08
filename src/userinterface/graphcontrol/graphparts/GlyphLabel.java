@@ -125,12 +125,7 @@ public class GlyphLabel extends Label{
      * @return A clone of the bounding box.
      */
     public Rectangle cloneBoundingBox(){
-        if(glyph_bounds != null){
-            return (Rectangle) glyph_bounds.clone();
-        }
-        else{
-            return null;
-        }
+        return glyph_bounds != null ? (Rectangle) glyph_bounds.clone() : null;
     }
 
     /**
@@ -268,10 +263,9 @@ public class GlyphLabel extends Label{
      *            The Drawer that will handle the drawing.
      */
     public void drawLabel(Drawer drawer){
-        if(glyph_shape_vector != null){
-            for(int i = 0; i < glyph_shape_vector.size(); i++){
-                drawer.drawShape(glyph_shape_vector.elementAt(i));
-            }
+        if(glyph_shape_vector == null) return;
+        for(int i = 0; i < glyph_shape_vector.size(); i++){
+            drawer.drawShape(glyph_shape_vector.elementAt(i));
         }
     }
 

@@ -266,11 +266,11 @@ public class GraphModel{
                 gp.gc.gpc.addToGrouping(n);
                 list1.add(n);
                 list2.add(n);
-                if(new_area == null) new_area = new Box(n.x(), n.y(), n.x(), n.y());
-                if(n.x() - n.r() < new_area.x1()) new_area.x1(n.x() - n.r());
-                if(n.y() - n.r() < new_area.y1()) new_area.y1(n.y() - n.r());
-                if(n.x() + n.r() > new_area.x2()) new_area.x2(n.x() + n.r());
-                if(n.y() + n.r() > new_area.y2()) new_area.y2(n.y() + n.r());
+                if(new_area == null) new_area = new Box(n.getX(), n.getY(), n.getX(), n.getY());
+                if(n.getX() - n.getR() < new_area.x1()) new_area.x1(n.getX() - n.getR());
+                if(n.getY() - n.getR() < new_area.y1()) new_area.y1(n.getY() - n.getR());
+                if(n.getX() + n.getR() > new_area.x2()) new_area.x2(n.getX() + n.getR());
+                if(n.getY() + n.getR() > new_area.y2()) new_area.y2(n.getY() + n.getR());
             }
         }
         for(int i = 0; i < list1.size(); i++){
@@ -327,17 +327,17 @@ public class GraphModel{
             n = node_list.elementAt(i);
             if(i == 0){
                 // first node
-                bounds.x1(n.x() - n.r());
-                bounds.y1(n.y() - n.r());
-                bounds.x2(n.x() + n.r());
-                bounds.y2(n.y() + n.r());
+                bounds.x1(n.getX() - n.getR());
+                bounds.y1(n.getY() - n.getR());
+                bounds.x2(n.getX() + n.getR());
+                bounds.y2(n.getY() + n.getR());
             }
             else{
                 // grow
-                if(n.x() - n.r() < bounds.x1()) bounds.x1(n.x() - n.r());
-                if(n.y() - n.r() < bounds.y1()) bounds.y1(n.y() - n.r());
-                if(n.x() + n.r() > bounds.x2()) bounds.x2(n.x() + n.r());
-                if(n.y() + n.r() > bounds.y2()) bounds.y2(n.y() + n.r());
+                if(n.getX() - n.getR() < bounds.x1()) bounds.x1(n.getX() - n.getR());
+                if(n.getY() - n.getR() < bounds.y1()) bounds.y1(n.getY() - n.getR());
+                if(n.getX() + n.getR() > bounds.x2()) bounds.x2(n.getX() + n.getR());
+                if(n.getY() + n.getR() > bounds.y2()) bounds.y2(n.getY() + n.getR());
             }
         }
 
@@ -370,7 +370,7 @@ public class GraphModel{
         Line line = new Line(n1.origin(), n2.origin());
         for(int i = 0; i < node_list.size(); i++){
             Node n = node_list.elementAt(i);
-            if(n != n1 && n != n2 && line.isNear(n.origin(), n.r())) return true;
+            if(n != n1 && n != n2 && line.isNear(n.origin(), n.getR())) return true;
         }
         return false;
     }
