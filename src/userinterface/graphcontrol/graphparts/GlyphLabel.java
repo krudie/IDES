@@ -157,34 +157,29 @@ public class GlyphLabel extends Label{
      * specify an anchor.
      */
     public void render(){
-        if(string_representation.length() > 0){
-            try{
-                gp.shell.setEnabled(false);
-                gp.shell.setCursor(ResourceManager.getCursor(ResourceManager.WAIT_CURSOR));
-
-                if(anchor_type == CENTER){
-                    renderAtCenter();
-                }
-                else{
-                    renderAtCorner();
-                }
-
-                rendered_radius = Math.round(Geometric.magnitude(glyph_bounds.height,
-                        glyph_bounds.width) / 2)
-                        + RENDERED_RADIUS_FACTOR;
-                rendered_radius = Math.max(rendered_radius, MINIMUM_RADIUS);
-                parent.accomodateLabel();
-
-                gp.gc.j2dcanvas.repaint();
-                gp.shell.setEnabled(true);
-                gp.shell.setCursor(ResourceManager.getCursor(ResourceManager.ARROW_CURSOR));
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-        else{
+        if(string_representation.length() <= 0){
             glyph_shape_vector = null;
+            return;
+        }
+        try{
+            gp.shell.setEnabled(false);
+            gp.shell.setCursor(ResourceManager.getCursor(ResourceManager.WAIT_CURSOR));
+
+            if(anchor_type == CENTER) renderAtCenter();
+            else renderAtCorner();
+
+            rendered_radius = Math.round(Geometric.magnitude(glyph_bounds.height,
+                    glyph_bounds.width) / 2)
+                    + RENDERED_RADIUS_FACTOR;
+            rendered_radius = Math.max(rendered_radius, MINIMUM_RADIUS);
+            parent.accomodateLabel();
+
+            gp.gc.j2dcanvas.repaint();
+            gp.shell.setEnabled(true);
+            gp.shell.setCursor(ResourceManager.getCursor(ResourceManager.ARROW_CURSOR));
+        }
+        catch(Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -194,9 +189,7 @@ public class GlyphLabel extends Label{
      * explicitly specify an anchor.
      */
     public void renderIfNeeded(){
-        if(glyph_shape_vector == null && string_representation.length() > 0){
-            render();
-        }
+        if(glyph_shape_vector == null && string_representation.length() > 0) render();
     }
 
     /**
@@ -277,7 +270,7 @@ public class GlyphLabel extends Label{
     public void drawLabel(Drawer drawer){
         if(glyph_shape_vector != null){
             for(int i = 0; i < glyph_shape_vector.size(); i++){
-                drawer.drawShape((Shape) glyph_shape_vector.elementAt(i));
+                drawer.drawShape(glyph_shape_vector.elementAt(i));
             }
         }
     }
@@ -316,7 +309,8 @@ public class GlyphLabel extends Label{
      *            this Label.
      */
     public void drawTether(Drawer drawer, Point anchor){
-        drawer.drawLine(anchor.getX(), anchor.getY(), glyph_bounds.x, glyph_bounds.y, Drawer.SMALL_DASHED);
+        drawer.drawLine(anchor.getX(), anchor.getY(), glyph_bounds.x, glyph_bounds.y,
+                Drawer.SMALL_DASHED);
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,19 +327,17 @@ public class GlyphLabel extends Label{
      *            Determines how the anchor should be interpreted.
      */
     public void setAnchor(Point anchor, int anchor_type){
-        if(this.anchor != null && anchor.equals(this.anchor) && anchor_type == this.anchor_type){
-                return;
-        }
-                
+        if(this.anchor != null && anchor.equals(this.anchor) && anchor_type == this.anchor_type) return;
+
         if(this.anchor == null) this.anchor = anchor.getCopy();
         else this.anchor.copy(anchor);
 
         this.anchor_type = anchor_type;
-        
+
         if(glyph_bounds != null && glyph_vector_vector != null && anchor_type == CENTER){
             glyph_bounds.x = anchor.getX() - glyph_bounds.width / 2;
             glyph_bounds.y = anchor.getY() - glyph_bounds.height / 2;
-            
+
             // build the glyph shapes in the proper positions
             glyph_shape_vector = new Vector<Shape>();
             Rectangle these_bounds = null;
@@ -353,10 +345,10 @@ public class GlyphLabel extends Label{
             for(int i = 0; i < glyph_vector_vector.size(); i++){
                 these_bounds = ((GlyphVector) glyph_vector_vector.elementAt(i)).getPixelBounds(
                         FONT_RENDER_CONTEXT, 0, 0);
-                glyph_shape = ((GlyphVector) glyph_vector_vector.elementAt(i)).getOutline(
-                        anchor.getX() - these_bounds.x - these_bounds.width / 2, anchor.getY()
-                        - these_bounds.y - unpadded_box_height / 2 + i
-                        * (GLYPH_HEIGHT + LINE_SPACE));
+                glyph_shape = ((GlyphVector) glyph_vector_vector.elementAt(i)).getOutline(anchor
+                        .getX()
+                        - these_bounds.x - these_bounds.width / 2, anchor.getY() - these_bounds.y
+                        - unpadded_box_height / 2 + i * (GLYPH_HEIGHT + LINE_SPACE));
                 glyph_shape_vector.addElement(glyph_shape);
             }
         }
@@ -364,7 +356,6 @@ public class GlyphLabel extends Label{
             renderAtCorner();
         }
     }
-
 
     /**
      * Test if a mouse-click should select this Label

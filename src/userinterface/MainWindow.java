@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.*;
 
 import userinterface.menu.MenuController;
 
-public class MainWindow {
+public class MainWindow{
 
     /**
      * The display object for this platform.
@@ -37,29 +37,25 @@ public class MainWindow {
             NULL_RESOURCE = "The resource bundle was null.  \nThis component requires the resource bundle.",
             LOST_RESOURCE = "The resource bundle [resource_bundle.properties] did not load.  \nIt should be located at the root of the source code.";
 
-    private ResourceManager rm;
-
     private static MenuController menu;
 
     private static ProjectExplorer pe;
 
-    private static ObjectExplorer oe;
-
     private static GraphingPlatform gp;
 
-    public MainWindow(Splash splash) {
-        try {
+    public MainWindow(Splash splash){
+        try{
             display = Display.getDefault();
             // Shell for showing error messages
             errorShell = new Shell(display, SWT.NO_TRIM);
             shell = new Shell(display, SWT.SHELL_TRIM);
-            rm = new ResourceManager();
+            new ResourceManager();
             initComponents();
 
-            shell.addListener(SWT.Close, new Listener() {
-                public void handleEvent(Event event) {
+            shell.addListener(SWT.Close, new Listener(){
+                public void handleEvent(Event event){
                     event.doit = false;
-                    if (menu != null && menu.getFileListener() != null) {
+                    if(menu != null && menu.getFileListener() != null){
                         menu.getFileListener().exit(new SelectionEvent(event));
                     }
                 }
@@ -67,27 +63,26 @@ public class MainWindow {
             shell.layout();
             shell.open();
             splash.dispose();
-            while (!shell.isDisposed()) {
-                if (!display.readAndDispatch())
-                    display.sleep();
+            while(!shell.isDisposed()){
+                if(!display.readAndDispatch()) display.sleep();
             }
             errorShell.dispose();
             display.dispose();
-        } catch (Exception e) {
-            if (errorShell != null) {
+        }
+        catch(Exception e){
+            if(errorShell != null){
                 errorShell.dispose();
             }
-            if (shell != null) {
+            if(shell != null){
                 shell.dispose();
             }
-            if (display != null) {
+            if(display != null){
                 display.dispose();
             }
 
             Display error_display = Display.getDefault();
             Shell errorShell = new Shell(error_display, SWT.NO_TRIM);
-            MessageBox messageBox = new MessageBox(errorShell, SWT.ICON_ERROR
-                    | SWT.CLOSE);
+            MessageBox messageBox = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE);
 
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -97,21 +92,22 @@ public class MainWindow {
             messageBox.setText(FATAL_ERROR);
             messageBox.open();
 
-            try {
+            try{
                 Runtime
                         .getRuntime()
                         .exec(
                                 "rundll32 url.dll,FileProtocolHandler http://www.aggressivesoftware.com/research/ides/bugs/default.asp?bug="
-                                        + URLEncoder.encode(e.getMessage()
-                                                + "\n\n" + stacktrace, "UTF-8"));
-            } catch (Exception ex) {
+                                        + URLEncoder.encode(e.getMessage() + "\n\n" + stacktrace,
+                                                "UTF-8"));
+            }
+            catch(Exception ex){
             }
 
             throw new RuntimeException(e);
         }
     }
 
-    private void initComponents() {
+    private void initComponents(){
 
         // the window
         shell.setText(ResourceManager.getString("window.title"));
@@ -140,38 +136,36 @@ public class MainWindow {
         mainSash.setLayout(new FillLayout());
 
         pe = new ProjectExplorer(leftSash, shell);
-        oe = new ObjectExplorer(leftSash);
+        new ObjectExplorer(leftSash);
         gp = new GraphingPlatform(mainSash, shell, menu);
         gp.setEnabled(false);
 
-        mainSash.setWeights(new int[] { 30, 70 });
+        mainSash.setWeights(new int[] {30, 70});
 
     }
 
-    public static void fatalErrorPopup(String error_title, String error_message) {
-        MessageBox error_popup = new MessageBox(errorShell, SWT.ICON_ERROR
-                | SWT.CLOSE);
+    public static void fatalErrorPopup(String error_title, String error_message){
+        MessageBox error_popup = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE);
         error_popup.setMessage(error_message);
         error_popup.setText(error_title);
         error_popup.open();
         throw new RuntimeException(error_title + "\n" + error_message);
     }
 
-    public static ProjectExplorer getProjectExplorer() {
+    public static ProjectExplorer getProjectExplorer(){
         return pe;
     }
 
-    public static GraphingPlatform getGraphingPlatform() {
+    public static GraphingPlatform getGraphingPlatform(){
         return gp;
     }
 
-    public static MenuController getMenu() {
+    public static MenuController getMenu(){
         return menu;
     }
 
-    public static void errorPopup(String errorTitle, String errorMessage) {
-        MessageBox errorPopup = new MessageBox(errorShell, SWT.ICON_ERROR
-                | SWT.CLOSE);
+    public static void errorPopup(String errorTitle, String errorMessage){
+        MessageBox errorPopup = new MessageBox(errorShell, SWT.ICON_ERROR | SWT.CLOSE);
         errorPopup.setMessage(errorMessage);
         errorPopup.setText(errorTitle);
         errorPopup.open();

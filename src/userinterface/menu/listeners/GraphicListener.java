@@ -14,7 +14,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
-import userinterface.GraphingPlatform;
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
 
