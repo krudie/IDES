@@ -400,8 +400,8 @@ public class GraphController{
                     if(gpc.new_last_grabbed_object){
                         if(gpc.lastGrabbedObject() instanceof Node){
                             floating_text.initialize(new Point(e.x, e.y), ((Node) gpc
-                                    .lastGrabbedObject()).origin(),
-                                    gpc.lastGrabbedObject().getGlyphLabel());
+                                    .lastGrabbedObject()).origin(), gpc.lastGrabbedObject()
+                                    .getGlyphLabel());
                             floating_text.setVisible(true);
                         }
                         else if(gpc.lastGrabbedObject() instanceof Edge
@@ -446,20 +446,17 @@ public class GraphController{
                     // can ignore right mouses at that time
                     left_mouse_is_down = false;
 
-                    if(selected_tool == ZOOM_TOOL){
+                    switch(selected_tool){
+                    case ZOOM_TOOL:
                         if(gm.scale < GraphModel.MAXIMUM_SCALE){
                             float old_scale = gm.scale;
                             gm.scale = gm.scale * 2;
                             gm.translateAll((int) Math.round(e.x / gm.scale - e.x / old_scale),
                                     (int) Math.round(e.y / gm.scale - e.y / old_scale));
                         }
-                        else{
-                            gp.display.beep();
-                        }
-                    }
-
-                    else if(selected_tool == CREATE_TOOL){
-
+                        else gp.display.beep();
+                        break;
+                    case CREATE_TOOL:
                         if(edge_creation_origin == null && !is_double_click){
                             // there was no node hit on the mouse down, so we
                             // assume they were trying to create a node
@@ -469,38 +466,36 @@ public class GraphController{
                                 && new Date().getTime() - click_time > 300){
                             // we are finishing the edge creation process, so we
                             // will try to connect it to an end node
-                            Node n = gm.findNode(edge_mouse, false); // search
-                            if(n == null){
-                                n = gm.findNode(edge_mouse, true);
-                            } // padded search
-                            if(n == null){
-                                n = createNode(edge_mouse);
-                            } // if they clicked on blank space then create a
+                            // search
+                            Node n = gm.findNode(edge_mouse, false);
+                            // padded search
+                            if(n == null) n = gm.findNode(edge_mouse, true);
+                            // if they clicked on blank space then create a
                             // new node
+                            if(n == null) n = createNode(edge_mouse);
                             finishEdgeCreation(n);
                         }
-                    }
-
-                    else if(selected_tool == MODIFY_TOOL){
+                        break;
+                    case MODIFY_TOOL:
                         if(hot_selected_object != null) finishObjectMovement();
                         if(start_state_node != null && start_state_node.isStartArrowSelected()) finishStartStateArrowMovement();
                         if(is_selection_area_click){
                             is_selection_area_click = false;
                             group_area.mouseUp();
                         }
-                    }
-
-                    else if(selected_tool == PRINT_AREA_TOOL){
+                        break;
+                    case PRINT_AREA_TOOL:
                         gm.print_area.mouseUp();
-                    }
-
-                    else if(selected_tool == GRAB_TOOL){
+                        break;
+                    case GRAB_TOOL:
                         grab_origin[2] = 0; // mark as "not in mid grab"
                         io.markUnsavedChanges();
+                        break;
                     }
                 }
                 else if(e.button == 3){
-                    if(selected_tool == ZOOM_TOOL){
+                    switch(selected_tool){
+                    case ZOOM_TOOL:
                         if(gm.scale > GraphModel.MINIMUM_SCALE){
                             float old_scale = gm.scale;
                             gm.scale = gm.scale / 2;
@@ -510,17 +505,16 @@ public class GraphController{
                         else{
                             gp.display.beep();
                         }
-                    }
-
-                    else if(selected_tool == CREATE_TOOL){
+                        break;
+                    case CREATE_TOOL:
                         if(edge_creation_origin != null && new Date().getTime() - click_time > 300){
                             // we are finishing the edge creation process
                             // the user right-clicked, so we abandon the edge
                             gp.display.beep();
                             cleanupEdgeCreation();
                         }
+                        break;
                     }
-
                 }
 
                 is_double_click = false;
@@ -545,55 +539,43 @@ public class GraphController{
              */
             public void mouseDown(MouseEvent e){
                 Point mouse = new Point(e.x / gm.scale, e.y / gm.scale);
-                Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10) / gm.scale); // allows
-                // two
-                // hotspots
-                // on
-                // the
-                // create
-                // tool
+                Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10) / gm.scale);
+                // allows two hotspots on the create tool
 
+                Edge broken_edge;
+                
                 last_down_created_an_edge = false;
 
                 if(e.button == 1){
                     left_mouse_is_down = true;
-
-                    if(selected_tool == CREATE_TOOL){
+                    switch(selected_tool){
+                    case CREATE_TOOL:
                         if(edge_creation_origin == null){
                             // assume we are starting the edge creation process;
                             // therefore look for a nearby node as the origin
                             Node n = gm.findNode(edge_mouse, false);
-                            if(n != null){
+                            if(n != null) startEdgeCreation(n, edge_mouse);
+                            // perhaps they are trying to disconnect and
+                            // move an existing edge, test for arrowhead
+                            // hits.
+                            else if((broken_edge = gm.findEdge(edge_mouse, Edge.L_NO_TETHERS)) != null){
+                                Node start_node = broken_edge.getSource();
+                                broken_edge_labels = broken_edge.getLabelDataVector();
+                                broken_edge_label_displacement = broken_edge
+                                .getLabelDisplacement();
+                                broken_edge.delete();
+                                startEdgeCreation(start_node, edge_mouse);
+                            }
+                            // still no hits. look again for nearby
+                            // nodes with a padded radius,
+                            // in case they thought they were supposed
+                            // to click near the node
+                            else if((n = gm.findNode(edge_mouse, true)) != null){
                                 startEdgeCreation(n, edge_mouse);
                             }
-                            else{
-                                // perhaps they are trying to disconnect and
-                                // move an existing edge, test for arrowhead
-                                // hits.
-                                Edge broken_edge = gm.findEdge(edge_mouse, Edge.L_NO_TETHERS);
-                                if(broken_edge != null){
-                                    Node start_node = broken_edge.getSource();
-                                    broken_edge_labels = broken_edge.getLabelDataVector();
-                                    broken_edge_label_displacement = broken_edge
-                                            .getLabelDisplacement();
-                                    broken_edge.delete();
-                                    startEdgeCreation(start_node, edge_mouse);
-                                }
-                                else{
-                                    // still no hits. look again for nearby
-                                    // nodes with a padded radius,
-                                    // in case they thought they were supposed
-                                    // to click near the node
-                                    n = gm.findNode(edge_mouse, true);
-                                    if(n != null){
-                                        startEdgeCreation(n, edge_mouse);
-                                    }
-                                }
-                            }
                         }
-                    }
-
-                    else if(selected_tool == MODIFY_TOOL){
+                        break;
+                    case MODIFY_TOOL:
                         // first we check if they are clicking inside a visible
                         // selection area.
                         if(group_area.cursorIsOverArea()){
@@ -655,9 +637,8 @@ public class GraphController{
                                         // anchors
                                         // this was an arrow hit, mark it as the
                                         // exclusive edge
-                                        if(last_exclusive_edge != null){
-                                            last_exclusive_edge.setSelectionState(Edge.NO_ANCHORS);
-                                        }
+                                        if(last_exclusive_edge != null) last_exclusive_edge
+                                                .setSelectionState(Edge.NO_ANCHORS);
                                         ((Edge) hot_selected_object)
                                                 .setSelectionState(Edge.EXCLUSIVE);
                                         last_exclusive_edge = ((Edge) hot_selected_object);
@@ -666,57 +647,41 @@ public class GraphController{
                                             GraphObject.HOT_SELECTED, e.stateMask);
                                     gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
-                                else{
-                                    // look for nearby nodes (since no edges
-                                    // were found)
-                                    hot_selected_object = gm.findNode(mouse, false);
-                                    if(hot_selected_object != null){
-                                        // the user clicked inside a node, so
-                                        // begin to move that node.
-                                        hot_selected_object.initiateMovement(mouse,
-                                                GraphObject.HOT_SELECTED, e.stateMask);
-                                        gpc.updateGroup(e.stateMask, hot_selected_object);
-                                    }
-                                    else{
-                                        // test if the user clicked on the start
-                                        // arrow of the start state
-                                        if(start_state_node != null){
-                                            if(start_state_node.isLocatedStartArrow(mouse)){
-                                                startStartStateArrowMovement();
-                                                gpc.updateGroup(e.stateMask, start_state_node);
-                                            }
-                                            else{
-                                                // the user clicked blank space.
-                                                blankClickAction(mouse);
-                                            }
-                                        }
-                                        else{
-                                            // the user clicked blank space.
-                                            blankClickAction(mouse);
-                                        }
-                                    }
+                                // look for nearby nodes (since no edges
+                                // were found)
+                                else if(null != (hot_selected_object = gm.findNode(mouse, false))){
+                                    // the user clicked inside a node, so
+                                    // begin to move that node.
+                                    hot_selected_object.initiateMovement(mouse,
+                                            GraphObject.HOT_SELECTED, e.stateMask);
+                                    gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
+                                // test if the user clicked on the start
+                                // arrow of the start state
+                                else if(start_state_node != null
+                                        && start_state_node.isLocatedStartArrow(mouse)){
+                                    startStartStateArrowMovement();
+                                    gpc.updateGroup(e.stateMask, start_state_node);
+                                }
+                                // the user clicked blank space.
+                                else blankClickAction(mouse);
                             }
                         }
-                    }
-
-                    else if(selected_tool == PRINT_AREA_TOOL){
+                        break;
+                    case PRINT_AREA_TOOL:
                         gm.print_area.mouseDown(mouse);
-                    }
-
-                    else if(selected_tool == GRAB_TOOL){
+                        break;
+                    case GRAB_TOOL:
                         grab_origin[0] = mouse.getX();
                         grab_origin[1] = mouse.getY();
                         grab_origin[2] = 1; // mark as "in mid grab"
+                        break;
                     }
                 }
 
                 else if(e.button == 3 && !left_mouse_is_down && selected_tool != ZOOM_TOOL){
                     // select the correct hotspot
-                    Point hot_mouse = mouse;
-                    if(selected_tool == CREATE_TOOL){
-                        hot_mouse = edge_mouse;
-                    }
+                    Point hot_mouse = selected_tool == CREATE_TOOL ? edge_mouse : mouse;
 
                     // ignore right click that occur during edge creation
                     if(edge_creation_origin == null){
@@ -739,18 +704,9 @@ public class GraphController{
                             if(menued_object != null){
                                 // a node was found
                                 menued_object.addAttribute(GraphObject.HOT_SELECTED);
-                                if(((Node) menued_object).isStartState()){
-                                    pc.mitm_node_startstate.setSelection(true);
-                                }
-                                else{
-                                    pc.mitm_node_startstate.setSelection(false);
-                                }
-                                if(((Node) menued_object).isMarkedState()){
-                                    pc.mitm_node_markedstate.setSelection(true);
-                                }
-                                else{
-                                    pc.mitm_node_markedstate.setSelection(false);
-                                }
+                                Node n = (Node) menued_object;
+                                pc.mitm_node_startstate.setSelection(n.isStartState());
+                                pc.mitm_node_markedstate.setSelection(n.isMarkedState());
                                 pc.mnu_node.setVisible(true);
                             }
                             else if(selected_tool == MODIFY_TOOL && group_area.isVisible()
@@ -954,8 +910,6 @@ public class GraphController{
         gm.addNode(n);
         io.markUnsavedChanges();
         return n;
-        // gp.display.beep();
-        // try { Thread.sleep(400); } catch (Exception e) {}
     }
 
     /**
