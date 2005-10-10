@@ -677,8 +677,7 @@ public class Edge extends GraphObject{
     private String getLabelDataString(){
         if(labelDataIsNull()) return "";
 
-        int column = getGlyphLabel().isLatexLabel() ? TransitionData.SPEC_LATEX
-                : TransitionData.SPEC_SYMBOL;
+        int column = TransitionData.SPEC_SYMBOL;
 
         String representation = ((TableItem) label_data.elementAt(0)).getText(column);
         for(int i = 1; i < label_data.size(); i++){
