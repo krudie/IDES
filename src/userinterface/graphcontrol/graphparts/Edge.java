@@ -13,7 +13,6 @@ import userinterface.geometric.Point;
 import userinterface.geometric.UnitVector;
 import userinterface.graphcontrol.Drawer;
 import userinterface.graphcontrol.GraphModel;
-import userinterface.graphcontrol.EventSpecification;
 
 /**
  * An Edge is a Curve connecting two Nodes with and ArrowHead at one end. The
@@ -608,7 +607,7 @@ public class Edge extends GraphObject{
         getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
 
-        String representation = getLabelDataString();
+        String representation = "";//getLabelDataString();
         if(!getGlyphLabel().string_representation.equals(representation)){
             // the label has changed we must render it.
             getGlyphLabel().string_representation = representation;
@@ -674,18 +673,16 @@ public class Edge extends GraphObject{
      * 
      * @return The string to be displayed.
      */
-    private String getLabelDataString(){
-        if(labelDataIsNull()) return "";
-
-        int column = TransitionData.SPEC_SYMBOL;
-
-
-        String representation = ((TableItem) label_data.elementAt(0)).getText(column);
-        for(int i = 1; i < label_data.size(); i++){
-            representation += ", " + ((TableItem) label_data.elementAt(i)).getText(column);
-        }
-        return representation;
-    }
+    //private String getLabelDataString(){
+    //    if(labelDataIsNull()) return "";
+    //    int column = TransitionData;
+//
+//        String representation = ((TableItem) label_data.elementAt(0)).getText(column);
+//        for(int i = 1; i < label_data.size(); i++){
+//            representation += ", " + ((TableItem) label_data.elementAt(i)).getText(column);
+//        }
+//        return representation;
+//    }
 
     /**
      * Delivers a copy of the label_data Vector of this Edge.
@@ -704,12 +701,6 @@ public class Edge extends GraphObject{
      * @return true if this edge bears any uncontrollable transitions.
      */
     private boolean hasUncontrollableLabel(){
-        if(labelDataIsNull()) return false;
-        
-        for(int i = 0; i < label_data.size(); i++){
-            if(label_data.elementAt(i).getText(TransitionData.SPEEventSpecification)
-                    .equals(TransitionData.BOOLEEventSpecification)) return true;
-        }
         return false;
     }
 

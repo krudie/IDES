@@ -131,7 +131,7 @@ public class Node extends GraphObject{
      * @param latex_label
      *            A Label to be cloned for the latex label of this Node.
      */
-    private Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes,
+    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes,
             float arrow_x, float arrow_y, GlyphLabel glyphLabel){
         super(gp, gm, attributes);
         this.x = x;

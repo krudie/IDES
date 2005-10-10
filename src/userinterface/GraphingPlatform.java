@@ -1,9 +1,10 @@
 package userinterface;
 
+import java.util.ListIterator;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -12,9 +13,15 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import projectModel.Automaton;
+import projectModel.State;
+import projectModel.SubElement;
 
+import userinterface.general.Ascii;
 import userinterface.graphcontrol.GraphController;
+
 import userinterface.graphcontrol.EventSpecification;
+import userinterface.graphcontrol.graphparts.Node;
+
 import userinterface.menu.MenuController;
 
 public class GraphingPlatform {
@@ -142,6 +149,47 @@ public class GraphingPlatform {
         automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
         
         graphFolderItem.setText(automaton.getName());
+        
+        ListIterator<State> si = automaton.getStateIterator();
+        while(si.hasNext()){
+            State s = si.next();
+            SubElement g = s.getSubElement("graphic");
+            
+            int x = Ascii.safeInt(g.getAttribute("x"));
+            int y = Ascii.safeInt(g.getAttribute("y"));
+            int r = Ascii.safeInt(g.getAttribute("r"));
+            int a = Ascii.safeInt(g.getAttribute("a"));
+            float dx = Ascii.safeFloat(g.getAttribute("dx"));
+            float dy = Ascii.safeFloat(g.getAttribute("dy"));
+            String l = Ascii.unEscapeReturn(g.getAttribute("l"));
+            
+            gc.gm.addNode(new Node(this,gc.gm,x,y,r,a,dx,dy,l));
+            gc.repaint();
+            gc.gm.accomodateLabels();
+        }        
+    }
+    
+    public void save(){
+        ListIterator<State> si = automaton.getStateIterator();
+        while(si.hasNext()){
+            si.next();
+            si.remove();
+        }
+        
+        for(int i = 0; i < gc.gm.getSize(); i++){
+            Node n = gc.gm.getNodeById(i);
+            State s = new State(i);
+            SubElement g = s.getSubElement("graphic");
+            g.setAttribute("x", ""+n.getX());
+            g.setAttribute("y", ""+n.getY());
+            g.setAttribute("r", ""+n.getR());
+            g.setAttribute("a", "0");
+            g.setAttribute("dx", "0");
+            g.setAttribute("dy", "0");
+            g.setAttribute("l", n.getGlyphLabel().string_representation);
+            
+            si.add(s);
+        }
         
     }
     

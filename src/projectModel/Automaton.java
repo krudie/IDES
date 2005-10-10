@@ -40,7 +40,7 @@ public class Automaton {
         states.remove(s);
     }
 
-    public ListIterator getStateIterator() {
+    public ListIterator<State> getStateIterator() {
         return states.listIterator();
     }
 
