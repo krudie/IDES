@@ -77,7 +77,7 @@ public class Edge extends GraphObject{
      * Determines edge behaviour, such as visibility, colour, etc of anchors and
      * the tether.
      */
-    private int selectionState = 0;
+    private int selectionState = NO_ANCHORS;
 
     public int getSelectionState(){
         return selectionState;
@@ -409,11 +409,9 @@ public class Edge extends GraphObject{
         rise -= rise * factor;
         // fix the rise for convention of calculateCurve
         if(angle < 0) rise *= -1;
-
         curve.calculateCurve(rise, angle);
         removeAttribute(GraphObject.SIMPLE);
     }
-
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Edge drawing
     // ///////////////////////////////////////////////////////////////////////////////////////////////////
