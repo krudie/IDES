@@ -35,8 +35,7 @@ public class ProjectExplorer {
     TreeItem automata[] = null;
 
     public ProjectExplorer(Composite parent, Shell shell) {
-        treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION
-                | SWT.BORDER);
+        treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
 
         pep = new ProjectExplorerPopup(shell, this);
 

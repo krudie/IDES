@@ -40,13 +40,11 @@ public class ProjectExplorerPopup {
     private void initAutomatonMenu() {
         automatonMenu = new Menu(shell, SWT.POP_UP);
         MenuItem renameItem = new MenuItem(automatonMenu, SWT.PUSH);
-        renameItem.setText(ResourceManager
-                .getToolTipText("projectexplorer_rename"));
+        renameItem.setText(ResourceManager.getToolTipText("projectexplorer_rename"));
         renameItem.addSelectionListener(rl);
 
         MenuItem deleteItem = new MenuItem(automatonMenu, SWT.PUSH);
-        deleteItem.setText(ResourceManager
-                .getToolTipText("projectexplorer_delete"));
+        deleteItem.setText(ResourceManager.getToolTipText("projectexplorer_delete"));
 
         deleteItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent arg0) {

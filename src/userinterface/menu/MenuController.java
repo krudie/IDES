@@ -44,7 +44,9 @@ public class MenuController {
     /**
      * The ToolBars
      */
-    public ToolBar tbr_file = null, tbr_graphic = null, tbr_edit = null;
+    public ToolBar tbr_file = null,
+                   tbr_graphic = null,
+                   tbr_edit = null;
 
     /**
      * This object houses all the listeners for the File System
@@ -63,43 +65,52 @@ public class MenuController {
     public OptionListener optionListener = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // UnifiedMenus
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // UnifiedMenu ///////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * File System.
      */
-    public UnifiedMenu file_new_project = null, file_new_automaton = null,
-            file_open_project = null, file_save_project = null,
-            file_open_automaton = null, file_save_automaton = null,
-            file_exit = null;
+    public UnifiedMenu file_new_project = null,
+                        file_new_automaton = null,
+                        file_open_project = null,
+                        file_save_project = null,
+                        file_open_automaton = null,
+                        file_save_automaton = null,
+                        file_exit = null;
 
     /**
      * Edit System.
      */
-    public UnifiedMenu edit_copy = null, edit_paste = null, edit_delete = null;
+    public UnifiedMenu edit_copy = null,
+                       edit_paste = null,
+                       edit_delete = null;
 
     /**
      * Option System.
      */
-    public UnifiedMenu option_errorreport = null, option_node = null;
+    public UnifiedMenu option_errorreport = null,
+                       option_node = null;
 
     /**
      * Graphic System.
      */
-    public UnifiedMenu graphic_zoom = null, graphic_create = null,
-            graphic_modify = null, graphic_grab = null, graphic_grid = null,
-            graphic_alledges = null, graphic_alllabels = null;
+    public UnifiedMenu graphic_zoom = null,
+                       graphic_create = null,
+                       graphic_modify = null,
+                       graphic_grab = null,
+                       graphic_grid = null,
+                       graphic_alledges = null,
+                       graphic_alllabels = null;
 
     /**
      * Help System.
      */
-    public UnifiedMenu help_helptopics = null, help_about = null;
+    public UnifiedMenu help_helptopics = null,
+                       help_about = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Other
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Other //////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -142,17 +153,12 @@ public class MenuController {
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
-        file_new_project = new UnifiedMenu(ResourceManager.FILE_NEW_PROJECT,
-                fileListener);
-        file_open_project = new UnifiedMenu(ResourceManager.FILE_OPEN_PROJECT,
-                fileListener, SWT.CTRL + 'o');
-        file_save_project = new UnifiedMenu(ResourceManager.FILE_SAVE_PROJECT,
-                fileListener, SWT.CTRL + 's');
+        file_new_project = new UnifiedMenu(ResourceManager.FILE_NEW_PROJECT, fileListener);
+        file_open_project = new UnifiedMenu(ResourceManager.FILE_OPEN_PROJECT, fileListener, SWT.CTRL + 'o');
+        file_save_project = new UnifiedMenu(ResourceManager.FILE_SAVE_PROJECT, fileListener, SWT.CTRL + 's');
         file_exit = new UnifiedMenu(ResourceManager.FILE_EXIT, fileListener);
 
-        file_new_automaton = new UnifiedMenu(
-                ResourceManager.FILE_NEW_AUTOMATON, fileListener,
-                SWT.CTRL + 'n');
+        file_new_automaton = new UnifiedMenu(ResourceManager.FILE_NEW_AUTOMATON, fileListener, SWT.CTRL + 'n');
         file_open_automaton = new UnifiedMenu(
                 ResourceManager.FILE_OPEN_AUTOMATON, fileListener);
         file_save_automaton = new UnifiedMenu(
@@ -176,8 +182,7 @@ public class MenuController {
 
         // setup the toolbar structures and add the ToolItems (order matters)
 
-        tbr_file = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT
-                | SWT.WRAP);
+        tbr_file = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT| SWT.WRAP);
 
         file_new_project.addTitm(tbr_file);
         file_open_project.addTitm(tbr_file);
@@ -226,8 +231,7 @@ public class MenuController {
         advanced_coolbar.addToolBar(tbr_edit);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Graphic System
-        // /////////////////////////////////////////////////////////////////////////////////////////////////
+        // Graphic System /////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
@@ -367,8 +371,7 @@ public class MenuController {
         advanced_coolbar.setWrapIndices(new int[] { 2 });
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Initial States
-        // /////////////////////////////////////////////////////////////////////////////////////////////////
+        // Initial States /////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         file_new_automaton.setEnabled(false);
@@ -405,8 +408,7 @@ public class MenuController {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // advanced features
-    // //////////////////////////////////////////////////////////////////////////////////////////////
+    // advanced features //////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

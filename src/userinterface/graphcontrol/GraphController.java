@@ -87,8 +87,12 @@ public class GraphController{
     /**
      * Constants for reference to the various ToolItems.
      */
-    public final int CREATE_TOOL = 1, MODIFY_TOOL = 3, GRAB_TOOL = 7, GRID_TOOL = 8,
-            PRINT_AREA_TOOL = 9, ZOOM_TOOL = 10;
+    public final int CREATE_TOOL = 1,
+                     MODIFY_TOOL = 3,
+                     GRAB_TOOL = 7,
+                     GRID_TOOL = 8,
+                     PRINT_AREA_TOOL = 9,
+                     ZOOM_TOOL = 10;
 
     /**
      * This objects facilitates the painting on the J2DCanvas
@@ -135,9 +139,12 @@ public class GraphController{
     /**
      * Colours for objects to be drawn in the graph.
      */
-    public final Color black = new Color(0, 0, 0), red = new Color(255, 0, 0), blue = new Color(0,
-            0, 255), green = new Color(0, 64, 0), dark_red = new Color(128, 0, 0),
-            grey = new Color(180, 180, 180);
+    public final Color black = new Color(0, 0, 0),
+                       red = new Color(255, 0, 0),
+                       blue = new Color(0,0, 255),
+                       green = new Color(0, 64, 0),
+                       dark_red = new Color(128, 0, 0),
+                       grey = new Color(180, 180, 180);
 
     /**
      * Colours for objects to be drawn in the graph. Indices correspond to the
@@ -253,17 +260,14 @@ public class GraphController{
     private int last_hslider_selection = 0, last_vslider_selection = 0;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // GraphController construction
-    // ///////////////////////////////////////////////////////////////////////////////////
+    // GraphController construction ///////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Construct the GraphController.
      * 
-     * @param graphing_platform
-     *            The platform in which this GraphController will exist.
-     * @param parent
-     *            The composite in which the J2DCanvas will be embedded.
+     * @param graphing_platform The platform in which this GraphController will exist.
+     * @param parent The composite in which the J2DCanvas will be embedded.
      */
     public GraphController(GraphingPlatform graphing_platform, Composite parent){
         gp = graphing_platform;
@@ -271,8 +275,7 @@ public class GraphController{
         // embed the J2DCanvas
         painting_controller = new PaintingController(this);
         j2dcanvas = new J2DCanvas(parent, SWT.NULL, painting_controller);
-        GridData gd_canvas = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
+        GridData gd_canvas = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
         j2dcanvas.setLayoutData(gd_canvas);
         j2dcanvas.setBackground(gp.display.getSystemColor(SWT.COLOR_WHITE));
         j2dcanvas.addListener(SWT.Resize, new Listener(){
@@ -295,9 +298,7 @@ public class GraphController{
 
         vslider.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent e){
-                gm.translateAll(0, (int) Math.round((last_vslider_selection - vslider
-                        .getSelection())
-                        / gm.scale));
+                gm.translateAll(0, (int) Math.round((last_vslider_selection - vslider.getSelection()) / gm.scale));
                 last_vslider_selection = vslider.getSelection();
                 j2dcanvas.repaint();
             }
@@ -305,8 +306,7 @@ public class GraphController{
 
         hslider.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent e){
-                gm.translateAll((int) Math.round((last_hslider_selection - hslider.getSelection())
-                        / gm.scale), 0);
+                gm.translateAll((int) Math.round((last_hslider_selection - hslider.getSelection()) / gm.scale), 0);
                 last_hslider_selection = hslider.getSelection();
                 j2dcanvas.repaint();
             }
@@ -334,8 +334,7 @@ public class GraphController{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Canvas
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Canvas /////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -399,17 +398,14 @@ public class GraphController{
                     }
                     if(gpc.new_last_grabbed_object){
                         if(gpc.lastGrabbedObject() instanceof Node){
-                            floating_text.initialize(new Point(e.x, e.y), ((Node) gpc
-                                    .lastGrabbedObject()).origin(), gpc.lastGrabbedObject()
-                                    .getGlyphLabel());
+                            floating_text.initialize(new Point(e.x, e.y), ((Node) gpc.lastGrabbedObject()).origin(), gpc.lastGrabbedObject().getGlyphLabel());
                             floating_text.setVisible(true);
                         }
                         else if(gpc.lastGrabbedObject() instanceof Edge
                                 && ((Edge) gpc.lastGrabbedObject()).getLastHitRegion() == Edge.R_LABEL
                                 || ((Edge) gpc.lastGrabbedObject()).getLastHitRegion() == Edge.R_ARROWHEAD
                                 || ((Edge) gpc.lastGrabbedObject()).getLastHitRegion() == Edge.R_HEAD_ANCHOR){
-                            floating_toggles.initialize(new Point(e.x, e.y + 8), (Edge) gpc
-                                    .lastGrabbedObject());
+                            floating_toggles.initialize(new Point(e.x, e.y + 8), (Edge) gpc.lastGrabbedObject());
                             floating_toggles.setVisible(true);
                         }
                     }
@@ -418,8 +414,7 @@ public class GraphController{
             }
 
             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // Mouse Up
-            // ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Mouse Up ///////////////////////////////////////////////////////////////////////////////////////////////////////
             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             /**
@@ -637,10 +632,8 @@ public class GraphController{
                                         // anchors
                                         // this was an arrow hit, mark it as the
                                         // exclusive edge
-                                        if(last_exclusive_edge != null) last_exclusive_edge
-                                                .setSelectionState(Edge.NO_ANCHORS);
-                                        ((Edge) hot_selected_object)
-                                                .setSelectionState(Edge.EXCLUSIVE);
+                                        if(last_exclusive_edge != null) last_exclusive_edge.setSelectionState(Edge.NO_ANCHORS);
+                                        ((Edge) hot_selected_object).setSelectionState(Edge.EXCLUSIVE);
                                         last_exclusive_edge = ((Edge) hot_selected_object);
                                     }
                                     hot_selected_object.initiateMovement(mouse,
@@ -652,8 +645,7 @@ public class GraphController{
                                 else if(null != (hot_selected_object = gm.findNode(mouse, false))){
                                     // the user clicked inside a node, so
                                     // begin to move that node.
-                                    hot_selected_object.initiateMovement(mouse,
-                                            GraphObject.HOT_SELECTED, e.stateMask);
+                                    hot_selected_object.initiateMovement(mouse, GraphObject.HOT_SELECTED, e.stateMask);
                                     gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
                                 // test if the user clicked on the start
@@ -1045,7 +1037,6 @@ public class GraphController{
         gpc.abandonGroupHistory();
         grab_origin[2] = 0;
         group_area.resetState();
-        gp.td.resetInputState();
         gm = new GraphModel(gp);
         j2dcanvas.repaint();
         gp.tabFolder.setSelection(GraphingPlatform.GRAPH_CANVAS_TAB);
@@ -1060,8 +1051,7 @@ public class GraphController{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // drawing
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // drawing ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

@@ -34,14 +34,15 @@ public class MainWindow{
      * Strings for error reporting before the resourse bundle can be loaded.
      */
     public static final String FATAL_ERROR = "Fatal Error: ",
-            NULL_RESOURCE = "The resource bundle was null.  \nThis component requires the resource bundle.",
-            LOST_RESOURCE = "The resource bundle [resource_bundle.properties] did not load.  \nIt should be located at the root of the source code.";
+                               NULL_RESOURCE = "The resource bundle was null.  \nThis component requires the resource bundle.",
+                               LOST_RESOURCE = "The resource bundle [resource_bundle.properties] did not load.  \nIt should be located at the root of the source code.";
 
     private static MenuController menu;
 
     private static ProjectExplorer pe;
 
     private static GraphingPlatform gp;
+    
 
     public MainWindow(Splash splash){
         try{
@@ -60,6 +61,7 @@ public class MainWindow{
                     }
                 }
             });
+            
             shell.layout();
             shell.open();
             splash.dispose();
@@ -95,10 +97,7 @@ public class MainWindow{
             try{
                 Runtime
                         .getRuntime()
-                        .exec(
-                                "rundll32 url.dll,FileProtocolHandler http://www.aggressivesoftware.com/research/ides/bugs/default.asp?bug="
-                                        + URLEncoder.encode(e.getMessage() + "\n\n" + stacktrace,
-                                                "UTF-8"));
+                        .exec("rundll32 url.dll,FileProtocolHandler http://www.aggressivesoftware.com/research/ides/bugs/default.asp?bug="+ URLEncoder.encode(e.getMessage() + "\n\n" + stacktrace,"UTF-8"));
             }
             catch(Exception ex){
             }
@@ -124,24 +123,23 @@ public class MainWindow{
 
         menu = new MenuController(shell);
 
-        SashForm mainSash = new SashForm(shell, SWT.HORIZONTAL);
-
-        GridData gd_tab_folder = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);
-        gd_tab_folder.horizontalSpan = 3;
-        mainSash.setLayoutData(gd_tab_folder);
-        mainSash.setLayout(new FillLayout());
-
+        SashForm mainSash = new SashForm(shell, SWT.HORIZONTAL | SWT.SMOOTH);
+        
+        GridData sashLayoutData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);
+        sashLayoutData.horizontalSpan = 3;
+        mainSash.setLayoutData(sashLayoutData);
+        
+        
         SashForm leftSash = new SashForm(mainSash, SWT.VERTICAL);
-        mainSash.setLayout(new FillLayout());
 
         pe = new ProjectExplorer(leftSash, shell);
         new ObjectExplorer(leftSash);
+        
+        
         gp = new GraphingPlatform(mainSash, shell, menu);
         gp.setEnabled(false);
 
         mainSash.setWeights(new int[] {30, 70});
-
     }
 
     public static void fatalErrorPopup(String error_title, String error_message){

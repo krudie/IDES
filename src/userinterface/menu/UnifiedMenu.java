@@ -82,14 +82,10 @@ public class UnifiedMenu {
     /**
      * Construct the UnifiedMenu.
      * 
-     * @param resource_handle
-     *            The constant identification for this UnifiedMenu's concept in
-     *            the ResourceManager.
-     * @param accelerator
-     *            An accelerator value for the MenuItems.
+     * @param resource_handle The constant identification for this UnifiedMenu's concept in the ResourceManager.
+     * @param accelerator An accelerator value for the MenuItems.
      */
-    public UnifiedMenu(String resource_handle, AbstractListener listener,
-            int accelerator) {
+    public UnifiedMenu(String resource_handle, AbstractListener listener, int accelerator) {
         constructUnifiedMenu(resource_handle, listener, accelerator);
     }
 
@@ -102,8 +98,7 @@ public class UnifiedMenu {
      * @param accelerator
      *            An accelerator value for the MenuItems.
      */
-    private void constructUnifiedMenu(String resource_handle,
-            AbstractListener listener, int accelerator) {
+    private void constructUnifiedMenu(String resource_handle,  AbstractListener listener, int accelerator) {
         this.listener = listener;
         this.resource_handle = resource_handle;
         this.accelerator = accelerator;
@@ -111,8 +106,7 @@ public class UnifiedMenu {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Main Menu Items
-    // ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Main Menu Items ////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -126,10 +120,8 @@ public class UnifiedMenu {
      * Create and add a MenuItem to this UnifiedMenu. It will appear at the next
      * available slot of its parent Menu.
      * 
-     * @param parent
-     *            The Menu where the MenuItem will exist.
-     * @param style
-     *            The style byte for the MenuItem
+     * @param parent The Menu where the MenuItem will exist.
+     * @param style  The style byte for the MenuItem
      */
     public void addMitm(Menu parent, int style) {
         mitm = new MenuItem(parent, style);
@@ -197,15 +189,9 @@ public class UnifiedMenu {
      * created after the main items. The initial enabled/disabled state of the
      * popup items are therefore derived from their respective main menu items.
      * 
-     * @param parent
-     *            The Menu where the MenuItem will exist.
-     * @param custom_listener
-     *            True if this MenuItem will use a custom listener instead of
-     *            the default one provided by its resource handle.
-     * @param custom_behaviour
-     *            True if this MenuItem should not be added to the Vector list
-     *            and should not be affected by group actions such as
-     *            enable/disable.
+     * @param parent The Menu where the MenuItem will exist.
+     * @param custom_listener True if this MenuItem will use a custom listener instead of  the default one provided by its resource handle.
+     * @param custom_behaviour True if this MenuItem should not be added to the Vector list and should not be affected by group actions such as enable/disable.
      */
     public MenuItem addPopupMitm(Menu parent, boolean custom_listener,
             boolean custom_behaviour) {

@@ -22,8 +22,15 @@ public class GraphModel{
     /**
      * The different styles that parts of this GraphModel may have.
      */
-    public static final int NORMAL = 0, SELECTED = 1, HOT_SELECTED = 1, CUSTOM = 2, ANCHORS = 3,
-            TETHERS = 3, TRACE = 2, GROUPED = 4, GREY = 5;
+    public static final int NORMAL = 0,
+                            SELECTED = 1,
+                            HOT_SELECTED = 1,
+                            CUSTOM = 2,
+                            ANCHORS = 3,
+                            TETHERS = 3,
+                            TRACE = 2,
+                            GROUPED = 4,
+                            GREY = 5;
 
     /**
      * The platform in which this GraphModel will exist.
@@ -73,15 +80,12 @@ public class GraphModel{
     public int max_node_size = 0;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // GraphModel construction
-    // ////////////////////////////////////////////////////////////////////////////////////////
+    // GraphModel construction ////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Construct the GraphModel.
-     * 
-     * @param gp
-     *            The GraphingPlatform in which this GraphModel will exist.
+     * @param gp The GraphingPlatform in which this GraphModel will exist.
      */
     public GraphModel(GraphingPlatform gp){
         this.gp = gp;
@@ -92,15 +96,13 @@ public class GraphModel{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // GraphModel modification
-    // ////////////////////////////////////////////////////////////////////////////////////////
+    // GraphModel modification ////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Add a Node to this GraphModel.
      * 
-     * @param new_node
-     *            The Node to be added to this GraphModel.
+     * @param new_node The Node to be added to this GraphModel.
      */
     public void addNode(Node new_node){
         node_list.addElement(new_node);
@@ -110,8 +112,7 @@ public class GraphModel{
     /**
      * Add an Edge to this GraphModel.
      * 
-     * @param new_edge
-     *            The Edge to be added to this GraphModel.
+     * @param new_edge The Edge to be added to this GraphModel.
      */
     public void addEdge(Edge new_edge){
         edge_list.addElement(new_edge);
@@ -130,9 +131,7 @@ public class GraphModel{
 
     /**
      * Remove an Edge from this GraphModel.
-     * 
-     * @param edge
-     *            The Edge to be removed from this GraphModel.
+     * @param edge The Edge to be removed from this GraphModel.
      */
     public void removeEdge(Edge edge){
         edge_list.removeElement(edge);
@@ -140,17 +139,14 @@ public class GraphModel{
 
     /**
      * Notify the GraphController of the deletion of a GraphObject
-     * 
-     * @param dead_object
-     *            The GraphObject that has been deleted.
+     * @param dead_object The GraphObject that has been deleted.
      */
     public void safeNull(GraphObject dead_object){
         gp.gc.safeNull(dead_object);
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // GraphModel actions
-    // /////////////////////////////////////////////////////////////////////////////////////////////
+    // GraphModel actions /////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -223,7 +219,8 @@ public class GraphModel{
         for(int i = 0; i < node_list.size(); i++){
             node_list.elementAt(i).fillBlankLabels();
         }
-        gp.td.fillBlankLabels();
+        // TODO: indkommenter
+        //gp.td.fillBlankLabels();
     }
 
     /**

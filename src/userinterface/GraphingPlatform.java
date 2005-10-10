@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.TabItem;
 import projectModel.Automaton;
 
 import userinterface.graphcontrol.GraphController;
-import userinterface.graphcontrol.TransitionData;
+import userinterface.graphcontrol.EventSpecification;
 import userinterface.menu.MenuController;
 
 public class GraphingPlatform {
@@ -38,12 +38,13 @@ public class GraphingPlatform {
      * The object that contains the transition data and exists in the info in
      * the specifications tab
      */
-    public TransitionData td = null;
+    public EventSpecification es = null;
 
     /**
      * Indicies of TabItems within the TabFolder
      */
-    public static final int GRAPH_CANVAS_TAB = 0, SPECIFICATIONS_TAB = 1;
+    public static final int GRAPH_CANVAS_TAB = 0,
+                            SPECIFICATIONS_TAB = 1;
 
     public GraphingPlatform(Composite parent, Shell shell, MenuController mc) {
 
@@ -58,19 +59,10 @@ public class GraphingPlatform {
         graphFolderItem.setText(ResourceManager.getString("window.graph_tab.text"));
 
         languageSpec = new TabItem(tabFolder, SWT.NONE);
-        languageSpec.setText(ResourceManager
-                .getString("window.specifications_tab.text"));
-
-        // define the layout of the content composite (within the base layout)
-        // define the layout of the TabFolder (within the base layout)
-        GridData gd_tab_folder = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);
-        gd_tab_folder.horizontalSpan = 3;
-        tabFolder.setLayoutData(gd_tab_folder);
+        languageSpec.setText(ResourceManager.getString("window.specifications_tab.text"));
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // specifications area
-        // ////////////////////////////////////////////////////////////////////////////////////////////
+        // specifications area ////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Note: this area has to be created before the graph area, because the
@@ -82,22 +74,19 @@ public class GraphingPlatform {
         // add it to the TabFolder
         languageSpec.setControl(cmp_transitions);
 
-        // create a layout for the content composite (for the widgits inside the
-        // composite)
-        GridLayout gl_transitions = new GridLayout();
-        gl_transitions.marginHeight = 3;
-        gl_transitions.marginWidth = 3;
-        gl_transitions.verticalSpacing = 0;
-        gl_transitions.horizontalSpacing = 0;
-        cmp_transitions.setLayout(gl_transitions); // attach it to the
-        // composite
+        // create a layout for the content composite (for the widgits inside the composite)
+        GridLayout glEvents = new GridLayout();
+        glEvents.marginHeight = 3;
+        glEvents.marginWidth = 3;
+        glEvents.verticalSpacing = 0;
+        glEvents.horizontalSpacing = 0;
+        cmp_transitions.setLayout(glEvents); // attach it to the composite
 
         // add the transition data object
-        td = new TransitionData(this, cmp_transitions);
+        es = new EventSpecification(cmp_transitions);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // graph area
-        // /////////////////////////////////////////////////////////////////////////////////////////////////////
+        // graph area /////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // the graphing area
@@ -119,20 +108,21 @@ public class GraphingPlatform {
         gc = new GraphController(this, cmpGraphing);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // selection between tabs
-        // /////////////////////////////////////////////////////////////////////////////////////////
+        // selection between tabs /////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         tabFolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
+                //TODO: indkommenter
+                /**
                 if (td.dirty_edges) {
                     td.dirty_edges = false;
                     gc.gm.accomodateLabels();
                     gc.repaint();
                 }
+                */
             }
         });
-
     }
 
     public void setEnabled(boolean state) {

@@ -23,9 +23,9 @@ public class ObjectExplorer {
 
     public ObjectExplorer(Composite parent) {
 
-        scrollComposite = new ScrolledComposite(parent, SWT.BORDER
-                | SWT.H_SCROLL | SWT.V_SCROLL);
-
+        scrollComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+                
+        
         objectComposite = new Composite(scrollComposite, SWT.BORDER);
 
         GridLayout gridLayout = new GridLayout();
@@ -39,7 +39,7 @@ public class ObjectExplorer {
             Text textbox = new Text(objectComposite, SWT.SINGLE | SWT.BORDER);
             GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
             gridData.grabExcessHorizontalSpace = true;
-            gridData.widthHint = 150;
+            gridData.widthHint = 100;
             textbox.setLayoutData(gridData);
         }
 

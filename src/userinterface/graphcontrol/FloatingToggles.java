@@ -50,8 +50,7 @@ public class FloatingToggles {
     private Button[] btns = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // FloatingToggles construction
-    // ///////////////////////////////////////////////////////////////////////////////////
+    // FloatingToggles construction ///////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -73,34 +72,34 @@ public class FloatingToggles {
             shell = null;
         }
 
-        TableItem[] table_items = gp.td.edges_table.getItems();
+        //TODO: indkommenter
+        //TableItem[] table_items = gp.td.edges_table.getItems();
 
         shell = new Shell(gp.shell, SWT.ON_TOP | SWT.RESIZE);
         GridLayout grid_layout = new GridLayout();
-        grid_layout.numColumns = Math.max((int) Math.round(Math
-                .sqrt(table_items.length)), 1);
+        //grid_layout.numColumns = Math.max((int) Math.round(Math.sqrt(table_items.length)), 1);
         grid_layout.marginWidth = 2;
         grid_layout.marginHeight = 2;
         grid_layout.verticalSpacing = 2;
         grid_layout.horizontalSpacing = 2;
         shell.setLayout(grid_layout);
 
-        Button btn = null;
-        GridData gd = null;
-        btns = new Button[table_items.length];
-        for (int i = 0; i < table_items.length; i++) {
-            btn = new Button(shell, SWT.TOGGLE);
-            btn.setText(table_items[i].getText(TransitionData.SPEC_SYMBOL));
-            btn.setData(table_items[i]);
-            btn.addListener(SWT.Selection, new Listener() {
-                public void handleEvent(Event e) {
-                    buttonToggleAction(e);
-                }
-            });
-            gd = new GridData(GridData.FILL_BOTH);
-            btn.setLayoutData(gd);
-            btns[i] = btn;
-        }
+        //Button btn = null;
+        //GridData gd = null;
+        //btns = new Button[table_items.length];
+        //for (int i = 0; i < table_items.length; i++) {
+        //    btn = new Button(shell, SWT.TOGGLE);
+        //    btn.setText(table_items[i].getText(TransitionDaEventSpecification));
+        //    btn.setData(table_items[i]);
+        //    btn.addListener(SWT.Selection, new Listener() {
+        //        public void handleEvent(Event e) {
+        //            buttonToggleAction(e);
+        //        }
+        //    });
+        //    gd = new GridData(GridData.FILL_BOTH);
+        //    btn.setLayoutData(gd);
+        //   btns[i] = btn;
+        //}
 
         shell.layout();
         shell.pack();

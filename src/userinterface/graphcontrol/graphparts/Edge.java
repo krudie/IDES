@@ -13,7 +13,7 @@ import userinterface.geometric.Point;
 import userinterface.geometric.UnitVector;
 import userinterface.graphcontrol.Drawer;
 import userinterface.graphcontrol.GraphModel;
-import userinterface.graphcontrol.TransitionData;
+import userinterface.graphcontrol.EventSpecification;
 
 /**
  * An Edge is a Curve connecting two Nodes with and ArrowHead at one end. The
@@ -679,6 +679,7 @@ public class Edge extends GraphObject{
 
         int column = TransitionData.SPEC_SYMBOL;
 
+
         String representation = ((TableItem) label_data.elementAt(0)).getText(column);
         for(int i = 1; i < label_data.size(); i++){
             representation += ", " + ((TableItem) label_data.elementAt(i)).getText(column);
@@ -706,8 +707,8 @@ public class Edge extends GraphObject{
         if(labelDataIsNull()) return false;
         
         for(int i = 0; i < label_data.size(); i++){
-            if(label_data.elementAt(i).getText(TransitionData.SPEC_CONTROLLABLE)
-                    .equals(TransitionData.BOOLEAN_COMBO_FALSE)) return true;
+            if(label_data.elementAt(i).getText(TransitionData.SPEEventSpecification)
+                    .equals(TransitionData.BOOLEEventSpecification)) return true;
         }
         return false;
     }
