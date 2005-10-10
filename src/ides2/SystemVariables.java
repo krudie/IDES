@@ -88,7 +88,7 @@ public class SystemVariables {
     /**
      * Construct the SystemVariables.
      */
-    public SystemVariables() {
+    public SystemVariables() {       
         // calcualte the application path
         String class_paths = System.getProperty("java.class.path");
         if (class_paths.indexOf(System.getProperty("path.separator")) > 0) {
@@ -140,8 +140,6 @@ public class SystemVariables {
                             use_error_reporting = (next_token.equals("true"));
                         } else if (this_token.equals("use_standard_node_size")) {
                             use_standard_node_size = (next_token.equals("true"));
-                        } else if (this_token.equals("floating_text_size")) {
-                            floating_text_size = new Point(next_token);
                         }
                     }
                 }
@@ -162,8 +160,7 @@ public class SystemVariables {
             out.println("show_all_edges=" + show_all_edges);
             out.println("show_all_labels=" + show_all_labels);
             out.println("use_error_reporting=" + use_error_reporting);
-            out.println("use_standard_node_size=" + use_standard_node_size);
-            out.println("floating_text_size=" + floating_text_size);
+            out.println("use_standard_node_size=" + use_standard_node_size);            
             out.close();
         } catch (Exception e) {
             e.printStackTrace();

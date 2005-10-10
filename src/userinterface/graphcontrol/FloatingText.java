@@ -65,9 +65,8 @@ public class FloatingText {
 
         shell = new Shell(gp.shell, SWT.ON_TOP | SWT.RESIZE);
         shell.setLayout(new FillLayout());
-        shell.setSize(SystemVariables.floating_text_size.getX(),
-                SystemVariables.floating_text_size.getY());
-
+        shell.setSize(SystemVariables.floating_text_size.getX(), SystemVariables.floating_text_size.getY());
+        
         Composite cmp = new Composite(shell, SWT.NULL);
 
         GridLayout grid_layout = new GridLayout();
@@ -78,10 +77,8 @@ public class FloatingText {
         grid_layout.horizontalSpacing = 0;
         cmp.setLayout(grid_layout);
 
-        text = new Text(cmp, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL
-                | SWT.V_SCROLL);
-        GridData gd_text = new GridData(GridData.FILL_HORIZONTAL
-                | GridData.FILL_VERTICAL);
+        text = new Text(cmp, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        GridData gd_text = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
         gd_text.horizontalSpan = 2;
         text.setLayoutData(gd_text);
 
