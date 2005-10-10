@@ -32,7 +32,7 @@ public class SubElement extends SubElementContainer {
         this.chars = chars;
     }
 
-    public String getAttribute(String aName) throws NullPointerException {
+    public String getAttribute(String aName){
         return attributeList.get(aName);
     }
 
@@ -41,7 +41,7 @@ public class SubElement extends SubElementContainer {
         attributeList.put(aName, attr);
     }
 
-    public void removeAttribute(String aName) throws NullPointerException {
+    public void removeAttribute(String aName){
         attributeList.remove(aName);
     }
 
