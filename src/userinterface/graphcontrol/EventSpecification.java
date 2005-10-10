@@ -3,24 +3,25 @@
  */
 package userinterface.graphcontrol;
 
+import java.util.LinkedList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+
+import userinterface.ResourceManager;
 
 
 
@@ -42,6 +43,9 @@ public class EventSpecification {
     private String[] columnName = new String[]{"Name", "Description", "Controllable", "Observable"};
     
     private Table table;
+    
+    private Button newRow = null,
+                   deleteRow = null;
     
     
     /**
@@ -70,44 +74,95 @@ public class EventSpecification {
         tableColumn[tableColumn.length-1] = new TableColumn(table, SWT.NONE);
         tableColumn[tableColumn.length-1].pack();
         
-       
-        createNewRow();
+        
+        newRow = new Button(parent, SWT.PUSH);
+        newRow.setText(ResourceManager.getString("EventSpec_newRow"));
+        newRow.addListener (SWT.Selection, new Listener(){
+            public void handleEvent(Event arg0){
+                createNewRow();
+                
+            }
+        });
+        
+        
+        deleteRow = new Button(parent, SWT.PUSH);
+        deleteRow.setText(ResourceManager.getString("EventSpec_deleteRow"));
+        deleteRow.addListener (SWT.Selection, new Listener(){
+            public void handleEvent(Event arg0){
+                deleteRow();
+            }
+        });
+        
+        
+        final TableEditor editor = new TableEditor (table);
+        editor.horizontalAlignment = SWT.LEFT;
+        editor.grabHorizontal = true;
+        table.addListener (SWT.MouseDown, new Listener () {
+            public void handleEvent (Event event) {
+                Rectangle clientArea = table.getClientArea ();
+                Point pt = new Point (event.x, event.y);
+                int index = table.getTopIndex ();
+                while (index < table.getItemCount ()) {
+                    boolean visible = false;
+                    final TableItem item = table.getItem (index);
+                    for (int i=0; i<table.getColumnCount (); i++) {
+                        Rectangle rect = item.getBounds (i);
+                        if (rect.contains (pt)) {
+                            final int column = i;
+                            if(column > 1) return;
+                            final Text text = new Text (table, SWT.NONE);
+                            
+                            Listener textListener = new Listener () {
+                                public void handleEvent (final Event e) {
+                                    switch (e.type) {
+                                        case SWT.FocusOut:
+                                            item.setText (column, text.getText ());
+                                            text.dispose ();
+                                            break;
+                                        case SWT.Traverse:
+                                            switch (e.detail) {
+                                                case SWT.TRAVERSE_RETURN:
+                                                    item.setText (column, text.getText ());
+                                                    //FALL THROUGH
+                                                case SWT.TRAVERSE_ESCAPE:
+                                                    text.dispose ();
+                                                    e.doit = false;
+                                            }
+                                            break;
+                                    }
+                                }
+                            };
+                            text.addListener (SWT.FocusOut, textListener);
+                            text.addListener (SWT.Traverse, textListener);
+                            editor.setEditor (text, item, i);
+                            text.setText (item.getText (i));
+                            text.selectAll ();
+                            text.setFocus ();
+                            return;
+                        }
+                        if (!visible && rect.intersects (clientArea)) {
+                            visible = true;
+                        }
+                    }
+                    if (!visible) return;
+                    index++;
+                } 
+        
+            }
+        });
     }
     
     public void createNewRow(){
-        TableItem empty = new TableItem(table, SWT.NONE);
-        
-        //The symbol row editor
-        
-        TableEditor editor = new TableEditor (table);
-        Text text = new Text (table, SWT.BORDER);
-        editor.grabHorizontal = true;
-        editor.setEditor(text, empty, 0);
-        editor = new TableEditor (table);
-        
-        
-        //The description editor
-        editor = new TableEditor (table);
-        text = new Text (table, SWT.BORDER);
-        editor.grabHorizontal = true;
-        editor.setEditor(text, empty, 1);
-        editor = new TableEditor (table);
-        
-        //Controlability
-        Button button = new Button (table, SWT.CHECK );
-        button.pack ();
-        editor.minimumWidth = button.getSize ().x;
-        editor.horizontalAlignment = SWT.CENTER;
-        editor.setEditor (button, empty, 2);
-        editor = new TableEditor (table);
-        
-        //observability
-        button = new Button (table, SWT.CHECK);
-        button.pack ();
-        editor.minimumWidth = button.getSize ().x;
-        editor.horizontalAlignment = SWT.CENTER;
-        editor.setEditor(button, empty, 3);
+        new TableItem(table, SWT.NONE);
     }
     
+    public void deleteRow(){
+        if(table.getSelectionIndex() != -1){
+            table.remove(table.getSelectionIndex());
+            table.redraw();
+        }
+        
+       
+    }
     
 }
