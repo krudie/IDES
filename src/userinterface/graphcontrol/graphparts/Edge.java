@@ -53,19 +53,19 @@ public class Edge extends GraphObject{
     /**
      * The Node where this Edge originates.
      */
-    private Node n1 = null;
+    private Node source = null;
 
     public Node getSource(){
-        return n1;
+        return source;
     }
 
     /**
      * The Node where this Edge terminates.
      */
-    private Node n2 = null;
+    private Node target = null;
 
     public Node getTarget(){
-        return n2;
+        return target;
     }
 
     /**
@@ -139,8 +139,8 @@ public class Edge extends GraphObject{
         constructEdge(start_node, end_node);
         initializeLabels(DEFAULT_LABEL_DISPLACEMENT, DEFAULT_LABEL_DISPLACEMENT);
 
-        curve = isSelfLoop() ? new Curve(n1, n2, edge_group.newUnitVector(this))
-                : new Curve(n1, n2);
+        curve = isSelfLoop() ? new Curve(source, target, edge_group.newUnitVector(this))
+                : new Curve(source, target);
 
         edge_group.recalculate();
     }
@@ -226,7 +226,7 @@ public class Edge extends GraphObject{
         constructEdge(start_node, end_node);
         initializeLabels(gtx, gty);
 
-        curve = new Curve(n1, n2, x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2, new UnitVector(
+        curve = new Curve(source, target, x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2, new UnitVector(
                 dx, dy));
     }
 
@@ -239,9 +239,9 @@ public class Edge extends GraphObject{
      *            The node where the edge terminates.
      */
     private void constructEdge(Node start_node, Node end_node){
-        n1 = start_node;
-        n2 = end_node;
-        edge_group = n1.join(this, n2);
+        source = start_node;
+        target = end_node;
+        edge_group = source.join(this, target);
     }
 
     /**
@@ -266,11 +266,11 @@ public class Edge extends GraphObject{
      * @return A clone of this Edge.
      */
     public Edge newClone(){
-        if(n1.getLastClone() == null || n2.getLastClone() == null) return null;
+        if(source.getLastClone() == null || target.getLastClone() == null) return null;
         int clone_attribute = GraphObject.NULL;
         if(isSimple()) clone_attribute = GraphObject.SIMPLE;
-        return new Edge(gp, null, n1.getLastClone(), n2.getLastClone(), curve.newClone(n1
-                .getLastClone(), n2.getLastClone()), label_displacement.getCopy(), clone_attribute,
+        return new Edge(gp, null, source.getLastClone(), target.getLastClone(), curve.newClone(source
+                .getLastClone(), target.getLastClone()), label_displacement.getCopy(), clone_attribute,
                 getLabelDataVector(), getGlyphLabel());
     }
 
@@ -301,8 +301,8 @@ public class Edge extends GraphObject{
     public void updateNodeMovement(Node n, Configuration origional_configuration, Point mouse){
         if(isSimple()) autoConfigureCurve();
         else if(isSelfLoop()) curve.recalculateSelfLoop();
-        else if(n == n1) curve.updateNodeMovement(origional_configuration, mouse, n2, n1);
-        else curve.updateNodeMovement(origional_configuration, mouse, n1, n2);
+        else if(n == source) curve.updateNodeMovement(origional_configuration, mouse, target, source);
+        else curve.updateNodeMovement(origional_configuration, mouse, source, target);
 
         getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
@@ -326,8 +326,8 @@ public class Edge extends GraphObject{
         int edge_position = edge_group.indexOf(this);
         int edge_group_levels = edge_group.levels();
         boolean odd_number_in_group = edge_group.hasOddEdges();
-        boolean intersects_node = gm.findNode(n1, n2);
-        boolean against_group_direction = edge_group.isStartNode(n2);
+        boolean intersects_node = gm.findNode(source, target);
+        boolean against_group_direction = edge_group.isStartNode(target);
         int level = 0;
         float angle = 120 / (edge_group_levels + 1);
 
@@ -381,7 +381,7 @@ public class Edge extends GraphObject{
         angle = -angle;
 
         // compute and increase the rise
-        Line bisector = new Line(n1.origin(), n2.origin());
+        Line bisector = new Line(source.origin(), target.origin());
         float rise = bisector.perpendicularDistance(curve.headCtrl());
         rise = (float) (rise * 1.1);
         // fix the rise for convention of calculateCurve
@@ -403,7 +403,7 @@ public class Edge extends GraphObject{
         angle *= -1;
 
         // compute and decrease the rise
-        Line bisector = new Line(n1.origin(), n2.origin());
+        Line bisector = new Line(source.origin(), target.origin());
         float rise = bisector.perpendicularDistance(curve.headCtrl());
         float factor = (float) ((100 - Math.abs(angle)) / 100);
         rise -= rise * factor;
@@ -537,9 +537,9 @@ public class Edge extends GraphObject{
         removeAttribute(GraphObject.SIMPLE);
 
         Point origin = null;
-        if(lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL) origin = n1
+        if(lastHitRegion == Edge.R_TAIL_ANCHOR || lastHitRegion == Edge.R_TAIL_CTRL) origin = source
                 .origin();
-        else origin = n2.origin();
+        else origin = target.origin();
 
         Point selection_target = null;
         if(isSelfLoop()) selection_target = curve.selfLoopAnchor();
@@ -742,9 +742,9 @@ public class Edge extends GraphObject{
      */
     public void reverseDirection(){
         if(!isSelfLoop()){
-            Node n = n1;
-            n1 = n2;
-            n2 = n;
+            Node n = source;
+            source = target;
+            target = n;
             if(isSimple()){
                 curve.reverseDirection(false);
                 autoConfigureCurve();
@@ -757,8 +757,8 @@ public class Edge extends GraphObject{
      * Delete this Edge from it's EdgeGroup
      */
     public void delete(){
-        n1 = null;
-        n2 = null;
+        source = null;
+        target = null;
         curve.dispose();
         curve = null;
         label_data = null;
@@ -773,12 +773,12 @@ public class Edge extends GraphObject{
     }
 
     /**
-     * If n1 == n2 then this is a self loop edge.
+     * If source == target then this is a self loop edge.
      * 
      * @return true if it is a self loop edge.
      */
     public boolean isSelfLoop(){
-        return n1 == n2;
+        return source == target;
     }
 
     /**
