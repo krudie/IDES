@@ -298,6 +298,10 @@ public class GraphModel{
     public Node getNodeById(int id){
         return id >= 0 && id < node_list.size() ? node_list.elementAt(id) : null;
     }
+    
+    public Edge getEdgeById(int id){
+        return id >= 0 && id < edge_list.size() ? edge_list.elementAt(id) : null;
+    }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // GraphModel queries
@@ -311,6 +315,14 @@ public class GraphModel{
      */
     public int getSize(){
         return node_list.size() + edge_list.size();
+    }
+    
+    public int getNodeSize(){
+        return node_list.size();
+    }
+    
+    public int getEdgeSize(){
+        return edge_list.size();
     }
 
     /**

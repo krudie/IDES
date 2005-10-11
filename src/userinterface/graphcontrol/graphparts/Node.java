@@ -44,6 +44,9 @@ public class Node extends GraphObject{
      * The direction of the arrow if this node is a start state.
      */
     private UnitVector start_arrow_direction = null;
+    public UnitVector getStartArrow(){
+        return start_arrow_direction;
+    }
 
     /**
      * The ArrowHead for the start arrow if this Node has the "start" attribute

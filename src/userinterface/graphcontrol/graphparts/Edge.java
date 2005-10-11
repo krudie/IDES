@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import org.eclipse.swt.widgets.TableItem;
 
+import projectModel.SubElement;
+
 import userinterface.GraphingPlatform;
 import userinterface.geometric.Line;
 import userinterface.geometric.Point;
@@ -90,6 +92,9 @@ public class Edge extends GraphObject{
      * Visual representation of the edge.
      */
     private Curve curve = null;
+    public Curve getCurve(){
+        return curve;
+    }
 
     /**
      * records which region was last hit by the mouse. uses region constants
@@ -227,6 +232,15 @@ public class Edge extends GraphObject{
 
         curve = new Curve(source, target, x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2, new UnitVector(
                 dx, dy));
+    }
+    
+    public Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, 
+            SubElement seCurve, int gtx, int gty, int a){
+        super(gp, gm, a);
+        constructEdge(start_node, end_node);
+        initializeLabels(gtx, gty);
+
+        curve = new Curve(source, target, seCurve);
     }
 
     /**

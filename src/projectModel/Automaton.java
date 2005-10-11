@@ -62,7 +62,7 @@ public class Automaton {
         transitions.remove(t);
     }
 
-    public ListIterator getTransitionIterator() {
+    public ListIterator<Transition> getTransitionIterator() {
         return transitions.listIterator();
     }
 
@@ -74,7 +74,7 @@ public class Automaton {
         events.remove(e);
     }
 
-    public ListIterator getEventIterator() {
+    public ListIterator<Event> getEventIterator() {
         return events.listIterator();
     }
 

@@ -13,13 +13,18 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import projectModel.Automaton;
+import projectModel.Event;
 import projectModel.State;
 import projectModel.SubElement;
+import projectModel.Transition;
 
 import userinterface.general.Ascii;
+import userinterface.geometric.UnitVector;
 import userinterface.graphcontrol.GraphController;
 
 import userinterface.graphcontrol.EventSpecification;
+import userinterface.graphcontrol.graphparts.Curve;
+import userinterface.graphcontrol.graphparts.Edge;
 import userinterface.graphcontrol.graphparts.Node;
 
 import userinterface.menu.MenuController;
@@ -166,29 +171,70 @@ public class GraphingPlatform {
             gc.gm.addNode(new Node(this,gc.gm,x,y,r,a,dx,dy,l));
             gc.repaint();
             gc.gm.accomodateLabels();
-        }        
+        }
+        
+        ListIterator<Transition> ti = automaton.getTransitionIterator();
+        while(ti.hasNext()){
+            Transition t = ti.next();
+            gc.gm.addEdge(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()),
+                    gc.gm.getNodeById(t.getTarget().getId()),
+                    t.getSubElement("qubicCurve"),
+                    Ascii.safeInt("0"),
+                    Ascii.safeInt("0")
+                    ,0));
+            
+        }
     }
     
     public void save(){
+        //remove everything in the automaton
+        
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             si.next();
             si.remove();
         }
+        ListIterator<Transition> ti = automaton.getTransitionIterator();
+        while(ti.hasNext()){
+            ti.next();
+            ti.remove();
+        }
+        ListIterator<Event> ei = automaton.getEventIterator();
+        while(ei.hasNext()){
+            ei.next();
+            ei.remove();
+        }
         
-        for(int i = 0; i < gc.gm.getSize(); i++){
+        //rebuild states
+        for(int i = 0; i < gc.gm.getNodeSize(); i++){
             Node n = gc.gm.getNodeById(i);
             State s = new State(i);
-            SubElement g = s.getSubElement("graphic");
+            SubElement g = new SubElement("graphic");
+            s.addSubElement("graphic", g);
+                  
             g.setAttribute("x", ""+n.getX());
             g.setAttribute("y", ""+n.getY());
             g.setAttribute("r", ""+n.getR());
             g.setAttribute("a", "0");
-            g.setAttribute("dx", "0");
-            g.setAttribute("dy", "0");
+
+            UnitVector u = n.getStartArrow();
+            g.setAttribute("dx", ""+u.x);
+            g.setAttribute("dy", ""+u.y);
             g.setAttribute("l", n.getGlyphLabel().string_representation);
             
-            si.add(s);
+            automaton.addState(s);
+        }
+        
+        //rebuilt transitions
+        for(int i = 0; i < gc.gm.getEdgeSize(); i++){
+            Edge e = gc.gm.getEdgeById(i);
+            Transition t = new Transition(i, 
+                    automaton.getState(gc.gm.getId(e.getSource())), 
+                    automaton.getState(gc.gm.getId(e.getTarget())));
+            
+            t.addSubElement("qubicCurve",e.getCurve().toSubElement("qubicCurve"));
+            
+            automaton.addTransition(t);
         }
         
     }

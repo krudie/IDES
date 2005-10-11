@@ -309,6 +309,7 @@ public class ProjectExplorer {
             case SWT.KeyDown:
                 switch (event.keyCode) {
                 case SWT.F2:
+                    if(treeWindow.getSelection().length > 0)
                     rename(treeWindow.getSelection()[0]);
                     break;
 

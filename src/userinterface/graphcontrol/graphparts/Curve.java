@@ -5,6 +5,9 @@ package userinterface.graphcontrol.graphparts;
 
 import org.eclipse.swt.SWT;
 
+import projectModel.SubElement;
+
+import userinterface.general.Ascii;
 import userinterface.geometric.Geometric;
 import userinterface.geometric.Line;
 import userinterface.geometric.Point;
@@ -162,6 +165,8 @@ public class Curve{
         if(tail_node == head_node) recalculateSelfLoop();
     }
 
+    
+    
     /**
      * Destruct the curve.
      */
@@ -190,7 +195,44 @@ public class Curve{
         return new Curve(tail_node, head_node, curve.x1, curve.y1, curve.ctrlx1, curve.ctrly1,
                 curve.ctrlx2, curve.ctrly2, curve.x2, curve.y2, cloned_direction);
     }
+    
+    public Curve(Node tail, Node head, SubElement se){
+        this.self_loop_direction = new UnitVector(
+                Ascii.safeFloat(se.getAttribute("dx")),
+                Ascii.safeFloat(se.getAttribute("dy")));
+        this.tail_node = tail;
+        this.head_node = head;
+        curve = new CubicCurve2Dex(
+                Ascii.safeFloat(se.getAttribute("x1")),
+                Ascii.safeFloat(se.getAttribute("y1")),
+                Ascii.safeFloat(se.getAttribute("ctrlx1")),
+                Ascii.safeFloat(se.getAttribute("ctrly1")),
+                Ascii.safeFloat(se.getAttribute("ctrlx2")),
+                Ascii.safeFloat(se.getAttribute("ctrly2")),
+                Ascii.safeFloat(se.getAttribute("x2")),
+                Ascii.safeFloat(se.getAttribute("y2")));
+        arrowhead = new ArrowHead();
+        updateArrowhead();
+        if(tail_node == head_node) recalculateSelfLoop();
+    }
 
+    public SubElement toSubElement(String name){
+        SubElement c = new SubElement(name);
+        c.setAttribute("x1", Float.toString(curve.x1));
+        c.setAttribute("y1", Float.toString(curve.y1));
+        c.setAttribute("x2", Float.toString(curve.x2));
+        c.setAttribute("y2", Float.toString(curve.y2));
+        c.setAttribute("ctrlx1", Float.toString(curve.ctrlx1));
+        c.setAttribute("ctrly1", Float.toString(curve.ctrly1));
+        c.setAttribute("ctrlx2", Float.toString(curve.ctrlx2));
+        c.setAttribute("ctrly2", Float.toString(curve.ctrly2));
+        if(self_loop_direction != null){
+            c.setAttribute("dx", Float.toString(self_loop_direction.x));
+            c.setAttribute("dy", Float.toString(self_loop_direction.y));
+        }
+        return c;
+    }
+    
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Drawing
     // ////////////////////////////////////////////////////////////////////////////////////////////////////////
