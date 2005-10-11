@@ -7,8 +7,6 @@ import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -47,6 +45,14 @@ public class EventSpecification {
     private Button newRow = null,
                    deleteRow = null;
     
+    public final static int NAME = 0,
+                            DESCRIPTION = 1,
+                            CONTROLLABLE = 2,
+                            OBSERVABLE = 3;
+                            
+                 
+    
+    
     
     /**
      * Constructor for the TransitionData object
@@ -76,7 +82,7 @@ public class EventSpecification {
         
         
         newRow = new Button(parent, SWT.PUSH);
-        newRow.setText(ResourceManager.getString("EventSpec_newRow"));
+        newRow.setText(ResourceManager.getString("eventSpec_newRow"));
         newRow.addListener (SWT.Selection, new Listener(){
             public void handleEvent(Event arg0){
                 createNewRow();
@@ -86,7 +92,7 @@ public class EventSpecification {
         
         
         deleteRow = new Button(parent, SWT.PUSH);
-        deleteRow.setText(ResourceManager.getString("EventSpec_deleteRow"));
+        deleteRow.setText(ResourceManager.getString("eventSpec_deleteRow"));
         deleteRow.addListener (SWT.Selection, new Listener(){
             public void handleEvent(Event arg0){
                 deleteRow();
@@ -153,15 +159,62 @@ public class EventSpecification {
     }
     
     public void createNewRow(){
-        new TableItem(table, SWT.NONE);
+        TableItem ti = new TableItem(table, SWT.NONE);      
+        table.setSelection(table.getItemCount()-1);
+        
+        TableEditor editor;
+
+        for(int i = 2; i < columnName.length;i++){
+            editor = new TableEditor(table );
+            
+            Button button = new Button (table, SWT.CHECK);
+            button.pack ();
+            editor.minimumWidth = button.getSize ().x;
+            editor.horizontalAlignment = SWT.CENTER;
+            editor.grabHorizontal = true;
+            editor.setEditor(button, ti, i);
+            button.addListener(SWT.Selection, new MyCheckListener(ti, i));
+        }
+        
     }
     
     public void deleteRow(){
         if(table.getSelectionIndex() != -1){
-            table.remove(table.getSelectionIndex());
+            table.remove(table.getSelectionIndices());
             table.redraw();
         }
         
+       
+    }
+    
+    
+    private class MyCheckListener implements Listener{
+
+        private TableItem ti;
+        private int column;
+        
+        public MyCheckListener(TableItem ti, int column){
+            this.ti = ti;
+            this.column = column;
+        }
+        
+        public void handleEvent(Event event){
+            ti.setText(column,Boolean.toString(((Button) event.widget).getSelection()));
+        }
+        
+    }
+    
+    
+    public TableItem[] getEventLabels(){
+        
+        LinkedList<TableItem> retVal = new LinkedList<TableItem>();
+        
+        for(int i = 0; i < table.getItemCount(); i++){
+            if(!table.getItem(i).getText(EventSpecification.NAME).trim().equals("")){
+                retVal.add(table.getItem(i));
+            }
+        }
+        return retVal.toArray(new TableItem[retVal.size()]);
        
     }
     
