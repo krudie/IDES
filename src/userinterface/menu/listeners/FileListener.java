@@ -325,7 +325,7 @@ public class FileListener extends AbstractListener {
      *            The SelectionEvent that initiated this action.
      */
     public void saveAutomaton(org.eclipse.swt.events.SelectionEvent e) {
-
+        MainWindow.getGraphingPlatform().save();
     }
 
     /**
