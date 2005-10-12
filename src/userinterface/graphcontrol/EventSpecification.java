@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -18,7 +20,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
+import sun.security.krb5.internal.crypto.t;
+import userinterface.MainWindow;
 import userinterface.ResourceManager;
 
 
@@ -44,6 +49,8 @@ public class EventSpecification {
     
     private Button newRow = null,
                    deleteRow = null;
+    
+    private boolean changed;
     
     public final static int NAME = 0,
                             DESCRIPTION = 1,
@@ -86,7 +93,6 @@ public class EventSpecification {
         newRow.addListener (SWT.Selection, new Listener(){
             public void handleEvent(Event arg0){
                 createNewRow();
-                
             }
         });
         
@@ -123,12 +129,14 @@ public class EventSpecification {
                                     switch (e.type) {
                                         case SWT.FocusOut:
                                             item.setText (column, text.getText ());
+                                            changed = true;
                                             text.dispose ();
                                             break;
                                         case SWT.Traverse:
                                             switch (e.detail) {
                                                 case SWT.TRAVERSE_RETURN:
                                                     item.setText (column, text.getText ());
+                                                    changed = true;
                                                     //FALL THROUGH
                                                 case SWT.TRAVERSE_ESCAPE:
                                                     text.dispose ();
@@ -162,6 +170,8 @@ public class EventSpecification {
         TableItem ti = new TableItem(table, SWT.NONE);      
         table.setSelection(table.getItemCount()-1);
         
+        
+        
         TableEditor editor;
 
         for(int i = 2; i < columnName.length;i++){
@@ -173,15 +183,23 @@ public class EventSpecification {
             editor.horizontalAlignment = SWT.CENTER;
             editor.grabHorizontal = true;
             editor.setEditor(button, ti, i);
+            ti.setData(Integer.toString(i), button);
             button.addListener(SWT.Selection, new MyCheckListener(ti, i));
         }
+        changed = true;
         
     }
     
     public void deleteRow(){
         if(table.getSelectionIndex() != -1){
+            TableItem[] ti = table.getSelection();
+            for(int i = 0; i < ti.length; i++){
+                ((Widget)ti[i].getData("2")).dispose();
+                ti[i].dispose();
+            }
             table.remove(table.getSelectionIndices());
             table.redraw();
+            changed = true;
         }
         
        
@@ -200,6 +218,7 @@ public class EventSpecification {
         
         public void handleEvent(Event event){
             ti.setText(column,Boolean.toString(((Button) event.widget).getSelection()));
+            changed = true;
         }
         
     }
@@ -216,6 +235,14 @@ public class EventSpecification {
         }
         return retVal.toArray(new TableItem[retVal.size()]);
        
+    }
+    
+    public boolean isChanged(){
+        return changed;
+    }
+    
+    public void setChanged(boolean state){
+        changed = state;
     }
     
 }

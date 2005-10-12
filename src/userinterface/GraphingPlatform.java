@@ -125,14 +125,11 @@ public class GraphingPlatform {
 
         tabFolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                //TODO: indkommenter
-                /**
-                if (td.dirty_edges) {
-                    td.dirty_edges = false;
+                if (es.isChanged()) {
+                    es.setChanged(false);
                     gc.gm.accomodateLabels();
                     gc.repaint();
                 }
-                */
             }
         });
     }

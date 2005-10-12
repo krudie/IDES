@@ -219,8 +219,6 @@ public class GraphModel{
         for(int i = 0; i < node_list.size(); i++){
             node_list.elementAt(i).fillBlankLabels();
         }
-        // TODO: indkommenter
-        //gp.td.fillBlankLabels();
     }
 
     /**

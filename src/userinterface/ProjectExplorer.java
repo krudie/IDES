@@ -301,7 +301,6 @@ public class ProjectExplorer {
                 point = new Point(event.x, event.y);
                 item = treeWindow.getItem(point);
                 if (event.button == 1 && item != null && !item.equals(project)) {
-                    System.out.println("I should really open an automaton");
                     MainWindow.getGraphingPlatform().open(item.getText());
                 }
                 break;

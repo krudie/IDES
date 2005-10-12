@@ -72,7 +72,6 @@ public class FloatingToggles {
         }
 
         TableItem[] tableItems = gp.es.getEventLabels(); 
-
         shell = new Shell(gp.shell, SWT.ON_TOP | SWT.RESIZE);
         GridLayout grid_layout = new GridLayout();
         grid_layout.numColumns = Math.max((int) Math.round(Math.sqrt(tableItems.length)), 1);
@@ -95,7 +94,9 @@ public class FloatingToggles {
                 }
             });
             gd = new GridData(GridData.FILL_BOTH);
+            btn.setSize(btn.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             btn.setLayoutData(gd);
+            btn.pack();
            btns[i] = btn;
         }
 
@@ -151,21 +152,14 @@ public class FloatingToggles {
         this.edge = edge;
 
         for (int i = 0; i < btns.length; i++) {
-            if (edge.checkLabel(btns[i].getData())) {
-                btns[i].setSelection(true);
-            } else {
-                btns[i].setSelection(false);
-            }
+            btns[i].setSelection(edge.checkLabel(btns[i].getData()));
         }
 
         Rectangle display_bounds = shell.getDisplay().getBounds();
         Rectangle shell_bounds = shell.getBounds();
-        shell_bounds.x = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(
-                scaled_origin.getX(), scaled_origin.getX()).x, display_bounds.width
-                - shell_bounds.width), 0);
-        shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(
-                scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height
-                - shell_bounds.height), 0);
+        shell_bounds.x = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.getX(), scaled_origin.getY()).x, display_bounds.width - shell_bounds.width), 0);
+        shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height- shell_bounds.height), 0);
+                
         shell.setBounds(shell_bounds);
         shell.forceActive();
 

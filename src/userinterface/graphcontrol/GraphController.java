@@ -582,8 +582,7 @@ public class GraphController{
                         }
                         else{
                             // this mousedown shoud modify an individual graph
-                            // part,
-                            // or start a new selection area.
+                            // part, or start a new selection area.
 
                             // this will be set to true if the mouse down is in
                             // blank space
@@ -600,21 +599,17 @@ public class GraphController{
                                 hot_selected_object = gm.findEdge(mouse, Edge.L_ALL_ANCHORS
                                         | Edge.L_NO_TETHERS);
                                 if(hot_selected_object != null){
-                                    hot_selected_object.initiateMovement(mouse,
-                                            GraphObject.HOT_SELECTED, e.stateMask);
+                                    hot_selected_object.initiateMovement(mouse,GraphObject.HOT_SELECTED, e.stateMask);
                                     gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
                             }
 
                             // show all labels
-
                             if(SystemVariables.show_all_labels && hot_selected_object == null){
                                 // look for nearby edges (by label hits)
-                                hot_selected_object = gm.findEdge(mouse, Edge.L_ALL_TETHERS
-                                        | Edge.L_NO_ANCHORS);
+                                hot_selected_object = gm.findEdge(mouse, Edge.L_ALL_TETHERS | Edge.L_NO_ANCHORS);
                                 if(hot_selected_object != null){
-                                    hot_selected_object.initiateMovement(mouse,
-                                            GraphObject.HOT_SELECTED, e.stateMask);
+                                    hot_selected_object.initiateMovement(mouse, GraphObject.HOT_SELECTED, e.stateMask);
                                     gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
                             }
@@ -629,27 +624,21 @@ public class GraphController{
                                     // an edge was found
                                     if(((Edge) hot_selected_object).getSelectionState() != Edge.EXCLUSIVE){
                                         // this edge was not painting its
-                                        // anchors
-                                        // this was an arrow hit, mark it as the
-                                        // exclusive edge
+                                        // anchors this was an arrow hit, mark it as the exclusive edge
                                         if(last_exclusive_edge != null) last_exclusive_edge.setSelectionState(Edge.NO_ANCHORS);
                                         ((Edge) hot_selected_object).setSelectionState(Edge.EXCLUSIVE);
                                         last_exclusive_edge = ((Edge) hot_selected_object);
                                     }
-                                    hot_selected_object.initiateMovement(mouse,
-                                            GraphObject.HOT_SELECTED, e.stateMask);
+                                    hot_selected_object.initiateMovement(mouse,GraphObject.HOT_SELECTED, e.stateMask);
                                     gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
-                                // look for nearby nodes (since no edges
-                                // were found)
+                                // look for nearby nodes (since no edges were found)
                                 else if(null != (hot_selected_object = gm.findNode(mouse, false))){
-                                    // the user clicked inside a node, so
-                                    // begin to move that node.
+                                    // the user clicked inside a node, so begin to move that node.
                                     hot_selected_object.initiateMovement(mouse, GraphObject.HOT_SELECTED, e.stateMask);
                                     gpc.updateGroup(e.stateMask, hot_selected_object);
                                 }
-                                // test if the user clicked on the start
-                                // arrow of the start state
+                                // test if the user clicked on the start  arrow of the start state
                                 else if(start_state_node != null
                                         && start_state_node.isLocatedStartArrow(mouse)){
                                     startStartStateArrowMovement();

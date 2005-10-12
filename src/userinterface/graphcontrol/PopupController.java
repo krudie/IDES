@@ -168,8 +168,7 @@ public class PopupController {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Edge Popup
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Edge Popup /////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -211,15 +210,13 @@ public class PopupController {
         mitm_edge_label.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event e) {
                 if (gp.gc.menued_object != null) {
-                    //TODO: indkommenter
-                    /**
-                    if (gp.td.edges_table.getItems().length > 0) {
+
+                    if (gp.es.getEventLabels().length > 0) {
                         gp.gc.floating_toggles.initialize((Point) mnu_edge.getData(), (Edge) gp.gc.menued_object);
                         gp.gc.floating_toggles.setVisible(true);
                     } else {
-                    */
                         gp.tabFolder.setSelection(GraphingPlatform.SPECIFICATIONS_TAB);
-                    //
+                    }
                 }
             }
         });

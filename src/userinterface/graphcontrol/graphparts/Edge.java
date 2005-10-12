@@ -14,6 +14,7 @@ import userinterface.geometric.Line;
 import userinterface.geometric.Point;
 import userinterface.geometric.UnitVector;
 import userinterface.graphcontrol.Drawer;
+import userinterface.graphcontrol.EventSpecification;
 import userinterface.graphcontrol.GraphModel;
 
 /**
@@ -31,20 +32,31 @@ public class Edge extends GraphObject{
     /**
      * possible values for selection_state
      */
-    public static final int NO_ANCHORS = 0, EXCLUSIVE = 1;
+    public static final int NO_ANCHORS = 0,
+                             EXCLUSIVE = 1;
 
     /**
      * region constants: possible values for last_hit_region
      */
-    public static final int R_ARROWHEAD = 0, R_TAIL_ANCHOR = 1, R_TAIL_CTRL = 2, R_HEAD_ANCHOR = 3,
-            R_HEAD_CTRL = 4, R_LABEL = 5, R_NONE = 6, R_LOOP = 7;
+    public static final int R_ARROWHEAD = 0,
+                            R_TAIL_ANCHOR = 1,
+                            R_TAIL_CTRL = 2,
+                            R_HEAD_ANCHOR = 3,
+                            R_HEAD_CTRL = 4,
+                            R_LABEL = 5,
+                            R_NONE = 6,
+                            R_LOOP = 7;
 
     /**
      * location constants: possible values for options when performing hit tests
      * note: tethers refer to labels, and anchors refer to the curve.
      */
-    public static final int L_NULL = 0, L_ALL_ANCHORS = 1, L_ALL_TETHERS = 2, L_NO_ANCHORS = 4,
-            L_NO_TETHERS = 8, L_PADDED = 16;
+    public static final int L_NULL = 0,
+                             L_ALL_ANCHORS = 1,
+                             L_ALL_TETHERS = 2,
+                             L_NO_ANCHORS = 4,
+                             L_NO_TETHERS = 8,
+                             L_PADDED = 16;
 
     /**
      * the default values for the label_displacement variable
@@ -122,21 +134,16 @@ public class Edge extends GraphObject{
     private Point label_displacement = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Edge construction
-    // //////////////////////////////////////////////////////////////////////////////////////////////
+    // Edge construction //////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Construct the Edge. (used at user creation)
      * 
-     * @param gp
-     *            The GraphingPlatform in which this Edge will exist.
-     * @param gm
-     *            The GraphModel in which this Edge will exist.
-     * @param start_node
-     *            The Node where the Edge originates.
-     * @param end_node
-     *            The Node where the Edge terminates.
+     * @param gp  The GraphingPlatform in which this Edge will exist.
+     * @param gm  The GraphModel in which this Edge will exist.
+     * @param start_node  The Node where the Edge originates.
+     * @param end_node  The Node where the Edge terminates.
      */
     public Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node){
         super(gp, gm, GraphObject.SIMPLE);
@@ -152,27 +159,16 @@ public class Edge extends GraphObject{
     /**
      * Construct the Edge. (used at cloning)
      * 
-     * @param gp
-     *            The GraphingPlatform in which this Edge will exist.
-     * @param gm
-     *            The GraphModel in which this Edge will exist.
-     * @param start_node
-     *            The node where the edge originates.
-     * @param end_node
-     *            The node where the edge terminates.
-     * @param curve
-     *            A cloned curve to be used.
-     * @param label_displacement
-     *            A cloned Point representing the displacement of the label from
-     *            the midpoint of the curve.
-     * @param label_data
-     *            A cloned Vector containing the required label data objects.
-     * @param a
-     *            The attributes for this Edge.
-     * @param glyph_label
-     *            A Label to be cloned for the glyph label of this Edge.
-     * @param latex_label
-     *            A Label to be cloned for the latex label of this Edge.
+     * @param gp  The GraphingPlatform in which this Edge will exist.
+     * @param gm  The GraphModel in which this Edge will exist.
+     * @param start_node  The node where the edge originates.
+     * @param end_node  The node where the edge terminates.
+     * @param curve  A cloned curve to be used.
+     * @param label_displacement A cloned Point representing the displacement of the label from the midpoint of the curve.
+     * @param label_data A cloned Vector containing the required label data objects.
+     * @param a  The attributes for this Edge.
+     * @param glyph_label A Label to be cloned for the glyph label of this Edge.
+     * @param latex_label A Label to be cloned for the latex label of this Edge.
      */
     private Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, Curve curve,
             Point label_displacement, int a, Vector<TableItem> label_data, GlyphLabel glyphLabel){
@@ -426,22 +422,16 @@ public class Edge extends GraphObject{
         removeAttribute(GraphObject.SIMPLE);
     }
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Edge drawing
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Edge drawing ///////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Draw this edge. It's style is determined here by testing it's properties,
      * and it's edgegroup.
      * 
-     * @param drawer
-     *            The Drawer that will handle the drawing.
-     * @param all_anchors
-     *            True if all edges in the graph should draw their anchors
-     *            (which define the curves).
-     * @param all_tethers
-     *            True if all edges in the graph should draw their tethers
-     *            (which define the label positions).
+     * @param drawer The Drawer that will handle the drawing.
+     * @param all_anchors True if all edges in the graph should draw their anchors (which define the curves).
+     * @param all_tethers True if all edges in the graph should draw their tethers (which define the label positions).
      */
     public void draw(Drawer drawer, boolean all_anchors, boolean all_tethers){
         if(isGrouped()) drawer.setColor(GraphModel.GROUPED);
@@ -480,8 +470,7 @@ public class Edge extends GraphObject{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Edge selection
-    // /////////////////////////////////////////////////////////////////////////////////////////////////
+    // Edge selection /////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -492,14 +481,9 @@ public class Edge extends GraphObject{
      * constants from the Edge class (start with L_). It is allowed to OR
      * multiple constants.
      * 
-     * @param x
-     *            x co-ordinate of the mouse.
-     * @param y
-     *            y co-ordinate of the mouse.
-     * @param options
-     *            selection options regarding anchors and tethers. Use the
-     *            locations constants from the Edge class (start with L_). It is
-     *            allowed to OR multiple constants.
+     * @param x  x co-ordinate of the mouse.
+     * @param y  y co-ordinate of the mouse.
+     * @param options   selection options regarding anchors and tethers. Use the locations constants from the Edge class (start with L_). It is  allowed to OR multiple constants.
      * @return true if this edge should be selected by this mouse click.
      */
     public boolean isLocated(int x, int y, int options){
@@ -540,8 +524,7 @@ public class Edge extends GraphObject{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Edge movement
-    // //////////////////////////////////////////////////////////////////////////////////////////////////
+    // Edge movement //////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void initiateMovement(Point mouse, int attribute, int state_mask){
@@ -621,7 +604,7 @@ public class Edge extends GraphObject{
         getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
 
-        String representation = "";//getLabelDataString();
+        String representation = getLabelDataString();
         if(!getGlyphLabel().string_representation.equals(representation)){
             // the label has changed we must render it.
             getGlyphLabel().string_representation = representation;
@@ -632,8 +615,7 @@ public class Edge extends GraphObject{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Labels
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Labels  /////////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -687,16 +669,15 @@ public class Edge extends GraphObject{
      * 
      * @return The string to be displayed.
      */
-    //private String getLabelDataString(){
-    //    if(labelDataIsNull()) return "";
-    //    int column = TransitionData;
-//
-//        String representation = ((TableItem) label_data.elementAt(0)).getText(column);
-//        for(int i = 1; i < label_data.size(); i++){
-//            representation += ", " + ((TableItem) label_data.elementAt(i)).getText(column);
-//        }
-//        return representation;
-//    }
+    private String getLabelDataString(){
+        if(labelDataIsNull()) return "";
+        
+        String representation = ((TableItem) label_data.elementAt(0)).getText(EventSpecification.NAME);
+        for(int i = 1; i < label_data.size(); i++){
+            representation += ", " + ((TableItem) label_data.elementAt(i)).getText(EventSpecification.NAME);
+        }
+        return representation;
+    }
 
     /**
      * Delivers a copy of the label_data Vector of this Edge.
