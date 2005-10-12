@@ -267,6 +267,7 @@ public class GlyphLabel extends Label
      */
 	public void drawBox(Drawer drawer)
 	{
+
 		drawer.drawBoxWH(glyph_bounds.x,glyph_bounds.y,glyph_bounds.width,glyph_bounds.height,Drawer.SMALL_DASHED);		
 	}
 	

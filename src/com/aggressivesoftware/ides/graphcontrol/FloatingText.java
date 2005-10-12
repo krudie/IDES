@@ -118,6 +118,8 @@ public class FloatingText
 			);
 	}
 	
+
+	
 	private void shellDeactivatedAction()
 	{
 		// if they click on MAIN or EXTERNAL then we need to hide FLOAT	        	
