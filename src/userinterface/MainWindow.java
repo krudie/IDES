@@ -133,7 +133,7 @@ public class MainWindow{
         SashForm leftSash = new SashForm(mainSash, SWT.VERTICAL);
 
         pe = new ProjectExplorer(leftSash, shell);
-        new ObjectExplorer(leftSash);
+        //new ObjectExplorer(leftSash);
         
         
         gp = new GraphingPlatform(mainSash, shell, menu);

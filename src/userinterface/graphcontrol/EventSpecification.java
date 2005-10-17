@@ -7,8 +7,6 @@ import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -20,10 +18,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
 
-import sun.security.krb5.internal.crypto.t;
-import userinterface.MainWindow;
 import userinterface.ResourceManager;
 
 
@@ -121,7 +116,10 @@ public class EventSpecification {
                         Rectangle rect = item.getBounds (i);
                         if (rect.contains (pt)) {
                             final int column = i;
-                            if(column > 1) return;
+                            if(column > 1){
+                                item.setText(column, Boolean.toString(item.getText(column).equals("false")));
+                                return;
+                            }
                             final Text text = new Text (table, SWT.NONE);
                             
                             Listener textListener = new Listener () {
@@ -170,60 +168,27 @@ public class EventSpecification {
         TableItem ti = new TableItem(table, SWT.NONE);      
         table.setSelection(table.getItemCount()-1);
         
-        
-        
-        TableEditor editor;
-
         for(int i = 2; i < columnName.length;i++){
-            editor = new TableEditor(table );
-            
-            Button button = new Button (table, SWT.CHECK);
-            button.pack ();
-            editor.minimumWidth = button.getSize ().x;
-            editor.horizontalAlignment = SWT.CENTER;
-            editor.grabHorizontal = true;
-            editor.setEditor(button, ti, i);
-            ti.setData(Integer.toString(i), button);
-            button.addListener(SWT.Selection, new MyCheckListener(ti, i));
+            ti.setText(i, "false");
         }
+        
+        
         changed = true;
         
     }
     
     public void deleteRow(){
         if(table.getSelectionIndex() != -1){
-            TableItem[] ti = table.getSelection();
-            for(int i = 0; i < ti.length; i++){
-                ((Widget)ti[i].getData("2")).dispose();
-                ti[i].dispose();
-            }
+            int selected = table.getSelectionIndex();
             table.remove(table.getSelectionIndices());
+            
+            table.setSelection((selected < table.getItemCount()) ? selected : table.getItemCount()-1);
             table.redraw();
             changed = true;
         }
-        
-       
     }
     
-    
-    private class MyCheckListener implements Listener{
-
-        private TableItem ti;
-        private int column;
-        
-        public MyCheckListener(TableItem ti, int column){
-            this.ti = ti;
-            this.column = column;
-        }
-        
-        public void handleEvent(Event event){
-            ti.setText(column,Boolean.toString(((Button) event.widget).getSelection()));
-            changed = true;
-        }
-        
-    }
-    
-    
+   
     public TableItem[] getEventLabels(){
         
         LinkedList<TableItem> retVal = new LinkedList<TableItem>();
@@ -244,5 +209,10 @@ public class EventSpecification {
     public void setChanged(boolean state){
         changed = state;
     }
+    
+    
+    
+    
+    
     
 }
