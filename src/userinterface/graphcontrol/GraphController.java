@@ -533,7 +533,7 @@ public class GraphController{
              *            The initiating MouseEvent.
              */
             public void mouseDown(MouseEvent e){
-                floating_toggles.setVisible(false);
+                floating_toggles.shellDeactivatedAction();
                 Point mouse = new Point(e.x / gm.scale, e.y / gm.scale);
                 Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10) / gm.scale);
                 // allows two hotspots on the create tool

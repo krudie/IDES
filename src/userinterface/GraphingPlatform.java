@@ -129,7 +129,7 @@ public class GraphingPlatform{
 
         tabFolder.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent e){
-                gc.floating_toggles.setVisible(false);
+                gc.floating_toggles.shellDeactivatedAction();
                 
                 if(es.isChanged()){
                     es.setChanged(false);

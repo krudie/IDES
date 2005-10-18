@@ -35,11 +35,6 @@ public class FloatingToggles {
     private Shell shell = null;
 
     /**
-     * Helps hide the window and prevents running the deactivate routine twice
-     */
-    private boolean is_live = false;
-
-    /**
      * The Edge being worked on.
      */
     private Edge edge = null;
@@ -122,15 +117,9 @@ public class FloatingToggles {
         });
     }
 
-    private void shellDeactivatedAction() {
+    public void shellDeactivatedAction() {
         // if they click on MAIN or EXTERNAL then we need to hide FLOAT
-        if (shell.getVisible()) {
-            shell.setVisible(false);
-        }
-
-        if (is_live) {
-            is_live = false;
-        }
+        shell.setVisible(false);
     }
 
     private void buttonToggleAction(Event e) {
@@ -161,9 +150,8 @@ public class FloatingToggles {
         shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height- shell_bounds.height), 0);
                 
         shell.setBounds(shell_bounds);
-        shell.forceActive();
-
-        is_live = true;
+        shell.pack();
+        shell.setActive();
     }
 
     public void setVisible(boolean visibility) {
