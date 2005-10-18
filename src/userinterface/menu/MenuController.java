@@ -112,7 +112,9 @@ public class MenuController {
     /**
      * Operations
      */
-    public UnifiedMenu operationsAccesible = null;
+    public UnifiedMenu operationsAccesible = null,
+                       operationsCoAccesible = null,
+                       operationsTrim = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Other //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,12 +128,14 @@ public class MenuController {
     /**
      * MenuItems for mnu_graphic_grid
      */
-    public MenuItem mitm_grid00 = null, mitm_grid05 = null, mitm_grid10 = null,
-            mitm_grid20 = null, mitm_grid30 = null;
+    public MenuItem mitm_grid00 = null,
+                    mitm_grid05 = null,
+                    mitm_grid10 = null,
+                    mitm_grid20 = null,
+                    mitm_grid30 = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // MenuController construction
-    // ////////////////////////////////////////////////////////////////////////////////////
+    // MenuController construction ////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -358,7 +362,9 @@ public class MenuController {
         // Operations////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
-        this.operationsAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_ACCESIBLE,operationsListener);
+        operationsAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_ACCESIBLE,operationsListener);
+        operationsCoAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_COACCESIBLE,operationsListener);
+        operationsTrim = new UnifiedMenu(ResourceManager.OPERATIONS_TRIM,operationsListener);
         
         //set up main menu structures and add the MenuItems (order matters)
 
@@ -367,7 +373,9 @@ public class MenuController {
         Menu mnu_operations = new Menu(mitm_option);
         mitm_operations.setMenu(mnu_operations);
         
-        this.operationsAccesible.addMitm(mnu_operations);
+        operationsAccesible.addMitm(mnu_operations);
+        operationsCoAccesible.addMitm(mnu_operations);
+        operationsTrim.addMitm(mnu_operations);
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////// /

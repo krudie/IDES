@@ -56,7 +56,10 @@ public class ResourceManager {
                                 LOGO = "logo",
                                 BIG_LOGO = "big_logo",
                                 DRAG = "drag",
-                                OPERATIONS_ACCESIBLE = "operations_accesible";
+                                OPERATIONS_ACCESIBLE = "operations_accesible",
+                                OPERATIONS_COACCESIBLE = "operations_coaccesible",
+                                OPERATIONS_TRIM = "operations_trim";
+    
 
     /**
      * This specifies which of the resources expect to have associated images.

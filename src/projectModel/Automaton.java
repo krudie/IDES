@@ -110,5 +110,5 @@ public class Automaton {
             ti.next().toXML(ps, "  ");
         }
         ps.println("</automaton>");
-    }
+    }   
 }

@@ -35,5 +35,7 @@ public interface ProjectPresentation {
     public String removeFileName(String name);
     
     public Automaton getAutomatonByName(String name);
+    
+    public void accesible(String source);
 
 }

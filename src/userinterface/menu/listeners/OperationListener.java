@@ -9,7 +9,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
+import userinterface.MainWindow;
 import userinterface.ResourceManager;
+import userinterface.Userinterface;
 
 /**
  * @author edlund
@@ -27,13 +29,31 @@ public class OperationListener extends AbstractListener{
             };
         }
         
+        if (resource_handle.equals(ResourceManager.OPERATIONS_COACCESIBLE)) {
+            return new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    
+                }
+            };
+        }
+        
+        if (resource_handle.equals(ResourceManager.OPERATIONS_TRIM)) {
+            return new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    
+                }
+            };
+        }
+        
+        
         return null;
     }
     
     
     
     public void accesible(){
-        
+        Userinterface.getProjectPresentation().accesible(MainWindow.getProjectExplorer().getSelectedAutomaton());
+        MainWindow.getProjectExplorer().updateProject();
     }
     
 

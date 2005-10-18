@@ -158,4 +158,66 @@ public class ProjectManager implements ProjectPresentation {
     public Automaton getAutomatonByName(String name){
         return project.getAutomatonByName(name);
     }
+    
+    
+    public void accesible(String source){
+
+        Automaton sourceAutomaton = getAutomatonByName(source);
+        
+        //create a queue
+        LinkedList<State> searchQue = new LinkedList<State>();
+        
+        //create a new automaton
+        Automaton result = new Automaton("Accesible(" + sourceAutomaton.getName() + ")");
+
+        //find initial state  mark as reached, copy it to the new automaton and add it to the que
+        Iterator<State> stateIterator = sourceAutomaton.getStateIterator();
+        State state;
+        while(stateIterator.hasNext()){
+            state = stateIterator.next();
+            
+            if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+                searchQue.add(state);
+                result.addState(new State(state));
+                state.addSubElement(new SubElement("reached"));
+            }
+        }
+        
+        
+        Iterator<Transition> transitionIterator = null;
+        //loop while que not empty
+        while(!searchQue.isEmpty()){
+            //take head of que
+            state = searchQue.removeFirst();
+            transitionIterator = state.getSourceTransitionsListIterator();
+            Transition transition = null;
+            // loop while the state has more transitions
+            while(transitionIterator.hasNext()){
+                transition = transitionIterator.next();
+                //if the state is not reached, mark it as reached and copy it to the new automaton, add it to the que
+                if(!transition.getTarget().hasSubElement("reached")){
+                    result.addState(new State(transition.getTarget()));
+                    transition.getTarget().addSubElement(new SubElement("reached"));
+                    searchQue.add(transition.getTarget());
+                }
+                
+                // copy the transition
+               //result.addTransition(new Transition(transition));
+            }
+ 
+        }
+
+        
+        //clean up
+        stateIterator = sourceAutomaton.getStateIterator();
+        while(stateIterator.hasNext()){
+            stateIterator.next().removeSubElement("reached");
+        }
+
+       //whatever copied to the new automaton is the accesible version of the automaton
+        
+       project.addAutomaton(result);
+    }
+    
+    
 }

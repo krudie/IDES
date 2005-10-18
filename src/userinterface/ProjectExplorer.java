@@ -342,5 +342,14 @@ public class ProjectExplorer {
             }
         }
     }
+    
+    public String getSelectedAutomaton(){
+        try{
+            if(!treeWindow.getSelection()[0].equals(this.project)){
+                return treeWindow.getSelection()[0].getText();
+            }
+        } catch(Exception e){}
+        return null;
+    }
 
 }
