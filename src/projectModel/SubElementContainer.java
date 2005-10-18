@@ -36,8 +36,8 @@ public class SubElementContainer{
         subElementList.remove(aName);
     }
 
-    public void hasSubElement(String aName){
-        subElementList.containsKey(aName);
+    public boolean hasSubElement(String aName){
+        return subElementList.containsKey(aName);
     }
 
     public boolean isEmpty(){
