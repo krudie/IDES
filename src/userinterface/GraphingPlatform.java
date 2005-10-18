@@ -286,7 +286,7 @@ public class GraphingPlatform{
             
             automaton.addState(s);
         }
-        // rebuilt events
+        // rebuild events
         for(int i = 0; i < es.getEventCount(); i++){
             Event e = new Event(i);
             automaton.addEvent(e);
@@ -309,7 +309,7 @@ public class GraphingPlatform{
             observable.setChars(Boolean.toString(es.getObservable(i)));
         }
 
-        // rebuilt transitions
+        // rebuild transitions
         int gn = 0, j = 0;
         for(int i = 0; i < gc.gm.getEdgeSize(); i++){
             Edge e = gc.gm.getEdgeById(i);
