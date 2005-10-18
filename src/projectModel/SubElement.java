@@ -44,8 +44,8 @@ public class SubElement extends SubElementContainer{
         attributeList.remove(aName);
     }
 
-    public void hasAttribute(String aName){
-        attributeList.containsKey(aName);
+    public boolean hasAttribute(String aName){
+        return attributeList.containsKey(aName);
     }
 
     public Enumeration<String> getAttributeValues(){

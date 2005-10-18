@@ -1,6 +1,7 @@
 package userinterface;
 
 import java.util.ListIterator;
+import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -11,6 +12,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.TableItem;
 
 import projectModel.Automaton;
 import projectModel.Event;
@@ -141,6 +143,7 @@ public class GraphingPlatform{
     }
 
     public void open(String automatonName){
+        gc.resetState();
         setEnabled(true);
         MainWindow.getMenu().graphic_zoom.setEnabled(true);
         MainWindow.getMenu().graphic_create.setEnabled(true);
@@ -153,7 +156,7 @@ public class GraphingPlatform{
         automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
 
         graphFolderItem.setText(automaton.getName());
-        
+
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             State s = si.next();
@@ -176,21 +179,41 @@ public class GraphingPlatform{
         while(ei.hasNext()){
             Event e = ei.next();
             SubElement g = e.getSubElement("graphic");
-            es.createNewEvent(g.getAttribute("name"),
-                    g.getAttribute("description"),
-                    Ascii.safeBoolean(g.getAttribute("controllable")),
-                    Ascii.safeBoolean(g.getAttribute("observable")));
+            es.createNewEvent(g.getAttribute("name"), g.getAttribute("description"), Ascii
+                    .safeBoolean(g.getAttribute("controllable")), Ascii.safeBoolean(g
+                    .getAttribute("observable")));
         }
 
         ListIterator<Transition> ti = automaton.getTransitionIterator();
+        Vector<Edge> group = new Vector<Edge>();
         while(ti.hasNext()){
             Transition t = ti.next();
-            gc.gm.addEdge(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                    .getNodeById(t.getTarget().getId()), t.getSubElement("graphic"), Ascii
-                    .safeInt("0"), Ascii.safeInt("0"), 0));
+            SubElement g = t.getSubElement("graphic");
+            Event event = t.getEvent();
+            if(g.hasAttribute("group")){
+                int gn = Ascii.safeInt(g.getAttribute("group"));
+                if(group.size() > gn) group.get(gn).addLabel(es.getEvent(event.getId()));
+                else{
+                    group.add(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()),
+                            gc.gm.getNodeById(t.getTarget().getId()), g, Ascii.safeInt("0"), Ascii
+                                    .safeInt("0"), 0));
+                    if(event != null)
+                        group.get(gn).addLabel(es.getEvent(event.getId()));
+                    gc.gm.addEdge(group.get(gn));
+                }
+            }
+            else{
+                Edge e = new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
+                        .getNodeById(t.getTarget().getId()), g, Ascii.safeInt("0"), Ascii
+                        .safeInt("0"), 0);
+                if(event != null){
+                    e.addLabel(es.getEvent(event.getId()));
+                }
+                gc.gm.addEdge(e);
+            }
 
         }
-        
+
         es.setChanged(false);
         gc.gm.accomodateLabels();
         gc.repaint();
@@ -234,27 +257,45 @@ public class GraphingPlatform{
 
             automaton.addState(s);
         }
-        //rebuilt events
+        // rebuilt events
         for(int i = 0; i < es.getEventCount(); i++){
             Event e = new Event(i);
             SubElement g = new SubElement("graphic");
             automaton.addEvent(e);
             e.addSubElement(g);
-            g.setAttribute("name",es.getName(i));
+            g.setAttribute("name", es.getName(i));
             g.setAttribute("description", es.getDescription(i));
             g.setAttribute("controllable", Boolean.toString(es.getControllable(i)));
             g.setAttribute("observable", Boolean.toString(es.getObservable(i)));
         }
-        
+
         // rebuilt transitions
+        int gn = 0;
         for(int i = 0; i < gc.gm.getEdgeSize(); i++){
+            int j = 0;
             Edge e = gc.gm.getEdgeById(i);
-            Transition t = new Transition(i, automaton.getState(gc.gm.getId(e.getSource())),
-                    automaton.getState(gc.gm.getId(e.getTarget())));
+            String[] events = e.getEventNames();
+            if(events.length <= 1){
+                Transition t = new Transition(i + j,
+                        automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
+                                .getId(e.getTarget())));
+                if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
+                t.addSubElement(e.getCurve().toSubElement("graphic"));
 
-            t.addSubElement(e.getCurve().toSubElement("graphic"));
-
-            automaton.addTransition(t);
+                automaton.addTransition(t);
+            }
+            else{
+                for(int k = 0; k < events.length; k++){
+                    Transition t = new Transition(i + j++, automaton.getState(gc.gm
+                            .getId(e.getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
+                    t.setEvent(automaton.getEvent(es.getId(events[k])));
+                    SubElement g = e.getCurve().toSubElement("graphic");
+                    g.setAttribute("group",Integer.toString(gn));
+                    t.addSubElement(g);
+                    automaton.addTransition(t);
+                }
+                gn++;
+            }
         }
     }
 
