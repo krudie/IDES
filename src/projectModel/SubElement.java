@@ -15,6 +15,17 @@ public class SubElement extends SubElementContainer{
         this.name = name;
         attributeList = new Hashtable<String, String>();
     }
+    public SubElement(SubElement se){
+        super(se);
+        this.name = se.name;
+        this.chars = se.chars;
+        attributeList = new Hashtable<String, String>();
+        Enumeration<String> names = se.getAttributeNames();
+        Enumeration<String> values = se.getAttributeValues();
+        while(names.hasMoreElements()){
+            this.setAttribute(names.nextElement(), values.nextElement());
+        }
+    }
 
     public String getName(){
         return name;

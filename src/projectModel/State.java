@@ -21,7 +21,7 @@ public class State extends SubElementContainer {
     }
     
     public State(State s){
-        super();
+        super(s);
         this.id = s.id;
     }
 

@@ -19,6 +19,14 @@ public class SubElementContainer{
     public SubElementContainer(){
         subElementList = new Hashtable<String, SubElement>();
     }
+    
+    public SubElementContainer(SubElementContainer sec){
+        subElementList = new Hashtable<String, SubElement>();
+        Enumeration<SubElement> see = sec.getSubElements();
+        while(see.hasMoreElements()){
+            this.addSubElement(new SubElement(see.nextElement()));
+        }
+    }
 
     public Enumeration<SubElement> getSubElements(){
         return subElementList.elements();
