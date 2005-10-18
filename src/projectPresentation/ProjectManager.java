@@ -160,7 +160,7 @@ public class ProjectManager implements ProjectPresentation {
     }
     
     
-    public void accesible(String source){
+    public void accesible(String source, String name){
 
         Automaton sourceAutomaton = getAutomatonByName(source);
         
@@ -168,7 +168,7 @@ public class ProjectManager implements ProjectPresentation {
         LinkedList<State> searchQue = new LinkedList<State>();
         
         //create a new automaton
-        Automaton result = new Automaton("Accesible(" + sourceAutomaton.getName() + ")");
+        Automaton result = new Automaton(name);
 
         //find initial state  mark as reached, copy it to the new automaton and add it to the que
         Iterator<State> stateIterator = sourceAutomaton.getStateIterator();

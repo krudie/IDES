@@ -52,8 +52,12 @@ public class OperationListener extends AbstractListener{
     
     
     public void accesible(){
-        Userinterface.getProjectPresentation().accesible(MainWindow.getProjectExplorer().getSelectedAutomaton());
-        MainWindow.getProjectExplorer().updateProject();
+        
+        String selectedName = MainWindow.getProjectExplorer().getSelectedAutomaton();
+        if(selectedName != null){
+            Userinterface.getProjectPresentation().accesible(selectedName, MainWindow.getProjectExplorer().getTitle("Accesible(" + selectedName +")"));
+            MainWindow.getProjectExplorer().updateProject();
+        }
     }
     
 
