@@ -3,6 +3,8 @@
  */
 package userinterface;
 
+import java.util.LinkedList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.graphics.Color;
@@ -343,11 +345,16 @@ public class ProjectExplorer {
         }
     }
     
-    public String getSelectedAutomaton(){
-        try{
-            if(!treeWindow.getSelection()[0].equals(this.project)){
-                return treeWindow.getSelection()[0].getText();
+    public String[] getSelectedAutomaton(){
+        
+        LinkedList<String> retVal = new LinkedList<String>();
+        
+        try{            
+            for(int i = 0; i < treeWindow.getSelectionCount(); i++)
+                if(!treeWindow.getSelection()[i].equals(this.project)){
+                    retVal.add(treeWindow.getSelection()[i].getText());
             }
+            return retVal.toArray(new String[retVal.size()]);
         } catch(Exception e){}
         return null;
     }
