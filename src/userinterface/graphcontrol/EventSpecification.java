@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import userinterface.MainWindow;
 import userinterface.ResourceManager;
 
 
@@ -127,14 +128,14 @@ public class EventSpecification {
                                     switch (e.type) {
                                         case SWT.FocusOut:
                                             item.setText (column, text.getText ());
-                                            changed = true;
+                                            setChanged(true);
                                             text.dispose ();
                                             break;
                                         case SWT.Traverse:
                                             switch (e.detail) {
                                                 case SWT.TRAVERSE_RETURN:
                                                     item.setText (column, text.getText ());
-                                                    changed = true;
+                                                    setChanged(true);
                                                     //FALL THROUGH
                                                 case SWT.TRAVERSE_ESCAPE:
                                                     text.dispose ();
@@ -172,7 +173,7 @@ public class EventSpecification {
             ti.setText(i, "false");
         }      
         
-        changed = true;
+        setChanged(true);
                 
         return table.getItemCount()-1; 
     }
@@ -193,7 +194,7 @@ public class EventSpecification {
             
             table.setSelection((selected < table.getItemCount()) ? selected : table.getItemCount()-1);
             table.redraw();
-            changed = true;
+            setChanged(true);
         }
     }
     
@@ -217,6 +218,7 @@ public class EventSpecification {
     
     public void setChanged(boolean state){
         changed = state;
+        MainWindow.getMenu().file_save_automaton.setEnabled(state);
     }
     
     
@@ -231,6 +233,7 @@ public class EventSpecification {
     public void setName(int id, String name){        
         try{
             table.getItem(id).setText(NAME, name);
+            setChanged(true);
         } catch(Exception e){}
     }
     
@@ -245,6 +248,7 @@ public class EventSpecification {
     public void setDescription(int id, String description){        
         try{    
             table.getItem(id).setText(DESCRIPTION, description);
+            setChanged(true);
         } catch(Exception e){}
     }  
     
@@ -259,6 +263,7 @@ public class EventSpecification {
     public void setObservable(int id, boolean observable){
         try{
             table.getItem(id).setText(OBSERVABLE, Boolean.toString(observable));
+            setChanged(true);
         } catch(Exception e){}
     }
     
@@ -273,6 +278,7 @@ public class EventSpecification {
     public void setControllable(int id, boolean controllable){
         try{
             table.getItem(id).setText(CONTROLLABLE, Boolean.toString(controllable));
+            setChanged(true);
         } catch(Exception e){}
     }
     

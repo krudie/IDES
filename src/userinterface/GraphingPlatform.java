@@ -240,6 +240,8 @@ public class GraphingPlatform {
             automaton.addTransition(t);
         }
         
+        mc.file_save_automaton.setEnabled(false);
+        
     }
     
     public void updateTitle(){
