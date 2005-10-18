@@ -298,5 +298,11 @@ public class EventSpecification {
         table.removeAll();
     }
     
-    
+    public TableItem getEvent(int id){
+        try{
+            return table.getItem(id);
+        } catch(Exception e){
+            return null;
+        }
+    }
 }
