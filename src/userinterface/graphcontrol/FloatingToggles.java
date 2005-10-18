@@ -68,6 +68,7 @@ public class FloatingToggles {
 
         TableItem[] tableItems = gp.es.getEventLabels(); 
         shell = new Shell(gp.shell, SWT.ON_TOP | SWT.RESIZE);
+        
         GridLayout grid_layout = new GridLayout();
         grid_layout.numColumns = Math.max((int) Math.round(Math.sqrt(tableItems.length)), 1);
         grid_layout.marginWidth = 2;
@@ -98,6 +99,7 @@ public class FloatingToggles {
         shell.layout();
         shell.pack();
 
+        
         shell.addShellListener(new ShellListener() {
             public void shellDeactivated(ShellEvent e) {
                 shellDeactivatedAction();
@@ -115,6 +117,8 @@ public class FloatingToggles {
             public void shellIconified(ShellEvent e) {
             }
         });
+        
+        
     }
 
     public void shellDeactivatedAction() {
@@ -150,8 +154,8 @@ public class FloatingToggles {
         shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height- shell_bounds.height), 0);
                 
         shell.setBounds(shell_bounds);
+        shell.forceActive();
         shell.pack();
-        shell.setActive();
     }
 
     public void setVisible(boolean visibility) {
