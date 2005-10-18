@@ -55,10 +55,14 @@ public class Automaton {
     }
 
     public void addTransition(Transition t) {
+        t.getSource().addSourceTransition(t);
+        t.getTarget().addTargetTransition(t);
         transitions.add(t);
     }
 
     public void removeTransition(Transition t) {
+        t.getSource().removeSourceTransition(t);
+        t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
     }
 
