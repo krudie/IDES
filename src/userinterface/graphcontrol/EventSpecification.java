@@ -219,7 +219,7 @@ public class EventSpecification {
     
     public void setChanged(boolean state){
         changed = state;
-        MainWindow.getMenu().file_save_automaton.setEnabled(state);
+        if(state) MainWindow.getGraphingPlatform().gc.io.markUnsavedChanges();
     }
     
     

@@ -154,10 +154,6 @@ public class GraphingPlatform{
 
         graphFolderItem.setText(automaton.getName());
         
-        
-
-        
-        
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             State s = si.next();
@@ -260,8 +256,6 @@ public class GraphingPlatform{
 
             automaton.addTransition(t);
         }
-        
-        mc.file_save_automaton.setEnabled(false);
     }
 
     public void updateTitle(){

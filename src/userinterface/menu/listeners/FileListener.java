@@ -31,8 +31,7 @@ public class FileListener extends AbstractListener {
     private Shell shell;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ListenersFile construction
-    // /////////////////////////////////////////////////////////////////////////////////////
+    // ListenersFile construction/////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -230,6 +229,7 @@ public class FileListener extends AbstractListener {
         Userinterface.getProjectPresentation().saveProject(saveLocation);
         MainWindow.getProjectExplorer().updateProject();
         Userinterface.getProjectPresentation().setUnsavedData(false);
+        
     }
 
     /**
@@ -326,6 +326,7 @@ public class FileListener extends AbstractListener {
      */
     public void saveAutomaton(org.eclipse.swt.events.SelectionEvent e) {
         MainWindow.getGraphingPlatform().save();
+        MainWindow.getGraphingPlatform().gc.io.resetState();
     }
 
     /**

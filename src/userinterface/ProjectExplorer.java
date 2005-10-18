@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -33,10 +34,13 @@ public class ProjectExplorer {
     TreeItem project = null;
 
     TreeItem automata[] = null;
+    
+    Shell shell;
 
     public ProjectExplorer(Composite parent, Shell shell) {
+        this.shell = shell;
         treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
-
+        
         pep = new ProjectExplorerPopup(shell, this);
 
         ProjectListener projectListener = new ProjectListener();
@@ -301,8 +305,27 @@ public class ProjectExplorer {
                 point = new Point(event.x, event.y);
                 item = treeWindow.getItem(point);
                 if (event.button == 1 && item != null && !item.equals(project)) {
-                    MainWindow.getGraphingPlatform().open(item.getText());
-                }
+                    
+                    if(MainWindow.getGraphingPlatform().gc.io.isUnsaved()){
+                        MessageBox confirmSave = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL);
+                        confirmSave.setText(ResourceManager.getString("file_sys.confirm_save_automaton.title"));
+                        confirmSave.setMessage(ResourceManager.getString("file_sys.confirm_save_automaton"));
+                        int response = confirmSave.open();
+                        switch (response) {
+                        case SWT.YES:
+                            // continue with the operation
+                            MainWindow.getGraphingPlatform().save();
+                            break;
+                        case SWT.NO:
+                            break;
+                        case SWT.CANCEL:
+                            return;
+                        }  
+                    }
+                 }
+                MainWindow.getGraphingPlatform().gc.resetState();
+                MainWindow.getGraphingPlatform().es.reset();
+                MainWindow.getGraphingPlatform().open(item.getText());
                 break;
 
             case SWT.KeyDown:
