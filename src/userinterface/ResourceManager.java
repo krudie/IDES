@@ -32,23 +32,31 @@ public class ResourceManager {
      * as: "images/icons/handle.gif"
      */
     public final static String FILE_NEW_PROJECT = "file_new_project",
-            FILE_OPEN_PROJECT = "file_open_project",
-            FILE_SAVE_PROJECT = "file_save_project",
-            FILE_NEW_AUTOMATON = "file_new_automaton",
-            FILE_OPEN_AUTOMATON = "file_open_automaton",
-            FILE_SAVE_AUTOMATON = "file_save_automaton",
-            FILE_EXIT = "file_exit", EDIT_COPY = "edit_copy",
-            EDIT_PASTE = "edit_paste", EDIT_DELETE = "edit_delete",
-            GRAPHIC_ZOOM = "graphic_zoom", GRAPHIC_CREATE = "graphic_create",
-            GRAPHIC_MODIFY = "graphic_modify",
-            GRAPHIC_ALLEDGES = "graphic_alledges",
-            GRAPHIC_ALLLABELS = "graphic_alllabels",
-            GRAPHIC_PRINTAREA = "graphic_printarea",
-            GRAPHIC_GRAB = "graphic_grab", GRAPHIC_GRID = "graphic_grid",
-            OPTION_ERRORREPORT = "option_errorreport",
-            OPTION_NODE = "option_node", HELP_HELPTOPICS = "help_helptopics",
-            HELP_ABOUT = "help_about", LOGO = "logo", BIG_LOGO = "big_logo",
-            DRAG = "drag";
+                                FILE_OPEN_PROJECT = "file_open_project",
+                                FILE_SAVE_PROJECT = "file_save_project",
+                                FILE_NEW_AUTOMATON = "file_new_automaton",
+                                FILE_OPEN_AUTOMATON = "file_open_automaton",
+                                FILE_SAVE_AUTOMATON = "file_save_automaton",
+                                FILE_EXIT = "file_exit",
+                                EDIT_COPY = "edit_copy",
+                                EDIT_PASTE = "edit_paste",
+                                EDIT_DELETE = "edit_delete",
+                                GRAPHIC_ZOOM = "graphic_zoom",
+                                GRAPHIC_CREATE = "graphic_create",
+                                GRAPHIC_MODIFY = "graphic_modify",
+                                GRAPHIC_ALLEDGES = "graphic_alledges",
+                                GRAPHIC_ALLLABELS = "graphic_alllabels",
+                                GRAPHIC_PRINTAREA = "graphic_printarea",
+                                GRAPHIC_GRAB = "graphic_grab",
+                                GRAPHIC_GRID = "graphic_grid",
+                                OPTION_ERRORREPORT = "option_errorreport",
+                                OPTION_NODE = "option_node",
+                                HELP_HELPTOPICS = "help_helptopics",
+                                HELP_ABOUT = "help_about",
+                                LOGO = "logo",
+                                BIG_LOGO = "big_logo",
+                                DRAG = "drag",
+                                OPERATIONS_ACCESIBLE = "operations_accesible";
 
     /**
      * This specifies which of the resources expect to have associated images.
@@ -56,11 +64,21 @@ public class ResourceManager {
      * okay to change the ordering. It won't break the code.
      */
     private final static String[] resourcesWithImages = { FILE_NEW_PROJECT,
-            FILE_OPEN_PROJECT, FILE_SAVE_PROJECT, FILE_NEW_AUTOMATON,
-            FILE_OPEN_AUTOMATON, FILE_SAVE_AUTOMATON, EDIT_COPY, EDIT_PASTE,
-            EDIT_DELETE, GRAPHIC_ZOOM, GRAPHIC_CREATE, GRAPHIC_MODIFY,
-            GRAPHIC_PRINTAREA, GRAPHIC_GRAB, LOGO, GRAPHIC_ALLEDGES,
-            GRAPHIC_ALLLABELS };
+                                                          FILE_OPEN_PROJECT,
+                                                          FILE_SAVE_PROJECT,
+                                                          FILE_NEW_AUTOMATON,
+                                                          FILE_OPEN_AUTOMATON,
+                                                          FILE_SAVE_AUTOMATON,
+                                                          EDIT_COPY, EDIT_PASTE,
+                                                          EDIT_DELETE,
+                                                          GRAPHIC_ZOOM,
+                                                          GRAPHIC_CREATE,
+                                                          GRAPHIC_MODIFY,
+                                                          GRAPHIC_PRINTAREA,
+                                                          GRAPHIC_GRAB,
+                                                          LOGO,
+                                                          GRAPHIC_ALLEDGES,
+                                                          GRAPHIC_ALLLABELS };
 
     /**
      * Every simple image constant declared above must be listed here. It is

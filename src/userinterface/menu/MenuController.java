@@ -11,6 +11,7 @@ import userinterface.menu.listeners.EditListener;
 import userinterface.menu.listeners.FileListener;
 import userinterface.menu.listeners.GraphicListener;
 import userinterface.menu.listeners.HelpListener;
+import userinterface.menu.listeners.OperationListener;
 import userinterface.menu.listeners.OptionListener;
 
 /**
@@ -53,9 +54,6 @@ public class MenuController {
      */
     public FileListener fileListener = null;
 
-    /**
-     * This object houses all the listeners for the Help System
-     */
     public HelpListener helpListener = null;
 
     public EditListener editListener = null;
@@ -63,6 +61,8 @@ public class MenuController {
     public GraphicListener graphicListener = null;
 
     public OptionListener optionListener = null;
+    
+    public OperationListener operationsListener = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // UnifiedMenu ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,6 +108,11 @@ public class MenuController {
      */
     public UnifiedMenu help_helptopics = null,
                        help_about = null;
+    
+    /**
+     * Operations
+     */
+    public UnifiedMenu operationsAccesible = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Other //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,6 +151,7 @@ public class MenuController {
         editListener = new EditListener(shell);
         optionListener = new OptionListener(shell);
         graphicListener = new GraphicListener(shell);
+        operationsListener = new OperationListener();
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // File PROJECT System
@@ -330,10 +336,8 @@ public class MenuController {
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
-        option_errorreport = new UnifiedMenu(
-                ResourceManager.OPTION_ERRORREPORT, optionListener);
-        option_node = new UnifiedMenu(ResourceManager.OPTION_NODE,
-                optionListener);
+        option_errorreport = new UnifiedMenu(ResourceManager.OPTION_ERRORREPORT, optionListener);
+        option_node = new UnifiedMenu(ResourceManager.OPTION_NODE, optionListener);
 
         // set up main menu structures and add the MenuItems (order matters)
 
@@ -347,9 +351,27 @@ public class MenuController {
 
         // setup the toolbar structures and add the ToolItems (order matters)
 
+        
+        
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Operations////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Help System
-        // ////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        this.operationsAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_ACCESIBLE,operationsListener);
+        
+        //set up main menu structures and add the MenuItems (order matters)
+
+        MenuItem mitm_operations = new MenuItem(menu, SWT.CASCADE);
+        mitm_operations.setText(ResourceManager.getString("operations.mtext"));
+        Menu mnu_operations = new Menu(mitm_option);
+        mitm_operations.setMenu(mnu_operations);
+        
+        this.operationsAccesible.addMitm(mnu_operations);
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////// /
+        // Help System////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
