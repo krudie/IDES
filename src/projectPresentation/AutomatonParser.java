@@ -137,7 +137,7 @@ public class AutomatonParser extends AbstractFileParser{
             for(int i = 0; i < atts.getLength(); i++){
                 nse.setAttribute(atts.getQName(i), atts.getValue(i));
             }
-            sec.addSubElement(qName, nse);
+            sec.addSubElement(nse);
             SubElementParser sep = new SubElementParser();
             sep.fill(nse, xmlr, parsingErrors);
             break;

@@ -29,7 +29,7 @@ import userinterface.graphcontrol.graphparts.Node;
 
 import userinterface.menu.MenuController;
 
-public class GraphingPlatform {
+public class GraphingPlatform{
 
     // private Composite da;
     public TabFolder tabFolder;
@@ -43,7 +43,7 @@ public class GraphingPlatform {
     public Shell shell;
 
     public MenuController mc;
-    
+
     private Automaton automaton;
 
     /**
@@ -55,10 +55,9 @@ public class GraphingPlatform {
     /**
      * Indicies of TabItems within the TabFolder
      */
-    public static final int GRAPH_CANVAS_TAB = 0,
-                            SPECIFICATIONS_TAB = 1;
+    public static final int GRAPH_CANVAS_TAB = 0, SPECIFICATIONS_TAB = 1;
 
-    public GraphingPlatform(Composite parent, Shell shell, MenuController mc) {
+    public GraphingPlatform(Composite parent, Shell shell, MenuController mc){
 
         this.mc = mc;
         this.shell = shell;
@@ -74,7 +73,8 @@ public class GraphingPlatform {
         languageSpec.setText(ResourceManager.getString("window.specifications_tab.text"));
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // specifications area ////////////////////////////////////////////////////////////////////////////////////////////
+        // specifications area
+        // ////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Note: this area has to be created before the graph area, because the
@@ -86,7 +86,8 @@ public class GraphingPlatform {
         // add it to the TabFolder
         languageSpec.setControl(cmp_transitions);
 
-        // create a layout for the content composite (for the widgits inside the composite)
+        // create a layout for the content composite (for the widgits inside the
+        // composite)
         GridLayout glEvents = new GridLayout();
         glEvents.marginHeight = 3;
         glEvents.marginWidth = 3;
@@ -98,7 +99,8 @@ public class GraphingPlatform {
         es = new EventSpecification(cmp_transitions);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // graph area /////////////////////////////////////////////////////////////////////////////////////////////////////
+        // graph area
+        // /////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // the graphing area
@@ -120,12 +122,13 @@ public class GraphingPlatform {
         gc = new GraphController(this, cmpGraphing);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // selection between tabs /////////////////////////////////////////////////////////////////////////////////////////
+        // selection between tabs
+        // /////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        tabFolder.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                if (es.isChanged()) {
+        tabFolder.addSelectionListener(new SelectionAdapter(){
+            public void widgetSelected(SelectionEvent e){
+                if(es.isChanged()){
                     es.setChanged(false);
                     gc.gm.accomodateLabels();
                     gc.repaint();
@@ -134,11 +137,11 @@ public class GraphingPlatform {
         });
     }
 
-    public void setEnabled(boolean state) {
+    public void setEnabled(boolean state){
         tabFolder.setEnabled(state);
     }
 
-    public void open(String automatonName) {
+    public void open(String automatonName){
         setEnabled(true);
         MainWindow.getMenu().graphic_zoom.setEnabled(true);
         MainWindow.getMenu().graphic_create.setEnabled(true);
@@ -147,16 +150,16 @@ public class GraphingPlatform {
         MainWindow.getMenu().graphic_grid.setEnabled(true);
         MainWindow.getMenu().graphic_alledges.setEnabled(true);
         MainWindow.getMenu().graphic_alllabels.setEnabled(true);
-        
+
         automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
-        
+
         graphFolderItem.setText(automaton.getName());
-        
+
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             State s = si.next();
             SubElement g = s.getSubElement("graphic");
-            
+
             int x = Ascii.safeInt(g.getAttribute("x"));
             int y = Ascii.safeInt(g.getAttribute("y"));
             int r = Ascii.safeInt(g.getAttribute("r"));
@@ -164,34 +167,35 @@ public class GraphingPlatform {
             float dx = Ascii.safeFloat(g.getAttribute("dx"));
             float dy = Ascii.safeFloat(g.getAttribute("dy"));
             String l = Ascii.unEscapeReturn(g.getAttribute("l"));
-            
-            gc.gm.addNode(new Node(this,gc.gm,x,y,r,a,dx,dy,l));
+
+            gc.gm.addNode(new Node(this, gc.gm, x, y, r, a, dx, dy, l));
             gc.repaint();
             gc.gm.accomodateLabels();
         }
-        
+
         ListIterator<Event> ei = automaton.getEventIterator();
         while(ei.hasNext()){
             Event e = ei.next();
-            
+            SubElement g = e.getSubElement("graphic");
+            es.createNewEvent(g.getAttribute("name"),
+                    g.getAttribute("description"),
+                    Ascii.safeBoolean(g.getAttribute("controllable")),
+                    Ascii.safeBoolean(g.getAttribute("observable")));
         }
-        
+
         ListIterator<Transition> ti = automaton.getTransitionIterator();
         while(ti.hasNext()){
             Transition t = ti.next();
-            gc.gm.addEdge(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()),
-                    gc.gm.getNodeById(t.getTarget().getId()),
-                    t.getSubElement("qubicCurve"),
-                    Ascii.safeInt("0"),
-                    Ascii.safeInt("0")
-                    ,0));
-            
+            gc.gm.addEdge(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
+                    .getNodeById(t.getTarget().getId()), t.getSubElement("graphic"), Ascii
+                    .safeInt("0"), Ascii.safeInt("0"), 0));
+
         }
     }
-    
+
     public void save(){
-        //remove everything in the automaton
-        
+        // remove everything in the automaton
+
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             si.next();
@@ -207,43 +211,52 @@ public class GraphingPlatform {
             ei.next();
             ei.remove();
         }
-        
-        //rebuild states
+
+        // rebuild states
         for(int i = 0; i < gc.gm.getNodeSize(); i++){
             Node n = gc.gm.getNodeById(i);
             State s = new State(i);
             SubElement g = new SubElement("graphic");
-            s.addSubElement("graphic", g);
-                  
-            g.setAttribute("x", ""+n.getX());
-            g.setAttribute("y", ""+n.getY());
-            g.setAttribute("r", ""+n.getR());
+            s.addSubElement(g);
+
+            g.setAttribute("x", "" + n.getX());
+            g.setAttribute("y", "" + n.getY());
+            g.setAttribute("r", "" + n.getR());
             g.setAttribute("a", "0");
 
             UnitVector u = n.getStartArrow();
-            g.setAttribute("dx", ""+u.x);
-            g.setAttribute("dy", ""+u.y);
+            g.setAttribute("dx", "" + u.x);
+            g.setAttribute("dy", "" + u.y);
             g.setAttribute("l", n.getGlyphLabel().string_representation);
-            
+
             automaton.addState(s);
         }
+        //rebuilt events
+        for(int i = 0; i < es.getEventCount(); i++){
+            Event e = new Event(i);
+            SubElement g = new SubElement("graphic");
+            automaton.addEvent(e);
+            e.addSubElement(g);
+            g.setAttribute("name",es.getName(i));
+            g.setAttribute("description", es.getDescription(i));
+            g.setAttribute("controllable", Boolean.toString(es.getControllable(i)));
+            g.setAttribute("observable", Boolean.toString(es.getObservable(i)));
+        }
         
-        //rebuilt transitions
+        // rebuilt transitions
         for(int i = 0; i < gc.gm.getEdgeSize(); i++){
             Edge e = gc.gm.getEdgeById(i);
-            Transition t = new Transition(i, 
-                    automaton.getState(gc.gm.getId(e.getSource())), 
+            Transition t = new Transition(i, automaton.getState(gc.gm.getId(e.getSource())),
                     automaton.getState(gc.gm.getId(e.getTarget())));
-            
-            t.addSubElement("qubicCurve",e.getCurve().toSubElement("qubicCurve"));
-            
+
+            t.addSubElement(e.getCurve().toSubElement("graphic"));
+
             automaton.addTransition(t);
         }
         
         mc.file_save_automaton.setEnabled(false);
-        
     }
-    
+
     public void updateTitle(){
         graphFolderItem.setText(automaton.getName());
     }

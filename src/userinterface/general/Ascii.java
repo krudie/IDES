@@ -154,4 +154,13 @@ public final class Ascii {
             return 0;
         }
     }
+    
+    public static boolean safeBoolean(String value){
+        try{
+            return Boolean.parseBoolean(value);
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
 }

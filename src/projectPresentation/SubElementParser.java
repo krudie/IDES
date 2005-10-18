@@ -32,7 +32,7 @@ public class SubElementParser extends AbstractParser {
         for (int i = 0; i < atts.getLength(); i++) {
             nse.setAttribute(atts.getQName(i), atts.getValue(i));
         }
-        se.addSubElement(qName, nse);
+        se.addSubElement(nse);
         SubElementParser sep = new SubElementParser();
         sep.fill(nse, xmlr, parsingErrors);
     }

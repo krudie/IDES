@@ -28,8 +28,8 @@ public class SubElementContainer{
         return subElementList.get(aName);
     }
 
-    public void addSubElement(String aName, SubElement s){
-        subElementList.put(aName, s);
+    public void addSubElement(SubElement s){
+        subElementList.put(s.getName(), s);
     }
 
     public void removeSubElement(String aName){
