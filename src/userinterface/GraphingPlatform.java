@@ -273,19 +273,22 @@ public class GraphingPlatform{
 
         // rebuilt transitions
         int gn = 0;
+        int j = 0;
         for(int i = 0; i < gc.gm.getEdgeSize(); i++){
-            int j = 0;
             Edge e = gc.gm.getEdgeById(i);
             String[] events = e.getEventNames();
+            //if the transition is triggered by one or zero events
+            //make one transition
             if(events.length <= 1){
                 Transition t = new Transition(i + j,
                         automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
                                 .getId(e.getTarget())));
-                if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
                 t.addSubElement(e.getCurve().toSubElement("graphic"));
+                if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
 
                 automaton.addTransition(t);
             }
+            //otherwize make a lot.
             else{
                 for(int k = 0; k < events.length; k++){
                     Transition t = new Transition(i + j++, automaton.getState(gc.gm
@@ -296,6 +299,7 @@ public class GraphingPlatform{
                     t.addSubElement(g);
                     automaton.addTransition(t);
                 }
+                j--;
                 gn++;
             }
         }
