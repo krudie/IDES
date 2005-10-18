@@ -67,14 +67,20 @@ public class SubElement extends SubElementContainer{
             ps.println("/>");
             return;
         }
-        ps.println(">");
+        ps.print(">");
         if(!super.isEmpty()){
+            ps.print("\n");
             super.toXML(ps, indent + "  ");
+            if(!(chars == null || chars.trim().equals("")))
+                ps.println(indent + "  "+chars);
+            ps.println(indent + "</" + name + ">");
         }
-        if(!(chars == null || chars.trim().equals(""))){
-            ps.println(chars);
+        else{
+            if(!(chars == null || chars.trim().equals("")))
+                ps.print(chars);
+            ps.print("</" + name + ">\n");    
         }
-        ps.println(indent + "</" + name + ">");
+        
     }
 
     /**

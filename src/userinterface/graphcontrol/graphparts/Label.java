@@ -194,7 +194,7 @@ public abstract class Label {
      * @return true If this label actually draws something.
      */
     public boolean isntEmpty() {
-        return (string_representation.length() > 0);
+        return string_representation.length() > 0;
     }
 
     /**

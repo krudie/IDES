@@ -159,14 +159,22 @@ public class GraphingPlatform{
             State s = si.next();
             SubElement g = s.getSubElement("graphic");
 
-            int x = Ascii.safeInt(g.getAttribute("x"));
-            int y = Ascii.safeInt(g.getAttribute("y"));
-            int r = Ascii.safeInt(g.getAttribute("r"));
-            int a = Ascii.safeInt(g.getAttribute("a"));
-            float dx = Ascii.safeFloat(g.getAttribute("dx"));
-            float dy = Ascii.safeFloat(g.getAttribute("dy"));
-            String l = Ascii.unEscapeReturn(g.getAttribute("l"));
-
+            SubElement circle = g.getSubElement("circle");
+            int x = Ascii.safeInt(circle.getAttribute("x"));
+            int y = Ascii.safeInt(circle.getAttribute("y"));
+            int r = Ascii.safeInt(circle.getAttribute("r"));
+            
+            
+            int a = 0;
+            
+            
+            SubElement name = s.getSubElement("name");
+            String l = (name.getChars() != null) ? name.getChars() : "";
+            
+            //name displacement (I think)
+            float dx = 0;
+            float dy = 0;
+            
             gc.gm.addNode(new Node(this, gc.gm, x, y, r, a, dx, dy, l));
             gc.repaint();
             gc.gm.accomodateLabels();
@@ -238,19 +246,33 @@ public class GraphingPlatform{
         for(int i = 0; i < gc.gm.getNodeSize(); i++){
             Node n = gc.gm.getNodeById(i);
             State s = new State(i);
-            SubElement g = new SubElement("graphic");
-            s.addSubElement(g);
+            SubElement graphic = new SubElement("graphic");
+            s.addSubElement(graphic);
+            
+            //circle
+            SubElement circle = new SubElement("circle");
+            circle.setAttribute("x", Integer.toString(n.getX()));
+            circle.setAttribute("y", Integer.toString(n.getY()));
+            circle.setAttribute("r", Integer.toString(n.getR()));
+            graphic.addSubElement(circle);
 
-            g.setAttribute("x", "" + n.getX());
-            g.setAttribute("y", "" + n.getY());
-            g.setAttribute("r", "" + n.getR());
-            g.setAttribute("a", "0");
-
+            //properties
+            SubElement properties = new SubElement("properties");
+            
+            
+            graphic.setAttribute("a", "0");
+            
+            //name
+            SubElement name = new SubElement("name");
+            name.setChars(n.getGlyphLabel().string_representation.trim());
+            s.addSubElement(name);
+            
+            //displacement of name
             UnitVector u = n.getStartArrow();
-            g.setAttribute("dx", "" + u.x);
-            g.setAttribute("dy", "" + u.y);
-            g.setAttribute("l", n.getGlyphLabel().string_representation);
+            graphic.setAttribute("dx", "" + u.x);
+            graphic.setAttribute("dy", "" + u.y);
 
+            
             automaton.addState(s);
         }
         // rebuilt events

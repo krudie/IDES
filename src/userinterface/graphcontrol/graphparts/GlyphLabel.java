@@ -180,7 +180,9 @@ public class GlyphLabel extends Label{
      * explicitly specify an anchor.
      */
     public void renderIfNeeded(){
-        if(glyph_shape_vector == null && string_representation.length() > 0) render();
+        if(glyph_shape_vector == null 
+                && string_representation != null
+                && string_representation.length() > 0) render();
     }
 
     /**
