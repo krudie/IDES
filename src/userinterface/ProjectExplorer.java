@@ -326,7 +326,6 @@ public class ProjectExplorer {
                     MainWindow.getGraphingPlatform().es.reset();
                     MainWindow.getGraphingPlatform().open(item.getText());
                  }
-
                 break;
 
             case SWT.KeyDown:

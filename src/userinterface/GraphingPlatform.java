@@ -129,6 +129,8 @@ public class GraphingPlatform{
 
         tabFolder.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent e){
+                gc.floating_toggles.setVisible(false);
+                
                 if(es.isChanged()){
                     es.setChanged(false);
                     gc.gm.accomodateLabels();

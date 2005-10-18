@@ -365,7 +365,8 @@ public class GraphController{
             public void mouseDoubleClick(MouseEvent e){
                 Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10) / gm.scale);
                 // allows two hotspots on the create tool
-
+                
+                
                 if(e.button == 1){
                     is_double_click = true;
 
@@ -519,8 +520,7 @@ public class GraphController{
             }
 
             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // Mouse Down
-            // /////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Mouse Down /////////////////////////////////////////////////////////////////////////////////////////////////////
             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             /**
@@ -533,6 +533,7 @@ public class GraphController{
              *            The initiating MouseEvent.
              */
             public void mouseDown(MouseEvent e){
+                floating_toggles.setVisible(false);
                 Point mouse = new Point(e.x / gm.scale, e.y / gm.scale);
                 Point edge_mouse = new Point(e.x / gm.scale, (e.y - 10) / gm.scale);
                 // allows two hotspots on the create tool
