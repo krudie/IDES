@@ -23,7 +23,6 @@ import userinterface.geometric.UnitVector;
 import userinterface.graphcontrol.GraphController;
 
 import userinterface.graphcontrol.EventSpecification;
-import userinterface.graphcontrol.graphparts.Curve;
 import userinterface.graphcontrol.graphparts.Edge;
 import userinterface.graphcontrol.graphparts.Node;
 
@@ -155,8 +154,8 @@ public class GraphingPlatform{
 
         graphFolderItem.setText(automaton.getName());
         
-        gc.resetState();
-        es.reset();
+        
+
         
         
         ListIterator<State> si = automaton.getStateIterator();
