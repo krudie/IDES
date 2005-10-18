@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import projectPresentation.ParsingToolbox;
 
+import userinterface.GraphingPlatform;
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
 import userinterface.Userinterface;
@@ -152,9 +153,10 @@ public class FileListener extends AbstractListener {
         MainWindow.getMenu().file_save_project.setEnabled(true);
         MainWindow.getMenu().file_new_automaton.setEnabled(true);
         MainWindow.getMenu().file_open_automaton.setEnabled(true);
-        Userinterface.getProjectPresentation().newProject(
-                ResourceManager.getString("new_project_untitled"));
+        Userinterface.getProjectPresentation().newProject(ResourceManager.getString("new_project_untitled"));
         MainWindow.getProjectExplorer().updateProject();
+        MainWindow.getGraphingPlatform().tabFolder.setSelection(GraphingPlatform.GRAPH_CANVAS_TAB);
+        MainWindow.getGraphingPlatform().tabFolder.setEnabled(false);
     }
 
     /**
@@ -210,6 +212,8 @@ public class FileListener extends AbstractListener {
             MainWindow.getMenu().file_new_automaton.setEnabled(true);
             MainWindow.getMenu().file_open_automaton.setEnabled(true);
             MainWindow.getProjectExplorer().updateProject();
+            MainWindow.getGraphingPlatform().tabFolder.setSelection(GraphingPlatform.GRAPH_CANVAS_TAB);
+            MainWindow.getGraphingPlatform().tabFolder.setEnabled(false);
         }
 
     }

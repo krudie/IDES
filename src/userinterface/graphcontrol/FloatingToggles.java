@@ -93,7 +93,7 @@ public class FloatingToggles {
             btn.setSize(btn.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             btn.setLayoutData(gd);
             btn.pack();
-           btns[i] = btn;
+            btns[i] = btn;
         }
 
         shell.layout();

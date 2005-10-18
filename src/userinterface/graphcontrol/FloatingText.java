@@ -57,8 +57,7 @@ public class FloatingText {
     /**
      * Construct the FloatingText.
      * 
-     * @param gp
-     *            The platform in which this FloatingText will exist.
+     * @param gp The platform in which this FloatingText will exist.
      */
     public FloatingText(GraphingPlatform gp) {
         this.gp = gp;
@@ -126,10 +125,8 @@ public class FloatingText {
 
     private void shellDeactivatedAction() {
         // if they click on MAIN or EXTERNAL then we need to hide FLOAT
-        if (shell.getVisible()) {
-            shell.setVisible(false);
-        }
-
+        shell.setVisible(false);
+        
         if (label != null) {
             SystemVariables.floating_text_size = new Point(shell.getSize());
 
@@ -148,12 +145,8 @@ public class FloatingText {
     public void initialize(Point scaled_origin, Point origin, Label label) {
         Rectangle display_bounds = shell.getDisplay().getBounds();
         Rectangle shell_bounds = shell.getBounds();
-        shell_bounds.x = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(
-                scaled_origin.getX(), scaled_origin.getY()).x, display_bounds.width
-                - shell_bounds.width), 0);
-        shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(
-                scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height
-                - shell_bounds.height), 0);
+        shell_bounds.x = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.getX(), scaled_origin.getY()).x, display_bounds.width- shell_bounds.width), 0);
+        shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.getX(), scaled_origin.getY()).y, display_bounds.height- shell_bounds.height), 0);
         shell.setBounds(shell_bounds);
 
         this.label = label;
