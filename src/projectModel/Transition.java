@@ -27,6 +27,20 @@ public class Transition extends SubElementContainer {
         this.e = e;
     }
 
+    public Transition(Transition t, State sourceS, State targetS, Event e){
+        super(t);
+        this.id = t.id;
+        this.sourceS = sourceS;
+        this.targetS = targetS;
+        this.e = e;
+    }
+    public Transition(Transition t, State sourceS, State targetS){
+        super(t);
+        this.id = t.id;
+        this.sourceS = sourceS;
+        this.targetS = targetS;
+    }
+
     public void setSource(State s) {
         this.sourceS = s;
     }
