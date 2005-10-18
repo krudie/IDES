@@ -87,7 +87,7 @@ public class EventSpecification {
         newRow.setText(ResourceManager.getString("eventSpec_newRow"));
         newRow.addListener (SWT.Selection, new Listener(){
             public void handleEvent(Event arg0){
-                createNewRow();
+                createNewEvent();
             }
         });
         
@@ -164,17 +164,17 @@ public class EventSpecification {
         });
     }
     
-    public void createNewRow(){
+    public int createNewEvent(){
         TableItem ti = new TableItem(table, SWT.NONE);      
         table.setSelection(table.getItemCount()-1);
         
         for(int i = 2; i < columnName.length;i++){
             ti.setText(i, "false");
-        }
-        
+        }      
         
         changed = true;
-        
+                
+        return table.getItemCount()-1; 
     }
     
     public void deleteRow(){
@@ -211,8 +211,70 @@ public class EventSpecification {
     }
     
     
+    public String getName(int id){        
+        try{
+            return table.getItem(id).getText(NAME);
+        } catch(Exception e){
+            return null;
+        }
+    }
     
+    public void setName(int id, String name){        
+        try{
+            table.getItem(id).setText(NAME, name);
+        } catch(Exception e){}
+    }
     
+    public String getDescription(int id){       
+       try{
+           return table.getItem(id).getText(DESCRIPTION);
+       } catch(Exception e){
+           return null;
+       }
+    }
+    
+    public void setDescription(int id, String description){        
+        try{    
+            table.getItem(id).setText(DESCRIPTION, description);
+        } catch(Exception e){}
+    }  
+    
+    public boolean getObservable(int id){
+        try{
+            return table.getItem(id).getText(OBSERVABLE).equals("true");
+        } catch(Exception e){
+            return false;
+        }
+    }
+    
+    public void setObservable(int id, boolean observable){
+        table.getItem(id).setText(OBSERVABLE, Boolean.toString(observable));
+    }
+    
+    public boolean getControllable(int id){
+        try{
+            return table.getItem(id).getText(CONTROLLABLE).equals("true");
+        } catch(Exception e){
+            return false;
+        }
+    }
+    
+    public void setControllable(int id, boolean controllable){
+        try{
+            table.getItem(id).setText(CONTROLLABLE, Boolean.toString(controllable));
+        } catch(Exception e){}
+    }
+    
+    public int getId(String name){
+        for(int i = 0; i< table.getItemCount(); i++){
+            if(table.getItem(i).getText(NAME).equals(name)) return i;
+        }
+        return -1;
+    }
+    
+    public int getEventCount(){
+        return table.getItemCount();
+    }
     
     
 }
