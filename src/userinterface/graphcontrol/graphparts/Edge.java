@@ -3,6 +3,8 @@
  */
 package userinterface.graphcontrol.graphparts;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import org.eclipse.swt.widgets.TableItem;
@@ -284,8 +286,7 @@ public class Edge extends GraphObject{
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Edge calculation
-    // ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Edge calculation ///////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -300,12 +301,9 @@ public class Edge extends GraphObject{
      * Recalculate the parameters of this Edge based on a node movement, keeping
      * the origional edge configuration.
      * 
-     * @param n
-     *            The initiating Node.
-     * @param origional_configuration
-     *            The configuration of the Node at the initiation of movement.
-     * @param mouse
-     *            The current mouse position.
+     * @param n The initiating Node.
+     * @param origional_configuration The configuration of the Node at the initiation of movement.
+     * @param mouse The current mouse position.
      */
     public void updateNodeMovement(Node n, Configuration origional_configuration, Point mouse){
         if(isSimple()) autoConfigureCurve();
@@ -402,8 +400,7 @@ public class Edge extends GraphObject{
 
     public void autoArcLess(){
         float angle = (float) Math.toDegrees(curve.headAnchorAngle());
-        // force angle to -180 ... 180 (it represents the angle from the
-        // bisector)
+        // force angle to -180 ... 180 (it represents the angle from the bisector)
         if(angle > 180) angle = 360 - angle;
         if(angle < -180) angle = 360 + angle;
         // decrease the size
@@ -777,5 +774,16 @@ public class Edge extends GraphObject{
         curve.translateAll(x, y);
         getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
+    }
+    
+    public String[] getEventNames(){
+        LinkedList<String> retList = new LinkedList<String>();
+        Iterator<TableItem> labelsIterator = label_data.iterator();
+        
+        while(labelsIterator.hasNext()){
+            retList.addLast(labelsIterator.next().getText(EventSpecification.NAME));
+        }
+        
+        return retList.toArray(new String[retList.size()]);
     }
 }
