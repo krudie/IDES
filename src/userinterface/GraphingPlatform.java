@@ -170,6 +170,12 @@ public class GraphingPlatform {
             gc.gm.accomodateLabels();
         }
         
+        ListIterator<Event> ei = automaton.getEventIterator();
+        while(ei.hasNext()){
+            Event e = ei.next();
+            
+        }
+        
         ListIterator<Transition> ti = automaton.getTransitionIterator();
         while(ti.hasNext()){
             Transition t = ti.next();
