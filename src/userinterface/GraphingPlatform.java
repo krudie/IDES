@@ -191,6 +191,10 @@ public class GraphingPlatform{
                     .safeInt("0"), Ascii.safeInt("0"), 0));
 
         }
+        
+        es.setChanged(false);
+        gc.gm.accomodateLabels();
+        gc.repaint();
     }
 
     public void save(){
