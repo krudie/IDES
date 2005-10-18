@@ -177,6 +177,15 @@ public class EventSpecification {
         return table.getItemCount()-1; 
     }
     
+    public int createNewEvent(String name, String description, boolean controllable, boolean observable){
+        int retVal = createNewEvent();
+        setName(retVal, name);
+        setDescription(retVal, description);
+        setControllable(retVal, controllable);
+        setObservable(retVal, observable);
+        return retVal;
+    }
+    
     public void deleteRow(){
         if(table.getSelectionIndex() != -1){
             int selected = table.getSelectionIndex();
@@ -248,7 +257,9 @@ public class EventSpecification {
     }
     
     public void setObservable(int id, boolean observable){
-        table.getItem(id).setText(OBSERVABLE, Boolean.toString(observable));
+        try{
+            table.getItem(id).setText(OBSERVABLE, Boolean.toString(observable));
+        } catch(Exception e){}
     }
     
     public boolean getControllable(int id){
