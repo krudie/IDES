@@ -154,7 +154,9 @@ public class GraphingPlatform{
         automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
 
         graphFolderItem.setText(automaton.getName());
+        
         gc.resetState();
+        es.reset();
         
         
         ListIterator<State> si = automaton.getStateIterator();

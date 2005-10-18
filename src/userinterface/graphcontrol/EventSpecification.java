@@ -294,5 +294,9 @@ public class EventSpecification {
         return table.getItemCount();
     }
     
+    public void reset(){
+        table.removeAll();
+    }
+    
     
 }
