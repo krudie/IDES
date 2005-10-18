@@ -73,7 +73,8 @@ public class GraphingPlatform{
         languageSpec.setText(ResourceManager.getString("window.specifications_tab.text"));
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // specifications area////////////////////////////////////////////////////////////////////////////////////////////
+        // specifications
+        // area////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Note: this area has to be created before the graph area, because the
@@ -121,7 +122,8 @@ public class GraphingPlatform{
         gc = new GraphController(this, cmpGraphing);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // selection between tabs /////////////////////////////////////////////////////////////////////////////////////////
+        // selection between tabs
+        // /////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         tabFolder.addSelectionListener(new SelectionAdapter(){
@@ -163,23 +165,23 @@ public class GraphingPlatform{
             int x = Ascii.safeInt(circle.getAttribute("x"));
             int y = Ascii.safeInt(circle.getAttribute("y"));
             int r = Ascii.safeInt(circle.getAttribute("r"));
-            
+
             SubElement arrow = g.getSubElement("arrow");
             float dx = Ascii.safeFloat(arrow.getAttribute("x"));
             float dy = Ascii.safeFloat(arrow.getAttribute("y"));
-            
+
             SubElement name = s.getSubElement("name");
             String l = (name.getChars() != null) ? name.getChars() : "";
-             
+
             Node n = new Node(this, gc.gm, x, y, r, 0, dx, dy, l);
-            
+
             SubElement properties = s.getSubElement("properties");
 
-            if(Ascii.safeBoolean(properties.getSubElement("initial").getChars()))
-                n.addAttribute(Node.START_STATE);
-            if(Ascii.safeBoolean(properties.getSubElement("marked").getChars()))
-                n.addAttribute(Node.MARKED_STATE);
-            
+            if(Ascii.safeBoolean(properties.getSubElement("initial").getChars())) n
+                    .addAttribute(Node.START_STATE);
+            if(Ascii.safeBoolean(properties.getSubElement("marked").getChars())) n
+                    .addAttribute(Node.MARKED_STATE);
+
             gc.gm.addNode(n);
         }
 
@@ -187,10 +189,10 @@ public class GraphingPlatform{
         while(ei.hasNext()){
             Event e = ei.next();
             SubElement properties = e.getSubElement("properties");
-            es.createNewEvent(e.getSubElement("name").getChars(),
-                    e.getSubElement("description").getChars(),
-                    Ascii.safeBoolean(properties.getSubElement("controllable").getChars()),
-                    Ascii.safeBoolean(properties.getSubElement("observable").getChars()));
+            es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description")
+                    .getChars(), Ascii.safeBoolean(properties.getSubElement("controllable")
+                    .getChars()), Ascii.safeBoolean(properties.getSubElement("observable")
+                    .getChars()));
         }
 
         ListIterator<Transition> ti = automaton.getTransitionIterator();
@@ -206,16 +208,19 @@ public class GraphingPlatform{
                 if(group.size() > gn) group.get(gn).addLabel(es.getEvent(event.getId()));
                 else{
                     group.add(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                            .getNodeById(t.getTarget().getId()), graphic.getSubElement("qubiccurve"), Ascii
-                            .safeInt(labelDisplacement.getAttribute("x")), Ascii.safeInt(labelDisplacement.getAttribute("y")), 0));
+                            .getNodeById(t.getTarget().getId()), graphic
+                            .getSubElement("qubiccurve"), Ascii.safeInt(labelDisplacement
+                            .getAttribute("x")),
+                            Ascii.safeInt(labelDisplacement.getAttribute("y")), 0));
                     if(event != null) group.get(gn).addLabel(es.getEvent(event.getId()));
                     gc.gm.addEdge(group.get(gn));
                 }
             }
             else{
                 Edge e = new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                        .getNodeById(t.getTarget().getId()), graphic.getSubElement("qubiccurve"), Ascii
-                        .safeInt(labelDisplacement.getAttribute("x")), Ascii.safeInt(labelDisplacement.getAttribute("y")), 0);
+                        .getNodeById(t.getTarget().getId()), graphic.getSubElement("qubiccurve"),
+                        Ascii.safeInt(labelDisplacement.getAttribute("x")), Ascii
+                                .safeInt(labelDisplacement.getAttribute("y")), 0);
                 if(event != null){
                     e.addLabel(es.getEvent(event.getId()));
                 }
@@ -247,7 +252,7 @@ public class GraphingPlatform{
             ei.next();
             ei.remove();
         }
-        //run the garbage collector. A lot has just been deleted.
+        // run the garbage collector. A lot has just been deleted.
         System.gc();
 
         // rebuild states
@@ -256,8 +261,8 @@ public class GraphingPlatform{
             State s = new State(i);
             SubElement graphic = new SubElement("graphic");
             s.addSubElement(graphic);
-            
-            //circle
+
+            // circle
             SubElement circle = new SubElement("circle");
             graphic.addSubElement(circle);
             circle.setAttribute("x", Integer.toString(n.getX()));
@@ -268,8 +273,8 @@ public class GraphingPlatform{
             UnitVector u = n.getStartArrow();
             arrow.setAttribute("x", Float.toString(u.x));
             arrow.setAttribute("y", Float.toString(u.y));
-            
-            //properties
+
+            // properties
             SubElement properties = new SubElement("properties");
             s.addSubElement(properties);
             SubElement marked = new SubElement("marked");
@@ -278,12 +283,12 @@ public class GraphingPlatform{
             SubElement initial = new SubElement("initial");
             properties.addSubElement(initial);
             initial.setChars(Boolean.toString(n.isStartState()));
-            
-            //name
+
+            // name
             SubElement name = new SubElement("name");
             name.setChars(n.getGlyphLabel().string_representation.trim());
             s.addSubElement(name);
-            
+
             automaton.addState(s);
         }
         // rebuild events
@@ -321,20 +326,22 @@ public class GraphingPlatform{
                         automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
                                 .getId(e.getTarget())));
                 automaton.addTransition(t);
-                
+
                 SubElement graphic = new SubElement("graphic");
                 t.addSubElement(graphic);
-                
+
                 graphic.addSubElement(e.getCurve().toSubElement("qubiccurve"));
 
                 SubElement labelDisplacement = new SubElement("labeldisplacement");
                 graphic.addSubElement(labelDisplacement);
-                labelDisplacement.setAttribute("x",Integer.toString(e.getLabelDisplacement().getX()));
-                labelDisplacement.setAttribute("y",Integer.toString(e.getLabelDisplacement().getY()));
-                
+                labelDisplacement.setAttribute("x", Integer.toString(e.getLabelDisplacement()
+                        .getX()));
+                labelDisplacement.setAttribute("y", Integer.toString(e.getLabelDisplacement()
+                        .getY()));
+
                 if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
             }
-            // otherwise make a lot transitions.
+            // otherwise make a lot of transitions.
             else{
                 for(int k = 0; k < events.length; k++){
                     Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e
@@ -347,12 +354,14 @@ public class GraphingPlatform{
                     t.addSubElement(graphic);
                     graphic.setAttribute("labelgroup", Integer.toString(gn));
 
-                    graphic.addSubElement(e.getCurve().toSubElement("qubiccurve"));                                        
+                    graphic.addSubElement(e.getCurve().toSubElement("qubiccurve"));
 
                     SubElement labelDisplacement = new SubElement("labeldisplacement");
                     graphic.addSubElement(labelDisplacement);
-                    labelDisplacement.setAttribute("x",Integer.toString(e.getLabelDisplacement().getX()));
-                    labelDisplacement.setAttribute("y",Integer.toString(e.getLabelDisplacement().getY()));                    
+                    labelDisplacement.setAttribute("x", Integer.toString(e.getLabelDisplacement()
+                            .getX()));
+                    labelDisplacement.setAttribute("y", Integer.toString(e.getLabelDisplacement()
+                            .getY()));
                 }
                 j--;
                 gn++;
