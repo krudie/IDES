@@ -130,7 +130,7 @@ public class GraphingPlatform{
         tabFolder.addSelectionListener(new SelectionAdapter(){
             public void widgetSelected(SelectionEvent e){
                 gc.floating_toggles.shellDeactivatedAction();
-                
+
                 if(es.isChanged()){
                     es.setChanged(false);
                     gc.gm.accomodateLabels();
@@ -196,18 +196,17 @@ public class GraphingPlatform{
                 int gn = Ascii.safeInt(g.getAttribute("group"));
                 if(group.size() > gn) group.get(gn).addLabel(es.getEvent(event.getId()));
                 else{
-                    group.add(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()),
-                            gc.gm.getNodeById(t.getTarget().getId()), g, Ascii.safeInt("0"), Ascii
-                                    .safeInt("0"), 0));
-                    if(event != null)
-                        group.get(gn).addLabel(es.getEvent(event.getId()));
+                    group.add(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
+                            .getNodeById(t.getTarget().getId()), g, Ascii
+                            .safeInt(g.getAttribute("gtx")), Ascii.safeInt(g.getAttribute("gty")), 0));
+                    if(event != null) group.get(gn).addLabel(es.getEvent(event.getId()));
                     gc.gm.addEdge(group.get(gn));
                 }
             }
             else{
                 Edge e = new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                        .getNodeById(t.getTarget().getId()), g, Ascii.safeInt("0"), Ascii
-                        .safeInt("0"), 0);
+                        .getNodeById(t.getTarget().getId()), g, Ascii
+                        .safeInt(g.getAttribute("gtx")), Ascii.safeInt(g.getAttribute("gty")), 0);
                 if(event != null){
                     e.addLabel(es.getEvent(event.getId()));
                 }
@@ -272,30 +271,36 @@ public class GraphingPlatform{
         }
 
         // rebuilt transitions
-        int gn = 0;
-        int j = 0;
+        int gn = 0, j = 0;
         for(int i = 0; i < gc.gm.getEdgeSize(); i++){
             Edge e = gc.gm.getEdgeById(i);
             String[] events = e.getEventNames();
-            //if the transition is triggered by one or zero events
-            //make one transition
+            // if the transition is triggered by one or zero events
+            // make one transition
             if(events.length <= 1){
                 Transition t = new Transition(i + j,
                         automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
                                 .getId(e.getTarget())));
-                t.addSubElement(e.getCurve().toSubElement("graphic"));
-                if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
+                SubElement g = e.getCurve().toSubElement("graphic");
+                t.addSubElement(g);
+                if(events.length == 1){
+                    t.setEvent(automaton.getEvent(es.getId(events[0])));
+                    g.setAttribute("gtx",Integer.toString(e.getLabelDisplacement().getX()));
+                    g.setAttribute("gty",Integer.toString(e.getLabelDisplacement().getY()));
+                }
 
                 automaton.addTransition(t);
             }
-            //otherwize make a lot.
+            // otherwise make a lot transitions.
             else{
                 for(int k = 0; k < events.length; k++){
-                    Transition t = new Transition(i + j++, automaton.getState(gc.gm
-                            .getId(e.getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
+                    Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e
+                            .getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
                     t.setEvent(automaton.getEvent(es.getId(events[k])));
                     SubElement g = e.getCurve().toSubElement("graphic");
-                    g.setAttribute("group",Integer.toString(gn));
+                    g.setAttribute("group", Integer.toString(gn));
+                    g.setAttribute("gtx",Integer.toString(e.getLabelDisplacement().getX()));
+                    g.setAttribute("gty",Integer.toString(e.getLabelDisplacement().getY()));
                     t.addSubElement(g);
                     automaton.addTransition(t);
                 }
