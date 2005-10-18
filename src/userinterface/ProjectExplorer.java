@@ -322,10 +322,11 @@ public class ProjectExplorer {
                             return;
                         }  
                     }
+                    MainWindow.getGraphingPlatform().gc.resetState();
+                    MainWindow.getGraphingPlatform().es.reset();
+                    MainWindow.getGraphingPlatform().open(item.getText());
                  }
-                MainWindow.getGraphingPlatform().gc.resetState();
-                MainWindow.getGraphingPlatform().es.reset();
-                MainWindow.getGraphingPlatform().open(item.getText());
+
                 break;
 
             case SWT.KeyDown:
