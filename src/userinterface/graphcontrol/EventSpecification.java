@@ -119,6 +119,7 @@ public class EventSpecification {
                             final int column = i;
                             if(column > 1){
                                 item.setText(column, Boolean.toString(item.getText(column).equals("false")));
+                                setChanged(true);
                                 return;
                             }
                             final Text text = new Text (table, SWT.NONE);
