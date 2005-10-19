@@ -204,10 +204,23 @@ public class Automaton implements Cloneable{
             sli.remove();
         }
 
-        public void set(State o){
+        public void set(State s){
+            ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
+            while(sources.hasNext()){
+                Transition t = sources.next();
+                t.setSource(s);
+                s.addSourceTransition(t);
+            }
+            ListIterator<Transition> targets = current.getTargetTransitionListIterator();
+            while(targets.hasNext()){
+                Transition t = targets.next();
+                t.setTarget(s);
+                s.addTargetTransition(t);
+            }
         }
 
-        public void add(State o){
+        public void add(State s){
+            sli.add(s);
         }
     }
 }
