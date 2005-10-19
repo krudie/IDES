@@ -160,23 +160,15 @@ public class ProjectManager implements ProjectPresentation {
     }
     
     
-    public void accesible(String source, String name){
-
+    public void accesible(String source){
+        
         Automaton sourceAutomaton = getAutomatonByName(source);
+        if(sourceAutomaton == null) return;
         
         //create a queue
         LinkedList<State> searchQue = new LinkedList<State>();
         
-        //create a new automaton
-        Automaton result = new Automaton(name);
-        
-        //copy all events
-        Iterator<Event> eventIterator = sourceAutomaton.getEventIterator();
-        while(eventIterator.hasNext()){
-           // result.addEvent(eventIterator.next());
-        }
-
-        //find initial state  mark as reached, copy it to the new automaton and add it to the que
+        //find initial state  mark as reached and add it to the que
         Iterator<State> stateIterator = sourceAutomaton.getStateIterator();
         State state;
         while(stateIterator.hasNext()){
@@ -184,7 +176,6 @@ public class ProjectManager implements ProjectPresentation {
             
             if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
                 searchQue.add(state);
-                result.add(new State(state));
                 state.addSubElement(new SubElement("reached"));
             }
         }
@@ -200,29 +191,36 @@ public class ProjectManager implements ProjectPresentation {
             // loop while the state has more transitions
             while(transitionIterator.hasNext()){
                 transition = transitionIterator.next();
-                //if the state is not reached, mark it as reached and copy it to the new automaton, add it to the que
+                //if the state is not reached, mark it as reached, add it to the que
                 if(!transition.getTarget().hasSubElement("reached")){
-                    result.add(new State(transition.getTarget()));
                     transition.getTarget().addSubElement(new SubElement("reached"));
                     searchQue.add(transition.getTarget());
                 }
-                
-                // copy the transition
-               //result.addTransition(new Transition(transition));
             }
- 
         }
 
-        
         //clean up
         stateIterator = sourceAutomaton.getStateIterator();
         while(stateIterator.hasNext()){
-            stateIterator.next().removeSubElement("reached");
+           
+            state = stateIterator.next();
+            if(!state.hasSubElement("reached")){
+                sourceAutomaton.remove(state);
+            } else {
+                state.removeSubElement("reached");
+            }
         }
+    }
+    
+    public void copyAutomaton(String source, String clonedName){
+        Automaton cloned = project.getAutomatonByName(source).clone();
 
-       //whatever copied to the new automaton is the accesible version of the automaton
-        
-       project.addAutomaton(result);
+        try{
+           cloned.setName(clonedName);
+           project.addAutomaton(cloned);
+        } catch(Exception e){
+            return;
+        }
     }
     
     

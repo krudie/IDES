@@ -54,9 +54,12 @@ public class OperationListener extends AbstractListener{
     public void accesible(){
         
         String selectedNames[] = MainWindow.getProjectExplorer().getSelectedAutomaton();
+        String newName = new String();
         for(int i= 0; i<selectedNames.length; i++){
             if(selectedNames[i] != null){
-                Userinterface.getProjectPresentation().accesible(selectedNames[i], MainWindow.getProjectExplorer().getTitle("Accesible(" + selectedNames[i] +")"));
+                newName = MainWindow.getProjectExplorer().getTitle("Accesible(" + selectedNames[i] +")");
+                Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
+                Userinterface.getProjectPresentation().accesible(newName);
             }
            
         }
