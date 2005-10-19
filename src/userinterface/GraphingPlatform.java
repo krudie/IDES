@@ -206,27 +206,27 @@ public class GraphingPlatform{
         while(ti.hasNext()){
             Transition t = ti.next();
             SubElement graphic = t.getSubElement("graphic");
-            SubElement labelDisplacement = graphic.getSubElement("labeldisplacement");
+            SubElement label = graphic.getSubElement("label");
             Event event = t.getEvent();
 
-            if(graphic.hasAttribute("labelgroup")){
-                int gn = Ascii.safeInt(graphic.getAttribute("labelgroup"));
+            if(label.hasAttribute("group")){
+                int gn = Ascii.safeInt(graphic.getSubElement("label").getAttribute("group"));
                 if(group.size() > gn) group.get(gn).addLabel(es.getEvent(event.getId()));
                 else{
                     group.add(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
                             .getNodeById(t.getTarget().getId()), graphic
-                            .getSubElement("qubiccurve"), Ascii.safeInt(labelDisplacement
+                            .getSubElement("bezier"), Ascii.safeInt(label
                             .getAttribute("x")),
-                            Ascii.safeInt(labelDisplacement.getAttribute("y")), 0));
+                            Ascii.safeInt(label.getAttribute("y")), 0));
                     if(event != null) group.get(gn).addLabel(es.getEvent(event.getId()));
                     gc.gm.addEdge(group.get(gn));
                 }
             }
             else{
                 Edge e = new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                        .getNodeById(t.getTarget().getId()), graphic.getSubElement("qubiccurve"),
-                        Ascii.safeInt(labelDisplacement.getAttribute("x")), Ascii
-                                .safeInt(labelDisplacement.getAttribute("y")), 0);
+                        .getNodeById(t.getTarget().getId()), graphic.getSubElement("bezier"),
+                        Ascii.safeInt(label.getAttribute("x")), Ascii
+                                .safeInt(label.getAttribute("y")), 0);
                 if(event != null){
                     e.addLabel(es.getEvent(event.getId()));
                 }
@@ -336,13 +336,13 @@ public class GraphingPlatform{
                 SubElement graphic = new SubElement("graphic");
                 t.addSubElement(graphic);
 
-                graphic.addSubElement(e.getCurve().toSubElement("qubiccurve"));
+                graphic.addSubElement(e.getCurve().toSubElement("bezier"));
 
-                SubElement labelDisplacement = new SubElement("labeldisplacement");
-                graphic.addSubElement(labelDisplacement);
-                labelDisplacement.setAttribute("x", Integer.toString(e.getLabelDisplacement()
+                SubElement label = new SubElement("label");
+                graphic.addSubElement(label);
+                label.setAttribute("x", Integer.toString(e.getLabelDisplacement()
                         .getX()));
-                labelDisplacement.setAttribute("y", Integer.toString(e.getLabelDisplacement()
+                label.setAttribute("y", Integer.toString(e.getLabelDisplacement()
                         .getY()));
 
                 if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
@@ -358,15 +358,15 @@ public class GraphingPlatform{
 
                     SubElement graphic = new SubElement("graphic");
                     t.addSubElement(graphic);
-                    graphic.setAttribute("labelgroup", Integer.toString(gn));
+                    
+                    graphic.addSubElement(e.getCurve().toSubElement("bezier"));
 
-                    graphic.addSubElement(e.getCurve().toSubElement("qubiccurve"));
-
-                    SubElement labelDisplacement = new SubElement("labeldisplacement");
-                    graphic.addSubElement(labelDisplacement);
-                    labelDisplacement.setAttribute("x", Integer.toString(e.getLabelDisplacement()
+                    SubElement label = new SubElement("label");
+                    graphic.addSubElement(label);
+                    label.setAttribute("group", Integer.toString(gn));
+                    label.setAttribute("x", Integer.toString(e.getLabelDisplacement()
                             .getX()));
-                    labelDisplacement.setAttribute("y", Integer.toString(e.getLabelDisplacement()
+                    label.setAttribute("y", Integer.toString(e.getLabelDisplacement()
                             .getY()));
                 }
                 j--;

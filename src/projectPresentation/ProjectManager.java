@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import projectModel.*;
 
@@ -168,7 +169,7 @@ public class ProjectManager implements ProjectPresentation {
         //create a queue
         LinkedList<State> searchQue = new LinkedList<State>();
         
-        //find initial state  mark as reached and add it to the que
+        //find initial state(s), mark as reached and add it(/them) to the que
         Iterator<State> stateIterator = sourceAutomaton.getStateIterator();
         State state;
         while(stateIterator.hasNext()){
@@ -179,7 +180,6 @@ public class ProjectManager implements ProjectPresentation {
                 state.addSubElement(new SubElement("reached"));
             }
         }
-        
         
         Iterator<Transition> transitionIterator = null;
         //loop while que not empty
@@ -201,7 +201,6 @@ public class ProjectManager implements ProjectPresentation {
 
         //clean up
         stateIterator = sourceAutomaton.getStateIterator();
-        int id = 0;
         while(stateIterator.hasNext()){
             state = stateIterator.next();
             if(state.hasSubElement("reached")){
@@ -209,6 +208,24 @@ public class ProjectManager implements ProjectPresentation {
             }
             else stateIterator.remove();
         }
+    }
+    
+    public void coAccesible(Automaton automaton){
+        LinkedList<State> searchList = new LinkedList<State>();
+        ListIterator<State> states = automaton.getStateIterator();
+        
+        while(states.hasNext()){
+            State s = states.next();
+            if(s.getSubElement("properties").getSubElement("marked").getChars().equals("true")){
+                s.addSubElement(new SubElement("reached"));
+                searchList.add(s);
+            }
+        }
+        
+        while(!searchList.isEmpty()){
+            
+        }
+    
     }
     
     public void copyAutomaton(String source, String clonedName){
