@@ -47,7 +47,7 @@ public class SubElement extends SubElementContainer{
         return attributeList.get(aName);
     }
 
-    public void setAttribute(String aName, String attr) throws NullPointerException{
+    public void setAttribute(String aName, String attr){
         attributeList.put(aName, attr);
     }
 
