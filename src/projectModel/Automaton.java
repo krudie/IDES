@@ -59,6 +59,14 @@ public class Automaton implements Cloneable{
 
     public void remove(State s) {
         states.remove(s);
+        ListIterator<Transition> sources = s.getSourceTransitionsListIterator();
+        while(sources.hasNext()){
+            remove(sources.next());
+        }
+        ListIterator<Transition> targets = s.getTargetTransitionListIterator();
+        while(targets.hasNext()){
+            remove(targets.next());
+        }
     }
 
     public ListIterator<State> getStateIterator() {
