@@ -169,6 +169,12 @@ public class ProjectManager implements ProjectPresentation {
         
         //create a new automaton
         Automaton result = new Automaton(name);
+        
+        //copy all events
+        Iterator<Event> eventIterator = sourceAutomaton.getEventIterator();
+        while(eventIterator.hasNext()){
+           // result.addEvent(eventIterator.next());
+        }
 
         //find initial state  mark as reached, copy it to the new automaton and add it to the que
         Iterator<State> stateIterator = sourceAutomaton.getStateIterator();
