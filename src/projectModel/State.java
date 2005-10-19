@@ -53,6 +53,9 @@ public class State extends SubElementContainer{
     public int getId(){
         return id;
     }
+    public void setId(int id){
+        this.id = id;
+    }
 
     
     public void toXML(PrintStream ps, String indent){

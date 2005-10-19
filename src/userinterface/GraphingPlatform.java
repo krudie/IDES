@@ -155,10 +155,14 @@ public class GraphingPlatform{
         automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
 
         graphFolderItem.setText(automaton.getName());
-
+        
         ListIterator<State> si = automaton.getStateIterator();
+        int id = 0;
         while(si.hasNext()){
             State s = si.next();
+            //set the stateid to be consequtive.
+            //Otherwise IDES can't handle it.
+            s.setId(id++);
             SubElement g = s.getSubElement("graphic");
 
             SubElement circle = g.getSubElement("circle");
@@ -186,8 +190,10 @@ public class GraphingPlatform{
         }
 
         ListIterator<Event> ei = automaton.getEventIterator();
+        id = 0;
         while(ei.hasNext()){
             Event e = ei.next();
+            e.setId(id++);
             SubElement properties = e.getSubElement("properties");
             es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description")
                     .getChars(), Ascii.safeBoolean(properties.getSubElement("controllable")

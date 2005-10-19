@@ -61,19 +61,25 @@ public class Automaton implements Cloneable{
     }
 
     public void remove(State s){
-        states.remove(s);
         ListIterator<Transition> sources = s.getSourceTransitionsListIterator();
         while(sources.hasNext()){
-            remove(sources.next());
+            Transition t = sources.next();
+            sources.remove();
+            t.getSource().removeSourceTransition(t);
+            t.getTarget().removeTargetTransition(t);
         }
         ListIterator<Transition> targets = s.getTargetTransitionListIterator();
         while(targets.hasNext()){
-            remove(targets.next());
+            Transition t = targets.next();
+            targets.remove();
+            t.getSource().removeSourceTransition(t);
+            t.getTarget().removeTargetTransition(t);            
         }
+        states.remove(s);
     }
-
+    
     public ListIterator<State> getStateIterator(){
-        return states.listIterator();
+        return new StateIterator(states.listIterator(), this);
     }
 
     public State getState(int id){
@@ -140,5 +146,68 @@ public class Automaton implements Cloneable{
             ti.next().toXML(ps, "  ");
         }
         ps.println("</automaton>");
+    }
+    
+    private class StateIterator implements ListIterator<State>{
+        private ListIterator<State> sli;
+        private State current;
+        private Automaton a;
+        
+        public StateIterator(ListIterator<State> sli, Automaton a){
+            this.a = a;
+            this.sli = sli;
+        }
+        
+        public boolean hasNext(){
+            return sli.hasNext();
+        }
+
+        public State next(){
+            current = sli.next();
+            return current;
+        }
+
+        public boolean hasPrevious(){
+            return sli.hasPrevious();
+        }
+
+        public State previous(){
+            current = sli.previous();
+            return current;
+        }
+
+        public int nextIndex(){
+            return sli.nextIndex();
+        }
+
+        public int previousIndex(){
+            return sli.previousIndex();
+        }
+
+        public void remove(){
+            ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
+            while(sources.hasNext()){
+                Transition t = sources.next();
+                sources.remove();
+                a.remove(t);
+                t.getSource().removeSourceTransition(t);
+                t.getTarget().removeTargetTransition(t);
+            }
+            ListIterator<Transition> targets = current.getTargetTransitionListIterator();
+            while(targets.hasNext()){
+                Transition t = targets.next();
+                targets.remove();
+                a.remove(t);
+                t.getSource().removeSourceTransition(t);
+                t.getTarget().removeTargetTransition(t);            
+            }
+            sli.remove();
+        }
+
+        public void set(State o){
+        }
+
+        public void add(State o){
+        }
     }
 }

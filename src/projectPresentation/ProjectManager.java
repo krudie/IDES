@@ -201,14 +201,13 @@ public class ProjectManager implements ProjectPresentation {
 
         //clean up
         stateIterator = sourceAutomaton.getStateIterator();
+        int id = 0;
         while(stateIterator.hasNext()){
-           
             state = stateIterator.next();
-            if(!state.hasSubElement("reached")){
-                sourceAutomaton.remove(state);
-            } else {
+            if(state.hasSubElement("reached")){
                 state.removeSubElement("reached");
             }
+            else stateIterator.remove();
         }
     }
     

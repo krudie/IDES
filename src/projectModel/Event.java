@@ -7,26 +7,31 @@ import java.io.PrintStream;
  * @author Axel Gottlieb Michelsen
  * 
  */
-public class Event extends SubElementContainer {
+public class Event extends SubElementContainer{
     private int id;
 
-    public Event(int id) {
+    public Event(int id){
         this.id = id;
     }
-    
+
     public Event(Event e){
         super(e);
         this.id = e.id;
     }
 
-    public int getId() {
+    public int getId(){
         return id;
     }
 
-    public void toXML(PrintStream ps, String indent) {
-        if (isEmpty()) {
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public void toXML(PrintStream ps, String indent){
+        if(isEmpty()){
             ps.println(indent + "<event" + " id=\"" + id + "\"/>");
-        } else {
+        }
+        else{
             ps.println(indent + "<event" + " id=\"" + id + "\">");
             super.toXML(ps, indent + "  ");
             ps.println(indent + "</event>");
