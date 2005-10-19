@@ -178,7 +178,7 @@ public class ProjectManager implements ProjectPresentation {
             
             if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
                 searchQue.add(state);
-                result.addState(new State(state));
+                result.add(new State(state));
                 state.addSubElement(new SubElement("reached"));
             }
         }
@@ -196,7 +196,7 @@ public class ProjectManager implements ProjectPresentation {
                 transition = transitionIterator.next();
                 //if the state is not reached, mark it as reached and copy it to the new automaton, add it to the que
                 if(!transition.getTarget().hasSubElement("reached")){
-                    result.addState(new State(transition.getTarget()));
+                    result.add(new State(transition.getTarget()));
                     transition.getTarget().addSubElement(new SubElement("reached"));
                     searchQue.add(transition.getTarget());
                 }

@@ -87,7 +87,7 @@ public class AutomatonParser extends AbstractFileParser{
                 }
                 int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
                 sec = new State(id);
-                a.addState((State) sec);
+                a.add((State) sec);
                 state = STATE_STATE;
             }
             else if(qName.equals(ELEMENT_EVENT)){
@@ -97,7 +97,7 @@ public class AutomatonParser extends AbstractFileParser{
                 }
                 int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
                 sec = new Event(id);
-                a.addEvent((Event) sec);
+                a.add((Event) sec);
                 state = STATE_EVENT;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
@@ -121,11 +121,11 @@ public class AutomatonParser extends AbstractFileParser{
                 }
                 else if(e == null){
                     sec = new Transition(id, s, t);
-                    a.addTransition((Transition) sec);
+                    a.add((Transition) sec);
                 }
                 else{
                     sec = new Transition(id, s, t, e);
-                    a.addTransition((Transition) sec);
+                    a.add((Transition) sec);
                 }
                 state = STATE_TRANSITION;
             }

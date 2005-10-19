@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-public class SubElement extends SubElementContainer{
+public class SubElement extends SubElementContainer implements Cloneable{
     private Hashtable<String, String> attributeList;
 
     private String name;
@@ -25,6 +25,10 @@ public class SubElement extends SubElementContainer{
         while(names.hasMoreElements()){
             this.setAttribute(names.nextElement(), values.nextElement());
         }
+    }
+    
+    public SubElement clone(){
+        return new SubElement(this);
     }
 
     public String getName(){

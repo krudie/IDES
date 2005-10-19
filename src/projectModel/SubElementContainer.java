@@ -13,7 +13,7 @@ import java.util.Hashtable;
  * attributes in the same every time.)
  * 
  */
-public class SubElementContainer{
+public class SubElementContainer implements Cloneable{
     private Hashtable<String, SubElement> subElementList;
 
     public SubElementContainer(){
@@ -26,6 +26,10 @@ public class SubElementContainer{
         while(see.hasMoreElements()){
             this.addSubElement(new SubElement(see.nextElement()));
         }
+    }
+    
+    public SubElementContainer clone(){
+        return new SubElementContainer(this);
     }
 
     public Enumeration<SubElement> getSubElements(){

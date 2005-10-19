@@ -13,6 +13,11 @@ public class Event extends SubElementContainer {
     public Event(int id) {
         this.id = id;
     }
+    
+    public Event(Event e){
+        super(e);
+        this.id = e.id;
+    }
 
     public int getId() {
         return id;

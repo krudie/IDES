@@ -8,7 +8,7 @@ import java.util.*;
  * @author Axel Gottlieb Michelsen
  * 
  */
-public class Automaton {
+public class Automaton implements Cloneable{
     private LinkedList<State> states;
 
     private LinkedList<Transition> transitions;
@@ -24,6 +24,27 @@ public class Automaton {
         this.name = name;
     }
 
+    public Automaton clone(){
+        Automaton clone = new Automaton(this.name);
+        ListIterator<Event> ei = getEventIterator();
+        while(ei.hasNext()){
+            clone.add(new Event(ei.next()));
+        }
+        ListIterator<State> si = getStateIterator();
+        while(si.hasNext()){
+            clone.add(new State(si.next()));
+        }
+        ListIterator<Transition> ti = getTransitionIterator();
+        while(ti.hasNext()){
+            Transition oldt = ti.next();
+            State source = clone.getState(oldt.getSource().getId());
+            State target = clone.getState(oldt.getTarget().getId()); 
+            Event event = clone.getEvent(oldt.getEvent().getId());
+            clone.add(new Transition(oldt, source, target, event));
+        }        
+        return clone;
+    }
+    
     public String getName() {
         return name;
     }
@@ -32,11 +53,11 @@ public class Automaton {
         this.name = name;
     }
 
-    public void addState(State s) {
+    public void add(State s) {
         states.add(s);
     }
 
-    public void removeState(State s) {
+    public void remove(State s) {
         states.remove(s);
     }
 
@@ -54,13 +75,13 @@ public class Automaton {
         return null;
     }
 
-    public void addTransition(Transition t) {
+    public void add(Transition t) {
         t.getSource().addSourceTransition(t);
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
     }
 
-    public void removeTransition(Transition t) {
+    public void remove(Transition t) {
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
@@ -70,11 +91,11 @@ public class Automaton {
         return transitions.listIterator();
     }
 
-    public void addEvent(Event e) {
+    public void add(Event e) {
         events.add(e);
     }
 
-    public void removeEvent(Event e) {
+    public void remove(Event e) {
         events.remove(e);
     }
 

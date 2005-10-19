@@ -289,12 +289,12 @@ public class GraphingPlatform{
             name.setChars(n.getGlyphLabel().string_representation.trim());
             s.addSubElement(name);
 
-            automaton.addState(s);
+            automaton.add(s);
         }
         // rebuild events
         for(int i = 0; i < es.getEventCount(); i++){
             Event e = new Event(i);
-            automaton.addEvent(e);
+            automaton.add(e);
 
             SubElement name = new SubElement("name");
             e.addSubElement(name);
@@ -325,7 +325,7 @@ public class GraphingPlatform{
                 Transition t = new Transition(i + j,
                         automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
                                 .getId(e.getTarget())));
-                automaton.addTransition(t);
+                automaton.add(t);
 
                 SubElement graphic = new SubElement("graphic");
                 t.addSubElement(graphic);
@@ -346,7 +346,7 @@ public class GraphingPlatform{
                 for(int k = 0; k < events.length; k++){
                     Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e
                             .getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
-                    automaton.addTransition(t);
+                    automaton.add(t);
 
                     t.setEvent(automaton.getEvent(es.getId(events[k])));
 
