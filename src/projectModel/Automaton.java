@@ -159,33 +159,26 @@ public class Automaton implements Cloneable{
             this.a = a;
             this.sli = sli;
         }
-        
         public boolean hasNext(){
             return sli.hasNext();
         }
-
         public State next(){
             current = sli.next();
             return current;
         }
-
         public boolean hasPrevious(){
             return sli.hasPrevious();
         }
-
         public State previous(){
             current = sli.previous();
             return current;
         }
-
         public int nextIndex(){
             return sli.nextIndex();
         }
-
         public int previousIndex(){
             return sli.previousIndex();
         }
-
         public void remove(){
             ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
@@ -205,7 +198,6 @@ public class Automaton implements Cloneable{
             }
             sli.remove();
         }
-
         public void set(State s){
             ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
@@ -221,7 +213,6 @@ public class Automaton implements Cloneable{
             }
             sli.set(s);
         }
-
         public void add(State s){
             sli.add(s);
         }
