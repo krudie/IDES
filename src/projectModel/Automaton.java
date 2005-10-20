@@ -106,7 +106,7 @@ public class Automaton implements Cloneable{
     }
 
     public ListIterator<Transition> getTransitionIterator(){
-        return new TransitionIterator(transitions.listIterator(), this);
+        return new TransitionIterator(transitions.listIterator());
     }
 
     public void add(Event e){
@@ -118,7 +118,7 @@ public class Automaton implements Cloneable{
     }
 
     public ListIterator<Event> getEventIterator(){
-        return events.listIterator();
+        return new EventIterator(events.listIterator(), this);
     }
 
     public Event getEvent(int id){
@@ -219,6 +219,7 @@ public class Automaton implements Cloneable{
                 t.setTarget(s);
                 s.addTargetTransition(t);
             }
+            sli.set(s);
         }
 
         public void add(State s){
@@ -228,55 +229,96 @@ public class Automaton implements Cloneable{
     private class TransitionIterator implements ListIterator<Transition>{
         private ListIterator<Transition> tli;
         private Transition current;
-        private Automaton a;
         
-        public TransitionIterator(ListIterator<Transition> tli, Automaton a){
+        public TransitionIterator(ListIterator<Transition> tli){
             this.tli = tli;
-            this.a = a;
         }
-        
         public boolean hasNext(){
             return tli.hasNext();
         }
-
         public Transition next(){
             current = tli.next();
             return current;
         }
-
         public boolean hasPrevious(){
             return tli.hasPrevious();
         }
-
         public Transition previous(){
             current = tli.previous();
             return current;
         }
-
         public int nextIndex(){
             return tli.nextIndex();
         }
-
         public int previousIndex(){
             return tli.previousIndex();
         }
-
         public void remove(){
             current.getTarget().removeTargetTransition(current);
             current.getSource().removeSourceTransition(current);
             tli.remove();
         }
-
         public void set(Transition t){
             remove();
             add(t);
         }
-
         public void add(Transition t){
             t.getSource().addSourceTransition(t);
             t.getTarget().addTargetTransition(t);
             transitions.add(t);
         }
+    }
+    private class EventIterator implements ListIterator<Event>{
+        private Event current;
+        private ListIterator<Event> eli;
+        private Automaton a;
         
+        public EventIterator(ListIterator<Event> eli, Automaton a){
+            this.eli = eli;
+            this.a = a;
+        }
+        public boolean hasNext(){
+            return eli.hasNext();
+        }
+        public Event next(){
+            current = eli.next();
+            return current;
+        }
+        public boolean hasPrevious(){
+            return eli.hasPrevious();
+        }
+        public Event previous(){
+            current = eli.previous();
+            return current;
+        }
+        public int nextIndex(){
+            return eli.nextIndex();
+        }
+        public int previousIndex(){
+            return eli.previousIndex();
+        }
+        public void remove(){
+            ListIterator<Transition> tli = a.getTransitionIterator();
+            while(tli.hasNext()){
+                Transition t = tli.next();
+                if(t.getEvent() == current){
+                    t.setEvent(null);
+                }
+            }
+            eli.remove();
+        }
+        public void set(Event e){
+            ListIterator<Transition> tli = a.getTransitionIterator();
+            while(tli.hasNext()){
+                Transition t = tli.next();
+                if(t.getEvent() == current){
+                    t.setEvent(e);
+                }
+            }
+            eli.set(e);
+        }
+        public void add(Event e){
+            eli.add(e);
+        }
     }
 }
