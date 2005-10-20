@@ -114,10 +114,6 @@ public class Automaton implements Cloneable{
         return null;
     }
     
-    public void getTransition(State source, State target){
-        
-    }
-
     public ListIterator<Transition> getTransitionIterator(){
         return new TransitionIterator(transitions.listIterator());
     }
