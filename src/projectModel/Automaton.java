@@ -105,6 +105,19 @@ public class Automaton implements Cloneable{
         transitions.remove(t);
     }
 
+    public Transition getTransition(int Id){
+        ListIterator<Transition> tli = transitions.listIterator();
+        while(tli.hasNext()){
+            Transition t = tli.next();
+            if(t.getId() == Id) return t;
+        }
+        return null;
+    }
+    
+    public void getTransition(State source, State target){
+        
+    }
+
     public ListIterator<Transition> getTransitionIterator(){
         return new TransitionIterator(transitions.listIterator());
     }
