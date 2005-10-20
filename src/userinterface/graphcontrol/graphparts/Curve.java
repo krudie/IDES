@@ -89,17 +89,14 @@ public class Curve{
     protected float distanceCoefCtrl1 = 1, distanceCoefCtrl2 = 1;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Curve construction
-    // /////////////////////////////////////////////////////////////////////////////////////////////
+    // Curve construction /////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Construct the Curve.
      * 
-     * @param tail_node
-     *            The tail Node.
-     * @param head_node
-     *            The head Node.
+     * @param tail_node The tail Node.
+     * @param head_node The head Node.
      */
     public Curve(Node tail_node, Node head_node){
         this.tail_node = tail_node;
@@ -112,12 +109,9 @@ public class Curve{
     /**
      * Construct a self-loop Curve.
      * 
-     * @param tail_node
-     *            The tail Node.
-     * @param head_node
-     *            The head Node.
-     * @param self_loop_direction
-     *            The direction of the self loop bisector.
+     * @param tail_node The tail Node.
+     * @param head_node The head Node.
+     * @param self_loop_direction The direction of the self loop bisector.
      */
     public Curve(Node tail_node, Node head_node, UnitVector self_loop_direction){
         this.self_loop_direction = self_loop_direction;
@@ -131,28 +125,17 @@ public class Curve{
     /**
      * Construct the Curve.
      * 
-     * @param tail_node
-     *            The tail Node.
-     * @param head_node
-     *            The head Node.
-     * @param x1
-     *            x1 parameter for the curve object.
-     * @param y1
-     *            y1 parameter for the curve object.
-     * @param ctrlx1
-     *            ctrlx1 parameter for the curve object.
-     * @param ctrly1
-     *            ctrly1 parameter for the curve object.
-     * @param ctrlx2
-     *            ctrlx2 parameter for the curve object.
-     * @param ctrly2
-     *            ctrly2 parameter for the curve object.
-     * @param x2
-     *            x2 parameter for the curve object.
-     * @param y2
-     *            y2 parameter for the curve object.
-     * @param self_loop_direction
-     *            The direction for the self loop.
+     * @param tail_node The tail Node.
+     * @param head_node The head Node.
+     * @param x1 x1 parameter for the curve object.
+     * @param y1 y1 parameter for the curve object.
+     * @param ctrlx1 ctrlx1 parameter for the curve object.
+     * @param ctrly1 ctrly1 parameter for the curve object.
+     * @param ctrlx2 ctrlx2 parameter for the curve object.
+     * @param ctrly2 ctrly2 parameter for the curve object.
+     * @param x2 x2 parameter for the curve object.
+     * @param y2 y2 parameter for the curve object.
+     * @param self_loop_direction The direction for the self loop.
      */
     public Curve(Node tail_node, Node head_node, float x1, float y1, float ctrlx1, float ctrly1,
             float ctrlx2, float ctrly2, float x2, float y2, UnitVector self_loop_direction){

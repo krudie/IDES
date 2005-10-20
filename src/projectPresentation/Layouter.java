@@ -14,6 +14,7 @@ import projectModel.Automaton;
 import projectModel.State;
 import projectModel.SubElement;
 import projectModel.Transition;
+import userinterface.geometric.UnitVector;
 
 import att.grappa.*;
 
@@ -176,25 +177,41 @@ public class Layouter{
             graphic.addSubElement(new SubElement("bezier"));
                   
             String[] posSplit = edge.getThisAttributeValue(Edge.POS_ATTR).toString().split(" |,");
-                        
-            graphic.getSubElement("bezier").setAttribute("x1", posSplit[1]);                                               
-            graphic.getSubElement("bezier").setAttribute("y2", Float.toString(-Float.parseFloat(posSplit[2])));            
-                
-            graphic.getSubElement("bezier").setAttribute("x2", posSplit[3]);                       
-            graphic.getSubElement("bezier").setAttribute("y1", Float.toString(-Float.parseFloat(posSplit[4])));            
+
             
-            graphic.getSubElement("bezier").setAttribute("ctrlx2", posSplit[posSplit.length -4]);            
-            graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(-Float.parseFloat(posSplit[posSplit.length -3])));                                    
+            if(posSplit[0].equals("s")){
+                graphic.getSubElement("bezier").setAttribute("x1", posSplit[1]);                       
+                graphic.getSubElement("bezier").setAttribute("y1", Float.toString(-Float.parseFloat(posSplit[2])));
                 
-            graphic.getSubElement("bezier").setAttribute("ctrlx1", posSplit[posSplit.length-2]);                        
-            graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(-Float.parseFloat(posSplit[2])));            
+                graphic.getSubElement("bezier").setAttribute("ctrlx1", posSplit[5]);            
+                graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(-Float.parseFloat(posSplit[6])));                                    
+                
+                graphic.getSubElement("bezier").setAttribute("x2", posSplit[posSplit.length -2]);                                               
+                graphic.getSubElement("bezier").setAttribute("y2", Float.toString(-Float.parseFloat(posSplit[posSplit.length -1])));            
+                                                        
+                graphic.getSubElement("bezier").setAttribute("ctrlx2", posSplit[posSplit.length-4]);                        
+                graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(-Float.parseFloat(posSplit[posSplit.length -3])));            
+            } else {
+                graphic.getSubElement("bezier").setAttribute("x1", posSplit[3]);                       
+                graphic.getSubElement("bezier").setAttribute("y1", Float.toString(-Float.parseFloat(posSplit[4])));
+                
+                graphic.getSubElement("bezier").setAttribute("ctrlx1", posSplit[5]);            
+                graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(-Float.parseFloat(posSplit[6])));                                    
+                
+                graphic.getSubElement("bezier").setAttribute("x2", posSplit[1]);                                               
+                graphic.getSubElement("bezier").setAttribute("y2", Float.toString(-Float.parseFloat(posSplit[2])));            
+                                                        
+                graphic.getSubElement("bezier").setAttribute("ctrlx2", posSplit[posSplit.length-4]);                        
+                graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(-Float.parseFloat(posSplit[posSplit.length -3]))); 
+            }
             
+            UnitVector uv = new UnitVector();
+            graphic.getSubElement("bezier").setAttribute("dx", Float.toString(uv.x));            
+            graphic.getSubElement("bezier").setAttribute("dy", Float.toString(uv.y));            
             
             graphic.addSubElement(new SubElement("label"));
             graphic.getSubElement("label").setAttribute("x", "0");
             graphic.getSubElement("label").setAttribute("y", "0");
-            
-            
             
             trans.addSubElement(graphic);
         }
@@ -221,7 +238,7 @@ public class Layouter{
         
         
         Automaton automaton = new Automaton("Test");
-        State[] state = new State[3];
+        State[] state = new State[14];
         
         for(int i = 0; i < state.length; i++){
             state[i] = new State(i);
@@ -238,6 +255,16 @@ public class Layouter{
         automaton.add(new Transition(0, state[0], state[1]));
         automaton.add(new Transition(1, state[1], state[1]));
         automaton.add(new Transition(2, state[1], state[2]));
+        automaton.add(new Transition(3, state[1], state[1]));
+        automaton.add(new Transition(4, state[4], state[2]));
+        automaton.add(new Transition(5, state[5], state[8]));
+        automaton.add(new Transition(6, state[7], state[6]));
+        automaton.add(new Transition(7, state[2], state[4]));
+        automaton.add(new Transition(8, state[9], state[12]));
+        automaton.add(new Transition(9, state[9], state[12]));
+        automaton.add(new Transition(10, state[9], state[12]));
+        automaton.add(new Transition(11, state[12], state[9]));
+        
         
         layout.layoutAutomaton(automaton);
         
