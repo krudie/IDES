@@ -7,6 +7,8 @@ import java.util.*;
  * 
  * @author Axel Gottlieb Michelsen
  * 
+ * This class is the topmost class in the automaton hierachy. It serves as the datastructure for
+ * states, transitions and event, and 
  */
 public class Automaton implements Cloneable{
     private LinkedList<State> states;
@@ -104,7 +106,7 @@ public class Automaton implements Cloneable{
     }
 
     public ListIterator<Transition> getTransitionIterator(){
-        return transitions.listIterator();
+        return new TransitionIterator(transitions.listIterator(), this);
     }
 
     public void add(Event e){
@@ -222,5 +224,59 @@ public class Automaton implements Cloneable{
         public void add(State s){
             sli.add(s);
         }
+    }
+    private class TransitionIterator implements ListIterator<Transition>{
+        private ListIterator<Transition> tli;
+        private Transition current;
+        private Automaton a;
+        
+        public TransitionIterator(ListIterator<Transition> tli, Automaton a){
+            this.tli = tli;
+            this.a = a;
+        }
+        
+        public boolean hasNext(){
+            return tli.hasNext();
+        }
+
+        public Transition next(){
+            current = tli.next();
+            return current;
+        }
+
+        public boolean hasPrevious(){
+            return tli.hasPrevious();
+        }
+
+        public Transition previous(){
+            current = tli.previous();
+            return current;
+        }
+
+        public int nextIndex(){
+            return tli.nextIndex();
+        }
+
+        public int previousIndex(){
+            return tli.previousIndex();
+        }
+
+        public void remove(){
+            current.getTarget().removeTargetTransition(current);
+            current.getSource().removeSourceTransition(current);
+            tli.remove();
+        }
+
+        public void set(Transition t){
+            remove();
+            add(t);
+        }
+
+        public void add(Transition t){
+            t.getSource().addSourceTransition(t);
+            t.getTarget().addTargetTransition(t);
+            transitions.add(t);
+        }
+        
     }
 }

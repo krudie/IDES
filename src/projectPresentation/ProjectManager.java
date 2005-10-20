@@ -169,14 +169,14 @@ public class ProjectManager implements ProjectPresentation {
         //create a queue
         LinkedList<State> searchQue = new LinkedList<State>();
         
-        //find initial state(s), mark as reached and add it(/them) to the que
+        //find initial states, mark as reached and add them to the que
         Iterator<State> stateIterator = sourceAutomaton.getStateIterator();
         State state;
         while(stateIterator.hasNext()){
             state = stateIterator.next();
             
             if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
-                searchQue.add(state);
+                searchQue.addFirst(state);
                 state.addSubElement(new SubElement("reached"));
             }
         }
@@ -191,10 +191,10 @@ public class ProjectManager implements ProjectPresentation {
             // loop while the state has more transitions
             while(transitionIterator.hasNext()){
                 transition = transitionIterator.next();
-                //if the state is not reached, mark it as reached, add it to the que
+                //if the state is not reached, mark it as reached, add it to the head of the que
                 if(!transition.getTarget().hasSubElement("reached")){
                     transition.getTarget().addSubElement(new SubElement("reached"));
-                    searchQue.add(transition.getTarget());
+                    searchQue.addFirst(transition.getTarget());
                 }
             }
         }
