@@ -228,16 +228,11 @@ public class ProjectManager implements ProjectPresentation{
         }
     }
 
-    public void copyAutomaton(String source, String clonedName){
+    public Automaton copyAutomaton(String source, String clonedName){
         Automaton cloned = project.getAutomatonByName(source).clone();
-
-        try{
-            cloned.setName(clonedName);
-            project.addAutomaton(cloned);
-        }
-        catch(Exception e){
-            return;
-        }
+        cloned.setName(clonedName);
+        project.addAutomaton(cloned);
+        return cloned;
     }
 
 }

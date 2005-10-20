@@ -38,7 +38,7 @@ public interface ProjectPresentation {
     
     public void accesible(Automaton automaton);
     
-    public void copyAutomaton(String source, String clonedName);
+    public Automaton copyAutomaton(String source, String clonedName);
 
     public void coAccesible(Automaton automaton);
 

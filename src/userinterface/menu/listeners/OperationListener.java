@@ -41,7 +41,6 @@ public class OperationListener extends AbstractListener{
             return new SelectionAdapter(){
                 public void widgetSelected(SelectionEvent e){
                     trim();
-
                 }
             };
         }
@@ -57,9 +56,8 @@ public class OperationListener extends AbstractListener{
                 newName = MainWindow.getProjectExplorer().getTitle(
                         ResourceManager.getString(ResourceManager.OPERATIONS_TRIM) + "("
                                 + selectedNames[i] + ")");
-                Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                Automaton automaton = Userinterface.getProjectPresentation().getAutomatonByName(
-                        newName);
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(
+                        selectedNames[i], newName);
                 Userinterface.getProjectPresentation().trim(automaton);
             }
 
@@ -75,9 +73,9 @@ public class OperationListener extends AbstractListener{
                 newName = MainWindow.getProjectExplorer().getTitle(
                         ResourceManager.getString(ResourceManager.OPERATIONS_COACCESIBLE) + "("
                                 + selectedNames[i] + ")");
-                Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                Automaton automaton = Userinterface.getProjectPresentation().getAutomatonByName(
-                        newName);
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(
+                        selectedNames[i], newName);
+
                 Userinterface.getProjectPresentation().coAccesible(automaton);
             }
 
@@ -93,9 +91,8 @@ public class OperationListener extends AbstractListener{
                 newName = MainWindow.getProjectExplorer().getTitle(
                         ResourceManager.getString(ResourceManager.OPERATIONS_ACCESIBLE) + "("
                                 + selectedNames[i] + ")");
-                Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                Automaton automaton = Userinterface.getProjectPresentation().getAutomatonByName(
-                        newName);
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(
+                        selectedNames[i], newName);
                 Userinterface.getProjectPresentation().accesible(automaton);
             }
 
