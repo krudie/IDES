@@ -272,7 +272,9 @@ public class ProjectExplorer {
         for (int i = 0; i < treeWindow.getSelection().length; i++) {
             Userinterface.getProjectPresentation().deleteAutomatonByName(
                     treeWindow.getSelection()[i].getText());
+            MainWindow.getGraphingPlatform().delete(treeWindow.getSelection()[i].getText());
         }
+        
         updateProject();
     }
 
