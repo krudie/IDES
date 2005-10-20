@@ -187,40 +187,23 @@ public class Edge extends GraphObject{
     /**
      * Construct the Edge. (used at load from file)
      * 
-     * @param gp
-     *            The GraphingPlatform in which this Edge will exist.
-     * @param gm
-     *            The GraphModel in which this Edge will exist.
-     * @param start_node
-     *            The node where the edge originates.
-     * @param end_node
-     *            The node where the edge terminates.
-     * @param x1
-     *            x1 parameter for the curve object
-     * @param y1
-     *            y1 parameter for the curve object
-     * @param ctrlx1
-     *            ctrlx1 parameter for the curve object
-     * @param ctrly1
-     *            ctrly1 parameter for the curve object
-     * @param ctrlx2
-     *            ctrlx2 parameter for the curve object
-     * @param ctrly2
-     *            ctrly2 parameter for the curve object
-     * @param x2
-     *            x2 parameter for the curve object
-     * @param y2
-     *            y2 parameter for the curve object
-     * @param dx
-     *            x parameter for the direction object
-     * @param dy
-     *            y parameter for the direction object
-     * @param gtx
-     *            x parameter for the label_displacement object
-     * @param gty
-     *            y parameter for the label_displacement object
-     * @param a
-     *            The attributes for this Edge.
+     * @param gp The GraphingPlatform in which this Edge will exist.
+     * @param gm The GraphModel in which this Edge will exist.
+     * @param start_node The node where the edge originates.
+     * @param end_node The node where the edge terminates.
+     * @param x1 x1 parameter for the curve object
+     * @param y1 y1 parameter for the curve object
+     * @param ctrlx1 ctrlx1 parameter for the curve object
+     * @param ctrly1 ctrly1 parameter for the curve object
+     * @param ctrlx2 ctrlx2 parameter for the curve object
+     * @param ctrly2 ctrly2 parameter for the curve object
+     * @param x2 x2 parameter for the curve object
+     * @param y2 y2 parameter for the curve object
+     * @param dx x parameter for the direction object
+     * @param dy y parameter for the direction object
+     * @param gtx x parameter for the label_displacement object
+     * @param gty y parameter for the label_displacement object
+     * @param a The attributes for this Edge.
      */
     public Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, float x1,
             float y1, float ctrlx1, float ctrly1, float ctrlx2, float ctrly2, float x2, float y2,

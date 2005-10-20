@@ -1,17 +1,18 @@
 package projectPresentation;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import projectModel.Automaton;
 import projectModel.State;
+import projectModel.SubElement;
 import projectModel.Transition;
 
 import att.grappa.*;
@@ -45,7 +46,12 @@ public class Layouter{
         
     }
     
-    public void doLayout(InputStream file){       
+    /**
+     * Calls graphviz through grappa to do the laytout
+     * @param file the dotformatted file
+     */
+    
+    public Graph doLayout(InputStream file){       
         try {
             Parser program = new Parser(file,System.err);
             program.parse();
@@ -53,7 +59,7 @@ public class Layouter{
         } catch(Exception ex) {
             System.err.println("Exception: " + ex.getMessage());
             ex.printStackTrace(System.err);
-            return;
+            return null;
         }
         
         if(engine == null) initEngine();
@@ -70,17 +76,22 @@ public class Layouter{
             System.err.println("Exception while closing down proc: " + ex.getMessage());
             ex.printStackTrace(System.err);
         }
-        graph.printGraph(System.out);
         
-        
+        return graph;
+       
     }
     
+    
+    /**
+     *  Transform the automaton into dot format
+     * @param automaton the automaton to be formatted
+     * @return The input stream containing the dot formatted version of the automaton
+     */
     private InputStream toDot(Automaton automaton){
         
         PipedInputStream result = new PipedInputStream();
         PipedOutputStream pipedOutputStream = null;
         PrintWriter input = null;
-        
         
         try{
             pipedOutputStream = new PipedOutputStream(result);
@@ -103,7 +114,7 @@ public class Layouter{
         while(states.hasNext()){
             state = states.next();
             input.println(state.getId() + "[");
-            input.print("Shape=ellipse, width=15, height=15");            
+            input.print("Shape=ellipse, width=\".5\", height=\".5\"");            
             input.println("];");
         }
         
@@ -114,9 +125,11 @@ public class Layouter{
         Transition trans = null;
         while(transitions.hasNext()){
             trans = transitions.next();
-            input.println(trans.getSource().getId() + "->" + trans.getTarget().getId() + "[");
+            input.println(trans.getSource().getId() + "->" + trans.getTarget().getId() + "[");            
+            input.println("label=" + trans.getId());            
             input.println("];");
         }
+        
         
         //input footer
         input.println("}");
@@ -127,15 +140,82 @@ public class Layouter{
     }
     
     
-    
-    public void layoutAutomaton(Automaton automaton){
-        InputStream dotFormat = toDot(automaton);
+    public void fromDot(Graph graph, Automaton automaton){
         
-        doLayout(dotFormat);
+        Enumeration<Node> nodes = graph.nodeElements();
+        
+        while(nodes.hasMoreElements()){
+            Node node = nodes.nextElement();
+            
+            State state = automaton.getState(Integer.parseInt(node.getName()));
+            SubElement graphic = new SubElement("graphic");
+            graphic.addSubElement(new SubElement("circle"));
+            
+            graphic.getSubElement("circle").setAttribute("r", "15");
+            
+            String[] posSplit = node.getThisAttributeValue(Node.POS_ATTR).toString().split(",");
+            
+            graphic.getSubElement("circle").setAttribute("x", posSplit[0].split("\\.")[0]);
+            graphic.getSubElement("circle").setAttribute("y", Integer.toString((int) -Float.parseFloat(posSplit[1])));
+                      
+            graphic.addSubElement(new SubElement("arrow"));
+            graphic.getSubElement("arrow").setAttribute("x", "1.0");
+            graphic.getSubElement("arrow").setAttribute("y", "0.0");
+            
+            state.addSubElement(graphic);
+        }
+
+        Enumeration<Edge> edges = graph.edgeElements();
+        
+        while(edges.hasMoreElements()){
+            Edge edge = edges.nextElement();
+                                                
+            Transition trans = automaton.getTransition(Integer.parseInt(edge.getAttribute(Edge.LABEL_ATTR).getStringValue()));
+        
+            SubElement graphic = new SubElement("graphic");
+            graphic.addSubElement(new SubElement("bezier"));
+                  
+            String[] posSplit = edge.getThisAttributeValue(Edge.POS_ATTR).toString().split(" |,");
+                        
+            graphic.getSubElement("bezier").setAttribute("x1", posSplit[1]);                                               
+            graphic.getSubElement("bezier").setAttribute("y2", Float.toString(-Float.parseFloat(posSplit[2])));            
+                
+            graphic.getSubElement("bezier").setAttribute("x2", posSplit[3]);                       
+            graphic.getSubElement("bezier").setAttribute("y1", Float.toString(-Float.parseFloat(posSplit[4])));            
+            
+            graphic.getSubElement("bezier").setAttribute("ctrlx2", posSplit[posSplit.length -4]);            
+            graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(-Float.parseFloat(posSplit[posSplit.length -3])));                                    
+                
+            graphic.getSubElement("bezier").setAttribute("ctrlx1", posSplit[posSplit.length-2]);                        
+            graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(-Float.parseFloat(posSplit[2])));            
+            
+            
+            graphic.addSubElement(new SubElement("label"));
+            graphic.getSubElement("label").setAttribute("x", "0");
+            graphic.getSubElement("label").setAttribute("y", "0");
+            
+            
+            
+            trans.addSubElement(graphic);
+        }
+        
     }
     
     
+    /**
+     * Takes an automaton and lays it out
+     * @param automaton the automaton that needs graphic info
+     */
+    public void layoutAutomaton(Automaton automaton){
+        InputStream dotFormat = toDot(automaton);      
+        Graph graph = doLayout(dotFormat);
+        fromDot(graph, automaton);
+    }
     
+    /**
+     * Test main
+     * @param args not used
+     */
     public static void main(String[] args){
         Layouter layout = new Layouter();
         
@@ -145,14 +225,23 @@ public class Layouter{
         
         for(int i = 0; i < state.length; i++){
             state[i] = new State(i);
+            state[i].addSubElement(new SubElement("name"));
+            state[i].addSubElement(new SubElement("properties"));
+            state[i].getSubElement("properties").addSubElement(new SubElement("marked"));
+            state[i].getSubElement("properties").getSubElement("marked").setChars("false");
+            state[i].getSubElement("properties").addSubElement(new SubElement("initial"));
+            state[i].getSubElement("properties").getSubElement("initial").setChars("false");
+            
             automaton.add(state[i]);
         }
         
         automaton.add(new Transition(0, state[0], state[1]));
-        automaton.add(new Transition(0, state[1], state[1]));
-        automaton.add(new Transition(0, state[1], state[2]));
+        automaton.add(new Transition(1, state[1], state[1]));
+        automaton.add(new Transition(2, state[1], state[2]));
         
         layout.layoutAutomaton(automaton);
+        
+        automaton.toXML(System.out);
         
     }
 }
