@@ -234,5 +234,11 @@ public class ProjectManager implements ProjectPresentation{
         project.addAutomaton(cloned);
         return cloned;
     }
+    
+    
+    public void layout(String name){
+        Layouter l = new Layouter();
+        l.layoutAutomaton(project.getAutomatonByName(name));        
+    }
 
 }

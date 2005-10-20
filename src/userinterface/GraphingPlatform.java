@@ -9,6 +9,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -142,6 +143,24 @@ public class GraphingPlatform{
     }
 
     public void open(String automatonName){
+        
+        automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
+        
+        //checks if it needs to be laid out
+        if(automaton.getStateIterator().hasNext() && !automaton.getStateIterator().next().hasSubElement("graphic")){            
+            MessageBox layout = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
+            layout.setText(ResourceManager.getString("layout_warning.title"));
+            layout.setMessage(ResourceManager.getString("layout_warning"));
+            int response = layout.open();
+            switch (response) {
+            case SWT.YES:
+                Userinterface.getProjectPresentation().layout(automatonName);
+                break;
+            case SWT.NO:
+                return;
+            }
+        }
+               
         gc.resetState();
         setEnabled(true);
         MainWindow.getMenu().graphic_zoom.setEnabled(true);

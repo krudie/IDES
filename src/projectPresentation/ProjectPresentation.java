@@ -43,5 +43,5 @@ public interface ProjectPresentation {
     public void coAccesible(Automaton automaton);
 
     public void trim(Automaton automaton);
-
+    public void layout(String name);
 }
