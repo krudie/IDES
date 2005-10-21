@@ -53,11 +53,13 @@ public class OperationListener extends AbstractListener{
         String newName;
         for(int i = 0; i < selectedNames.length; i++){
             if(selectedNames[i] != null){
-                newName = MainWindow.getProjectExplorer().getTitle(
-                        ResourceManager.getString(ResourceManager.OPERATIONS_TRIM) + "("
-                                + selectedNames[i] + ")");
-                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(
-                        selectedNames[i], newName);
+                newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_TRIM) + "(" + selectedNames[i] + ")");
+                
+                if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
+                    MainWindow.getGraphingPlatform().save();
+                }
+                
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
                 Userinterface.getProjectPresentation().trim(automaton);
             }
 
@@ -70,11 +72,13 @@ public class OperationListener extends AbstractListener{
         String newName;
         for(int i = 0; i < selectedNames.length; i++){
             if(selectedNames[i] != null){
-                newName = MainWindow.getProjectExplorer().getTitle(
-                        ResourceManager.getString(ResourceManager.OPERATIONS_COACCESIBLE) + "("
-                                + selectedNames[i] + ")");
-                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(
-                        selectedNames[i], newName);
+                
+                if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
+                    MainWindow.getGraphingPlatform().save();
+                }
+                
+                newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_COACCESIBLE) + "(" + selectedNames[i] + ")");
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
 
                 Userinterface.getProjectPresentation().coAccesible(automaton);
             }
@@ -88,11 +92,12 @@ public class OperationListener extends AbstractListener{
         String newName;
         for(int i = 0; i < selectedNames.length; i++){
             if(selectedNames[i] != null){
-                newName = MainWindow.getProjectExplorer().getTitle(
-                        ResourceManager.getString(ResourceManager.OPERATIONS_ACCESIBLE) + "("
-                                + selectedNames[i] + ")");
-                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(
-                        selectedNames[i], newName);
+                if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
+                    MainWindow.getGraphingPlatform().save();
+                }
+                
+                newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_ACCESIBLE) + "(" + selectedNames[i] + ")");
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
                 Userinterface.getProjectPresentation().accesible(automaton);
             }
 

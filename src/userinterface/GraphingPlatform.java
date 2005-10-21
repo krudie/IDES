@@ -388,6 +388,7 @@ public class GraphingPlatform{
                 gn++;
             }
         }
+        gc.io.resetState();
     }
 
     public void updateTitle(){
@@ -402,5 +403,9 @@ public class GraphingPlatform{
             tabFolder.setEnabled(false);
             graphFolderItem.setText(ResourceManager.getString("window.graph_tab.text"));
         }
+    }
+    
+    public String getOpenAutomatonName(){
+        return (automaton != null) ? automaton.getName() : "";        
     }
 }
