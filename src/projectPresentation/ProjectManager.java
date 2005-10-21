@@ -264,7 +264,9 @@ public class ProjectManager implements ProjectPresentation{
     private State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
         SubElement name = new SubElement("name");
-        name.setChars(s[0].getSubElement("name") + ", " + s[1].getSubElement("name"));
+        name.setChars(s[0].getSubElement("name").getChars() 
+                + ", " 
+                + s[1].getSubElement("name").getChars());
         state.addSubElement(name);
 
         SubElement properties = new SubElement("properties");
@@ -355,8 +357,8 @@ public class ProjectManager implements ProjectPresentation{
                 ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
-                    if(t0.getEvent().getSubElement("name").equals(
-                            t1.getEvent().getSubElement("name"))){
+                    if(t0.getEvent().getSubElement("name").getChars().equals(
+                            t1.getEvent().getSubElement("name").getChars())){
                         Event event = getEventByName(
                                 t0.getEvent().getSubElement("name").getChars(), product);
                         State[] s = new State[2];
