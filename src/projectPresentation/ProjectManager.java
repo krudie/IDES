@@ -343,6 +343,10 @@ public class ProjectManager implements ProjectPresentation{
         product.add(makeState(initial, stateNumber));
         setStateId(initial, stateNumber++);
 
+        
+        //accessibility. all accessible states are added to product
+        //transitions are only traversible if they can be traversed from both states in sa 
+        //firing the same event
         while(!searchList.isEmpty()){
             State[] sa = searchList.removeFirst();
             State source = product.getState(getStateId(sa));
@@ -377,7 +381,15 @@ public class ProjectManager implements ProjectPresentation{
                 }
             }
         }
-        // TODO: tidy up the mess you left.
+        //tidy up the mess I left.
+        ListIterator<State> sli = a.getStateIterator();
+        while(sli.hasNext()){
+            sli.next().removeSubElement("searched");
+        }
+        sli = b.getStateIterator();
+        while(sli.hasNext()){
+            sli.next().removeSubElement("searched");
+        }
 
         return product;
     }
