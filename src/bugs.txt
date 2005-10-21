@@ -1,1 +1,0 @@
-* If the user tries to rename an automaton, focus out of it, and then succesfully renames another automaton. When returning to the first automaton and renaming it, causes the program to crash

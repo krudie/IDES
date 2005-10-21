@@ -1,9 +1,9 @@
 package projectPresentation;
 
+import ides2.SystemVariables;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
@@ -20,24 +20,24 @@ import att.grappa.*;
 
 public class Layouter{
 
-    public static final String LINUX_COMMAND = "/usr/bin/dot -Tdot";
-    
-    
+    private String graphvizPath;       
     private Process engine = null;
            
+
+    /**
+     * The constructor of the layouter
+     *
+     */
+    public Layouter(){
+        graphvizPath = SystemVariables.getGraphvizPath() + " -Tdot";        
+    }   
+    
     /**
      * This function is called to initilise the engine
      * Only works with Linux atm. 
      */
-    private void initEngine(){
-        
-        try{
-            engine = Runtime.getRuntime().exec(LINUX_COMMAND);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-        
+    private void initEngine() throws Exception{              
+        engine = Runtime.getRuntime().exec(graphvizPath);       
     }
     
     /**
@@ -45,7 +45,7 @@ public class Layouter{
      * @param file the dotformatted file
      */
     
-    public Graph doLayout(InputStream file){       
+    public Graph doLayout(InputStream file) throws Exception{       
         
         Graph graph;
         
@@ -211,11 +211,10 @@ public class Layouter{
      * Takes an automaton and lays it out
      * @param automaton the automaton that needs graphic info
      */
-    public void layoutAutomaton(Automaton automaton){
-        InputStream dotFormat = toDot(automaton);      
+    public void layoutAutomaton(Automaton automaton) throws Exception{
+        InputStream dotFormat = toDot(automaton);              
         Graph graph = doLayout(dotFormat);
-        graph.printGraph(System.out);
-        fromDot(graph, automaton);
+        fromDot(graph, automaton);           
     }
     
     /**
@@ -255,8 +254,11 @@ public class Layouter{
         automaton.add(new Transition(11, state[12], state[9]));
         
         
-                
-        layout.layoutAutomaton(automaton);
+        try{        
+            layout.layoutAutomaton(automaton);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         
     }
 }

@@ -23,15 +23,29 @@ public class ProjectManager implements ProjectPresentation{
 
     private boolean unsaved = false;
 
+    
+    /**
+     * Creates a new project
+     * @param name The name of the new project
+     */
     public void newProject(String name){
         project = new Project(name);
         unsaved = true;
     }
+  
 
+   /**
+    * A check to see there is an open project
+    * @return true if the project is open
+    */   
     public boolean isProjectOpen(){
         return (project != null);
     }
-
+  
+    /**
+     *  Changes the open project' name
+     *  @param name the new name of the project
+     */
     public void setProjectName(String name){
         if(project != null){
             project.setName(name);
@@ -414,7 +428,7 @@ public class ProjectManager implements ProjectPresentation{
     }
     
     
-    public void layout(String name){
+    public void layout(String name) throws Exception{
         Layouter l = new Layouter();
         l.layoutAutomaton(project.getAutomatonByName(name));        
     }

@@ -22,15 +22,10 @@ public class SystemVariables {
      * The name of the simple text file where the system variables will be
      * recorded
      */
-    private static final String settings_file_name = "settings.txt"; // in
-
-    // the
-    // application
-    // path
+    private static final String settings_file_name = "settings.txt";
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // system variables
-    // ///////////////////////////////////////////////////////////////////////////////////////////////
+    // system variables ///////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -79,10 +74,14 @@ public class SystemVariables {
      * The size for the node text eding window
      */
     public static Point floating_text_size = new Point(200, 100);
-
+    
+    /**
+     * The path for graphviz
+     */
+    private static String graphvizPath = new String();
+    
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // SystemVariables construction
-    // ///////////////////////////////////////////////////////////////////////////////////
+    // SystemVariables construction///////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -112,8 +111,7 @@ public class SystemVariables {
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // miscelaneous
-    // ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // miscelaneous///////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void fetchValues() {
@@ -140,6 +138,8 @@ public class SystemVariables {
                             use_error_reporting = (next_token.equals("true"));
                         } else if (this_token.equals("use_standard_node_size")) {
                             use_standard_node_size = (next_token.equals("true"));
+                        } else if(this_token.equals("graphvizPath")){
+                            graphvizPath = next_token;
                         }
                     }
                 }
@@ -160,10 +160,19 @@ public class SystemVariables {
             out.println("show_all_edges=" + show_all_edges);
             out.println("show_all_labels=" + show_all_labels);
             out.println("use_error_reporting=" + use_error_reporting);
-            out.println("use_standard_node_size=" + use_standard_node_size);            
+            out.println("use_standard_node_size=" + use_standard_node_size);
+            out.println("graphvizPath=" + graphvizPath);
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setGraphvizPath(String graphvizPath){
+        SystemVariables.graphvizPath = graphvizPath;
+    }
+
+    public static String getGraphvizPath(){
+        return graphvizPath;
     }
 }

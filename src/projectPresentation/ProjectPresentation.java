@@ -43,7 +43,7 @@ public interface ProjectPresentation {
     public void coAccesible(Automaton automaton);
 
     public void trim(Automaton automaton);
-    public void layout(String name);
+    public void layout(String name) throws Exception;
 
     public void product(Automaton a, Automaton b, Automaton product);
 }

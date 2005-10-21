@@ -1,5 +1,7 @@
 package userinterface;
 
+import ides2.SystemVariables;
+
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -8,7 +10,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -144,15 +148,43 @@ public class GraphingPlatform{
         
         //checks if it needs to be laid out
         if(automaton.getStateIterator().hasNext() && !automaton.getStateIterator().next().hasSubElement("graphic")){            
-            MessageBox layout = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-            layout.setText(ResourceManager.getString("layout_warning.title"));
-            layout.setMessage(ResourceManager.getString("layout_warning"));
-            int response = layout.open();
-            switch (response) {
-            case SWT.YES:
+           
+            if(automaton.getStateCount() > 30){                       
+                MessageBox layout = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
+                layout.setText(ResourceManager.getString("layout.warning.title"));
+                layout.setMessage(ResourceManager.getMessage("layout.warning", Integer.toString(automaton.getStateCount())));
+                int response = layout.open();
+                switch (response) {
+                case SWT.YES:
+                    break;
+                case SWT.NO:
+                    return;
+                }
+            }
+        
+            try{
                 Userinterface.getProjectPresentation().layout(automatonName);
-                break;
-            case SWT.NO:
+            } catch(Exception e){
+                
+                //asks the user if the path is correct
+                
+                // we have bad parameters; therefore, open popup window and request valid info.
+                FileDialog fileDialog = new FileDialog(shell, SWT.OPEN); 
+
+                fileDialog.setText(ResourceManager.getString("graphviz.filedialog.title"));                
+                fileDialog.setFilterPath(SystemVariables.getGraphvizPath());                
+                String newPath = fileDialog.open();
+                
+                if(newPath == null){
+                    MessageBox warning = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
+                    warning.setMessage(ResourceManager.getString("graphviz.stillmissing"));
+                    warning.setText(ResourceManager.getString("graphviz.stillmissing.title"));
+                    warning.open();
+                    return;
+                }
+                
+                SystemVariables.setGraphvizPath(newPath);
+                open(automatonName);
                 return;
             }
         }

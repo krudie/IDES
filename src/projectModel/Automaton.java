@@ -61,6 +61,14 @@ public class Automaton implements Cloneable{
     public void add(State s){
         states.add(s);
     }
+    
+    public int getStateCount(){
+        return states.size();
+    }
+    
+    public int getTransitionCount(){
+        return transitions.size();
+    }
 
     public void remove(State s){
         ListIterator<Transition> sources = s.getSourceTransitionsListIterator();

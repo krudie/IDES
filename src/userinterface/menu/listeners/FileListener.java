@@ -38,7 +38,6 @@ public class FileListener extends AbstractListener{
 
     /**
      * Construct the ListenersFile.
-     * 
      * @param shell The main shell
      */
     public FileListener(Shell shell){
@@ -150,6 +149,7 @@ public class FileListener extends AbstractListener{
         MainWindow.getProjectExplorer().updateProject();
         MainWindow.getGraphingPlatform().tabFolder.setSelection(GraphingPlatform.GRAPH_CANVAS_TAB);
         MainWindow.getGraphingPlatform().tabFolder.setEnabled(false);
+        MainWindow.getGraphingPlatform().gc.resetState();
     }
 
     /**
@@ -199,6 +199,7 @@ public class FileListener extends AbstractListener{
             MainWindow.getProjectExplorer().updateProject();
             MainWindow.getGraphingPlatform().tabFolder.setSelection(GraphingPlatform.GRAPH_CANVAS_TAB);
             MainWindow.getGraphingPlatform().tabFolder.setEnabled(false);
+            MainWindow.getGraphingPlatform().gc.resetState();
         }
 
     }
