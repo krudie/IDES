@@ -24,14 +24,7 @@ public class Layouter{
     
     
     private Process engine = null;
-    Graph graph = null;
-    
-    /**
-     * Constructer for the class
-     *
-     */
-    public Layouter(){}
-    
+           
     /**
      * This function is called to initilise the engine
      * Only works with Linux atm. 
@@ -53,6 +46,9 @@ public class Layouter{
      */
     
     public Graph doLayout(InputStream file){       
+        
+        Graph graph;
+        
         try {
             Parser program = new Parser(file,System.err);
             program.parse();
@@ -117,7 +113,7 @@ public class Layouter{
         while(states.hasNext()){
             state = states.next();
             input.println(state.getId() + "[");
-            input.print("Shape=ellipse, width=\".4\", height=\".4\"");     
+            input.println("Shape=ellipse, width=\".4\", height=\".4\"");
             input.println("];");
         }
         

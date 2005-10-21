@@ -123,6 +123,8 @@ public class OperationListener extends AbstractListener{
             name += ", " + selectedNames[i];
         }
         name += ")";
+        
+        name = MainWindow.getProjectExplorer().getTitle(name);
 
         Userinterface.getProjectPresentation().addAutomaton(name);
         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
