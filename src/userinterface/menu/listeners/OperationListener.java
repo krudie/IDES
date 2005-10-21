@@ -115,26 +115,27 @@ public class OperationListener extends AbstractListener{
         String name = ResourceManager.getString(ResourceManager.OPERATIONS_PRODUCT) + "(";
 
         if(selectedNames.length < 2) return;
-        for(int i = 0; i < 2; i++){
+        name += selectedNames[0];
+        for(int i = 1; i < selectedNames.length; i++){
             if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
                 MainWindow.getGraphingPlatform().save();
             }
+            name += ", " + selectedNames[i];
         }
-        Userinterface.getProjectPresentation().addAutomaton("temp");
+        name += ")";
+
+        Userinterface.getProjectPresentation().addAutomaton(name);
         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
-                Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]),
-                Userinterface.getProjectPresentation().getAutomatonByName("temp"));
-        MainWindow.getProjectExplorer().updateProject();
-        
+                Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
+
         if(selectedNames.length < 3){
-            name += ")";
+            MainWindow.getProjectExplorer().updateProject();
             return;
         }
         for(int i = 3; i < selectedNames.length; i++){
-            if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
-                MainWindow.getGraphingPlatform().save();
-            }
+            Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(name),
+                    Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]), Userinterface.getProjectPresentation().getAutomatonByName(name));
         }
-
+        MainWindow.getProjectExplorer().updateProject();
     }
 }
