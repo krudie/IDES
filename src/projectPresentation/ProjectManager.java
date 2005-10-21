@@ -253,9 +253,13 @@ public class ProjectManager implements ProjectPresentation{
     }
 
     private void setStateId(State[] s, int stateId){
-        s[0].addSubElement(new SubElement("searched"));
+        if(!s[0].hasSubElement("searched")) 
+            s[0].addSubElement(new SubElement("searched"));
+        
         s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()),
                 Integer.toString(stateId));
+        
+        if(!s[1].hasSubElement("searched"))
         s[1].addSubElement(new SubElement("searched"));
         s[1].getSubElement("searched").setAttribute(Integer.toString(s[0].getId()),
                 Integer.toString(stateId));
@@ -318,30 +322,28 @@ public class ProjectManager implements ProjectPresentation{
         
         // find initial states, mark them as reached and add them to the que
         State[] initial = new State[2];
-
-        Iterator<State> stateIterator = a.getStateIterator();
-        while(stateIterator.hasNext()){
-            State state = stateIterator.next();
-            if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
-                initial[0] = state;
-                break;
-            }
-        }
-        stateIterator = b.getStateIterator();
-        while(stateIterator.hasNext()){
-            State state = stateIterator.next();
-            if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
-                initial[1] = state;
-                break;
-            }
-        }
-
-
-        int stateNumber = 0, transitionNumber = 0;
+        int stateNumber = 0;
         LinkedList<State[]> searchList = new LinkedList<State[]>();
-        searchList.add(initial);
-        product.add(makeState(initial, stateNumber));
-        setStateId(initial, stateNumber++);
+        
+        Iterator<State> sia = a.getStateIterator();
+        while(sia.hasNext()){
+            initial[0] = sia.next();
+            if(initial[0].getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+                Iterator<State> sib = b.getStateIterator();
+                while(sib.hasNext()){
+                    initial[1] = sib.next();
+                    if(initial[1].getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+                        
+                        searchList.add(initial.clone());
+                        product.add(makeState(initial, stateNumber));
+                        setStateId(initial, stateNumber++);                        
+                    }
+                }
+            }
+        }
+
+        int transitionNumber = 0;
+        
 
         
         //accessibility. all accessible states are added to product

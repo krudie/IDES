@@ -115,13 +115,15 @@ public class OperationListener extends AbstractListener{
         String name = ResourceManager.getString(ResourceManager.OPERATIONS_PRODUCT) + "(";
 
         if(selectedNames.length < 2) return;
-        name += selectedNames[0];
-        for(int i = 1; i < selectedNames.length; i++){
+        name += selectedNames[0]+", "+selectedNames[1];
+        
+        
+        /*for(int i = 1; i < selectedNames.length; i++){
             if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
                 MainWindow.getGraphingPlatform().save();
             }
             name += ", " + selectedNames[i];
-        }
+        }*/
         name += ")";
         
         name = MainWindow.getProjectExplorer().getTitle(name);
