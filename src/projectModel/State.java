@@ -29,13 +29,14 @@ public class State extends SubElementContainer{
     public void addSourceTransition(Transition t){
         sourceT.add(t);
     }
-
     public void removeSourceTransition(Transition t){
         sourceT.remove(t);
     }
-
     public ListIterator<Transition> getSourceTransitionsListIterator(){
         return sourceT.listIterator();
+    }
+    public LinkedList<Transition> getSourceTransitions(){
+        return sourceT;
     }
 
     public void addTargetTransition(Transition t){
@@ -49,7 +50,10 @@ public class State extends SubElementContainer{
     public ListIterator<Transition> getTargetTransitionListIterator(){
         return targetT.listIterator();
     }
-
+    public LinkedList<Transition> getTargetTransitions(){
+        return targetT;
+    }
+    
     public int getId(){
         return id;
     }
