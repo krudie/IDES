@@ -33,14 +33,6 @@ public class Layouter{
     }   
     
     /**
-     * This function is called to initilise the engine
-     * Only works with Linux atm. 
-     */
-    private void initEngine() throws Exception{              
-        engine = Runtime.getRuntime().exec(graphvizPath);       
-    }
-    
-    /**
      * Calls graphviz through grappa to do the laytout
      * @param file the dotformatted file
      */
@@ -59,7 +51,7 @@ public class Layouter{
             return null;
         }
         
-        if(engine == null) initEngine();
+        engine = Runtime.getRuntime().exec(graphvizPath);        
        
         if(!GrappaSupport.filterGraph(graph,engine)) {
             System.err.println("ERROR: somewhere in filterGraph");
@@ -73,7 +65,6 @@ public class Layouter{
             System.err.println("Exception while closing down proc: " + ex.getMessage());
             ex.printStackTrace(System.err);
         }
-        
         return graph;
        
     }
