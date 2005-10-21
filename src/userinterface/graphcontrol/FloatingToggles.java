@@ -59,10 +59,8 @@ public class FloatingToggles {
     }
 
     public void populate() {
-        if (shell != null) {
-            if (!shell.isDisposed()) {
-                shell.dispose();
-            }
+        if (shell != null && !shell.isDisposed()) {
+            shell.dispose();
             shell = null;
         }
 

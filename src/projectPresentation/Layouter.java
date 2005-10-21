@@ -106,6 +106,8 @@ public class Layouter{
         //putting out basic info that needs to be put into the buffer
         
         input.println("digraph Test_Graph {");
+        input.println("graph[");
+        input.println("];");
         
         //Putting in the nodes
         //Nodes are going to look like
@@ -115,7 +117,7 @@ public class Layouter{
         while(states.hasNext()){
             state = states.next();
             input.println(state.getId() + "[");
-            input.print("Shape=ellipse, width=\".5\", height=\".5\"");            
+            input.print("Shape=ellipse, width=\".4\", height=\".4\"");     
             input.println("];");
         }
         
@@ -143,6 +145,9 @@ public class Layouter{
     
     public void fromDot(Graph graph, Automaton automaton){
         
+        int ydisplacement = (int) Float.parseFloat(graph.getThisAttributeValue(Graph.BBOX_ATTR).toString().split(",")[3]) + 25;
+        int xdisplacement = 25;
+        
         Enumeration<Node> nodes = graph.nodeElements();
         
         while(nodes.hasMoreElements()){
@@ -156,8 +161,8 @@ public class Layouter{
             
             String[] posSplit = node.getThisAttributeValue(Node.POS_ATTR).toString().split(",");
             
-            graphic.getSubElement("circle").setAttribute("x", posSplit[0].split("\\.")[0]);
-            graphic.getSubElement("circle").setAttribute("y", Integer.toString((int) -Float.parseFloat(posSplit[1])));
+            graphic.getSubElement("circle").setAttribute("x", Integer.toString((int) Float.parseFloat(posSplit[0]) + xdisplacement));
+            graphic.getSubElement("circle").setAttribute("y", Integer.toString((int) Float.parseFloat(posSplit[1]) + ydisplacement));
                       
             graphic.addSubElement(new SubElement("arrow"));
             graphic.getSubElement("arrow").setAttribute("x", "1.0");
@@ -179,31 +184,18 @@ public class Layouter{
             String[] posSplit = edge.getThisAttributeValue(Edge.POS_ATTR).toString().split(" |,");
 
             
-            if(posSplit[0].equals("s")){
-                graphic.getSubElement("bezier").setAttribute("x1", posSplit[1]);                       
-                graphic.getSubElement("bezier").setAttribute("y1", Float.toString(-Float.parseFloat(posSplit[2])));
+            graphic.getSubElement("bezier").setAttribute("x1", Float.toString(Float.parseFloat(posSplit[3]) + xdisplacement));                                     
+            graphic.getSubElement("bezier").setAttribute("y1", Float.toString(Float.parseFloat(posSplit[4]) + ydisplacement));
                 
-                graphic.getSubElement("bezier").setAttribute("ctrlx1", posSplit[5]);            
-                graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(-Float.parseFloat(posSplit[6])));                                    
+            graphic.getSubElement("bezier").setAttribute("ctrlx1", Float.toString(Float.parseFloat(posSplit[5]) + xdisplacement));
+            graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(Float.parseFloat(posSplit[6]) + ydisplacement));                                    
                 
-                graphic.getSubElement("bezier").setAttribute("x2", posSplit[posSplit.length -2]);                                               
-                graphic.getSubElement("bezier").setAttribute("y2", Float.toString(-Float.parseFloat(posSplit[posSplit.length -1])));            
+            graphic.getSubElement("bezier").setAttribute("x2", Float.toString(Float.parseFloat(posSplit[posSplit.length -2]) + xdisplacement));            
+            graphic.getSubElement("bezier").setAttribute("y2", Float.toString(Float.parseFloat(posSplit[posSplit.length -1]) + ydisplacement));            
                                                         
-                graphic.getSubElement("bezier").setAttribute("ctrlx2", posSplit[posSplit.length-4]);                        
-                graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(-Float.parseFloat(posSplit[posSplit.length -3])));            
-            } else {
-                graphic.getSubElement("bezier").setAttribute("x1", posSplit[3]);                       
-                graphic.getSubElement("bezier").setAttribute("y1", Float.toString(-Float.parseFloat(posSplit[4])));
-                
-                graphic.getSubElement("bezier").setAttribute("ctrlx1", posSplit[5]);            
-                graphic.getSubElement("bezier").setAttribute("ctrly1", Float.toString(-Float.parseFloat(posSplit[6])));                                    
-                
-                graphic.getSubElement("bezier").setAttribute("x2", posSplit[1]);                                               
-                graphic.getSubElement("bezier").setAttribute("y2", Float.toString(-Float.parseFloat(posSplit[2])));            
-                                                        
-                graphic.getSubElement("bezier").setAttribute("ctrlx2", posSplit[posSplit.length-4]);                        
-                graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(-Float.parseFloat(posSplit[posSplit.length -3]))); 
-            }
+            graphic.getSubElement("bezier").setAttribute("ctrlx2", Float.toString(Float.parseFloat(posSplit[posSplit.length -4]) + xdisplacement));            
+            graphic.getSubElement("bezier").setAttribute("ctrly2", Float.toString(Float.parseFloat(posSplit[posSplit.length -3]) + ydisplacement));            
+
             
             UnitVector uv = new UnitVector();
             graphic.getSubElement("bezier").setAttribute("dx", Float.toString(uv.x));            
@@ -226,6 +218,7 @@ public class Layouter{
     public void layoutAutomaton(Automaton automaton){
         InputStream dotFormat = toDot(automaton);      
         Graph graph = doLayout(dotFormat);
+        graph.printGraph(System.out);
         fromDot(graph, automaton);
     }
     
@@ -266,9 +259,8 @@ public class Layouter{
         automaton.add(new Transition(11, state[12], state[9]));
         
         
+                
         layout.layoutAutomaton(automaton);
-        
-        automaton.toXML(System.out);
         
     }
 }
