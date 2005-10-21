@@ -316,9 +316,7 @@ public class ProjectManager implements ProjectPresentation{
                     product.add(event);
                 }
             }
-            
         }
-        
         
         // find initial states, mark them as reached and add them to the que
         State[] initial = new State[2];
@@ -341,14 +339,13 @@ public class ProjectManager implements ProjectPresentation{
                 }
             }
         }
-
-        int transitionNumber = 0;
-        
-
         
         //accessibility. all accessible states are added to product
         //transitions are only traversible if they can be traversed from both states in sa 
-        //firing the same event
+        //firing the same event, i.e., the intersection of the transitions originating from the two
+        //states are the transitions of state in product.
+        int transitionNumber = 0;
+        State[] s = new State[2];
         while(!searchList.isEmpty()){
             State[] sa = searchList.removeFirst();
             State source = product.getState(getStateId(sa));
@@ -360,7 +357,6 @@ public class ProjectManager implements ProjectPresentation{
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
                     if(t0.getEvent() == null && t1.getEvent() == null){
-                        State[] s = new State[2];
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
 
@@ -374,17 +370,15 @@ public class ProjectManager implements ProjectPresentation{
                             product.add(target);
                             product.add(new Transition(transitionNumber++, source, target));
                             setStateId(s, stateNumber++);
-                            searchList.add(s);
+                            searchList.add(s.clone());
                         }
                     }
                     else if(t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
                             t1.getEvent().getSubElement("name").getChars())){
                         Event event = getEventByName(
                                 t0.getEvent().getSubElement("name").getChars(), product);
-                        State[] s = new State[2];
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
-
                         int id = getStateId(s);
                         if(id != -1){
                             product.add(new Transition(transitionNumber++, source, product
@@ -395,7 +389,7 @@ public class ProjectManager implements ProjectPresentation{
                             product.add(target);
                             product.add(new Transition(transitionNumber++, source, target, event));
                             setStateId(s, stateNumber++);
-                            searchList.add(s);
+                            searchList.add(s.clone());
                         }
                     }
                 }
