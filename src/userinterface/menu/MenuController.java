@@ -114,7 +114,8 @@ public class MenuController {
      */
     public UnifiedMenu operationsAccesible = null,
                        operationsCoAccesible = null,
-                       operationsTrim = null;
+                       operationsTrim = null,
+                       operationsProduct = null;
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Other //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,9 +141,7 @@ public class MenuController {
 
     /**
      * Construct the MenuController.
-     * 
-     * @param gp
-     *            The GraphingPlatform in which this MenuController will exist.
+     * @param gp The GraphingPlatform in which this MenuController will exist.
      */
     public MenuController(Shell shell) {
         // setup the container objects
@@ -158,8 +157,7 @@ public class MenuController {
         operationsListener = new OperationListener();
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // File PROJECT System
-        // ///////////////////////////////////////////////////////////////////////////////////////////
+        // File PROJECT System ///////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
@@ -169,10 +167,8 @@ public class MenuController {
         file_exit = new UnifiedMenu(ResourceManager.FILE_EXIT, fileListener);
 
         file_new_automaton = new UnifiedMenu(ResourceManager.FILE_NEW_AUTOMATON, fileListener, SWT.CTRL + 'n');
-        file_open_automaton = new UnifiedMenu(
-                ResourceManager.FILE_OPEN_AUTOMATON, fileListener);
-        file_save_automaton = new UnifiedMenu(
-                ResourceManager.FILE_SAVE_AUTOMATON, fileListener);
+        file_open_automaton = new UnifiedMenu(ResourceManager.FILE_OPEN_AUTOMATON, fileListener);
+        file_save_automaton = new UnifiedMenu(ResourceManager.FILE_SAVE_AUTOMATON, fileListener);
 
         // set up main menu structures and add the MenuItems (order matters)
         MenuItem mitm_file = new MenuItem(menu, SWT.CASCADE);
@@ -205,17 +201,13 @@ public class MenuController {
         advanced_coolbar.addToolBar(tbr_file);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Edit System
-        // ////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Edit System ///////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
-        edit_copy = new UnifiedMenu(ResourceManager.EDIT_COPY, editListener,
-                SWT.CTRL + 'c');
-        edit_paste = new UnifiedMenu(ResourceManager.EDIT_PASTE, editListener,
-                SWT.CTRL + 'v');
-        edit_delete = new UnifiedMenu(ResourceManager.EDIT_DELETE,
-                editListener, SWT.DEL);
+        edit_copy = new UnifiedMenu(ResourceManager.EDIT_COPY, editListener, SWT.CTRL + 'c');
+        edit_paste = new UnifiedMenu(ResourceManager.EDIT_PASTE, editListener, SWT.CTRL + 'v');
+        edit_delete = new UnifiedMenu(ResourceManager.EDIT_DELETE, editListener, SWT.DEL);
 
         // set up main menu structures and add the MenuItems (order matters)
 
@@ -231,8 +223,7 @@ public class MenuController {
 
         // setup the toolbar structures and add the ToolItems (order matters)
 
-        tbr_edit = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT
-                | SWT.WRAP);
+        tbr_edit = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT | SWT.WRAP);
 
         edit_copy.addTitm(tbr_edit);
         edit_paste.addTitm(tbr_edit);
@@ -245,20 +236,13 @@ public class MenuController {
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
-        graphic_zoom = new UnifiedMenu(ResourceManager.GRAPHIC_ZOOM,
-                graphicListener);
-        graphic_create = new UnifiedMenu(ResourceManager.GRAPHIC_CREATE,
-                graphicListener);
-        graphic_modify = new UnifiedMenu(ResourceManager.GRAPHIC_MODIFY,
-                graphicListener);
-        graphic_grab = new UnifiedMenu(ResourceManager.GRAPHIC_GRAB,
-                graphicListener);
-        graphic_grid = new UnifiedMenu(ResourceManager.GRAPHIC_GRID,
-                graphicListener);
-        graphic_alledges = new UnifiedMenu(ResourceManager.GRAPHIC_ALLEDGES,
-                graphicListener);
-        graphic_alllabels = new UnifiedMenu(ResourceManager.GRAPHIC_ALLLABELS,
-                graphicListener);
+        graphic_zoom = new UnifiedMenu(ResourceManager.GRAPHIC_ZOOM, graphicListener);
+        graphic_create = new UnifiedMenu(ResourceManager.GRAPHIC_CREATE, graphicListener);
+        graphic_modify = new UnifiedMenu(ResourceManager.GRAPHIC_MODIFY, graphicListener);
+        graphic_grab = new UnifiedMenu(ResourceManager.GRAPHIC_GRAB, graphicListener);
+        graphic_grid = new UnifiedMenu(ResourceManager.GRAPHIC_GRID, graphicListener);
+        graphic_alledges = new UnifiedMenu(ResourceManager.GRAPHIC_ALLEDGES, graphicListener);
+        graphic_alllabels = new UnifiedMenu(ResourceManager.GRAPHIC_ALLLABELS, graphicListener);
 
         // set up main menu structures and add the MenuItems (order matters)
 
@@ -277,8 +261,7 @@ public class MenuController {
 
         // setup the toolbar structures and add the ToolItems (order matters)
 
-        tbr_graphic = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT
-                | SWT.WRAP | SWT.RIGHT);
+        tbr_graphic = new ToolBar(advanced_coolbar.getCoolbar(), SWT.FLAT | SWT.WRAP | SWT.RIGHT);
 
         graphic_grid.addTitm(tbr_graphic, SWT.DROP_DOWN);
         graphic_alledges.addTitm(tbr_graphic, SWT.CHECK);
@@ -294,8 +277,8 @@ public class MenuController {
         mitm_grid00 = new MenuItem(mnu_graphic_grid, SWT.RADIO);
         mitm_grid00.setText(ResourceManager.getString("graphic_grid.nogrid"));
         mitm_grid00.setData(new Integer(0));
-        mitm_grid00.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event e) {
+        mitm_grid00.addListener(SWT.Selection, new Listener(){
+            public void handleEvent(Event e){
                 graphicListener.gridDropdown(mitm_grid00);
             }
         });
@@ -335,8 +318,7 @@ public class MenuController {
         advanced_coolbar.addToolBar(tbr_graphic);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Option System
-        // //////////////////////////////////////////////////////////////////////////////////////////////////
+        // Option System //////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // create the UnifiedMenus
@@ -365,6 +347,7 @@ public class MenuController {
         operationsAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_ACCESIBLE,operationsListener);
         operationsCoAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_COACCESIBLE,operationsListener);
         operationsTrim = new UnifiedMenu(ResourceManager.OPERATIONS_TRIM,operationsListener);
+        operationsProduct = new UnifiedMenu(ResourceManager.OPERATIONS_PRODUCT,operationsListener);
         
         //set up main menu structures and add the MenuItems (order matters)
 
@@ -376,6 +359,7 @@ public class MenuController {
         operationsAccesible.addMitm(mnu_operations);
         operationsCoAccesible.addMitm(mnu_operations);
         operationsTrim.addMitm(mnu_operations);
+        operationsProduct.addMitm(mnu_operations);
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////// /

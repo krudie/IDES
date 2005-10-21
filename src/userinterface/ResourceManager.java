@@ -58,7 +58,9 @@ public class ResourceManager {
                                 DRAG = "drag",
                                 OPERATIONS_ACCESIBLE = "operations_accesible",
                                 OPERATIONS_COACCESIBLE = "operations_coaccesible",
-                                OPERATIONS_TRIM = "operations_trim";
+                                OPERATIONS_TRIM = "operations_trim",
+                                OPERATIONS_PRODUCT = "operations_product";
+    
     
 
     /**

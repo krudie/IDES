@@ -44,7 +44,13 @@ public class OperationListener extends AbstractListener{
                 }
             };
         }
-
+        if(resource_handle.equals(ResourceManager.OPERATIONS_PRODUCT)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
+                    product();
+                }
+            };
+        }
         return null;
     }
 
@@ -103,5 +109,9 @@ public class OperationListener extends AbstractListener{
 
         }
         MainWindow.getProjectExplorer().updateProject();
+    }
+    
+    public void product(){
+        
     }
 }
