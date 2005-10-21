@@ -253,6 +253,7 @@ public class GraphingPlatform{
         es.setChanged(false);
         gc.gm.accomodateLabels();
         gc.repaint();
+        gc.io.resetState();
     }
 
     public void save(){
