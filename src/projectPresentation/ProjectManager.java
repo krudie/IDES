@@ -271,15 +271,15 @@ public class ProjectManager implements ProjectPresentation{
 
         SubElement properties = new SubElement("properties");
         SubElement initial = new SubElement("initial");
-        initial.setChars(Boolean.toString(s[0].getSubElement("properties").getSubElement("initial")
+        initial.setChars(Boolean.toString(s[0].getSubElement("properties").getSubElement("initial").getChars()
                 .equals("true")
-                && s[1].getSubElement("properties").getSubElement("initial").equals("true")));
+                && s[1].getSubElement("properties").getSubElement("initial").getChars().equals("true")));
         properties.addSubElement(initial);
 
         SubElement marked = new SubElement("marked");
-        marked.setChars(Boolean.toString(s[0].getSubElement("properties").getSubElement("marked")
+        marked.setChars(Boolean.toString(s[0].getSubElement("properties").getSubElement("marked").getChars()
                 .equals("true")
-                || s[1].getSubElement("properties").getSubElement("marked").equals("true")));
+                || s[1].getSubElement("properties").getSubElement("marked").getChars().equals("true")));
         properties.addSubElement(marked);
         state.addSubElement(properties);
 
