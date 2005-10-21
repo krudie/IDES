@@ -354,8 +354,8 @@ public class ProjectManager implements ProjectPresentation{
             }
         }
         
-        //accessibility. all accessible states are added to product
-        //transitions are only traversible if they can be traversed from both states in sa 
+        //accessibility. all accessible states are added to product.
+        //Transitions are only traversible if they can be traversed from both states in sa 
         //firing the same event, i.e., the intersection of the transitions originating from the two
         //states are the transitions of state in product.
         int transitionNumber = 0;
