@@ -357,7 +357,25 @@ public class ProjectManager implements ProjectPresentation{
                 ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
-                    if(t0.getEvent().getSubElement("name").getChars().equals(
+                    if(t0.getEvent() == null && t1.getEvent() == null){
+                        State[] s = new State[2];
+                        s[0] = t0.getTarget();
+                        s[1] = t1.getTarget();
+
+                        int id = getStateId(s);
+                        if(id != -1){
+                            product.add(new Transition(transitionNumber++, source, product
+                                    .getState(id)));
+                        }
+                        else{
+                            State target = makeState(s, stateNumber);
+                            product.add(target);
+                            product.add(new Transition(transitionNumber++, source, target));
+                            setStateId(s, stateNumber++);
+                            searchList.add(s);
+                        }
+                    }
+                    else if(t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
                             t1.getEvent().getSubElement("name").getChars())){
                         Event event = getEventByName(
                                 t0.getEvent().getSubElement("name").getChars(), product);

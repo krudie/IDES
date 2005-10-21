@@ -128,14 +128,14 @@ public class OperationListener extends AbstractListener{
         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
                 Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
 
-        if(selectedNames.length < 3){
-            MainWindow.getProjectExplorer().updateProject();
-            return;
-        }
-        for(int i = 3; i < selectedNames.length; i++){
-            Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(name),
-                    Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]), Userinterface.getProjectPresentation().getAutomatonByName(name));
-        }
         MainWindow.getProjectExplorer().updateProject();
+        return;
+        /*    
+         for(int i = 2; i < selectedNames.length; i++){
+         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(name),
+         Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]), Userinterface.getProjectPresentation().getAutomatonByName(name));
+         }
+         MainWindow.getProjectExplorer().updateProject();
+        */
     }
 }
