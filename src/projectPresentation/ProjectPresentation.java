@@ -44,4 +44,6 @@ public interface ProjectPresentation {
 
     public void trim(Automaton automaton);
     public void layout(String name);
+
+    public void product(Automaton a, Automaton b, Automaton product);
 }

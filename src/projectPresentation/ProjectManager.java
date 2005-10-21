@@ -293,9 +293,7 @@ public class ProjectManager implements ProjectPresentation{
         return null;
     }
 
-    public Automaton product(Automaton a, Automaton b){
-        Automaton product = new Automaton("product");
-
+    public void product(Automaton a, Automaton b, Automaton product){
         // Add the intersection between the eventsets as the products
         // eventset.
         int eventNumber = 0;
@@ -390,8 +388,6 @@ public class ProjectManager implements ProjectPresentation{
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
-
-        return product;
     }
 
     public Automaton copyAutomaton(String source, String clonedName){
