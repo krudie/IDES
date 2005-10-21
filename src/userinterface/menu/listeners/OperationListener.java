@@ -128,7 +128,7 @@ public class OperationListener extends AbstractListener{
         
         name = MainWindow.getProjectExplorer().getTitle(name);
 
-        Userinterface.getProjectPresentation().addAutomaton(name);
+        Userinterface.getProjectPresentation().newAutomaton(name);
         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
                 Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
 

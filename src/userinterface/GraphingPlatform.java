@@ -164,10 +164,8 @@ public class GraphingPlatform{
         
             try{
                 Userinterface.getProjectPresentation().layout(automatonName);
-            } catch(Exception e){
-                
-                //asks the user if the path is correct
-                
+            } catch(Exception e){                
+                //asks the user if the path is correct                
                 // we have bad parameters; therefore, open popup window and request valid info.
                 FileDialog fileDialog = new FileDialog(shell, SWT.OPEN); 
 

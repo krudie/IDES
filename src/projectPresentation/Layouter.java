@@ -2,7 +2,6 @@ package projectPresentation;
 
 import ides2.SystemVariables;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -44,6 +43,10 @@ public class Layouter{
         try {
             Parser program = new Parser(file,System.err);
             program.parse();
+            
+            
+            
+            
             graph = program.getGraph();
         } catch(Exception ex) {
             System.err.println("Exception: " + ex.getMessage());
@@ -52,7 +55,6 @@ public class Layouter{
         }
         
         engine = Runtime.getRuntime().exec(graphvizPath);        
-       
         if(!GrappaSupport.filterGraph(graph,engine)) {
             System.err.println("ERROR: somewhere in filterGraph");
         }
@@ -60,13 +62,13 @@ public class Layouter{
             int code = engine.waitFor();
             if(code != 0) {
                 System.err.println("WARNING: proc exit code is: " + code);
-            }
+            }            
         } catch(InterruptedException ex) {
             System.err.println("Exception while closing down proc: " + ex.getMessage());
             ex.printStackTrace(System.err);
         }
-        return graph;
-       
+        engine = null;
+        return graph;       
     }
     
     
@@ -75,21 +77,12 @@ public class Layouter{
      * @param automaton the automaton to be formatted
      * @return The input stream containing the dot formatted version of the automaton
      */
-    private InputStream toDot(Automaton automaton){
+    private InputStream toDot(Automaton automaton){             
         
-        PipedInputStream result = new PipedInputStream();
-        PipedOutputStream pipedOutputStream = null;
-        PrintWriter input = null;
-        
-        try{
-            pipedOutputStream = new PipedOutputStream(result);
-            input = new PrintWriter(pipedOutputStream, true);
-        }
-        catch(IOException e){
-            System.out.println(e.getMessage());
-        }
-        
-        
+              
+        PipedOutputStream pipedOutputStream = new PipedOutputStream();
+        PrintWriter input = new PrintWriter(pipedOutputStream, true);
+          
         //putting out basic info that needs to be put into the buffer
         
         input.println("digraph Test_Graph {");
@@ -101,7 +94,8 @@ public class Layouter{
         // ID[];
         Iterator<State> states = automaton.getStateIterator();
         State state = null;
-        while(states.hasNext()){
+        int i = 0;
+        while(states.hasNext()){            
             state = states.next();
             input.println(state.getId() + "[");
             input.println("Shape=ellipse, width=\".4\", height=\".4\"");
@@ -109,8 +103,7 @@ public class Layouter{
         }
         
        //putting in the transitions
-       //sourceID->targetID[];
-        
+       //sourceID->targetID[];        
         Iterator<Transition> transitions = automaton.getTransitionIterator();
         Transition trans = null;
         while(transitions.hasNext()){
@@ -126,6 +119,18 @@ public class Layouter{
         input.flush();
         input.close();
 
+        
+        PipedInputStream result = null;        
+        try{
+            result = new PipedInputStream(pipedOutputStream);
+            System.out.println("kommer jeg hertil?");
+            pipedOutputStream.flush();
+            input.close();
+            pipedOutputStream.close();            
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        
         return (InputStream) result;
     }
     
@@ -203,9 +208,13 @@ public class Layouter{
      * @param automaton the automaton that needs graphic info
      */
     public void layoutAutomaton(Automaton automaton) throws Exception{
-        InputStream dotFormat = toDot(automaton);              
+        System.out.println("Så laver vi toDot");
+        InputStream dotFormat = toDot(automaton);
+        System.out.println("Så laver vi doLayout");
         Graph graph = doLayout(dotFormat);
+        System.out.println("Så laver vi mike format");
         fromDot(graph, automaton);           
+        System.out.println("Jeg er færdig!");
     }
     
     /**

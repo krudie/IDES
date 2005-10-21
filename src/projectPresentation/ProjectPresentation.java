@@ -22,7 +22,7 @@ public interface ProjectPresentation {
 
     public boolean isProjectOpen();
 
-    public void addAutomaton(String name);
+    public void newAutomaton(String name);
 
     public boolean hasUnsavedData();
 

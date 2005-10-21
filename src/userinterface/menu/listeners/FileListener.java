@@ -253,7 +253,7 @@ public class FileListener extends AbstractListener{
      */
     public void newAutomaton(org.eclipse.swt.events.SelectionEvent e){
         if(Userinterface.getProjectPresentation().isProjectOpen()){
-            Userinterface.getProjectPresentation().addAutomaton(MainWindow.getProjectExplorer().getTitle(ResourceManager.getString("new_automaton_untitled")));
+            Userinterface.getProjectPresentation().newAutomaton(MainWindow.getProjectExplorer().getTitle(ResourceManager.getString("new_automaton_untitled")));
             MainWindow.getProjectExplorer().updateProject();
         }
     }
