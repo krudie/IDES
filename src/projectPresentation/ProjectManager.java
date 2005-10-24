@@ -469,8 +469,7 @@ public class ProjectManager implements ProjectPresentation{
     
     
     public void layout(String name) throws Exception{
-        Layouter l = new Layouter();
-        l.layoutAutomaton(project.getAutomatonByName(name));        
+       new Layouter(project.getAutomatonByName(name));
     }
 
 }
