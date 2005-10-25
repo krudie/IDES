@@ -64,7 +64,7 @@ public class Composition{
                     }
                 }
             }
-        }
+        }        
         
         //accessibility. All accessible states are added to product.
         //Transitions are only traversible if they can be traversed from both states in sa 
@@ -82,14 +82,17 @@ public class Composition{
                 ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
-                    if(t0.getEvent() == null && t1.getEvent() == null){
+                    if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
+                            t1.getEvent().getSubElement("name").getChars())))){
+                        
+                        Event event = (t0.getEvent() == null )? null : getEventByName(t0.getEvent().getSubElement("name").getChars(), product);                        
+                        
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
 
                         int id = getStateId(s);
                         if(id != -1){
-                            product.add(new Transition(transitionNumber++, source, product
-                                    .getState(id)));
+                            product.add(new Transition(transitionNumber++, source, product.getState(id), event));
                         }
                         else{
                             State target = makeState(s, stateNumber);
@@ -99,34 +102,11 @@ public class Composition{
                             searchList.add(s.clone());
                         }
                     }
-                    else if(t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
-                            t1.getEvent().getSubElement("name").getChars())){
-                        Event event = getEventByName(
-                                t0.getEvent().getSubElement("name").getChars(), product);
-                        s[0] = t0.getTarget();
-                        s[1] = t1.getTarget();
-                        int id = getStateId(s);
-                        if(id != -1){
-                            product.add(new Transition(transitionNumber++, source, product
-                                    .getState(id), event));
-                        }
-                        else{
-                            State target = makeState(s, stateNumber);
-                            product.add(target);
-                            product.add(new Transition(transitionNumber++, source, target, event));
-                            setStateId(s, stateNumber++);
-                            searchList.add(s.clone());
-                        }
-                    }
                 }
             }
         }
         //tidy up the mess I left.
         ListIterator<State> sli = a.getStateIterator();
-        while(sli.hasNext()){
-            sli.next().removeSubElement("searched");
-        }
-        sli = b.getStateIterator();
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
@@ -170,20 +150,12 @@ public class Composition{
         if(!s[0].hasSubElement("searched")) 
             s[0].addSubElement(new SubElement("searched"));
         
-        s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()),
-                Integer.toString(stateId));
-        
-        if(!s[1].hasSubElement("searched"))
-        s[1].addSubElement(new SubElement("searched"));
-        s[1].getSubElement("searched").setAttribute(Integer.toString(s[0].getId()),
-                Integer.toString(stateId));
+        s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()), Integer.toString(stateId));        
     }
     
     private static int getStateId(State[] s){
-        if(s[0].hasSubElement("searched")
-                && s[0].getSubElement("searched").hasAttribute(Integer.toString(s[1].getId()))){
-            return Integer.parseInt(s[0].getSubElement("searched").getAttribute(
-                    Integer.toString(s[1].getId())));
+        if(s[0].hasSubElement("searched") && s[0].getSubElement("searched").hasAttribute(Integer.toString(s[1].getId()))){
+            return Integer.parseInt(s[0].getSubElement("searched").getAttribute(Integer.toString(s[1].getId())));
         }
         return -1;
     }
