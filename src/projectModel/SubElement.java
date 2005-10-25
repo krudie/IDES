@@ -103,7 +103,7 @@ public class SubElement extends SubElementContainer implements Cloneable{
             ps.println(indent + "</" + name + ">");
         }
         else{
-            if(chars != null && chars.trim().equals(""))
+            if(chars != null && !chars.trim().equals(""))
                 ps.print(chars);
             ps.print("</" + name + ">\n");    
         }
