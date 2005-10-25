@@ -66,7 +66,7 @@ public class OperationListener extends AbstractListener{
                 }
 
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                projectPresentation.Trim.trim(automaton);
+                projectPresentation.Unary.trim(automaton);
             }
 
         }
@@ -86,7 +86,7 @@ public class OperationListener extends AbstractListener{
                 newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_COACCESIBLE) + "(" + selectedNames[i] + ")");
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
 
-                projectPresentation.CoAccessible.coAccesible(automaton);
+                projectPresentation.Unary.coAccesible(automaton);
             }
 
         }
@@ -103,7 +103,7 @@ public class OperationListener extends AbstractListener{
                 }
                 newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_ACCESIBLE) + "(" + selectedNames[i] + ")");
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                projectPresentation.Accessible.accesible(automaton);
+                projectPresentation.Unary.accesible(automaton);
             }
 
         }
@@ -129,7 +129,7 @@ public class OperationListener extends AbstractListener{
         name = MainWindow.getProjectExplorer().getTitle(name);
 
         Userinterface.getProjectPresentation().newAutomaton(name);
-        Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
+        projectPresentation.Composition.product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
                 Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
 
         MainWindow.getProjectExplorer().updateProject();
