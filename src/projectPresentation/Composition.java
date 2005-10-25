@@ -35,7 +35,6 @@ public class Composition{
                 if(eventa.getSubElement("name").getChars().equals(eventb.getSubElement("name").getChars())){
                     //is this right? Does the new event have the same properties as the old event?
                     Event event = new Event(eventa);
-                    event.setId(eventa.getId());
                     product.add(event);
                     break;
                 }
