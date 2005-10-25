@@ -144,20 +144,22 @@ public class GraphingPlatform{
 
     public void open(String automatonName){
         
-        automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
+                
+        Automaton tempautomaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
         
         //checks if it needs to be laid out
-        if(automaton.getStateIterator().hasNext() && !automaton.getStateIterator().next().hasSubElement("graphic")){            
+        if(tempautomaton.getStateIterator().hasNext() && !tempautomaton.getStateIterator().next().hasSubElement("graphic")){            
            
-            if(automaton.getStateCount() > 30){                       
+            if(tempautomaton.getStateCount() > 30){                       
                 MessageBox layout = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
                 layout.setText(ResourceManager.getString("layout.warning.title"));
-                layout.setMessage(ResourceManager.getMessage("layout.warning", Integer.toString(automaton.getStateCount())));
+                layout.setMessage(ResourceManager.getMessage("layout.warning", Integer.toString(tempautomaton.getStateCount())));
                 int response = layout.open();
                 switch (response) {
                 case SWT.YES:
+                    automaton = tempautomaton;
                     break;
-                case SWT.NO:
+                case SWT.NO:                    
                     return;
                 }
             }
@@ -289,6 +291,8 @@ public class GraphingPlatform{
     public void save(){
         // remove everything in the automaton
 
+        if(automaton == null) return;
+        
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             si.next();

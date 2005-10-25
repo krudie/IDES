@@ -31,12 +31,35 @@ public class ResourceManager{
      * "handle.ttext". If this resource has an associated image, it must exist
      * as: "images/icons/handle.gif"
      */
-    public final static String FILE_NEW_PROJECT = "file_new_project", FILE_OPEN_PROJECT = "file_open_project", FILE_SAVE_PROJECT = "file_save_project", FILE_NEW_AUTOMATON = "file_new_automaton",
-            FILE_OPEN_AUTOMATON = "file_open_automaton", FILE_SAVE_AUTOMATON = "file_save_automaton", FILE_EXIT = "file_exit", EDIT_COPY = "edit_copy", EDIT_PASTE = "edit_paste",
-            EDIT_DELETE = "edit_delete", GRAPHIC_ZOOM = "graphic_zoom", GRAPHIC_CREATE = "graphic_create", GRAPHIC_MODIFY = "graphic_modify", GRAPHIC_ALLEDGES = "graphic_alledges",
-            GRAPHIC_ALLLABELS = "graphic_alllabels", GRAPHIC_PRINTAREA = "graphic_printarea", GRAPHIC_GRAB = "graphic_grab", GRAPHIC_GRID = "graphic_grid", OPTION_ERRORREPORT = "option_errorreport",
-            OPTION_NODE = "option_node", HELP_HELPTOPICS = "help_helptopics", HELP_ABOUT = "help_about", LOGO = "logo", BIG_LOGO = "big_logo", DRAG = "drag",
-            OPERATIONS_ACCESIBLE = "operations_accesible", OPERATIONS_COACCESIBLE = "operations_coaccesible", OPERATIONS_TRIM = "operations_trim", OPERATIONS_PRODUCT = "operations_product";
+    public final static String FILE_NEW_PROJECT = "file_new_project",
+                               FILE_OPEN_PROJECT = "file_open_project",
+                               FILE_SAVE_PROJECT = "file_save_project",
+                               FILE_NEW_AUTOMATON = "file_new_automaton",
+                               FILE_OPEN_AUTOMATON = "file_open_automaton",
+                               FILE_SAVE_AUTOMATON = "file_save_automaton",
+                               FILE_EXIT = "file_exit",
+                               EDIT_COPY = "edit_copy",
+                               EDIT_PASTE = "edit_paste",
+                               EDIT_DELETE = "edit_delete",
+                               GRAPHIC_ZOOM = "graphic_zoom",
+                               GRAPHIC_CREATE = "graphic_create",
+                               GRAPHIC_MODIFY = "graphic_modify",
+                               GRAPHIC_ALLEDGES = "graphic_alledges",
+                               GRAPHIC_ALLLABELS = "graphic_alllabels",
+                               GRAPHIC_PRINTAREA = "graphic_printarea",
+                               GRAPHIC_GRAB = "graphic_grab",
+                               GRAPHIC_GRID = "graphic_grid",
+                               OPTION_ERRORREPORT = "option_errorreport",
+                               OPTION_NODE = "option_node",
+                               HELP_HELPTOPICS = "help_helptopics",
+                               HELP_ABOUT = "help_about",
+                               LOGO = "logo",
+                               BIG_LOGO = "big_logo",
+                               DRAG = "drag",
+                               OPERATIONS_ACCESIBLE = "operations.accesible",
+                               OPERATIONS_COACCESIBLE = "operations.coaccesible",
+                               OPERATIONS_TRIM = "operations.trim",
+                               OPERATIONS_PRODUCT = "operations.product";
 
     /**
      * This specifies which of the resources expect to have associated images.
@@ -168,7 +191,7 @@ public class ResourceManager{
      * @param key The key for the message string.
      * @return The message string.
      */
-    public static String getMenuText(String key){        
+    public static String getMenuText(String key){
         return getString(key + ".mtext");
     }
 
@@ -225,7 +248,8 @@ public class ResourceManager{
      */
     private static Image getImage(String resourceHandle, int offset){
         try{
-            // find the index of this resource within the images specifications array
+            // find the index of this resource within the images specifications
+            // array
             int tag;
             // try tristate images
             for(tag = 0; tag < resourcesWithImages.length; tag++){
@@ -244,7 +268,8 @@ public class ResourceManager{
             }
         }
         catch(Exception e){
-            // Ignore that we have an error an continue to the final part of the method
+            // Ignore that we have an error an continue to the final part of the
+            // method
         }
         // if we haven't returned yet then we have failed
         MainWindow.fatalErrorPopup(getString("error.fatal_title"), getString("error.null_image") + "\n" + resourceHandle);

@@ -350,16 +350,31 @@ public class MenuController {
         operationsProduct = new UnifiedMenu(ResourceManager.OPERATIONS_PRODUCT,operationsListener);
         
         //set up main menu structures and add the MenuItems (order matters)
-
-        MenuItem mitm_operations = new MenuItem(menu, SWT.CASCADE);
-        mitm_operations.setText(ResourceManager.getString("operations.mtext"));
-        Menu mnu_operations = new Menu(mitm_option);
-        mitm_operations.setMenu(mnu_operations);
+                      
         
-        operationsAccesible.addMitm(mnu_operations);
-        operationsCoAccesible.addMitm(mnu_operations);
-        operationsTrim.addMitm(mnu_operations);
-        operationsProduct.addMitm(mnu_operations);
+        MenuItem mitmOperations = new MenuItem(menu, SWT.CASCADE);
+        mitmOperations.setText(ResourceManager.getString("operations.mtext"));
+                
+        Menu mnuOperations = new Menu(mitmOperations);
+        mitmOperations.setMenu(mnuOperations);
+        
+
+        MenuItem mitmUnary = new MenuItem(mnuOperations, SWT.CASCADE);
+        mitmUnary.setText(ResourceManager.getString("operations.unary.mtext"));        
+        Menu mnuUnary = new Menu(mitmOperations);
+        mitmUnary.setMenu(mnuUnary);
+                
+        
+        operationsAccesible.addMitm(mnuUnary);
+        operationsCoAccesible.addMitm(mnuUnary);
+        operationsTrim.addMitm(mnuUnary);
+        
+        MenuItem mitmComposition = new MenuItem(mnuOperations, SWT.CASCADE);
+        mitmComposition.setText(ResourceManager.getString("operations.composition.mtext"));        
+        Menu mnuComposition = new Menu(mitmOperations);
+        mitmComposition.setMenu(mnuComposition);
+                
+        operationsProduct.addMitm(mnuComposition);
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////// /
