@@ -52,12 +52,11 @@ public class Composition{
         Iterator<State> sia = a.getStateIterator();
         while(sia.hasNext()){
             initial[0] = sia.next();
-            if(initial[0].getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+            if(initial[0].getSubElement("properties").hasSubElement("initial")){
                 Iterator<State> sib = b.getStateIterator();
                 while(sib.hasNext()){
                     initial[1] = sib.next();
-                    if(initial[1].getSubElement("properties").getSubElement("initial").getChars().equals("true")){
-                        
+                    if(initial[1].getSubElement("properties").hasSubElement("initial")){                        
                         searchList.add(initial.clone());
                         product.add(makeState(initial, stateNumber));
                         setStateId(initial, stateNumber++);                        
@@ -85,7 +84,7 @@ public class Composition{
                     if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
                             t1.getEvent().getSubElement("name").getChars())))){
                         
-                        Event event = (t0.getEvent() == null )? null : getEventByName(t0.getEvent().getSubElement("name").getChars(), product);                        
+                        Event event = (t0.getEvent() == null)? null : getEventByName(t0.getEvent().getSubElement("name").getChars(), product);                        
                         
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
@@ -130,19 +129,17 @@ public class Composition{
         state.addSubElement(name);
 
         SubElement properties = new SubElement("properties");
-        SubElement initial = new SubElement("initial");
-        initial.setChars(Boolean.toString(s[0].getSubElement("properties").getSubElement("initial").getChars()
-                .equals("true")
-                && s[1].getSubElement("properties").getSubElement("initial").getChars().equals("true")));
-        properties.addSubElement(initial);
+                
+        if(s[0].getSubElement("properties").hasSubElement("initial") && s[1].getSubElement("properties").hasSubElement("initial")){        
+            SubElement initial = new SubElement("initial");
+            properties.addSubElement(initial);
+        }
 
-        SubElement marked = new SubElement("marked");
-        marked.setChars(Boolean.toString(s[0].getSubElement("properties").getSubElement("marked").getChars()
-                .equals("true")
-                || s[1].getSubElement("properties").getSubElement("marked").getChars().equals("true")));
-        properties.addSubElement(marked);
-        state.addSubElement(properties);
-
+        if(s[0].getSubElement("properties").hasSubElement("marked") && s[1].getSubElement("properties").hasSubElement("marked")){
+            SubElement marked = new SubElement("marked");
+            properties.addSubElement(marked);                        
+        }            
+        state.addSubElement(properties);                      
         return state;
     }
     
@@ -150,7 +147,7 @@ public class Composition{
         if(!s[0].hasSubElement("searched")) 
             s[0].addSubElement(new SubElement("searched"));
         
-        s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()), Integer.toString(stateId));        
+        s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()), Integer.toString(stateId));
     }
     
     private static int getStateId(State[] s){

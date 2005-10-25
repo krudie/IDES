@@ -228,10 +228,11 @@ public class GraphingPlatform{
 
             SubElement properties = s.getSubElement("properties");
 
-            if(Ascii.safeBoolean(properties.getSubElement("initial").getChars())) n
-                    .addAttribute(Node.START_STATE);
-            if(Ascii.safeBoolean(properties.getSubElement("marked").getChars())) n
-                    .addAttribute(Node.MARKED_STATE);
+            if(properties.hasSubElement("initial"))
+                n.addAttribute(Node.START_STATE);                
+            
+            if(properties.hasSubElement("marked"))
+                n.addAttribute(Node.MARKED_STATE);
 
             gc.gm.addNode(n);
         }
@@ -333,12 +334,16 @@ public class GraphingPlatform{
             // properties
             SubElement properties = new SubElement("properties");
             s.addSubElement(properties);
-            SubElement marked = new SubElement("marked");
-            properties.addSubElement(marked);
-            marked.setChars(Boolean.toString(n.isMarkedState()));
-            SubElement initial = new SubElement("initial");
-            properties.addSubElement(initial);
-            initial.setChars(Boolean.toString(n.isStartState()));
+            
+            if(n.isMarkedState()){
+                SubElement marked = new SubElement("marked");
+                properties.addSubElement(marked);
+            }
+            
+            if(n.isStartState()){
+                SubElement initial = new SubElement("initial");
+                properties.addSubElement(initial);
+            }
 
             // name
             SubElement name = new SubElement("name");

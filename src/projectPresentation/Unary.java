@@ -24,7 +24,7 @@ public class Unary{
         Iterator<State> stateIterator = automaton.getStateIterator();
         while(stateIterator.hasNext()){
             State state = stateIterator.next();
-            if(state.getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+            if(state.getSubElement("properties").hasSubElement("initial")){
                 searchList.addFirst(state);
                 state.addSubElement(new SubElement("accesible"));
             }
@@ -58,7 +58,7 @@ public class Unary{
         // mark all marked states as coaccesible and add them to the list.
         while(states.hasNext()){
             State s = states.next();
-            if(s.getSubElement("properties").getSubElement("marked").getChars().equals("true")){
+            if(s.getSubElement("properties").hasSubElement("marked")){
                 s.addSubElement(new SubElement("coaccesible"));
                 searchList.add(s);
             }
