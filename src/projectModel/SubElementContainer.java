@@ -15,16 +15,19 @@ import java.util.Hashtable;
  */
 public class SubElementContainer implements Cloneable{
     private Hashtable<String, SubElement> subElementList;
+    private boolean initialized = false;
 
     public SubElementContainer(){
-        subElementList = new Hashtable<String, SubElement>();
     }
     
     public SubElementContainer(SubElementContainer sec){
-        subElementList = new Hashtable<String, SubElement>();
-        Enumeration<SubElement> see = sec.getSubElements();
-        while(see.hasMoreElements()){
-            this.addSubElement(new SubElement(see.nextElement()));
+        if(sec.initialized){
+            this.initialize();
+            subElementList = new Hashtable<String, SubElement>();
+            Enumeration<SubElement> see = sec.getSubElements();
+            while(see.hasMoreElements()){
+                this.addSubElement(new SubElement(see.nextElement()));
+            }
         }
     }
     
@@ -32,31 +35,38 @@ public class SubElementContainer implements Cloneable{
         return new SubElementContainer(this);
     }
 
+    private void initialize(){
+        initialized = true;
+        subElementList = new Hashtable<String, SubElement>(5);        
+    }
+
     public Enumeration<SubElement> getSubElements(){
-        return subElementList.elements();
+        return initialized ? subElementList.elements() : new Hashtable<String, SubElement>().elements();
     }
 
     public SubElement getSubElement(String aName){
-        return subElementList.get(aName);
+        return initialized ? subElementList.get(aName) : null;
     }
 
     public void addSubElement(SubElement s){
+        if(!initialized) initialize();
         subElementList.put(s.getName(), s);
     }
 
     public void removeSubElement(String aName){
-        subElementList.remove(aName);
+        if(initialized) subElementList.remove(aName);
     }
 
     public boolean hasSubElement(String aName){
-        return subElementList.containsKey(aName);
+        return initialized && subElementList.containsKey(aName);
     }
 
     public boolean isEmpty(){
-        return subElementList.isEmpty();
+        return !initialized || subElementList.isEmpty();
     }
 
     public void toXML(PrintStream ps, String indent){
+        if(!initialized) return;
         Enumeration<SubElement> see = subElementList.elements();
         while(see.hasMoreElements())
             see.nextElement().toXML(ps, indent);
