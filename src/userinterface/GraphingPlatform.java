@@ -244,9 +244,7 @@ public class GraphingPlatform{
             e.setId(id++);
             SubElement properties = e.getSubElement("properties");
             es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description")
-                    .getChars(), Ascii.safeBoolean(properties.getSubElement("controllable")
-                    .getChars()), Ascii.safeBoolean(properties.getSubElement("observable")
-                    .getChars()));
+                    .getChars(), properties.hasSubElement("controllable"),  properties.hasSubElement("observable"));
         }
 
         ListIterator<Transition> ti = automaton.getTransitionIterator();
@@ -367,12 +365,16 @@ public class GraphingPlatform{
 
             SubElement properties = new SubElement("properties");
             e.addSubElement(properties);
-            SubElement controllable = new SubElement("controllable");
-            properties.addSubElement(controllable);
-            controllable.setChars(Boolean.toString(es.getControllable(i)));
-            SubElement observable = new SubElement("observable");
-            properties.addSubElement(observable);
-            observable.setChars(Boolean.toString(es.getObservable(i)));
+            
+            if(es.getControllable(i)){
+                SubElement controllable = new SubElement("controllable");
+                properties.addSubElement(controllable);                
+            }
+            
+            if(es.getObservable(i)){            
+                SubElement observable = new SubElement("observable");
+                properties.addSubElement(observable);
+            }
         }
 
         // rebuild transitions

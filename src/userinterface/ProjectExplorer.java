@@ -234,7 +234,7 @@ public class ProjectExplorer {
                     // testing if the name is already used
                     if (!item.equals(project) && project.getText().equals(text.getText())) {
                         looseFocus = true;
-                        MainWindow.errorPopup(ResourceManager.getString("naming_error.title"),ResourceManager.getString("naming_error.used"));
+                        MainWindow.errorPopup(ResourceManager.getString("naming_error.title"),ResourceManager.getString("naming_error.used"));                        
                         looseFocus = false;
                         return false;
                     }
