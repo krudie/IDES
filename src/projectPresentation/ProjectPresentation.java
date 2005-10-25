@@ -34,15 +34,10 @@ public interface ProjectPresentation {
 
     public String removeFileName(String name);
     
-    public Automaton getAutomatonByName(String name);
-    
-    public void accesible(Automaton automaton);
+    public Automaton getAutomatonByName(String name);      
     
     public Automaton copyAutomaton(String source, String clonedName);
 
-    public void coAccesible(Automaton automaton);
-
-    public void trim(Automaton automaton);
     public void layout(String name) throws Exception;
 
     public void product(Automaton a, Automaton b, Automaton product);
