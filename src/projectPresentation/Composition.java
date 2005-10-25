@@ -25,9 +25,7 @@ public class Composition{
      * @param product the accesible product of a and b.
      */
     public static void product(Automaton a, Automaton b, Automaton product){
-        // Add the intersection between the eventsets as the products
-        // eventset.
-        int eventNumber = 0;
+        // Add the intersection between the eventsets as the products eventset.        
         ListIterator<Event> eventsa = a.getEventIterator();
         while(eventsa.hasNext()){
             Event eventa = eventsa.next();
@@ -37,7 +35,7 @@ public class Composition{
                 if(eventa.getSubElement("name").getChars().equals(eventb.getSubElement("name").getChars())){
                     //is this right? Does the new event have the same properties as the old event?
                     Event event = new Event(eventa);
-                    event.setId(eventNumber++);
+                    event.setId(eventa.getId());
                     product.add(event);
                     break;
                 }
@@ -84,7 +82,7 @@ public class Composition{
                     if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
                             t1.getEvent().getSubElement("name").getChars())))){
                         
-                        Event event = (t0.getEvent() == null)? null : getEventByName(t0.getEvent().getSubElement("name").getChars(), product);                        
+                        Event event = (t0.getEvent() == null) ? null : product.getEvent(t0.getEvent().getId());                                                                                
                         
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
@@ -109,16 +107,7 @@ public class Composition{
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
-    }
-    
-    private static Event getEventByName(String name, Automaton automaton){
-        ListIterator<Event> eli = automaton.getEventIterator();
-        while(eli.hasNext()){
-            Event event = eli.next();
-            if(event.getSubElement("name").getChars().equals(name)) return event;
-        }
-        return null;
-    }
+    }    
     
     private static State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
