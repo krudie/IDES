@@ -353,6 +353,114 @@ public class ProjectManager implements ProjectPresentation{
         return null;
     }
 
+    public void parallel(Automaton a, Automaton b, Automaton parallel){
+        // Add the intersection between the eventsets as the products
+        // eventset.
+        int eventNumber = 0;
+        ListIterator<Event> eventsa = a.getEventIterator();
+        while(eventsa.hasNext()){
+            Event eventa = eventsa.next();
+            ListIterator<Event> eventsb = b.getEventIterator();
+            while(eventsb.hasNext()){
+                Event eventb = eventsb.next();
+                if(eventa.getSubElement("name").getChars().equals(eventb.getSubElement("name").getChars())){
+                    //is this right? Does the new event have the same properties as the old event?
+                    Event event = new Event(eventa);
+                    event.setId(eventNumber++);
+                    parallel.add(event);
+                    break;
+                }
+            }
+        }
+        
+        // find initial states, mark them as reached and add them to the que
+        State[] initial = new State[2];
+        int stateNumber = 0;
+        LinkedList<State[]> searchList = new LinkedList<State[]>();
+        
+        Iterator<State> sia = a.getStateIterator();
+        while(sia.hasNext()){
+            initial[0] = sia.next();
+            if(initial[0].getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+                Iterator<State> sib = b.getStateIterator();
+                while(sib.hasNext()){
+                    initial[1] = sib.next();
+                    if(initial[1].getSubElement("properties").getSubElement("initial").getChars().equals("true")){
+                        
+                        searchList.add(initial.clone());
+                        parallel.add(makeState(initial, stateNumber));
+                        setStateId(initial, stateNumber++);                        
+                    }
+                }
+            }
+        }
+        
+        //accessibility. All accessible states are added to product.
+        //Transitions are only traversible if they can be traversed from both states in sa 
+        //firing the same event, i.e., the intersection of the transitions originating from the two
+        //states are the transitions of state in product.
+        int transitionNumber = 0;
+        State[] s = new State[2];
+        while(!searchList.isEmpty()){
+            State[] sa = searchList.removeFirst();
+            State source = parallel.getState(getStateId(sa));
+
+            ListIterator<Transition> sti0 = sa[0].getSourceTransitionsListIterator();
+            while(sti0.hasNext()){
+                Transition t0 = sti0.next();
+                ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
+                while(sti1.hasNext()){
+                    Transition t1 = sti1.next();
+                    if(t0.getEvent() == null && t1.getEvent() == null){
+                        s[0] = t0.getTarget();
+                        s[1] = t1.getTarget();
+
+                        int id = getStateId(s);
+                        if(id != -1){
+                            parallel.add(new Transition(transitionNumber++, source, parallel
+                                    .getState(id)));
+                        }
+                        else{
+                            State target = makeState(s, stateNumber);
+                            parallel.add(target);
+                            parallel.add(new Transition(transitionNumber++, source, target));
+                            setStateId(s, stateNumber++);
+                            searchList.add(s.clone());
+                        }
+                    }
+                    else if(t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
+                            t1.getEvent().getSubElement("name").getChars())){
+                        Event event = getEventByName(
+                                t0.getEvent().getSubElement("name").getChars(), parallel);
+                        s[0] = t0.getTarget();
+                        s[1] = t1.getTarget();
+                        int id = getStateId(s);
+                        if(id != -1){
+                            parallel.add(new Transition(transitionNumber++, source, parallel
+                                    .getState(id), event));
+                        }
+                        else{
+                            State target = makeState(s, stateNumber);
+                            parallel.add(target);
+                            parallel.add(new Transition(transitionNumber++, source, target, event));
+                            setStateId(s, stateNumber++);
+                            searchList.add(s.clone());
+                        }
+                    }
+                }
+            }
+        }
+        //tidy up the mess I left.
+        ListIterator<State> sli = a.getStateIterator();
+        while(sli.hasNext()){
+            sli.next().removeSubElement("searched");
+        }
+        sli = b.getStateIterator();
+        while(sli.hasNext()){
+            sli.next().removeSubElement("searched");
+        }
+    }
+
     public void product(Automaton a, Automaton b, Automaton product){
         // Add the intersection between the eventsets as the products
         // eventset.
@@ -368,6 +476,7 @@ public class ProjectManager implements ProjectPresentation{
                     Event event = new Event(eventa);
                     event.setId(eventNumber++);
                     product.add(event);
+                    break;
                 }
             }
         }
@@ -394,7 +503,7 @@ public class ProjectManager implements ProjectPresentation{
             }
         }
         
-        //accessibility. all accessible states are added to product.
+        //accessibility. All accessible states are added to product.
         //Transitions are only traversible if they can be traversed from both states in sa 
         //firing the same event, i.e., the intersection of the transitions originating from the two
         //states are the transitions of state in product.
