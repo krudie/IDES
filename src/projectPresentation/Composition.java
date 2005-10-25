@@ -18,6 +18,12 @@ import projectModel.Transition;
  *
  */
 public class Composition{
+    /**
+     * Computes the accessible product of the two automata a and b.
+     * @param a an automaton
+     * @param b an automaton
+     * @param product the accesible product of a and b.
+     */
     public static void product(Automaton a, Automaton b, Automaton product){
         // Add the intersection between the eventsets as the products
         // eventset.
