@@ -37,7 +37,7 @@ public class SubElementContainer implements Cloneable{
 
     private void initialize(){
         initialized = true;
-        subElementList = new Hashtable<String, SubElement>(5);        
+        subElementList = new Hashtable<String, SubElement>(5);
     }
 
     public Enumeration<SubElement> getSubElements(){
