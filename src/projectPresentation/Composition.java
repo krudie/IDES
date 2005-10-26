@@ -18,7 +18,7 @@ import projectModel.Transition;
  * 
  */
 public class Composition{
-    
+
     /**
      * Takes multiple automata and makes the product of them all
      * @param automata an array of automata
@@ -26,25 +26,24 @@ public class Composition{
      * @return The result of the product
      */    
     public static Automaton product(Automaton[] automata, String name){
-        
+
         if(automata.length < 2) return null;
-                           
-        Automaton prevAnswer= new Automaton("temp");
+
+        Automaton prevAnswer = new Automaton("temp");
         Automaton newAnswer;
-        
-        product(automata[0], automata[1],prevAnswer);
-        
-        
-        for(int i=2; i<automata.length; i++){
+
+        product(automata[0], automata[1], prevAnswer);
+
+        for(int i = 2; i < automata.length; i++){
             newAnswer = new Automaton("temp");
-            product(prevAnswer,automata[i], newAnswer);            
+            product(prevAnswer, automata[i], newAnswer);
+
             prevAnswer = newAnswer;
         }
         prevAnswer.setName(name);
         return prevAnswer;
     }
-    
-    
+
     /**
      * Computes the accessible product of the two automata a and b.
      * 
@@ -173,7 +172,7 @@ public class Composition{
     }
     
     /**
-     * Computes the accessible product of the two automata a and b.
+     * Computes the accessible parallel composition of the two automata a and b.
      * 
      * @param a
      *            an automaton
@@ -183,9 +182,8 @@ public class Composition{
      *            the accesible product of a and b.
      */
     public static void parallel(Automaton a, Automaton b, Automaton parallel){
-        // Add the union
-
-        // Add the intersection between the eventsets as the products eventset.
+        // Add the union of the eventsets as the parallel compositions eventset.
+        // mark all events in the intersection as being in the intersection.
         int eventid = 0;
         ListIterator<Event> events = a.getEventIterator();
         while(events.hasNext()){
@@ -215,7 +213,8 @@ public class Composition{
             else{
                 SubElement intersection = new SubElement("intersection");
                 event.addSubElement(intersection);
-                a.getEvent(Integer.parseInt(parallel.getEvent(id).getSubElement("ref").getChars())).addSubElement(intersection);
+                a.getEvent(Integer.parseInt(parallel.getEvent(id).getSubElement("ref").getChars()))
+                        .addSubElement(intersection);
             }
         }
 
@@ -240,20 +239,21 @@ public class Composition{
             }
         }
 
-        // accessibility. All accessible states are added to product.
-        // Transitions are only traversible if they can be traversed from both
-        // states in sa
-        // firing the same event, i.e., the intersection of the transitions
+        // accessibility. All accessible states are added to parallel.
+        // Transitions are traversible if they can be traversed from both
+        // states in sa firing the same event, i.e., the intersection of the
+        // transitions
         // originating from the two
-        // states are the transitions of state in product.
+        // states are the transitions of state in product, or if the event
+        // firing the transition isn't in the intersection between E_a and E_b.
         int transitionNumber = 0;
         State[] s = new State[2];
         while(!searchList.isEmpty()){
             State[] sa = searchList.removeFirst();
             State source = parallel.getState(getStateId(sa));
 
-            //add all transitions in sa[0] and sa[1] that
-            //aren't in 
+            // add all transitions in sa[0] and sa[1] that
+            // aren't in the intersection between E_a and E_b
             for(int i = 0; i < 2; i++){
                 ListIterator<Transition> sti = sa[i].getSourceTransitionsListIterator();
                 while(sti.hasNext()){
@@ -285,12 +285,10 @@ public class Composition{
             while(sti0.hasNext()){
                 Transition t0 = sti0.next();
                 if(t0.getEvent() != null && !t0.getEvent().hasSubElement("intersection")) continue;
-
                 ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
                     if(t1.getEvent() != null && !t1.getEvent().hasSubElement("intersection")) continue;
-                    
                     if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null
                             && t1.getEvent() != null && t0.getEvent().getSubElement("name")
                             .getChars().equals(t1.getEvent().getSubElement("name").getChars())))){
@@ -322,7 +320,7 @@ public class Composition{
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
-        Automaton[] aa = {a,b,parallel};
+        Automaton[] aa = {a, b, parallel};
         for(int i = 0; i < 3; i++){
             ListIterator<Event> eli = aa[i].getEventIterator();
             while(eli.hasNext()){
