@@ -255,9 +255,9 @@ public class Composition{
             // add all transitions in sa[0] and sa[1] that
             // aren't in the intersection between E_a and E_b
             for(int i = 0; i < 2; i++){
-                ListIterator<Transition> sti = sa[i].getSourceTransitionsListIterator();
-                while(sti.hasNext()){
-                    Transition t = sti.next();
+                ListIterator<Transition> stli = sa[i].getSourceTransitionsListIterator();
+                while(stli.hasNext()){
+                    Transition t = stli.next();
                     if(t.getEvent() == null || !t.getEvent().hasSubElement("intersection")){
                         Event event = (t.getEvent() == null) ? null : parallel.getEvent(Integer
                                 .parseInt(t.getEvent().getSubElement("ref").getChars()));
