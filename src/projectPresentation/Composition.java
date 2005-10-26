@@ -305,8 +305,9 @@ public class Composition{
         ListIterator<Event> eli = a.getEventIterator();
         while(eli.hasNext()){
             Event temp = eli.next();
-            if(temp.getSubElement("name").getChars().equals(e.getSubElement("name").getChars())) return temp
-                    .getId();
+            if(temp.getSubElement("name").getChars().equals(e.getSubElement("name").getChars())){
+                return temp.getId();
+            }
         }
         return -1;
     }
