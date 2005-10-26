@@ -125,7 +125,7 @@ public class Composition{
                         else{
                             State target = makeState(s, stateNumber);
                             product.add(target);
-                            product.add(new Transition(transitionNumber++, source, target));
+                            product.add(new Transition(transitionNumber++, source, target, event));
                             setStateId(s, stateNumber++);
                             searchList.add(s.clone());
                         }
@@ -154,22 +154,36 @@ public class Composition{
         // Add the union
 
         // Add the intersection between the eventsets as the products eventset.
+        int eventid = 0;
         ListIterator<Event> events = a.getEventIterator();
         while(events.hasNext()){
-            parallel.add(new Event(events.next()));
+            Event event = events.next();
+            SubElement ref = new SubElement("ref");
+            ref.setChars(Integer.toString(eventid));
+            event.addSubElement(ref);
+            Event temp = new Event(event);
+            temp.setId(eventid++);
+            parallel.add(temp);
+            ref = new SubElement("ref");
+            ref.setChars(Integer.toString(event.getId()));
         }
 
         events = b.getEventIterator();
-        SubElement intersection = new SubElement("intersection");
         while(events.hasNext()){
             Event event = events.next();
-            int id = isInIntersection(event, parallel);
+            int id = getId(event, parallel);
             if(id == -1){
-                parallel.add(new Event(event));
+                SubElement ref = new SubElement("ref");
+                ref.setChars(Integer.toString(eventid));
+                event.addSubElement(ref);
+                event = new Event(event);
+                event.setId(eventid++);
+                parallel.add(event);
             }
             else{
+                SubElement intersection = new SubElement("intersection");
                 event.addSubElement(intersection);
-                a.getEvent(id).addSubElement(intersection);
+                a.getEvent(Integer.parseInt(parallel.getEvent(id).getSubElement("ref").getChars())).addSubElement(intersection);
             }
         }
 
@@ -206,30 +220,45 @@ public class Composition{
             State[] sa = searchList.removeFirst();
             State source = parallel.getState(getStateId(sa));
 
-            ListIterator<Transition> sti0 = sa[0].getSourceTransitionsListIterator();
-            while(sti0.hasNext()){
-                Transition t = sti0.next();
-                if(t.getEvent() == null || !t.getEvent().hasSubElement("intersection")){
-                    Event event = (t.getEvent() == null) ? null : parallel.getEvent(t.getEvent()
-                            .getId());
+            //add all transitions in sa[0] and sa[1] that
+            //aren't in 
+            for(int i = 0; i < 2; i++){
+                ListIterator<Transition> sti = sa[i].getSourceTransitionsListIterator();
+                while(sti.hasNext()){
+                    Transition t = sti.next();
+                    if(t.getEvent() == null || !t.getEvent().hasSubElement("intersection")){
+                        Event event = (t.getEvent() == null) ? null : parallel.getEvent(Integer
+                                .parseInt(t.getEvent().getSubElement("ref").getChars()));
 
-                    s[0] = source;
-                    s[1] = t.getTarget();
+                        s[(i + 1) % 2] = sa[(i + 1) % 2];
+                        s[i] = t.getTarget();
 
-                    int id = getStateId(s);
-                    if(id != -1){
-                        parallel.add(new Transition(transitionNumber++, source, parallel
-                                .getState(id), event));
+                        int id = getStateId(s);
+                        if(id != -1){
+                            parallel.add(new Transition(transitionNumber++, source, parallel
+                                    .getState(id), event));
+                        }
+                        else{
+                            State target = makeState(s, stateNumber);
+                            parallel.add(target);
+                            parallel.add(new Transition(transitionNumber++, source, target, event));
+                            setStateId(s, stateNumber++);
+                            searchList.add(s.clone());
+                        }
                     }
                 }
             }
 
-            sti0 = sa[0].getSourceTransitionsListIterator();
+            ListIterator<Transition> sti0 = sa[0].getSourceTransitionsListIterator();
             while(sti0.hasNext()){
                 Transition t0 = sti0.next();
+                if(t0.getEvent() != null && !t0.getEvent().hasSubElement("intersection")) continue;
+
                 ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
+                    if(t1.getEvent() != null && !t1.getEvent().hasSubElement("intersection")) continue;
+                    
                     if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null
                             && t1.getEvent() != null && t0.getEvent().getSubElement("name")
                             .getChars().equals(t1.getEvent().getSubElement("name").getChars())))){
@@ -248,7 +277,7 @@ public class Composition{
                         else{
                             State target = makeState(s, stateNumber);
                             parallel.add(target);
-                            parallel.add(new Transition(transitionNumber++, source, target));
+                            parallel.add(new Transition(transitionNumber++, source, target, event));
                             setStateId(s, stateNumber++);
                             searchList.add(s.clone());
                         }
@@ -261,9 +290,18 @@ public class Composition{
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
+        Automaton[] aa = {a,b,parallel};
+        for(int i = 0; i < 3; i++){
+            ListIterator<Event> eli = aa[i].getEventIterator();
+            while(eli.hasNext()){
+                Event e = eli.next();
+                e.removeSubElement("intersection");
+                e.removeSubElement("ref");
+            }
+        }
     }
 
-    private static int isInIntersection(Event e, Automaton a){
+    private static int getId(Event e, Automaton a){
         ListIterator<Event> eli = a.getEventIterator();
         while(eli.hasNext()){
             Event temp = eli.next();
