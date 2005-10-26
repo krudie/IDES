@@ -19,6 +19,12 @@ import projectModel.Transition;
  */
 public class Composition{
     
+    /**
+     * Takes multiple automata and makes the product of them all
+     * @param automata an array of automata
+     * @param name The name of the end product
+     * @return The result of the product
+     */    
     public static Automaton product(Automaton[] automata, String name){
         
         if(automata.length < 2) return null;
@@ -31,7 +37,7 @@ public class Composition{
         
         for(int i=2; i<automata.length; i++){
             newAnswer = new Automaton("temp");
-            product(prevAnswer,automata[i], newAnswer);
+            product(prevAnswer,automata[i], newAnswer);            
             prevAnswer = newAnswer;
         }
         prevAnswer.setName(name);
@@ -140,6 +146,32 @@ public class Composition{
         }
     }
 
+    
+    /**
+     * Takes multiple automata and makes the product of them all
+     * @param automata an array of automata
+     * @param name The name of the end product of the parallel composition
+     * @return The result of the parallel composition
+     */    
+    public static Automaton parallel(Automaton[] automata, String name){
+        
+        if(automata.length < 2) return null;
+                           
+        Automaton prevAnswer= new Automaton("temp");
+        Automaton newAnswer;
+        
+        parallel(automata[0], automata[1],prevAnswer);
+        
+        
+        for(int i=2; i<automata.length; i++){
+            newAnswer = new Automaton("temp");
+            product(prevAnswer,automata[i], newAnswer);            
+            prevAnswer = newAnswer;
+        }
+        prevAnswer.setName(name);
+        return prevAnswer;
+    }
+    
     /**
      * Computes the accessible product of the two automata a and b.
      * 
