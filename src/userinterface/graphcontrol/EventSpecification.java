@@ -102,9 +102,7 @@ public class EventSpecification {
         });
         
         
-        final TableEditor editor = new TableEditor (table);
-        editor.horizontalAlignment = SWT.LEFT;
-        editor.grabHorizontal = true;
+        
         table.addListener (SWT.MouseDown, new Listener () {
             public void handleEvent (Event event) {
                 Rectangle clientArea = table.getClientArea ();
@@ -121,38 +119,8 @@ public class EventSpecification {
                                 item.setText(column, Boolean.toString(item.getText(column).equals("false")));
                                 setChanged(true);
                                 return;
-                            }
-                            final Text text = new Text (table, SWT.NONE);
-                            
-                            Listener textListener = new Listener () {
-                                public void handleEvent (final Event e) {
-                                    switch (e.type) {
-                                        case SWT.FocusOut:
-                                            item.setText (column, text.getText ());
-                                            setChanged(true);
-                                            text.dispose ();
-                                            break;
-                                        case SWT.Traverse:
-                                            switch (e.detail) {
-                                                case SWT.TRAVERSE_RETURN:
-                                                    item.setText (column, text.getText ());
-                                                    setChanged(true);
-                                                    //FALL THROUGH
-                                                case SWT.TRAVERSE_ESCAPE:
-                                                    text.dispose ();
-                                                    e.doit = false;
-                                            }
-                                            break;
-                                    }
-                                }
-                            };
-                            text.addListener (SWT.FocusOut, textListener);
-                            text.addListener (SWT.Traverse, textListener);
-                            editor.setEditor (text, item, i);
-                            text.setText (item.getText (i));
-                            text.selectAll ();
-                            text.setFocus ();
-                            return;
+                            }                            
+                            rename(item, column, i);                                                       
                         }
                         if (!visible && rect.intersects (clientArea)) {
                             visible = true;
@@ -164,6 +132,86 @@ public class EventSpecification {
             } 
         });
     }
+    
+    
+    private void rename(TableItem tableItem, int col, int row){
+        final Text text = new Text (table, SWT.NONE);
+        final TableItem item = tableItem;
+        final int column = col;
+        final int i = row;
+        
+        final TableEditor editor = new TableEditor (table);
+        editor.horizontalAlignment = SWT.LEFT;
+        editor.grabHorizontal = true;
+        
+        Listener textListener = new Listener () {
+            boolean looseFocus = false;
+            
+            public void handleEvent (final Event e) {
+               
+                
+                switch (e.type) {
+                    case SWT.FocusOut:
+                        if (!looseFocus) {
+                            if(!setName()){
+                                break;
+                            }
+                            setChanged(true);
+                            text.dispose ();
+                        }
+                        break;
+                    case SWT.Traverse:
+                        switch (e.detail) {
+                            case SWT.TRAVERSE_RETURN:
+                                if(!setName()){
+                                    break;
+                                }
+                                setChanged(true);
+                                //FALL THROUGH
+                            case SWT.TRAVERSE_ESCAPE:
+                                text.dispose ();
+                                e.doit = false;
+                        }
+                        break;
+                }
+            }
+        
+        
+            /**
+             * Sets the name if the name does not break the given rules
+             * 
+             * @return wheter the name was legal or not
+             */
+            private boolean setName() {
+                if(column != EventSpecification.NAME){
+                    item.setText(column, text.getText()); 
+                    return true;
+                }
+                  
+                for (int i = 0; i < table.getItemCount(); i++) {
+                    if ((!item.equals(table.getItem(i))) && (table.getItem(i).getText(EventSpecification.NAME).equals(text.getText()))) {
+                        looseFocus = true;
+                        MainWindow.errorPopup(ResourceManager.getString("naming_error.title"), ResourceManager.getString("naming_error.used"));
+                        looseFocus = false;
+                        return false;
+                    }
+                }
+
+                item.setText(column, text.getText());                               
+                return true;
+            }
+        
+        };
+        text.addListener (SWT.FocusOut, textListener);
+        text.addListener (SWT.Traverse, textListener);
+        editor.setEditor (text, item, i);
+        text.setText (item.getText (i));
+        text.selectAll ();
+        text.setFocus ();
+        return;
+        
+    }
+    
     
     public int createNewEvent(){
         TableItem ti = new TableItem(table, SWT.NONE);      
@@ -224,10 +272,11 @@ public class EventSpecification {
     
     public String getName(int id){        
         try{
-            return table.getItem(id).getText(NAME);
-        } catch(Exception e){
-            return null;
-        }
+            if(!table.getItem(id).getText(NAME).trim().equals(""))            
+                return table.getItem(id).getText(NAME);
+        } catch(Exception e){}
+        
+        return null;
     }
     
     public void setName(int id, String name){        

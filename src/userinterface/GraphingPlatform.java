@@ -358,6 +358,9 @@ public class GraphingPlatform{
         }
         // rebuild events
         for(int i = 0; i < es.getEventCount(); i++){
+            
+            if(es.getName(i) == null) continue;
+            
             Event e = new Event(i);
             automaton.add(e);
 
