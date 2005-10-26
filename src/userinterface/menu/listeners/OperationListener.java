@@ -8,6 +8,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
 import projectModel.Automaton;
+import projectPresentation.Composition;
 
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
@@ -124,31 +125,29 @@ public class OperationListener extends AbstractListener{
 
         if(selectedNames.length < 2) return;
         name += selectedNames[0]+", "+selectedNames[1];
-        
-        
-        /*for(int i = 1; i < selectedNames.length; i++){
+              
+        for(int i = 1; i < selectedNames.length; i++){
             if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
                 MainWindow.getGraphingPlatform().save();
             }
             name += ", " + selectedNames[i];
-        }*/
+        }
         name += ")";
         
         name = MainWindow.getProjectExplorer().getTitle(name);
 
-        Userinterface.getProjectPresentation().newAutomaton(name);
-        projectPresentation.Composition.product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
-                Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
+        Automaton[] automata = new Automaton[selectedNames.length];
+        for(int i=0; i<automata.length; i++){
+            automata[i] = Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]);
+        }
+        
+        Automaton answer = Composition.product(automata, name);
+        
+        if(answer == null) return;
 
+        Userinterface.getProjectPresentation().addAutomaton(answer);
         MainWindow.getProjectExplorer().updateProject();
         return;
-        /*    
-         for(int i = 2; i < selectedNames.length; i++){
-         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(name),
-         Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]), Userinterface.getProjectPresentation().getAutomatonByName(name));
-         }
-         MainWindow.getProjectExplorer().updateProject();
-        */
     }
     
     public void parallel(){

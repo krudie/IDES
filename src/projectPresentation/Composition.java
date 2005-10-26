@@ -18,6 +18,27 @@ import projectModel.Transition;
  * 
  */
 public class Composition{
+    
+    public static Automaton product(Automaton[] automata, String name){
+        
+        if(automata.length < 2) return null;
+                           
+        Automaton prevAnswer= new Automaton("temp");
+        Automaton newAnswer;
+        
+        product(automata[0], automata[1],prevAnswer);
+        
+        
+        for(int i=2; i<automata.length; i++){
+            newAnswer = new Automaton("temp");
+            product(prevAnswer,automata[i], newAnswer);
+            prevAnswer = newAnswer;
+        }
+        prevAnswer.setName(name);
+        return prevAnswer;
+    }
+    
+    
     /**
      * Computes the accessible product of the two automata a and b.
      * 

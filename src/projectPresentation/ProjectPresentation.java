@@ -38,5 +38,7 @@ public interface ProjectPresentation {
     
     public Automaton copyAutomaton(String source, String clonedName);
 
-    public void layout(String name) throws Exception;    
+    public void layout(String name) throws Exception;  
+    
+    public void addAutomaton(Automaton automaton);
 }

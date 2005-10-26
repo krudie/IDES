@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 import projectModel.*;
 
@@ -187,6 +186,11 @@ public class ProjectManager implements ProjectPresentation{
      */
     public void newAutomaton(String name){
         project.addAutomaton(new Automaton(name));
+        unsaved = true;
+    }
+    
+    public void addAutomaton(Automaton automaton){
+        project.addAutomaton(automaton);
         unsaved = true;
     }
 
