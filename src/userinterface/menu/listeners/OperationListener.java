@@ -51,6 +51,14 @@ public class OperationListener extends AbstractListener{
                 }
             };
         }
+        if(resource_handle.equals(ResourceManager.OPERATIONS_PARALLEL)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
+                    parallel();
+                }
+            };
+        }
+        
         return null;
     }
 
@@ -130,6 +138,39 @@ public class OperationListener extends AbstractListener{
 
         Userinterface.getProjectPresentation().newAutomaton(name);
         projectPresentation.Composition.product(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
+                Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
+
+        MainWindow.getProjectExplorer().updateProject();
+        return;
+        /*    
+         for(int i = 2; i < selectedNames.length; i++){
+         Userinterface.getProjectPresentation().product(Userinterface.getProjectPresentation().getAutomatonByName(name),
+         Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]), Userinterface.getProjectPresentation().getAutomatonByName(name));
+         }
+         MainWindow.getProjectExplorer().updateProject();
+        */
+    }
+    
+    public void parallel(){
+        String[] selectedNames = MainWindow.getProjectExplorer().getSelectedAutomaton();
+        String name = ResourceManager.getString(ResourceManager.OPERATIONS_PARALLEL) + "(";
+
+        if(selectedNames.length < 2) return;
+        name += selectedNames[0]+", "+selectedNames[1];
+        
+        
+        /*for(int i = 1; i < selectedNames.length; i++){
+            if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
+                MainWindow.getGraphingPlatform().save();
+            }
+            name += ", " + selectedNames[i];
+        }*/
+        name += ")";
+        
+        name = MainWindow.getProjectExplorer().getTitle(name);
+
+        Userinterface.getProjectPresentation().newAutomaton(name);
+        projectPresentation.Composition.parallel(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
                 Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]), Userinterface.getProjectPresentation().getAutomatonByName(name));
 
         MainWindow.getProjectExplorer().updateProject();

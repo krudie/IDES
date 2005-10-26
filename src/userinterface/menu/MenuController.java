@@ -115,7 +115,9 @@ public class MenuController {
     public UnifiedMenu operationsAccesible = null,
                        operationsCoAccesible = null,
                        operationsTrim = null,
-                       operationsProduct = null;
+                       operationsProduct = null,
+                       operationsParallel = null;
+    
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Other //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,7 +350,7 @@ public class MenuController {
         operationsCoAccesible = new UnifiedMenu(ResourceManager.OPERATIONS_COACCESIBLE,operationsListener);
         operationsTrim = new UnifiedMenu(ResourceManager.OPERATIONS_TRIM,operationsListener);
         operationsProduct = new UnifiedMenu(ResourceManager.OPERATIONS_PRODUCT,operationsListener);
-        
+        operationsParallel = new UnifiedMenu(ResourceManager.OPERATIONS_PARALLEL,operationsListener);
         //set up main menu structures and add the MenuItems (order matters)
                       
         
@@ -375,6 +377,7 @@ public class MenuController {
         mitmComposition.setMenu(mnuComposition);
                 
         operationsProduct.addMitm(mnuComposition);
+        operationsParallel.addMitm(mnuComposition);
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////// /
