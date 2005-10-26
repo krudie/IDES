@@ -15,37 +15,43 @@ import projectModel.Transition;
 
 /**
  * @author edlund
- *
+ * 
  */
 public class Composition{
     /**
      * Computes the accessible product of the two automata a and b.
-     * @param a an automaton
-     * @param b an automaton
-     * @param product the accesible product of a and b.
+     * 
+     * @param a
+     *            an automaton
+     * @param b
+     *            an automaton
+     * @param product
+     *            the accesible product of a and b.
      */
     public static void product(Automaton a, Automaton b, Automaton product){
-        // Add the intersection between the eventsets as the products eventset.        
+        // Add the intersection between the eventsets as the products eventset.
         ListIterator<Event> eventsa = a.getEventIterator();
         while(eventsa.hasNext()){
             Event eventa = eventsa.next();
             ListIterator<Event> eventsb = b.getEventIterator();
             while(eventsb.hasNext()){
                 Event eventb = eventsb.next();
-                if(eventa.getSubElement("name").getChars().equals(eventb.getSubElement("name").getChars())){
-                    //is this right? Does the new event have the same properties as the old event?
+                if(eventa.getSubElement("name").getChars().equals(
+                        eventb.getSubElement("name").getChars())){
+                    // is this right? Does the new event have the same
+                    // properties as the old event?
                     Event event = new Event(eventa);
                     product.add(event);
                     break;
                 }
             }
         }
-        
+
         // find initial states, mark them as reached and add them to the que
         State[] initial = new State[2];
         int stateNumber = 0;
         LinkedList<State[]> searchList = new LinkedList<State[]>();
-        
+
         Iterator<State> sia = a.getStateIterator();
         while(sia.hasNext()){
             initial[0] = sia.next();
@@ -53,19 +59,21 @@ public class Composition{
                 Iterator<State> sib = b.getStateIterator();
                 while(sib.hasNext()){
                     initial[1] = sib.next();
-                    if(initial[1].getSubElement("properties").hasSubElement("initial")){                        
+                    if(initial[1].getSubElement("properties").hasSubElement("initial")){
                         searchList.add(initial.clone());
                         product.add(makeState(initial, stateNumber));
-                        setStateId(initial, stateNumber++);                        
+                        setStateId(initial, stateNumber++);
                     }
                 }
             }
-        }        
-        
-        //accessibility. All accessible states are added to product.
-        //Transitions are only traversible if they can be traversed from both states in sa 
-        //firing the same event, i.e., the intersection of the transitions originating from the two
-        //states are the transitions of state in product.
+        }
+
+        // accessibility. All accessible states are added to product.
+        // Transitions are only traversible if they can be traversed from both
+        // states in sa
+        // firing the same event, i.e., the intersection of the transitions
+        // originating from the two
+        // states are the transitions of state in product.
         int transitionNumber = 0;
         State[] s = new State[2];
         while(!searchList.isEmpty()){
@@ -78,17 +86,20 @@ public class Composition{
                 ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     Transition t1 = sti1.next();
-                    if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
-                            t1.getEvent().getSubElement("name").getChars())))){
-                        
-                        Event event = (t0.getEvent() == null) ? null : product.getEvent(t0.getEvent().getId());                                                                                
-                        
+                    if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null
+                            && t1.getEvent() != null && t0.getEvent().getSubElement("name")
+                            .getChars().equals(t1.getEvent().getSubElement("name").getChars())))){
+
+                        Event event = (t0.getEvent() == null) ? null : product.getEvent(t0
+                                .getEvent().getId());
+
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
 
                         int id = getStateId(s);
                         if(id != -1){
-                            product.add(new Transition(transitionNumber++, source, product.getState(id), event));
+                            product.add(new Transition(transitionNumber++, source, product
+                                    .getState(id), event));
                         }
                         else{
                             State target = makeState(s, stateNumber);
@@ -101,135 +112,182 @@ public class Composition{
                 }
             }
         }
-        //tidy up the mess I left.
+        // tidy up the mess I left.
         ListIterator<State> sli = a.getStateIterator();
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
     }
+
     /**
-    * Computes the accessible product of the two automata a and b.
-    * @param a an automaton
-    * @param b an automaton
-    * @param product the accesible product of a and b.
-    */
-   public static void parallel(Automaton a, Automaton b, Automaton product){
-       // Add the intersection between the eventsets as the products eventset.        
-       ListIterator<Event> eventsa = a.getEventIterator();
-       while(eventsa.hasNext()){
-           Event eventa = eventsa.next();
-           ListIterator<Event> eventsb = b.getEventIterator();
-           while(eventsb.hasNext()){
-               Event eventb = eventsb.next();
-               if(eventa.getSubElement("name").getChars().equals(eventb.getSubElement("name").getChars())){
-                   //is this right? Does the new event have the same properties as the old event?
-                   Event event = new Event(eventa);
-                   product.add(event);
-                   break;
-               }
-           }
-       }
-       
-       // find initial states, mark them as reached and add them to the que
-       State[] initial = new State[2];
-       int stateNumber = 0;
-       LinkedList<State[]> searchList = new LinkedList<State[]>();
-       
-       Iterator<State> sia = a.getStateIterator();
-       while(sia.hasNext()){
-           initial[0] = sia.next();
-           if(initial[0].getSubElement("properties").hasSubElement("initial")){
-               Iterator<State> sib = b.getStateIterator();
-               while(sib.hasNext()){
-                   initial[1] = sib.next();
-                   if(initial[1].getSubElement("properties").hasSubElement("initial")){                        
-                       searchList.add(initial.clone());
-                       product.add(makeState(initial, stateNumber));
-                       setStateId(initial, stateNumber++);                        
-                   }
-               }
-           }
-       }        
-       
-       //accessibility. All accessible states are added to product.
-       //Transitions are only traversible if they can be traversed from both states in sa 
-       //firing the same event, i.e., the intersection of the transitions originating from the two
-       //states are the transitions of state in product.
-       int transitionNumber = 0;
-       State[] s = new State[2];
-       while(!searchList.isEmpty()){
-           State[] sa = searchList.removeFirst();
-           State source = product.getState(getStateId(sa));
+     * Computes the accessible product of the two automata a and b.
+     * 
+     * @param a
+     *            an automaton
+     * @param b
+     *            an automaton
+     * @param product
+     *            the accesible product of a and b.
+     */
+    public static void parallel(Automaton a, Automaton b, Automaton parallel){
+        // Add the union
 
-           ListIterator<Transition> sti0 = sa[0].getSourceTransitionsListIterator();
-           while(sti0.hasNext()){
-               Transition t0 = sti0.next();
-               ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
-               while(sti1.hasNext()){
-                   Transition t1 = sti1.next();
-                   if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null && t1.getEvent() != null && t0.getEvent().getSubElement("name").getChars().equals(
-                           t1.getEvent().getSubElement("name").getChars())))){
-                       
-                       Event event = (t0.getEvent() == null) ? null : product.getEvent(t0.getEvent().getId());                                                                                
-                       
-                       s[0] = t0.getTarget();
-                       s[1] = t1.getTarget();
+        // Add the intersection between the eventsets as the products eventset.
+        ListIterator<Event> events = a.getEventIterator();
+        while(events.hasNext()){
+            parallel.add(new Event(events.next()));
+        }
 
-                       int id = getStateId(s);
-                       if(id != -1){
-                           product.add(new Transition(transitionNumber++, source, product.getState(id), event));
-                       }
-                       else{
-                           State target = makeState(s, stateNumber);
-                           product.add(target);
-                           product.add(new Transition(transitionNumber++, source, target));
-                           setStateId(s, stateNumber++);
-                           searchList.add(s.clone());
-                       }
-                   }
-               }
-           }
-       }
-       //tidy up the mess I left.
-       ListIterator<State> sli = a.getStateIterator();
-       while(sli.hasNext()){
-           sli.next().removeSubElement("searched");
-       }
-   }
-    
+        events = b.getEventIterator();
+        SubElement intersection = new SubElement("intersection");
+        while(events.hasNext()){
+            Event event = events.next();
+            int id = isInIntersection(event, parallel);
+            if(id == -1){
+                parallel.add(new Event(event));
+            }
+            else{
+                event.addSubElement(intersection);
+                a.getEvent(id).addSubElement(intersection);
+            }
+        }
+
+        // find initial states, mark them as reached and add them to the que
+        State[] initial = new State[2];
+        int stateNumber = 0;
+        LinkedList<State[]> searchList = new LinkedList<State[]>();
+
+        Iterator<State> sia = a.getStateIterator();
+        while(sia.hasNext()){
+            initial[0] = sia.next();
+            if(initial[0].getSubElement("properties").hasSubElement("initial")){
+                Iterator<State> sib = b.getStateIterator();
+                while(sib.hasNext()){
+                    initial[1] = sib.next();
+                    if(initial[1].getSubElement("properties").hasSubElement("initial")){
+                        searchList.add(initial.clone());
+                        parallel.add(makeState(initial, stateNumber));
+                        setStateId(initial, stateNumber++);
+                    }
+                }
+            }
+        }
+
+        // accessibility. All accessible states are added to product.
+        // Transitions are only traversible if they can be traversed from both
+        // states in sa
+        // firing the same event, i.e., the intersection of the transitions
+        // originating from the two
+        // states are the transitions of state in product.
+        int transitionNumber = 0;
+        State[] s = new State[2];
+        while(!searchList.isEmpty()){
+            State[] sa = searchList.removeFirst();
+            State source = parallel.getState(getStateId(sa));
+
+            ListIterator<Transition> sti0 = sa[0].getSourceTransitionsListIterator();
+            while(sti0.hasNext()){
+                Transition t = sti0.next();
+                if(t.getEvent() == null || !t.getEvent().hasSubElement("intersection")){
+                    Event event = (t.getEvent() == null) ? null : parallel.getEvent(t.getEvent()
+                            .getId());
+
+                    s[0] = source;
+                    s[1] = t.getTarget();
+
+                    int id = getStateId(s);
+                    if(id != -1){
+                        parallel.add(new Transition(transitionNumber++, source, parallel
+                                .getState(id), event));
+                    }
+                }
+            }
+
+            sti0 = sa[0].getSourceTransitionsListIterator();
+            while(sti0.hasNext()){
+                Transition t0 = sti0.next();
+                ListIterator<Transition> sti1 = sa[1].getSourceTransitionsListIterator();
+                while(sti1.hasNext()){
+                    Transition t1 = sti1.next();
+                    if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null
+                            && t1.getEvent() != null && t0.getEvent().getSubElement("name")
+                            .getChars().equals(t1.getEvent().getSubElement("name").getChars())))){
+
+                        Event event = (t0.getEvent() == null) ? null : parallel.getEvent(t0
+                                .getEvent().getId());
+
+                        s[0] = t0.getTarget();
+                        s[1] = t1.getTarget();
+
+                        int id = getStateId(s);
+                        if(id != -1){
+                            parallel.add(new Transition(transitionNumber++, source, parallel
+                                    .getState(id), event));
+                        }
+                        else{
+                            State target = makeState(s, stateNumber);
+                            parallel.add(target);
+                            parallel.add(new Transition(transitionNumber++, source, target));
+                            setStateId(s, stateNumber++);
+                            searchList.add(s.clone());
+                        }
+                    }
+                }
+            }
+        }
+        // tidy up the mess I left.
+        ListIterator<State> sli = a.getStateIterator();
+        while(sli.hasNext()){
+            sli.next().removeSubElement("searched");
+        }
+    }
+
+    private static int isInIntersection(Event e, Automaton a){
+        ListIterator<Event> eli = a.getEventIterator();
+        while(eli.hasNext()){
+            Event temp = eli.next();
+            if(temp.getSubElement("name").getChars().equals(e.getSubElement("name").getChars())) return temp
+                    .getId();
+        }
+        return -1;
+    }
+
     private static State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
         SubElement name = new SubElement("name");
-        name.setChars(s[0].getSubElement("name").getChars() 
-                + ", " 
+        name.setChars(s[0].getSubElement("name").getChars() + ", "
                 + s[1].getSubElement("name").getChars());
         state.addSubElement(name);
 
         SubElement properties = new SubElement("properties");
-                
-        if(s[0].getSubElement("properties").hasSubElement("initial") && s[1].getSubElement("properties").hasSubElement("initial")){        
+
+        if(s[0].getSubElement("properties").hasSubElement("initial")
+                && s[1].getSubElement("properties").hasSubElement("initial")){
             SubElement initial = new SubElement("initial");
             properties.addSubElement(initial);
         }
 
-        if(s[0].getSubElement("properties").hasSubElement("marked") && s[1].getSubElement("properties").hasSubElement("marked")){
+        if(s[0].getSubElement("properties").hasSubElement("marked")
+                && s[1].getSubElement("properties").hasSubElement("marked")){
             SubElement marked = new SubElement("marked");
-            properties.addSubElement(marked);                        
-        }            
-        state.addSubElement(properties);                      
+            properties.addSubElement(marked);
+        }
+        state.addSubElement(properties);
         return state;
     }
-    
+
     private static void setStateId(State[] s, int stateId){
-        if(!s[0].hasSubElement("searched")) 
-            s[0].addSubElement(new SubElement("searched"));
-        
-        s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()), Integer.toString(stateId));
+        if(!s[0].hasSubElement("searched")) s[0].addSubElement(new SubElement("searched"));
+
+        s[0].getSubElement("searched").setAttribute(Integer.toString(s[1].getId()),
+                Integer.toString(stateId));
     }
-    
+
     private static int getStateId(State[] s){
-        if(s[0].hasSubElement("searched") && s[0].getSubElement("searched").hasAttribute(Integer.toString(s[1].getId()))){
-            return Integer.parseInt(s[0].getSubElement("searched").getAttribute(Integer.toString(s[1].getId())));
+        if(s[0].hasSubElement("searched")
+                && s[0].getSubElement("searched").hasAttribute(Integer.toString(s[1].getId()))){
+            return Integer.parseInt(s[0].getSubElement("searched").getAttribute(
+                    Integer.toString(s[1].getId())));
         }
         return -1;
     }
