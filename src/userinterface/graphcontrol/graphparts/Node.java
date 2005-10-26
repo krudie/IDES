@@ -44,6 +44,7 @@ public class Node extends GraphObject{
      * The direction of the arrow if this node is a start state.
      */
     private UnitVector start_arrow_direction = null;
+
     public UnitVector getStartArrow(){
         return start_arrow_direction;
     }
@@ -84,6 +85,11 @@ public class Node extends GraphObject{
         lastClone = n;
     }
 
+    /**
+     * A place to keep track of the model ID when loading
+     */
+    private int modelID;
+
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Node construction
     // //////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,14 +98,10 @@ public class Node extends GraphObject{
     /**
      * Construct the Node. (used at user creation)
      * 
-     * @param gp
-     *            The GraphingPlatform in which this Node will exist.
-     * @param gm
-     *            The GraphModel in which this Node will exist.
-     * @param x
-     *            The x co-ordinate for the origin of this Node.
-     * @param y
-     *            The y co-ordinate for the origin of this Node.
+     * @param gp The GraphingPlatform in which this Node will exist.
+     * @param gm The GraphModel in which this Node will exist.
+     * @param x The x co-ordinate for the origin of this Node.
+     * @param y The y co-ordinate for the origin of this Node.
      */
     public Node(GraphingPlatform gp, GraphModel gm, int x, int y){
         super(gp, gm, GraphObject.NULL);
@@ -113,29 +115,18 @@ public class Node extends GraphObject{
     /**
      * Construct the Node. (used at cloning)
      * 
-     * @param gp
-     *            The GraphingPlatform in which this Node will exist.
-     * @param gm
-     *            The GraphModel in which this Node will exist.
-     * @param x
-     *            The x co-ordinate for the origin of this Node.
-     * @param y
-     *            The y co-ordinate for the origin of this Node.
-     * @param r
-     *            The radius for this Node.
-     * @param attributes
-     *            The attributes for this node.
-     * @param arrow_x
-     *            The x component of the start arrow direction.
-     * @param arrow_y
-     *            The y component of the start arrow direction.
-     * @param glyphLabel
-     *            A Label to be cloned for the glyph label of this Node.
-     * @param latex_label
-     *            A Label to be cloned for the latex label of this Node.
+     * @param gp The GraphingPlatform in which this Node will exist.
+     * @param gm The GraphModel in which this Node will exist.
+     * @param x The x co-ordinate for the origin of this Node.
+     * @param y The y co-ordinate for the origin of this Node.
+     * @param r The radius for this Node.
+     * @param attributes The attributes for this node.
+     * @param arrow_x The x component of the start arrow direction.
+     * @param arrow_y The y component of the start arrow direction.
+     * @param glyphLabel A Label to be cloned for the glyph label of this Node.
+     * @param latex_label A Label to be cloned for the latex label of this Node.
      */
-    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes,
-            float arrow_x, float arrow_y, GlyphLabel glyphLabel){
+    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes, float arrow_x, float arrow_y, GlyphLabel glyphLabel){
         super(gp, gm, attributes);
         this.x = x;
         this.y = y;
@@ -146,30 +137,19 @@ public class Node extends GraphObject{
     /**
      * Construct the Node. (used at load from file)
      * 
-     * @param gp
-     *            The GraphingPlatform in which this Node will exist.
-     * @param gm
-     *            The GraphModel in which this Node will exist.
-     * @param x
-     *            The x co-ordinate for the origin of this Node.
-     * @param y
-     *            The y co-ordinate for the origin of this Node.
-     * @param r
-     *            The radius for this Node.
-     * @param attributes
-     *            The attributes for this node.
-     * @param arrow_x
-     *            The x component of the start arrow direction.
-     * @param arrow_y
-     *            The y component of the start arrow direction.
-     * @param glyph_string
-     *            The string representation of the glyph label.
-     * @param latex_string
-     *            The string representation of the latex label.
+     * @param gp The GraphingPlatform in which this Node will exist.
+     * @param gm The GraphModel in which this Node will exist.
+     * @param x The x co-ordinate for the origin of this Node.
+     * @param y The y co-ordinate for the origin of this Node.
+     * @param r The radius for this Node.
+     * @param attributes The attributes for this node.
+     * @param arrow_x The x component of the start arrow direction.
+     * @param arrow_y The y component of the start arrow direction.
+     * @param glyph_string The string representation of the glyph label.
      */
-    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes,
-            float arrow_x, float arrow_y, String glyph_string){
+    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes, float arrow_x, float arrow_y, String glyph_string, int id){
         super(gp, gm, attributes);
+        modelID = id;
         this.x = x;
         this.y = y;
         constructNode(r, arrow_x, arrow_y);
@@ -179,12 +159,9 @@ public class Node extends GraphObject{
     /**
      * Set the class variables of this Node.
      * 
-     * @param r
-     *            The radius for this Node.
-     * @param arrow_x
-     *            The x component of the start arrow direction.
-     * @param arrow_y
-     *            The y component of the start arrow direction.
+     * @param r The radius for this Node.
+     * @param arrow_x The x component of the start arrow direction.
+     * @param arrow_y The y component of the start arrow direction.
      */
     private void constructNode(int r, float arrow_x, float arrow_y){
         if(r > 0){
@@ -192,18 +169,14 @@ public class Node extends GraphObject{
         }
         edge_group_list = new Vector<EdgeGroup>();
         start_arrow_direction = new UnitVector(arrow_x, arrow_y);
-        arrowhead = new ArrowHead(start_arrow_direction, x
-                - (int) Math.round(this.r * start_arrow_direction.x), y
-                - (int) Math.round(this.r * start_arrow_direction.y));
+        arrowhead = new ArrowHead(start_arrow_direction, x - (int) Math.round(this.r * start_arrow_direction.x), y - (int) Math.round(this.r * start_arrow_direction.y));
     }
 
     /**
      * Set the class variables of this Node.
      * 
-     * @param glyph_string
-     *            The string representation of the glyph label.
-     * @param latex_string
-     *            The string representation of the latex label.
+     * @param glyph_string The string representation of the glyph label.
+     * @param latex_string The string representation of the latex label.
      */
     private void initializeLabels(String glyph_string){
         setGlyphLabel(new GlyphLabel(gp, this, glyph_string, origin(), Label.CENTER));
@@ -219,8 +192,7 @@ public class Node extends GraphObject{
         if(isMarkedState()){
             attributes = GraphObject.MARKED_STATE;
         }
-        lastClone = new Node(gp, null, x, y, r, attributes, start_arrow_direction.x,
-                start_arrow_direction.y, getGlyphLabel());
+        lastClone = new Node(gp, null, x, y, r, attributes, start_arrow_direction.x, start_arrow_direction.y, getGlyphLabel());
         return lastClone;
     }
 
@@ -232,8 +204,7 @@ public class Node extends GraphObject{
     /**
      * Draw this Node.
      * 
-     * @param drawer
-     *            The Drawer that will handle the drawing.
+     * @param drawer The Drawer that will handle the drawing.
      */
     public void draw(Drawer drawer){
         if(isGrouped()) drawer.setColor(GraphModel.GROUPED);
@@ -252,18 +223,14 @@ public class Node extends GraphObject{
             if(isStartArrowSelected() || isHotSelected()) drawer.setColor(GraphModel.SELECTED);
             arrowhead.draw(drawer);
             drawer.drawLine(arrowhead.xcoords[ArrowHead.NOCK], arrowhead.ycoords[ArrowHead.NOCK],
-                    arrowhead.xcoords[ArrowHead.NOCK]
-                            - (int) Math.round(ArrowHead.HEAD_LENGTH * start_arrow_direction.x),
-                    arrowhead.ycoords[ArrowHead.NOCK]
-                            - (int) Math.round(ArrowHead.HEAD_LENGTH * start_arrow_direction.y),
-                    Drawer.SOLID);
+                    arrowhead.xcoords[ArrowHead.NOCK] - (int) Math.round(ArrowHead.HEAD_LENGTH * start_arrow_direction.x), arrowhead.ycoords[ArrowHead.NOCK]
+                            - (int) Math.round(ArrowHead.HEAD_LENGTH * start_arrow_direction.y), Drawer.SOLID);
         }
 
         if(partialEdgeEndpoint != null){
             UnitVector d = new UnitVector(partialEdgeEndpoint, origin());
-            drawer.drawLine(this.x, this.y, (int) Math.round(partialEdgeEndpoint.getX()
-                    + ArrowHead.HEAD_LENGTH * d.x), (int) Math.round(partialEdgeEndpoint.getY()
-                    + ArrowHead.HEAD_LENGTH * d.y), Drawer.SOLID);
+            drawer.drawLine(this.x, this.y, (int) Math.round(partialEdgeEndpoint.getX() + ArrowHead.HEAD_LENGTH * d.x), (int) Math.round(partialEdgeEndpoint.getY() + ArrowHead.HEAD_LENGTH * d.y),
+                    Drawer.SOLID);
             d.reverse();
             ArrowHead partial_edge_arrow = new ArrowHead(d, partialEdgeEndpoint);
             partial_edge_arrow.draw(drawer);
@@ -289,13 +256,10 @@ public class Node extends GraphObject{
      * flag is used for group movement. Note that group movement modifies the
      * Node using the translateAll method.
      * 
-     * @param mouse
-     *            The origin of movement.
-     * @param attribute
-     *            The temporary attribute to be applied during movement.
-     * @param exclusive
-     *            If this is true than the Node is not modified, and only non
-     *            exclusive edges are modified.
+     * @param mouse The origin of movement.
+     * @param attribute The temporary attribute to be applied during movement.
+     * @param exclusive If this is true than the Node is not modified, and only
+     *            non exclusive edges are modified.
      */
     public void initiateMovement(Point mouse, int attribute, boolean exclusive){
         EdgeGroup edge_group = null;
@@ -321,27 +285,21 @@ public class Node extends GraphObject{
      * is used for group movement. Note that group movement modifies the Node
      * using the translateAll method.
      * 
-     * @param mouse
-     *            The current mouse position.
-     * @param exclusive
-     *            If this is true than the Node is not modified, and only non
-     *            exclusive edges are modified.
+     * @param mouse The current mouse position.
+     * @param exclusive If this is true than the Node is not modified, and only
+     *            non exclusive edges are modified.
      */
     public void updateMovement(Point mouse, boolean exclusive){
         if(origional_configuration != null){
             if(!exclusive){
-                Point displacement = new Point(mouse.getX()
-                        - origional_configuration.movement_origin.getX(), mouse.getY()
-                        - origional_configuration.movement_origin.getY());
+                Point displacement = new Point(mouse.getX() - origional_configuration.movement_origin.getX(), mouse.getY() - origional_configuration.movement_origin.getY());
                 this.x = origional_configuration.origin.getX() + displacement.getX();
                 this.y = origional_configuration.origin.getY() + displacement.getY();
 
                 snapToGrid();
 
-                arrowhead.update(start_arrow_direction, origional_configuration.arrow_tip.getX()
-                        + this.x - origional_configuration.origin.getX(),
-                        origional_configuration.arrow_tip.getY() + this.y
-                                - origional_configuration.origin.getY());
+                arrowhead.update(start_arrow_direction, origional_configuration.arrow_tip.getX() + this.x - origional_configuration.origin.getX(), origional_configuration.arrow_tip.getY() + this.y
+                        - origional_configuration.origin.getY());
             }
             // edges
             EdgeGroup edge_group = null;
@@ -368,11 +326,9 @@ public class Node extends GraphObject{
      * flag is used for group movement. Note that group movement modifies the
      * Node using the translateAll method.
      * 
-     * @param attribute
-     *            The temporary attribute to be applied during movement.
-     * @param exclusive
-     *            If this is true than the Node is not modified, and only non
-     *            exclusive edges are modified.
+     * @param attribute The temporary attribute to be applied during movement.
+     * @param exclusive If this is true than the Node is not modified, and only
+     *            non exclusive edges are modified.
      */
     public void terminateMovement(int attribute, boolean exclusive){
         EdgeGroup edge_group = null;
@@ -418,8 +374,7 @@ public class Node extends GraphObject{
             terminateMovement(GraphObject.NULL);
 
             if(arrowhead != null){
-                updateConfiguration(arrowhead.xcoords[ArrowHead.NOCK],
-                        arrowhead.ycoords[ArrowHead.NOCK]);
+                updateConfiguration(arrowhead.xcoords[ArrowHead.NOCK], arrowhead.ycoords[ArrowHead.NOCK]);
             }
         }
     }
@@ -452,10 +407,8 @@ public class Node extends GraphObject{
     /**
      * Used only for the cursor location Node.
      * 
-     * @param x
-     *            The new x co-ordinate.
-     * @param y
-     *            The new y co-ordinate.
+     * @param x The new x co-ordinate.
+     * @param y The new y co-ordinate.
      */
     public void setOrigin(int x, int y){
         this.x = x;
@@ -465,8 +418,7 @@ public class Node extends GraphObject{
     /**
      * Used when rendering latex label.
      * 
-     * @param r
-     *            The new radius.
+     * @param r The new radius.
      */
     public void setRadius(int r){
         this.r = r >= DEFAULT_RADIUS ? r : DEFAULT_RADIUS;
@@ -516,8 +468,7 @@ public class Node extends GraphObject{
     /**
      * Test if this node is contained in the given area.
      * 
-     * @param area
-     *            The bounding area to be considered.
+     * @param area The bounding area to be considered.
      * @return true if this Node is contained in the given area.
      */
     public boolean isBoundBy(Box area){
@@ -527,10 +478,8 @@ public class Node extends GraphObject{
     /**
      * Test if this Node should be selected by a mouse-click.
      * 
-     * @param mouse
-     *            The co-ordinates of the mouse.
-     * @param padded
-     *            If true then the nodes radius is padded by
+     * @param mouse The co-ordinates of the mouse.
+     * @param padded If true then the nodes radius is padded by
      *            ArrowHead.HEAD_LENGTH, thereby accepting nearby points as
      *            well.
      * @return true if this Node should be selected by this mouse-click.
@@ -549,8 +498,7 @@ public class Node extends GraphObject{
      * Used to determine if a mouse-click should select the start arrow of this
      * node (if it exists)
      * 
-     * @param mouse
-     *            The co-ordinates of the mouse.
+     * @param mouse The co-ordinates of the mouse.
      * @return true if the start arrow should be selected by this mouse click.
      */
     public boolean isLocatedStartArrow(Point mouse){
@@ -561,16 +509,12 @@ public class Node extends GraphObject{
      * Used in movement of the start state arrow. Displacement is origin-out,
      * hence reverse direction of start arrow.
      * 
-     * @param x
-     *            x co-ordinate of the mouse.
-     * @param y
-     *            y co-ordinate of the mouse.
+     * @param x x co-ordinate of the mouse.
+     * @param y y co-ordinate of the mouse.
      */
     public void updateConfiguration(int x, int y){
         start_arrow_direction = new UnitVector(this.x - x, this.y - y);
-        arrowhead.update(start_arrow_direction, this.x
-                - (int) Math.round(r * start_arrow_direction.x), this.y
-                - (int) Math.round(r * start_arrow_direction.y));
+        arrowhead.update(start_arrow_direction, this.x - (int) Math.round(r * start_arrow_direction.x), this.y - (int) Math.round(r * start_arrow_direction.y));
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -594,11 +538,9 @@ public class Node extends GraphObject{
      * it. Else create a new EdgeGroup between the two Nodes with the new Edge
      * as the initial Edge.
      * 
-     * @param new_edge
-     *            The new Edge to be added to this Node.
-     * @param new_neighbour
-     *            The Node that will be made adjacent to this Node by the new
-     *            Edge.
+     * @param new_edge The new Edge to be added to this Node.
+     * @param new_neighbour The Node that will be made adjacent to this Node by
+     *            the new Edge.
      * @return The EdgeGroup of the new Edge.
      */
     public EdgeGroup join(Edge new_edge, Node new_neighbour){
@@ -618,8 +560,8 @@ public class Node extends GraphObject{
     /**
      * Add an EdgeGroup to this Node's edge_group_list
      * 
-     * @param edge_group
-     *            The EdgeGroup to be added to this Node's edge_group_list.
+     * @param edge_group The EdgeGroup to be added to this Node's
+     *            edge_group_list.
      */
     public void addEdgeGroup(EdgeGroup edge_group){
         edge_group_list.addElement(edge_group);
@@ -628,8 +570,7 @@ public class Node extends GraphObject{
     /**
      * Delete the specified EdgeGroup from this Node.
      * 
-     * @param edge_group
-     *            The EdgeGroup to be deleted.
+     * @param edge_group The EdgeGroup to be deleted.
      */
     public void removeEdgeGroup(EdgeGroup edge_group){
         edge_group_list.remove(edge_group);
@@ -638,8 +579,7 @@ public class Node extends GraphObject{
     /**
      * Look for edges that join this Node to a node in the given nodeList
      * 
-     * @param nodeList
-     *            The list of valid nodes
+     * @param nodeList The list of valid nodes
      * @return A Vector of edges that join this Node to Nodes in the given
      *         nodeList
      */
@@ -667,15 +607,27 @@ public class Node extends GraphObject{
     /**
      * Translate all variables.
      * 
-     * @param x
-     *            Translation in the x direction.
-     * @param y
-     *            Translation in the y direction.
+     * @param x Translation in the x direction.
+     * @param y Translation in the y direction.
      */
     public void translateAll(int x, int y){
         this.x = this.x + x;
         this.y = this.y + y;
         arrowhead.translateAll(x, y);
         getGlyphLabel().setAnchor(origin(), Label.CENTER);
+    }
+
+    /**
+     * @return Returns the modelID.
+     */
+    public int getModelID(){
+        return modelID;
+    }
+
+    /**
+     * @param modelID The modelID to set.
+     */
+    public void setModelID(int modelID){
+        this.modelID = modelID;
     }
 }

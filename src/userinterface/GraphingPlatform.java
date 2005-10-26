@@ -10,7 +10,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
@@ -78,7 +77,8 @@ public class GraphingPlatform{
         languageSpec.setText(ResourceManager.getString("window.specifications_tab.text"));
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // specifications area////////////////////////////////////////////////////////////////////////////////////////////
+        // specifications
+        // area////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Note: this area has to be created before the graph area, because the
@@ -103,7 +103,8 @@ public class GraphingPlatform{
         es = new EventSpecification(cmp_transitions);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // graph area /////////////////////////////////////////////////////////////////////////////////////////////////////
+        // graph area
+        // /////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // the graphing area
@@ -112,7 +113,8 @@ public class GraphingPlatform{
         // add it to the TabFolder
         graphFolderItem.setControl(cmpGraphing);
 
-        // create a layout for the content composite (for the widgits inside the composite)
+        // create a layout for the content composite (for the widgits inside the
+        // composite)
         GridLayout gl_graphing = new GridLayout();
         gl_graphing.marginHeight = 0;
         gl_graphing.marginWidth = 0;
@@ -124,7 +126,8 @@ public class GraphingPlatform{
         gc = new GraphController(this, cmpGraphing);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // selection between tabs /////////////////////////////////////////////////////////////////////////////////////////
+        // selection between tabs
+        // /////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         tabFolder.addSelectionListener(new SelectionAdapter(){
@@ -143,38 +146,39 @@ public class GraphingPlatform{
     }
 
     public void open(String automatonName){
-        
-                
+
         Automaton tempautomaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
-        
-        //checks if it needs to be laid out
-        if(tempautomaton.getStateIterator().hasNext() && !tempautomaton.getStateIterator().next().hasSubElement("graphic")){            
-           
-            if(tempautomaton.getStateCount() > 30){                       
+
+        // checks if it needs to be laid out
+        if(tempautomaton.getStateIterator().hasNext() && !tempautomaton.getStateIterator().next().hasSubElement("graphic")){
+
+            if(tempautomaton.getStateCount() > 30){
                 MessageBox layout = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
                 layout.setText(ResourceManager.getString("layout.warning.title"));
                 layout.setMessage(ResourceManager.getMessage("layout.warning", Integer.toString(tempautomaton.getStateCount())));
                 int response = layout.open();
-                switch (response) {
+                switch(response){
                 case SWT.YES:
                     automaton = tempautomaton;
                     break;
-                case SWT.NO:                    
+                case SWT.NO:
                     return;
                 }
             }
-        
+
             try{
                 Userinterface.getProjectPresentation().layout(automatonName);
-            } catch(Exception e){                
-                //asks the user if the path is correct                
-                // we have bad parameters; therefore, open popup window and request valid info.
-                FileDialog fileDialog = new FileDialog(shell, SWT.OPEN); 
+            }
+            catch(Exception e){
+                // asks the user if the path is correct
+                // we have bad parameters; therefore, open popup window and
+                // request valid info.
+                FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
 
-                fileDialog.setText(ResourceManager.getString("graphviz.filedialog.title"));                
-                fileDialog.setFilterPath(SystemVariables.getGraphvizPath());                
+                fileDialog.setText(ResourceManager.getString("graphviz.filedialog.title"));
+                fileDialog.setFilterPath(SystemVariables.getGraphvizPath());
                 String newPath = fileDialog.open();
-                
+
                 if(newPath == null){
                     MessageBox warning = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
                     warning.setMessage(ResourceManager.getString("graphviz.stillmissing"));
@@ -182,13 +186,13 @@ public class GraphingPlatform{
                     warning.open();
                     return;
                 }
-                
+
                 SystemVariables.setGraphvizPath(newPath);
                 open(automatonName);
                 return;
             }
         }
-               
+
         gc.resetState();
         setEnabled(true);
         MainWindow.getMenu().graphic_zoom.setEnabled(true);
@@ -202,16 +206,14 @@ public class GraphingPlatform{
         automaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
 
         graphFolderItem.setText(automaton.getName());
-        
+
         ListIterator<State> si = automaton.getStateIterator();
-        int id = 0;
+
         while(si.hasNext()){
             State s = si.next();
-            //set the stateid to be consequtive.
-            //Otherwise IDES can't handle it.
-            s.setId(id++);
-            SubElement g = s.getSubElement("graphic");
 
+            int id = s.getId();
+            SubElement g = s.getSubElement("graphic");
             SubElement circle = g.getSubElement("circle");
             int x = Ascii.safeInt(circle.getAttribute("x"));
             int y = Ascii.safeInt(circle.getAttribute("y"));
@@ -224,55 +226,59 @@ public class GraphingPlatform{
             SubElement name = s.getSubElement("name");
             String l = (name.getChars() != null) ? name.getChars() : "";
 
-            Node n = new Node(this, gc.gm, x, y, r, 0, dx, dy, l);
+            Node n = new Node(this, gc.gm, x, y, r, 0, dx, dy, l, id);
 
             SubElement properties = s.getSubElement("properties");
 
-            if(properties.hasSubElement("initial"))
-                n.addAttribute(Node.START_STATE);                
-            
-            if(properties.hasSubElement("marked"))
-                n.addAttribute(Node.MARKED_STATE);
+            if(properties.hasSubElement("initial")) n.addAttribute(Node.START_STATE);
+
+            if(properties.hasSubElement("marked")) n.addAttribute(Node.MARKED_STATE);
 
             gc.gm.addNode(n);
         }
 
         ListIterator<Event> ei = automaton.getEventIterator();
-        id = 0;
+
         while(ei.hasNext()){
             Event e = ei.next();
-            e.setId(id++);
             SubElement properties = e.getSubElement("properties");
-            es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description")
-                    .getChars(), properties.hasSubElement("controllable"),  properties.hasSubElement("observable"));
+            es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description").getChars(), properties.hasSubElement("controllable"), properties.hasSubElement("observable"));
         }
 
         ListIterator<Transition> ti = automaton.getTransitionIterator();
         Vector<Edge> group = new Vector<Edge>();
+
         while(ti.hasNext()){
             Transition t = ti.next();
             SubElement graphic = t.getSubElement("graphic");
             SubElement label = graphic.getSubElement("label");
             Event event = t.getEvent();
 
+            // find the target node
+            Node target = null;
+            for(int i = 0; i < gc.gm.getNodeSize(); i++){
+                target = gc.gm.getNodeById(i);
+                if(target.getModelID() == t.getTarget().getId()) break;
+            }
+
+            // find the source node
+            Node source = null;
+            for(int i = 0; i < gc.gm.getNodeSize(); i++){
+                source = gc.gm.getNodeById(i);
+                if(source.getModelID() == t.getSource().getId()) break;
+            }
+
             if(label.hasAttribute("group")){
                 int gn = Ascii.safeInt(graphic.getSubElement("label").getAttribute("group"));
                 if(group.size() > gn) group.get(gn).addLabel(es.getEvent(event.getId()));
                 else{
-                    group.add(new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                            .getNodeById(t.getTarget().getId()), graphic
-                            .getSubElement("bezier"), Ascii.safeInt(label
-                            .getAttribute("x")),
-                            Ascii.safeInt(label.getAttribute("y")), 0));
+                    group.add(new Edge(this, gc.gm, source, target, graphic.getSubElement("bezier"), Ascii.safeInt(label.getAttribute("x")), Ascii.safeInt(label.getAttribute("y")), 0));
                     if(event != null) group.get(gn).addLabel(es.getEvent(event.getId()));
                     gc.gm.addEdge(group.get(gn));
                 }
             }
             else{
-                Edge e = new Edge(this, gc.gm, gc.gm.getNodeById(t.getSource().getId()), gc.gm
-                        .getNodeById(t.getTarget().getId()), graphic.getSubElement("bezier"),
-                        Ascii.safeInt(label.getAttribute("x")), Ascii
-                                .safeInt(label.getAttribute("y")), 0);
+                Edge e = new Edge(this, gc.gm, source, target, graphic.getSubElement("bezier"), Ascii.safeInt(label.getAttribute("x")), Ascii.safeInt(label.getAttribute("y")), 0);
                 if(event != null){
                     e.addLabel(es.getEvent(event.getId()));
                 }
@@ -291,7 +297,7 @@ public class GraphingPlatform{
         // remove everything in the automaton
 
         if(automaton == null) return;
-        
+
         ListIterator<State> si = automaton.getStateIterator();
         while(si.hasNext()){
             si.next();
@@ -332,12 +338,12 @@ public class GraphingPlatform{
             // properties
             SubElement properties = new SubElement("properties");
             s.addSubElement(properties);
-            
+
             if(n.isMarkedState()){
                 SubElement marked = new SubElement("marked");
                 properties.addSubElement(marked);
             }
-            
+
             if(n.isStartState()){
                 SubElement initial = new SubElement("initial");
                 properties.addSubElement(initial);
@@ -365,13 +371,13 @@ public class GraphingPlatform{
 
             SubElement properties = new SubElement("properties");
             e.addSubElement(properties);
-            
+
             if(es.getControllable(i)){
                 SubElement controllable = new SubElement("controllable");
-                properties.addSubElement(controllable);                
+                properties.addSubElement(controllable);
             }
-            
-            if(es.getObservable(i)){            
+
+            if(es.getObservable(i)){
                 SubElement observable = new SubElement("observable");
                 properties.addSubElement(observable);
             }
@@ -385,9 +391,7 @@ public class GraphingPlatform{
             // if the transition is triggered by one or zero events
             // make one transition
             if(events.length <= 1){
-                Transition t = new Transition(i + j,
-                        automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
-                                .getId(e.getTarget())));
+                Transition t = new Transition(i + j, automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
                 automaton.add(t);
 
                 SubElement graphic = new SubElement("graphic");
@@ -397,34 +401,29 @@ public class GraphingPlatform{
 
                 SubElement label = new SubElement("label");
                 graphic.addSubElement(label);
-                label.setAttribute("x", Integer.toString(e.getLabelDisplacement()
-                        .getX()));
-                label.setAttribute("y", Integer.toString(e.getLabelDisplacement()
-                        .getY()));
+                label.setAttribute("x", Integer.toString(e.getLabelDisplacement().getX()));
+                label.setAttribute("y", Integer.toString(e.getLabelDisplacement().getY()));
 
                 if(events.length == 1) t.setEvent(automaton.getEvent(es.getId(events[0])));
             }
             // otherwise make a lot of transitions.
             else{
                 for(int k = 0; k < events.length; k++){
-                    Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e
-                            .getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
+                    Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
                     automaton.add(t);
 
                     t.setEvent(automaton.getEvent(es.getId(events[k])));
 
                     SubElement graphic = new SubElement("graphic");
                     t.addSubElement(graphic);
-                    
+
                     graphic.addSubElement(e.getCurve().toSubElement("bezier"));
 
                     SubElement label = new SubElement("label");
                     graphic.addSubElement(label);
                     label.setAttribute("group", Integer.toString(gn));
-                    label.setAttribute("x", Integer.toString(e.getLabelDisplacement()
-                            .getX()));
-                    label.setAttribute("y", Integer.toString(e.getLabelDisplacement()
-                            .getY()));
+                    label.setAttribute("x", Integer.toString(e.getLabelDisplacement().getX()));
+                    label.setAttribute("y", Integer.toString(e.getLabelDisplacement().getY()));
                 }
                 j--;
                 gn++;
@@ -438,7 +437,7 @@ public class GraphingPlatform{
             graphFolderItem.setText(automaton.getName());
         }
     }
-    
+
     public void delete(String name){
         if(automaton != null && name.equals(automaton.getName())){
             gc.resetState();
@@ -446,8 +445,8 @@ public class GraphingPlatform{
             graphFolderItem.setText(ResourceManager.getString("window.graph_tab.text"));
         }
     }
-    
+
     public String getOpenAutomatonName(){
-        return (automaton != null) ? automaton.getName() : "";        
+        return (automaton != null) ? automaton.getName() : "";
     }
 }

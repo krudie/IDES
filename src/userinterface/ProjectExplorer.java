@@ -1,6 +1,3 @@
-/**
- * 
- */
 package userinterface;
 
 import java.util.LinkedList;
@@ -136,13 +133,10 @@ public class ProjectExplorer {
 
     /**
      * Brings up a renaming box for the automatons
-     * 
-     * @param item
-     *            the treeItem to be renamed
+     * @param item the treeItem to be renamed
      */
     public void rename(TreeItem selected) {
-        final Color black = Display.getDefault()
-                .getSystemColor(SWT.COLOR_BLACK);
+        final Color black = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
         final TreeItem item = selected;
         final TreeEditor editor = new TreeEditor(treeWindow);
 
@@ -156,8 +150,7 @@ public class ProjectExplorer {
             composite.addListener(SWT.Resize, new Listener() {
                 public void handleEvent(Event e) {
                     Rectangle rect = composite.getClientArea();
-                    text.setBounds(rect.x + inset, rect.y + inset, rect.width
-                            - inset * 2, rect.height - inset * 2);
+                    text.setBounds(rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
                 }
             });
 

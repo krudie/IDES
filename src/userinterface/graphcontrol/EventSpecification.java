@@ -161,8 +161,7 @@ public class EventSpecification {
                     if (!visible) return;
                     index++;
                 } 
-        
-            }
+            } 
         });
     }
     
