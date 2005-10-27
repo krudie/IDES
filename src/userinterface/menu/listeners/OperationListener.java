@@ -9,6 +9,7 @@ import org.eclipse.swt.events.SelectionListener;
 
 import projectModel.Automaton;
 import projectPresentation.Composition;
+import projectPresentation.SuperVisory;
 
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
@@ -59,7 +60,13 @@ public class OperationListener extends AbstractListener{
                 }
             };
         }
-        
+        if(resource_handle.equals(ResourceManager.OPERATIONS_SUPC)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
+                    supC();
+                }
+            };
+        }
         return null;
     }
 
@@ -177,6 +184,31 @@ public class OperationListener extends AbstractListener{
         if(answer == null) return;
 
         Userinterface.getProjectPresentation().addAutomaton(answer);
+        MainWindow.getProjectExplorer().updateProject();
+    }
+    
+    public void supC(){
+        String[] selectedNames = MainWindow.getProjectExplorer().getSelectedAutomaton();
+        String name = ResourceManager.getString(ResourceManager.OPERATIONS_SUPC) + "(";
+
+        if(selectedNames.length < 2) return;
+        name += selectedNames[0] + "," + selectedNames[1] + ")";
+        
+        
+        name = MainWindow.getProjectExplorer().getTitle(name);
+
+        Automaton[] automata = new Automaton[selectedNames.length];
+        for(int i=0; i<automata.length; i++){
+            automata[i] = Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]);
+        }
+        
+        
+        Userinterface.getProjectPresentation().newAutomaton(name);
+        
+        SuperVisory.supC(Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[0]),
+                         Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]),
+                         Userinterface.getProjectPresentation().getAutomatonByName(name));
+        
         MainWindow.getProjectExplorer().updateProject();
     }
 }

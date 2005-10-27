@@ -60,7 +60,8 @@ public class ResourceManager{
                                OPERATIONS_COACCESIBLE = "operations.coaccesible",
                                OPERATIONS_TRIM = "operations.trim",
                                OPERATIONS_PRODUCT = "operations.product",
-                               OPERATIONS_PARALLEL = "operations.parallel";
+                               OPERATIONS_PARALLEL = "operations.parallel",
+                               OPERATIONS_SUPC = "operations.supC";
 
     /**
      * This specifies which of the resources expect to have associated images.
