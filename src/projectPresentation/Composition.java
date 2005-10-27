@@ -6,6 +6,7 @@ package projectPresentation;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Vector;
 
 import projectModel.Automaton;
 import projectModel.Event;
@@ -330,6 +331,27 @@ public class Composition{
             }
         }
     }
+    
+    private static LinkedList<State> reachable(LinkedList<State> sll){
+        LinkedList<State> result = new LinkedList<State>(sll);
+        ListIterator<State> sli= result.listIterator();
+        while(sli.hasNext()){
+            State s = sli.next();
+            ListIterator<Transition> stli = s.getSourceTransitionsListIterator();
+            while(stli.hasNext()){
+                Transition t = stli.next();
+                if(t.getEvent() == null 
+                        || !t.getEvent().getSubElement("properties").hasSubElement("observable")
+                        && !result.contains(t.getTarget())){
+                    result.add(t.getTarget());                        
+                }
+            }
+        }
+        Vector<State> sv = new Vector<State>();
+        return result;
+    }
+    
+    
 
     private static int getId(Event e, Automaton a){
         ListIterator<Event> eli = a.getEventIterator();
