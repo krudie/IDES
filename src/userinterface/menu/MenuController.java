@@ -117,7 +117,8 @@ public class MenuController {
                        operationsTrim = null,
                        operationsProduct = null,
                        operationsParallel = null,
-                       operationsSupC = null;
+                       operationsSupC = null,
+                       operationsPrefixClosure = null;
     
     
 
@@ -354,6 +355,9 @@ public class MenuController {
         operationsProduct = new UnifiedMenu(ResourceManager.OPERATIONS_PRODUCT,operationsListener);
         operationsParallel = new UnifiedMenu(ResourceManager.OPERATIONS_PARALLEL,operationsListener);
         operationsSupC = new UnifiedMenu(ResourceManager.OPERATIONS_SUPC,operationsListener);
+        operationsPrefixClosure = new UnifiedMenu(ResourceManager.OPERATIONS_PREFIXCLOSURE,operationsListener);
+        
+        
         //set up main menu structures and add the MenuItems (order matters)
                       
         
@@ -373,6 +377,7 @@ public class MenuController {
         operationsAccesible.addMitm(mnuUnary);
         operationsCoAccesible.addMitm(mnuUnary);
         operationsTrim.addMitm(mnuUnary);
+        operationsPrefixClosure.addMitm(mnuUnary);
         
         MenuItem mitmComposition = new MenuItem(mnuOperations, SWT.CASCADE);
         mitmComposition.setText(ResourceManager.getString("operations.composition.mtext"));        

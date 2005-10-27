@@ -67,6 +67,13 @@ public class OperationListener extends AbstractListener{
                 }
             };
         }
+        if(resource_handle.equals(ResourceManager.OPERATIONS_PREFIXCLOSURE)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
+                    prefixClosure();
+                }
+            };
+        }
         return null;
     }
 
@@ -209,6 +216,26 @@ public class OperationListener extends AbstractListener{
                          Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[1]),
                          Userinterface.getProjectPresentation().getAutomatonByName(name));
         
+        MainWindow.getProjectExplorer().updateProject();
+    }
+    
+    private void prefixClosure(){
+        String selectedNames[] = MainWindow.getProjectExplorer().getSelectedAutomaton();
+        String newName;
+        for(int i = 0; i < selectedNames.length; i++){
+            if(selectedNames[i] != null){
+
+                if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
+                    MainWindow.getGraphingPlatform().save();
+                }
+
+                newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_PREFIXCLOSURE) + "(" + selectedNames[i] + ")");
+                Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
+
+                projectPresentation.Unary.prefixClosure(automaton);
+            }
+
+        }
         MainWindow.getProjectExplorer().updateProject();
     }
 }
