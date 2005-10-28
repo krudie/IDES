@@ -74,43 +74,34 @@ public class SuperVisory{
         Automaton result = new Automaton("");
         supCProduct(plant, legal, result);
 
-        if(result.getStateCount() == 0) return true;
-        
-        boolean changed = true;
-        
-        while(changed){
-            // step 2
-            ListIterator<State> si = result.getStateIterator();
-            //step 2.1
-            while(si.hasNext()){
-                changed = false;
-                State s = si.next();
-
-                State pln = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
-                ListIterator<Transition> plsti = pln.getSourceTransitionsListIterator();                
+        if(result.getStateCount() == 0) return true;              
+                
+        // step 2
+        ListIterator<State> si = result.getStateIterator();
+        //step 2.1
+        while(si.hasNext()){
+            State s = si.next();
+            
+            State pln = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
+            ListIterator<Transition> plsti = pln.getSourceTransitionsListIterator();                
                                 
-                while(plsti.hasNext()){
-                    Transition plst = plsti.next();
-                    if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
-                        ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
-                        while(sti.hasNext()){
-                            if(sti.next().getEvent().getId() == plst.getEvent().getId()){
-                                si.remove();
-                                changed = true;
-                                return false;
-                            }                                                        
-                        }
-                    }                
-                }    
-            }   
+            while(plsti.hasNext()){
+                Transition plst = plsti.next();
+                if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
+                    ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
+                    while(sti.hasNext()){
+                        if(sti.next().getEvent().getId() == plst.getEvent().getId()){
+                            si.remove();
+                            return false;
+                        }                                                        
+                    }
+                }                
+            }                   
             //Step 2.2
             Unary.trim(result);
-        
-            if(result.getStateCount() == 0) return false;
         }
-        
-        return true;
-        
+        if(result.getStateCount() == 0) return false;                
+        return true;        
     }
 
     /**
