@@ -159,7 +159,7 @@ public class MenuController {
         editListener = new EditListener(shell);
         optionListener = new OptionListener(shell);
         graphicListener = new GraphicListener(shell);
-        operationsListener = new OperationListener();
+        operationsListener = new OperationListener(shell);
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // File PROJECT System ///////////////////////////////////////////////////////////////////////////////////////////

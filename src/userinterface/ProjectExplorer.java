@@ -353,5 +353,16 @@ public class ProjectExplorer {
         } catch(Exception e){}
         return null;
     }
+    
+    public String[] getAutomata(){
+        
+        if(automata == null || automata.length == 0) return null;
+        
+        String[] retVal = new String[automata.length]; 
+        for(int i = 0; i < automata.length; i++){
+            retVal[i] = automata[i].getText();            
+        }
+        return retVal;
+    }
 
 }

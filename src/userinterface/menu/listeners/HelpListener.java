@@ -7,6 +7,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
@@ -22,9 +24,7 @@ import userinterface.ResourceManager;
 public class HelpListener extends AbstractListener {
     /**
      * The shell for the about window.
-     */
-    private Shell about_shell = null;
-
+     */    
     private Shell shell;
 
     /**
@@ -46,9 +46,6 @@ public class HelpListener extends AbstractListener {
      * Dispose the ListenersHelp.
      */
     public void dispose() {
-        if (about_shell != null && !about_shell.isDisposed()) {
-            about_shell.dispose();
-        }
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,10 +112,10 @@ public class HelpListener extends AbstractListener {
      *            The SelectionEvent that initiated this action.
      */
     public void about(org.eclipse.swt.events.SelectionEvent e) {
-        about_shell = new Shell(shell, SWT.BORDER | SWT.CLOSE | SWT.TITLE);
+        Shell about_shell = new Shell(shell, SWT.BORDER | SWT.CLOSE | SWT.TITLE);
         about_shell.setText(ResourceManager.getString("help.about.title"));
-        about_shell.setSize(400, 250);
-
+        about_shell.setSize(400, 250);              
+        
         GridLayout layout = new GridLayout();
         layout.marginHeight = 4;
         layout.marginWidth = 4;
