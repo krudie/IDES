@@ -6,7 +6,6 @@ package projectPresentation;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Vector;
 
 import projectModel.Automaton;
 import projectModel.Event;
