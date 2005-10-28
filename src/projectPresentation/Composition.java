@@ -348,7 +348,7 @@ public class Composition{
         LinkedList<LinkedList<State>> searchList = new LinkedList<LinkedList<State>>();
         int id = 0, transitionid = 0;
         
-        // find initial states, mark them as reached and add them to the que
+        // find initial states, mark them as reached and add them to the searchlist
         LinkedList<State> state = new LinkedList<State>();
         Iterator<State> sia = a.getStateIterator();
         while(sia.hasNext()){
