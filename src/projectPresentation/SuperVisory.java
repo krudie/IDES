@@ -25,41 +25,38 @@ public class SuperVisory{
         // systems of Casandras and LaFortune.
         // Page 177
 
-        // step 1
-        
+        // step 1        
         supCProduct(plant, legal, result);
 
-       boolean changed = true;
+        boolean changed = true;
         
         while(changed){
             // step 2
             ListIterator<State> si = result.getStateIterator();
-
+            //step 2.1
             while(si.hasNext()){
                 changed = false;
                 State s = si.next();
 
-                State pn = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
-                ListIterator<Transition> pti = pn.getSourceTransitionsListIterator();
-                while(pti.hasNext()){
-                    Transition pt = pti.next();
-                    if(!pt.getEvent().getSubElement("properties").hasSubElement("controllable")){
-                        ListIterator<Transition> sti = s.getSourceTransitionsListIterator();
-                        boolean hasTrans = false;                            
-                        while(sti.hasNext()){
-                            if(sti.next().getEvent().getId() == pt.getEvent().getId()){
-                                hasTrans = true;
-                                break;
-                            }                                                        
-                        }
-                        if(!hasTrans){
-                            si.remove();
-                            changed = true;  
-                            break;
-                        }
-                    }                
-                }    
-            }        
+                State pln = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
+                ListIterator<Transition> plsti = pln.getSourceTransitionsListIterator();                
+                
+                searchNode:
+                    while(plsti.hasNext()){
+                        Transition plst = plsti.next();
+                        if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
+                            ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
+                            while(sti.hasNext()){
+                                if(sti.next().getEvent().getId() == plst.getEvent().getId()){
+                                    si.remove();
+                                    changed = true;
+                                    break searchNode;
+                                }                                                        
+                            }
+                        }                
+                    }    
+            }   
+            //Step 2.2
             Unary.trim(result);
         
             if(result.getStateCount() == 0) return;
