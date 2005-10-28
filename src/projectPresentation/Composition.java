@@ -330,7 +330,13 @@ public class Composition{
             }
         }
     }
-    
+    /**
+     * Computes an observer for the non-deterministic automaton P(a),
+     * i.e., the automaton where all unobservable events have been replaced
+     * with the empty event, epsilon.
+     * @param a a non-deterministic automaton
+     * @param observer the output, a deterministic observer of the automaton a.
+     */
     public static void observer(Automaton a, Automaton observer){
         ListIterator<Event> eli = a.getEventIterator();
         while(eli.hasNext()){
