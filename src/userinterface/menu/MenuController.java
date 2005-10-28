@@ -119,7 +119,9 @@ public class MenuController {
                        operationsParallel = null,
                        operationsSupC = null,
                        operationsPrefixClosure = null,
-                       operationsObserver = null;
+                       operationsObserver = null,
+                       operationsControllable = null;
+    
     
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,7 +359,7 @@ public class MenuController {
         operationsSupC = new UnifiedMenu(ResourceManager.OPERATIONS_SUPC,operationsListener);
         operationsPrefixClosure = new UnifiedMenu(ResourceManager.OPERATIONS_PREFIXCLOSURE,operationsListener);
         operationsObserver = new UnifiedMenu(ResourceManager.OPERATIONS_OBSERVER,operationsListener);
-        
+        operationsControllable = new UnifiedMenu(ResourceManager.OPERATIONS_CONTROLLABLE,operationsListener);
         
         //set up main menu structures and add the MenuItems (order matters)
                       
@@ -395,6 +397,7 @@ public class MenuController {
         mitmSupervisory.setMenu(mnuSupervisory);
         
         operationsSupC.addMitm(mnuSupervisory);
+        operationsControllable.addMitm(mnuSupervisory);
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////// /

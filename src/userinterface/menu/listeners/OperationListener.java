@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import projectModel.Automaton;
@@ -106,8 +107,18 @@ public class OperationListener extends AbstractListener{
                 }
             };
         }
+        if(resource_handle.equals(ResourceManager.OPERATIONS_CONTROLLABLE)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
+                    controllable();
+                }
+            };
+        }
         return null;
     }
+    
+    
+    
     
     private void observer(){
         String selectedNames[] = MainWindow.getProjectExplorer().getSelectedAutomaton();
@@ -357,6 +368,98 @@ public class OperationListener extends AbstractListener{
             }
 
         }
+        MainWindow.getProjectExplorer().updateProject();
+    }
+    
+    public void controllable(){
+        
+        String[] automataNames = MainWindow.getProjectExplorer().getAutomata();
+        
+        if(automataNames == null) return;
+        final Shell chooser = new Shell(shell, SWT.SHELL_TRIM);
+        chooser.setText(ResourceManager.getString("operations.controllablepopup.title"));
+        chooser.setSize(400, 250);
+
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 4;
+        layout.marginWidth = 4;
+        layout.verticalSpacing = 4;
+        layout.horizontalSpacing = 4;
+        layout.numColumns = 2;
+        chooser.setLayout(layout);
+        
+        
+        Label plantLabel = new Label(chooser, SWT.NONE);
+        plantLabel.setText(ResourceManager.getString("operations.plant"));
+        plantLabel.pack();
+        
+        final Combo plantCombo = new Combo (chooser, SWT.READ_ONLY);
+        
+        
+        plantCombo.setItems (automataNames);
+        plantCombo.setSize (200, 200);
+        plantCombo.pack();
+        
+        Label legalLabel = new Label(chooser, SWT.NONE);
+        legalLabel.setText(ResourceManager.getString("operations.legal"));
+        legalLabel.pack();
+        
+        final Combo legalCombo = new Combo (chooser, SWT.READ_ONLY);
+        legalCombo.setItems (automataNames);
+        legalCombo.setSize (200, 200);
+        
+        Button ok = new Button (chooser, SWT.PUSH);        
+        ok.setText (ResourceManager.getString("ok"));
+        ok.addListener(SWT.Activate, new Listener(){
+
+            public void handleEvent(Event arg0){
+                //close the window and proceed
+                controllableOperation(plantCombo.getText(), legalCombo.getText());
+                chooser.close();
+                chooser.dispose();
+            }
+            
+        });
+        Button cancel = new Button (chooser, SWT.PUSH);
+        
+        cancel.addListener(SWT.Activate, new Listener(){
+            public void handleEvent(Event arg0){
+                //close the window and and exit the supC
+                chooser.close();
+                chooser.dispose();
+            }
+            
+        });
+        cancel.setText (ResourceManager.getString("cancel"));
+                                
+        
+        chooser.pack();
+        chooser.open();
+        
+        
+
+    }
+   
+    
+    private void controllableOperation(String plant, String legal){
+        
+        if(plant == null || legal == null) return;                               
+
+        if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(plant) || MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(legal)){
+            MainWindow.getGraphingPlatform().save();
+        }
+        
+        
+        MessageBox answer = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.CLOSE);
+        answer.setText(ResourceManager.getString("operations.controllable.answer.title"));
+        if(SuperVisory.controllable(Userinterface.getProjectPresentation().getAutomatonByName(plant),
+                         Userinterface.getProjectPresentation().getAutomatonByName(legal))){
+            answer.setMessage(ResourceManager.getString("operations.controllable.answer.yes"));            
+        } else {
+            answer.setMessage(ResourceManager.getString("operations.controllable.answer.no"));            
+        }
+        answer.open();
+        
         MainWindow.getProjectExplorer().updateProject();
     }
 }

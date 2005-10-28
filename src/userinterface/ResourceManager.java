@@ -63,7 +63,8 @@ public class ResourceManager{
                                OPERATIONS_PARALLEL = "operations.parallel",
                                OPERATIONS_SUPC = "operations.supC",
                                OPERATIONS_PREFIXCLOSURE = "operations.prefixclosure",
-                               OPERATIONS_OBSERVER = "operations.observer";
+                               OPERATIONS_OBSERVER = "operations.observer",
+                               OPERATIONS_CONTROLLABLE = "operations.controllable";
 
     /**
      * This specifies which of the resources expect to have associated images.

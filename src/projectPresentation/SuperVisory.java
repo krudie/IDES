@@ -63,6 +63,55 @@ public class SuperVisory{
         }
         
     }
+    
+    public static boolean controllable(Automaton plant, Automaton legal){
+
+        // This is implemented accourding to "Introduction to discrete event
+        // systems of Casandras and LaFortune.
+        // Page 177
+
+        // step 1
+        Automaton result = new Automaton("");
+        supCProduct(plant, legal, result);
+
+        if(result.getStateCount() == 0) return true;
+        
+        boolean changed = true;
+        
+        while(changed){
+            // step 2
+            ListIterator<State> si = result.getStateIterator();
+            //step 2.1
+            while(si.hasNext()){
+                changed = false;
+                State s = si.next();
+
+                State pln = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
+                ListIterator<Transition> plsti = pln.getSourceTransitionsListIterator();                
+                                
+                while(plsti.hasNext()){
+                    Transition plst = plsti.next();
+                    if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
+                        ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
+                        while(sti.hasNext()){
+                            if(sti.next().getEvent().getId() == plst.getEvent().getId()){
+                                si.remove();
+                                changed = true;
+                                return false;
+                            }                                                        
+                        }
+                    }                
+                }    
+            }   
+            //Step 2.2
+            Unary.trim(result);
+        
+            if(result.getStateCount() == 0) return false;
+        }
+        
+        return true;
+        
+    }
 
     /**
      * Computes the accessible product of the two automata a and b.
