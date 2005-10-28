@@ -335,7 +335,9 @@ public class Composition{
     public static void observer(Automaton a, Automaton observer){
         ListIterator<Event> eli = a.getEventIterator();
         while(eli.hasNext()){
-            observer.add(new Event(eli.next()));
+            Event e = eli.next();
+            if(e.getSubElement("properties").hasSubElement("observable"))
+                observer.add(new Event(e));
         }
         
         LinkedList<LinkedList<State>> searchList = new LinkedList<LinkedList<State>>();
@@ -360,19 +362,21 @@ public class Composition{
         State target, source;
 
         state = new LinkedList<State>();
+        
         while(!searchList.isEmpty()){
             LinkedList<State> sourceList = searchList.remove();
             source = observer.getState(Integer.parseInt(isIn(sourceList)));
             eli = a.getEventIterator();
             while(eli.hasNext()){
-                Event event = eli.next();
+                Event event= eli.next();
+                if(!event.getSubElement("properties").hasSubElement("observable")) continue;
                 ListIterator<State> sli = sourceList.listIterator();
                 while(sli.hasNext()){
                     State s = sli.next();
                     ListIterator<Transition> tli = s.getSourceTransitionsListIterator();
                     while(tli.hasNext()){
                         Transition t = tli.next();
-                        if(t.getEvent() == event && sourceList.contains(t.getTarget())){
+                        if(t.getEvent() == event && !state.contains(t.getTarget())){
                             state.add(t.getTarget());
                         }
                     }
@@ -394,6 +398,11 @@ public class Composition{
                     state = new LinkedList<State>();
                 }
             }
+        }
+        //clean
+        sia = a.getStateIterator();
+        while(sia.hasNext()){
+            sia.next().removeSubElement("in");
         }
     }
     
