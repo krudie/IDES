@@ -99,7 +99,34 @@ public class OperationListener extends AbstractListener{
                 }
             };
         }
+        if(resource_handle.equals(ResourceManager.OPERATIONS_OBSERVER)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
+                    observer();
+                }
+            };
+        }
         return null;
+    }
+    
+    private void observer(){
+        String selectedNames[] = MainWindow.getProjectExplorer().getSelectedAutomaton();
+        String newName;
+        for(int i = 0; i < selectedNames.length; i++){
+            if(selectedNames[i] != null){
+                newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_OBSERVER) + "(" + selectedNames[i] + ")");
+
+                if(MainWindow.getGraphingPlatform().getOpenAutomatonName().equals(selectedNames[i])){
+                    MainWindow.getGraphingPlatform().save();
+                }
+                Userinterface.getProjectPresentation().newAutomaton(newName);
+                Automaton observer = Userinterface.getProjectPresentation().getAutomatonByName(newName);
+                Automaton nondet = Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]);
+                projectPresentation.Composition.observer(nondet, observer);
+            }
+
+        }
+        MainWindow.getProjectExplorer().updateProject();
     }
 
     private void trim(){

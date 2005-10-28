@@ -372,7 +372,7 @@ public class Composition{
                     ListIterator<Transition> tli = s.getSourceTransitionsListIterator();
                     while(tli.hasNext()){
                         Transition t = tli.next();
-                        if(t.getEvent() == event){
+                        if(t.getEvent() == event && sourceList.contains(t.getTarget())){
                             state.add(t.getTarget());
                         }
                     }
@@ -444,7 +444,7 @@ public class Composition{
     }
     
     private static void sort(LinkedList<State> sll){
-        if(sll.size() < 1);
+        if(sll.size() < 2);
         else if(sll.size() == 2){
             State s1 = sll.getFirst();
             State s2 = sll.getLast();
@@ -456,20 +456,20 @@ public class Composition{
             }
         }
         else{
-            LinkedList<State> l1 = new LinkedList<State>(sll.subList(0,sll.size()/2));
+            LinkedList<State> l1 = new LinkedList<State>(sll.subList(0, sll.size()/2));
             LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size()/2, sll.size()));
             sort(l1);
             sort(l2);
             sll.clear();
             while(!l1.isEmpty() || !l2.isEmpty()){
                 if(l1.isEmpty())
-                    sll.addLast(l2.remove());
+                    sll.addLast(l2.removeFirst());
                 else if(l2.isEmpty())
-                    sll.addLast(l1.remove());
+                    sll.addLast(l1.removeFirst());
                 else if(l1.peek().getId() <= l2.peek().getId())
-                    sll.addLast(l1.remove());
+                    sll.addLast(l1.removeFirst());
                 else
-                    sll.addLast(l2.remove());
+                    sll.addLast(l2.removeFirst());
             }
         }
     }
