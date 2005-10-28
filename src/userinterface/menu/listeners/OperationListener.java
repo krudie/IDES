@@ -122,6 +122,7 @@ public class OperationListener extends AbstractListener{
                 Userinterface.getProjectPresentation().newAutomaton(newName);
                 Automaton observer = Userinterface.getProjectPresentation().getAutomatonByName(newName);
                 Automaton nondet = Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]);
+                
                 projectPresentation.Composition.observer(nondet, observer);
             }
 

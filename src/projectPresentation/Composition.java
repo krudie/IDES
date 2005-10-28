@@ -359,7 +359,7 @@ public class Composition{
         searchList.add(state);
         State target, source;
 
-        state.clear();
+        state = new LinkedList<State>();
         while(!searchList.isEmpty()){
             LinkedList<State> sourceList = searchList.remove();
             source = observer.getState(Integer.parseInt(isIn(sourceList)));
@@ -391,14 +391,14 @@ public class Composition{
                     event = (event == null) ? null : observer.getEvent(event.getId());
                     Transition t = new Transition(transitionid++, source, target, event);
                     observer.add(t);
-                    state.clear();
+                    state = new LinkedList<State>();
                 }
             }
         }
     }
     
-    private static String isIn(LinkedList<State> sll){
-        if(sll.isEmpty() || !sll.peek().hasSubElement("in")) return null;
+    private static String isIn(LinkedList<State> sll){       
+        if(sll.isEmpty() || !sll.peek().hasSubElement("in")) return null;        
         return sll.peek().getSubElement("in").getAttribute(id(sll));
     }
     
