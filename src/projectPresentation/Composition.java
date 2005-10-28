@@ -332,23 +332,162 @@ public class Composition{
         }
     }
     
-    private static LinkedList<State> reachable(LinkedList<State> sll){
-        LinkedList<State> result = new LinkedList<State>(sll);
-        ListIterator<State> sli= result.listIterator();
+    public static void observer(Automaton a, Automaton observer){
+        ListIterator<Event> eli = a.getEventIterator();
+        while(eli.hasNext()){
+            observer.add(new Event(eli.next()));
+        }
+        
+        LinkedList<LinkedList<State>> searchList = new LinkedList<LinkedList<State>>();
+        int id = 0, transitionid = 0;
+        
+        // find initial states, mark them as reached and add them to the que
+        LinkedList<State> state = new LinkedList<State>();
+        Iterator<State> sia = a.getStateIterator();
+        while(sia.hasNext()){
+            State initial = sia.next();
+            if(initial.getSubElement("properties").hasSubElement("initial")){
+                state.add(initial);
+            }
+        }
+        unobservableReach(state);
+        sort(state);
+        State rState = makeState(state, id, true);
+        setIn(state, id++);
+
+        observer.add(rState);
+        searchList.add(state);
+        State target, source;
+
+        state.clear();
+        while(!searchList.isEmpty()){
+            LinkedList<State> sourceList = searchList.remove();
+            source = observer.getState(Integer.parseInt(isIn(sourceList)));
+            eli = a.getEventIterator();
+            while(eli.hasNext()){
+                Event event = eli.next();
+                ListIterator<State> sli = sourceList.listIterator();
+                while(sli.hasNext()){
+                    State s = sli.next();
+                    ListIterator<Transition> tli = s.getSourceTransitionsListIterator();
+                    while(tli.hasNext()){
+                        Transition t = tli.next();
+                        if(t.getEvent() == event){
+                            state.add(t.getTarget());
+                        }
+                    }
+                }
+                if(!state.isEmpty()){
+                    unobservableReach(state);
+                    sort(state);
+                    String stateid = isIn(state);
+                    if(stateid == null){
+                        target = makeState(state, id, false);
+                        setIn(state, id++);
+                        observer.add(target);
+                        searchList.add(state);
+                    }
+                    else target = observer.getState(Integer.parseInt(stateid));
+                    event = (event == null) ? null : observer.getEvent(event.getId());
+                    Transition t = new Transition(transitionid++, source, target, event);
+                    observer.add(t);
+                    state.clear();
+                }
+            }
+        }
+    }
+    
+    private static String isIn(LinkedList<State> sll){
+        if(sll.isEmpty() || !sll.peek().hasSubElement("in")) return null;
+        return sll.peek().getSubElement("in").getAttribute(id(sll));
+    }
+    
+    private static void setIn(LinkedList<State> sll, int n){
+        if(sll.isEmpty()) return;
+        State s = sll.peek();
+        if(!s.hasSubElement("in")) s.addSubElement(new SubElement("in"));
+        s.getSubElement("in").setAttribute(id(sll), Integer.toString(n));
+    }
+    
+    private static String id(LinkedList<State> sll){
+        ListIterator<State> sli = sll.listIterator();
+        String name = "";
+        while(sli.hasNext()){
+            name += sli.next().getId()+".";
+        }
+        return name;
+    }
+    
+    private static State makeState(LinkedList<State> sll, int id, boolean initial){
+        ListIterator<State> sli = sll.listIterator();
+        boolean marked = false;
+        State s, rs;
+        s = sli.next();
+        marked |= s.getSubElement("properties").hasSubElement("marked");
+        String name = "{"+s.getSubElement("name").getChars();
+        
+        while(sli.hasNext()){
+            s = sli.next();
+            marked |= s.getSubElement("properties").hasSubElement("marked");
+            name += ", " + s.getSubElement("name").getChars();
+        }
+        name += "}";
+        rs = new State(id);
+        SubElement sname = new SubElement("name");
+        rs.addSubElement(sname);
+        sname.setChars(name);
+        SubElement properties = new SubElement("properties");
+        rs.addSubElement(properties);
+        if(marked) properties.addSubElement(new SubElement("marked"));
+        if(initial) properties.addSubElement(new SubElement("initial"));
+        return rs;
+    }
+    
+    private static void sort(LinkedList<State> sll){
+        if(sll.size() < 1);
+        else if(sll.size() == 2){
+            State s1 = sll.getFirst();
+            State s2 = sll.getLast();
+            if(s1.getId() <= s2.getId()) return;
+            else{
+                sll.clear();
+                sll.addFirst(s2);
+                sll.addLast(s1);
+            }
+        }
+        else{
+            LinkedList<State> l1 = new LinkedList<State>(sll.subList(0,sll.size()/2));
+            LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size()/2, sll.size()));
+            sort(l1);
+            sort(l2);
+            sll.clear();
+            while(!l1.isEmpty() || !l2.isEmpty()){
+                if(l1.isEmpty())
+                    sll.addLast(l2.remove());
+                else if(l2.isEmpty())
+                    sll.addLast(l1.remove());
+                else if(l1.peek().getId() <= l2.peek().getId())
+                    sll.addLast(l1.remove());
+                else
+                    sll.addLast(l2.remove());
+            }
+        }
+    }
+    
+    private static void unobservableReach(LinkedList<State> sll){
+        ListIterator<State> sli = sll.listIterator();
         while(sli.hasNext()){
             State s = sli.next();
             ListIterator<Transition> stli = s.getSourceTransitionsListIterator();
             while(stli.hasNext()){
                 Transition t = stli.next();
-                if(t.getEvent() == null 
-                        || !t.getEvent().getSubElement("properties").hasSubElement("observable")
-                        && !result.contains(t.getTarget())){
-                    result.add(t.getTarget());                        
+                if((t.getEvent() == null 
+                        || !t.getEvent().getSubElement("properties").hasSubElement("observable"))
+                        && !sll.contains(t.getTarget())){
+                    sli.add(t.getTarget());                        
                 }
             }
         }
-        Vector<State> sv = new Vector<State>();
-        return result;
     }
     
     
