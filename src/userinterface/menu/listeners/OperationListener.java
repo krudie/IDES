@@ -262,7 +262,6 @@ public class OperationListener extends AbstractListener{
 
             public void handleEvent(Event arg0){
                 //close the window and proceed
-                System.out.println(plantCombo.getText());
                 supCoperation(plantCombo.getText(), legalCombo.getText());
                 chooser.close();
                 chooser.dispose();
