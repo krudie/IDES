@@ -218,7 +218,7 @@ public class EventSpecification {
         table.setSelection(table.getItemCount()-1);
         
         for(int i = 2; i < columnName.length;i++){
-            ti.setText(i, "false");
+            ti.setText(i, "true");
         }      
         
         setChanged(true);
