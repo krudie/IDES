@@ -476,14 +476,10 @@ public class Composition{
             sort(l2);
             sll.clear();
             while(!l1.isEmpty() || !l2.isEmpty()){
-                if(l1.isEmpty())
-                    sll.addLast(l2.removeFirst());
-                else if(l2.isEmpty())
-                    sll.addLast(l1.removeFirst());
-                else if(l1.peek().getId() <= l2.peek().getId())
-                    sll.addLast(l1.removeFirst());
-                else
-                    sll.addLast(l2.removeFirst());
+                if(l1.isEmpty()) sll.addLast(l2.removeFirst());
+                else if(l2.isEmpty()) sll.addLast(l1.removeFirst());
+                else if(l1.peek().getId() <= l2.peek().getId()) sll.addLast(l1.removeFirst());
+                else sll.addLast(l2.removeFirst());
             }
         }
     }
