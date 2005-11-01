@@ -434,10 +434,9 @@ public class Composition{
     
     private static State makeState(LinkedList<State> sll, int id, boolean initial){
         ListIterator<State> sli = sll.listIterator();
-        boolean marked = false;
         State s, rs;
         s = sli.next();
-        marked |= s.getSubElement("properties").hasSubElement("marked");
+        boolean marked = s.getSubElement("properties").hasSubElement("marked");
         String name = "{"+s.getSubElement("name").getChars();
         
         while(sli.hasNext()){
@@ -491,10 +490,10 @@ public class Composition{
             ListIterator<Transition> stli = s.getSourceTransitionsListIterator();
             while(stli.hasNext()){
                 Transition t = stli.next();
-                if((t.getEvent() == null 
-                        || !t.getEvent().getSubElement("properties").hasSubElement("observable"))
+                if((t.getEvent() == null || !t.getEvent().getSubElement("properties").hasSubElement("observable"))
                         && !sll.contains(t.getTarget())){
-                    sli.add(t.getTarget());                        
+                    sli.add(t.getTarget());
+                    sli.previous();
                 }
             }
         }
