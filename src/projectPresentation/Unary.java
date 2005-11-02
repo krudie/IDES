@@ -18,6 +18,12 @@ import projectModel.Transition;
  */
 public class Unary{
 
+    /**
+     * Finds the accessible part of an automaton
+     * The function does not return a new automaton, so if the original automaton should not be changed,
+     *  make sure to copy it first.
+     * @param automaton The automaton which to find the accessible part of
+     */    
     public static void accesible(Automaton automaton){
         LinkedList<State> searchList = new LinkedList<State>();
         // find initial states, mark them as reached and add them to the que
@@ -52,6 +58,13 @@ public class Unary{
         }
     }
     
+    
+    /**
+     * Finds the coaccessible part of an automaton
+     * The function does not return a new automaton, so if the original automaton should not be changed,
+     * make sure to copy it first.
+     * @param automaton The automaton which to find the coaccessible part of
+     */  
     public static  void coAccesible(Automaton automaton){
         LinkedList<State> searchList = new LinkedList<State>();
         ListIterator<State> states = automaton.getStateIterator();
@@ -88,13 +101,24 @@ public class Unary{
     
     
     
-    
+    /**
+     * Finds the trim part of an automaton
+     * The function does not return a new automaton, so if the original automaton should not be changed,
+     * make sure to copy it first.
+     * @param automaton The automaton which to trim.
+     */   
     public static void trim(Automaton automaton){
         accesible(automaton);
         coAccesible(automaton);
     }
     
     
+    /**
+     * Makes an automaton prefix closed
+     * The function does not return a new automaton, so if the original automaton should not be changed,
+     * make sure to copy it first.
+     * @param automaton The automaton to prefix close
+     */    
     public static  void prefixClosure(Automaton automaton){
         LinkedList<State> searchList = new LinkedList<State>();
         ListIterator<State> states = automaton.getStateIterator();
@@ -120,7 +144,7 @@ public class Unary{
                 }
             }
         }
-        // tidy up. Remove all states that aren't coaccesible.
+        // tidy up. Mark all states that are marked as coaccessible
         states = automaton.getStateIterator();
         while(states.hasNext()){
             State s = states.next();

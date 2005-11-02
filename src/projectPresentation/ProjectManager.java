@@ -22,29 +22,15 @@ public class ProjectManager implements ProjectPresentation{
 
     private boolean unsaved = false;
 
-    
-    /**
-     * Creates a new project
-     * @param name The name of the new project
-     */
     public void newProject(String name){
         project = new Project(name);
         unsaved = true;
     }
   
-
-   /**
-    * A check to see there is an open project
-    * @return true if the project is open
-    */   
     public boolean isProjectOpen(){
         return (project != null);
     }
   
-    /**
-     *  Changes the open project' name
-     *  @param name the new name of the project
-     */
     public void setProjectName(String name){
         if(project != null){
             project.setName(name);
@@ -52,22 +38,13 @@ public class ProjectManager implements ProjectPresentation{
         unsaved = true;
     }
 
-    /**
-     * Gets the project name
-     * @return the project name
-     */   
     public String getProjectName(){
         if(project != null){
             return project.getName();
         }
         return null;
     }
-
-    /**
-     *  Opens a project
-     *  @param file the filename of the project file to open
-     *  @return the parsing error
-     */    
+   
     public String openProject(File file){
         ProjectParser pp = new ProjectParser();
 
@@ -75,13 +52,6 @@ public class ProjectManager implements ProjectPresentation{
         return pp.getParsingErrors();
     }
     
-    
-    /**
-     * Open an automaton
-     * @param file The file to open
-     * @param name The name for the automaton
-     * @return The parsing errors from parsing the automaton file
-     */
     public String openAutomaton(File file, String name){
         AutomatonParser ap = new AutomatonParser();
         Automaton automaton = ap.parse(file);
@@ -90,11 +60,7 @@ public class ProjectManager implements ProjectPresentation{
         return ap.getParsingErrors();
 
     }
-
-    /**
-     * Get a list of automaton names
-     * @return an array of automaton names in the project
-     */    
+  
     public String[] getAutomataNames(){
         LinkedList<Automaton> al = project.getAutomata();
         String[] sa = new String[al.size()];
@@ -110,12 +76,7 @@ public class ProjectManager implements ProjectPresentation{
         return sa;
     }
 
-    
-    /**
-     * changes the name of an automaton
-     * @param oldname The name of the automaton to changes name of
-     * @param newName the new name for the automaton
-     */    
+      
     public void setAutomatonName(String oldName, String newName){
         project.getAutomatonByName(oldName).setName(newName);
         unsaved = true;
@@ -151,10 +112,7 @@ public class ProjectManager implements ProjectPresentation{
         return ps;
     }
 
-    /**
-     * Function for saving the project to a file
-     * @param path The path where the project should be saved
-     */    
+  
     public void saveProject(String path){
         File file = new File(path, project.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
@@ -171,8 +129,8 @@ public class ProjectManager implements ProjectPresentation{
      * Saves an automaton to a file
      * @param a the automaton to save
      * @param path the path to save it to
-     */    
-    public void saveAutomaton(Automaton a, String path){
+     */      
+    private void saveAutomaton(Automaton a, String path){
         File file = new File(path, a.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) return;
@@ -180,16 +138,14 @@ public class ProjectManager implements ProjectPresentation{
     }
 
   
-    /**
-     * Creates a new automaton
-     * @param name The name of the new automaton
-     */
     public void newAutomaton(String name){
+        if(project == null) return;
         project.addAutomaton(new Automaton(name));
         unsaved = true;
     }
-    
+            
     public void addAutomaton(Automaton automaton){
+        if(project == null) return;
         project.addAutomaton(automaton);
         unsaved = true;
     }

@@ -19,21 +19,31 @@ import projectModel.Transition;
  */
 public class SuperVisory{
 
+    /**
+     * Finds the supremal controllable sublanguage of a legal language wrt. a given plant
+     * @param plant The plant
+     * @param legal The legal language
+     * @param result An empty automaton to use for the result
+     */    
     public static void supC(Automaton plant, Automaton legal, Automaton result){
 
         // This is implemented accourding to "Introduction to discrete event
         // systems of Casandras and LaFortune.
         // Page 177
 
-        // step 1        
+        // step 1
+        //take the product of the plant and the legal language
         supCProduct(plant, legal, result);
 
         boolean changed = true;
         
+        // While we keep removing stuff continue
         while(changed){
             // step 2
             ListIterator<State> si = result.getStateIterator();
             //step 2.1
+            //For all states in the result of the product check to see if there are any uncontrollable events that are disabled
+            // in that case, delete the state from the result
             while(si.hasNext()){
                 changed = false;
                 State s = si.next();
@@ -62,23 +72,29 @@ public class SuperVisory{
             if(result.getStateCount() == 0) return;
         }
         
+        //tidying up
+        ListIterator<State> si = result.getStateIterator();
+        while(si.hasNext()){
+            State s = si.next();
+            s.removeSubElement("plantID");            
+        }
+        
     }
     
+    /**
+     * Checks to see if a given legal language is controllable wrt. a plant
+     * @param plant The plant
+     * @param legal The legal language
+     * @return The answer to the controllable question
+     */    
     public static boolean controllable(Automaton plant, Automaton legal){
 
-        // This is implemented accourding to "Introduction to discrete event
-        // systems of Casandras and LaFortune.
-        // Page 177
-
-        // step 1
+        //This function is very similar to supC besides that it will only run trough the automaton once to see if anyhitng should be cut of.
+                
         Automaton result = new Automaton("");
         supCProduct(plant, legal, result);
-
-        if(result.getStateCount() == 0) return true;              
-                
-        // step 2
+                                    
         ListIterator<State> si = result.getStateIterator();
-        //step 2.1
         while(si.hasNext()){
             State s = si.next();
             
@@ -90,31 +106,29 @@ public class SuperVisory{
                 if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
                     ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
                     while(sti.hasNext()){
-                        if(sti.next().getEvent().getId() == plst.getEvent().getId()){
-                            si.remove();
+                        if(sti.next().getEvent().getId() == plst.getEvent().getId()){                            
                             return false;
                         }                                                        
                     }
                 }                
             }                   
-            //Step 2.2
-            Unary.trim(result);
-        }
-        if(result.getStateCount() == 0) return false;                
+        }                    
         return true;        
     }
 
+    
+    
+    
+    
     /**
-     * Computes the accessible product of the two automata a and b.
+     * Computes the accessible product of the two automata a and b for use with the supremal controllable sublanguage.
+     * This is made as a special an extra flag is set in the resulting automaton
      * 
-     * @param a
-     *            an automaton
-     * @param b
-     *            an automaton
-     * @param product
-     *            the accesible product of a and b.
+     * @param a an automaton
+     * @param b an automaton
+     * @param product the accesible product of a and b.
      */
-    public static void supCProduct(Automaton a, Automaton b, Automaton product){
+    private static void supCProduct(Automaton a, Automaton b, Automaton product){
         // Add the intersection between the eventsets as the products eventset.
         ListIterator<Event> eventsa = a.getEventIterator();
         while(eventsa.hasNext()){
