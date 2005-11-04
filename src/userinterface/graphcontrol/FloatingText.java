@@ -134,7 +134,8 @@ public class FloatingText {
             if (!label.string_representation.equals(text.getText())) {
                 label.string_representation = text.getText();
                 label.render();
-
+                gp.gc.io.markUnsavedChanges();
+                
                 // prevent doing it twice due to the double call due the the
                 // setVisible(false)
                 label = null;
