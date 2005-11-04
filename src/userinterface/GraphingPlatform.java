@@ -147,15 +147,18 @@ public class GraphingPlatform{
 
     public void open(String automatonName){
 
-        Automaton tempautomaton = Userinterface.getProjectPresentation().getAutomatonByName(automatonName);
+        Automaton tempautomaton = Userinterface.getProjectPresentation().getAutomatonByName(
+                automatonName);
 
         // checks if it needs to be laid out
-        if(tempautomaton.getStateIterator().hasNext() && !tempautomaton.getStateIterator().next().hasSubElement("graphic")){
+        if(tempautomaton.getStateIterator().hasNext()
+                && !tempautomaton.getStateIterator().next().hasSubElement("graphic")){
 
             if(tempautomaton.getStateCount() > 30){
                 MessageBox layout = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
                 layout.setText(ResourceManager.getString("layout.warning.title"));
-                layout.setMessage(ResourceManager.getMessage("layout.warning", Integer.toString(tempautomaton.getStateCount())));
+                layout.setMessage(ResourceManager.getMessage("layout.warning", Integer
+                        .toString(tempautomaton.getStateCount())));
                 int response = layout.open();
                 switch(response){
                 case SWT.YES:
@@ -242,7 +245,9 @@ public class GraphingPlatform{
         while(ei.hasNext()){
             Event e = ei.next();
             SubElement properties = e.getSubElement("properties");
-            es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description").getChars(), properties.hasSubElement("controllable"), properties.hasSubElement("observable"));
+            es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description")
+                    .getChars(), properties.hasSubElement("controllable"), properties
+                    .hasSubElement("observable"));
         }
 
         ListIterator<Transition> ti = automaton.getTransitionIterator();
@@ -270,15 +275,21 @@ public class GraphingPlatform{
 
             if(label.hasAttribute("group")){
                 int gn = Ascii.safeInt(graphic.getSubElement("label").getAttribute("group"));
-                if(group.size() > gn) group.get(gn).addLabel(es.getEvent(event.getId()));
+                if((group.size() > gn) && (group.elementAt(gn) != null)) group.get(gn).addLabel(
+                        es.getEvent(event.getId()));
                 else{
-                    group.add(new Edge(this, gc.gm, source, target, graphic.getSubElement("bezier"), Ascii.safeInt(label.getAttribute("x")), Ascii.safeInt(label.getAttribute("y")), 0));
+                    if(group.size() <= gn) group.setSize(gn + 1);
+                    group.setElementAt(new Edge(this, gc.gm, source, target, graphic
+                            .getSubElement("bezier"), Ascii.safeInt(label.getAttribute("x")), Ascii
+                            .safeInt(label.getAttribute("y")), 0), gn);
                     if(event != null) group.get(gn).addLabel(es.getEvent(event.getId()));
                     gc.gm.addEdge(group.get(gn));
                 }
             }
             else{
-                Edge e = new Edge(this, gc.gm, source, target, graphic.getSubElement("bezier"), Ascii.safeInt(label.getAttribute("x")), Ascii.safeInt(label.getAttribute("y")), 0);
+                Edge e = new Edge(this, gc.gm, source, target, graphic.getSubElement("bezier"),
+                        Ascii.safeInt(label.getAttribute("x")), Ascii.safeInt(label
+                                .getAttribute("y")), 0);
                 if(event != null){
                     e.addLabel(es.getEvent(event.getId()));
                 }
@@ -358,9 +369,9 @@ public class GraphingPlatform{
         }
         // rebuild events
         for(int i = 0; i < es.getEventCount(); i++){
-            
+
             if(es.getName(i) == null) continue;
-            
+
             Event e = new Event(i);
             automaton.add(e);
 
@@ -394,7 +405,9 @@ public class GraphingPlatform{
             // if the transition is triggered by one or zero events
             // make one transition
             if(events.length <= 1){
-                Transition t = new Transition(i + j, automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
+                Transition t = new Transition(i + j,
+                        automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm
+                                .getId(e.getTarget())));
                 automaton.add(t);
 
                 SubElement graphic = new SubElement("graphic");
@@ -412,7 +425,8 @@ public class GraphingPlatform{
             // otherwise make a lot of transitions.
             else{
                 for(int k = 0; k < events.length; k++){
-                    Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e.getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
+                    Transition t = new Transition(i + j++, automaton.getState(gc.gm.getId(e
+                            .getSource())), automaton.getState(gc.gm.getId(e.getTarget())));
                     automaton.add(t);
 
                     t.setEvent(automaton.getEvent(es.getId(events[k])));
