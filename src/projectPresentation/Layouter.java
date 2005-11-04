@@ -19,6 +19,11 @@ import userinterface.geometric.UnitVector;
 
 import att.grappa.*;
 
+
+/**
+ * This class is supposed to be created an teared down after every layout of a graph.
+ * @author edlund
+ */
 public class Layouter{
       
         
@@ -30,8 +35,7 @@ public class Layouter{
      */
     public Layouter(Automaton automaton) throws Exception{
         final String graphvizPath = SystemVariables.getGraphvizPath() + " -Tdot";
-        //graphvizPath =  "/usr/bin/dot -Tdot";
-                
+                      
         PipedInputStream pis = new PipedInputStream();
         PipedOutputStream pos = null;
         
@@ -40,12 +44,13 @@ public class Layouter{
         }catch(Exception e){}
 
         
+        // Creating the inputter which inputs things into grappa
+        // It is made this way so it wont block
         Inputter inputter = new Inputter(pos, automaton);
         inputter.start();
         
         Graph graph = doLayout(pis, graphvizPath);
         fromDot(graph, automaton);   
-        
     }
               
     /**
@@ -53,6 +58,9 @@ public class Layouter{
      * @param file the dotformatted file
      */   
     private Graph doLayout(InputStream file, String graphvizPath) throws Exception{       
+        
+        // I just stole this part from an example on how to use grappa
+        //Make a parser and then use it to parse the file.
         
         Graph graph;
         
@@ -66,6 +74,8 @@ public class Layouter{
             return null;
         }
         
+        
+        //Here we fire up graphviz as an external process and hand it to grappa
         Process engine = Runtime.getRuntime().exec(graphvizPath);        
         if(!GrappaSupport.filterGraph(graph,engine)) {
             System.err.println("ERROR: somewhere in filterGraph");
@@ -134,7 +144,11 @@ public class Layouter{
             input.close();                       
         }            
     }            
-    
+    /**
+     * Transform Grappa Graph object back into the graphic information we need for the model 
+     * @param graph The graph to convert
+     * @param automaton The automaton that needs the graphic information
+     */
     private void fromDot(Graph graph, Automaton automaton){
         
         int ydisplacement = (int) Float.parseFloat(graph.getThisAttributeValue(Graph.BBOX_ATTR).toString().split(",")[3]) + 25;
