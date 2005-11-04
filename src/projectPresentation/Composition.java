@@ -164,7 +164,7 @@ public class Composition{
         
         for(int i=2; i<automata.length; i++){
             newAnswer = new Automaton("temp");
-            product(prevAnswer,automata[i], newAnswer);            
+            parallel(prevAnswer,automata[i], newAnswer);            
             prevAnswer = newAnswer;
         }
         prevAnswer.setName(name);
