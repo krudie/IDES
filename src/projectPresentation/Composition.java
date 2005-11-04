@@ -194,14 +194,12 @@ public class Composition{
             Event temp = new Event(event);
             temp.setId(eventid++);
             parallel.add(temp);
-            ref = new SubElement("ref");
-            ref.setChars(Integer.toString(event.getId()));
         }
 
         events = b.getEventIterator();
         while(events.hasNext()){
             Event event = events.next();
-            int id = getId(event, parallel);
+            int id = getId(event, a);
             if(id == -1){
                 SubElement ref = new SubElement("ref");
                 ref.setChars(Integer.toString(eventid));
@@ -213,8 +211,7 @@ public class Composition{
             else{
                 SubElement intersection = new SubElement("intersection");
                 event.addSubElement(intersection);
-                a.getEvent(Integer.parseInt(parallel.getEvent(id).getSubElement("ref").getChars()))
-                        .addSubElement(intersection);
+                a.getEvent(id).addSubElement(intersection);
             }
         }
 
@@ -293,8 +290,8 @@ public class Composition{
                             && t1.getEvent() != null && t0.getEvent().getSubElement("name")
                             .getChars().equals(t1.getEvent().getSubElement("name").getChars())))){
 
-                        Event event = (t0.getEvent() == null) ? null : parallel.getEvent(t0
-                                .getEvent().getId());
+                        Event event = (t0.getEvent() == null) ? null : parallel.getEvent(Integer.parseInt(t0
+                                .getEvent().getSubElement("ref").getChars()));
 
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
@@ -320,8 +317,8 @@ public class Composition{
         while(sli.hasNext()){
             sli.next().removeSubElement("searched");
         }
-        Automaton[] aa = {a, b, parallel};
-        for(int i = 0; i < 3; i++){
+        Automaton[] aa = {a, b};
+        for(int i = 0; i < aa.length; i++){
             ListIterator<Event> eli = aa[i].getEventIterator();
             while(eli.hasNext()){
                 Event e = eli.next();
