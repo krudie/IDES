@@ -13,8 +13,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
 
 /**
- * @author edlund
+ * The right click popup menu used by the project explorer
  * 
+ * @author Kristian edlund
  */
 public class ProjectExplorerPopup {
 
@@ -28,6 +29,11 @@ public class ProjectExplorerPopup {
 
     private ProjectExplorer pe;
 
+    /**
+     * The constructor
+     * @param shell The parent shell
+     * @param pe the project explorer this popup menu is attached to.
+     */
     public ProjectExplorerPopup(Shell shell, ProjectExplorer pe) {
         this.pe = pe;
         this.shell = shell;
@@ -36,7 +42,11 @@ public class ProjectExplorerPopup {
         initAutomatonMenu();
         initProjectMenu();
     }
-
+    
+    
+    /**
+     * Function to initialise the automaton menu. Used when user right click on an automaton in the project explorer.
+     */
     private void initAutomatonMenu() {
         automatonMenu = new Menu(shell, SWT.POP_UP);
         MenuItem renameItem = new MenuItem(automatonMenu, SWT.PUSH);
@@ -54,6 +64,9 @@ public class ProjectExplorerPopup {
 
     }
 
+    /**
+     * Function to initialise the project menu. Used when user right click on the project in the project explorer.
+     */
     private void initProjectMenu() {
         projectMenu = new Menu(shell, SWT.POP_UP);
         MenuItem renameItem = new MenuItem(projectMenu, SWT.PUSH);
@@ -62,22 +75,43 @@ public class ProjectExplorerPopup {
         renameItem.addSelectionListener(rl);
     }
 
+    /**
+     * Gets the menu used if the user right clicks on an automaton
+     * @param last The item that the user clicked on last
+     * @return The menu that should pop up when the user clicks on an automaton
+     */
     public Menu getAutomatonMenu(TreeItem last) {
         this.lastItem = last;
         return automatonMenu;
     }
-
+    /**
+     * Gets the menu used if the user right clicks on the project
+     * @param last The item that the user clicked on last
+     * @return The menu that should pop up when the user clicks on the project
+     */
     public Menu getProjectMenu(TreeItem last) {
         this.lastItem = last;
         return projectMenu;
     }
 
+    /**
+     * Private class used to listen for clicks on the rename menu item
+     * @author Kristian Edlund
+     */
     private class RenameListener implements SelectionListener {
 
+        /**
+         * Standard required function
+         * calls rename
+         */
         public void widgetSelected(SelectionEvent arg0) {
             pe.rename(lastItem);
         }
-
+        
+        /**
+         * Standard required function
+         * does nothing.
+         */
         public void widgetDefaultSelected(SelectionEvent arg0) {
         }
     }
