@@ -19,7 +19,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 /**
- * @author edlund
+ * This class is used to make a widget that gives the user a way to navigate through the open project.
+ * 
+ * @author Kristian edlund
  * 
  */
 public class ProjectExplorer {
@@ -36,6 +38,11 @@ public class ProjectExplorer {
     
     Shell shell;
 
+    /**
+     * The constructer of the project explorer
+     * @param parent The parent the widget should be attached to.
+     * @param shell The parent shell
+     */    
     public ProjectExplorer(Composite parent, Shell shell) {
         this.shell = shell;
         treeWindow = new Tree(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
@@ -49,6 +56,7 @@ public class ProjectExplorer {
 
     }
 
+   
     /**
      * Updates the window of the projectexplorer
      */
@@ -274,8 +282,7 @@ public class ProjectExplorer {
     /**
      * Private Listener implemenetation for the ProjectExplorer
      * 
-     * @author edlund
-     * 
+     * @author Kristian edlund
      */
     private class ProjectListener implements Listener {
 
