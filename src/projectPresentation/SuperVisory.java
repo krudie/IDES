@@ -39,37 +39,39 @@ public class SuperVisory{
         
         // While we keep removing stuff continue
         while(changed){
-            // step 2
+            changed = false;
+            //step 2
             ListIterator<State> si = result.getStateIterator();
             //step 2.1
             //For all states in the result of the product check to see if there are any uncontrollable events that are disabled
             // in that case, delete the state from the result
-            while(si.hasNext()){
-                changed = false;
+            while(si.hasNext()){                
                 State s = si.next();
 
                 State pln = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
                 ListIterator<Transition> plsti = pln.getSourceTransitionsListIterator();                
-                
-                searchNode:
-                    while(plsti.hasNext()){
-                        Transition plst = plsti.next();
-                        if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
-                            ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
-                            while(sti.hasNext()){
-                                if(sti.next().getEvent().getId() == plst.getEvent().getId()){
-                                    si.remove();
-                                    changed = true;
-                                    break searchNode;
-                                }                                                        
+                                
+                while(plsti.hasNext()){
+                    Transition plst = plsti.next();
+                    if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
+                        ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
+                        boolean found = false;
+                        while(sti.hasNext()){
+                            if(sti.next().getEvent().getId() == plst.getEvent().getId()){
+                                found = true;
+                                break;
                             }
-                        }                
-                    }    
+                        }
+                        if(!found){
+                            si.remove();
+                            changed = true;
+                            break;
+                        }                            
+                    }                
+                }    
             }   
             //Step 2.2
-            Unary.trim(result);
-        
-            if(result.getStateCount() == 0) return;
+            Unary.trim(result);        
         }
         
         //tidying up

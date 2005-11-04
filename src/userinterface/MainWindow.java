@@ -105,6 +105,9 @@ public class MainWindow{
         }
     }
 
+    /**
+     * Initialisation method for all the components on the gui     
+     */
     private void initComponents(){
 
         // the window
