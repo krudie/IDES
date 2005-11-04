@@ -22,7 +22,7 @@ import att.grappa.*;
 
 /**
  * This class is supposed to be created an teared down after every layout of a graph.
- * @author edlund
+ * @author Kristian edlund
  */
 public class Layouter{
       
