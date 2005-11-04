@@ -19,13 +19,21 @@ public class Automaton implements Cloneable{
 
     private String name = null;
 
+    
+    /**
+     * constructs a nem automaton with the name name
+     * @param name the name of the automaton
+     */
     public Automaton(String name){
         states = new LinkedList<State>();
         transitions = new LinkedList<Transition>();
         events = new LinkedList<Event>();
         this.name = name;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
     public Automaton clone(){
         Automaton clone = new Automaton(this.name);
         ListIterator<Event> ei = getEventIterator();
@@ -50,26 +58,46 @@ public class Automaton implements Cloneable{
         return clone;
     }
 
+    /**
+     * @return the name of the automaton
+     */
     public String getName(){
         return name;
     }
 
+    /**
+     * @param name the name of the automaton
+     */
     public void setName(String name){
         this.name = name;
     }
 
+    /**
+     * @param s a state that needs to be added.
+     */
     public void add(State s){
         states.add(s);
     }
     
+    /**
+     * @return the number of states in the automaton
+     */
     public int getStateCount(){
         return states.size();
     }
     
+    /**
+     * @return the number of transitions in the automaton
+     */
     public int getTransitionCount(){
         return transitions.size();
     }
 
+    /**
+     * removes the state from the automaton and all transitions leading to 
+     * the state and originating from the state
+     * @param s the state to be removed
+     */
     public void remove(State s){
         ListIterator<Transition> sources = s.getSourceTransitionsListIterator();
         while(sources.hasNext()){
@@ -88,10 +116,18 @@ public class Automaton implements Cloneable{
         states.remove(s);
     }
     
+    /**
+     * @return a custom list iterator for the states
+     */
     public ListIterator<State> getStateIterator(){
         return new StateIterator(states.listIterator(), this);
     }
 
+    /**
+     * searches for the state with the given id.
+     * @param id the id of the state
+     * @return the state, null if it doesn't exist
+     */
     public State getState(int id){
         ListIterator<State> si = states.listIterator();
         while(si.hasNext()){
@@ -101,18 +137,35 @@ public class Automaton implements Cloneable{
         return null;
     }
 
+    /**
+     * Adds a transition the the automaton and adds the transition to
+     * the list of sources and targets in the source and target state of the
+     * transition.
+     * @param t the transition to be added to the state
+     */
     public void add(Transition t){
         t.getSource().addSourceTransition(t);
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
     }
 
+    /**
+     * Removes a transition from the automaton. Removes the transition from the 
+     * list of sourcetransitions and the list of target transitions in the 
+     * right states.
+     * @param t the transition to be removed
+     */
     public void remove(Transition t){
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
     }
 
+    /**
+     * searches for the transition with the given id.
+     * @param Id the id of the transition.
+     * @return the transition, null if the transition is not in the automaton.
+     */
     public Transition getTransition(int Id){
         ListIterator<Transition> tli = transitions.listIterator();
         while(tli.hasNext()){
@@ -122,22 +175,42 @@ public class Automaton implements Cloneable{
         return null;
     }
     
+    /**
+     * @return a custom list iterator for the transitions.
+     */
     public ListIterator<Transition> getTransitionIterator(){
         return new TransitionIterator(transitions.listIterator());
     }
 
+    /**
+     * Adds an event to the aotumaton.
+     * @param e the event that shall be added to the automaton.
+     */
     public void add(Event e){
         events.add(e);
     }
 
+    /**
+     * Removes an event from the automaton.
+     * @param e the event to be removed
+     */
     public void remove(Event e){
         events.remove(e);
     }
 
+    /**
+     * @return a custom list iterator for the events.
+     */
     public ListIterator<Event> getEventIterator(){
         return new EventIterator(events.listIterator(), this);
     }
 
+    
+    /**
+     * searches for the event with the given event id.
+     * @param id the id of the event
+     * @return the event, null if it doesn't exist
+     */
     public Event getEvent(int id){
         ListIterator<Event> ei = events.listIterator();
         while(ei.hasNext()){
@@ -147,6 +220,10 @@ public class Automaton implements Cloneable{
         return null;
     }
 
+    /**
+     * writes the automaton to xml
+     * @param ps a printstream that the automaton should be written to.
+     */
     public void toXML(PrintStream ps){
         ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
         ps.println("<automaton>");
@@ -167,35 +244,67 @@ public class Automaton implements Cloneable{
         ps.println("</automaton>");
     }
     
+    /**
+     * @author agmi02
+     * A custom list iterator for states. Conserves data integrity.
+     */
     private class StateIterator implements ListIterator<State>{
         private ListIterator<State> sli;
         private State current;
         private Automaton a;
         
+        /**
+         * constructs a stateIterator
+         * @param sli the listiterator this listiterator shall encapsulate
+         * @param a the automaton that is backing the listiterator
+         */
         public StateIterator(ListIterator<State> sli, Automaton a){
             this.a = a;
             this.sli = sli;
         }
+        /* (non-Javadoc)
+         * @see java.util.Iterator#hasNext()
+         */
         public boolean hasNext(){
             return sli.hasNext();
         }
+        /* (non-Javadoc)
+         * @see java.util.Iterator#next()
+         */
         public State next(){
             current = sli.next();
             return current;
         }
+        /* (non-Javadoc)
+         * @see java.util.ListIterator#hasPrevious()
+         */
         public boolean hasPrevious(){
             return sli.hasPrevious();
         }
+        /* (non-Javadoc)
+         * @see java.util.ListIterator#previous()
+         */
         public State previous(){
             current = sli.previous();
             return current;
         }
+        /* (non-Javadoc)
+         * @see java.util.ListIterator#nextIndex()
+         */
         public int nextIndex(){
             return sli.nextIndex();
         }
+        /* (non-Javadoc)
+         * @see java.util.ListIterator#previousIndex()
+         */
         public int previousIndex(){
             return sli.previousIndex();
         }
+        /** 
+         * removes the element last returned by either next or previous. 
+         * removes the transitions originating from this state and leading
+         * to this state in order to maintain data integrity.
+         */
         public void remove(){
             ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
@@ -234,6 +343,10 @@ public class Automaton implements Cloneable{
             sli.add(s);
         }
     }
+    /**
+     * @author agmi02
+     * A custom list iterator for transitions. Conserves data integrity.
+     */
     private class TransitionIterator implements ListIterator<Transition>{
         private ListIterator<Transition> tli;
         private Transition current;
@@ -276,6 +389,11 @@ public class Automaton implements Cloneable{
             transitions.add(t);
         }
     }
+    /**
+     * @author agmi02
+     *
+     * A custom list iterator for events. Conserves data integrity.
+     */
     private class EventIterator implements ListIterator<Event>{
         private Event current;
         private ListIterator<Event> eli;
