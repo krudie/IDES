@@ -52,6 +52,7 @@ public class MainWindow{
      */
     private static GraphingPlatform gp;
     
+    
     /**
      * The constructor for the class 
      * @param splash takes the splash screen as an argument.
@@ -155,6 +156,8 @@ public class MainWindow{
         gp.setEnabled(false);
 
         mainSash.setWeights(new int[] {30, 70});
+        
+        
     }
 
     /**
@@ -194,7 +197,6 @@ public class MainWindow{
         return menu;
     }
 
-    
     /**
      * A method for showing non fatal error messages
      * @param errorTitle error_title The title of the popup box

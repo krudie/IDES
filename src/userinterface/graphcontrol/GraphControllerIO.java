@@ -47,6 +47,9 @@ public class GraphControllerIO {
     public void markUnsavedChanges() {
         gp.mc.file_save_automaton.setEnabled(true);
         unsaved_changes = true;
+        //update the status
+        gp.getStatus().setText("   "+gp.getOpenAutomatonName()+", states: "+
+                gp.gc.gm.getNodeSize()+", transitions: "+gp.gc.gm.getEdgeSize());
     }
 
     /**

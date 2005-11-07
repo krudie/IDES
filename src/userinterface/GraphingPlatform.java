@@ -8,10 +8,12 @@ import java.util.Vector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -51,6 +53,11 @@ public class GraphingPlatform{
     private Automaton automaton;
 
     /**
+     * The status bar of the main window
+     */    
+    private static Label status;
+
+    /**
      * The object that contains the transition data and exists in the info in
      * the specifications tab
      */
@@ -67,8 +74,14 @@ public class GraphingPlatform{
         this.shell = shell;
         display = Display.getDefault();
 
+        // status bar
+        status=new Label (shell, SWT.LEFT);
+        status.setText("foo");
+        status.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+
         // tabfolders
         tabFolder = new TabFolder(parent, SWT.NONE);
+        
 
         graphFolderItem = new TabItem(tabFolder, SWT.NONE);
         graphFolderItem.setText(ResourceManager.getString("window.graph_tab.text"));
@@ -302,6 +315,10 @@ public class GraphingPlatform{
         gc.gm.accomodateLabels();
         gc.repaint();
         gc.io.resetState();
+        //update the status
+        getStatus().setText("   "+getOpenAutomatonName()+", states: "+
+                getOpenAutomatonStates()+", transitions: "+getOpenAutomatonTransitions());
+
     }
 
     public void save(){
@@ -465,5 +482,21 @@ public class GraphingPlatform{
 
     public String getOpenAutomatonName(){
         return (automaton != null) ? automaton.getName() : "";
+    }
+
+    public int getOpenAutomatonStates(){
+        return (automaton != null) ? automaton.getStateCount() : 0;
+    }
+
+    public int getOpenAutomatonTransitions(){
+        return (automaton != null) ? automaton.getTransitionCount() : 0;
+    }
+
+    /**
+     * The status bar of the program
+     * @return The label for the status
+     */
+    public static Label getStatus(){
+        return status;
     }
 }
