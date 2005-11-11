@@ -7,7 +7,16 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+/**
+ * @author agmi02
+ * 
+ * This is an abstract class for xml parsers that take a file as input.
+ */
 public abstract class AbstractFileParser extends AbstractParser {
+
+    /**
+     * constructs an abstract file parser.
+     */
     public AbstractFileParser() {
         try {
             xmlr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
@@ -23,5 +32,10 @@ public abstract class AbstractFileParser extends AbstractParser {
         }
     }
 
+    /**
+     * Parses a file. Returns the coresponding object.
+     * @param file the file that needs parsing
+     * @return the corresponding object.
+     */
     public abstract Object parse(File file);
 }

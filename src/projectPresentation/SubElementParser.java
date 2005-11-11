@@ -7,6 +7,10 @@ import org.xml.sax.XMLReader;
 
 import projectModel.SubElement;
 
+/**
+ * @author agmi02
+ * This class parses subelements of an xml document.
+ */
 public class SubElementParser extends AbstractParser {
     private SubElement se;
 
@@ -14,10 +18,21 @@ public class SubElementParser extends AbstractParser {
 
     private ContentHandler ch;
 
+    /**
+     * constructs a subelementparser.
+     */
     public SubElementParser() {
 
     }
 
+    /**
+     * Fills the subelement se with data read from the XMLreader xmlr and writes all errors
+     * encountered while parsing in parsingerrors
+     * @param se the subelement that needs filling.
+     * @param xmlr the xml reader that should be read for information to fill into the subelement.
+     * 
+     * @param parsingErrors the string to write parsingerrors into.
+     */
     public void fill(SubElement se, XMLReader xmlr, String parsingErrors) {
         this.parsingErrors = parsingErrors;
         this.xmlr = xmlr;
@@ -26,6 +41,9 @@ public class SubElementParser extends AbstractParser {
         this.se = se;
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     */
     public void startElement(String uri, String localName, String qName,
             Attributes atts) throws SAXException {
         SubElement nse = new SubElement(qName);
@@ -37,6 +55,9 @@ public class SubElementParser extends AbstractParser {
         sep.fill(nse, xmlr, parsingErrors);
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+     */
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         if (!qName.equals(se.getName())) {
@@ -49,6 +70,9 @@ public class SubElementParser extends AbstractParser {
         xmlr.setContentHandler(ch);
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#characters(char[], int, int)
+     */
     public void characters(char[] ch, int start, int length)
             throws SAXException {
         if (chars == null)

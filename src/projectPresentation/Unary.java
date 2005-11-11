@@ -15,6 +15,7 @@ import projectModel.Transition;
 /**
  * @author edlund
  *
+ * This class contatins methods for unary operations on automata.
  */
 public class Unary{
 

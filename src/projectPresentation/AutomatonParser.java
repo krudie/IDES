@@ -15,6 +15,8 @@ import org.xml.sax.SAXException;
  * 
  * @author agmi02
  * 
+ * Objects of this class parse a file into an automaton.
+ * 
  */
 public class AutomatonParser extends AbstractFileParser{
     private int state = STATE_IDLE;
@@ -28,10 +30,16 @@ public class AutomatonParser extends AbstractFileParser{
 
     private SubElementContainer sec;
 
+    /**
+     * creates an automatonParser.
+     */
     public AutomatonParser(){
         super();
     }
 
+    /* (non-Javadoc)
+     * @see projectPresentation.AbstractFileParser#parse(java.io.File)
+     */
     public Automaton parse(File f){
         state = STATE_IDLE;
         a = null;
@@ -53,18 +61,27 @@ public class AutomatonParser extends AbstractFileParser{
         return a;
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#startDocument()
+     */
     public void startDocument(){
         if(state != STATE_IDLE) parsingErrors += file.getName()
                 + ": wrong state at start of document.";
         state = STATE_DOCUMENT;
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#endDocument()
+     */
     public void endDocument(){
         if(state != STATE_DOCUMENT) parsingErrors += file.getName()
                 + ": wrong state at end of document.\n";
         state = STATE_IDLE;
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     */
     public void startElement(String uri, String localName, String qName, Attributes atts){
         switch(state){
         case (STATE_IDLE):
@@ -147,6 +164,9 @@ public class AutomatonParser extends AbstractFileParser{
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+     */
     public void endElement(String uri, String localName, String qName){
         switch(state){
         case (STATE_AUTOMATON):

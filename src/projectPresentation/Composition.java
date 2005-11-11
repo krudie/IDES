@@ -16,6 +16,9 @@ import projectModel.Transition;
 /**
  * @author edlund and axel
  * 
+ * This class contains methods for composing new automata from
+ * existing automata.
+ * 
  */
 public class Composition{
 

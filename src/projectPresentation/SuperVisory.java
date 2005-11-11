@@ -16,6 +16,8 @@ import projectModel.Transition;
 /**
  * @author edlund
  * 
+ * This class contains methods for supervisory control of discrete event systems.
+ * 
  */
 public class SuperVisory{
 
