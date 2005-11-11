@@ -18,7 +18,6 @@ import projectModel.Transition;
  * This class contatins methods for unary operations on automata.
  */
 public class Unary{
-
     /**
      * Finds the accessible part of an automaton
      * The function does not return a new automaton, so if the original automaton should not be changed,
@@ -58,7 +57,6 @@ public class Unary{
             else stateIterator.remove();
         }
     }
-    
     
     /**
      * Finds the coaccessible part of an automaton
@@ -100,8 +98,6 @@ public class Unary{
         }
     }
     
-    
-    
     /**
      * Finds the trim part of an automaton
      * The function does not return a new automaton, so if the original automaton should not be changed,
@@ -112,7 +108,6 @@ public class Unary{
         accesible(automaton);
         coAccesible(automaton);
     }
-    
     
     /**
      * Makes an automaton prefix closed
@@ -145,5 +140,4 @@ public class Unary{
             }
         }
     }
-
 }
