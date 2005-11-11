@@ -154,7 +154,7 @@ public class Transition extends SubElementContainer{
         if(isEmpty()){
             ps.println(indent + "<transition" + " id=\"" + id + "\"" + " source=\""
                     + sourceS.getId() + "\"" + " target=\"" + targetS.getId() + "\""
-                    + ((e != null) ? " event=\"" + e.getId() + "\"" : "") + "/>");
+                    + ((e != null) ? " event=\"" + e.getId() + "\"" : "") + " />");
         }
         else{
             ps.println(indent + "<transition" + " id=\"" + id + "\"" + " source=\""
