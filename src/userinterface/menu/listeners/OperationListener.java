@@ -17,9 +17,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import algorithms.Composition;
+import algorithms.SuperVisory;
+
 import projectModel.Automaton;
-import projectPresentation.Composition;
-import projectPresentation.SuperVisory;
 
 import userinterface.MainWindow;
 import userinterface.ResourceManager;
@@ -134,7 +135,7 @@ public class OperationListener extends AbstractListener{
                 Automaton observer = Userinterface.getProjectPresentation().getAutomatonByName(newName);
                 Automaton nondet = Userinterface.getProjectPresentation().getAutomatonByName(selectedNames[i]);
                 
-                projectPresentation.Composition.observer(nondet, observer);
+                algorithms.Composition.observer(nondet, observer);
             }
 
         }
@@ -153,7 +154,7 @@ public class OperationListener extends AbstractListener{
                 }
 
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                projectPresentation.Unary.trim(automaton);
+                algorithms.Unary.trim(automaton);
             }
 
         }
@@ -173,7 +174,7 @@ public class OperationListener extends AbstractListener{
                 newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_COACCESIBLE) + "(" + selectedNames[i] + ")");
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
 
-                projectPresentation.Unary.coAccesible(automaton);
+                algorithms.Unary.coAccesible(automaton);
             }
 
         }
@@ -190,7 +191,7 @@ public class OperationListener extends AbstractListener{
                 }
                 newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_ACCESIBLE) + "(" + selectedNames[i] + ")");
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
-                projectPresentation.Unary.accesible(automaton);
+                algorithms.Unary.accesible(automaton);
             }
 
         }
@@ -364,7 +365,7 @@ public class OperationListener extends AbstractListener{
                 newName = MainWindow.getProjectExplorer().getTitle(ResourceManager.getString(ResourceManager.OPERATIONS_PREFIXCLOSURE) + "(" + selectedNames[i] + ")");
                 Automaton automaton = Userinterface.getProjectPresentation().copyAutomaton(selectedNames[i], newName);
 
-                projectPresentation.Unary.prefixClosure(automaton);
+                algorithms.Unary.prefixClosure(automaton);
             }
 
         }

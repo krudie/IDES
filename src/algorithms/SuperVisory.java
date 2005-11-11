@@ -1,11 +1,12 @@
 /**
  * 
  */
-package projectPresentation;
+package algorithms;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+
 
 import projectModel.Automaton;
 import projectModel.Event;
