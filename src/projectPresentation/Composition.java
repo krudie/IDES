@@ -367,7 +367,8 @@ public class Composition{
         State target, source;
 
         state = new LinkedList<State>();
-        
+
+        //find the accesible states in the observer.
         while(!searchList.isEmpty()){
             LinkedList<State> sourceList = searchList.remove();
             source = observer.getState(Integer.parseInt(isIn(sourceList)));
@@ -486,16 +487,25 @@ public class Composition{
     private static void unobservableReach(LinkedList<State> sll){
         ListIterator<State> sli = sll.listIterator();
         while(sli.hasNext()){
+            sli.next().addSubElement(new SubElement("reached"));
+        }
+        sli = sll.listIterator();
+        while(sli.hasNext()){
             State s = sli.next();
             ListIterator<Transition> stli = s.getSourceTransitionsListIterator();
             while(stli.hasNext()){
                 Transition t = stli.next();
                 if((t.getEvent() == null || !t.getEvent().getSubElement("properties").hasSubElement("observable"))
-                        && !sll.contains(t.getTarget())){
+                        && !t.getTarget().hasSubElement("reached")){
+                    t.getTarget().addSubElement(new SubElement("reached"));
                     sli.add(t.getTarget());
                     sli.previous();
                 }
             }
+        }
+        sli = sll.listIterator();
+        while(sli.hasNext()){
+            sli.next().removeSubElement("reached");
         }
     }
     
