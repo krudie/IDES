@@ -122,11 +122,10 @@ public class Unary{
     public static  void prefixClosure(Automaton automaton){
         LinkedList<State> searchList = new LinkedList<State>();
         ListIterator<State> states = automaton.getStateIterator();
-        // mark all marked states as coaccesible and add them to the list.
+        // add all marked states to the list.
         while(states.hasNext()){
             State s = states.next();
             if(s.getSubElement("properties").hasSubElement("marked")){
-                s.addSubElement(new SubElement("coaccesible"));
                 searchList.add(s);
             }
         }
@@ -138,22 +137,12 @@ public class Unary{
             ListIterator<Transition> tli = s.getTargetTransitionListIterator();
             while(tli.hasNext()){
                 State source = tli.next().getSource();
-                if(!source.hasSubElement("coaccesible")){
-                    source.addSubElement(new SubElement("coaccesible"));
+                if(!source.getSubElement("properties").hasSubElement("marked")){
+                    s.getSubElement("properties").addSubElement(new SubElement("marked"));
                     searchList.addFirst(source);
                 }
             }
         }
-        // tidy up. Mark all states that are marked as coaccessible
-        states = automaton.getStateIterator();
-        while(states.hasNext()){
-            State s = states.next();
-            if(s.hasSubElement("coaccesible")){
-                s.removeSubElement("coaccesible");
-                s.getSubElement("properties").addSubElement(new SubElement("marked"));
-            }
-            
-        }
     }
-    
+
 }

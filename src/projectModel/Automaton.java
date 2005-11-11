@@ -8,7 +8,8 @@ import java.util.*;
  * @author Axel Gottlieb Michelsen
  * 
  * This class is the topmost class in the automaton hierachy. It serves as the datastructure for
- * states, transitions and event.
+ * states, transitions and event, and gives access to data iterators that are customized to 
+ * maintain data integrity of the automaton at all times.
  */
 public class Automaton implements Cloneable{
     private LinkedList<State> states;
