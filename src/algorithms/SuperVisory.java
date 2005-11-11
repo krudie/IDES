@@ -56,10 +56,12 @@ public class SuperVisory{
                                 
                 while(plsti.hasNext()){
                     Transition plst = plsti.next();
+                    //if the event is not controllable, check if the event is in the product as well
                     if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
                         ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
                         boolean found = false;
                         while(sti.hasNext()){
+                            //if we find the event we might as well break out of the search
                             if(sti.next().getEvent().getId() == plst.getEvent().getId()){
                                 found = true;
                                 break;
