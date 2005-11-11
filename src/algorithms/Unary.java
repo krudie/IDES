@@ -13,7 +13,7 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author edlund
+ * @author edlund and axel
  *
  * This class contatins methods for unary operations on automata.
  */
