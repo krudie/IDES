@@ -118,12 +118,20 @@ public class Layouter{
             input.println("digraph Test_Graph {");
             input.println("graph[");
             input.println("];");
-            input.println("node[Shape=ellipse, width=\".4\", height=\".4\"];");
+            
 
             // putting in the transitions
             // sourceID->targetID[];
             ListIterator<projectModel.State> states = automaton.getStateIterator();
             projectModel.State state = null;
+            
+            while(states.hasNext()){
+                state = states.next();
+                input.println(state.getId() + "[Shape=ellipse, width=\".4\", height=\".4\"];");                
+            }
+            
+            states = automaton.getStateIterator();
+            
             while(states.hasNext()){
                 state = states.next();
 
