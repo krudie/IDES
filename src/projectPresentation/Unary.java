@@ -139,7 +139,7 @@ public class Unary{
             while(tli.hasNext()){
                 State source = tli.next().getSource();
                 if(!source.getSubElement("properties").hasSubElement("marked")){
-                    s.getSubElement("properties").addSubElement(new SubElement("marked"));
+                    source.getSubElement("properties").addSubElement(new SubElement("marked"));
                     searchList.addFirst(source);
                 }
             }
