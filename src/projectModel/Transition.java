@@ -64,7 +64,8 @@ public class Transition extends SubElementContainer{
     /**
      * Constructs a new transition where the internal variables of the new
      * transition are the same as t. The transition originates in state source
-     * and ends in state target and fires uppon receival of event null (epsillon).
+     * and ends in state target and fires uppon receival of event null
+     * (epsillon).
      * 
      * @param t the transiton the new transition is to resemble.
      * @param source the source state.
@@ -78,7 +79,9 @@ public class Transition extends SubElementContainer{
     }
 
     /**
-     * Sets a new source, i.e., state from which this transition originates, for this transition.
+     * Sets a new source, i.e., state from which this transition originates, for
+     * this transition.
+     * 
      * @param s the new source.
      */
     public void setSource(State s){
@@ -86,7 +89,9 @@ public class Transition extends SubElementContainer{
     }
 
     /**
-     * Sets a new source, i.e., state from which this transition originates, for this transition.
+     * Sets a new source, i.e., state from which this transition originates, for
+     * this transition.
+     * 
      * @param s the new source.
      */
     public State getSource(){
@@ -94,16 +99,18 @@ public class Transition extends SubElementContainer{
     }
 
     /**
-     * Sets a new target, i.e., state from which this transition originates, for this transition.
+     * Sets a new target, i.e., state from which this transition originates, for
+     * this transition.
+     * 
      * @param s the new source.
      */
     public void setTarget(State s){
         this.targetS = s;
     }
 
-    
     /**
      * returns the state this transition ends in.
+     * 
      * @return the target state.
      */
     public State getTarget(){
@@ -112,6 +119,7 @@ public class Transition extends SubElementContainer{
 
     /**
      * set the event this transiton fires uppon to e.
+     * 
      * @param e the event this transition fires uppon.
      */
     public void setEvent(Event e){
@@ -120,6 +128,7 @@ public class Transition extends SubElementContainer{
 
     /**
      * returns the event this transition fires uppon.
+     * 
      * @return the event this transition fires uppon.
      */
     public Event getEvent(){
@@ -128,14 +137,18 @@ public class Transition extends SubElementContainer{
 
     /**
      * returns the id of this transition.
+     * 
      * @return the id of this transition.
      */
     public int getId(){
         return id;
     }
 
-    /* (non-Javadoc)
-     * @see projectModel.SubElementContainer#toXML(java.io.PrintStream, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see projectModel.SubElementContainer#toXML(java.io.PrintStream,
+     *      java.lang.String)
      */
     public void toXML(PrintStream ps, String indent){
         if(isEmpty()){
