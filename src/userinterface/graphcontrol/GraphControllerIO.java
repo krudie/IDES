@@ -4,6 +4,7 @@
 package userinterface.graphcontrol;
 
 import userinterface.GraphingPlatform;
+import userinterface.MainWindow;
 
 /**
  * This class handles all the IO for the GraphController. This includes: file
@@ -48,8 +49,8 @@ public class GraphControllerIO {
         gp.mc.file_save_automaton.setEnabled(true);
         unsaved_changes = true;
         //update the status
-        gp.getStatus().setText("   "+gp.getOpenAutomatonName()+", states: "+
-                gp.gc.gm.getNodeSize()+", transitions: "+gp.gc.gm.getEdgeSize());
+        MainWindow.getStatusBar().update();
+        
     }
 
     /**

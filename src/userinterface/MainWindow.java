@@ -53,6 +53,8 @@ public class MainWindow{
     private static GraphingPlatform gp;
     
     
+    private static Statusbar sb;
+    
     /**
      * The constructor for the class 
      * @param splash takes the splash screen as an argument.
@@ -141,7 +143,7 @@ public class MainWindow{
 
         SashForm mainSash = new SashForm(shell, SWT.HORIZONTAL | SWT.SMOOTH);
         
-        GridData sashLayoutData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);
+        GridData sashLayoutData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_VERTICAL | GridData.VERTICAL_ALIGN_FILL);
         sashLayoutData.horizontalSpan = 3;
         mainSash.setLayoutData(sashLayoutData);
         
@@ -157,7 +159,7 @@ public class MainWindow{
 
         mainSash.setWeights(new int[] {30, 70});
         
-        
+        sb = new Statusbar(shell);        
     }
 
     /**
@@ -195,6 +197,10 @@ public class MainWindow{
      */
     public static MenuController getMenu(){
         return menu;
+    }
+    
+    public static Statusbar getStatusBar(){
+        return sb;
     }
 
     /**
