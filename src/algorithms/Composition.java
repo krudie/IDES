@@ -525,8 +525,8 @@ public class Composition{
     private static State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
         SubElement name = new SubElement("name");
-        name.setChars(s[0].getSubElement("name").getChars() + ", "
-                + s[1].getSubElement("name").getChars());
+        name.setChars("("+s[0].getSubElement("name").getChars() + ", "
+                + s[1].getSubElement("name").getChars()+")");
         state.addSubElement(name);
 
         SubElement properties = new SubElement("properties");
