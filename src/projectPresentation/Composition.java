@@ -14,7 +14,7 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author edlund
+ * @author edlund and axel
  * 
  */
 public class Composition{
