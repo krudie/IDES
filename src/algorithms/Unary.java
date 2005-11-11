@@ -126,8 +126,7 @@ public class Unary{
             }
         }
         // for all states in the list mark all states that can access this state
-        // as coaccesible and add it to the list (if it isn't allready marked as
-        // coaccesible.)
+        // as marked and add it to the list (if it isn't allready marked.)
         while(!searchList.isEmpty()){
             State s = searchList.removeFirst();
             ListIterator<Transition> tli = s.getTargetTransitionListIterator();
