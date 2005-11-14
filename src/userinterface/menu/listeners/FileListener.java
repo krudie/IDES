@@ -194,7 +194,7 @@ public class FileListener extends AbstractListener{
             }
             
             //A file has been opened that does not contain a project
-            if(Userinterface.getProjectPresentation().getProjectName() == null) return;
+            if(!Userinterface.getProjectPresentation().isProjectOpen()) return;
 
             MainWindow.getMenu().file_save_project.setEnabled(true);
             MainWindow.getMenu().file_new_automaton.setEnabled(true);
