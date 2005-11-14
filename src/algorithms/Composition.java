@@ -357,6 +357,7 @@ public class Composition{
                 state.add(initial);
             }
         }
+        if(state.size() == 0) return;
         unobservableReach(state);
         sort(state);
         State rState = makeState(state, id, true);
