@@ -192,6 +192,9 @@ public class FileListener extends AbstractListener{
             if(!error.trim().equals("")){
                 MainWindow.errorPopup(ResourceManager.getString("parsing_error"), error);
             }
+            
+            //A file has been opened that does not contain a project
+            if(Userinterface.getProjectPresentation().getProjectName() == null) return;
 
             MainWindow.getMenu().file_save_project.setEnabled(true);
             MainWindow.getMenu().file_new_automaton.setEnabled(true);
