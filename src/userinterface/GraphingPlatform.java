@@ -243,8 +243,10 @@ public class GraphingPlatform{
 
         ListIterator<Event> ei = automaton.getEventIterator();
 
+        int j = 0;
         while(ei.hasNext()){
             Event e = ei.next();
+            e.setId(j++);
             SubElement properties = e.getSubElement("properties");
             es.createNewEvent(e.getSubElement("name").getChars(), e.getSubElement("description")
                     .getChars(), properties.hasSubElement("controllable"), properties
