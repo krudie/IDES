@@ -57,20 +57,6 @@ public class Project {
         this.name = name;
     }
 
-    /**
-     * prints this object to XML.
-     * @param ps the printstream this object should be printet to.
-     */
-    public void toXML(PrintStream ps) {
-        ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        ps.println("<project>");
-        Iterator<Automaton> ai = automata.iterator();
-        while (ai.hasNext()) {
-            Automaton a = ai.next();
-            ps.println("  <automaton file=\"" + a.getName() + ".xml\" />");
-        }
-        ps.println("</project>");
-    }
 
     public Automaton getAutomatonByName(String name) {
 

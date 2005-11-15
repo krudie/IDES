@@ -110,17 +110,4 @@ public class State extends SubElementContainer{
     public void setId(int id){
         this.id = id;
     }
-
-    /* (non-Javadoc)
-     * @see projectModel.SubElementContainer#toXML(java.io.PrintStream, java.lang.String)
-     */
-    public void toXML(PrintStream ps, String indent){
-        if(isEmpty()) ps.println(indent + "<state" + " id=\"" + id + "\" />");
-        else{
-            ps.println(indent + "<state" + " id=\"" + id + "\">");
-            super.toXML(ps, indent + "  ");
-            ps.println(indent + "</state>");
-        }
-    }
-
-}
+ }

@@ -117,7 +117,7 @@ public class ProjectManager implements ProjectPresentation{
         File file = new File(path, project.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) return;
-        project.toXML(ps);
+        XMLexporter.projectToXML(project, ps);
         Iterator<Automaton> ai = project.getAutomata().iterator();
         while(ai.hasNext()){
             Automaton a = ai.next();
@@ -134,7 +134,7 @@ public class ProjectManager implements ProjectPresentation{
         File file = new File(path, a.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) return;
-        a.toXML(ps);
+        XMLexporter.automatonToXML(a, ps);        
     }
 
   

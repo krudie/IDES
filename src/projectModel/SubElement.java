@@ -149,35 +149,5 @@ public class SubElement extends SubElementContainer implements Cloneable{
      */
     public Enumeration<String> getAttributeNames(){
         return initialized ? attributeList.keys() : new Hashtable<String, String>().keys();
-    }
-
-    /* (non-Javadoc)
-     * @see projectModel.SubElementContainer#toXML(java.io.PrintStream, java.lang.String)
-     */
-    public void toXML(PrintStream ps, String indent){
-        ps.print(indent + "<" + name);
-        if(initialized){
-            Enumeration<String> av = attributeList.elements();
-            Enumeration<String> an = attributeList.keys();
-            while(an.hasMoreElements()){
-                ps.print(" " + an.nextElement() + "=\"" + av.nextElement() + "\"");
-            }
-        }
-        if(super.isEmpty() && (chars == null || chars.trim().equals(""))){
-            ps.println(" />");
-            return;
-        }
-        ps.print(">");
-        if(!super.isEmpty()){
-            ps.print("\n");
-            super.toXML(ps, indent + "  ");
-            if(chars != null && !chars.trim().equals(""))
-                ps.println(indent + "  "+chars);
-            ps.println(indent + "</" + name + ">");
-            return;
-        }
-        if(chars != null && !chars.trim().equals(""))
-            ps.print(chars);
-        ps.print("</" + name + ">\n");    
-    }
+    }   
 }

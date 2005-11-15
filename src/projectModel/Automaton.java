@@ -220,30 +220,6 @@ public class Automaton implements Cloneable{
         }
         return null;
     }
-
-    /**
-     * writes the automaton to xml
-     * @param ps a printstream that the automaton should be written to.
-     */
-    public void toXML(PrintStream ps){
-        ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        ps.println("<automaton>");
-        Iterator<State> si = states.iterator();
-        while(si.hasNext()){
-            si.next().toXML(ps, "  ");
-        }
-
-        Iterator<Event> ei = events.iterator();
-        while(ei.hasNext()){
-            ei.next().toXML(ps, "  ");
-        }
-
-        Iterator<Transition> ti = transitions.iterator();
-        while(ti.hasNext()){
-            ti.next().toXML(ps, "  ");
-        }
-        ps.println("</automaton>");
-    }
     
     /**
      * @author agmi02

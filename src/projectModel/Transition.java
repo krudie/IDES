@@ -143,25 +143,4 @@ public class Transition extends SubElementContainer{
     public int getId(){
         return id;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see projectModel.SubElementContainer#toXML(java.io.PrintStream,
-     *      java.lang.String)
-     */
-    public void toXML(PrintStream ps, String indent){
-        if(isEmpty()){
-            ps.println(indent + "<transition" + " id=\"" + id + "\"" + " source=\""
-                    + sourceS.getId() + "\"" + " target=\"" + targetS.getId() + "\""
-                    + ((e != null) ? " event=\"" + e.getId() + "\"" : "") + " />");
-        }
-        else{
-            ps.println(indent + "<transition" + " id=\"" + id + "\"" + " source=\""
-                    + sourceS.getId() + "\"" + " target=\"" + targetS.getId() + "\""
-                    + ((e != null) ? " event=\"" + e.getId() + "\"" : "") + ">");
-            super.toXML(ps, indent + "  ");
-            ps.println(indent + "</transition>");
-        }
-    }
 }

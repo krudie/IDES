@@ -113,17 +113,4 @@ public class SubElementContainer implements Cloneable{
     public boolean isEmpty(){
         return !initialized || subElementList.isEmpty();
     }
-
-    /**
-     * Prints this object and all subelements of this objects to the
-     * printsstream as XML.
-     * @param ps the printstream this object should be printet to.
-     * @param indent the indentation this object should have.
-     */
-    public void toXML(PrintStream ps, String indent){
-        if(!initialized) return;
-        Enumeration<SubElement> see = subElementList.elements();
-        while(see.hasMoreElements())
-            see.nextElement().toXML(ps, indent);
-    }
 }
