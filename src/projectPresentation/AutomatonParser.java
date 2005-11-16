@@ -12,11 +12,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * 
- * @author agmi02
- * 
- * Objects of this class parse a file into an automaton.
- * 
+ * Objects of this class parse a file into an automaton. 
+ * @author Axel Gottlieb Michelsen
  */
 public class AutomatonParser extends AbstractFileParser{
     private int state = STATE_IDLE;
@@ -37,7 +34,7 @@ public class AutomatonParser extends AbstractFileParser{
         super();
     }
 
-    /* (non-Javadoc)
+    /**
      * @see projectPresentation.AbstractFileParser#parse(java.io.File)
      */
     public Automaton parse(File f){
@@ -61,7 +58,7 @@ public class AutomatonParser extends AbstractFileParser{
         return a;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startDocument()
      */
     public void startDocument(){
@@ -70,7 +67,7 @@ public class AutomatonParser extends AbstractFileParser{
         state = STATE_DOCUMENT;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#endDocument()
      */
     public void endDocument(){
@@ -79,7 +76,7 @@ public class AutomatonParser extends AbstractFileParser{
         state = STATE_IDLE;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
     public void startElement(String uri, String localName, String qName, Attributes atts){
@@ -164,7 +161,7 @@ public class AutomatonParser extends AbstractFileParser{
         }
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      */
     public void endElement(String uri, String localName, String qName){

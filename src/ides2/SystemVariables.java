@@ -15,7 +15,7 @@ import userinterface.geometric.Point;
  * used by the GraphingPlatform to read/write system variables at open/close of
  * the application. It functions as an os independent registry.
  * 
- * @author Michael Wood (slamkoder)
+ * @author Michael Wood
  */
 public class SystemVariables {
     /**
@@ -150,6 +150,9 @@ public class SystemVariables {
         }
     }
 
+    /**
+     * Stores the values set in the systemvariable to a file
+     */
     public void saveValues() {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(
@@ -168,10 +171,18 @@ public class SystemVariables {
         }
     }
 
+    /**
+     * Sets the graphviz path in the systems variables, so it will be stored correctly
+     * @param graphvizPath the graphvizpath to store
+     */
     public static void setGraphvizPath(String graphvizPath){
         SystemVariables.graphvizPath = graphvizPath;
     }
 
+    /**
+     * Returns the current set graphvizpath. It should always be read from here to avoid multiple paths to graphviz
+     * @return the graphviz path 
+     */
     public static String getGraphvizPath(){
         return graphvizPath;
     }

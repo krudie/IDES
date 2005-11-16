@@ -4,13 +4,14 @@ import projectPresentation.ProjectManager;
 import projectPresentation.ProjectPresentation;
 
 /**
- * @author edlund
+ * @author Kristian Edlund
  * 
  */
 public class IDES2 {
 
     /**
-     * @param args
+     * Used as the main class for IDES2
+     * @param args not used
      */
     public static void main(String[] args) {
         SystemVariables sv = new SystemVariables();

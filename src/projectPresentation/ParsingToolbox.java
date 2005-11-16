@@ -4,9 +4,9 @@
 package projectPresentation;
 
 /**
- * @author agmi02
+ * This class contains various methods helpful while parsing.
  * 
- * This class contains various methods helpfull while parsing.
+ * @author Axel Gottlieb Michelsen
  */
 public class ParsingToolbox{
 

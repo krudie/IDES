@@ -170,8 +170,6 @@ public class Edge extends GraphObject{
      * @param label_displacement A cloned Point representing the displacement of the label from the midpoint of the curve.
      * @param label_data A cloned Vector containing the required label data objects.
      * @param a  The attributes for this Edge.
-     * @param glyph_label A Label to be cloned for the glyph label of this Edge.
-     * @param latex_label A Label to be cloned for the latex label of this Edge.
      */
     private Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, Curve curve,
             Point label_displacement, int a, Vector<TableItem> label_data, GlyphLabel glyphLabel){

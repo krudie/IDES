@@ -8,8 +8,8 @@ import org.xml.sax.XMLReader;
 import projectModel.SubElement;
 
 /**
- * @author agmi02
  * This class parses subelements of an xml document.
+ * @author Axel Gottlieb Michelsen
  */
 public class SubElementParser extends AbstractParser {
     private SubElement se;
@@ -41,7 +41,7 @@ public class SubElementParser extends AbstractParser {
         this.se = se;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
     public void startElement(String uri, String localName, String qName,
@@ -55,7 +55,7 @@ public class SubElementParser extends AbstractParser {
         sep.fill(nse, xmlr, parsingErrors);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      */
     public void endElement(String uri, String localName, String qName)
@@ -70,7 +70,7 @@ public class SubElementParser extends AbstractParser {
         xmlr.setContentHandler(ch);
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
     public void characters(char[] ch, int start, int length)

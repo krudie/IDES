@@ -46,6 +46,9 @@ public class ProjectParser extends AbstractFileParser {
         return p;
     }
 
+    /**
+     * @see org.xml.sax.ContentHandler#startDocument()
+     */
     public void startDocument() {
         if (state != STATE_IDLE) {
             parsingErrors += file.getName()
@@ -55,6 +58,9 @@ public class ProjectParser extends AbstractFileParser {
         state = STATE_DOCUMENT;
     }
 
+    /**
+     * @see org.xml.sax.ContentHandler#endDocument()
+     */
     public void endDocument() {
         if (state != STATE_DOCUMENT) {
             parsingErrors += file.getName()
@@ -64,6 +70,9 @@ public class ProjectParser extends AbstractFileParser {
         state = STATE_IDLE;
     }
 
+    /**
+     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+     */
     public void startElement(String uri, String localName, String qName,
             Attributes atts) {
         switch (state) {
@@ -105,6 +114,9 @@ public class ProjectParser extends AbstractFileParser {
         }
     }
 
+    /**
+     * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+     */
     public void endElement(String uri, String localName, String qName) {
         switch (state) {
         case STATE_IDLE:
@@ -137,6 +149,10 @@ public class ProjectParser extends AbstractFileParser {
         }
     }
 
+    /**
+     * Method used for testing the class
+     * @param args not used
+     */
     public static void main(String args[]) {
         ProjectManager p = new ProjectManager();
         p.openProject(new File("/home/agmi02/des/test.xml"));

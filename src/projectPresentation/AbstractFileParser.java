@@ -8,9 +8,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 /**
- * @author agmi02
- * 
  * This is an abstract class for xml parsers that take a file as input.
+ * @author agmi02
  */
 public abstract class AbstractFileParser extends AbstractParser {
 

@@ -13,8 +13,13 @@ import java.util.LinkedList;
 import projectModel.*;
 
 /**
- * @author edlund
+ * The main file that implements the interface available for the userinterface
  * 
+ * @author Kristian Edlund
+ */
+/**
+ * @author edlund
+ *
  */
 public class ProjectManager implements ProjectPresentation{
 
@@ -22,15 +27,25 @@ public class ProjectManager implements ProjectPresentation{
 
     private boolean unsaved = false;
 
+    /**
+     * @see projectPresentation.ProjectPresentation#newProject(java.lang.String)
+     */
     public void newProject(String name){
         project = new Project(name);
         unsaved = true;
     }
   
+    /**
+     * @see projectPresentation.ProjectPresentation#isProjectOpen()
+     */
     public boolean isProjectOpen(){
         return (project != null);
     }
   
+    
+    /**
+     * @see projectPresentation.ProjectPresentation#setProjectName(java.lang.String)
+     */
     public void setProjectName(String name){
         if(project != null){
             project.setName(name);
@@ -38,6 +53,9 @@ public class ProjectManager implements ProjectPresentation{
         unsaved = true;
     }
 
+    /**
+     * @see projectPresentation.ProjectPresentation#getProjectName()
+     */
     public String getProjectName(){
         if(project != null){
             return project.getName();
@@ -45,6 +63,10 @@ public class ProjectManager implements ProjectPresentation{
         return null;
     }
    
+    
+    /**
+     * @see projectPresentation.ProjectPresentation#openProject(java.io.File)
+     */
     public String openProject(File file){
         ProjectParser pp = new ProjectParser();
 
@@ -52,6 +74,9 @@ public class ProjectManager implements ProjectPresentation{
         return pp.getParsingErrors();
     }
     
+    /**
+     * @see projectPresentation.ProjectPresentation#openAutomaton(java.io.File, java.lang.String)
+     */
     public String openAutomaton(File file, String name){
         AutomatonParser ap = new AutomatonParser();
         Automaton automaton = ap.parse(file);
@@ -61,6 +86,9 @@ public class ProjectManager implements ProjectPresentation{
 
     }
   
+    /**
+     * @see projectPresentation.ProjectPresentation#getAutomataNames()
+     */
     public String[] getAutomataNames(){
         LinkedList<Automaton> al = project.getAutomata();
         String[] sa = new String[al.size()];
@@ -77,11 +105,19 @@ public class ProjectManager implements ProjectPresentation{
     }
 
       
+    /**
+     * @see projectPresentation.ProjectPresentation#setAutomatonName(java.lang.String, java.lang.String)
+     */
     public void setAutomatonName(String oldName, String newName){
         project.getAutomatonByName(oldName).setName(newName);
         unsaved = true;
     }
         
+    /**
+     * Method for getting a printstream wrapped around a file
+     * @param file the file that needs a printstream wrapped around it
+     * @return The printstream pointing to a the file
+     */
     private PrintStream getPrintStream(File file){
         PrintStream ps = null;
         if(!file.exists()){
@@ -113,6 +149,9 @@ public class ProjectManager implements ProjectPresentation{
     }
 
   
+    /**
+     * @see projectPresentation.ProjectPresentation#saveProject(java.lang.String)
+     */
     public void saveProject(String path){
         File file = new File(path, project.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
@@ -138,34 +177,55 @@ public class ProjectManager implements ProjectPresentation{
     }
 
   
+    /**
+     * @see projectPresentation.ProjectPresentation#newAutomaton(java.lang.String)
+     */
     public void newAutomaton(String name){
         if(project == null) return;
         project.addAutomaton(new Automaton(name));
         unsaved = true;
     }
             
+    /**
+     * @see projectPresentation.ProjectPresentation#addAutomaton(projectModel.Automaton)
+     */
     public void addAutomaton(Automaton automaton){
         if(project == null) return;
         project.addAutomaton(automaton);
         unsaved = true;
     }
 
+    /**
+     * @see projectPresentation.ProjectPresentation#hasUnsavedData()
+     */
     public boolean hasUnsavedData(){
         return unsaved;
     }
 
+    /**
+     * @see projectPresentation.ProjectPresentation#setUnsavedData(boolean)
+     */
     public void setUnsavedData(boolean state){
         unsaved = state;
     }
 
+    /**
+     * @see projectPresentation.ProjectPresentation#deleteAutomatonByName(java.lang.String)
+     */
     public void deleteAutomatonByName(String name){
         project.removeAutomaton(project.getAutomatonByName(name));
     }
 
+    /**
+     * @see projectPresentation.ProjectPresentation#removeFileName(java.lang.String)
+     */
     public String removeFileName(String name){
         return ParsingToolbox.removeFileType(name);
     }
 
+    /**
+     * @see projectPresentation.ProjectPresentation#getAutomatonByName(java.lang.String)
+     */
     public Automaton getAutomatonByName(String name){
         return project.getAutomatonByName(name);
     }
@@ -188,6 +248,9 @@ public class ProjectManager implements ProjectPresentation{
     
     */
 
+    /**
+     * @see projectPresentation.ProjectPresentation#copyAutomaton(java.lang.String, java.lang.String)
+     */
     public Automaton copyAutomaton(String source, String clonedName){
         Automaton cloned = project.getAutomatonByName(source).clone();
         cloned.setName(clonedName);
@@ -196,6 +259,9 @@ public class ProjectManager implements ProjectPresentation{
     }
     
     
+    /**
+     * @see projectPresentation.ProjectPresentation#layout(java.lang.String)
+     */
     public void layout(String name) throws Exception{
        new Layouter(project.getAutomatonByName(name));
     }

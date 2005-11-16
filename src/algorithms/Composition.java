@@ -1,6 +1,3 @@
-/**
- * 
- */
 package algorithms;
 
 import java.util.Iterator;
@@ -14,8 +11,8 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author edlund and axel This class contains methods for composing new
- *         automata from existing automata.
+ * This class contains methods for composing new automata from existing automata.
+ * @author Kristian Edlund and Axel Gottlieb Michelsen
  */
 public class Composition{
 

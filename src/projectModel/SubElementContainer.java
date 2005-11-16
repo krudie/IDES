@@ -38,7 +38,7 @@ public class SubElementContainer implements Cloneable{
     }
     
     
-    /* (non-Javadoc)
+    /**
      * @see java.lang.Object#clone()
      */
     public SubElementContainer clone(){

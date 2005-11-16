@@ -7,17 +7,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * @author agmi02
  * This is an abstract class for XML parsers.
- */
-/**
  * @author agmi02
- *
  */
-/**
- * @author agmi02
- *
- */
+
 public class AbstractParser implements ContentHandler {
 
     protected static final String ELEMENT_AUTOMATON = "automaton",
@@ -40,13 +33,13 @@ public class AbstractParser implements ContentHandler {
         return parsingErrors;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#setDocumentLocator(org.xml.sax.Locator)
      */
     public void setDocumentLocator(Locator locator) {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startDocument()
      */
     public void startDocument() throws SAXException {
@@ -55,55 +48,55 @@ public class AbstractParser implements ContentHandler {
     public void endDocument() throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startPrefixMapping(java.lang.String, java.lang.String)
      */
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
      */
     public void endPrefixMapping(String prefix) throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
     public void startElement(String uri, String localName, String qName,
             Attributes atts) throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
      */
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#characters(char[], int, int)
      */
     public void characters(char[] ch, int start, int length)
             throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#ignorableWhitespace(char[], int, int)
      */
     public void ignorableWhitespace(char[] ch, int start, int length)
             throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#processingInstruction(java.lang.String, java.lang.String)
      */
     public void processingInstruction(String target, String data)
             throws SAXException {
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#skippedEntity(java.lang.String)
      */
     public void skippedEntity(String name) throws SAXException {

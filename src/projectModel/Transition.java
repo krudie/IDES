@@ -1,8 +1,8 @@
 package projectModel;
 
 /**
- * @author Axel Gottlieb Michelsen This class represent the transitions in an
- *         automaton.
+ * This class represent the transitions in an automaton.
+ * @author Axel Gottlieb Michelsen
  */
 public class Transition extends SubElementContainer{
     private State sourceS, targetS;

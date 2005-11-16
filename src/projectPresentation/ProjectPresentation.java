@@ -4,6 +4,11 @@ import java.io.File;
 
 import projectModel.Automaton;
 
+/**
+ * Interface for the userinterface to call things in the presentation layer
+ * 
+ * @author Kristian Edlund
+ */
 public interface ProjectPresentation {
     
     /**

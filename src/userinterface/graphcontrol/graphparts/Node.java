@@ -144,7 +144,6 @@ public class Node extends GraphObject{
      * @param attributes The attributes for this node.
      * @param arrow_x The x component of the start arrow direction.
      * @param arrow_y The y component of the start arrow direction.
-     * @param glyph_string The string representation of the glyph label.
      */
     public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes, float arrow_x, float arrow_y, String glyph_string, int id){
         super(gp, gm, attributes);
@@ -175,7 +174,6 @@ public class Node extends GraphObject{
      * Set the class variables of this Node.
      * 
      * @param glyph_string The string representation of the glyph label.
-     * @param latex_string The string representation of the latex label.
      */
     private void initializeLabels(String glyph_string){
         setGlyphLabel(new GlyphLabel(gp, this, glyph_string, origin(), Label.CENTER));

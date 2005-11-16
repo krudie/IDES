@@ -31,7 +31,7 @@ public class Automaton implements Cloneable{
         this.name = name;
     }
     
-    /* (non-Javadoc)
+    /**
      * @see java.lang.Object#clone()
      */
     public Automaton clone(){
@@ -238,39 +238,40 @@ public class Automaton implements Cloneable{
             this.a = a;
             this.sli = sli;
         }
-        /* (non-Javadoc)
+        
+        /**
          * @see java.util.Iterator#hasNext()
          */
         public boolean hasNext(){
             return sli.hasNext();
         }
-        /* (non-Javadoc)
+        /**
          * @see java.util.Iterator#next()
          */
         public State next(){
             current = sli.next();
             return current;
         }
-        /* (non-Javadoc)
+        /**
          * @see java.util.ListIterator#hasPrevious()
          */
         public boolean hasPrevious(){
             return sli.hasPrevious();
         }
-        /* (non-Javadoc)
+        /**
          * @see java.util.ListIterator#previous()
          */
         public State previous(){
             current = sli.previous();
             return current;
         }
-        /* (non-Javadoc)
+        /**
          * @see java.util.ListIterator#nextIndex()
          */
         public int nextIndex(){
             return sli.nextIndex();
         }
-        /* (non-Javadoc)
+        /**
          * @see java.util.ListIterator#previousIndex()
          */
         public int previousIndex(){

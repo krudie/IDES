@@ -20,20 +20,19 @@ import userinterface.geometric.UnitVector;
 
 import att.grappa.*;
 
-
 /**
- * This class is supposed to be created an teared down after every layout of a graph.
+ * This class is supposed to be created an teared down after every layout of a
+ * graph. It uses the Java interface Grappa for the layout engine Graphviz
+ * 
+ * @see Grappa
  * @author Kristian edlund
  */
 public class Layouter{
 
     /**
-     * The constructor of the layouter
+     * The constructor of the layouter Takes an automaton and lays it out
      * 
-     * Takes an automaton and lays it out
-     * 
-     * @param automaton
-     *            the automaton that needs graphic info
+     * @param automaton the automaton that needs graphic info
      */
     public Layouter(Automaton automaton) throws Exception{
         final String graphvizPath = SystemVariables.getGraphvizPath() + " -Tdot";
@@ -47,25 +46,26 @@ public class Layouter{
         catch(Exception e){
         }
 
-        
         // Creating the inputter which inputs things into grappa
         // It is made this way so it wont block
         Inputter inputter = new Inputter(pos, automaton);
         inputter.start();
 
         Graph graph = doLayout(pis, graphvizPath);
-        fromDot(graph, automaton);   
+        fromDot(graph, automaton);
     }
 
     /**
      * Calls graphviz through grappa to do the laytout
+     * 
      * @param file the dotformatted file
-     */   
-    private Graph doLayout(InputStream file, String graphvizPath) throws Exception{       
-        
+     * @return The layouted graph in Grappa format
+     */
+    private Graph doLayout(InputStream file, String graphvizPath) throws Exception{
+
         // I just stole this part from an example on how to use grappa
-        //Make a parser and then use it to parse the file.
-        
+        // Make a parser and then use it to parse the file.
+
         Graph graph;
 
         try{
@@ -78,11 +78,10 @@ public class Layouter{
             ex.printStackTrace(System.err);
             return null;
         }
-        
-        
-        //Here we fire up graphviz as an external process and hand it to grappa
-        Process engine = Runtime.getRuntime().exec(graphvizPath);        
-        if(!GrappaSupport.filterGraph(graph,engine)) {
+
+        // Here we fire up graphviz as an external process and hand it to grappa
+        Process engine = Runtime.getRuntime().exec(graphvizPath);
+        if(!GrappaSupport.filterGraph(graph, engine)){
             System.err.println("ERROR: somewhere in filterGraph");
         }
         try{
@@ -99,39 +98,51 @@ public class Layouter{
         return graph;
     }
 
+    /**
+     * An internal class used for layouting. It starts a thread and inputs stuff into a stream that grappa reads from.
+     * It is done this way, since reading and writing to the stream from the same thread can cause deadlock.
+     * @author Kristian Edlund
+     */
     private class Inputter extends Thread{
 
         private PrintWriter input;
 
         private Automaton automaton;
 
+        /**
+         * Constructer for the inputter
+         * @param os The outputstream to write the data into
+         * @param automaton The automaton that needs the layout
+         */       
         public Inputter(OutputStream os, Automaton automaton){
             input = new PrintWriter(os, true);
             this.automaton = automaton;
         }
 
+                
         /**
-         * Transform the automaton into dot format
+         * The method that transform the automaton into dot format.
+         * This method should be called as start() instead to start it as a thread.
+         * @see java.lang.Runnable#run()
          */
         public void run(){
             // putting out basic info that needs to be put into the buffer
             input.println("digraph Test_Graph {");
             input.println("graph[");
             input.println("];");
-            
 
             // putting in the transitions
             // sourceID->targetID[];
             ListIterator<projectModel.State> states = automaton.getStateIterator();
             projectModel.State state = null;
-            
+
             while(states.hasNext()){
                 state = states.next();
-                input.println(state.getId() + "[Shape=ellipse, width=\".4\", height=\".4\"];");                
+                input.println(state.getId() + "[Shape=ellipse, width=\".4\", height=\".4\"];");
             }
-            
+
             states = automaton.getStateIterator();
-            
+
             while(states.hasNext()){
                 state = states.next();
 
@@ -160,11 +171,14 @@ public class Layouter{
             // input footer
             input.println("}");
             input.flush();
-            input.close();                       
-        }            
-    }            
+            input.close();
+        }
+    }
+
     /**
-     * Transform Grappa Graph object back into the graphic information we need for the model 
+     * Transform Grappa Graph object back into the graphic information we need
+     * for the model
+     * 
      * @param graph The graph to convert
      * @param automaton The automaton that needs the graphic information
      */
@@ -262,10 +276,8 @@ public class Layouter{
     }
 
     /**
-     * Test main
-     * 
-     * @param args
-     *            not used
+     * Used for testing
+     * @param args not used
      */
     public static void main(String[] args){
 

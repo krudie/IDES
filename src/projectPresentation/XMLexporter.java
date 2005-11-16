@@ -12,6 +12,11 @@ import projectModel.SubElement;
 import projectModel.SubElementContainer;
 import projectModel.Transition;
 
+/**
+ * Class for exporting the projects to xml format for saving them on the harddrive
+ * 
+ * @author Axel Gottlieb Michelsen & Kristian Edlund
+ */
 public class XMLexporter{
     
     private static final String INDENT =  "  ";
