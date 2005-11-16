@@ -15,7 +15,7 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author edlund
+ * @author Kristian edlund
  * 
  * This class contains methods for supervisory control of discrete event systems.
  * 

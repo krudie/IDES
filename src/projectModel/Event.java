@@ -1,7 +1,5 @@
 package projectModel;
 
-import java.io.PrintStream;
-
 /**
  * 
  * @author Axel Gottlieb Michelsen

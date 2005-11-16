@@ -124,7 +124,6 @@ public class Node extends GraphObject{
      * @param arrow_x The x component of the start arrow direction.
      * @param arrow_y The y component of the start arrow direction.
      * @param glyphLabel A Label to be cloned for the glyph label of this Node.
-     * @param latex_label A Label to be cloned for the latex label of this Node.
      */
     public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes, float arrow_x, float arrow_y, GlyphLabel glyphLabel){
         super(gp, gm, attributes);

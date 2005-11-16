@@ -14,20 +14,18 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author edlund and axel
- * 
- * This class contains methods for composing new automata from
- * existing automata.
- * 
+ * @author edlund and axel This class contains methods for composing new
+ *         automata from existing automata.
  */
 public class Composition{
 
     /**
      * Takes multiple automata and makes the product of them all
+     * 
      * @param automata an array of automata
      * @param name The name of the end product
      * @return The result of the product
-     */    
+     */
     public static Automaton product(Automaton[] automata, String name){
 
         if(automata.length < 2) return null;
@@ -50,12 +48,9 @@ public class Composition{
     /**
      * Computes the accessible product of the two automata a and b.
      * 
-     * @param a
-     *            an automaton
-     * @param b
-     *            an automaton
-     * @param product
-     *            the accesible product of a and b.
+     * @param a an automaton
+     * @param b an automaton
+     * @param product the accesible product of a and b.
      */
     public static void product(Automaton a, Automaton b, Automaton product){
         // Add the intersection between the eventsets as the products eventset.
@@ -148,41 +143,37 @@ public class Composition{
         }
     }
 
-    
     /**
      * Takes multiple automata and makes the product of them all
+     * 
      * @param automata an array of automata
      * @param name The name of the end product of the parallel composition
      * @return The result of the parallel composition
-     */    
+     */
     public static Automaton parallel(Automaton[] automata, String name){
-        
+
         if(automata.length < 2) return null;
-                           
-        Automaton prevAnswer= new Automaton("temp");
+
+        Automaton prevAnswer = new Automaton("temp");
         Automaton newAnswer;
-        
-        parallel(automata[0], automata[1],prevAnswer);
-        
-        
-        for(int i=2; i<automata.length; i++){
+
+        parallel(automata[0], automata[1], prevAnswer);
+
+        for(int i = 2; i < automata.length; i++){
             newAnswer = new Automaton("temp");
-            parallel(prevAnswer,automata[i], newAnswer);            
+            parallel(prevAnswer, automata[i], newAnswer);
             prevAnswer = newAnswer;
         }
         prevAnswer.setName(name);
         return prevAnswer;
     }
-    
+
     /**
      * Computes the accessible parallel composition of the two automata a and b.
      * 
-     * @param a
-     *            an automaton
-     * @param b
-     *            an automaton
-     * @param product
-     *            the accesible product of a and b.
+     * @param a an automaton
+     * @param b an automaton
+     * @param parallel a pointer to the result for the accesible parallel product of a and b.
      */
     public static void parallel(Automaton a, Automaton b, Automaton parallel){
         // Add the union of the eventsets as the parallel compositions eventset.
@@ -293,8 +284,8 @@ public class Composition{
                             && t1.getEvent() != null && t0.getEvent().getSubElement("name")
                             .getChars().equals(t1.getEvent().getSubElement("name").getChars())))){
 
-                        Event event = (t0.getEvent() == null) ? null : parallel.getEvent(Integer.parseInt(t0
-                                .getEvent().getSubElement("ref").getChars()));
+                        Event event = (t0.getEvent() == null) ? null : parallel.getEvent(Integer
+                                .parseInt(t0.getEvent().getSubElement("ref").getChars()));
 
                         s[0] = t0.getTarget();
                         s[1] = t1.getTarget();
@@ -330,10 +321,12 @@ public class Composition{
             }
         }
     }
+
     /**
-     * Computes an observer for the non-deterministic automaton P(a),
-     * i.e., the automaton where all unobservable events have been replaced
-     * with the empty event, epsilon.
+     * Computes an observer for the non-deterministic automaton P(a), i.e., the
+     * automaton where all unobservable events have been replaced with the empty
+     * event, epsilon.
+     * 
      * @param a a non-deterministic automaton
      * @param observer the output, a deterministic observer of the automaton a.
      */
@@ -341,14 +334,15 @@ public class Composition{
         ListIterator<Event> eli = a.getEventIterator();
         while(eli.hasNext()){
             Event e = eli.next();
-            if(e.getSubElement("properties").hasSubElement("observable"))
-                observer.add(new Event(e));
+            if(e.getSubElement("properties").hasSubElement("observable")) observer
+                    .add(new Event(e));
         }
-        
+
         LinkedList<LinkedList<State>> searchList = new LinkedList<LinkedList<State>>();
         int id = 0, transitionid = 0;
-        
-        // find initial states, mark them as reached and add them to the searchlist
+
+        // find initial states, mark them as reached and add them to the
+        // searchlist
         LinkedList<State> state = new LinkedList<State>();
         Iterator<State> sia = a.getStateIterator();
         while(sia.hasNext()){
@@ -369,13 +363,13 @@ public class Composition{
 
         state = new LinkedList<State>();
 
-        //find the accesible states in the observer.
+        // find the accesible states in the observer.
         while(!searchList.isEmpty()){
             LinkedList<State> sourceList = searchList.remove();
             source = observer.getState(Integer.parseInt(isIn(sourceList)));
             eli = a.getEventIterator();
             while(eli.hasNext()){
-                Event event= eli.next();
+                Event event = eli.next();
                 if(!event.getSubElement("properties").hasSubElement("observable")) continue;
                 ListIterator<State> sli = sourceList.listIterator();
                 while(sli.hasNext()){
@@ -406,41 +400,41 @@ public class Composition{
                 }
             }
         }
-        //clean
+        // clean
         sia = a.getStateIterator();
         while(sia.hasNext()){
             sia.next().removeSubElement("in");
         }
     }
-    
-    private static String isIn(LinkedList<State> sll){       
-        if(sll.isEmpty() || !sll.peek().hasSubElement("in")) return null;        
+
+    private static String isIn(LinkedList<State> sll){
+        if(sll.isEmpty() || !sll.peek().hasSubElement("in")) return null;
         return sll.peek().getSubElement("in").getAttribute(id(sll));
     }
-    
+
     private static void setIn(LinkedList<State> sll, int n){
         if(sll.isEmpty()) return;
         State s = sll.peek();
         if(!s.hasSubElement("in")) s.addSubElement(new SubElement("in"));
         s.getSubElement("in").setAttribute(id(sll), Integer.toString(n));
     }
-    
+
     private static String id(LinkedList<State> sll){
         ListIterator<State> sli = sll.listIterator();
         String name = "";
         while(sli.hasNext()){
-            name += sli.next().getId()+".";
+            name += sli.next().getId() + ".";
         }
         return name;
     }
-    
+
     private static State makeState(LinkedList<State> sll, int id, boolean initial){
         ListIterator<State> sli = sll.listIterator();
         State s, rs;
         s = sli.next();
         boolean marked = s.getSubElement("properties").hasSubElement("marked");
-        String name = "{"+s.getSubElement("name").getChars();
-        
+        String name = "{" + s.getSubElement("name").getChars();
+
         while(sli.hasNext()){
             s = sli.next();
             marked |= s.getSubElement("properties").hasSubElement("marked");
@@ -457,9 +451,10 @@ public class Composition{
         if(initial) properties.addSubElement(new SubElement("initial"));
         return rs;
     }
-    
+
     private static void sort(LinkedList<State> sll){
-        if(sll.size() < 2);
+        if(sll.size() < 2)
+        ;
         else if(sll.size() == 2){
             State s1 = sll.getFirst();
             State s2 = sll.getLast();
@@ -471,8 +466,8 @@ public class Composition{
             }
         }
         else{
-            LinkedList<State> l1 = new LinkedList<State>(sll.subList(0, sll.size()/2));
-            LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size()/2, sll.size()));
+            LinkedList<State> l1 = new LinkedList<State>(sll.subList(0, sll.size() / 2));
+            LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size() / 2, sll.size()));
             sort(l1);
             sort(l2);
             sll.clear();
@@ -484,7 +479,7 @@ public class Composition{
             }
         }
     }
-    
+
     private static void unobservableReach(LinkedList<State> sll){
         ListIterator<State> sli = sll.listIterator();
         while(sli.hasNext()){
@@ -496,7 +491,8 @@ public class Composition{
             ListIterator<Transition> stli = s.getSourceTransitionsListIterator();
             while(stli.hasNext()){
                 Transition t = stli.next();
-                if((t.getEvent() == null || !t.getEvent().getSubElement("properties").hasSubElement("observable"))
+                if((t.getEvent() == null || !t.getEvent().getSubElement("properties")
+                        .hasSubElement("observable"))
                         && !t.getTarget().hasSubElement("reached")){
                     t.getTarget().addSubElement(new SubElement("reached"));
                     sli.add(t.getTarget());
@@ -509,8 +505,6 @@ public class Composition{
             sli.next().removeSubElement("reached");
         }
     }
-    
-    
 
     private static int getId(Event e, Automaton a){
         ListIterator<Event> eli = a.getEventIterator();
@@ -526,8 +520,8 @@ public class Composition{
     private static State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
         SubElement name = new SubElement("name");
-        name.setChars("("+s[0].getSubElement("name").getChars() + ", "
-                + s[1].getSubElement("name").getChars()+")");
+        name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
+                + s[1].getSubElement("name").getChars() + ")");
         state.addSubElement(name);
 
         SubElement properties = new SubElement("properties");

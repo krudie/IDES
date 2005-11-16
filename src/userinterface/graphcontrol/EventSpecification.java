@@ -59,7 +59,6 @@ public class EventSpecification {
     
     /**
      * Constructor for the TransitionData object
-     * @param gp A link to the graphing platform
      * @param parent The parent, which the panel should be atteched to
      */
     public EventSpecification(Composite parent){

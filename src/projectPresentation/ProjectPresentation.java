@@ -53,7 +53,7 @@ public interface ProjectPresentation {
     
     /**
      * changes the name of an automaton
-     * @param oldname The name of the automaton to changes name of
+     * @param oldName The name of the automaton to changes name of
      * @param newName the new name for the automaton
      */  
     public void setAutomatonName(String oldName, String newName);

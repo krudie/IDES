@@ -1,7 +1,5 @@
 package projectModel;
 
-import java.io.PrintStream;
-
 /**
  * @author Axel Gottlieb Michelsen This class represent the transitions in an
  *         automaton.
@@ -68,8 +66,8 @@ public class Transition extends SubElementContainer{
      * (epsillon).
      * 
      * @param t the transiton the new transition is to resemble.
-     * @param source the source state.
-     * @param target the target state.
+     * @param sourceS the source state.
+     * @param targetS the target state.
      */
     public Transition(Transition t, State sourceS, State targetS){
         super(t);
@@ -91,8 +89,6 @@ public class Transition extends SubElementContainer{
     /**
      * Sets a new source, i.e., state from which this transition originates, for
      * this transition.
-     * 
-     * @param s the new source.
      */
     public State getSource(){
         return this.sourceS;

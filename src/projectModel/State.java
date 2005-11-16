@@ -1,6 +1,5 @@
 package projectModel;
 
-import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -54,7 +53,7 @@ public class State extends SubElementContainer{
     }
     /**
      * returns an iterator for the transitions originating from this state.
-     * @return
+     * @return a source transition iterator
      */
     public ListIterator<Transition> getSourceTransitionsListIterator(){
         return sourceT.listIterator();

@@ -34,7 +34,7 @@ public class AbstractParser implements ContentHandler {
 
     /**
      * Returns the errors that occured during the last parse.
-     * @return
+     * @return The generated parsing errors
      */
     public String getParsingErrors() {
         return parsingErrors;

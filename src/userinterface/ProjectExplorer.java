@@ -141,7 +141,7 @@ public class ProjectExplorer {
 
     /**
      * Brings up a renaming box for the automatons
-     * @param item the treeItem to be renamed
+     * @param selected the treeItem to be renamed
      */
     public void rename(TreeItem selected) {
         final Color black = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);

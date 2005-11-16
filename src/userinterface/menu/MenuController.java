@@ -148,7 +148,7 @@ public class MenuController {
 
     /**
      * Construct the MenuController.
-     * @param gp The GraphingPlatform in which this MenuController will exist.
+     * @param shell The shell in which this MenuController will exist.
      */
     public MenuController(Shell shell) {
         // setup the container objects

@@ -27,8 +27,7 @@ public class OptionListener extends AbstractListener {
     /**
      * Construct the OptionListener.
      * 
-     * @param graphing_platform
-     *            The platform in which this OptionListener will exist.
+     * @param shell The shell in which this OptionListener will exist.
      */
     public OptionListener(Shell shell) {
         this.shell = shell;
