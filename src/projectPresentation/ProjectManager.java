@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package projectPresentation;
 
 import java.io.File;
@@ -16,11 +14,9 @@ import projectModel.*;
  * The main file that implements the interface available for the userinterface
  * 
  * @author Kristian Edlund
+ * @author Axel Gottlieb Michelsen
  */
-/**
- * @author edlund
- *
- */
+
 public class ProjectManager implements ProjectPresentation{
 
     private Project project = null;

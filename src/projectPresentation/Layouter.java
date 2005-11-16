@@ -25,7 +25,10 @@ import att.grappa.*;
  * graph. It uses the Java interface Grappa for the layout engine Graphviz
  * 
  * @see Grappa
+ * @see <a href="http://graphviz.org">graphviz</a>
+ * 
  * @author Kristian edlund
+ * @author Axel Gottlieb Michelsen
  */
 public class Layouter{
 
@@ -102,6 +105,7 @@ public class Layouter{
      * An internal class used for layouting. It starts a thread and inputs stuff into a stream that grappa reads from.
      * It is done this way, since reading and writing to the stream from the same thread can cause deadlock.
      * @author Kristian Edlund
+     * @author Axel Gottlieb Michelsen
      */
     private class Inputter extends Thread{
 

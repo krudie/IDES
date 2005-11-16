@@ -8,6 +8,7 @@ import projectModel.Automaton;
  * Interface for the userinterface to call things in the presentation layer
  * 
  * @author Kristian Edlund
+ * @author Axel Gottlieb Michelsen
  */
 public interface ProjectPresentation {
     

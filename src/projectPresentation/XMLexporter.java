@@ -15,7 +15,8 @@ import projectModel.Transition;
 /**
  * Class for exporting the projects to xml format for saving them on the harddrive
  * 
- * @author Axel Gottlieb Michelsen & Kristian Edlund
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class XMLexporter{
     

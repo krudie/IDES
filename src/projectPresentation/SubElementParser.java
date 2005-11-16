@@ -10,6 +10,7 @@ import projectModel.SubElement;
 /**
  * This class parses subelements of an xml document.
  * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class SubElementParser extends AbstractParser {
     private SubElement se;

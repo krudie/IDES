@@ -8,7 +8,8 @@ import org.xml.sax.XMLReader;
 
 /**
  * This is an abstract class for XML parsers.
- * @author agmi02
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 
 public class AbstractParser implements ContentHandler {

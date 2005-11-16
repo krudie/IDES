@@ -1,12 +1,10 @@
-/**
- * 
- */
 package projectPresentation;
 
 /**
  * This class contains various methods helpful while parsing.
  * 
  * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class ParsingToolbox{
 

@@ -9,7 +9,8 @@ import org.xml.sax.SAXException;
 
 /**
  * This is an abstract class for xml parsers that take a file as input.
- * @author agmi02
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public abstract class AbstractFileParser extends AbstractParser {
 

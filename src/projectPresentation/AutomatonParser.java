@@ -14,6 +14,7 @@ import org.xml.sax.SAXException;
 /**
  * Objects of this class parse a file into an automaton. 
  * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class AutomatonParser extends AbstractFileParser{
     private int state = STATE_IDLE;

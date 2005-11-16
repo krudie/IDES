@@ -12,6 +12,12 @@ import org.xml.sax.SAXException;
 import projectModel.Automaton;
 import projectModel.Project;
 
+/**
+ * This is a xml parser for the project files
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
+ *
+ */
 public class ProjectParser extends AbstractFileParser {
     private Project p;
 
@@ -24,11 +30,18 @@ public class ProjectParser extends AbstractFileParser {
 
     private File file;
 
+    /**
+     * Constructer for the projectParser
+     */
     public ProjectParser() {
         super();
         ap = new AutomatonParser();
     }
 
+    
+    /**
+     * @see projectPresentation.AbstractFileParser#parse(java.io.File)
+     */
     public Project parse(File f) {
         file = f;
         state = STATE_IDLE;
