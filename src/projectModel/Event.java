@@ -1,10 +1,10 @@
 package projectModel;
 
 /**
+ * Event is the class for representing events in an automaton.
  * 
  * @author Axel Gottlieb Michelsen
- * 
- * Event is the class for representing events in an automaton.
+ * @author Kristian Edlund
  */
 public class Event extends SubElementContainer{
     private int id;

@@ -3,12 +3,12 @@ package projectModel;
 import java.util.*;
 
 /**
- * 
- * @author Axel Gottlieb Michelsen
- * 
  * This class is the topmost class in the automaton hierachy. It serves as the datastructure for
  * states, transitions and event, and gives access to data iterators that are customized to 
  * maintain data integrity of the automaton at all times.
+ * 
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class Automaton implements Cloneable{
     private LinkedList<State> states;
@@ -321,85 +321,164 @@ public class Automaton implements Cloneable{
         }
     }
     /**
-     * @author agmi02
      * A custom list iterator for transitions. Conserves data integrity.
+     * @author Axel Gottlieb Michelsen
+     * @author Kristian Edlund
      */
     private class TransitionIterator implements ListIterator<Transition>{
         private ListIterator<Transition> tli;
         private Transition current;
         
+        /**
+         * Constructor for the customized transition iterator
+         * @param tli the original transition iterator that is going to be wrapped
+         */
         public TransitionIterator(ListIterator<Transition> tli){
             this.tli = tli;
         }
+        
+        /**
+         * @see java.util.Iterator#hasNext()
+         */
         public boolean hasNext(){
             return tli.hasNext();
         }
+        
+        /**
+         * @see java.util.Iterator#next()
+         */
         public Transition next(){
             current = tli.next();
             return current;
         }
+        
+        /**
+         * @see java.util.ListIterator#hasPrevious()
+         */
         public boolean hasPrevious(){
             return tli.hasPrevious();
         }
+        
+        /**
+         * @see java.util.ListIterator#previous()
+         */
         public Transition previous(){
             current = tli.previous();
             return current;
         }
+        
+        /**
+         * @see java.util.ListIterator#nextIndex()
+         */
         public int nextIndex(){
             return tli.nextIndex();
         }
+        
+        /**
+         * @see java.util.ListIterator#previousIndex()
+         */
         public int previousIndex(){
             return tli.previousIndex();
         }
+        
+        /**
+         * Removes the transition from the states it is attached to and then removes it from the transition list
+         * @see java.util.Iterator#remove()
+         */
         public void remove(){
             current.getTarget().removeTargetTransition(current);
             current.getSource().removeSourceTransition(current);
             tli.remove();
         }
+                 
+       /**
+        * Removes the last returned transition and replaces it with the new one
+        * @param t the transition to replace the old one
+        */
         public void set(Transition t){
             remove();
             add(t);
         }
+        
+        /**
+         * Adds a new transition to the correct states and to the list of transitions
+         * @param t the transition to be added
+         */
         public void add(Transition t){
             t.getSource().addSourceTransition(t);
             t.getTarget().addTargetTransition(t);
             transitions.add(t);
         }
     }
+    
+    
     /**
-     * @author agmi02
-     *
      * A custom list iterator for events. Conserves data integrity.
+     * @author Axel Gottlieb Michelsen
+     * @author Kristian Edlund
      */
     private class EventIterator implements ListIterator<Event>{
         private Event current;
         private ListIterator<Event> eli;
         private Automaton a;
+                
         
+        /**
+         * The constructor for the event iterator
+         * @param eli the event iterator to be wrapped
+         * @param a the automaton the event list is connected to
+         */
         public EventIterator(ListIterator<Event> eli, Automaton a){
             this.eli = eli;
             this.a = a;
         }
+        
+        /**
+         * @see java.util.Iterator#hasNext()
+         */
         public boolean hasNext(){
             return eli.hasNext();
         }
+        
+        /**
+         * @see java.util.Iterator#next()
+         */
         public Event next(){
             current = eli.next();
             return current;
         }
+        
+        /**
+         * @see java.util.ListIterator#hasPrevious()
+         */
         public boolean hasPrevious(){
             return eli.hasPrevious();
         }
+        
+        /**
+         * @see java.util.ListIterator#previous()
+         */
         public Event previous(){
             current = eli.previous();
             return current;
         }
+        /**
+         * @see java.util.ListIterator#nextIndex()
+         */
         public int nextIndex(){
             return eli.nextIndex();
         }
+        
+        /**
+         * @see java.util.ListIterator#previousIndex()
+         */
         public int previousIndex(){
             return eli.previousIndex();
         }
+        /**
+         * removes the current event from all the transitions it was involved in
+         * @see java.util.Iterator#remove()
+         */
         public void remove(){
             ListIterator<Transition> tli = a.getTransitionIterator();
             while(tli.hasNext()){
@@ -410,6 +489,11 @@ public class Automaton implements Cloneable{
             }
             eli.remove();
         }
+        
+        /**
+         * Replaces the current event with the given event
+         * @param e the event to replace the current event
+         */
         public void set(Event e){
             ListIterator<Transition> tli = a.getTransitionIterator();
             while(tli.hasNext()){
@@ -420,6 +504,10 @@ public class Automaton implements Cloneable{
             }
             eli.set(e);
         }
+        /**
+         * Adds an event to the event list
+         * @param e the event to add
+         */
         public void add(Event e){
             eli.add(e);
         }

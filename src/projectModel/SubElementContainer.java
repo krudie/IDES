@@ -3,14 +3,13 @@ package projectModel;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-/**
- * @author Axel Gottlieb Michelsen
- * 
+/** 
  * This class is the superclass of elements in an automaton (suprise suprise) At
  * the moment it holds functionality for manipulating subelements of an element,
  * e.g. observable, controllable. (Just make sure you type the names of the
  * attributes in the same every time.)
- * 
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class SubElementContainer implements Cloneable{
     private Hashtable<String, SubElement> subElementList;

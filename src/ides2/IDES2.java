@@ -4,8 +4,9 @@ import projectPresentation.ProjectManager;
 import projectPresentation.ProjectPresentation;
 
 /**
+ * This is the mainclass for IDES2, and is the class that should be run as deafult
  * @author Kristian Edlund
- * 
+ * @author Axel Gottlieb Michelsen
  */
 public class IDES2 {
 

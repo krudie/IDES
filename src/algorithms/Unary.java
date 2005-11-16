@@ -1,5 +1,5 @@
 /**
- * 
+ * Contains all operations defined as unary operations
  */
 package algorithms;
 
@@ -13,9 +13,10 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author edlund and axel
- *
  * This class contatins methods for unary operations on automata.
+ * 
+ * @author Kristian Edlund
+ * @author Axel Gottlieb Michelsen
  */
 public class Unary{
     /**

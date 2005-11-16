@@ -4,11 +4,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
- * @author agmi02
- *
+ 
  * This class represents an element in an xml document.
  * It can hold attributes and character data.
- * 
+ * @author Axel Gottlieb Michelsen 
+ * @author Kristian Edlund
  */
 public class SubElement extends SubElementContainer implements Cloneable{
     private Hashtable<String, String> attributeList;
@@ -44,7 +44,7 @@ public class SubElement extends SubElementContainer implements Cloneable{
         }
     }
     
-    /* (non-Javadoc)
+    /**
      * @see java.lang.Object#clone()
      */
     public SubElement clone(){

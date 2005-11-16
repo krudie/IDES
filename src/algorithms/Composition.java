@@ -1,3 +1,4 @@
+
 package algorithms;
 
 import java.util.Iterator;
@@ -12,7 +13,8 @@ import projectModel.Transition;
 
 /**
  * This class contains methods for composing new automata from existing automata.
- * @author Kristian Edlund and Axel Gottlieb Michelsen
+ * @author Kristian Edlund 
+ * @author Axel Gottlieb Michelsen
  */
 public class Composition{
 
@@ -404,11 +406,21 @@ public class Composition{
         }
     }
 
+    /**
+     * Private function  to check if a stateset is in the observer
+     * @param sll the stateset to check
+     * @return null if it is not in, else returns the id of the observer state 
+     */
     private static String isIn(LinkedList<State> sll){
         if(sll.isEmpty() || !sll.peek().hasSubElement("in")) return null;
         return sll.peek().getSubElement("in").getAttribute(id(sll));
     }
 
+    /**
+     * private function for setting an in subelement a state
+     * @param sll the stateset to set a new id in
+     * @param n the new id
+     */
     private static void setIn(LinkedList<State> sll, int n){
         if(sll.isEmpty()) return;
         State s = sll.peek();
@@ -416,6 +428,11 @@ public class Composition{
         s.getSubElement("in").setAttribute(id(sll), Integer.toString(n));
     }
 
+    /**
+     * Makes a string of the ides in a stateset
+     * @param sll the stateset to compile a string from
+     * @return the id string . seperated
+     */
     private static String id(LinkedList<State> sll){
         ListIterator<State> sli = sll.listIterator();
         String name = "";
@@ -425,6 +442,14 @@ public class Composition{
         return name;
     }
 
+    /**
+     * Private function for making a new state from a stateset
+     * 
+     * @param sll the state set to make a new state from
+     * @param id the id it should use for the new state
+     * @param initial sets the state as initial if needed
+     * @return the newly created state
+     */
     private static State makeState(LinkedList<State> sll, int id, boolean initial){
         ListIterator<State> sli = sll.listIterator();
         State s, rs;
@@ -449,6 +474,11 @@ public class Composition{
         return rs;
     }
 
+    /**
+     * Sorting algorithm for sorting a list of states after id.
+     * Right now it uses bublesort
+     * @param sll the list of states to sort
+     */
     private static void sort(LinkedList<State> sll){
         if(sll.size() < 2)
         ;
@@ -477,6 +507,11 @@ public class Composition{
         }
     }
 
+    /**
+     * calculates the unoberservable reach for a stateset
+     * 
+     * @param sll the stateset to use.
+     */
     private static void unobservableReach(LinkedList<State> sll){
         ListIterator<State> sli = sll.listIterator();
         while(sli.hasNext()){
@@ -503,6 +538,13 @@ public class Composition{
         }
     }
 
+    /**
+     * Gets the id for an event in another automaton. It is used for finding an event id based on the event name.
+     * 
+     * @param e the event to search for
+     * @param a the automaton to search in
+     * @return returns -1 if it couldn't find the event, else returns the id of the event in automaton a
+     */
     private static int getId(Event e, Automaton a){
         ListIterator<Event> eli = a.getEventIterator();
         while(eli.hasNext()){
@@ -514,6 +556,12 @@ public class Composition{
         return -1;
     }
 
+    /**
+     * Private function for making a new state from a stateset
+     * @param s the stateset to make a new state from
+     * @param stateNumber the id of the new state
+     * @return the newly created state
+     */
     private static State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
         SubElement name = new SubElement("name");
@@ -538,6 +586,11 @@ public class Composition{
         return state;
     }
 
+    /**
+     * set the stateid for a set of states 
+     * @param s the stateset
+     * @param stateId the id to set
+     */
     private static void setStateId(State[] s, int stateId){
         if(!s[0].hasSubElement("searched")) s[0].addSubElement(new SubElement("searched"));
 
@@ -545,6 +598,12 @@ public class Composition{
                 Integer.toString(stateId));
     }
 
+    /**
+     * Gets the id from a set of states
+     * 
+     * @param s the stateset
+     * @return the id of the stateset
+     */
     private static int getStateId(State[] s){
         if(s[0].hasSubElement("searched")
                 && s[0].getSubElement("searched").hasAttribute(Integer.toString(s[1].getId()))){

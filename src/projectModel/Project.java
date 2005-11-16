@@ -2,12 +2,11 @@ package projectModel;
 
 import java.util.*;
 
-/**
- * 
- * @author agmi02
- * 
+/** 
  * This class is the topmost class in the model. It contains a set of automata.
  * 
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian Edlund
  */
 public class Project {
 

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package algorithms;
 
 import java.util.Iterator;
@@ -15,10 +12,9 @@ import projectModel.SubElement;
 import projectModel.Transition;
 
 /**
- * @author Kristian edlund
- * 
  * This class contains methods for supervisory control of discrete event systems.
- * 
+ * @author Axel Gottlieb Michelsen
+ * @author Kristian edlund
  */
 public class SuperVisory{
 
@@ -233,6 +229,12 @@ public class SuperVisory{
         }
     }
     
+    /**
+     * Private function for making a new state from a stateset
+     * @param s the stateset to make a new state from
+     * @param stateNumber the id of the new state
+     * @return the newly created state
+     */
     private static State makeState(State[] s, int stateNumber){
         State state = new State(stateNumber);
         SubElement name = new SubElement("name");

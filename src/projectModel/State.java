@@ -3,9 +3,10 @@ package projectModel;
 import java.util.*;
 
 /**
+ * Model of the state
  * 
  * @author Axel Gottlieb Michelsen
- * 
+ * @author Kristian Edlund
  */
 public class State extends SubElementContainer{
     private LinkedList<Transition> sourceT, targetT;
