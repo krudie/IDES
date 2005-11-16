@@ -95,32 +95,39 @@ public class SuperVisory{
      * @return The answer to the controllable question
      */    
     public static boolean controllable(Automaton plant, Automaton legal){
-
         //This function is very similar to supC besides that it will only run trough the automaton once to see if anyhitng should be cut of.
-                
         Automaton result = new Automaton("");
         supCProduct(plant, legal, result);
-                                    
+        
         ListIterator<State> si = result.getStateIterator();
-        while(si.hasNext()){
+        
+        while(si.hasNext()){                
             State s = si.next();
             
             State pln = plant.getState(Integer.parseInt(s.getSubElement("plantID").getChars()));
             ListIterator<Transition> plsti = pln.getSourceTransitionsListIterator();                
-                                
-            while(plsti.hasNext()){
-                Transition plst = plsti.next();
-                if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
-                    ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
-                    while(sti.hasNext()){
-                        if(sti.next().getEvent().getId() == plst.getEvent().getId()){                            
-                            return false;
-                        }                                                        
-                    }
-                }                
-            }                   
-        }                    
-        return true;        
+            
+                while(plsti.hasNext()){
+                    Transition plst = plsti.next();
+                    //if the event is not controllable, check if the event is in the product as well
+                    if(!plst.getEvent().getSubElement("properties").hasSubElement("controllable")){
+                        ListIterator<Transition> sti = s.getSourceTransitionsListIterator();                                                  
+                        boolean found = false;
+                        while(sti.hasNext()){
+                            //if we find the event we might as well break out of the search
+                            if(sti.next().getEvent().getId() == plst.getEvent().getId()){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found){ 
+                            //if the event is not found in the product as well it is not controllable
+                           return false;
+                        }                            
+                    }                
+                }    
+        }   
+        return true;                                                              
     }
 
     
