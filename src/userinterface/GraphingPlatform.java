@@ -132,6 +132,9 @@ public class GraphingPlatform{
         // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         tabFolder.addSelectionListener(new SelectionAdapter(){
+            /**
+             * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+             */
             public void widgetSelected(SelectionEvent e){
                 if(es.isChanged()){
                     es.setChanged(false);
@@ -142,10 +145,18 @@ public class GraphingPlatform{
         });
     }
 
+    /**
+     * Sets the enabled status of the graphing area
+     * @param state the new state
+     */
     public void setEnabled(boolean state){
         tabFolder.setEnabled(state);
     }
 
+    /**
+     * opens an automaton in the graphing area
+     * @param automatonName the name of the automaton to open
+     */
     public void open(String automatonName){
 
         Automaton tempautomaton = Userinterface.getProjectPresentation().getAutomatonByName(
@@ -309,6 +320,9 @@ public class GraphingPlatform{
         MainWindow.getStatusBar().update();
     }
 
+    /**
+     * saves the open automaton
+     */
     public void save(){
         // remove everything in the automaton
 
