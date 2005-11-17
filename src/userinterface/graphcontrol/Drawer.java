@@ -435,4 +435,9 @@ public class Drawer{
         if(scale != 1)
             g2d.scale(1 / scale, 1 / scale);
     }
+    
+    public Graphics2D getGraphics()
+    {
+        return g2d;
+    }
 }

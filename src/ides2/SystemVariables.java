@@ -22,7 +22,13 @@ public class SystemVariables {
      * The name of the simple text file where the system variables will be
      * recorded
      */
-    private static final String settings_file_name = "settings.txt";
+	private static final String settings_file_name = "settings.txt"; // in the application path
+	
+	/**
+     * Paths to thrid party latex application.
+     */
+	public static final String DEFAULT_TEX_PATH = "C:\\Program Files\\texmf\\miktex\\bin",
+								DEFAULT_PS_PATH = "C:\\Program Files\\gs\\gs8.15\\bin";
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // system variables ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +45,12 @@ public class SystemVariables {
      */
     public static String system_path = "";
 
-    /**
+	/**
+     * The physical location used for export to latex files
+     */
+	public static String tex_path = "";
+	
+	/**
      * The last used physical location for save/load
      */
     public static String last_used_path = "";
@@ -66,9 +77,19 @@ public class SystemVariables {
     public static boolean use_error_reporting = true;
 
     /**
+     * Records whether or not labels should be renderd latex or just plain text
+     */
+	public static boolean use_latex_labels = false;
+	
+    /**
      * Force all nodes to the largest used radius
      */
     public static boolean use_standard_node_size = false;
+
+    /**
+     * Use pstricks as the export to latex format (versus pict2e)
+     */
+    public static boolean use_pstricks = true;
 
     /**
      * The size for the node text eding window
@@ -80,6 +101,16 @@ public class SystemVariables {
      */
     private static String graphvizPath = new String();
     
+	/**
+     * Path to a latex rendering tool.
+     */
+	public static String path_to_tex = DEFAULT_TEX_PATH;
+	
+	/**
+     * Path to a post script handeling tool.
+     */
+	public static String path_to_ps = DEFAULT_PS_PATH;
+	
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // SystemVariables construction///////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +136,9 @@ public class SystemVariables {
 
         // calcualte and create if necessary the system and tex paths.
         system_path = application_path + "system" + File.separator;
+        tex_path = application_path + "tex" + File.separator;
         (new File(system_path)).mkdir();
+        (new File(tex_path)).mkdir();
 
         fetchValues();
     }
@@ -138,9 +171,14 @@ public class SystemVariables {
                             use_error_reporting = (next_token.equals("true"));
                         } else if (this_token.equals("use_standard_node_size")) {
                             use_standard_node_size = (next_token.equals("true"));
+                        } else if (this_token.equals("use_latex_labels")) {
+                            use_latex_labels = (next_token.equals("true"));
                         } else if(this_token.equals("graphvizPath")){
                             graphvizPath = next_token;
                         }
+                        else if(this_token.equals("floating_text_size"))     { floating_text_size     = new Point(next_token); }
+                        else if(this_token.equals("path_to_tex"))            { path_to_tex            = next_token; }
+                        else if(this_token.equals("path_to_ps"))             { path_to_ps             = next_token; }
                     }
                 }
                 this_line = in.readLine();
@@ -164,8 +202,12 @@ public class SystemVariables {
             out.println("show_all_labels=" + show_all_labels);
             out.println("use_error_reporting=" + use_error_reporting);
             out.println("use_standard_node_size=" + use_standard_node_size);
+            out.println("use_latex_labels="+use_latex_labels);
             out.println("graphvizPath=" + graphvizPath);
-            out.close();
+            out.println("floating_text_size="     + floating_text_size);
+            out.println("path_to_tex="            + path_to_tex);
+            out.println("path_to_ps="             + path_to_ps);
+           out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

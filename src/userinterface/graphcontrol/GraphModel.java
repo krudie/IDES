@@ -199,6 +199,11 @@ public class GraphModel{
      * Cause all GraphObjects to accomodate any recent changes in their Labels.
      */
     public void accomodateLabels(){
+        max_node_size=0;
+        for(int i = 0; i < node_list.size(); i++){
+            if(max_node_size<node_list.elementAt(i).getPreferredRadius())
+                max_node_size=node_list.elementAt(i).getPreferredRadius();
+        }
         for(int i = 0; i < node_list.size(); i++){
             node_list.elementAt(i).accomodateLabel();
         }

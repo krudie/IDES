@@ -172,14 +172,14 @@ public class Edge extends GraphObject{
      * @param a  The attributes for this Edge.
      */
     private Edge(GraphingPlatform gp, GraphModel gm, Node start_node, Node end_node, Curve curve,
-            Point label_displacement, int a, Vector<TableItem> label_data, GlyphLabel glyphLabel){
+            Point label_displacement, int a, Vector<TableItem> label_data, LatexLabel glyphLabel){
         super(gp, gm, a);
         constructEdge(start_node, end_node);
 
         this.curve = curve;
         this.label_displacement = label_displacement;
         this.label_data = label_data;
-        this.setGlyphLabel(new GlyphLabel(gp, this, glyphLabel));
+        this.setGlyphLabel(new LatexLabel(gp, this, glyphLabel));
     }
 
     /**
@@ -248,7 +248,7 @@ public class Edge extends GraphObject{
     private void initializeLabels(int gtx, int gty){
         label_displacement = new Point(gtx, gty);
         label_data = new Vector<TableItem>();
-        setGlyphLabel(new GlyphLabel(gp, this));
+        setGlyphLabel(new LatexLabel(gp, this));
     }
 
     /**
@@ -586,8 +586,8 @@ public class Edge extends GraphObject{
         String representation = getLabelDataString();
         if(!getGlyphLabel().string_representation.equals(representation)){
             // the label has changed we must render it.
-            getGlyphLabel().string_representation = representation;
-            getGlyphLabel().render();
+//            getGlyphLabel().string_representation = representation;
+//            getGlyphLabel().render();
         }
 
         getGlyphLabel().renderIfNeeded();
@@ -756,6 +756,11 @@ public class Edge extends GraphObject{
         curve.translateAll(x, y);
         getGlyphLabel().setAnchor(label_displacement.plus(curve.calculateBezierPoint((float) 0.5)),
                 Label.CORNER);
+    }
+    
+    public int numberOfEvents()
+    {
+        return label_data.size();
     }
     
     public String[] getEventNames(){

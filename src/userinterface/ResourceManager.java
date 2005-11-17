@@ -51,6 +51,7 @@ public class ResourceManager{
                                GRAPHIC_GRID = "graphic_grid",
                                OPTION_ERRORREPORT = "option_errorreport",
                                OPTION_NODE = "option_node",
+                               OPTION_LATEX = "option_uselatex",
                                HELP_HELPTOPICS = "help_helptopics",
                                HELP_ABOUT = "help_about",
                                LOGO = "logo",

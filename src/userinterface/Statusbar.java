@@ -5,6 +5,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import userinterface.graphcontrol.graphparts.Edge;
+
 public class Statusbar{
     
     /**
@@ -23,9 +25,15 @@ public class Statusbar{
         status.pack();        
     }
     
-    public void update(){               
+    public void update(){
+        int transitions=0;
+        for(int i=MainWindow.getGraphingPlatform().gc.gm.getEdgeSize()-1;i>=0;--i)
+        {
+            Edge e=MainWindow.getGraphingPlatform().gc.gm.getEdgeById(i);
+            transitions+=e.numberOfEvents();
+        }
         status.setText("   "+ MainWindow.getGraphingPlatform().getOpenAutomatonName()+", states: "+
-                MainWindow.getGraphingPlatform().gc.gm.getNodeSize() +", transitions: "+MainWindow.getGraphingPlatform().gc.gm.getEdgeSize());                
+                MainWindow.getGraphingPlatform().gc.gm.getNodeSize() +", transitions: "+transitions);                
     }
     
 }

@@ -3,6 +3,8 @@
  */
 package userinterface.menu;
 
+import ides2.SystemVariables;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
@@ -90,7 +92,8 @@ public class MenuController {
      * Option System.
      */
     public UnifiedMenu option_errorreport = null,
-                       option_node = null;
+                       option_node = null,
+                       option_uselatex = null;
 
     /**
      * Graphic System.
@@ -331,6 +334,7 @@ public class MenuController {
         // create the UnifiedMenus
         option_errorreport = new UnifiedMenu(ResourceManager.OPTION_ERRORREPORT, optionListener);
         option_node = new UnifiedMenu(ResourceManager.OPTION_NODE, optionListener);
+        option_uselatex = new UnifiedMenu(ResourceManager.OPTION_LATEX, optionListener);
 
         // set up main menu structures and add the MenuItems (order matters)
 
@@ -341,6 +345,7 @@ public class MenuController {
 
         option_errorreport.addMitm(mnu_option, SWT.CHECK);
         option_node.addMitm(mnu_option, SWT.CHECK);
+        option_uselatex.addMitm(mnu_option,SWT.CHECK);
 
         // setup the toolbar structures and add the ToolItems (order matters)
 
@@ -441,6 +446,9 @@ public class MenuController {
         graphic_grid.setEnabled(false);
         graphic_alledges.setEnabled(false);
         graphic_alllabels.setEnabled(false);
+
+        option_node.setSelection(SystemVariables.use_standard_node_size);
+        option_uselatex.setSelection(SystemVariables.use_latex_labels);
 
     }
 

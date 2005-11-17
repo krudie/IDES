@@ -41,12 +41,12 @@ public abstract class GraphObject {
     /**
      * The label for this GraphObject
      */
-    private GlyphLabel glyphLabel = null;
+    private LatexLabel glyphLabel = null;
     
-    public GlyphLabel getGlyphLabel(){
+    public LatexLabel getGlyphLabel(){
         return glyphLabel;
     }
-    public void setGlyphLabel(GlyphLabel glyphLabel){
+    public void setGlyphLabel(LatexLabel glyphLabel){
         this.glyphLabel = glyphLabel;
     }
 

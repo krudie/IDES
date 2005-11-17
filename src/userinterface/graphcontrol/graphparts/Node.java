@@ -44,6 +44,9 @@ public class Node extends GraphObject{
      * The direction of the arrow if this node is a start state.
      */
     private UnitVector start_arrow_direction = null;
+    
+    /* control: if already accommodating its label, skip accommodation on external call */
+    private boolean accommodating=false;
 
     public UnitVector getStartArrow(){
         return start_arrow_direction;
@@ -125,12 +128,12 @@ public class Node extends GraphObject{
      * @param arrow_y The y component of the start arrow direction.
      * @param glyphLabel A Label to be cloned for the glyph label of this Node.
      */
-    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes, float arrow_x, float arrow_y, GlyphLabel glyphLabel){
+    public Node(GraphingPlatform gp, GraphModel gm, int x, int y, int r, int attributes, float arrow_x, float arrow_y, LatexLabel glyphLabel){
         super(gp, gm, attributes);
         this.x = x;
         this.y = y;
         constructNode(r, arrow_x, arrow_y);
-        this.setGlyphLabel(new GlyphLabel(gp, this, glyphLabel));
+        this.setGlyphLabel(new LatexLabel(gp, this, glyphLabel));
     }
 
     /**
@@ -176,7 +179,7 @@ public class Node extends GraphObject{
      * @param glyph_string The string representation of the glyph label.
      */
     private void initializeLabels(String glyph_string){
-        setGlyphLabel(new GlyphLabel(gp, this, glyph_string, origin(), Label.CENTER));
+        setGlyphLabel(new LatexLabel(gp, this, glyph_string, origin(), Label.CENTER));
     }
 
     /**
@@ -352,16 +355,22 @@ public class Node extends GraphObject{
 
         getGlyphLabel().renderIfNeeded();
 
-        int new_radius = getGlyphLabel().rendered_radius;
+        int new_radius = getGlyphLabel().getRadius();//.rendered_radius;
         if(getGlyphLabel().isntEmpty() && isMarkedState()){
             new_radius = new_radius + RDIF;
         }
-        if(gm.max_node_size < new_radius){
-            gm.max_node_size = new_radius;
+        if(new_radius!=r&&SystemVariables.use_standard_node_size&&!accommodating)
+        {
+            accommodating=true;
+            gm.accomodateLabels();
+            accommodating=false;
+        }   
+ //       if(gm.max_node_size < new_radius){
+            //gm.max_node_size = new_radius;
             // because we changed the node size, we need to tell all the other
             // nodes to update.
-            if(SystemVariables.use_standard_node_size) gm.accomodateLabels();
-        }
+   //         if(SystemVariables.use_standard_node_size) gm.accomodateLabels();
+     //   }
         if(SystemVariables.use_standard_node_size) new_radius = gm.max_node_size;
 
         if(new_radius != r){
@@ -376,6 +385,19 @@ public class Node extends GraphObject{
         }
     }
 
+    public int getPreferredRadius()
+    {
+        getGlyphLabel().setAnchor(origin(), Label.CENTER);
+
+        getGlyphLabel().renderIfNeeded();
+
+        int new_radius = getGlyphLabel().getRadius();//.rendered_radius;
+        if(getGlyphLabel().isntEmpty() && isMarkedState()){
+            new_radius = new_radius + RDIF;
+        }
+        return new_radius;
+    }
+    
     /**
      * Copy any existing information from the abandoned label type into the new
      * label type providing that the new type has an empty value.

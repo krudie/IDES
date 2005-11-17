@@ -5,6 +5,7 @@ package userinterface.graphcontrol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.File;
 import java.util.Date;
 import java.util.Vector;
 
@@ -30,6 +31,7 @@ import ides2.SystemVariables;
 import userinterface.graphcontrol.graphparts.Edge;
 import userinterface.graphcontrol.graphparts.GraphObject;
 import userinterface.graphcontrol.graphparts.Node;
+import userinterface.graphcontrol.graphparts.Renderer;
 
 /**
  * This class handles the creation and management of everything inside the
@@ -48,6 +50,11 @@ import userinterface.graphcontrol.graphparts.Node;
  * @author Michael Wood
  */
 public class GraphController{
+
+    /**
+     * This renders latex code to png files.
+     */
+    public Renderer renderer = null;    
 
     /**
      * The platform in which this GraphController will exist.
@@ -258,6 +265,9 @@ public class GraphController{
      */
     private int last_hslider_selection = 0, last_vslider_selection = 0;
 
+    /*used by Node to estimate font length*/
+    private Drawer drawer;
+    
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // GraphController construction ///////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,6 +340,8 @@ public class GraphController{
 
         floating_text = new FloatingText(gp);
         floating_toggles = new FloatingToggles(gp);
+        
+        renderer = Renderer.getRenderer(new File(SystemVariables.path_to_tex),new File(SystemVariables.path_to_ps));
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1047,7 +1059,7 @@ public class GraphController{
      *            The Graphics2D object where it will be drawn.
      */
     public void draw(Graphics2D g2d){
-        Drawer drawer = new Drawer(gp, g2d, gm.scale);
+        drawer = new Drawer(gp, g2d, gm.scale);
 
         gm.draw(drawer);
 
@@ -1056,4 +1068,8 @@ public class GraphController{
         drawer.setColor(GraphModel.NORMAL);
     }
 
+    public Drawer getCurrentDrawer()
+    {
+        return drawer;
+    }
 }

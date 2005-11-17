@@ -60,6 +60,13 @@ public class OptionListener extends AbstractListener {
                 }
             };
         }
+        if (resource_handle.equals(ResourceManager.OPTION_LATEX)) {
+            return new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    latex(e);
+                }
+            };
+        }
         System.out.println("Error: no match for resource_handle = "
                 + resource_handle);
         return new SelectionAdapter() {
@@ -92,6 +99,12 @@ public class OptionListener extends AbstractListener {
     public void node(org.eclipse.swt.events.SelectionEvent e) {
         SystemVariables.use_standard_node_size = MainWindow
                 .getGraphingPlatform().mc.option_node.getSelection();
+        MainWindow.getGraphingPlatform().gc.gm.accomodateLabels();
+        MainWindow.getGraphingPlatform().gc.repaint();
+    }
+    public void latex(org.eclipse.swt.events.SelectionEvent e) {
+        SystemVariables.use_latex_labels = MainWindow
+                .getGraphingPlatform().mc.option_uselatex.getSelection();
         MainWindow.getGraphingPlatform().gc.gm.accomodateLabels();
         MainWindow.getGraphingPlatform().gc.repaint();
     }
