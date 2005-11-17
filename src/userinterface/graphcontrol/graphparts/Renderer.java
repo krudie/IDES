@@ -470,7 +470,7 @@ public class Renderer {
 
 		//GhostScript
 		command=new String[7];
-		command[0]=gsPath.getCanonicalPath()+File.separator+"gswin32c";
+		command[0]=gsPath.getCanonicalPath();//+File.separator+"gswin32c";
 		command[1]="-dBATCH";
 		command[2]="-dNOPAUSE";
 		command[3]="-sDEVICE=pnggray";

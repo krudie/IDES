@@ -30,7 +30,10 @@ public class Statusbar{
         for(int i=MainWindow.getGraphingPlatform().gc.gm.getEdgeSize()-1;i>=0;--i)
         {
             Edge e=MainWindow.getGraphingPlatform().gc.gm.getEdgeById(i);
-            transitions+=e.numberOfEvents();
+            if(e.numberOfEvents()==0)
+                transitions++;
+            else
+                transitions+=e.numberOfEvents();
         }
         status.setText("   "+ MainWindow.getGraphingPlatform().getOpenAutomatonName()+", states: "+
                 MainWindow.getGraphingPlatform().gc.gm.getNodeSize() +", transitions: "+transitions);                
