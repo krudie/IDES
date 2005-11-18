@@ -1123,11 +1123,9 @@ public class GraphController{
                     return;
                 }
                 SystemVariables.path_to_ps = newPath;                                 
+                Renderer.getRenderer(new File(SystemVariables.path_to_tex), new File(SystemVariables.path_to_ps));        
                 initializeRenderer();
-            }
-            
-        }
-        
-        Renderer.getRenderer(new File(SystemVariables.path_to_tex), new File(SystemVariables.path_to_ps));        
+            }            
+        }                
     }
 }
