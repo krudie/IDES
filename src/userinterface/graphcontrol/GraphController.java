@@ -1085,8 +1085,7 @@ public class GraphController{
         if(SystemVariables.use_latex_labels){         
             try{
                 renderer.renderString("test");                
-            }catch(Exception exp){
-                exp.printStackTrace();
+            }catch(Exception exp){                
                 //asks for the tex path                
                 DirectoryDialog dirDialog = new DirectoryDialog(gp.shell, SWT.OPEN);
 
