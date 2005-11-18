@@ -1090,7 +1090,7 @@ public class GraphController{
                 DirectoryDialog dirDialog = new DirectoryDialog(gp.shell, SWT.OPEN);
 
                 dirDialog.setText(ResourceManager.getString("tex.filedialog.title"));
-                dirDialog.setFilterPath(SystemVariables.path_to_ps);
+                dirDialog.setFilterPath(SystemVariables.path_to_tex);
                 dirDialog.setMessage(ResourceManager.getString("tex.filedialog.message"));
                 String newPath = dirDialog.open();
 
