@@ -81,7 +81,8 @@ public class MainWindow{
             shell.open();
             splash.dispose();
             while(!shell.isDisposed()){
-                if(!display.readAndDispatch()) display.sleep();
+                if(!display.readAndDispatch())
+                    display.sleep();
             }
             errorShell.dispose();
             display.dispose();
