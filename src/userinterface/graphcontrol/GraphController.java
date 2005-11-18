@@ -1092,7 +1092,7 @@ public class GraphController{
 
                 dirDialog.setText(ResourceManager.getString("tex.filedialog.title"));
                 dirDialog.setFilterPath(SystemVariables.path_to_ps);
-                dirDialog.setMessage("snaps");
+                dirDialog.setMessage(ResourceManager.getString("tex.filedialog.message"));
                 String newPath = dirDialog.open();
 
                 if(newPath == null){
