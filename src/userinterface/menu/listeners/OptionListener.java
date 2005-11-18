@@ -16,7 +16,7 @@ import userinterface.ResourceManager;
 /**
  * @author Micahel Wood
  */
-public class OptionListener extends AbstractListener {
+public class OptionListener extends AbstractListener{
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // OptionListener construction
     // /////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ public class OptionListener extends AbstractListener {
      * 
      * @param shell The shell in which this OptionListener will exist.
      */
-    public OptionListener(Shell shell) {
+    public OptionListener(Shell shell){
         this.shell = shell;
     }
 
@@ -40,52 +40,50 @@ public class OptionListener extends AbstractListener {
     /**
      * Find the appropriate Listener for this resource.
      * 
-     * @param resource_handle
-     *            The constant identification for a concept in the
+     * @param resource_handle The constant identification for a concept in the
      *            ResourceManager.
      * @return The appropriate Listener for this resource.
      */
-    public SelectionListener getListener(String resource_handle) {
-        if (resource_handle.equals(ResourceManager.OPTION_ERRORREPORT)) {
-            return new SelectionAdapter() {
-                public void widgetSelected(SelectionEvent e) {
+    public SelectionListener getListener(String resource_handle){
+        if(resource_handle.equals(ResourceManager.OPTION_ERRORREPORT)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
                     errorReport(e);
                 }
             };
         }
-        if (resource_handle.equals(ResourceManager.OPTION_NODE)) {
-            return new SelectionAdapter() {
-                public void widgetSelected(SelectionEvent e) {
+        if(resource_handle.equals(ResourceManager.OPTION_NODE)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
                     node(e);
                 }
             };
         }
-        if (resource_handle.equals(ResourceManager.OPTION_LATEX)) {
-            return new SelectionAdapter() {
-                public void widgetSelected(SelectionEvent e) {
+        if(resource_handle.equals(ResourceManager.OPTION_LATEX)){
+            return new SelectionAdapter(){
+                public void widgetSelected(SelectionEvent e){
                     latex(e);
                 }
             };
         }
-        System.out.println("Error: no match for resource_handle = "
-                + resource_handle);
-        return new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
+        System.out.println("Error: no match for resource_handle = " + resource_handle);
+        return new SelectionAdapter(){
+            public void widgetSelected(SelectionEvent e){
             }
         };
     }
 
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // listeners //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // listeners
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Toggle the use_error_reporting system varaible.
      * 
-     * @param e
-     *            The SelectionEvent that initiated this action.
+     * @param e The SelectionEvent that initiated this action.
      */
-    public void errorReport(org.eclipse.swt.events.SelectionEvent e) {
+    public void errorReport(org.eclipse.swt.events.SelectionEvent e){
         SystemVariables.use_error_reporting = MainWindow.getGraphingPlatform().mc.option_errorreport
                 .getSelection();
     }
@@ -93,20 +91,24 @@ public class OptionListener extends AbstractListener {
     /**
      * Toggle the use_standard_node_size system varaible.
      * 
-     * @param e
-     *            The SelectionEvent that initiated this action.
+     * @param e The SelectionEvent that initiated this action.
      */
-    public void node(org.eclipse.swt.events.SelectionEvent e) {
-        SystemVariables.use_standard_node_size = MainWindow
-                .getGraphingPlatform().mc.option_node.getSelection();
-        MainWindow.getGraphingPlatform().gc.gm.accomodateLabels();
-        MainWindow.getGraphingPlatform().gc.repaint();
-    }
-    public void latex(org.eclipse.swt.events.SelectionEvent e) {
-        SystemVariables.use_latex_labels = MainWindow
-                .getGraphingPlatform().mc.option_uselatex.getSelection();
+    public void node(org.eclipse.swt.events.SelectionEvent e){
+        SystemVariables.use_standard_node_size = MainWindow.getGraphingPlatform().mc.option_node
+                .getSelection();
         MainWindow.getGraphingPlatform().gc.gm.accomodateLabels();
         MainWindow.getGraphingPlatform().gc.repaint();
     }
 
+    
+    
+    
+    public void latex(org.eclipse.swt.events.SelectionEvent e){
+        SystemVariables.use_latex_labels = MainWindow.getGraphingPlatform().mc.option_uselatex.getSelection();
+        
+        MainWindow.getGraphingPlatform().gc.initializeRenderer();
+        
+        MainWindow.getGraphingPlatform().gc.gm.accomodateLabels();
+        MainWindow.getGraphingPlatform().gc.repaint();
+    }
 }

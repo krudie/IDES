@@ -17,8 +17,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.TableItem;
 import org.holongate.j2d.J2DCanvas;
@@ -1071,5 +1074,60 @@ public class GraphController{
     public Drawer getCurrentDrawer()
     {
         return drawer;
+    }
+    
+    /**
+     * Attempt to initialize a LaTeX renderer.
+     * If they third party applicaitons cannot be found, dialogues will prompt the user for more information.
+     */
+    public void initializeRenderer(){
+                        
+        if(SystemVariables.use_latex_labels){         
+            try{
+                renderer.renderString("test");                
+            }catch(Exception exp){
+                exp.printStackTrace();
+                //asks for the tex path                
+                DirectoryDialog dirDialog = new DirectoryDialog(gp.shell, SWT.OPEN);
+
+                dirDialog.setText(ResourceManager.getString("tex.filedialog.title"));
+                dirDialog.setFilterPath(SystemVariables.path_to_ps);
+                dirDialog.setMessage("snaps");
+                String newPath = dirDialog.open();
+
+                if(newPath == null){
+                    MessageBox warning = new MessageBox(gp.shell, SWT.ICON_WARNING | SWT.OK);
+                    warning.setMessage(ResourceManager.getString("tex.stillmissing"));
+                    warning.setText(ResourceManager.getString("tex.stillmissing.title"));
+                    warning.open();
+                    gp.mc.option_uselatex.setSelection(false);
+                    SystemVariables.use_latex_labels = false;
+                    return;
+                }
+                SystemVariables.path_to_tex = newPath;
+                
+                //asks for the ps path
+                FileDialog fileDialog = new FileDialog(gp.shell, SWT.OPEN);
+
+                fileDialog.setText(ResourceManager.getString("ps.filedialog.title"));
+                fileDialog.setFilterPath(SystemVariables.path_to_ps);
+                newPath = fileDialog.open();
+
+                if(newPath == null){
+                    MessageBox warning = new MessageBox(gp.shell, SWT.ICON_WARNING | SWT.OK);
+                    warning.setMessage(ResourceManager.getString("ps.stillmissing"));
+                    warning.setText(ResourceManager.getString("ps.stillmissing.title"));
+                    warning.open();
+                    gp.mc.option_uselatex.setSelection(false);
+                    SystemVariables.use_latex_labels = false;
+                    return;
+                }
+                SystemVariables.path_to_ps = newPath;                                 
+                initializeRenderer();
+            }
+            
+        }
+        
+        Renderer.getRenderer(new File(SystemVariables.path_to_tex), new File(SystemVariables.path_to_ps));        
     }
 }

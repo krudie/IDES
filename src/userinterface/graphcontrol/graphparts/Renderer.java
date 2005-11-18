@@ -475,11 +475,12 @@ public class Renderer {
 		command[2]="-dNOPAUSE";
 		command[3]="-sDEVICE=pnggray";
 		command[4]="-r"+dpi;
-		command[5]="-sOutputFile=\""+latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png\"";
+		//command[5]="-sOutputFile=\""+latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png\"";
+        command[5] = "-sOutputFile=" +latexFile.getCanonicalPath().substring(0,latexFile.getCanonicalPath().lastIndexOf('.'))+".png";
 		command[6]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
-		Executor gs=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));
-		execute(gs);
-		
+		Executor gs=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));		
+        execute(gs);
+		                    
 		File pngFile=new File(latexFile.getCanonicalPath().substring(0,latexFile.getCanonicalPath().lastIndexOf('.'))+".png");
 		
 		//if createImage() directly from file, file cannot be deleted

@@ -68,7 +68,6 @@ public class LatexLabel extends Label{
      */
     public LatexLabel(GraphingPlatform gp, GraphObject parent){
         super(gp, parent);
-        this.never_render = never_render;
     }
 
     /**
@@ -86,7 +85,6 @@ public class LatexLabel extends Label{
     public LatexLabel(GraphingPlatform gp, GraphObject parent, String string_representation,
             Point anchor, int anchor_type){
         super(gp, parent, string_representation, anchor, anchor_type, MINIMUM_RADIUS);
-        this.never_render = never_render;
     }
 
     /**
