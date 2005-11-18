@@ -133,10 +133,10 @@ public class Renderer {
 	/**
 	 * Construct a new object which will use the provided paths to <code>latex</code> and
 	 * GhostScript. 
-	 * @param latexPath	the path to <code>latex</code> and <code>dvips</code>
-	 * 					(e.g., "c:\texmf\miktex\bin")
-	 * @param gsPath	the path to <code>gswin32c</code>
-	 * 					(e.g., "c:\gs\gs8.14\bin")
+	 * @param latexPath	the directory where the <code>latex</code> and <code>dvips</code>
+     *                  binaries are located (e.g., "c:\texmf\miktex\bin")
+	 * @param gsPath	the location of the GhostScript command-line engine
+	 * 					(e.g., "c:\gs\gs8.14\bin\gswin32c.exe" on Windows)
 	 */
 	private Renderer(java.io.File latexPath, java.io.File gsPath)
 	{
@@ -459,6 +459,19 @@ public class Renderer {
 		command[2]=latexFile.getName();
 		Executor latex=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));
 		execute(latex);
+        
+        //Check if LaTeX output anything
+        File latexOutputFile=new File(latexFile.getParentFile().getCanonicalPath()+File.separator+
+                latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".dvi");
+        if(!latexOutputFile.exists())
+        {
+            //return empty image
+            BufferedImage empty=new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);
+            Graphics g=empty.getGraphics();
+            g.setColor(Color.WHITE);
+            g.drawLine(0,0,0,0);
+            return empty;
+        }
 		
 		//DVIPS
 		command=new String[3];
@@ -476,7 +489,7 @@ public class Renderer {
 		command[3]="-sDEVICE=pnggray";
 		command[4]="-r"+dpi;
 		//command[5]="-sOutputFile=\""+latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png\"";
-        command[5] = "-sOutputFile=" +latexFile.getCanonicalPath().substring(0,latexFile.getCanonicalPath().lastIndexOf('.'))+".png";
+        command[5] = "-sOutputFile=" +latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png";
 		command[6]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
 		Executor gs=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));		
         execute(gs);
@@ -573,6 +586,7 @@ public class Renderer {
 		int maxX=Integer.MIN_VALUE;
 		int minY=Integer.MAX_VALUE;
 		int maxY=Integer.MIN_VALUE;
+        boolean emptyImage=true;
 		for(int i=0;i<w;++i)
 		{
 			for(int j=0;j<h;++j)
@@ -584,9 +598,12 @@ public class Renderer {
 					if(i>maxX) maxX=i;
 					if(j<minY) minY=j;
 					if(j>maxY) maxY=j;
+                    emptyImage=false;
 				}
 			}
 		}
+        if(emptyImage)
+            return new Rectangle(0,0,0,0);
 		if(maxX-minX<0)
 		{
 			minX=0;
