@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.TableItem;
@@ -1053,27 +1054,27 @@ public class GraphController
 		if (!(validTexPath() && validPsPath()))
 		{
 			// we have bad parameters; therefore, open popup window and request valid info.
-			DirectoryDialog directory_dialog = new DirectoryDialog(gp.shell, SWT.OPEN); 
+			DirectoryDialog directoryDialog = new DirectoryDialog(gp.shell, SWT.OPEN); 
 
 			if (!validTexPath())
 			{
-				directory_dialog.setText(gp.rm.getString("error.missing")); 
-				directory_dialog.setMessage(gp.rm.getString("error.bad_tex"));
-				directory_dialog.setFilterPath(SystemVariables.DEFAULT_TEX_PATH);
+				directoryDialog.setText(gp.rm.getString("error.missing")); 
+				directoryDialog.setMessage(gp.rm.getString("error.bad_tex"));
+				directoryDialog.setFilterPath(SystemVariables.DEFAULT_TEX_PATH);
 				gp.sv.path_to_tex = "";
 				while (gp.sv.path_to_tex != null && !validTexPath())
-				{ gp.sv.path_to_tex = directory_dialog.open(); }
+				{ gp.sv.path_to_tex = directoryDialog.open(); }
 			}
 
 			// don't force the second prompt on them if they have canceled.
 			if (validTexPath() && !validPsPath())
 			{
-				directory_dialog.setText(gp.rm.getString("error.missing")); 
-				directory_dialog.setMessage(gp.rm.getString("error.bad_ps"));
-				directory_dialog.setFilterPath(SystemVariables.DEFAULT_PS_PATH);
+				directoryDialog.setText(gp.rm.getString("error.missing")); 
+				directoryDialog.setMessage(gp.rm.getString("error.bad_ps"));
+				directoryDialog.setFilterPath(SystemVariables.DEFAULT_PS_PATH);
 				gp.sv.path_to_ps = "";
 				while (gp.sv.path_to_ps != null && !validPsPath())
-				{ gp.sv.path_to_ps = directory_dialog.open(); }
+				{ gp.sv.path_to_ps = directoryDialog.open(); }
 			}
 		}
 

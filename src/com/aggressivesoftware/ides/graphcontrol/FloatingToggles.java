@@ -164,7 +164,8 @@ public class FloatingToggles
 		shell_bounds.x = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.x,scaled_origin.y).x, display_bounds.width - shell_bounds.width), 0);
 		shell_bounds.y = Math.max(Math.min(gp.gc.j2dcanvas.toDisplay(scaled_origin.x,scaled_origin.y).y, display_bounds.height - shell_bounds.height), 0);
 		shell.setBounds(shell_bounds);
-		shell.forceActive(); 
+		shell.forceActive();
+		shell.pack();
 
 		is_live = true;		
 	}
