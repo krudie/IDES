@@ -144,6 +144,7 @@ public class LatexLabel extends Label{
                     + RENDERED_RADIUS_FACTOR;
             rendered_radius = Math.max(rendered_radius, MINIMUM_RADIUS);            
         }
+        rendered_radius = Math.max(rendered_radius, MINIMUM_RADIUS);
         return rendered_radius;
     }
 
