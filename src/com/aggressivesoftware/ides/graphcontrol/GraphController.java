@@ -1026,7 +1026,9 @@ public class GraphController
 	{
 		try
 		{
-			if (new File(gp.sv.path_to_tex + File.separator + "latex.exe").exists() &&	new File(gp.sv.path_to_tex + File.separator + "dvips.exe").exists()) { return true; }
+			if ((new File(gp.sv.path_to_tex + File.separator + "latex.exe").exists() &&	new File(gp.sv.path_to_tex + File.separator + "dvips.exe").exists())
+					||
+					(new File(gp.sv.path_to_tex + File.separator + "latex").exists() &&	new File(gp.sv.path_to_tex + File.separator + "dvips").exists())) { return true; }
 			else { return false; }
 		}
 		catch (Exception e) { return false; }
