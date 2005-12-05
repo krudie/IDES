@@ -1036,7 +1036,8 @@ public class GraphController
 	{
 		try
 		{
-			if (new File(gp.sv.path_to_ps  + File.separator + "gswin32c.exe").exists()) { return true; }
+//			if (new File(gp.sv.path_to_ps  + File.separator + "gswin32c.exe").exists()) { return true; }
+			if (new File(gp.sv.path_to_ps).exists()&&new File(gp.sv.path_to_ps).isFile()) { return true; }
 			else { return false; }
 		}
 		catch (Exception e) { return false; }
@@ -1055,6 +1056,7 @@ public class GraphController
 		{
 			// we have bad parameters; therefore, open popup window and request valid info.
 			DirectoryDialog directoryDialog = new DirectoryDialog(gp.shell, SWT.OPEN); 
+			FileDialog fileDialog = new FileDialog(gp.shell, SWT.OPEN); 
 
 			if (!validTexPath())
 			{
@@ -1069,12 +1071,12 @@ public class GraphController
 			// don't force the second prompt on them if they have canceled.
 			if (validTexPath() && !validPsPath())
 			{
-				directoryDialog.setText(gp.rm.getString("error.missing")); 
-				directoryDialog.setMessage(gp.rm.getString("error.bad_ps"));
-				directoryDialog.setFilterPath(SystemVariables.DEFAULT_PS_PATH);
+				fileDialog.setText(gp.rm.getString("error.bad_ps"));//"error.missing")); 
+				//fileDialog.setMessage(gp.rm.getString("error.bad_ps"));
+				fileDialog.setFilterPath(SystemVariables.DEFAULT_PS_PATH);
 				gp.sv.path_to_ps = "";
 				while (gp.sv.path_to_ps != null && !validPsPath())
-				{ gp.sv.path_to_ps = directoryDialog.open(); }
+				{ gp.sv.path_to_ps = fileDialog.open(); }
 			}
 		}
 
