@@ -119,6 +119,7 @@ public class FloatingText {
                     // save changes
                     shell.setVisible(false);
                 }
+                shell.pack();
             }
         });
     }
@@ -153,11 +154,13 @@ public class FloatingText {
         this.label = label;
         label.setAnchor(origin, Label.CENTER);
         text.setText(label.string_representation);
+        shell.pack();
     }
 
     public void setVisible(boolean visibility) {
         shell.setVisible(visibility);
         if (visibility) {
+            shell.pack();
             text.forceFocus();
         }
     }
