@@ -88,12 +88,7 @@ public class GraphController
      * Manages all popups for the canvas area
      */
 	public PopupController pc = null;		
-	
-	/**
-     * Implicit hard reset from every state
-     */
-	private static final int MACHINE_RESET_CODE = 255;
-	
+		
 	/**
      * Constants for reference to the various ToolItems.
      */

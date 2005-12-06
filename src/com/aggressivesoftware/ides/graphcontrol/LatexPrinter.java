@@ -20,7 +20,8 @@ public class LatexPrinter
 	private String nodes = "",
 	   	   		   curves = "",
 				   arrows = "",
-				   texts = "",
+				   
+				   texts = "\n  \\rput(0,0){\\parbox{21pt}{\\begin{center}\\end{center}}}",
 				   vectors = "";
 
 	/**

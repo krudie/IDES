@@ -100,7 +100,7 @@ public class FloatingText
 		        public void	shellIconified(ShellEvent e)  {}
 			}
 		);
-		
+				
 		text.addKeyListener
 		(
 				new KeyListener() 
@@ -112,6 +112,10 @@ public class FloatingText
 						{
 							// save changes
 							shell.setVisible(false);
+							
+						}
+						else if((e.character == (char)Ascii.RETURN) && ((e.stateMask & SWT.CTRL) == SWT.CTRL)){
+							shell.pack();
 						}
 					}
 				}
@@ -152,12 +156,16 @@ public class FloatingText
 		this.label = label;
 		label.setAnchor(origin,Label.CENTER);
 		text.setText(label.string_representation);
+		shell.pack();
 	}
 
 	public void setVisible(boolean visibility) 
 	{ 
 		shell.setVisible(visibility); 
-		if (visibility) { text.forceFocus(); }
+		if (visibility) {
+			text.forceFocus();
+			shell.pack();
+		}
 	}
 	
 	public void dispose() { shell.dispose(); }
