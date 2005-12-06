@@ -188,6 +188,7 @@ public class TransitionData
 		
 		txt_symbol = new Text(cmp_edit_region, SWT.BORDER);
 		GridData gd_txt_symbol = new GridData();
+		gd_txt_symbol.widthHint = 50;
 		txt_symbol.setLayoutData(gd_txt_symbol);
 				
 		Label lbl_name = new Label(cmp_edit_region, SWT.NONE);
@@ -209,6 +210,7 @@ public class TransitionData
 		
 		txt_machine_code = new Text(cmp_edit_region, SWT.BORDER);
 		GridData gd_txt_machine_code = new GridData();
+		gd_txt_machine_code.widthHint = 50;
 		txt_machine_code.setLayoutData(gd_txt_machine_code);
 
 		Label lbl_description = new Label(cmp_edit_region, SWT.NONE);
@@ -458,7 +460,7 @@ public class TransitionData
 		txt_name.setText(selected_item.getText(SPEC_NAME));
 		txt_latex.setText(selected_item.getText(SPEC_LATEX));
 		txt_symbol.setText(selected_item.getText(SPEC_SYMBOL));
-		cbo_controllable.select(convertToCombo(selected_item.getText(SPEC_CONTROLLABLE)));
+		cbo_controllable.select(convertToCombo(selected_item.getText(SPEC_CONTROLLABLE)));		
 		cbo_observable.select(convertToCombo(selected_item.getText(SPEC_OBSERVABLE)));
 		txt_machine_code.setText(selected_item.getText(SPEC_MACHINE_CODE));
 		txt_description.setText(selected_item.getText(SPEC_DESCRIPTION));
@@ -764,7 +766,7 @@ public class TransitionData
 	 */	
 	private int convertToCombo(String text_meaning)
 	{
-		if (text_meaning == BOOLEAN_COMBO_TRUE) { return 0; }
+		if (text_meaning.equals(BOOLEAN_COMBO_TRUE)) { return 0; }
 		else { return 1; }
 	}
 	
