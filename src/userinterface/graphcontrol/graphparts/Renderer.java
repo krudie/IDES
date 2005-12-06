@@ -482,15 +482,17 @@ public class Renderer {
 		execute(dvips);
 
 		//GhostScript
-		command=new String[7];
+		command=new String[9];
 		command[0]=gsPath.getCanonicalPath();//+File.separator+"gswin32c";
 		command[1]="-dBATCH";
 		command[2]="-dNOPAUSE";
-		command[3]="-sDEVICE=pnggray";
-		command[4]="-r"+dpi;
+        command[3]="-dTextAlphaBits=2";
+        command[4]="-dGraphicsAlphaBits=2";
+		command[5]="-sDEVICE=pnggray";
+		command[6]="-r"+dpi;
 		//command[5]="-sOutputFile=\""+latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png\"";
-        command[5] = "-sOutputFile=" +latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png";
-		command[6]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
+        command[7] = "-sOutputFile=" +latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png";
+		command[8]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
 		Executor gs=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));		
         execute(gs);
 		                    
