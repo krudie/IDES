@@ -7,7 +7,7 @@ package com.aggressivesoftware.ides.graphcontrol;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-import org.eclipse.swt.graphics.Rectangle;
+//import org.eclipse.swt.graphics.Rectangle;
 
 import com.aggressivesoftware.geometric.Box;
 import com.aggressivesoftware.geometric.Line;
@@ -87,7 +87,7 @@ public class GraphModel
 	 * The last recorded system time.
 	 * This is used to gather performance statistics.
 	 */
-	private long last_system_time = 0;
+	//private long last_system_time = 0;
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GraphModel construction ////////////////////////////////////////////////////////////////////////////////////////
@@ -327,7 +327,7 @@ public class GraphModel
 	 */
 	public Box getBounds()
 	{
-		Rectangle canvas = gp.gc.j2dcanvas.getBounds();
+		//Rectangle canvas = gp.gc.j2dcanvas.getBounds();
 		Box bounds = new Box(50,50,51,51);
 
 		Node n = null;
@@ -418,6 +418,7 @@ public class GraphModel
      * @param	p		The input co-ordinates.
      * @return	Where the input co-ordinates would lie if they were snapped to the grid.
      */
+	/*
 	private Point snappedToGrid(Point p)
 	{
 		Point r = p.getCopy();
@@ -442,6 +443,7 @@ public class GraphModel
 		}
 		return r;
 	}
+	*/
 	
 	/**
      * Find the first a Edge in this GraphModel that contains the given query point within its bounding area.

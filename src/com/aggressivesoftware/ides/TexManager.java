@@ -33,7 +33,7 @@ public class TexManager
 	/**
      * The composite in which this TexManager's objects will be embedded.
      */
-	private Composite parent = null;
+	//private Composite parent = null;
 	
 	/**
      * The text area in the latex output frame
@@ -65,7 +65,7 @@ public class TexManager
 	public TexManager(GraphingPlatform gp, Composite parent)
 	{
 		this.gp = gp;
-		this.parent = parent;
+		//this.parent = parent;
 		
 		// create a layout for the content composite (for the widgits inside the composite)
 		GridLayout gl_tex = new GridLayout();

@@ -38,7 +38,7 @@ public class MenuController
 	/**
      * The platform in which this MenuController exists.
      */
-	private GraphingPlatform gp = null;
+	//private GraphingPlatform gp = null;
 	
 	/**
      * The main Menu to appear at the top of the GraphingPlatform gui.
@@ -171,7 +171,7 @@ public class MenuController
 	public MenuController(GraphingPlatform gp)
 	{
 		// setup the container objects
-		this.gp = gp;	
+		//this.gp = gp;	
 		menu = new Menu(gp.shell, SWT.BAR);
 		gp.shell.setMenuBar(menu);
 		advanced_coolbar = new AdvancedCoolBar(gp);
@@ -318,8 +318,7 @@ public class MenuController
 		graphic_grab.addTitm(tbr_graphic, SWT.RADIO);
 		
 		// dropdown menu
-		mnu_graphic_grid = new Menu(gp.shell, SWT.POP_UP);
-		MenuItem menuitem = null;
+		mnu_graphic_grid = new Menu(gp.shell, SWT.POP_UP);	
 		mitm_grid00 = new MenuItem(mnu_graphic_grid, SWT.RADIO);
 		mitm_grid00.setText(gp.rm.getString("graphic_grid.nogrid"));
 		mitm_grid00.setData(new Integer(0));

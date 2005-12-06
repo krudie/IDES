@@ -372,8 +372,7 @@ public class GraphController
 			     * @param	e	The initiating MouseEvent. 
 			     */
 				public void mouseDoubleClick(MouseEvent e) 
-				{					
-					Point mouse = new Point(e.x/gm.scale,e.y/gm.scale);
+				{										
 					Point edge_mouse = new Point(e.x/gm.scale,(e.y-10)/gm.scale); // allows two hotspots on the create tool
 					
 					if (DEBUGGING) { System.out.println("double"); }
@@ -985,8 +984,8 @@ public class GraphController
      */
 	public void toggleGrid()
 	{
-		draw_grid = !draw_grid;
-		j2dcanvas.repaint();
+		draw_grid = false;
+		//j2dcanvas.repaint();
 	}
 	
     /**
