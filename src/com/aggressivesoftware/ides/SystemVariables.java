@@ -75,7 +75,7 @@ public class SystemVariables
 	/**
      * Records whether or not crashing errors should automatically open a webpage to report their details.
      */
-	public boolean use_error_reporting = true;
+	public boolean use_error_reporting = false;
 
 	/**
      * Records whether or not labels should be renderd latex or just plain text
@@ -131,9 +131,9 @@ public class SystemVariables
      */
 	public SystemVariables()
 	{
-		// calcualte the application path
-		String class_paths = System.getProperty("java.class.path");
-		if (class_paths.indexOf(System.getProperty("path.separator")) > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(System.getProperty("path.separator"))); }
+		// calcualte the application path				
+		String class_paths = System.getProperty("java.class.path");	
+		if (class_paths.indexOf(System.getProperty("path.separator")) > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(System.getProperty("path.separator"))); }				
 		if (class_paths.endsWith(".jar")) { class_paths = class_paths.substring(0,class_paths.lastIndexOf(File.separator)); }
 		if (class_paths.length()>0 && !class_paths.endsWith(File.separator)) { class_paths = class_paths + File.separator; }
 		application_path = class_paths;
@@ -172,7 +172,7 @@ public class SystemVariables
 			            else if(this_token.equals("last_save_path"))         { last_used_path         = next_token; }
 			            else if(this_token.equals("show_all_edges"))         { show_all_edges         = (next_token.equals("true")); }
 			            else if(this_token.equals("show_all_labels"))        { show_all_labels        = (next_token.equals("true")); }
-			            else if(this_token.equals("use_error_reporting"))    { use_error_reporting    = (next_token.equals("true")); }
+			            //else if(this_token.equals("use_error_reporting"))    { use_error_reporting    = (next_token.equals("true")); }
 			            else if(this_token.equals("use_latex_labels"))       { use_latex_labels       = (next_token.equals("true")); }
 			            else if(this_token.equals("export_latex_to_eps"))    { export_latex_to_eps    = (next_token.equals("true")); }
 			            else if(this_token.equals("export_latex_to_tex"))    { export_latex_to_tex    = (next_token.equals("true")); }

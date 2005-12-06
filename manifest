@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: com.aggressivesoftware.ides.Main
-Class-Path: jars/swt.jar jars/j2d4swt.jar jars/comm.jar jars/Acme.zip jars/jimi.jar
+Class-Path: jars/swt.jar ./jars/j2d4swt.jar ./jars/comm.jar ./jars/Acme.zip ./jars/jimi.jar
 

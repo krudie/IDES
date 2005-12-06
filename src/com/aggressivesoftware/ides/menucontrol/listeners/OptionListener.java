@@ -62,7 +62,7 @@ public class OptionListener extends AbstractListener
      */
 	public void errorReport(org.eclipse.swt.events.SelectionEvent e)
 	{
-		gp.sv.use_error_reporting = gp.mc.option_errorreport.getSelection();
+		//gp.sv.use_error_reporting = gp.mc.option_errorreport.getSelection();
 	}	
 	
     /**

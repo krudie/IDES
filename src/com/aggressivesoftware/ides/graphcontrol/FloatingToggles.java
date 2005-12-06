@@ -93,10 +93,12 @@ public class FloatingToggles
 			if (gp.sv.use_latex_labels) 
 			{ 
 				if (table_items[i].getData("swt") != null)
-				{ btn.setImage((Image)table_items[i].getData("swt")); }
+				{
+					btn.setImage((Image)table_items[i].getData("swt"));					
+				}
 			}
-			else { btn.setText(table_items[i].getText(TransitionData.SPEC_SYMBOL)); }
-			btn.setData(table_items[i]);
+			else { btn.setText(table_items[i].getText(TransitionData.SPEC_SYMBOL)); }			
+			btn.setData(table_items[i]);			
 			btn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { buttonToggleAction(e); } } );
 			gd = new GridData(GridData.FILL_BOTH);
 			btn.setLayoutData(gd);

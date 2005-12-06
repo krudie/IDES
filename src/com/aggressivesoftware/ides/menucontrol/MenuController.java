@@ -121,7 +121,7 @@ public class MenuController
 	/**
      * Option System.
      */
-	public UnifiedMenu option_errorreport = null,
+	public UnifiedMenu //option_errorreport = null,
 					   option_latex = null,
 					   option_eps = null,	
 					   option_tex = null,	
@@ -347,7 +347,7 @@ public class MenuController
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
 		// create the UnifiedMenus
-		option_errorreport = new UnifiedMenu(gp,option_listener,gp.rm.OPTION_ERRORREPORT);
+		//option_errorreport = new UnifiedMenu(gp,option_listener,gp.rm.OPTION_ERRORREPORT);
 		option_latex = new UnifiedMenu(gp,option_listener,gp.rm.OPTION_LATEX);
 		option_eps = new UnifiedMenu(gp,option_listener,gp.rm.OPTION_EPS);
 		option_tex = new UnifiedMenu(gp,option_listener,gp.rm.OPTION_TEX);
@@ -362,7 +362,7 @@ public class MenuController
 		Menu mnu_option = new Menu(mitm_option);
 		mitm_option.setMenu(mnu_option);	
 
-		option_errorreport.addMitm(mnu_option, SWT.CHECK);
+		//option_errorreport.addMitm(mnu_option, SWT.CHECK);
 		option_latex.addMitm(mnu_option, SWT.CHECK);
 		option_eps.addMitm(mnu_option, SWT.CHECK);
 		option_tex.addMitm(mnu_option, SWT.CHECK);
@@ -408,7 +408,7 @@ public class MenuController
 		graphic_create.setSelection(true);
 		graphic_alledges.setSelection(gp.sv.show_all_edges);
 		graphic_alllabels.setSelection(gp.sv.show_all_labels);
-		option_errorreport.setSelection(gp.sv.use_error_reporting);
+		//option_errorreport.setSelection(gp.sv.use_error_reporting);
 		option_latex.setSelection(gp.sv.use_latex_labels);
 		option_eps.setSelection(gp.sv.export_latex_to_eps);
 		option_tex.setSelection(gp.sv.export_latex_to_tex);
