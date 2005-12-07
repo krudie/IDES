@@ -114,6 +114,9 @@ public class EventSpecification {
                         Rectangle rect = item.getBounds (i);
                         if (rect.contains (pt)) {
                             final int column = i;
+                            if(column > 3){
+                                return;
+                            }
                             if(column > 1){
                                 item.setText(column, Boolean.toString(item.getText(column).equals("false")));
                                 setChanged(true);
