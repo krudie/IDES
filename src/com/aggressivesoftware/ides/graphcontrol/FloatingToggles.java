@@ -4,6 +4,8 @@
 package com.aggressivesoftware.ides.graphcontrol;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Image;
@@ -109,23 +111,19 @@ public class FloatingToggles
 		(
 			new ShellListener()
 			{
-		        public void	shellDeactivated(ShellEvent e) { shellDeactivatedAction(); }
+		        public void	shellDeactivated(ShellEvent e) {shellDeactivatedAction(); }
 				public void	shellActivated(ShellEvent e) { }
 		        public void	shellClosed(ShellEvent e) {}
 		        public void	shellDeiconified(ShellEvent e) {}
 		        public void	shellIconified(ShellEvent e)  {}
 			}
-		);
-		
-		
-		
-					
+		);	
 	}
 	
 	private void shellDeactivatedAction()
 	{
 		// if they click on MAIN or EXTERNAL then we need to hide FLOAT	    
-		shell.setVisible(false);		
+		shell.setVisible(false);			
 	}
 	
 	private void buttonToggleAction(Event e)
@@ -166,7 +164,12 @@ public class FloatingToggles
 		shell.pack();	
 	}
 	
-	public void setVisible(boolean visibility) { shell.setVisible(visibility); }
+	public void setVisible(boolean visibility) {
+		shell.setVisible(visibility);
+		if(visibility){
+			shell.setActive();
+		}
+	}
 		
 	public void dispose() { shell.dispose(); }
 }
