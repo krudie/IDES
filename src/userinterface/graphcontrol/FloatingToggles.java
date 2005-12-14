@@ -158,6 +158,9 @@ public class FloatingToggles {
 
     public void setVisible(boolean visibility) {
         shell.setVisible(visibility);
+        if(visibility){
+            shell.setActive();
+        }
     }
 
     public void dispose() {
