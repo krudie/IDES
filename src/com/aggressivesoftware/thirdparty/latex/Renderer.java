@@ -473,8 +473,8 @@ public class Renderer {
 		command[0]=gsPath.getCanonicalPath();//+File.separator+"gswin32c";
 		command[1]="-dBATCH";
 		command[2]="-dNOPAUSE";
-		command[3]="-dTextAlphaBits=2";
-		command[4]="-dGraphicsAlphaBits=2";
+		command[3]="-dTextAlphaBits=4";
+		command[4]="-dGraphicsAlphaBits=4";
 		command[5]="-sDEVICE=pnggray";
 		command[6]="-r"+dpi;
 		command[7]="-sOutputFile="+latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".png";
