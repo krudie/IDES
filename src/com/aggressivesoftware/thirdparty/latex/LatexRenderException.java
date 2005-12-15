@@ -6,6 +6,8 @@ package com.aggressivesoftware.thirdparty.latex;
  */
 public class LatexRenderException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	public LatexRenderException() {
 		super();
 	}

@@ -191,10 +191,10 @@ public class LatexLabel extends Label
 	{
 		bounding_box_commas = 0;
 		Box box = new Box(anchor.x,anchor.y,anchor.x,anchor.y);
-		BufferedImage image = null;
-		int comma_factor = 3;
-		int max_height = 0;
-		boolean first_access = true;
+		//BufferedImage image = null;
+		//int comma_factor = 3;
+		//int max_height = 0;
+		//boolean first_access = true;
 		string_representation = "";
 
 		if (data != null)

@@ -33,10 +33,7 @@ import com.aggressivesoftware.ides.graphcontrol.TransitionData;
  * @author Michael Wood
  */
 public class Edge extends GraphObject
-{
- 
-	private static final int ANCHOR_RADIUS = 5;
-
+{ 	
 	/**
      * possible values for selection_state
      */
@@ -843,7 +840,7 @@ public class Edge extends GraphObject
 			float x1=0, y1=0, ctrlx1=0, ctrly1=0, ctrlx2=0, ctrly2=0, x2=0, y2=0, dx=0, dy=0;
 			int gtx=Edge.DEFAULT_LABEL_DISPLACEMENT, gty=Edge.DEFAULT_LABEL_DISPLACEMENT, a=0;
 			Node source=null, target=null;
-			boolean X1=false, Y1=false, CTRLX1=false, CTRLY1=false, CTRLX2=false, CTRLY2=false, X2=false, Y2=false, DX=false, DY=false, SOURCE=false, TARGET=false;
+			boolean X1=false, Y1=false, CTRLX1=false, CTRLY1=false, CTRLX2=false, CTRLY2=false, X2=false, Y2=false, SOURCE=false, TARGET=false;
 			String transition_data_indicies = "";
 
 			StringTokenizer tdi_tokenizer = null;
@@ -883,8 +880,6 @@ public class Edge extends GraphObject
 		            else if (last_token.equals("ctrly2")) { ctrly2 = Float.parseFloat(this_token); CTRLY2 = true; }
 		            else if (last_token.equals("x2")) { x2 = Float.parseFloat(this_token); X2 = true; }
 		            else if (last_token.equals("y2")) { y2 = Float.parseFloat(this_token); Y2 = true; }
-		            else if (last_token.equals("dx")) { dx = Float.parseFloat(this_token); DX = true; }
-		            else if (last_token.equals("dy")) { dy = Float.parseFloat(this_token); DY = true; }
 		            else if (last_token.equals("tdi")) { transition_data_indicies = this_token; }
 		            else if (last_token.equals("gtx")) { gtx = Integer.parseInt(this_token); }
 		            else if (last_token.equals("gty")) { gty = Integer.parseInt(this_token); }
