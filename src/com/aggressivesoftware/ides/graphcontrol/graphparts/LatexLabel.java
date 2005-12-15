@@ -26,7 +26,7 @@ public class LatexLabel extends Label
 	/**
      * The rendered image of the latex code.
      */
-	private BufferedImage rendered_latex = null;
+	private BufferedImage rendered_latex = null;//new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);
 	
 	/**
      * This switch allows the label to draw a set of input BufferedImages, instead of rendering them itself.
@@ -44,6 +44,15 @@ public class LatexLabel extends Label
 	 */
 	private int bounding_box_commas = 0;
 		
+	/** 
+	 * used to keep LaTeX string for the label when it shows multiple events
+	 */
+	private String latex_string = "";
+
+	/** 
+	 * keep local copy of rendered LaTeX label
+	 */
+//	private BufferedImage latex_label = new BufferedImage(0,0,BufferedImage.TYPE_BYTE_GRAY);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// LatexLabel construction ////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
@@ -190,30 +199,48 @@ public class LatexLabel extends Label
 
 		if (data != null)
 		{
+//			for (int i=0; i<data.size(); i++)
+//			{
+//				image = (BufferedImage)((TableItem)data.elementAt(i)).getData("awt");
+//				if (image != null) { max_height = Math.max(max_height, image.getHeight()); }
+//			}
+//			box.y2(box.y1() + max_height);
 			for (int i=0; i<data.size(); i++)
 			{
-				image = (BufferedImage)((TableItem)data.elementAt(i)).getData("awt");
-				if (image != null) { max_height = Math.max(max_height, image.getHeight()); }
-			}
-			box.y2(box.y1() + max_height);
-			for (int i=0; i<data.size(); i++)
-			{
-				image = (BufferedImage)((TableItem)data.elementAt(i)).getData("awt");
-				if (image != null)
-				{
-					if (!first_access)
-					{
-						string_representation = string_representation + "~,~";
-						drawer.drawString(",",box.x2()+comma_factor,box.y1()+max_height);
-						box.x2(box.x2() + 2*BOUNDING_BOX_FACTOR);
-						bounding_box_commas++;
-					}
-					else { first_access = false; }
+//				image = (BufferedImage)((TableItem)data.elementAt(i)).getData("awt");
+//				if (image != null)
+//				{
+//					if (!first_access)
+//					{
+//						string_representation = string_representation + ",~";
+//						//drawer.drawString(",",box.x2()+comma_factor,box.y1()+max_height);
+//						box.x2(box.x2() + 2*BOUNDING_BOX_FACTOR);
+//						bounding_box_commas++;
+//					}
+//					else { first_access = false; }
 					string_representation = string_representation + ((TableItem)data.elementAt(i)).getText(TransitionData.SPEC_LATEX);
-					drawer.draw(image, box.x2(), box.y1() + max_height - image.getHeight());
-					box.x2(box.x2() + image.getWidth());
-				}
+					if(i<data.size()-1)
+						string_representation = string_representation + ",~";
+					//drawer.draw(image, box.x2(), box.y1() + max_height - image.getHeight());
+//					box.x2(box.x2() + image.getWidth());
+//				}
 			}
+		}
+		if(!latex_string.equals(string_representation)||
+				(latex_string.length()!=0&&rendered_latex==null))
+		{
+			latex_string=string_representation;
+			try
+			{
+				rendered_latex = gp.gc.renderer.renderString(string_representation);
+			}catch(Exception e){e.printStackTrace();}
+		}
+//		System.out.println(string_representation+rendered_latex);
+		if(rendered_latex!=null)
+		{
+			drawer.draw(rendered_latex, anchor.x,anchor.y);
+			box.x2(box.x1()+rendered_latex.getWidth());
+			box.y2(box.y1()+rendered_latex.getHeight());
 		}
 		box.grow(BOUNDING_BOX_FACTOR);
 		bounding_box = box;
