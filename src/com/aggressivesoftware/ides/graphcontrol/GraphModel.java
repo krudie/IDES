@@ -322,6 +322,24 @@ public class GraphModel
 		return node_list.size() + edge_list.size();
 	}
 	
+	public int getNodeCount()
+	{
+		return node_list.size();
+	}
+	
+	public int getTransitionCount()
+	{
+		int count=0;
+		for(int i=0;i<edge_list.size();++i)
+		{
+			if(((Edge)edge_list.elementAt(i)).getLabelDataVector().size()>0)
+				count+=((Edge)edge_list.elementAt(i)).getLabelDataVector().size();
+			else
+				++count;
+		}
+		return count;
+	}
+	
 	/**
 	 * Get a bounding box for this graph model.
 	 */

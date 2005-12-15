@@ -1181,6 +1181,7 @@ public class GraphController
 		resetInternalState();
 		io.resetState();
 		gp.tm.resetState();
+		gp.updateStatusInfo();
 	}
 
     /**

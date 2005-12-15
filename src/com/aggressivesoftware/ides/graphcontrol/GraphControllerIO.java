@@ -102,6 +102,7 @@ public class GraphControllerIO
 	{
 		gp.mc.file_save.enable();
 		gp.mc.file_saveas.enable();
+		gp.updateStatusInfo();
 		unsaved_changes = true;
 	}
 	
@@ -237,6 +238,10 @@ public class GraphControllerIO
 			error_popup.open();	
 			return false;
 		}
+	    finally
+	    {
+	    	gp.updateStatusInfo();
+	    }
 	}
 	
 	public void loadState()
