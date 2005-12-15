@@ -10,6 +10,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import com.aggressivesoftware.ides.GraphingPlatform;
@@ -77,8 +78,10 @@ public class HelpListener extends AbstractListener
      */
 	public void helpTopics(org.eclipse.swt.events.SelectionEvent e)
 	{
-		try { Runtime.getRuntime().exec ("rundll32 url.dll,FileProtocolHandler " + gp.rm.getString("help.topics.url")); }
-		catch(Exception ex) { ex.printStackTrace(); }
+		MessageBox msg = new MessageBox(gp.shell);
+		msg.setMessage(gp.rm.getString("help.help.message"));
+		msg.setText(gp.rm.getString("help.help.title"));		
+		msg.open();						
 	}	
 	
 	/**

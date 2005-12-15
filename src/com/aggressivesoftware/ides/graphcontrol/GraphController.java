@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.TableItem;
 import org.holongate.j2d.J2DCanvas;
@@ -1050,6 +1051,8 @@ public class GraphController
 	{
 		if (!(validTexPath() && validPsPath()))
 		{
+			
+	
 			// we have bad parameters; therefore, open popup window and request valid info.
 			DirectoryDialog directoryDialog = new DirectoryDialog(gp.shell, SWT.OPEN); 
 			FileDialog fileDialog = new FileDialog(gp.shell, SWT.OPEN); 
@@ -1067,6 +1070,10 @@ public class GraphController
 			// don't force the second prompt on them if they have canceled.
 			if (validTexPath() && !validPsPath())
 			{
+				MessageBox msg = new MessageBox(gp.shell);
+				msg.setMessage(gp.rm.getString("option.gv.message"));
+				msg.setText(gp.rm.getString("option.gv.title"));		
+				msg.open();	
 				fileDialog.setText(gp.rm.getString("error.bad_ps"));//"error.missing")); 
 				//fileDialog.setMessage(gp.rm.getString("error.bad_ps"));
 				fileDialog.setFilterPath(SystemVariables.DEFAULT_PS_PATH);
