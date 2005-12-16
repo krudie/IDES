@@ -133,10 +133,16 @@ public class SystemVariables
 	{
 		// calcualte the application path				
 		String class_paths = System.getProperty("java.class.path");	
-		if (class_paths.indexOf(System.getProperty("path.separator")) > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(System.getProperty("path.separator"))); }				
-		if (class_paths.endsWith(".jar")) { class_paths = class_paths.substring(0,class_paths.lastIndexOf(File.separator)); }
-		if (class_paths.length()>0 && !class_paths.endsWith(File.separator)) { class_paths = class_paths + File.separator; }
+		try{
+			if (class_paths.indexOf(System.getProperty("path.separator")) > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(System.getProperty("path.separator"))); }				
+			if (class_paths.endsWith(".jar")) { class_paths = class_paths.substring(0,class_paths.lastIndexOf(File.separator)); }		
+			if (class_paths.length()>0 && !class_paths.endsWith(File.separator)) { class_paths = class_paths + File.separator; }
+		} catch(Exception e){			
+		}
+		if(class_paths.length()==0) class_paths = System.getProperty("user.dir");
+		
 		application_path = class_paths;
+		System.out.println(application_path);
 		
 		// calcualte and create if necessary the system and tex paths.
 		system_path = application_path + "system" + File.separator;
