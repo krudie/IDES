@@ -132,17 +132,27 @@ public class SystemVariables
 	public SystemVariables()
 	{
 		// calcualte the application path				
-		String class_paths = System.getProperty("java.class.path");	
-		try{
-			if (class_paths.indexOf(System.getProperty("path.separator")) > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(System.getProperty("path.separator"))); }				
-			if (class_paths.endsWith(".jar")) { class_paths = class_paths.substring(0,class_paths.lastIndexOf(File.separator)); }		
-			if (class_paths.length()>0 && !class_paths.endsWith(File.separator)) { class_paths = class_paths + File.separator; }
-		} catch(Exception e){			
-		}
-		if(class_paths.length()==0) class_paths = System.getProperty("user.dir");
+		String class_path = System.getProperty("java.class.path");
+		String paths[]=class_path.split(System.getProperty("path.separator"));
+		class_path="";
+		for(int i=0;i<paths.length;++i)
+			if(paths[i].toLowerCase().endsWith("ides.jar"))
+			{
+				class_path=paths[i].substring(0,paths[i].length()-8);
+				break;
+			}
+//		try{
+//			if (class_paths.indexOf(System.getProperty("path.separator")) > 0) { class_paths = class_paths.substring(0,class_paths.indexOf(System.getProperty("path.separator"))); }				
+//			if (class_paths.endsWith(".jar")) { class_paths = class_paths.substring(0,class_paths.lastIndexOf(File.separator)); }		
+//			if (class_paths.length()>0 && !class_paths.endsWith(File.separator)) { class_paths = class_paths + File.separator; }
+//		} catch(Exception e){			
+//		}
+		if(class_path.length()==0) class_path = System.getProperty("user.dir");
+		if(!class_path.endsWith(File.separator))
+			class_path+=File.separator;
 		
-		application_path = class_paths;
-		System.out.println(application_path);
+		application_path = class_path;
+//		System.out.println(application_path);
 		
 		// calcualte and create if necessary the system and tex paths.
 		system_path = application_path + "system" + File.separator;

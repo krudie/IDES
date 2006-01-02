@@ -45,8 +45,9 @@ public class FloatingText
 	/**
      * The current label being edited.
      */
-	private Label label = null;			
-				
+	private Label label = null;
+	
+			
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// FloatingText construction //////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
@@ -59,7 +60,12 @@ public class FloatingText
 	public FloatingText(GraphingPlatform gp)
 	{		
 		this.gp = gp;
-		
+		makeNewShell();
+	}
+	
+
+	private void makeNewShell()
+	{
 		shell = new Shell(gp.shell, SWT.ON_TOP | SWT.RESIZE);
 		shell.setLayout(new FillLayout());
 		shell.setSize(gp.sv.floating_text_size.x,gp.sv.floating_text_size.y);
@@ -95,17 +101,19 @@ public class FloatingText
 			{
 		        public void	shellDeactivated(ShellEvent e) { shellDeactivatedAction(); }
 				public void	shellActivated(ShellEvent e) { }
-		        public void	shellClosed(ShellEvent e) {}
+		        public void	shellClosed(ShellEvent e) { makeNewShell(); }
 		        public void	shellDeiconified(ShellEvent e) {}
 		        public void	shellIconified(ShellEvent e)  {}
 			}
 		);
-				
 		text.addKeyListener
 		(
 				new KeyListener() 
 				{
-					public void keyReleased(KeyEvent e) {}
+					public void keyReleased(KeyEvent e) {
+						if (e.character == (char)Ascii.RETURN)
+							shell.pack();
+					}
 					public void keyPressed(KeyEvent e) 
 					{
 						if ((e.character == (char)Ascii.RETURN) && !((e.stateMask & SWT.CTRL) == SWT.CTRL))
@@ -114,15 +122,14 @@ public class FloatingText
 							shell.setVisible(false);
 							
 						}
-						else if((e.character == (char)Ascii.RETURN) && ((e.stateMask & SWT.CTRL) == SWT.CTRL)){
-							shell.pack();
-						}
+//						if(e.character==(char)Ascii.escapeReturn())
+//						else if((e.character == (char)Ascii.RETURN) && ((e.stateMask & SWT.CTRL) == SWT.CTRL)){
+//							shell.pack();
+//						}
 					}
 				}
-			);
+			);		
 	}
-	
-
 	
 	private void shellDeactivatedAction()
 	{

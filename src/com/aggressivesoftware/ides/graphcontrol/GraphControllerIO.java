@@ -268,6 +268,10 @@ public class GraphControllerIO
 			error_popup.setMessage(gp.rm.getString("file_sys.fatal_error"));
 			error_popup.open();	
 		}
+	    finally
+	    {
+	    	gp.updateStatusInfo();
+	    }
 	}
 	
 	/**
