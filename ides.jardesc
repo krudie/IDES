@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="C:/!work/Software/IDES/IDES.jar"/>
+    <options overwrite="false" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/IDES/ides.jardesc" useSourceFolders="false" buildIfNeeded="true" includeDirectoryEntries="false"/>
+    <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="false" manifestLocation="/IDES/manifest">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="false">
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.ides.menucontrol"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.general"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.geometric"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.ides"/>
+        <javaElement handleIdentifier="=IDES/src&lt;images.icons"/>
+        <file path="/IDES/src/resource_bundle.properties"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.ides.menucontrol.listeners"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.ides.graphcontrol.graphparts"/>
+        <javaElement handleIdentifier="=IDES/src&lt;images.graphics"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.thirdparty.latex"/>
+        <javaElement handleIdentifier="=IDES/src&lt;com.aggressivesoftware.ides.graphcontrol"/>
+        <javaElement handleIdentifier="=IDES/src&lt;images.cursors"/>
+    </selectedElements>
+</jardesc>
