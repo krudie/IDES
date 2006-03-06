@@ -2,9 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/lenko/My Documents/Software/IDES/jars/Acme.zip"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/lenko/My Documents/Software/IDES/jars/j2d4swt.jar"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/lenko/My Documents/Software/IDES/jars/jimi.jar"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/lenko/My Documents/Software/IDES/jars/swt.jar"/>
+	<classpathentry kind="lib" path="jars/swt.jar"/>
+	<classpathentry kind="lib" path="jars/j2d4swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
