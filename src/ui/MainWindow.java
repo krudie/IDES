@@ -30,6 +30,7 @@ public class MainWindow extends JFrame {
 		// create and add the toolbars
 		
 		// create tabbed panes and their components: canvas, graph specs panel, LaTeX output text area.
+		drawingBoard = new DrawingBoard();
 		createAndAddTabbedPane();
 		
 		// attach listener to drawing area
@@ -42,9 +43,9 @@ public class MainWindow extends JFrame {
 	
 	 private void createAndAddTabbedPane() {
 		tabbedViews = new JTabbedPane();
-		tabbedViews.addTab("Un-named Graph", null);
+		tabbedViews.addTab("Un-named Graph", drawingBoard);
 		tabbedViews.addTab("Graph Specification", null);
-		tabbedViews.addTab("LaTeX Output", null);
+		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");
 	}
 
@@ -249,5 +250,18 @@ public class MainWindow extends JFrame {
 	  }  
 	*/
 	
+	// User interaction modes to determine mouse and keyboard responses.
+	public final static int DEFAULT_MODE = 0;
+	public final static int SELECT_AREA_MODE = 1;
+	public final static int ZOOM_MODE = 2;
+	public final static int CREATE_MODE = 3;
+	public final static int MODIFY_MODE = 4;
+	public final static int MOVE_MODE = 5;
+	public final static int TEXT_MODE = 6;
+		
 	private JTabbedPane tabbedViews;
+	private DrawingBoard drawingBoard;
+	private int interactionMode = DEFAULT_MODE;
+	
+		
 }

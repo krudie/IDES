@@ -2,9 +2,6 @@ package ui;
 
 public interface Command {
 	
-	public void undo();
-	public void redo();
+	public void execute();	
 	
-	// need a context for the action i.e. the drawing canvas
-		
 }

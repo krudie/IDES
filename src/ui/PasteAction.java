@@ -1,15 +1,15 @@
 package ui;
 
-public class PasteAction implements Command {
+public class PasteAction implements ReversableCommand {
 
-	public void undo() {
+	public void execute() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
-	public void redo() {
+	public void unexecute() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 }
