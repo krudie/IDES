@@ -1,5 +1,6 @@
-#Fri Mar 17 15:17:27 EST 2006
+#Tue Mar 28 15:15:22 EST 2006
 eclipse.preferences.version=1
+internal.default.compliance=default
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.gettersetter.use.is=true
 org.eclipse.jdt.ui.javadoc=false

@@ -1,4 +1,4 @@
-package ui;
+package ui.command;
 
 /* Does copy need to be undoable?
  * 

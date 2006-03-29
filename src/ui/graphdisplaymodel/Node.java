@@ -1,4 +1,4 @@
-package graphmodel;
+package ui.graphdisplaymodel;
 
 public class Node extends GraphElement {
 	

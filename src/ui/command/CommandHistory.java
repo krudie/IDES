@@ -1,10 +1,8 @@
-package ui;
+package ui.command;
 
 import java.util.ArrayList;
 
-import ui.Command;
-import ui.ReversableCommand;
-import ui.UndoCommand;
+import ui.command.Command;
 
 /**
  * Provides a finite history of commands with undo and redo operations. 

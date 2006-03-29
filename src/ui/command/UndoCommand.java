@@ -1,4 +1,5 @@
-package ui;
+package ui.command;
+
 
 public class UndoCommand implements Command {
 

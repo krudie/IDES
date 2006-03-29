@@ -1,4 +1,4 @@
-package ui;
+package ui.command;
 
 public class CutCommand implements Command {
 

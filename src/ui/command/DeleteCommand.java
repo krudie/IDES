@@ -1,6 +1,6 @@
-package ui;
+package ui.command;
 
-import graphmodel.GraphElement;
+import ui.graphdisplaymodel.GraphElement;
 
 /**
  * Represent a user issued command to delete an element of the graph.

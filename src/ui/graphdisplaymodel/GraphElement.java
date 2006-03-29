@@ -1,9 +1,12 @@
-package graphmodel;
+package ui.graphdisplaymodel;
 
 /**
- * TODO Before proceeding with graph model implementation, review work by Christian and Axl.
+ * TODO Before proceeding with graph model implementation, 
+ * review work by Christian and Axl.
  * 
- * @author helen
+ * This should be an interface.
+ * 
+ * @author helen bretzke
  *
  */
 public class GraphElement {

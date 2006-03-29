@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
@@ -43,7 +45,10 @@ public class MainWindow extends JFrame {
 	
 	 private void createAndAddTabbedPane() {
 		tabbedViews = new JTabbedPane();
-		tabbedViews.addTab("Un-named Graph", drawingBoard);
+		JScrollPane sp = new JScrollPane(drawingBoard, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);		
+		tabbedViews.addTab("Un-named Graph", sp);
 		tabbedViews.addTab("Graph Specification", null);
 		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");
@@ -65,7 +70,7 @@ public class MainWindow extends JFrame {
 		 JMenu menuGraph;
 		 // TODO add a submenu for all zoom and scale operations
 		 // ? How about a 'Transform' submenu ?
-		 JMenu menuScale;
+		 JMenu menuTransform;
 		 JMenuItem miZoomIn, miZoomOut, miScaleBy, miCreate, miModify, miPrintArea, miMove, miAllEdges, miAllNodes;
 		 
 		 JMenu menuOptions; 
@@ -145,6 +150,8 @@ public class MainWindow extends JFrame {
 		 miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 		 menuEdit.add(miDelete);
 	 
+		 menuBar.add(menuEdit);
+		 
 		 // assemble the graph menu
 		 menuGraph = new JMenu("Graph");
 		 menuGraph.setMnemonic(KeyEvent.VK_G);
@@ -152,52 +159,51 @@ public class MainWindow extends JFrame {
 		 miZoomIn = new JMenuItem("Zoom In");
 		 miZoomIn.setMnemonic(KeyEvent.VK_I);
 		 miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miZoomIn);
+		 menuGraph.add(miZoomIn);
 
 		 miZoomOut = new JMenuItem("Zoom Out");
 		 miZoomOut.setMnemonic(KeyEvent.VK_O);
 		 miZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miZoomOut);
+		 menuGraph.add(miZoomOut);
 		 
 		 miScaleBy = new JMenuItem("Scale By...");
 		 miScaleBy.setMnemonic(KeyEvent.VK_S);
 		 
 		 // TODO Think up a memorable accelerator: ctrl+shift+S ?
 		 // miScaleBy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miScaleBy);
+		 menuGraph.add(miScaleBy);
 
 		 miCreate = new JMenuItem("Create Nodes or Edges");
 		 miCreate.setMnemonic(KeyEvent.VK_C);
 		 // miCreate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miCreate);
+		 menuGraph.add(miCreate);
 
 		 miModify = new JMenuItem("Modify Nodes, Edges or Labels");
 		 miModify.setMnemonic(KeyEvent.VK_M);
 		 // miModify.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miModify);
+		 menuGraph.add(miModify);
 
-		 miPrintArea = new JMenuItem("Print Area");
+		 miPrintArea = new JMenuItem("Select Print Area");
 		 miPrintArea.setMnemonic(KeyEvent.VK_A);
 		 // miPrintArea.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miPrintArea);
+		 menuGraph.add(miPrintArea);
 
 		 miMove = new JMenuItem("Move Graph");
 		 miMove.setMnemonic(KeyEvent.VK_V);
 		 //miMove.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miMove);
+		 menuGraph.add(miMove);
 
 		 miAllEdges = new JMenuItem("Select All Edges");
 		 miAllEdges.setMnemonic(KeyEvent.VK_E);
 		 //miAllEdges.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miAllEdges);
+		 menuGraph.add(miAllEdges);
  
 		 miAllNodes = new JMenuItem("Select All Nodes");
 		 miAllNodes.setMnemonic(KeyEvent.VK_N);
 		 //miAllNodes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miAllNodes);
+		 menuGraph.add(miAllNodes);
 
-		 menuBar.add(menuEdit);
-		 
+		 menuBar.add(menuGraph);
 		 // assemble the options menu
 		 menuOptions = new JMenu("Options");
 		 menuOptions.setMnemonic(KeyEvent.VK_O);		 
@@ -208,7 +214,7 @@ public class MainWindow extends JFrame {
 		 // TODO change the order of these items; move frequently used to top of list.
 		 miErrReports = new JMenuItem("Send Error Reports");
 		 // ...
-		 
+		 menuOptions.add(miErrReports);
 		 menuBar.add(menuOptions);
 		 	 
 		 // assemble the help menu
@@ -220,35 +226,7 @@ public class MainWindow extends JFrame {
 		 // add menubar to this window
 		 getContentPane().add(menuBar, "North");
 	}
-
-	/*
-	  * Test: Override the paint method to draw a quadrilateral consisting of 
-	  * straight lines, a quadratic curve and a bezier curve.
-	  */
-/*	  public void paint(Graphics g)  {
-	    
-	    Graphics2D g2d = (Graphics2D)g;
-	    GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
-	    
-	    path.moveTo(20.0f,50.0f);  // first point
-	    path.lineTo(0.0f,125.0f);  // straight line
-	    path.quadTo(100.0f,100.0f,225.0f,125.0f);  // quadratic curve
-	    path.curveTo(260.0f,100.0f,130.0f,50.0f,225.0f,0.0f);  // cubic (bezier) curve (ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2) starts at current point
-	    path.closePath();
-	    
-	    AffineTransform at = new AffineTransform();
-	    at.setToRotation(-Math.PI/8.0);
-	    g2d.transform(at);
-	    at.setToTranslation(0.0f,150.0f);
-	    g2d.transform(at);
-	    g2d.setColor(Color.blue);
-	    g2d.setStroke(new BasicStroke(3));
-	                  
-	    // g2d.fill(path);
-	    g2d.draw(path);
-	    
-	  }  
-	*/
+	
 	
 	// User interaction modes to determine mouse and keyboard responses.
 	public final static int DEFAULT_MODE = 0;
@@ -258,10 +236,14 @@ public class MainWindow extends JFrame {
 	public final static int MODIFY_MODE = 4;
 	public final static int MOVE_MODE = 5;
 	public final static int TEXT_MODE = 6;
-		
-	private JTabbedPane tabbedViews;
-	private DrawingBoard drawingBoard;
+
+	// the current user interaction mode; 
+	// determines response to mouse and keyboard actions; 
+	// determines cursor appearance
 	private int interactionMode = DEFAULT_MODE;
 	
-		
+	private JTabbedPane tabbedViews;
+	private DrawingBoard drawingBoard;
+	private JPanel graphSpecsView;
+	private JPanel latexView;
 }
