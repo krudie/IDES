@@ -1,4 +1,4 @@
-package fsamodel;
+package fsa.model;
 
 import java.util.Enumeration;
 import java.util.Hashtable;

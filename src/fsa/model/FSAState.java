@@ -1,6 +1,7 @@
-package fsamodel;
+package fsa.model;
 
 import java.util.*;
+
 
 /**
  * Model of the state
@@ -8,7 +9,7 @@ import java.util.*;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class State extends SubElementContainer{
+public class FSAState extends SubElementContainer implements fsa.model.State {
     
     // transitions originating from this state and ending in this state respectively.
     private LinkedList<Transition> sourceT, targetT;
@@ -19,7 +20,7 @@ public class State extends SubElementContainer{
      * constructs a state with the given id.
      * @param id the id of the state.
      */
-    public State(int id){
+    public FSAState(int id){
         this.id = id;
         sourceT = new LinkedList<Transition>();
         targetT = new LinkedList<Transition>();
@@ -30,7 +31,7 @@ public class State extends SubElementContainer{
      * new state doesn't have any transitions.
      * @param s a state.
      */
-    public State(State s){
+    public FSAState(FSAState s){
         super(s);
         sourceT = new LinkedList<Transition>();
         targetT = new LinkedList<Transition>();
@@ -112,4 +113,5 @@ public class State extends SubElementContainer{
     public void setId(int id){
         this.id = id;
     }
+	
  }

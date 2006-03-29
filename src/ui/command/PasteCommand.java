@@ -1,7 +1,7 @@
 package ui.command;
 
 
-public class PasteAction implements ReversableCommand {
+public class PasteCommand implements ReversableCommand {
 
 	public void execute() {
 		// TODO Auto-generated method stub

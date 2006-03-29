@@ -12,10 +12,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
-import java.awt.*;
+import ui.listeners.MenuListenerFactory;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.geom.*;
 
 /**
  * @author helen bretzke
@@ -138,6 +138,7 @@ public class MainWindow extends JFrame {
 		 miCopy = new JMenuItem("Copy");
 		 miCopy.setMnemonic(KeyEvent.VK_C);
 		 miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		 miCopy.addActionListener(MenuListenerFactory.getCopyListener());
 		 menuEdit.add(miCopy);
 		 
 		 miPaste = new JMenuItem("Paste");
@@ -148,8 +149,9 @@ public class MainWindow extends JFrame {
 		 miDelete = new JMenuItem("Delete");
 		 miDelete.setMnemonic(KeyEvent.VK_D);
 		 miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		 miDelete.addActionListener(MenuListenerFactory.getDeleteListener());
 		 menuEdit.add(miDelete);
-	 
+	 		 		 
 		 menuBar.add(menuEdit);
 		 
 		 // assemble the graph menu

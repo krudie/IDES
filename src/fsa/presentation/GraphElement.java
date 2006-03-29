@@ -1,10 +1,8 @@
-package ui.graphdisplaymodel;
+package fsa.presentation;
 
 /**
- * TODO Before proceeding with graph model implementation, 
- * review work by Christian and Axl.
- * 
- * This should be an interface.
+ * TODO This should be an interface and follow the Composite pattern to 
+ * support groups of graph elements.
  * 
  * @author helen bretzke
  *
@@ -12,6 +10,7 @@ package ui.graphdisplaymodel;
 public class GraphElement {
 	
 	private String name;
+	private int id;
 	
 	public GraphElement(){
 		name = "anonymous";

@@ -1,9 +1,10 @@
-package fsamodel;
+package fsa.model;
 
 import java.util.*;
 
 /** 
- * This class is the topmost class in the model. It contains a set of automata.
+ * The topmost class in the model. 
+ * It contains a set of automata.
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund

@@ -1,12 +1,13 @@
-package fsamodel;
+package fsa.model;
 
 /**
  * This class represent a transition in an automaton.
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Transition extends SubElementContainer{
-    private State sourceS, targetS;
+public class FSATransition extends SubElementContainer implements fsa.model.Transition {
+    
+	private State sourceS, targetS;
 
     private Event e = null;
 
@@ -20,7 +21,7 @@ public class Transition extends SubElementContainer{
      * @param source the source state.
      * @param target the target state.
      */
-    public Transition(int id, State source, State target){
+    public FSATransition(int id, FSAState source, FSAState target){
         this.id = id;
         this.sourceS = source;
         this.targetS = target;
@@ -35,7 +36,7 @@ public class Transition extends SubElementContainer{
      * @param target the target state.
      * @param e the event this transition fires uppon receival of.
      */
-    public Transition(int id, State source, State target, Event e){
+    public FSATransition(int id, FSAState source, FSAState target, FSAEvent e){
         this.id = id;
         this.sourceS = source;
         this.targetS = target;
@@ -52,7 +53,7 @@ public class Transition extends SubElementContainer{
      * @param target the target state.
      * @param e the event this transition fires uppon receival of.
      */
-    public Transition(Transition t, State source, State target, Event e){
+    public FSATransition(FSATransition t, FSAState source, FSAState target, FSAEvent e){
         super(t);
         this.id = t.id;
         this.sourceS = source;
@@ -70,7 +71,7 @@ public class Transition extends SubElementContainer{
      * @param sourceS the source state.
      * @param targetS the target state.
      */
-    public Transition(Transition t, State sourceS, State targetS){
+    public FSATransition(FSATransition t, FSAState sourceS, FSAState targetS){
         super(t);
         this.id = t.id;
         this.sourceS = sourceS;

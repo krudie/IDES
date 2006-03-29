@@ -1,7 +1,5 @@
 package ui.command;
 
-import ui.graphdisplaymodel.GraphElement;
-
 /**
  * Represent a user issued command to delete an element of the graph.
  * ??? What about deleting elements of a text label? 
@@ -11,16 +9,30 @@ import ui.graphdisplaymodel.GraphElement;
  */
 public class DeleteCommand implements ReversableCommand {
 	
-	private GraphElement element;
+	private Object element;	 // TODO decide on type, GraphElement composite type?
+	private Object context;  // Does this need to be stored?
+	
+	/**
+	 * Creates a command that, when executed, will cut 
+	 * <code>element</code> from the given context.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	public DeleteCommand(Object element, Object context) {
+		this.element = element;
+		this.context = context;
+	}
 	
 	public void execute() {
-		// TODO Auto-generated method stub
-		
+		// TODO 
+		System.out.println("Delete");
+		// place element in the restore buffer
 	}
 
 	public void unexecute() {
-		// TODO Auto-generated method stub
-		
+		// TODO 
+		System.out.println("Restore");
 	}
 	
 }

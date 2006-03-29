@@ -1,4 +1,4 @@
-package fsamodel;
+package fsa.model;
 
 /**
  * Represents an events in an automaton.
@@ -6,14 +6,14 @@ package fsamodel;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event extends SubElementContainer{
+public class FSAEvent extends SubElementContainer implements fsa.model.Event {
     private int id;
 
     /**
      * Constructs an event with the given id.
      * @param id the id of the event.
      */
-    public Event(int id){
+    public FSAEvent(int id){
         this.id = id;
     }
 
@@ -22,7 +22,7 @@ public class Event extends SubElementContainer{
      * constructs an event with all internal variables equal to the event e.
      * @param e the event the new event must equal.
      */
-    public Event(Event e){
+    public FSAEvent(FSAEvent e){
         super(e);
         this.id = e.id;
     }

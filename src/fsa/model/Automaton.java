@@ -1,6 +1,7 @@
-package fsamodel;
+package fsa.model;
 
 import java.util.*;
+
 
 /**
  * This class is the topmost class in the automaton hierarchy. It serves as the datastructure for
@@ -38,21 +39,21 @@ public class Automaton implements Cloneable{
         Automaton clone = new Automaton(this.name);
         ListIterator<Event> ei = getEventIterator();
         while(ei.hasNext()){
-            clone.add(new Event(ei.next()));
+            clone.add(new FSAEvent((FSAEvent)ei.next()));
         }
         ListIterator<State> si = getStateIterator();
         while(si.hasNext()){
-            clone.add(new State(si.next()));
+            clone.add(new FSAState((FSAState) si.next()));
         }
         ListIterator<Transition> ti = getTransitionIterator();
         while(ti.hasNext()){
-            Transition oldt = ti.next();
-            State source = clone.getState(oldt.getSource().getId());
-            State target = clone.getState(oldt.getTarget().getId());
-            if(oldt.getEvent() == null) clone.add(new Transition(oldt, source, target));
+            FSATransition oldt = (FSATransition)ti.next();
+            FSAState source = (FSAState)clone.getState(oldt.getSource().getId());
+            FSAState target = (FSAState)clone.getState(oldt.getTarget().getId());
+            if(oldt.getEvent() == null) clone.add(new FSATransition(oldt, source, target));
             else{
-                Event event = clone.getEvent(oldt.getEvent().getId());
-                clone.add(new Transition(oldt, source, target, event));
+                FSAEvent event = (FSAEvent)clone.getEvent(oldt.getEvent().getId());
+                clone.add(new FSATransition(oldt, source, target, event));
             }
         }
         return clone;
