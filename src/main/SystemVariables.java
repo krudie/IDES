@@ -15,23 +15,31 @@ import java.util.StringTokenizer;
 import ui.command.CommandHistory;
 
 /**
- * This class provides a simple read/write interface to a plain text file.
- * It is used by the GraphingPlatform to read/write system variables at open/close of the application.
- * It functions as an os independent registry.
+ * This singleton class provides a simple read/write interface to a plain text file.
+ * An OS independent registry.
  * 
  * @author Michael Wood
  * @author Helen Bretzke
  */
 public class SystemVariables 
 {
+	protected static SystemVariables me = null;
+	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SystemVariables construction ///////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
+	public static SystemVariables instance() {
+		if(me == null) {
+		 me = new SystemVariables();
+		}
+		return me;
+	}
+	
     /**
      * Construct the SystemVariables.
      */
-	public SystemVariables()
+	private SystemVariables()	
 	{
 		// calcualte the application path				
 		String class_path = System.getProperty("java.class.path");
@@ -56,7 +64,7 @@ public class SystemVariables
 		application_path = class_path;
 //		System.out.println(application_path);
 		
-		// calcualte and create if necessary the system and tex paths.
+		// calculate and create if necessary the system and tex paths.
 		system_path = application_path + "system" + File.separator;
 		tex_path = application_path + "tex" + File.separator;
 		(new File(system_path)).mkdir();
@@ -69,7 +77,7 @@ public class SystemVariables
 	// miscelaneous ///////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
-	private void fetchValues()
+	private  void fetchValues()
 	{
 		try
 		{ 
@@ -134,7 +142,7 @@ public class SystemVariables
 	    catch (Exception e)	{ e.printStackTrace(); }
 	}
 	
-	private Point parsePoint(String coords) {
+	private  Point parsePoint(String coords) {
 		Point p = new Point();
 		try
 		{
@@ -149,11 +157,9 @@ public class SystemVariables
 		return p;
 	}
 
-	public static CommandHistory getCommandHistory() {
-		return commandHistory;
-	}
 	
-	public static String getSettings_file_name() {
+	
+	public  String getSettings_file_name() {
 		return settings_file_name;
 	}
 
@@ -227,71 +233,71 @@ public class SystemVariables
 	
 	
 	public void setApplication_path(String application_path) {
-		this.application_path = application_path;
+		me.application_path = application_path;
 	}
 
 	public void setExport_latex_to_eps(boolean export_latex_to_eps) {
-		this.export_latex_to_eps = export_latex_to_eps;
+		me.export_latex_to_eps = export_latex_to_eps;
 	}
 
 	public void setExport_latex_to_tex(boolean export_latex_to_tex) {
-		this.export_latex_to_tex = export_latex_to_tex;
+		me.export_latex_to_tex = export_latex_to_tex;
 	}
 
 	public void setExport_with_border(boolean export_with_border) {
-		this.export_with_border = export_with_border;
+		me.export_with_border = export_with_border;
 	}
 
 	public void setFloating_text_size(Point floating_text_size) {
-		this.floating_text_size = floating_text_size;
+		me.floating_text_size = floating_text_size;
 	}
 
 	public void setGrid(int grid) {
-		this.grid = grid;
+		me.grid = grid;
 	}
 
 	public void setLast_used_path(String last_used_path) {
-		this.last_used_path = last_used_path;
+		me.last_used_path = last_used_path;
 	}
 
 	public void setPath_to_ps(String path_to_ps) {
-		this.path_to_ps = path_to_ps;
+		me.path_to_ps = path_to_ps;
 	}
 
 	public void setPath_to_tex(String path_to_tex) {
-		this.path_to_tex = path_to_tex;
+		me.path_to_tex = path_to_tex;
 	}
 
 	public void setSelect_all_edges(boolean select_all_edges) {
-		this.select_all_edges = select_all_edges;
+		me.select_all_edges = select_all_edges;
 	}
 
 	public void setSelect_all_labels(boolean select_all_labels) {
-		this.select_all_labels = select_all_labels;
+		me.select_all_labels = select_all_labels;
 	}
 
 	public void setSystem_path(String system_path) {
-		this.system_path = system_path;
+		me.system_path = system_path;
 	}
 
 	public void setTex_path(String tex_path) {
-		this.tex_path = tex_path;
+		me.tex_path = tex_path;
 	}
 
 	public void setUse_error_reporting(boolean use_error_reporting) {
-		this.use_error_reporting = use_error_reporting;
+		me.use_error_reporting = use_error_reporting;
 	}
 
 	public void setUse_latex_labels(boolean use_latex_labels) {
-		this.use_latex_labels = use_latex_labels;
+		me.use_latex_labels = use_latex_labels;
 	}
 
 	public void setUse_pstricks(boolean use_pstricks) {
-		this.use_pstricks = use_pstricks;
+		me.use_pstricks = use_pstricks;
 	}
 
 	public void setUse_standard_node_size(boolean use_standard_node_size) {
-		this.use_standard_node_size = use_standard_node_size;
+		me.use_standard_node_size = use_standard_node_size;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -309,101 +315,97 @@ public class SystemVariables
 	public static final String DEFAULT_TEX_PATH = "C:" + File.separator + "texmf" + File.separator + "miktex" + File.separator + "bin",
 								DEFAULT_PS_PATH = "C:" + File.separator + "gs" + File.separator + "gs8.11" + File.separator + "bin";
 
-	private static final int DEFAULT_COMMAND_HISTORY_LENGTH = 20;
+	
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// system variables ///////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 	
-	/**
-	 * The command history for the user interface
-	 */
-	private static CommandHistory commandHistory = new CommandHistory(DEFAULT_COMMAND_HISTORY_LENGTH); 
 	
 	/**
      * The physical location of the main JAR
      */
-	private static String application_path = "";
+	private  String application_path = "";
 
 	/**
      * The physical location used for system settings files and undo/redo files, etc.
      */
-	private static String system_path = "";
+	private  String system_path = "";
 
 	/**
      * The physical location used for export to latex files
      */
-	private static String tex_path = "";
+	private  String tex_path = "";
 	
 	/**
      * The last used physical location for save/load
      */
-	private static String last_used_path = "";
+	private  String last_used_path = "";
 
 	/**
      * Records the last "snap to grid" value.
      */
-	private static int grid = 20;
+	private  int grid = 20;
 
 	/**
      * Records the last "show_all_edges" state.
      */
-	private static boolean select_all_edges = false;
+	private  boolean select_all_edges = false;
 
 	/**
      * Records the last "show_all_labels" state.
      */
-	private static boolean select_all_labels = false;
+	private  boolean select_all_labels = false;
 	
 	/**
      * Records whether or not crashing errors should automatically open a webpage to report their details.
      */
-	private static boolean use_error_reporting = false;
+	private  boolean use_error_reporting = false;
 
 	/**
      * Records whether or not labels should be renderd latex or just plain text
      */
-	private static boolean use_latex_labels = false;
+	private  boolean use_latex_labels = false;
 
 	/**
      * Records whether or not export to latex should automatically create an eps with the generated code.
      */
-	private static boolean export_latex_to_eps = false;
+	private  boolean export_latex_to_eps = false;
 
 	/**
      * Records whether or not export to latex should automatically create an tex with the generated code.
      */
-	private static boolean export_latex_to_tex = true;
+	private  boolean export_latex_to_tex = true;
 	
 	/**
      * Optionally draw a border around export output.
      */
-	private static boolean export_with_border = false;
+	private  boolean export_with_border = false;
 		
 	/**
      * Force all nodes to the largest used radius
      */
-	private static boolean use_standard_node_size = false;
+	private  boolean use_standard_node_size = false;
 
 	/**
      * Use pstricks as the export to latex format (versus pict2e)
      */
-	private static boolean use_pstricks = true;
+	private  boolean use_pstricks = true;
 
 	/**
      * The size for the node text eding window
      */
-	private static Point floating_text_size = new Point(200,100);
+	private Point floating_text_size = new Point(200,100);
 	
 	/**
      * Path to a latex rendering tool.
      */
-	private static String path_to_tex = DEFAULT_TEX_PATH;
+	private String path_to_tex = DEFAULT_TEX_PATH;
 	
 	/**
      * Path to a post script handling tool.
      */
-	private static String path_to_ps = DEFAULT_PS_PATH;
+	private String path_to_ps = DEFAULT_PS_PATH;
 
 
 }

@@ -1,4 +1,4 @@
-package fsa.model;
+package model;
 
 public interface Event {
 
@@ -6,12 +6,14 @@ public interface Event {
 	 * returns the id of the event.
 	 * @return the id of the event.
 	 */
-	public abstract int getId();
+	public int getId();
 
 	/**
 	 * sets the id of the event.
 	 * @param id the id to be set.
 	 */
-	public abstract void setId(int id);
+	public void setId(int id);
+	
+	public String getSymbol();
 
 }

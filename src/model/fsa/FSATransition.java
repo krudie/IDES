@@ -1,11 +1,14 @@
-package fsa.model;
+package model.fsa;
+
+import model.Event;
+import model.State;
 
 /**
  * This class represent a transition in an automaton.
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class FSATransition extends SubElementContainer implements fsa.model.Transition {
+public class FSATransition extends SubElementContainer implements model.Transition {
     
 	private State sourceS, targetS;
 

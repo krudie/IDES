@@ -1,6 +1,9 @@
-package fsa.model;
-
+package model.fsa;
 import java.util.*;
+
+import model.Event;
+import model.State;
+import model.Transition;
 
 
 /**

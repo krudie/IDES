@@ -1,4 +1,4 @@
-package fsa.model;
+package model.fsa;
 
 /**
  * Represents an events in an automaton.
@@ -6,7 +6,7 @@ package fsa.model;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class FSAEvent extends SubElementContainer implements fsa.model.Event {
+public class FSAEvent extends SubElementContainer implements model.Event {
     private int id;
 
     /**
@@ -42,4 +42,18 @@ public class FSAEvent extends SubElementContainer implements fsa.model.Event {
     public void setId(int id){
         this.id = id;
     }
+
+    /**
+     * TODO need constants to access attribute values in hash tables
+     * and when reading and writing to file.
+     * 
+     * @return the symbol that represents this event
+     */
+	public String getSymbol() {
+		SubElement eventSymbol = getSubElement("SYMBOL"); 
+		return eventSymbol != null ? eventSymbol.getName() : "";
+	}
+
+
+	
 }

@@ -12,11 +12,22 @@ import ui.command.Command;
  */
 public class CommandHistory {
 
+	private static final int DEFAULT_COMMAND_HISTORY_LENGTH = 20;
+	
 	// Use a vector and keep track of the size.
 	private ArrayList history;
 	private int maxLength;
 	private int lastCommand = -1;
 	private boolean undone = false;
+	
+	/**
+	 * Create a command history that remembers <code>DEFAULT_COMMAND_HISTORY_LENGTH</code> commands.	
+	 */
+	public CommandHistory() {
+		maxLength = DEFAULT_COMMAND_HISTORY_LENGTH;
+		history = new ArrayList(DEFAULT_COMMAND_HISTORY_LENGTH);
+	}
+	
 	
 	/**
 	 * Create a command history that remembers <code>n</code> commands.

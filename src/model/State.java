@@ -1,4 +1,4 @@
-package fsa.model;
+package model;
 
 import java.util.ListIterator;
 

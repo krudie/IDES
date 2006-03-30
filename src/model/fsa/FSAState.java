@@ -1,6 +1,8 @@
-package fsa.model;
+package model.fsa;
 
 import java.util.*;
+
+import model.Transition;
 
 
 /**
@@ -9,7 +11,7 @@ import java.util.*;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class FSAState extends SubElementContainer implements fsa.model.State {
+public class FSAState extends SubElementContainer implements model.State {
     
     // transitions originating from this state and ending in this state respectively.
     private LinkedList<Transition> sourceT, targetT;
