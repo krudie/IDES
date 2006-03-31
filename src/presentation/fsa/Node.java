@@ -3,6 +3,7 @@ package presentation.fsa;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 import java.util.LinkedList;
 
 import presentation.Glyph;
@@ -18,6 +19,8 @@ public class Node implements Glyph {
 	
 	// list of labels to be displayed within the bounds of this node
 	private LinkedList<Glyph> labels;
+	
+	private Ellipse2D circle;
 
 	public void draw(Graphics g) {
 		// TODO Auto-generated method stub

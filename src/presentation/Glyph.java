@@ -8,6 +8,9 @@ import java.awt.Rectangle;
  * Interface for any object that can appear in the drawing area.
  * Adheres to Composite design pattern.
  * 
+ * TODO extend to add highlight() and select() methods that render the glyph 
+ * in distinct ways from draw().
+ * 
  * @author Helen Bretzke
  *
  */

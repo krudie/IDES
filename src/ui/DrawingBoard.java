@@ -1,21 +1,15 @@
 package ui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.geom.AffineTransform;
+import java.awt.Point;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
 
 import javax.swing.JPanel;
+
+import presentation.Glyph;
+import presentation.GlyphLabel;
+import ui.listeners.DrawingBoardListener;
 
 /**
  * The area in which users draw graphs and in which 
@@ -24,33 +18,41 @@ import javax.swing.JPanel;
  * @author helen
  *
  */
-public class DrawingBoard extends JPanel implements ActionListener, KeyListener, MouseListener {
+public class DrawingBoard extends JPanel {
 
 	/**
-	 * ??? What does this mean? 
+	 * ??? What is this variable? 
 	 */
 	private static final long serialVersionUID = 1L;
 	
 	public DrawingBoard() {
-		addMouseListener(this);
+		addMouseListener(new DrawingBoardListener());
 	}
 	
 	
 	public void paint(Graphics g){
 		Graphics2D g2d = (Graphics2D)g;
-		
+
+		// Warning: scales distance from origin as well as size of nodes
+		// we want to scale everything from the centre of the user's view.
+		// Solution: translate origin before scaling and beware of op precendence.
+		g2d.translate(-(this.getWidth()/2), -(this.getHeight()/2));
+		g2d.scale(2.0f, 2.0f);
+
+		// One day this will grow up to be a node.
 		Ellipse2D.Double circle =
-	        new Ellipse2D.Double(x, y, radius*2, radius*2);
+	        new Ellipse2D.Double(p.getX(), p.getY(), radius*3, radius*3);
 		g2d.draw(circle);
+
+		// NOTE This type extends Component and could be inserted in the panel
+		// if we used an absolute layout manager.
+		// Then we could use geComponentAt(Point) to get the selected glyph in
+		// one call (use the container as the presentation model's DS).
+		// Then would have to make all glyphs extend Component (heavy).
+		Glyph glyph = new GlyphLabel("(" + (int)p.getX() + "," + (int)p.getY() + ")", p);
+		glyph.draw(g2d);
 		
-	    GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
-	    
-	    path.moveTo(20.0f,50.0f);  // first point
-	    path.lineTo(0.0f,125.0f);  // straight line
-	    path.quadTo(100.0f,100.0f,225.0f,125.0f);  // quadratic curve
-	    path.curveTo(260.0f,100.0f,130.0f,50.0f,225.0f,0.0f);  // cubic (bezier) curve (ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2) starts at current point
-	    path.closePath();
-	    
+		/*	        
 	    AffineTransform at = new AffineTransform();
 	    at.setToRotation(-Math.PI/8.0);
 	    g2d.transform(at);
@@ -60,68 +62,31 @@ public class DrawingBoard extends JPanel implements ActionListener, KeyListener,
 	    g2d.setStroke(new BasicStroke(3));
 	                  
 	    // g2d.fill(path);
-	    g2d.draw(path);	
-	}
-
-
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+	    g2d.draw(path);
+	    */
 		
 	}
 
-
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+	/**
+	 * TODO
+	 * 
+	 * switch on interaction mode
+	 * get Glyph(s)/Components that intersect with the point
+	 * update the presentation model and abstract model (see Observer pattern)
+	 * update the view (paint)
+	 * 		
+	 * @param p
+	 */
+	public void setPoint(Point p){
 		
+		this.p = p;
+		paint(this.getGraphics());
 	}
-
-
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		x = arg0.getX();
-		y = arg0.getY();
-		this.paint(this.getGraphics());
-	}
-
-
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
+	// TODO move to UIStateModel
 	// Current state information
-	private int x, y;
+	private Point p = new Point();
 	
 	// Graph configuration data
-	private int radius = 5;
+	private int radius = 10;
 }

@@ -95,6 +95,14 @@ public class UIStateModel {
 
 	public void setInteractionMode(int interactionMode) {
 		this.interactionMode = interactionMode;
+	}
+
+	public Glyph getCurrentSelection() {
+		return currentSelection;
+	}
+
+	public void setCurrentSelection(Glyph currentSelection) {
+		this.currentSelection = currentSelection;
 	}	
 
 }

@@ -248,6 +248,9 @@ public class MainWindow extends JFrame {
 		 miExportTex = new JCheckBoxMenuItem("Export to TEX");		 
 		 miErrReports = new JCheckBoxMenuItem("Send Error Reports");
 		
+		 // TODO add listeners
+		 
+		 
 		 menuOptions.add(miDrawBorder);
 		 menuOptions.add(miStdNodeSize);
 		 menuOptions.add(miUsePstricks);
