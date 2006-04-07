@@ -20,6 +20,7 @@ import main.SystemVariables;
 import ui.listeners.MenuListenerFactory;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 /**
@@ -97,6 +98,8 @@ public class MainWindow extends JFrame {
 		 	 
 		 // assemble the file menu
 //		 TODO add listeners
+		 ActionListener fileMenuListener = MenuListenerFactory.getFileMenuListener();
+		 
 		 menuFile = new JMenu("File");
 		 menuFile.setMnemonic(KeyEvent.VK_F);
 		 
@@ -119,6 +122,7 @@ public class MainWindow extends JFrame {
 		 miOpen = new JMenuItem("Open", new ImageIcon(imagePath + "file_open.gif"));
 		 miOpen.setMnemonic(KeyEvent.VK_O);
 		 miOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		 miOpen.addActionListener(fileMenuListener);
 		 menuFile.add(miOpen);
 		 
 		 miSave = new JMenuItem("Save", new ImageIcon(imagePath + "file_save.gif"));

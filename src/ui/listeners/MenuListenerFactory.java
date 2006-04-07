@@ -1,5 +1,7 @@
 package ui.listeners;
 
+import io.FileOperations;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -46,5 +48,25 @@ public class MenuListenerFactory {
 	  };
   }
 
+  /**
+   * Note that file operations do not go into the command history
+   * for undoing etc.
+   * 
+   * @return a listener for all file menu items
+   */
+  public static ActionListener getFileMenuListener() {
+	  return new ActionListener() {
+		  public void actionPerformed(ActionEvent arg0) {			  			
+			  JMenuItem item = (JMenuItem)arg0.getSource();
+			  
+			  // figure out which file menu item was selected
+			  //if(item.getName().equals(""))
+			  // For now just open an existing system
+			  FileOperations.openSystem();
+		  }
+	  };
+	  
+  }
+  
 }
 

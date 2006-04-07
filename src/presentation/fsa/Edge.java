@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 import java.util.LinkedList;
 
-import model.Transition;
+import model.DESTransition;
 import presentation.Glyph;
 
 public class Edge implements Glyph {
@@ -18,14 +18,14 @@ public class Edge implements Glyph {
 	// the abstract concept that this edge represents
 	// ??? do i need to know about the transition or simply 
 	// the edge and the destination node?
-	private Transition t;
+	private DESTransition t;
 	
 	// The bezier curve.
 	// Review Lenko and Mike's curve code.
 	private GeneralPath path;
 	private Point[] controls; // four controls points
 	
-	public Edge(Transition t){
+	public Edge(DESTransition t){
 		this.t = t;
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
 		controls = new Point[4];

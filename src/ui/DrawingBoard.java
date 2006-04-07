@@ -1,4 +1,4 @@
-package ui;
+ package ui;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 
 import javax.swing.JPanel;
+
+import model.DESObserver;
 
 import presentation.Glyph;
 import presentation.GlyphLabel;
@@ -18,7 +20,7 @@ import ui.listeners.DrawingBoardListener;
  * @author helen
  *
  */
-public class DrawingBoard extends JPanel {
+public class DrawingBoard extends JPanel implements DESObserver {
 
 	/**
 	 * ??? What is this variable? 
@@ -89,4 +91,9 @@ public class DrawingBoard extends JPanel {
 	
 	// Graph configuration data
 	private int radius = 10;
+
+	public void update() {
+		// TODO refresh the data in the DESModel (Automaton)
+		
+	}
 }

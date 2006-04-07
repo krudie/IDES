@@ -1,9 +1,11 @@
 package model.fsa;
 import java.util.*;
 
-import model.Event;
-import model.State;
-import model.Transition;
+import model.DESModel;
+import model.DESObserver;
+import model.DESEvent;
+import model.DESState;
+import model.DESTransition;
 
 
 /**
@@ -14,12 +16,14 @@ import model.Transition;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Automaton implements Cloneable{
-    private LinkedList<State> states;
+public class Automaton extends DESModel implements Cloneable {
+	
+	
+    private LinkedList<DESState> states;
 
-    private LinkedList<Transition> transitions;
+    private LinkedList<DESTransition> transitions;
 
-    private LinkedList<Event> events;
+    private LinkedList<DESEvent> events;
 
     private String name = null;
 
@@ -29,9 +33,9 @@ public class Automaton implements Cloneable{
      * @param name the name of the automaton
      */
     public Automaton(String name){
-        states = new LinkedList<State>();
-        transitions = new LinkedList<Transition>();
-        events = new LinkedList<Event>();
+        states = new LinkedList<DESState>();
+        transitions = new LinkedList<DESTransition>();
+        events = new LinkedList<DESEvent>();
         this.name = name;
     }
     
@@ -40,23 +44,23 @@ public class Automaton implements Cloneable{
      */
     public Automaton clone(){
         Automaton clone = new Automaton(this.name);
-        ListIterator<Event> ei = getEventIterator();
+        ListIterator<DESEvent> ei = getEventIterator();
         while(ei.hasNext()){
-            clone.add(new FSAEvent((FSAEvent)ei.next()));
+            clone.add(new Event((Event)ei.next()));
         }
-        ListIterator<State> si = getStateIterator();
+        ListIterator<DESState> si = getStateIterator();
         while(si.hasNext()){
-            clone.add(new FSAState((FSAState) si.next()));
+            clone.add(new State((State) si.next()));
         }
-        ListIterator<Transition> ti = getTransitionIterator();
+        ListIterator<DESTransition> ti = getTransitionIterator();
         while(ti.hasNext()){
-            FSATransition oldt = (FSATransition)ti.next();
-            FSAState source = (FSAState)clone.getState(oldt.getSource().getId());
-            FSAState target = (FSAState)clone.getState(oldt.getTarget().getId());
-            if(oldt.getEvent() == null) clone.add(new FSATransition(oldt, source, target));
+            Transition oldt = (Transition)ti.next();
+            State source = (State)clone.getState(oldt.getSource().getId());
+            State target = (State)clone.getState(oldt.getTarget().getId());
+            if(oldt.getEvent() == null) clone.add(new Transition(oldt, source, target));
             else{
-                FSAEvent event = (FSAEvent)clone.getEvent(oldt.getEvent().getId());
-                clone.add(new FSATransition(oldt, source, target, event));
+                Event event = (Event)clone.getEvent(oldt.getEvent().getId());
+                clone.add(new Transition(oldt, source, target, event));
             }
         }
         return clone;
@@ -79,7 +83,7 @@ public class Automaton implements Cloneable{
     /**
      * @param s a state that needs to be added.
      */
-    public void add(State s){
+    public void add(DESState s){
         states.add(s);
     }
     
@@ -102,17 +106,17 @@ public class Automaton implements Cloneable{
      * the state and originating from the state
      * @param s the state to be removed
      */
-    public void remove(State s){
-        ListIterator<Transition> sources = s.getSourceTransitionsListIterator();
+    public void remove(DESState s){
+        ListIterator<DESTransition> sources = s.getSourceTransitionsListIterator();
         while(sources.hasNext()){
-            Transition t = sources.next();
+            DESTransition t = sources.next();
             sources.remove();
             t.getSource().removeSourceTransition(t);
             t.getTarget().removeTargetTransition(t);
         }
-        ListIterator<Transition> targets = s.getTargetTransitionListIterator();
+        ListIterator<DESTransition> targets = s.getTargetTransitionListIterator();
         while(targets.hasNext()){
-            Transition t = targets.next();
+            DESTransition t = targets.next();
             targets.remove();
             t.getSource().removeSourceTransition(t);
             t.getTarget().removeTargetTransition(t);            
@@ -123,7 +127,7 @@ public class Automaton implements Cloneable{
     /**
      * @return a custom list iterator for the states
      */
-    public ListIterator<State> getStateIterator(){
+    public ListIterator<DESState> getStateIterator(){
         return new StateIterator(states.listIterator(), this);
     }
 
@@ -132,10 +136,10 @@ public class Automaton implements Cloneable{
      * @param id the id of the state
      * @return the state, null if it doesn't exist
      */
-    public State getState(int id){
-        ListIterator<State> si = states.listIterator();
+    public DESState getState(int id){
+        ListIterator<DESState> si = states.listIterator();
         while(si.hasNext()){
-            State s = si.next();
+            DESState s = si.next();
             if(s.getId() == id) return s;
         }
         return null;
@@ -147,7 +151,7 @@ public class Automaton implements Cloneable{
      * transition.
      * @param t the transition to be added to the state
      */
-    public void add(Transition t){
+    public void add(DESTransition t){
         t.getSource().addSourceTransition(t);
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
@@ -159,7 +163,7 @@ public class Automaton implements Cloneable{
      * right states.
      * @param t the transition to be removed
      */
-    public void remove(Transition t){
+    public void remove(DESTransition t){
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
@@ -170,10 +174,10 @@ public class Automaton implements Cloneable{
      * @param Id the id of the transition.
      * @return the transition, null if the transition is not in the automaton.
      */
-    public Transition getTransition(int Id){
-        ListIterator<Transition> tli = transitions.listIterator();
+    public DESTransition getTransition(int Id){
+        ListIterator<DESTransition> tli = transitions.listIterator();
         while(tli.hasNext()){
-            Transition t = tli.next();
+            DESTransition t = tli.next();
             if(t.getId() == Id) return t;
         }
         return null;
@@ -182,7 +186,7 @@ public class Automaton implements Cloneable{
     /**
      * @return a custom list iterator for the transitions.
      */
-    public ListIterator<Transition> getTransitionIterator(){
+    public ListIterator<DESTransition> getTransitionIterator(){
         return new TransitionIterator(transitions.listIterator());
     }
 
@@ -190,7 +194,7 @@ public class Automaton implements Cloneable{
      * Adds an event to the aotumaton.
      * @param e the event that shall be added to the automaton.
      */
-    public void add(Event e){
+    public void add(DESEvent e){
         events.add(e);
     }
 
@@ -198,14 +202,14 @@ public class Automaton implements Cloneable{
      * Removes an event from the automaton.
      * @param e the event to be removed
      */
-    public void remove(Event e){
+    public void remove(DESEvent e){
         events.remove(e);
     }
 
     /**
      * @return a custom list iterator for the events.
      */
-    public ListIterator<Event> getEventIterator(){
+    public ListIterator<DESEvent> getEventIterator(){
         return new EventIterator(events.listIterator(), this);
     }
 
@@ -215,10 +219,10 @@ public class Automaton implements Cloneable{
      * @param id the id of the event
      * @return the event, null if it doesn't exist
      */
-    public Event getEvent(int id){
-        ListIterator<Event> ei = events.listIterator();
+    public DESEvent getEvent(int id){
+        ListIterator<DESEvent> ei = events.listIterator();
         while(ei.hasNext()){
-            Event e = ei.next();
+            DESEvent e = ei.next();
             if(e.getId() == id) return e;
         }
         return null;
@@ -228,9 +232,9 @@ public class Automaton implements Cloneable{
      * @author agmi02
      * A custom list iterator for states. Conserves data integrity.
      */
-    private class StateIterator implements ListIterator<State>{
-        private ListIterator<State> sli;
-        private State current;
+    private class StateIterator implements ListIterator<DESState>{
+        private ListIterator<DESState> sli;
+        private DESState current;
         private Automaton a;
         
         /**
@@ -238,7 +242,7 @@ public class Automaton implements Cloneable{
          * @param sli the listiterator this listiterator shall encapsulate
          * @param a the automaton that is backing the listiterator
          */
-        public StateIterator(ListIterator<State> sli, Automaton a){
+        public StateIterator(ListIterator<DESState> sli, Automaton a){
             this.a = a;
             this.sli = sli;
         }
@@ -252,7 +256,7 @@ public class Automaton implements Cloneable{
         /**
          * @see java.util.Iterator#next()
          */
-        public State next(){
+        public DESState next(){
             current = sli.next();
             return current;
         }
@@ -265,7 +269,7 @@ public class Automaton implements Cloneable{
         /**
          * @see java.util.ListIterator#previous()
          */
-        public State previous(){
+        public DESState previous(){
             current = sli.previous();
             return current;
         }
@@ -287,17 +291,17 @@ public class Automaton implements Cloneable{
          * to this state in order to maintain data integrity.
          */
         public void remove(){
-            ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
+            ListIterator<DESTransition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
-                Transition t = sources.next();
+                DESTransition t = sources.next();
                 sources.remove();
                 a.remove(t);
                 t.getSource().removeSourceTransition(t);
                 t.getTarget().removeTargetTransition(t);
             }
-            ListIterator<Transition> targets = current.getTargetTransitionListIterator();
+            ListIterator<DESTransition> targets = current.getTargetTransitionListIterator();
             while(targets.hasNext()){
-                Transition t = targets.next();
+                DESTransition t = targets.next();
                 targets.remove();
                 a.remove(t);
                 t.getSource().removeSourceTransition(t);
@@ -305,22 +309,22 @@ public class Automaton implements Cloneable{
             }
             sli.remove();
         }
-        public void set(State s){
-            ListIterator<Transition> sources = current.getSourceTransitionsListIterator();
+        public void set(DESState s){
+            ListIterator<DESTransition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
-                Transition t = sources.next();
+                DESTransition t = sources.next();
                 t.setSource(s);
                 s.addSourceTransition(t);
             }
-            ListIterator<Transition> targets = current.getTargetTransitionListIterator();
+            ListIterator<DESTransition> targets = current.getTargetTransitionListIterator();
             while(targets.hasNext()){
-                Transition t = targets.next();
+                DESTransition t = targets.next();
                 t.setTarget(s);
                 s.addTargetTransition(t);
             }
             sli.set(s);
         }
-        public void add(State s){
+        public void add(DESState s){
             sli.add(s);
         }
     }
@@ -329,15 +333,15 @@ public class Automaton implements Cloneable{
      * @author Axel Gottlieb Michelsen
      * @author Kristian Edlund
      */
-    private class TransitionIterator implements ListIterator<Transition>{
-        private ListIterator<Transition> tli;
-        private Transition current;
+    private class TransitionIterator implements ListIterator<DESTransition>{
+        private ListIterator<DESTransition> tli;
+        private DESTransition current;
         
         /**
          * Constructor for the customized transition iterator
          * @param tli the original transition iterator that is going to be wrapped
          */
-        public TransitionIterator(ListIterator<Transition> tli){
+        public TransitionIterator(ListIterator<DESTransition> tli){
             this.tli = tli;
         }
         
@@ -351,7 +355,7 @@ public class Automaton implements Cloneable{
         /**
          * @see java.util.Iterator#next()
          */
-        public Transition next(){
+        public DESTransition next(){
             current = tli.next();
             return current;
         }
@@ -366,7 +370,7 @@ public class Automaton implements Cloneable{
         /**
          * @see java.util.ListIterator#previous()
          */
-        public Transition previous(){
+        public DESTransition previous(){
             current = tli.previous();
             return current;
         }
@@ -399,7 +403,7 @@ public class Automaton implements Cloneable{
         * Removes the last returned transition and replaces it with the new one
         * @param t the transition to replace the old one
         */
-        public void set(Transition t){
+        public void set(DESTransition t){
             remove();
             add(t);
         }
@@ -408,7 +412,7 @@ public class Automaton implements Cloneable{
          * Adds a new transition to the correct states and to the list of transitions
          * @param t the transition to be added
          */
-        public void add(Transition t){
+        public void add(DESTransition t){
             t.getSource().addSourceTransition(t);
             t.getTarget().addTargetTransition(t);
             transitions.add(t);
@@ -421,9 +425,9 @@ public class Automaton implements Cloneable{
      * @author Axel Gottlieb Michelsen
      * @author Kristian Edlund
      */
-    private class EventIterator implements ListIterator<Event>{
-        private Event current;
-        private ListIterator<Event> eli;
+    private class EventIterator implements ListIterator<DESEvent>{
+        private DESEvent current;
+        private ListIterator<DESEvent> eli;
         private Automaton a;
                 
         
@@ -432,7 +436,7 @@ public class Automaton implements Cloneable{
          * @param eli the event iterator to be wrapped
          * @param a the automaton the event list is connected to
          */
-        public EventIterator(ListIterator<Event> eli, Automaton a){
+        public EventIterator(ListIterator<DESEvent> eli, Automaton a){
             this.eli = eli;
             this.a = a;
         }
@@ -447,7 +451,7 @@ public class Automaton implements Cloneable{
         /**
          * @see java.util.Iterator#next()
          */
-        public Event next(){
+        public DESEvent next(){
             current = eli.next();
             return current;
         }
@@ -462,7 +466,7 @@ public class Automaton implements Cloneable{
         /**
          * @see java.util.ListIterator#previous()
          */
-        public Event previous(){
+        public DESEvent previous(){
             current = eli.previous();
             return current;
         }
@@ -484,9 +488,9 @@ public class Automaton implements Cloneable{
          * @see java.util.Iterator#remove()
          */
         public void remove(){
-            ListIterator<Transition> tli = a.getTransitionIterator();
+            ListIterator<DESTransition> tli = a.getTransitionIterator();
             while(tli.hasNext()){
-                Transition t = tli.next();
+                DESTransition t = tli.next();
                 if(t.getEvent() == current){
                     t.setEvent(null);
                 }
@@ -498,10 +502,10 @@ public class Automaton implements Cloneable{
          * Replaces the current event with the given event
          * @param e the event to replace the current event
          */
-        public void set(Event e){
-            ListIterator<Transition> tli = a.getTransitionIterator();
+        public void set(DESEvent e){
+            ListIterator<DESTransition> tli = a.getTransitionIterator();
             while(tli.hasNext()){
-                Transition t = tli.next();
+                DESTransition t = tli.next();
                 if(t.getEvent() == current){
                     t.setEvent(e);
                 }
@@ -512,8 +516,29 @@ public class Automaton implements Cloneable{
          * Adds an event to the event list
          * @param e the event to add
          */
-        public void add(Event e){
+        public void add(DESEvent e){
             eli.add(e);
         }
     }
+
+
+	public void notifyAllObservers() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void notifyAllBut(DESObserver observer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void attach(DESObserver observer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void detach(DESObserver observer) {
+		// TODO Auto-generated method stub
+		
+	}
 }

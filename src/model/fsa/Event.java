@@ -6,14 +6,14 @@ package model.fsa;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class FSAEvent extends SubElementContainer implements model.Event {
+public class Event extends SubElementContainer implements model.DESEvent {
     private int id;
 
     /**
      * Constructs an event with the given id.
      * @param id the id of the event.
      */
-    public FSAEvent(int id){
+    public Event(int id){
         this.id = id;
     }
 
@@ -22,7 +22,7 @@ public class FSAEvent extends SubElementContainer implements model.Event {
      * constructs an event with all internal variables equal to the event e.
      * @param e the event the new event must equal.
      */
-    public FSAEvent(FSAEvent e){
+    public Event(Event e){
         super(e);
         this.id = e.id;
     }

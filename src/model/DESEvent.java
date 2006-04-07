@@ -1,6 +1,6 @@
 package model;
 
-public interface Event {
+public interface DESEvent {
 
 	/**
 	 * returns the id of the event.

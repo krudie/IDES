@@ -2,15 +2,15 @@ package presentation.fsa;
 
 import java.awt.Point;
 
-import model.Event;
+import model.DESEvent;
 import presentation.Glyph;
 import presentation.GlyphLabel;
 
 public class EdgeLabel extends GlyphLabel {
 
-	private Event event;
+	private DESEvent event;
 
-	public EdgeLabel(Event e, Glyph parent, Point location) {
+	public EdgeLabel(DESEvent e, Glyph parent, Point location) {
 		// TODO Axl & Kristian's model is unwieldy.  
 		// Need a cleaner interface to talk to my presentation elements.
 		// Improve interfaces in the model package and make their code conform.

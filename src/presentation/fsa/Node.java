@@ -7,7 +7,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.LinkedList;
 
 import presentation.Glyph;
-import model.State;
+import model.DESState;
 
 public class Node implements Glyph {
 	
@@ -15,7 +15,7 @@ public class Node implements Glyph {
 	// whether initial, final or standard node
 	// also tells which transitions and hence edges are incoming and outgoing,
 	// to and from this node for the purpose of highlighting and recursive drawing.
-	private State s;
+	private DESState s;
 	
 	// list of labels to be displayed within the bounds of this node
 	private LinkedList<Glyph> labels;
