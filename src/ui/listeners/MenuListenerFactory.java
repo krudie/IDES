@@ -62,7 +62,10 @@ public class MenuListenerFactory {
 			  // figure out which file menu item was selected
 			  //if(item.getName().equals(""))
 			  // For now just open an existing system
-			  FileOperations.openSystem();
+			  UIStateModel.instance().setDESModel(FileOperations.openSystem());
+			  			  
+			  // refresh the views
+			  UIStateModel.instance().refresh();
 		  }
 	  };
 	  

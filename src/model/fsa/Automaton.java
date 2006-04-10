@@ -230,7 +230,7 @@ public class Automaton extends DESModel implements Cloneable {
     
     /**
      * @author agmi02
-     * A custom list iterator for states. Conserves data integrity.
+     * A custom list iterator for states. Preserves data integrity.
      */
     private class StateIterator implements ListIterator<DESState>{
         private ListIterator<DESState> sli;

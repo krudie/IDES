@@ -2,7 +2,7 @@ package presentation;
 
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Interface for any object that can appear in the drawing area.
@@ -29,7 +29,7 @@ public interface Glyph {
 	 * 
 	 * @return the smallest rectangular area that the glyph occupies.
 	 */
-	public Rectangle bounds();
+	public Rectangle2D bounds();
 	
 	/**
 	 * Used to determine which glyph is under the mouse.

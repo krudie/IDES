@@ -51,5 +51,20 @@ public class FileOperations {
 //            MainWindow.getProjectExplorer().updateProject();
 //        }
 		return null;
-	}	
+	}
+	
+	public static void saveSystem(DESModel model) {
+		// TODO call saveSystemAs with default directory from SystemVariables
+		
+	}
+	
+	public static void saveSystemAs(DESModel model, File f) {
+		// TODO implement
+		// open file output stream
+		
+		// write file
+		
+		// handle runtime errors
+		
+	}
 }

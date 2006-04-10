@@ -37,11 +37,12 @@ public class MainWindow extends JFrame {
 		
 		// create and add the toolbars
 		
-		// create tabbed panes and their components: canvas, graph specs panel, LaTeX output text area.
+		// create tabbed panes and their components: 
+		// canvas, graph specs panel, LaTeX and EPS output text areas.
 		drawingBoard = new DrawingBoard();
 		createAndAddTabbedPane();
 		
-		// attach listener to drawing area
+		// TODO attach listener to drawing area
 			    
 	    	
 		pack();

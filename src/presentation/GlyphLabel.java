@@ -9,19 +9,20 @@ import java.awt.Rectangle;
 
 public class GlyphLabel extends Label implements Glyph {
 
-	private Glyph parent;  // either the DrawingBoard, a node or an edge	
+	private Glyph parent = null;  // either the DrawingBoard, a node or an edge	
 	private Color colour = Color.blue;
 	
-	// the x,y coordinates of the top left corner of this label
-	  
+	public GlyphLabel(String text){
+		super(text);		
+	}
+	
 	/**
 	 * @param text string to display in this label
 	 * @param location the x,y coordinates of the top left corner of this label 
 	 */
 	public GlyphLabel(String text, Point location){
 		super(text);
-		setLocation(location);
-		parent = null;
+		setLocation(location);		
 	}
 	
 	/**
