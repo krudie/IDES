@@ -50,7 +50,7 @@ public class UIStateModel {
 	private CommandHistory commandHistory;
 
 	/**
-	 * Abstract data model to keep synchronized with visualModel
+	 * Abstract data model to keep synchronized with visualModel.
 	 */ 
 	private DESModel desModel;
 	
@@ -120,7 +120,7 @@ public class UIStateModel {
 	 * Set the underlying data model to the given DESModel and
 	 * attach all views to the model.
 	 * 
-	 * @param model
+	 * @param model is not null
 	 */
 	public void setDESModel(DESModel model) {
 		desModel = model;

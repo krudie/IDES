@@ -107,14 +107,18 @@ public class DrawingBoard extends JPanel implements DESObserver {
 	/**
 	 * Refresh my visual model from the data in the DESModel (Automaton)
 	 * TODO define equals() on all glyph implementations so that don't need
-	 * to update everything.
+	 * to update everything. BUT checking every element is almost as expensive as 
+	 * rebuilding the graph every time...
+	 * 
+	 * IDEA Try maintaining a set of dirty bits.
+	 * 
 	 */
 	public void update() {
 		
 		Automaton a = (Automaton)UIStateModel.instance().getDESModel();
 		Iterator states = a.getStateIterator();
 		State s;
-//		 for all states in the model, refresh all of my nodes		
+// TODO for all states in the model, refresh all of my nodes		
 		// For now, just create everthing new.
 		graph.clear();
 		while(states.hasNext()){

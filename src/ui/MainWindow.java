@@ -35,15 +35,20 @@ public class MainWindow extends JFrame {
 		// create and add the menu
 		createAndAddMenuBar();
 		
-		// create and add the toolbars
+		// TODO create and add the toolbars
 		
 		// create tabbed panes and their components: 
 		// canvas, graph specs panel, LaTeX and EPS output text areas.
 		drawingBoard = new DrawingBoard();
+		UIStateModel.instance().addView(drawingBoard);
+		
 		createAndAddTabbedPane();
 		
+		// TODO add graph spec, latex and eps views to the state model
+		// UIStateModel.instance().addView(???);
+		
 		// TODO attach listener to drawing area
-			    
+		    
 	    	
 		pack();
 		setSize(800, 600);
@@ -73,6 +78,10 @@ public class MainWindow extends JFrame {
 		    
 	 }
 	 
+	/**
+	 * An ugly mess of repetative code: factor out and use info from SystemVariables.
+	 *
+	 */
 	private void createAndAddMenuBar() {
 		 		 
 		 JMenuBar menuBar = new JMenuBar();

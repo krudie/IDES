@@ -519,26 +519,5 @@ public class Automaton extends DESModel implements Cloneable {
         public void add(DESEvent e){
             eli.add(e);
         }
-    }
-
-
-	public void notifyAllObservers() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void notifyAllBut(DESObserver observer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void attach(DESObserver observer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void detach(DESObserver observer) {
-		// TODO Auto-generated method stub
-		
-	}
+    }	
 }

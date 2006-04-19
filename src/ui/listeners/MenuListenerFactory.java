@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 
 import main.SystemVariables;
+import model.DESModel;
 
 import ui.UIStateModel;
 import ui.command.Command;
@@ -57,15 +58,16 @@ public class MenuListenerFactory {
   public static ActionListener getFileMenuListener() {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
-			  JMenuItem item = (JMenuItem)arg0.getSource();
-			  
+			  //JMenuItem item = (JMenuItem)arg0.getSource();			  
 			  // figure out which file menu item was selected
 			  //if(item.getName().equals(""))
 			  // For now just open an existing system
-			  UIStateModel.instance().setDESModel(FileOperations.openSystem());
-			  			  
-			  // refresh the views
-			  UIStateModel.instance().refresh();
+			  DESModel des = FileOperations.openSystem();
+			  if(des != null){
+				  UIStateModel.instance().setDESModel(des);			  			  
+				  // refresh the views
+				  UIStateModel.instance().refresh();
+			  }
 		  }
 	  };
 	  

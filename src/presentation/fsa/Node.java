@@ -1,10 +1,13 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import presentation.Glyph;
@@ -13,7 +16,14 @@ import presentation.GraphElement;
 import model.DESState;
 import model.fsa.State;
 import model.fsa.SubElement;
+import model.fsa.Transition;
 
+/**
+ * The graphical representation of a state in a finite state automaton.
+ * 
+ * @author helen bretzke
+ *
+ */
 public class Node extends GraphElement {
 	
 	// determines the way this node is to be rendered
@@ -41,10 +51,12 @@ public class Node extends GraphElement {
 	}	
 	
 	public void update() {
-		SubElement layout = s.getSubElement("graphic");
+		
+		SubElement layout = s.getSubElement("graphic").getSubElement("circle");
 		int radius = Integer.parseInt(layout.getAttribute("r"));
 		Point centre = new Point(Integer.parseInt(layout.getAttribute("x")),
 								 Integer.parseInt(layout.getAttribute("y")));
+		
 		// upper left corner, width and height
 		int d = 2*radius;
 		circle = new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
@@ -53,19 +65,31 @@ public class Node extends GraphElement {
 
 		// TODO change to iterate over collection of labels on a state
 		// (requires change to file reading and writing, states be composed of many states)
-		label.setText(s.getSubElement("name").getName());
+		// FIXME where does the subelementcontainer structure store the name of the state ????!!
+		label.setText("x");
 		label.setLocation((int)centre.x - label.getWidth()/2, 
 				(int)centre.y - label.getHeight()/2);
 		
 		// TODO create and add all edges from transition lists
-		
+		clear(); // remove all of my child glyphs
+		Iterator t = s.getTargetTransitionListIterator();
+		int i = 0;
+		while(t.hasNext()){						
+			insert(new Edge((Transition)t.next()), i++);			
+		}
 	}
 	
-	public void draw(Graphics g) {		
-		// get radius and centre point
-		label.draw(g);
+	public void draw(Graphics g) {				
+		super.draw(g);	// calls draw on all of the outgoing edges
 		Graphics2D g2d = (Graphics2D)g;
+		
+		// should be in GraphElement ///////
+		g2d.setColor(Color.GREEN);
+		g2d.setStroke(new BasicStroke(2));
+		////////////////////////////////////
+		
 		g2d.draw(circle);
+		label.draw(g);
 	}
 
 	/**
