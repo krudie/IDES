@@ -2,9 +2,12 @@ package ui.listeners;
 
 import io.FileOperations;
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
 import main.SystemVariables;
@@ -58,11 +61,18 @@ public class MenuListenerFactory {
   public static ActionListener getFileMenuListener() {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
-			  //JMenuItem item = (JMenuItem)arg0.getSource();			  
+			  JMenuItem item = (JMenuItem)arg0.getSource();			  
+			  Container c = item.getParent();
+			  JFileChooser chooser = new JFileChooser();
+			  DESModel des = null;
+			  int returnVal = chooser.showOpenDialog(c);
+			  if(returnVal == JFileChooser.APPROVE_OPTION) {
+				  File f = chooser.getSelectedFile();	    	
+				  des = FileOperations.openSystem(f);
+			  	}
 			  // figure out which file menu item was selected
 			  //if(item.getName().equals(""))
-			  // For now just open an existing system
-			  DESModel des = FileOperations.openSystem();
+			  // For now just open an existing system			  
 			  if(des != null){
 				  UIStateModel.instance().setDESModel(des);			  			  
 				  // refresh the views

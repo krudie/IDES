@@ -66,11 +66,15 @@ public class Node extends GraphElement {
 		// TODO change to iterate over collection of labels on a state
 		// (requires change to file reading and writing, states be composed of many states)
 		// FIXME where does the subelementcontainer structure store the name of the state ????!!
-		label.setText("x");
+		SubElement name = s.getSubElement("name");
+        String l = (name.getChars() != null) ? name.getChars() : "";
+		label.setText(l);
 		label.setLocation((int)centre.x - label.getWidth()/2, 
 				(int)centre.y - label.getHeight()/2);
 		
-		// TODO create and add all edges from transition lists
+		// Create and add all edges from transition lists
+		// Start with only the outgoing edges
+		// TODO figure out how to store the incoming edges as well (are highlighted on MouseDown event)
 		clear(); // remove all of my child glyphs
 		Iterator t = s.getTargetTransitionListIterator();
 		int i = 0;
@@ -83,8 +87,7 @@ public class Node extends GraphElement {
 		super.draw(g);	// calls draw on all of the outgoing edges
 		Graphics2D g2d = (Graphics2D)g;
 		
-		// should be in GraphElement ///////
-		g2d.setColor(Color.GREEN);
+		// should be in GraphElement ///////		
 		g2d.setStroke(new BasicStroke(2));
 		////////////////////////////////////
 		

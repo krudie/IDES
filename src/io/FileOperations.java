@@ -16,22 +16,11 @@ import model.DESModel;
 
 public class FileOperations {
 
-	public static DESModel openSystem() {
-	
-		// open input dialog
-		
-		// check for valid filename
-		
-		// open file and read file into DESModel
-		JFileChooser chooser = new JFileChooser();
-		int returnVal = chooser.showOpenDialog(null);
-	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	    	AutomatonParser ap = new AutomatonParser();
-	    	File f = chooser.getSelectedFile();	    	
-	        Automaton automaton = ap.parse(f);	        
-	        automaton.setName(ParsingToolbox.removeFileType(f.getName()));
-	        return automaton;
-	    }
+	public static DESModel openSystem(File f) {	
+	    AutomatonParser ap = new AutomatonParser();	    	
+        Automaton automaton = ap.parse(f);	        
+        automaton.setName(ParsingToolbox.removeFileType(f.getName()));
+        return automaton;
 		
 //		openDialog.setText(ResourceManager.getToolTipText(ResourceManager.FILE_OPEN_AUTOMATON));
 //        openDialog.setFilterExtensions(new String[] {"*.xml", "*.*"});
@@ -49,8 +38,7 @@ public class FileOperations {
 //                MainWindow.errorPopup(ResourceManager.getString("parsing_error"), error);
 //            }
 //            MainWindow.getProjectExplorer().updateProject();
-//        }
-		return null;
+//        }		
 	}
 	
 	public static void saveSystem(DESModel model) {

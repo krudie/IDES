@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
@@ -33,7 +34,14 @@ public class Edge extends GraphElement {
 	// replace the following with Class java.awt.geom.CubicCurve2D
 	private GeneralPath path;
 	private Point2D.Float[] controls; // four controls points
+	
+	// TODO factor out arrow code for reuse by initial state nodes
 	private Polygon arrow; // the triangle representing the arrow
+	
+	public static final int P1 = 0;	
+	public static final int CTRL1 = 1;
+	public static final int CTRL2 = 2;
+	public static final int P2 = 3;
 	
 	public Edge(Transition t){
 		this.t = t;
@@ -46,13 +54,16 @@ public class Edge extends GraphElement {
 	public void draw(Graphics g) {
 		super.draw(g);
 		Graphics2D g2d = (Graphics2D)g;
+		// TODO change to anti-alias and see if can get nicer looking arcs
+		g2d.setRenderingHint (RenderingHints.KEY_INTERPOLATION,
+                			  RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g2d.setColor(Color.BLACK);
 		g2d.setStroke(new BasicStroke(2));
 		// draw myself as a cubic (bezier) curve 	
-		path.moveTo(controls[0].x, controls[0].y);	    
-	    path.curveTo(controls[1].x, controls[1].y,
-	    			controls[2].x, controls[2].y,
-	    			controls[3].x, controls[3].y);		    
+		path.moveTo(controls[P1].x, controls[P1].y);	    
+	    path.curveTo(controls[CTRL1].x, controls[CTRL1].y,
+	    			controls[CTRL2].x, controls[CTRL2].y,
+	    			controls[P2].x, controls[P2].y);		    
 	    g2d.draw(path);
 	    
 	    // draw the arrow and fill it
@@ -78,19 +89,70 @@ public class Edge extends GraphElement {
 		
 		// Compute and store the arrow layout
 		// the direction vector from base to tip of the arrow 
-	    Point2D.Float dir = unit(new Point2D.Float(controls[3].x - controls[2].x, controls[3].y - controls[2].y));	    
+	    Point2D.Float dir = new Point2D.Float(controls[3].x - controls[2].x, controls[3].y - controls[2].y);	    
+	    dir = scale(unit(dir), SHORT_HEAD_LENGTH);	    	    
 	    Point2D.Float base = controls[3];
-	    // corner points of the triangle
+	    double angle = 3*Math.PI/4;
 	    arrow.addPoint((int)(base.x + dir.x), (int)(base.y + dir.y));
-		arrow.addPoint((int)(base.x + dir.x/2), (int)(base.y + dir.y/2));
-		arrow.addPoint((int)(base.x - dir.x/2), (int)(base.y - dir.y/2));
-		
+	    Point2D.Float v = scale(rotate(dir, angle),0.75f);
+		arrow.addPoint((int)(base.x + v.x), (int)(base.y + v.y));	    
+	    arrow.addPoint((int)base.x, (int)base.y);
+	    v = scale(rotate(dir, -angle), 0.75f);	
+	    arrow.addPoint((int)(base.x + v.x), (int)(base.y + v.y));
 		// TODO label[s] from associated event[s]		
 		
 	}
 	
-// TODO Move the following methods to a utilities class.
 	
+	/** 
+	 * NOTE intersects with control point handles will be a different operation.
+	 * 
+	 * @return true iff p intersects with this edge. 
+	 */
+	public boolean intersects(Point p){		
+		return path.contains(p) || arrow.contains(p);
+	}
+	
+	public Point2D.Float getP1() {
+		return controls[P1];
+	}
+
+	public Point2D.Float getP2() {
+		return controls[P2];
+	}
+	
+	public Point2D.Float getCTRL1() {
+		return controls[CTRL1];		
+	}
+
+	public Point2D.Float getCTRL2() {
+		return controls[CTRL2];		
+	}
+
+	/**
+	 * From Michael Wood's code:
+	 * 
+     * The dimensions of the arrow head.
+     * 
+     *    tang
+     *     \\
+     *       \\\\ 
+     *   nock ]>>>>> tip
+     *       ////  
+     *     //
+     *     tang 
+     * 
+     * HEAD_LENGTH = nock to tip.
+     * TANG_X = distance along shaft from tip to projection of tang on shaft.
+     * TANG_Y = distance perpendicluar to shaft from projection of tang on shaft to tang.
+     */
+	public static final int HEAD_LENGTH = 9,
+							TANG_X = 13,
+							TANG_Y = 5,
+							SHORT_HEAD_LENGTH = 7;
+
+	
+//	 TODO Move the following methods to a utilities class. ///////////////////
 	/**
 	 * Returns the norm of the given vector.
 	 * 
@@ -112,12 +174,31 @@ public class Edge extends GraphElement {
 		return p1;
 	}
 
-	/**
-	 * 
-	 * @param p
-	 * @return the vector perpendicular to p (rotated 90 degrees clockwise)
+	/** 
+	 * @param v vector with origin at (0,0) and given direction
+	 * @return the vector perpendicular to v (rotated 90 degrees clockwise)
 	 */
-	private Point2D.Float perp(Point2D.Float p){
-		return new Point2D.Float(p.y, -p.x);		
+	private Point2D.Float perp(Point2D.Float v){
+		return new Point2D.Float(v.y, -v.x);		
+	}
+	
+	/**
+	 * @param v vector with origin at (0,0) and given direction
+	 * @param r radians
+	 * @return the vector resulting from rotating v by r radians
+	 */
+	private Point2D.Float rotate(Point2D.Float v, double r) {
+		float c = (float)Math.cos(r);
+		float s = (float)Math.sin(r);
+		return new Point2D.Float(v.x*c + v.y*s, v.y*c - v.x*s);	
+	}
+	
+	/** 
+	 * @param v vector with origin at (0,0) and given direction
+	 * @param s the scalar 
+	 * @return the result of scaling v by s
+	 */
+	private Point2D.Float scale(Point2D.Float v, float s) {		
+		return new Point2D.Float(Math.round(v.x * s), Math.round(v.y * s));		
 	}
 }
