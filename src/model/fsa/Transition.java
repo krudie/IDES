@@ -2,6 +2,7 @@ package model.fsa;
 
 import model.DESEvent;
 import model.DESState;
+import java.awt.geom.Point2D;
 
 /**
  * This class represent a transition in an automaton.
@@ -16,6 +17,8 @@ public class Transition extends SubElementContainer implements model.DESTransiti
 
     private int id;
 
+    private TransitionLayout layout = new TransitionLayout();
+    
     /**
      * Constructs a new transition originating in state source and ending in
      * state target. This transition is fired by the null event (epsilon).
@@ -40,9 +43,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * @param e the event this transition fires uppon receival of.
      */
     public Transition(int id, DESState source, DESState target, DESEvent e){
-        this.id = id;
-        this.sourceS = source;
-        this.targetS = target;
+        this(id, source, target);
         this.e = e;
     }
 
@@ -61,7 +62,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
         this.id = t.id;
         this.sourceS = source;
         this.targetS = target;
-        this.e = e;
+        this.e = e;       
     }
 
     /**
@@ -78,7 +79,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
         super(t);
         this.id = t.id;
         this.sourceS = sourceS;
-        this.targetS = targetS;
+        this.targetS = targetS;        
     }
 
     /**
@@ -143,5 +144,23 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      */
     public int getId(){
         return id;
+    }
+    
+    public TransitionLayout getLayout() {
+    	updateLayout();
+    	return layout;
+    }
+    
+    public void updateLayout() {    	
+    	SubElement arc = getSubElement("graphic").getSubElement("bezier"); 
+    	layout.setCurve(new Point2D.Float(Float.parseFloat(arc.getAttribute("x1")), 
+								Float.parseFloat(arc.getAttribute("y1"))),
+				new Point2D.Float(Float.parseFloat(arc.getAttribute("ctrlx1")), 
+								Float.parseFloat(arc.getAttribute("ctrly1"))),
+				new Point2D.Float(Float.parseFloat(arc.getAttribute("ctrlx2")), 
+								Float.parseFloat(arc.getAttribute("ctrly2"))),
+				new Point2D.Float(Float.parseFloat(arc.getAttribute("x2")), 
+								Float.parseFloat(arc.getAttribute("y2"))));  	
+		
     }
 }

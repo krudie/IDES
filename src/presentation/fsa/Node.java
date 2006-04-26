@@ -8,14 +8,11 @@ import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
 import java.util.Iterator;
-import java.util.LinkedList;
-
 import presentation.Glyph;
 import presentation.GlyphLabel;
 import presentation.GraphElement;
-import model.DESState;
 import model.fsa.State;
-import model.fsa.SubElement;
+import model.fsa.StateLayout;
 import model.fsa.Transition;
 
 /**
@@ -30,53 +27,68 @@ public class Node extends GraphElement {
 	// whether initial, marked (terminal) or standard node
 	// also tells which transitions and hence edges are incoming and outgoing,
 	// for the purpose of highlighting and recursive drawing.
-	private State s;
-	
+	private State state;	
 	// list of labels to be displayed within the bounds of this node
 	private GlyphLabel label;
 	
 	private Ellipse2D circle;
-
+	
+	// TODO Move to subclasses of Node
+	private Ellipse2D innerCircle = null;  // only drawn for final states	
+	private ArrowHead arrow = null;  // only draw for initial states
+	
 	public Node(State s){
-		this.s = s;
+		this.state = s;
 		label = new GlyphLabel("");
 		update();
 	}
 	
 	public Node(State s, Glyph parent){
 		super(parent);
-		this.s = s;
+		this.state = s;
 		label = new GlyphLabel("");
 		update();
 	}	
 	
+	/**
+	 * 	// TODO what about colour and line thickness?
+
+		// TODO change to iterate over collection of labels on a state
+		// (requires change to file reading and writing, states be composed of many states)		
+
+	 *
+	 */
 	public void update() {
-		
-		SubElement layout = s.getSubElement("graphic").getSubElement("circle");
-		int radius = Integer.parseInt(layout.getAttribute("r"));
-		Point centre = new Point(Integer.parseInt(layout.getAttribute("x")),
-								 Integer.parseInt(layout.getAttribute("y")));
+				
+		StateLayout layout = (StateLayout)state.getLayout();
+		int radius = layout.getRadius();
+		Point centre = layout.getLocation();
 		
 		// upper left corner, width and height
 		int d = 2*radius;
 		circle = new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
-		
-		// TODO what about colour and line thickness?
 
-		// TODO change to iterate over collection of labels on a state
-		// (requires change to file reading and writing, states be composed of many states)
-		// FIXME where does the subelementcontainer structure store the name of the state ????!!
-		SubElement name = s.getSubElement("name");
-        String l = (name.getChars() != null) ? name.getChars() : "";
-		label.setText(l);
-		label.setLocation((int)centre.x - label.getWidth()/2, 
-				(int)centre.y - label.getHeight()/2);
+		if(state.isMarked()){			
+			innerCircle = new Ellipse2D.Double(centre.x - 0.75*radius, centre.y - 0.75*radius, 1.5*radius, 1.5*radius);
+		}
+			
+		if(state.isInitial()){
+			// FIXME what is the point on the edge of the circle?
+			// A: centre point - arrow vector
+			// arrow = new ArrowHead(state.getLayout().getArrow(), ???);
+		}
+		
+		label.setText(layout.getText());
+		label.setLocation((int)centre.x - label.getWidth(), 
+				(int)centre.y - label.getHeight());
+		
 		
 		// Create and add all edges from transition lists
 		// Start with only the outgoing edges
-		// TODO figure out how to store the incoming edges as well (are highlighted on MouseDown event)
+		// TODO figure out how to store the incoming edges as well. 
+		// Since they are highlighted on MouseDown event.
 		clear(); // remove all of my child glyphs
-		Iterator t = s.getTargetTransitionListIterator();
+		Iterator t = state.getTargetTransitionListIterator();
 		int i = 0;
 		while(t.hasNext()){						
 			insert(new Edge((Transition)t.next()), i++);			
@@ -90,8 +102,18 @@ public class Node extends GraphElement {
 		// should be in GraphElement ///////		
 		g2d.setStroke(new BasicStroke(2));
 		////////////////////////////////////
-		
+
 		g2d.draw(circle);
+		
+		// FIXME If Node were subclassed, we wouldn't need this logic.
+		if(state.isMarked()){
+			g2d.draw(innerCircle);
+		}
+		
+		if(state.isInitial()){ // TODO draw an arrow
+			
+		}
+				
 		label.draw(g);
 	}
 

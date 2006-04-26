@@ -47,6 +47,5 @@ public interface DESState {
 	/**
 	 * @param id the id of this state
 	 */
-	public abstract void setId(int id);
-
+	public abstract void setId(int id);	
 }
