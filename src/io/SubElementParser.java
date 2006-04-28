@@ -5,7 +5,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import model.fsa.SubElement;
+import model.fsa.ver1.SubElement;
 
 /**
  * This class parses subelements of an xml document.

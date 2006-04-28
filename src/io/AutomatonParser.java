@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import model.fsa.*;
-import model.*;
+import model.fsa.ver1.*;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -103,7 +103,7 @@ public class AutomatonParser extends AbstractFileParser{
                 }
                 int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
                 sec = new State(id);
-                a.add((DESState) sec);
+                a.add((FSAState) sec);
                 state = STATE_STATE;
             }
             else if(qName.equals(ELEMENT_EVENT)){
@@ -113,13 +113,13 @@ public class AutomatonParser extends AbstractFileParser{
                 }
                 int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
                 sec = new Event(id);
-                a.add((DESEvent) sec);
+                a.add((FSAEvent) sec);
                 state = STATE_EVENT;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
-                DESState s = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)));
-                DESState t = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)));
-                DESEvent e = atts.getValue(ATTRIBUTE_EVENT) != null ? a.getEvent(Integer.parseInt(atts
+                FSAState s = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)));
+                FSAState t = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)));
+                FSAEvent e = atts.getValue(ATTRIBUTE_EVENT) != null ? a.getEvent(Integer.parseInt(atts
                         .getValue(ATTRIBUTE_EVENT))) : null;
 
                 if(atts.getValue(ATTRIBUTE_ID) == null){
@@ -137,11 +137,11 @@ public class AutomatonParser extends AbstractFileParser{
                 }
                 else if(e == null){
                     sec = new Transition(id, s, t);
-                    a.add((DESTransition) sec);
+                    a.add((FSATransition) sec);
                 }
                 else{
                     sec = new Transition(id, s, t, e);
-                    a.add((DESTransition) sec);
+                    a.add((FSATransition) sec);
                 }
                 state = STATE_TRANSITION;
             }

@@ -1,4 +1,4 @@
-package model;
+package model.fsa;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,12 +12,12 @@ import java.util.LinkedList;
  * @author helen bretzke
  *
  */
-public class DESModel {
+public class FSAModel {
 
-	private LinkedList<DESObserver> observers;
+	private LinkedList<FSAObserver> observers;
 	
-	public DESModel() {
-		observers = new LinkedList<DESObserver>();
+	public FSAModel() {
+		observers = new LinkedList<FSAObserver>();
 	}
 	
 	/**
@@ -26,7 +26,7 @@ public class DESModel {
 	public void notifyAllObservers() {
 		Iterator iter = observers.iterator();		
 		while(iter.hasNext()){
-			((DESObserver)iter.next()).update();
+			((FSAObserver)iter.next()).update();
 		}		
 	}
 	
@@ -34,11 +34,11 @@ public class DESModel {
 	 * Notifies (calls update on) all of my observers except the given one (assuming that it 
 	 * was the one that sent the notification.)
 	 */ 
-	public void notifyAllBut(DESObserver observer) {
+	public void notifyAllBut(FSAObserver observer) {
 		Iterator iter = observers.iterator();
-		DESObserver current;
+		FSAObserver current;
 		while(iter.hasNext()){
-			current = (DESObserver)iter.next();
+			current = (FSAObserver)iter.next();
 			if(current != observer){
 				current.update();
 			}
@@ -51,7 +51,7 @@ public class DESModel {
 	 * 
 	 * @param observer
 	 */
-	public void attach(DESObserver observer) {
+	public void attach(FSAObserver observer) {
 		observers.add(observer);		
 	}
 	
@@ -61,7 +61,7 @@ public class DESModel {
 	 * 
 	 * @param observer
 	 */	
-	public void detach(DESObserver observer) {
+	public void detach(FSAObserver observer) {
 		observers.remove(observer);
 	}
 }

@@ -6,6 +6,8 @@ import ui.command.Command;
 
 /**
  * Provides a finite history of commands with undo and redo operations. 
+ * FIXME Note that each command is associated with a context.  
+ * Only undo or redo a command if the UI is currently in the correct context.
  * 
  * @author helen
  *

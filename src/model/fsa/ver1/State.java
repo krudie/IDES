@@ -1,11 +1,11 @@
-package model.fsa;
+package model.fsa.ver1;
 
 import java.awt.Point;
 import java.util.*;
 
 import presentation.GraphicalLayout;
 
-import model.DESTransition;
+import model.fsa.FSATransition;
 
 
 /**
@@ -22,10 +22,10 @@ import model.DESTransition;
  * @author helen
  *
  */
-public class State extends SubElementContainer implements model.DESState {
+public class State extends SubElementContainer implements model.fsa.FSAState {
     
     // transitions originating from this state and ending in this state respectively.
-    private LinkedList<DESTransition> sourceT, targetT;
+    private LinkedList<FSATransition> sourceT, targetT;
 
     private int id;
 
@@ -35,8 +35,8 @@ public class State extends SubElementContainer implements model.DESState {
      */
     public State(int id){
         this.id = id;
-        sourceT = new LinkedList<DESTransition>();
-        targetT = new LinkedList<DESTransition>();
+        sourceT = new LinkedList<FSATransition>();
+        targetT = new LinkedList<FSATransition>();
     }
 
     /**
@@ -46,8 +46,8 @@ public class State extends SubElementContainer implements model.DESState {
      */
     public State(State s){
         super(s);
-        sourceT = new LinkedList<DESTransition>();
-        targetT = new LinkedList<DESTransition>();
+        sourceT = new LinkedList<FSATransition>();
+        targetT = new LinkedList<FSATransition>();
         this.id = s.id;
     }
 
@@ -56,7 +56,7 @@ public class State extends SubElementContainer implements model.DESState {
      * of transitions originating from it.
      * @param t the transition to be removed
      */
-    public void addSourceTransition(DESTransition t){
+    public void addSourceTransition(FSATransition t){
         sourceT.add(t);
     }
     
@@ -65,20 +65,20 @@ public class State extends SubElementContainer implements model.DESState {
      * of transtions originating from it.
      * @param t the transition to be removed
      */
-    public void removeSourceTransition(DESTransition t){
+    public void removeSourceTransition(FSATransition t){
         sourceT.remove(t);
     }
     /**
      * returns an iterator for the transitions originating from this state.
      * @return a source transition iterator
      */
-    public ListIterator<DESTransition> getSourceTransitionsListIterator(){
+    public ListIterator<FSATransition> getSourceTransitionsListIterator(){
         return sourceT.listIterator();
     }
     /**
      * @return a linked list of the transitions originating from this state.
      */
-    public LinkedList<DESTransition> getSourceTransitions(){
+    public LinkedList<FSATransition> getSourceTransitions(){
         return sourceT;
     }
 
@@ -87,7 +87,7 @@ public class State extends SubElementContainer implements model.DESState {
      * transitions ending in it.
      * @param t the transition to be added.
      */
-    public void addTargetTransition(DESTransition t){
+    public void addTargetTransition(FSATransition t){
         targetT.add(t);
     }
 
@@ -96,21 +96,21 @@ public class State extends SubElementContainer implements model.DESState {
      * transitions ending in it.
      * @param t the transition to be removed.
      */
-    public void removeTargetTransition(DESTransition t){
+    public void removeTargetTransition(FSATransition t){
         targetT.remove(t);
     }
 
     /**
      * @return an iterator for the transitions ending in this state
      */
-    public ListIterator<DESTransition> getTargetTransitionListIterator(){
+    public ListIterator<FSATransition> getTargetTransitionListIterator(){
         return targetT.listIterator();
     }
     
     /**
      * @return a list of the transitions ending in this state.
      */
-    public LinkedList<DESTransition> getTargetTransitions(){
+    public LinkedList<FSATransition> getTargetTransitions(){
         return targetT;
     }
     

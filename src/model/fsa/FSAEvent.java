@@ -1,6 +1,6 @@
-package model;
+package model.fsa;
 
-public interface DESEvent {
+public interface FSAEvent {
 
 	/**
 	 * returns the id of the event.

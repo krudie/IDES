@@ -11,7 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
 import main.SystemVariables;
-import model.DESModel;
+import model.fsa.FSAModel;
 
 import ui.UIStateModel;
 import ui.command.Command;
@@ -22,7 +22,7 @@ import ui.command.DeleteCommand;
 
 public class MenuListenerFactory {
 
-  public static ActionListener getCopyListener () {
+  public static ActionListener makeCopyListener () {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
 			  Command cmd = new CopyCommand("selected item", "drawing area"); 
@@ -32,7 +32,7 @@ public class MenuListenerFactory {
 	  };
   }
 
-  public static ActionListener getDeleteListener () {
+  public static ActionListener makeDeleteListener () {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  	
 			  Command cmd = new DeleteCommand("selected item", "drawing area"); 
@@ -42,7 +42,7 @@ public class MenuListenerFactory {
 	  };
   }
   
-  public static ActionListener getCutListener () {
+  public static ActionListener makeCutListener () {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
 			  Command cmd = new CutCommand("selected item", "drawing area"); 
@@ -58,13 +58,13 @@ public class MenuListenerFactory {
    * 
    * @return a listener for all file menu items
    */
-  public static ActionListener getFileMenuListener() {
+  public static ActionListener makeFileMenuListener() {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
 			  JMenuItem item = (JMenuItem)arg0.getSource();			  
 			  Container c = item.getParent();
 			  JFileChooser chooser = new JFileChooser();
-			  DESModel des = null;
+			  FSAModel des = null;
 			  int returnVal = chooser.showOpenDialog(c);
 			  if(returnVal == JFileChooser.APPROVE_OPTION) {
 				  File f = chooser.getSelectedFile();	    	

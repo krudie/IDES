@@ -1,11 +1,11 @@
-package model.fsa;
+package model.fsa.ver1;
 import java.util.*;
 
-import model.DESModel;
-import model.DESObserver;
-import model.DESEvent;
-import model.DESState;
-import model.DESTransition;
+import model.fsa.FSAEvent;
+import model.fsa.FSAModel;
+import model.fsa.FSAObserver;
+import model.fsa.FSAState;
+import model.fsa.FSATransition;
 
 
 /**
@@ -16,14 +16,14 @@ import model.DESTransition;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Automaton extends DESModel implements Cloneable {
+public class Automaton extends FSAModel implements Cloneable {
 	
 	
-    private LinkedList<DESState> states;
+    private LinkedList<FSAState> states;
 
-    private LinkedList<DESTransition> transitions;
+    private LinkedList<FSATransition> transitions;
 
-    private LinkedList<DESEvent> events;
+    private LinkedList<FSAEvent> events;
 
     private String name = null;
 
@@ -33,9 +33,9 @@ public class Automaton extends DESModel implements Cloneable {
      * @param name the name of the automaton
      */
     public Automaton(String name){
-        states = new LinkedList<DESState>();
-        transitions = new LinkedList<DESTransition>();
-        events = new LinkedList<DESEvent>();
+        states = new LinkedList<FSAState>();
+        transitions = new LinkedList<FSATransition>();
+        events = new LinkedList<FSAEvent>();
         this.name = name;
     }
     
@@ -44,15 +44,15 @@ public class Automaton extends DESModel implements Cloneable {
      */
     public Automaton clone(){
         Automaton clone = new Automaton(this.name);
-        ListIterator<DESEvent> ei = getEventIterator();
+        ListIterator<FSAEvent> ei = getEventIterator();
         while(ei.hasNext()){
             clone.add(new Event((Event)ei.next()));
         }
-        ListIterator<DESState> si = getStateIterator();
+        ListIterator<FSAState> si = getStateIterator();
         while(si.hasNext()){
             clone.add(new State((State) si.next()));
         }
-        ListIterator<DESTransition> ti = getTransitionIterator();
+        ListIterator<FSATransition> ti = getTransitionIterator();
         while(ti.hasNext()){
             Transition oldt = (Transition)ti.next();
             State source = (State)clone.getState(oldt.getSource().getId());
@@ -83,7 +83,7 @@ public class Automaton extends DESModel implements Cloneable {
     /**
      * @param s a state that needs to be added.
      */
-    public void add(DESState s){
+    public void add(FSAState s){
         states.add(s);
     }
     
@@ -106,17 +106,17 @@ public class Automaton extends DESModel implements Cloneable {
      * the state and originating from the state
      * @param s the state to be removed
      */
-    public void remove(DESState s){
-        ListIterator<DESTransition> sources = s.getSourceTransitionsListIterator();
+    public void remove(FSAState s){
+        ListIterator<FSATransition> sources = s.getSourceTransitionsListIterator();
         while(sources.hasNext()){
-            DESTransition t = sources.next();
+            FSATransition t = sources.next();
             sources.remove();
             t.getSource().removeSourceTransition(t);
             t.getTarget().removeTargetTransition(t);
         }
-        ListIterator<DESTransition> targets = s.getTargetTransitionListIterator();
+        ListIterator<FSATransition> targets = s.getTargetTransitionListIterator();
         while(targets.hasNext()){
-            DESTransition t = targets.next();
+            FSATransition t = targets.next();
             targets.remove();
             t.getSource().removeSourceTransition(t);
             t.getTarget().removeTargetTransition(t);            
@@ -127,7 +127,7 @@ public class Automaton extends DESModel implements Cloneable {
     /**
      * @return a custom list iterator for the states
      */
-    public ListIterator<DESState> getStateIterator(){
+    public ListIterator<FSAState> getStateIterator(){
         return new StateIterator(states.listIterator(), this);
     }
 
@@ -136,10 +136,10 @@ public class Automaton extends DESModel implements Cloneable {
      * @param id the id of the state
      * @return the state, null if it doesn't exist
      */
-    public DESState getState(int id){
-        ListIterator<DESState> si = states.listIterator();
+    public FSAState getState(int id){
+        ListIterator<FSAState> si = states.listIterator();
         while(si.hasNext()){
-            DESState s = si.next();
+            FSAState s = si.next();
             if(s.getId() == id) return s;
         }
         return null;
@@ -151,7 +151,7 @@ public class Automaton extends DESModel implements Cloneable {
      * transition.
      * @param t the transition to be added to the state
      */
-    public void add(DESTransition t){
+    public void add(FSATransition t){
         t.getSource().addSourceTransition(t);
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
@@ -163,7 +163,7 @@ public class Automaton extends DESModel implements Cloneable {
      * right states.
      * @param t the transition to be removed
      */
-    public void remove(DESTransition t){
+    public void remove(FSATransition t){
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
@@ -174,10 +174,10 @@ public class Automaton extends DESModel implements Cloneable {
      * @param Id the id of the transition.
      * @return the transition, null if the transition is not in the automaton.
      */
-    public DESTransition getTransition(int Id){
-        ListIterator<DESTransition> tli = transitions.listIterator();
+    public FSATransition getTransition(int Id){
+        ListIterator<FSATransition> tli = transitions.listIterator();
         while(tli.hasNext()){
-            DESTransition t = tli.next();
+            FSATransition t = tli.next();
             if(t.getId() == Id) return t;
         }
         return null;
@@ -186,7 +186,7 @@ public class Automaton extends DESModel implements Cloneable {
     /**
      * @return a custom list iterator for the transitions.
      */
-    public ListIterator<DESTransition> getTransitionIterator(){
+    public ListIterator<FSATransition> getTransitionIterator(){
         return new TransitionIterator(transitions.listIterator());
     }
 
@@ -194,7 +194,7 @@ public class Automaton extends DESModel implements Cloneable {
      * Adds an event to the aotumaton.
      * @param e the event that shall be added to the automaton.
      */
-    public void add(DESEvent e){
+    public void add(FSAEvent e){
         events.add(e);
     }
 
@@ -202,14 +202,14 @@ public class Automaton extends DESModel implements Cloneable {
      * Removes an event from the automaton.
      * @param e the event to be removed
      */
-    public void remove(DESEvent e){
+    public void remove(FSAEvent e){
         events.remove(e);
     }
 
     /**
      * @return a custom list iterator for the events.
      */
-    public ListIterator<DESEvent> getEventIterator(){
+    public ListIterator<FSAEvent> getEventIterator(){
         return new EventIterator(events.listIterator(), this);
     }
 
@@ -219,10 +219,10 @@ public class Automaton extends DESModel implements Cloneable {
      * @param id the id of the event
      * @return the event, null if it doesn't exist
      */
-    public DESEvent getEvent(int id){
-        ListIterator<DESEvent> ei = events.listIterator();
+    public FSAEvent getEvent(int id){
+        ListIterator<FSAEvent> ei = events.listIterator();
         while(ei.hasNext()){
-            DESEvent e = ei.next();
+            FSAEvent e = ei.next();
             if(e.getId() == id) return e;
         }
         return null;
@@ -232,9 +232,9 @@ public class Automaton extends DESModel implements Cloneable {
      * @author agmi02
      * A custom list iterator for states. Preserves data integrity.
      */
-    private class StateIterator implements ListIterator<DESState>{
-        private ListIterator<DESState> sli;
-        private DESState current;
+    private class StateIterator implements ListIterator<FSAState>{
+        private ListIterator<FSAState> sli;
+        private FSAState current;
         private Automaton a;
         
         /**
@@ -242,7 +242,7 @@ public class Automaton extends DESModel implements Cloneable {
          * @param sli the listiterator this listiterator shall encapsulate
          * @param a the automaton that is backing the listiterator
          */
-        public StateIterator(ListIterator<DESState> sli, Automaton a){
+        public StateIterator(ListIterator<FSAState> sli, Automaton a){
             this.a = a;
             this.sli = sli;
         }
@@ -256,7 +256,7 @@ public class Automaton extends DESModel implements Cloneable {
         /**
          * @see java.util.Iterator#next()
          */
-        public DESState next(){
+        public FSAState next(){
             current = sli.next();
             return current;
         }
@@ -269,7 +269,7 @@ public class Automaton extends DESModel implements Cloneable {
         /**
          * @see java.util.ListIterator#previous()
          */
-        public DESState previous(){
+        public FSAState previous(){
             current = sli.previous();
             return current;
         }
@@ -291,17 +291,17 @@ public class Automaton extends DESModel implements Cloneable {
          * to this state in order to maintain data integrity.
          */
         public void remove(){
-            ListIterator<DESTransition> sources = current.getSourceTransitionsListIterator();
+            ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
-                DESTransition t = sources.next();
+                FSATransition t = sources.next();
                 sources.remove();
                 a.remove(t);
                 t.getSource().removeSourceTransition(t);
                 t.getTarget().removeTargetTransition(t);
             }
-            ListIterator<DESTransition> targets = current.getTargetTransitionListIterator();
+            ListIterator<FSATransition> targets = current.getTargetTransitionListIterator();
             while(targets.hasNext()){
-                DESTransition t = targets.next();
+                FSATransition t = targets.next();
                 targets.remove();
                 a.remove(t);
                 t.getSource().removeSourceTransition(t);
@@ -309,22 +309,22 @@ public class Automaton extends DESModel implements Cloneable {
             }
             sli.remove();
         }
-        public void set(DESState s){
-            ListIterator<DESTransition> sources = current.getSourceTransitionsListIterator();
+        public void set(FSAState s){
+            ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
-                DESTransition t = sources.next();
+                FSATransition t = sources.next();
                 t.setSource(s);
                 s.addSourceTransition(t);
             }
-            ListIterator<DESTransition> targets = current.getTargetTransitionListIterator();
+            ListIterator<FSATransition> targets = current.getTargetTransitionListIterator();
             while(targets.hasNext()){
-                DESTransition t = targets.next();
+                FSATransition t = targets.next();
                 t.setTarget(s);
                 s.addTargetTransition(t);
             }
             sli.set(s);
         }
-        public void add(DESState s){
+        public void add(FSAState s){
             sli.add(s);
         }
     }
@@ -333,15 +333,15 @@ public class Automaton extends DESModel implements Cloneable {
      * @author Axel Gottlieb Michelsen
      * @author Kristian Edlund
      */
-    private class TransitionIterator implements ListIterator<DESTransition>{
-        private ListIterator<DESTransition> tli;
-        private DESTransition current;
+    private class TransitionIterator implements ListIterator<FSATransition>{
+        private ListIterator<FSATransition> tli;
+        private FSATransition current;
         
         /**
          * Constructor for the customized transition iterator
          * @param tli the original transition iterator that is going to be wrapped
          */
-        public TransitionIterator(ListIterator<DESTransition> tli){
+        public TransitionIterator(ListIterator<FSATransition> tli){
             this.tli = tli;
         }
         
@@ -355,7 +355,7 @@ public class Automaton extends DESModel implements Cloneable {
         /**
          * @see java.util.Iterator#next()
          */
-        public DESTransition next(){
+        public FSATransition next(){
             current = tli.next();
             return current;
         }
@@ -370,7 +370,7 @@ public class Automaton extends DESModel implements Cloneable {
         /**
          * @see java.util.ListIterator#previous()
          */
-        public DESTransition previous(){
+        public FSATransition previous(){
             current = tli.previous();
             return current;
         }
@@ -403,7 +403,7 @@ public class Automaton extends DESModel implements Cloneable {
         * Removes the last returned transition and replaces it with the new one
         * @param t the transition to replace the old one
         */
-        public void set(DESTransition t){
+        public void set(FSATransition t){
             remove();
             add(t);
         }
@@ -412,7 +412,7 @@ public class Automaton extends DESModel implements Cloneable {
          * Adds a new transition to the correct states and to the list of transitions
          * @param t the transition to be added
          */
-        public void add(DESTransition t){
+        public void add(FSATransition t){
             t.getSource().addSourceTransition(t);
             t.getTarget().addTargetTransition(t);
             transitions.add(t);
@@ -425,9 +425,9 @@ public class Automaton extends DESModel implements Cloneable {
      * @author Axel Gottlieb Michelsen
      * @author Kristian Edlund
      */
-    private class EventIterator implements ListIterator<DESEvent>{
-        private DESEvent current;
-        private ListIterator<DESEvent> eli;
+    private class EventIterator implements ListIterator<FSAEvent>{
+        private FSAEvent current;
+        private ListIterator<FSAEvent> eli;
         private Automaton a;
                 
         
@@ -436,7 +436,7 @@ public class Automaton extends DESModel implements Cloneable {
          * @param eli the event iterator to be wrapped
          * @param a the automaton the event list is connected to
          */
-        public EventIterator(ListIterator<DESEvent> eli, Automaton a){
+        public EventIterator(ListIterator<FSAEvent> eli, Automaton a){
             this.eli = eli;
             this.a = a;
         }
@@ -451,7 +451,7 @@ public class Automaton extends DESModel implements Cloneable {
         /**
          * @see java.util.Iterator#next()
          */
-        public DESEvent next(){
+        public FSAEvent next(){
             current = eli.next();
             return current;
         }
@@ -466,7 +466,7 @@ public class Automaton extends DESModel implements Cloneable {
         /**
          * @see java.util.ListIterator#previous()
          */
-        public DESEvent previous(){
+        public FSAEvent previous(){
             current = eli.previous();
             return current;
         }
@@ -488,9 +488,9 @@ public class Automaton extends DESModel implements Cloneable {
          * @see java.util.Iterator#remove()
          */
         public void remove(){
-            ListIterator<DESTransition> tli = a.getTransitionIterator();
+            ListIterator<FSATransition> tli = a.getTransitionIterator();
             while(tli.hasNext()){
-                DESTransition t = tli.next();
+                FSATransition t = tli.next();
                 if(t.getEvent() == current){
                     t.setEvent(null);
                 }
@@ -502,10 +502,10 @@ public class Automaton extends DESModel implements Cloneable {
          * Replaces the current event with the given event
          * @param e the event to replace the current event
          */
-        public void set(DESEvent e){
-            ListIterator<DESTransition> tli = a.getTransitionIterator();
+        public void set(FSAEvent e){
+            ListIterator<FSATransition> tli = a.getTransitionIterator();
             while(tli.hasNext()){
-                DESTransition t = tli.next();
+                FSATransition t = tli.next();
                 if(t.getEvent() == current){
                     t.setEvent(e);
                 }
@@ -516,7 +516,7 @@ public class Automaton extends DESModel implements Cloneable {
          * Adds an event to the event list
          * @param e the event to add
          */
-        public void add(DESEvent e){
+        public void add(FSAEvent e){
             eli.add(e);
         }
     }	

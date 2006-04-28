@@ -12,9 +12,9 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
-import model.DESTransition;
-import model.fsa.SubElement;
-import model.fsa.Transition;
+import model.fsa.FSATransition;
+import model.fsa.ver1.SubElement;
+import model.fsa.ver1.Transition;
 import presentation.Glyph;
 import presentation.GraphElement;
 import presentation.MathUtils;

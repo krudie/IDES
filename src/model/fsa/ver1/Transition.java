@@ -1,7 +1,8 @@
-package model.fsa;
+package model.fsa.ver1;
 
-import model.DESEvent;
-import model.DESState;
+import model.fsa.FSAEvent;
+import model.fsa.FSAState;
+
 import java.awt.geom.Point2D;
 
 /**
@@ -9,11 +10,11 @@ import java.awt.geom.Point2D;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Transition extends SubElementContainer implements model.DESTransition {
+public class Transition extends SubElementContainer implements model.fsa.FSATransition {
     
-	private DESState sourceS, targetS;
+	private FSAState sourceS, targetS;
 
-    private DESEvent e = null;
+    private FSAEvent e = null;
 
     private int id;
 
@@ -27,7 +28,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * @param source the source state.
      * @param target the target state.
      */
-    public Transition(int id, DESState source, DESState target){
+    public Transition(int id, FSAState source, FSAState target){
         this.id = id;
         this.sourceS = source;
         this.targetS = target;
@@ -42,7 +43,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * @param target the target state.
      * @param e the event this transition fires uppon receival of.
      */
-    public Transition(int id, DESState source, DESState target, DESEvent e){
+    public Transition(int id, FSAState source, FSAState target, FSAEvent e){
         this(id, source, target);
         this.e = e;
     }
@@ -57,7 +58,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * @param target the target state.
      * @param e the event this transition fires uppon receival of.
      */
-    public Transition(Transition t, DESState source, DESState target, Event e){
+    public Transition(Transition t, FSAState source, FSAState target, Event e){
         super(t);
         this.id = t.id;
         this.sourceS = source;
@@ -75,7 +76,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * @param sourceS the source state.
      * @param targetS the target state.
      */
-    public Transition(Transition t, DESState sourceS, DESState targetS){
+    public Transition(Transition t, FSAState sourceS, FSAState targetS){
         super(t);
         this.id = t.id;
         this.sourceS = sourceS;
@@ -88,7 +89,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * 
      * @param s the new source.
      */
-    public void setSource(DESState s){
+    public void setSource(FSAState s){
         this.sourceS = s;
     }
 
@@ -96,7 +97,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * Sets a new source, i.e., state from which this transition originates, for
      * this transition.
      */
-    public DESState getSource(){
+    public FSAState getSource(){
         return this.sourceS;
     }
 
@@ -106,7 +107,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * 
      * @param s the new source.
      */
-    public void setTarget(DESState s){
+    public void setTarget(FSAState s){
         this.targetS = s;
     }
 
@@ -115,7 +116,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * 
      * @return the target state.
      */
-    public DESState getTarget(){
+    public FSAState getTarget(){
         return this.targetS;
     }
 
@@ -124,7 +125,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * 
      * @param e the event this transition fires uppon.
      */
-    public void setEvent(DESEvent e){
+    public void setEvent(FSAEvent e){
         this.e = e;
     }
 
@@ -133,7 +134,7 @@ public class Transition extends SubElementContainer implements model.DESTransiti
      * 
      * @return the event this transition fires uppon.
      */
-    public DESEvent getEvent(){
+    public FSAEvent getEvent(){
         return e;
     }
 

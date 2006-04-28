@@ -43,6 +43,9 @@ public interface Glyph {
 	 * Inserts the given child into my list at the given index, overwrites
 	 * any other glyph in that position.
 	 * 
+	 * FIXME It is not great to index the children in this way.
+	 * Should I hash them instead?
+	 * 
 	 * @param child the child to be added
 	 * @param index the index at which to insert the child
 	 */

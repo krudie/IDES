@@ -40,15 +40,11 @@ public class MainWindow extends JFrame {
 		// create tabbed panes and their components: 
 		// canvas, graph specs panel, LaTeX and EPS output text areas.
 		drawingBoard = new DrawingBoard();
-		UIStateModel.instance().addView(drawingBoard);
-		
+		UIStateModel.instance().addView(drawingBoard);		
 		createAndAddTabbedPane();
-		
-		// TODO add graph spec, latex and eps views to the state model
+//		 TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
-		
-		// TODO attach listener to drawing area
-		    
+			
 	    	
 		pack();
 		setSize(800, 600);
@@ -59,7 +55,9 @@ public class MainWindow extends JFrame {
 		tabbedViews = new JTabbedPane();
 		JScrollPane sp = new JScrollPane(drawingBoard, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);		
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		
+		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
 		tabbedViews.addTab("Un-named Graph", sp);
 		tabbedViews.addTab("Graph Specification", null);
 		tabbedViews.addTab("LaTeX Output", null);		
@@ -108,7 +106,7 @@ public class MainWindow extends JFrame {
 		 	 
 		 // assemble the file menu
 //		 TODO add listeners
-		 ActionListener fileMenuListener = MenuListenerFactory.getFileMenuListener();
+		 ActionListener fileMenuListener = MenuListenerFactory.makeFileMenuListener();
 		 
 		 menuFile = new JMenu("File");
 		 menuFile.setMnemonic(KeyEvent.VK_F);
@@ -170,13 +168,13 @@ public class MainWindow extends JFrame {
 		 miCut = new JMenuItem("Cut", new ImageIcon(imagePath + "edit_cut16.gif"));
 		 miCut.setMnemonic(KeyEvent.VK_T);
 		 miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		 miCut.addActionListener(MenuListenerFactory.getCutListener());
+		 miCut.addActionListener(MenuListenerFactory.makeCutListener());
 		 menuEdit.add(miCut);
 		 
 		 miCopy = new JMenuItem("Copy", new ImageIcon(imagePath + "edit_copy.gif"));
 		 miCopy.setMnemonic(KeyEvent.VK_C);
 		 miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-		 miCopy.addActionListener(MenuListenerFactory.getCopyListener());
+		 miCopy.addActionListener(MenuListenerFactory.makeCopyListener());
 		 menuEdit.add(miCopy);
 		 
 		 miPaste = new JMenuItem("Paste", new ImageIcon(imagePath + "edit_paste.gif"));
@@ -187,7 +185,7 @@ public class MainWindow extends JFrame {
 		 miDelete = new JMenuItem("Delete", new ImageIcon(imagePath + "edit_delete.gif"));
 		 miDelete.setMnemonic(KeyEvent.VK_D);
 		 miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-		 miDelete.addActionListener(MenuListenerFactory.getDeleteListener());
+		 miDelete.addActionListener(MenuListenerFactory.makeDeleteListener());
 		 menuEdit.add(miDelete);
 	 		 		 
 		 menuBar.add(menuEdit);

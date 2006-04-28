@@ -3,7 +3,9 @@ package io;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import model.fsa.Automaton;
+
+import model.fsa.FSAModel;
+import model.fsa.ver1.Automaton;
 
 //import org.eclipse.swt.SWT;
 //import org.eclipse.swt.widgets.FileDialog;
@@ -12,11 +14,10 @@ import model.fsa.Automaton;
 //import userinterface.MainWindow;
 //import userinterface.ResourceManager;
 //import userinterface.Userinterface;
-import model.DESModel;
 
 public class FileOperations {
 
-	public static DESModel openSystem(File f) {	
+	public static FSAModel openSystem(File f) {	
 	    AutomatonParser ap = new AutomatonParser();	    	
         Automaton automaton = ap.parse(f);	        
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
@@ -41,12 +42,12 @@ public class FileOperations {
 //        }		
 	}
 	
-	public static void saveSystem(DESModel model) {
+	public static void saveSystem(FSAModel model) {
 		// TODO call saveSystemAs with default directory from SystemVariables
 		
 	}
 	
-	public static void saveSystemAs(DESModel model, File f) {
+	public static void saveSystemAs(FSAModel model, File f) {
 		// TODO implement
 		// open file output stream
 		

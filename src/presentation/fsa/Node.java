@@ -1,6 +1,5 @@
 package presentation.fsa;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,9 +10,9 @@ import java.util.Iterator;
 import presentation.Glyph;
 import presentation.GlyphLabel;
 import presentation.GraphElement;
-import model.fsa.State;
-import model.fsa.StateLayout;
-import model.fsa.Transition;
+import model.fsa.ver1.State;
+import model.fsa.ver1.StateLayout;
+import model.fsa.ver1.Transition;
 
 /**
  * The graphical representation of a state in a finite state automaton.

@@ -1,6 +1,6 @@
-package model;
+package model.fsa;
 
-public interface DESObserver {
+public interface FSAObserver {
 
 	/**
 	 * Updates this observer with the most recent version of

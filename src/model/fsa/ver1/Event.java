@@ -1,4 +1,4 @@
-package model.fsa;
+package model.fsa.ver1;
 
 /**
  * Represents an events in an automaton.
@@ -6,7 +6,7 @@ package model.fsa;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event extends SubElementContainer implements model.DESEvent {
+public class Event extends SubElementContainer implements model.fsa.FSAEvent {
     private int id;
 
     /**
