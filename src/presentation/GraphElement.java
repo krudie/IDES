@@ -9,6 +9,9 @@ import java.awt.geom.Rectangle2D;
 
 public class GraphElement implements Glyph {
 	
+	private boolean visible;
+	private boolean highlight;
+	
 	// my states and free labels
 	private LinkedList<Glyph> children;
 	private Glyph parent;
@@ -54,6 +57,10 @@ public class GraphElement implements Glyph {
 		children.add(index, child);
 	}
 
+	public void insert(Glyph g) {
+		children.add(g);		
+	}
+	
 	public void remove(Glyph child) {
 		children.remove(child);
 	}
@@ -69,5 +76,41 @@ public class GraphElement implements Glyph {
 	public Glyph parent() {
 		return parent;
 	}
+
+	public Iterator children() { 
+		return children.iterator();
+	}
+
+	public LinkedList<Glyph> getChildren() {
+		return children;
+	}
+
+	public void setChildren(LinkedList<Glyph> children) {
+		this.children = children;
+	}
+
+	public boolean isHighlight() {
+		return highlight;
+	}
+
+	public void setHighlight(boolean highlight) {
+		this.highlight = highlight;
+	}
+
+	public Glyph getParent() {
+		return parent;
+	}
+
+	public void setParent(Glyph parent) {
+		this.parent = parent;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}	
 
 }

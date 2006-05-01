@@ -1,9 +1,13 @@
 package model.fsa.ver1;
 
-import java.awt.Point;
-import java.util.*;
+import io.fsa.ver1.SubElement;
+import io.fsa.ver1.SubElementContainer;
 
-import presentation.GraphicalLayout;
+import java.awt.Point;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+import presentation.fsa.StateLayout;
 
 import model.fsa.FSATransition;
 
@@ -142,6 +146,8 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	}   
 	
 	/**
+	 * Move to SubElementParser class.
+	 * 
 	 * @return an object encapsulating all of the graphical layout 
 	 * 	information required to display this state.
 	 */

@@ -1,14 +1,13 @@
-package model.fsa.ver1;
+package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.Point;
 
 import presentation.GraphicalLayout;
 
-public class StateLayout implements GraphicalLayout {
+public class StateLayout extends GraphicalLayout {
 
-	private int radius;
-	private Point centre;
-	private String name;
+	private int radius;		
 	private Point arrow; // the direction vector for arrow if the state is initial
 	
 	
@@ -18,26 +17,16 @@ public class StateLayout implements GraphicalLayout {
 	}
 	
 	public StateLayout(Point centre, int radius, String name) {
-		this.centre = centre;
-		this.radius = radius;
-		this.name = name;
+		super(centre, name);
+		this.radius = radius;		
 		arrow = null;
 	}
 	
 	public int getRadius() {
 		return radius;
-	}
-	
-	public Point getLocation() {		
-		return centre;
 	}	
-
-	public String getText() {		
-		return name;
-	}
 	
 	public Point getArrow(){		
 		return arrow;
-	}
-
+	}	
 }

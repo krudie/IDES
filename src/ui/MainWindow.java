@@ -45,7 +45,7 @@ public class MainWindow extends JFrame {
 //		 TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
 			
-	    	
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		pack();
 		setSize(800, 600);
 		setVisible(true);
@@ -77,7 +77,7 @@ public class MainWindow extends JFrame {
 	 }
 	 
 	/**
-	 * An ugly mess of repetative code: factor out and use info from SystemVariables.
+	 * FIXME An ugly mess of repetitive code: factor out and use info from SystemVariables.
 	 *
 	 */
 	private void createAndAddMenuBar() {

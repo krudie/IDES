@@ -1,5 +1,7 @@
 package presentation.fsa;
 
+import io.fsa.ver1.SubElement;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,7 +15,6 @@ import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
 import model.fsa.FSATransition;
-import model.fsa.ver1.SubElement;
 import model.fsa.ver1.Transition;
 import presentation.Glyph;
 import presentation.GraphElement;
@@ -28,7 +29,8 @@ import presentation.MathUtils;
 public class Edge extends GraphElement {
 
 	// the transition that this edge represents
-	private Transition t;
+	private FSATransition t;
+	private TransitionLayout layout;
 	
 	// The bezier curve.
 	// Review Lenko and Mike's curve code.
@@ -42,8 +44,9 @@ public class Edge extends GraphElement {
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
 	
-	public Edge(Transition t){
+	public Edge(FSATransition t){		
 		this.t = t;
+		layout = ((Transition)t).getLayout();
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
 		controlPoints = new Point2D.Float[4];		
 		arrow = new ArrowHead();
@@ -56,7 +59,11 @@ public class Edge extends GraphElement {
 		// TODO change to anti-alias and see if can get nicer looking arcs
 		g2d.setRenderingHint (RenderingHints.KEY_INTERPOLATION,
                 			  RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		g2d.setColor(Color.BLACK);
+		if(isHighlight()){
+			g2d.setColor(layout.getHighlightColor());
+		}else{
+			g2d.setColor(Color.BLACK);
+		}
 		g2d.setStroke(new BasicStroke(2));
 		
 		// draw myself as a cubic (bezier) curve 	
@@ -76,7 +83,9 @@ public class Edge extends GraphElement {
 	 */
 	public void update() {
 		
-		controlPoints = (Point2D.Float[])(t.getLayout().getCurve());
+		// FIXME Transition objects will not have this information. ///////////
+		controlPoints = (Point2D.Float[])layout.getCurve();
+		///////////////////////////////////////////////////////////////////////
 		
 		// Compute and store the arrow layout
 		// the direction vector from base to tip of the arrow 
@@ -112,23 +121,5 @@ public class Edge extends GraphElement {
 	public Point2D.Float getCTRL2() {
 		return controlPoints[CTRL2];		
 	}
-
-	/**
-	 * From Michael Wood's code:
-	 * 
-     * The dimensions of the arrow head.
-     * 
-     *    tang
-     *     \\
-     *       \\\\ 
-     *   nock ]>>>>> tip
-     *       ////  
-     *     //
-     *     tang 
-     * 
-     * HEAD_LENGTH = nock to tip.
-     * TANG_X = distance along shaft from tip to projection of tang on shaft.
-     * TANG_Y = distance perpendicluar to shaft from projection of tang on shaft to tang.
-     */
 	
 }

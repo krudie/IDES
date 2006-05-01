@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 
 import presentation.Glyph;
 
@@ -22,7 +23,7 @@ public class EdgeHandler implements Glyph {
 	private Ellipse2D.Double[] anchors;
 	private static final int RADIUS = 5;	
 	
-	public EdgeHandler(Edge edge) {
+	public EdgeHandler(Edge edge) {		
 		this.edge = edge;
 		anchors = new Ellipse2D.Double[4];		                               
 		update();
@@ -73,24 +74,7 @@ public class EdgeHandler implements Glyph {
 				(int)(edge.getCTRL2().x), 
 				(int)(edge.getCTRL2().y));
 		
-		// TODO reset color to previous one
-	}
-
-
-
-	public Rectangle2D bounds() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	public void insert(Glyph child, int index) {}
-	
-	public void remove(Glyph child) {}
-
-	public Glyph child(int index) {
-		return null;
+		// TODO ? reset color to previous one
 	}
 
 	/**
@@ -100,5 +84,16 @@ public class EdgeHandler implements Glyph {
 	public Glyph parent() {		
 		return edge;
 	}
+
+	public Rectangle2D bounds() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void insert(Glyph child, int index) {}
+	public void remove(Glyph child) {}
+	public Glyph child(int index) {	return null; }
+	public Iterator children() { return null; }
+	public void insert(Glyph g) {}	
 	
 }

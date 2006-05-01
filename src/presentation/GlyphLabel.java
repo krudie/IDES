@@ -5,6 +5,7 @@ import java.awt.Label;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Iterator;
 
 
 public class GlyphLabel extends Label implements Glyph {
@@ -54,10 +55,13 @@ public class GlyphLabel extends Label implements Glyph {
 	}
 
 	public void insert(Glyph child, int index) {}
+	public void insert(Glyph g) {}
 	public void remove(Glyph child) {}
 	public Glyph child(int index) {	return null; }
-
+	public Iterator children() { return null; }
+	
 	public Glyph parent() {		
 		return parent;
-	}	
+	}
+
 }

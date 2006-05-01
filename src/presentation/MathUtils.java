@@ -1,6 +1,8 @@
 package presentation;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 
 public class MathUtils {
 
@@ -51,6 +53,19 @@ public class MathUtils {
 	 */
 	public static Point2D.Float scale(Point2D.Float v, float s) {		
 		return new Point2D.Float(Math.round(v.x * s), Math.round(v.y * s));		
+	}
+	
+	/** 
+	 * @param a
+	 * @param b
+	 * @return a new point a - b
+	 */
+	public static Point2D.Float subtract(Point2D.Float a, Point2D.Float b){
+		return new Point2D.Float(a.x - b.x, a.y - b.y);		
+	}
+
+	public static Point2D.Float subtract(Point a, Point b) {		
+		return new Point2D.Float(a.x - b.x, a.y - b.y);	
 	}
 
 }

@@ -6,12 +6,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.util.Iterator;
 import presentation.Glyph;
 import presentation.GlyphLabel;
 import presentation.GraphElement;
+import presentation.MathUtils;
+import model.fsa.FSAState;
 import model.fsa.ver1.State;
-import model.fsa.ver1.StateLayout;
 import model.fsa.ver1.Transition;
 
 /**
@@ -21,28 +23,30 @@ import model.fsa.ver1.Transition;
  *
  */
 public class Node extends GraphElement {
+
+	// the state to be represented
+	private FSAState state;	
 	
-	// determines the way this node is to be rendered
-	// whether initial, marked (terminal) or standard node
-	// also tells which transitions and hence edges are incoming and outgoing,
-	// for the purpose of highlighting and recursive drawing.
-	private State state;	
+	private StateLayout layout;
+	
 	// list of labels to be displayed within the bounds of this node
-	private GlyphLabel label;
-	
+	private GlyphLabel label;	
 	private Ellipse2D circle;
 	
-	// TODO Move to subclasses of Node
+	// TODO Move to subclasses of Node and move extra drawing logic.
 	private Ellipse2D innerCircle = null;  // only drawn for final states	
 	private ArrowHead arrow = null;  // only draw for initial states
+	private Point2D.Float a1, a2;  // the arrow shaft
 	
-	public Node(State s){
+	public Node(FSAState s){
 		this.state = s;
 		label = new GlyphLabel("");
+		a1 = new Point2D.Float();
+		a2 = new Point2D.Float();
 		update();
 	}
 	
-	public Node(State s, Glyph parent){
+	public Node(FSAState s, Glyph parent){
 		super(parent);
 		this.state = s;
 		label = new GlyphLabel("");
@@ -58,8 +62,11 @@ public class Node extends GraphElement {
 	 *
 	 */
 	public void update() {
-				
-		StateLayout layout = (StateLayout)state.getLayout();
+		
+		// FIXME //////////////////////////////
+		layout = (StateLayout)((State)state).getLayout();		
+		///////////////////////////////////////
+		
 		int radius = layout.getRadius();
 		Point centre = layout.getLocation();
 		
@@ -72,9 +79,15 @@ public class Node extends GraphElement {
 		}
 			
 		if(state.isInitial()){
-			// FIXME what is the point on the edge of the circle?
-			// A: centre point - arrow vector
-			// arrow = new ArrowHead(state.getLayout().getArrow(), ???);
+			// The point on the edge of the circle:
+			// centre point - arrow vector
+			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
+			Point2D.Float dir = new Point2D.Float(layout.getArrow().x, layout.getArrow().y);
+			float offset = layout.getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
+			a2 = MathUtils.subtract(c, MathUtils.scale(dir, offset));
+			arrow = new ArrowHead(dir, a2);					
+			// ??? How long should the shaft be?
+			a1 = MathUtils.subtract(a2, MathUtils.scale(dir, ArrowHead.HEAD_LENGTH));
 		}
 		
 		label.setText(layout.getText());
@@ -82,49 +95,59 @@ public class Node extends GraphElement {
 				(int)centre.y - label.getHeight());
 		
 		
+		// FIXME
 		// Create and add all edges from transition lists
-		// Start with only the outgoing edges
-		// TODO figure out how to store the incoming edges as well. 
-		// Since they are highlighted on MouseDown event.
+		// Start with only the outgoing edges		
 		clear(); // remove all of my child glyphs
+		// This class shouldn't know anything about transitions...
 		Iterator t = state.getTargetTransitionListIterator();
 		int i = 0;
 		while(t.hasNext()){						
 			insert(new Edge((Transition)t.next()), i++);			
 		}
+		
+		// TODO figure out how to store the incoming edges as well. 
+		// Since they are highlighted on MouseDown event.
+		
 	}
 	
 	public void draw(Graphics g) {				
+		
 		super.draw(g);	// calls draw on all of the outgoing edges
+		if(super.isHighlight()){
+			g.setColor(layout.getHighlightColor());
+		}else{
+			g.setColor(layout.getColor());
+		}
+		
 		Graphics2D g2d = (Graphics2D)g;
 		
-		// should be in GraphElement ///////		
-		g2d.setStroke(new BasicStroke(2));
-		////////////////////////////////////
-
+		// ??? Why do I need to set the stroke here?
+		g2d.setStroke(new BasicStroke(2));		
 		g2d.draw(circle);
-		
-		// FIXME If Node were subclassed, we wouldn't need this logic.
+				
 		if(state.isMarked()){
 			g2d.draw(innerCircle);
 		}
 		
-		if(state.isInitial()){ // TODO draw an arrow
-			
-		}
-				
+		if(state.isInitial()){
+			g2d.drawLine((int)a1.x, (int)a1.y, (int)a2.x, (int)a2.y);
+			g2d.draw(arrow);
+			g2d.fill(arrow);
+		}				
 		label.draw(g);
 	}
 
-	/**
-	 * Draw myself and all incoming and outgoing edges 
-	 * in a highlighted colour in the given graphics context.
-	 * 
-	 * @param g
-	 */
-	public void highlight(Graphics g) {
-				
-	}
+		// FIXME to highlight this node, must highlight each incoming edge
+		// only have storage for outgoing edges.
+		// I know my incoming transitions, but must call highlight on each edge.
+		// References for these are stored in their source nodes.
+		// IDEA if I store a reference to my parent graph, I could ask it for these edges.
+		// should update be called on this parent/graph to update all edges and nodes etc.???
+		// instead of doing it recursively?
+	// Better Idea: get the Edges to check if source node or dest node is highlighted
+	// and if so, draw themselves as highlighted.
+	
 	
 	public Rectangle bounds() {		
 		return circle.getBounds();
@@ -134,4 +157,11 @@ public class Node extends GraphElement {
 		return circle.contains(p);
 	}	
 	
+	public void setHighlight(boolean b){
+		super.setHighlight(b);
+		Iterator edges = super.children();
+		while(edges.hasNext()){
+			((Edge)edges.next()).setHighlight(b);
+		}
+	}
 }

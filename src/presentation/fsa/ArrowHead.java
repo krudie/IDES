@@ -1,17 +1,19 @@
 /*
- * Created on Sep 21, 2004
+ * Created April 2006
  */
 package presentation.fsa;
 
-import presentation.MathUtils;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
+
+import presentation.MathUtils;
 
 /**
  * This is a filled polygon in the shape of an arrowhead.
  * 
  * @author Helen Bretzke
  */
+@SuppressWarnings("serial")
 public class ArrowHead extends Polygon {
 
     public static final int HEAD_LENGTH = 9, SHORT_HEAD_LENGTH = 7;
@@ -30,8 +32,8 @@ public class ArrowHead extends Polygon {
      */
     public ArrowHead(Point2D.Float dir, Point2D.Float base){
         update(dir, base);
-    }    
-    
+    } 
+        
     public void update(Point2D.Float dir, Point2D.Float base){
     	reset();
     	dir = MathUtils.scale(dir, SHORT_HEAD_LENGTH);

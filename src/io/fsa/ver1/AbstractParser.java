@@ -1,4 +1,4 @@
-package io;
+package io.fsa.ver1;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;

@@ -47,5 +47,16 @@ public interface FSAState {
 	/**
 	 * @param id the id of this state
 	 */
-	public abstract void setId(int id);	
+	public abstract void setId(int id);
+	
+	/**
+	 * @return true iff this is an initial state
+	 */	
+	public boolean isInitial();
+
+	/**
+	 * @return true iff this is marked (final) state
+	 */
+	public boolean isMarked();
+	
 }

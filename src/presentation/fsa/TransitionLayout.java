@@ -1,10 +1,10 @@
-package model.fsa.ver1;
+package presentation.fsa;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
+
 import presentation.GraphicalLayout;
 
-public class TransitionLayout implements GraphicalLayout {
+public class TransitionLayout extends GraphicalLayout {
 
 	private Point2D[] bezierControls;
 	
@@ -14,16 +14,6 @@ public class TransitionLayout implements GraphicalLayout {
 	
 	public TransitionLayout(Point2D[] curve){
 		bezierControls = curve;
-	}
-	
-	public String getText() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Point getLocation() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public Point2D[] getCurve() {

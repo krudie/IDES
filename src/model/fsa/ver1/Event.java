@@ -1,5 +1,8 @@
 package model.fsa.ver1;
 
+import io.fsa.ver1.SubElement;
+import io.fsa.ver1.SubElementContainer;
+
 /**
  * Represents an events in an automaton.
  * 

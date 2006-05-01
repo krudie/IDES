@@ -3,7 +3,12 @@ package model.fsa.ver1;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 
+import io.fsa.ver1.SubElement;
+import io.fsa.ver1.SubElementContainer;
+
 import java.awt.geom.Point2D;
+
+import presentation.fsa.TransitionLayout;
 
 /**
  * This class represent a transition in an automaton.

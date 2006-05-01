@@ -1,13 +1,20 @@
  package ui;
 
+import java.awt.BasicStroke;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
-
-import javax.swing.JPanel;
 
 import model.fsa.FSAObserver;
 import model.fsa.ver1.Automaton;
@@ -16,6 +23,7 @@ import presentation.Glyph;
 import presentation.GraphElement;
 import presentation.fsa.Node;
 import ui.tools.DrawingTool;
+import ui.tools.SelectionTool;
 
 /**
  * The area in which users view, create and modify graphs.
@@ -29,10 +37,13 @@ import ui.tools.DrawingTool;
  * @author helen bretzke
  *
  */
-public class DrawingBoard extends JPanel implements FSAObserver, MouseListener, KeyListener {
+public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, KeyListener {
 		
 	private DrawingTool currentTool;
 	private DrawingTool[] drawingTools;
+	private Font font; 
+	private FontMetrics fontMetrics;
+	private BasicStroke wideStroke, fineStroke;	
 	
 //	 Tools types (corresponding to user interaction modes) to 
 	// determine mouse and keyboard responses.
@@ -76,18 +87,29 @@ public class DrawingBoard extends JPanel implements FSAObserver, MouseListener, 
 
 	public DrawingBoard() {	
 		graph = new GraphElement();
+		currentSelection = new GraphElement();
+		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
+		drawingTools[DEFAULT] = new SelectionTool(this);
+		// TODO construct all other drawing tools
+		currentTool = drawingTools[DEFAULT];
 		
-				
-		
+	    wideStroke = new BasicStroke(2);
+	    fineStroke = new BasicStroke(1);
+	    this.setVisible(true);
 		addMouseListener(this);		
 	}	
 	
 	public void paint(Graphics g){
 		
 		// TODO scale or other transformation?
+		Graphics2D g2D = (Graphics2D) g; // cast to 2D
+	    g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	                         RenderingHints.VALUE_ANTIALIAS_ON);
+	    //g2D.setBackground(Color.white);
+	    g2D.setStroke(fineStroke);
+		graph.draw(g);
 		
-		graph.draw(g);				
 		//Graphics2D g2d = (Graphics2D)g;
 		
 		// Warning: scales distance from origin as well as size of nodes
@@ -129,7 +151,7 @@ public class DrawingBoard extends JPanel implements FSAObserver, MouseListener, 
 		State s;
 		
 		// TODO for all states in the model, refresh all of my nodes		
-		// For now, just create everthing new.
+		// For now, just create everthing new.		
 		graph.clear();
 		while(states.hasNext()){
 			s = (State)states.next();
@@ -173,20 +195,17 @@ public class DrawingBoard extends JPanel implements FSAObserver, MouseListener, 
 
 
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		currentTool.handleMouseClicked(arg0);		
 	}
 
 
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		currentTool.handleMousePressed(arg0);		
 	}
 
 
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		currentTool.handleMouseReleased(arg0);		
 	}
 
 
@@ -199,5 +218,43 @@ public class DrawingBoard extends JPanel implements FSAObserver, MouseListener, 
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	// TODO Move these methods into the SelectionTool class; accessor to buffers and graph elements.
+	
+//	 TODO clear and un-highlight the set of selected elements
+	
+	public void clearCurrentSelection(){
+		Iterator els = graph.children();
+		Node g;
+		while(els.hasNext()){
+			g = (Node)els.next();
+			g.setHighlight(false);
+		}		
+	}
+	
+	public void updateCurrentSelection(Point point) {
+		
+		// TODO store and highlight the set of intersected elements 
+		
+		Iterator els = graph.children();
+		Node g;
+		while(els.hasNext()){
+			g = (Node)els.next();
+			if(g.intersects(point)){
+				g.setHighlight(true);
+			}else{
+				g.setHighlight(false);
+			}
+		}		
+	}
+ 
+	/**
+	 * Set the current selection to all elements contained by the given rectangle.
+	 * 
+	 * @param rectangle
+	 */
+	public void updateCurrentSelection(Rectangle rectangle){
+			
 	}
 }

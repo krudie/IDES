@@ -3,6 +3,7 @@ package presentation;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 
 /**
  * Interface for any object that can appear in the drawing area.
@@ -51,6 +52,8 @@ public interface Glyph {
 	 */
 	public void insert(Glyph child, int index);
 	
+	public void insert(Glyph g);
+	
 	/**
 	 * Removes the first occurrence of the given child from my list of children.
 	 * 
@@ -69,4 +72,9 @@ public interface Glyph {
 	 */
 	public Glyph parent();
 	
+	/**
+	 * @return an iterator of my children
+	 */
+	public Iterator children();
+		
 }

@@ -1,6 +1,10 @@
 package ui.tools;
 
 import java.awt.Cursor;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+import presentation.Glyph;
 
 import ui.DrawingBoard;
 
@@ -12,27 +16,27 @@ public class SelectionTool extends DrawingTool {
 	}
 	
 	@Override
-	public void handleMouseClicked() {
-		// TODO 
-		// 1. Compute graph element(s) hit by point clicked
-		// 2. set the context's selection buffer
-
+	public void handleMouseClicked(MouseEvent me) {		
+		// if keyboard holds shift or control down, add currently selected item to buffer		
 	}
 
 	@Override
-	public void handleMouseDragged() {
+	public void handleMouseDragged(MouseEvent me) {
 		// TODO Look up java.awt.dnd
 
 	}
 
 	@Override
-	public void handleMousePressed() {
-		// TODO store starting point for selection rectangle
-
+	public void handleMousePressed(MouseEvent me) {
+		// TODO store starting point for selection rectangle		
+		context.updateCurrentSelection(me.getPoint());
+		context.repaint();
 	}
 
 	@Override
-	public void handleMouseReleased() {
+	public void handleMouseReleased(MouseEvent me) {
+		context.clearCurrentSelection();
+		context.repaint();
 //		 TODO 
 		// 1. get end point for selection rectangle 
 		// 2. draw a dashed rectangle
@@ -42,6 +46,6 @@ public class SelectionTool extends DrawingTool {
 	}
 
 	@Override
-	public void handleKeyTyped() {}
+	public void handleKeyTyped(KeyEvent ke) {}
 
 }
