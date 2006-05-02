@@ -56,16 +56,13 @@ public class Edge extends GraphElement {
 	public void draw(Graphics g) {
 		super.draw(g);
 		Graphics2D g2d = (Graphics2D)g;
-		// TODO change to anti-alias and see if can get nicer looking arcs
-		g2d.setRenderingHint (RenderingHints.KEY_INTERPOLATION,
-                			  RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		
 		if(isHighlight()){
 			g2d.setColor(layout.getHighlightColor());
 		}else{
 			g2d.setColor(Color.BLACK);
 		}
-		g2d.setStroke(new BasicStroke(2));
-		
+				
 		// draw myself as a cubic (bezier) curve 	
 		path.moveTo(controlPoints[P1].x, controlPoints[P1].y);	    
 	    path.curveTo(controlPoints[CTRL1].x, controlPoints[CTRL1].y,

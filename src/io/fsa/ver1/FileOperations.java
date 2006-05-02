@@ -31,8 +31,7 @@ public class FileOperations {
         
         // *** Do this in AutomatonParser.parse just before returning the Automaton.
         
-        return automaton;
-		
+        return automaton;		
 	}
 	
 	public static void saveSystem(FSAModel model) {

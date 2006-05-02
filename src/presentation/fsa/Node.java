@@ -91,8 +91,9 @@ public class Node extends GraphElement {
 		}
 		
 		label.setText(layout.getText());
-		label.setLocation((int)centre.x - label.getWidth(), 
-				(int)centre.y - label.getHeight());
+		
+		// TODO centre the label in the node; note that width and height of label are both 0.
+		label.setLocation((int)centre.x - radius, (int)centre.y + radius/4);
 		
 		
 		// FIXME
@@ -121,9 +122,6 @@ public class Node extends GraphElement {
 		}
 		
 		Graphics2D g2d = (Graphics2D)g;
-		
-		// ??? Why do I need to set the stroke here?
-		g2d.setStroke(new BasicStroke(2));		
 		g2d.draw(circle);
 				
 		if(state.isMarked()){

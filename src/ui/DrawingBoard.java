@@ -10,11 +10,15 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import model.fsa.FSAObserver;
 import model.fsa.ver1.Automaton;
@@ -37,8 +41,8 @@ import ui.tools.SelectionTool;
  * @author helen bretzke
  *
  */
-public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, KeyListener {
-		
+public class DrawingBoard extends JComponent implements FSAObserver, MouseListener, KeyListener {
+			
 	private DrawingTool currentTool;
 	private DrawingTool[] drawingTools;
 	private Font font; 
@@ -95,22 +99,39 @@ public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, 
 		currentTool = drawingTools[DEFAULT];
 		
 	    wideStroke = new BasicStroke(2);
-	    fineStroke = new BasicStroke(1);
-	    this.setVisible(true);
+	    fineStroke = new BasicStroke(1);	    
+	    setVisible(true);
 		addMouseListener(this);		
 	}	
 	
 	public void paint(Graphics g){
-		
-		// TODO scale or other transformation?
+			
 		Graphics2D g2D = (Graphics2D) g; // cast to 2D
-	    g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	                         RenderingHints.VALUE_ANTIALIAS_ON);
-	    //g2D.setBackground(Color.white);
+
+//		RenderingHints hints = 
+//		     new RenderingHints(
+//		       RenderingHints.KEY_TEXT_ANTIALIASING, 
+//		         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//	   hints.put(RenderingHints.KEY_DITHERING,
+//		     	RenderingHints.VALUE_DITHER_ENABLE);
+//	   hints.put(RenderingHints.KEY_ANTIALIASING,
+//	            RenderingHints.VALUE_ANTIALIAS_ON);
+//	   hints.put(RenderingHints.KEY_RENDERING,
+//	    		RenderingHints.VALUE_RENDER_QUALITY);
+//	   hints.put(RenderingHints.KEY_FRACTIONALMETRICS,
+//				RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+//	   hints.put
+//	   g2D.addRenderingHints(hints);  // THIS METHOD DOESN'T WORK
+		
+		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
+		g2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+			   				 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2D.setBackground(Color.white);  // THIS DOESN'T WORK
 	    g2D.setStroke(fineStroke);
 		graph.draw(g);
 		
-		//Graphics2D g2d = (Graphics2D)g;
+//		 TODO scale or other transformation?
 		
 		// Warning: scales distance from origin as well as size of nodes
 		// we want to scale everything from the centre of the user's view.
@@ -124,11 +145,11 @@ public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, 
 //		// one call (use the container as the presentation model's DS).
 //		// Then would have to make all glyphs extend Component (heavy?).
 //		Glyph glyph = new GlyphLabel("(" + (int)p.getX() + "," + (int)p.getY() + ")", p);
-//		glyph.draw(g2d);		
+//		glyph.draw(g2d);
 	}
 
 	/**
-	 * Presentation model (the glyph structure that represents the DES model.)
+	 * Presentation model (the composite structure that represents the DES model.)
 	 */	
 	private GraphElement graph;	
 	
@@ -220,10 +241,11 @@ public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, 
 		
 	}
 
-	// TODO Move these methods into the SelectionTool class; accessor to buffers and graph elements.
+// TODO Move these methods into the SelectionTool class; accessor to buffers and graph elements.
 	
-//	 TODO clear and un-highlight the set of selected elements
-	
+	/**
+	 * Clears and un-highlight the set of selected elements 
+	 */
 	public void clearCurrentSelection(){
 		Iterator els = graph.children();
 		Node g;
@@ -233,10 +255,16 @@ public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, 
 		}		
 	}
 	
+	/**
+	 * IDEA To avoid duplicate code, call overloaded method with a Rectangle with
+	 * the same point for opposite corners?
+	 * 
+	 * @param point
+	 */
 	public void updateCurrentSelection(Point point) {
 		
-		// TODO store and highlight the set of intersected elements 
-		
+		// TODO store and highlight the set of intersected elements
+				
 		Iterator els = graph.children();
 		Node g;
 		while(els.hasNext()){
@@ -255,6 +283,7 @@ public class DrawingBoard extends Canvas implements FSAObserver, MouseListener, 
 	 * @param rectangle
 	 */
 	public void updateCurrentSelection(Rectangle rectangle){
-			
+		//	IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
+		
 	}
 }

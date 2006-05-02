@@ -3,11 +3,11 @@ package model.fsa;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+
 /**
  * State participant of the Observer design pattern.
- * Provides data and operations for notifying all observers of changes
- * to the data.
- * Data models requiring multiple concurrent views should extend this class.
+ * Registers and notifies all observers of changes to shared data.
+ * FSA data models requiring multiple concurrent views should extend this class.
  * 
  * @author helen bretzke
  *

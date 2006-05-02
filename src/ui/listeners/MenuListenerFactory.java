@@ -62,15 +62,17 @@ public class MenuListenerFactory {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
 			  JMenuItem item = (JMenuItem)arg0.getSource();			  
-			  Container c = item.getParent();
-			  JFileChooser chooser = new JFileChooser();
+			  Container c = item.getParent();			  
+			  JFileChooser chooser = new JFileChooser("C:/Documents and Settings/helen/My Documents/development/output/");
 			  FSAModel des = null;
 			  int returnVal = chooser.showOpenDialog(c);
 			  if(returnVal == JFileChooser.APPROVE_OPTION) {
-				  File f = chooser.getSelectedFile();	    	
+				  File f = chooser.getSelectedFile();
+				  // DEBUG
+				  // System.out.println(f.getAbsolutePath());
 				  des = FileOperations.openSystem(f);
 			  	}
-			  // figure out which file menu item was selected
+			  // TODO figure out which file menu item was selected
 			  //if(item.getName().equals(""))
 			  // For now just open an existing system			  
 			  if(des != null){

@@ -1,6 +1,7 @@
 package ui.tools;
 
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
@@ -10,6 +11,8 @@ import ui.DrawingBoard;
 
 public class SelectionTool extends DrawingTool {
 
+	private Point startPoint, endPoint; 
+	
 	public SelectionTool(DrawingBoard board){
 		context = board;
 		cursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -17,7 +20,7 @@ public class SelectionTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {		
-		// if keyboard holds shift or control down, add currently selected item to buffer		
+		// TODO if keyboard shift or control, add currently selected item to buffer		
 	}
 
 	@Override
@@ -28,20 +31,29 @@ public class SelectionTool extends DrawingTool {
 
 	@Override
 	public void handleMousePressed(MouseEvent me) {
-		// TODO store starting point for selection rectangle		
-		context.updateCurrentSelection(me.getPoint());
+		// TODO store starting point for selection rectangle
+		startPoint = me.getPoint();
+		context.updateCurrentSelection(startPoint);
 		context.repaint();
 	}
 
 	@Override
 	public void handleMouseReleased(MouseEvent me) {
-		context.clearCurrentSelection();
-		context.repaint();
-//		 TODO 
-		// 1. get end point for selection rectangle 
-		// 2. draw a dashed rectangle
-		// 3. compute set of all GraphElements contained within (hit by?) the rectangle
-		// 4. set the selection in the context's selection buffer
+		endPoint = me.getPoint();
+		
+		if(startPoint.equals(endPoint)){  // user has selected a point
+			context.clearCurrentSelection();
+			context.repaint();
+		}else{
+			// user has selected an area
+
+//			 TODO 
+			// 2. draw a dashed rectangle
+			// 3. compute set of all GraphElements contained within (hit by?) the rectangle
+			// 4. set the selection in the context's selection buffer
+			// 5. highlight all selected elements
+
+		}
 
 	}
 

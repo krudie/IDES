@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Label;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.Iterator;
 
@@ -11,10 +12,12 @@ import java.util.Iterator;
 public class GlyphLabel extends Label implements Glyph {
 
 	private Glyph parent = null;  // either the DrawingBoard, a node or an edge	
-	private Color colour = Color.blue;
+	private Color colour = Color.DARK_GRAY;
+	private Font font;
 	
 	public GlyphLabel(String text){
-		super(text);		
+		super(text);
+		font = new Font("times", Font.ITALIC, 12);
 	}
 	
 	/**
@@ -22,7 +25,7 @@ public class GlyphLabel extends Label implements Glyph {
 	 * @param location the x,y coordinates of the top left corner of this label 
 	 */
 	public GlyphLabel(String text, Point location){
-		super(text);
+		this(text);
 		setLocation(location);		
 	}
 	
@@ -43,6 +46,8 @@ public class GlyphLabel extends Label implements Glyph {
 		// get the bounding box of my parent
 		// and then draw myself correctly oriented to my parent
 		g.setColor(colour);
+		// DEBUG
+		g.setFont(font);
 		g.drawString(getText(), getLocation().x, getLocation().y);
 	}
 
