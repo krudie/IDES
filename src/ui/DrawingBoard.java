@@ -20,11 +20,10 @@ import java.util.Iterator;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import model.fsa.FSAObserver;
-import model.fsa.ver1.Automaton;
+import model.fsa.FSAModel;
 import model.fsa.ver1.State;
 import presentation.Glyph;
-import presentation.GraphElement;
+import presentation.fsa.GraphElement;
 import presentation.fsa.Node;
 import ui.tools.DrawingTool;
 import ui.tools.SelectionTool;
@@ -41,7 +40,7 @@ import ui.tools.SelectionTool;
  * @author helen bretzke
  *
  */
-public class DrawingBoard extends JComponent implements FSAObserver, MouseListener, KeyListener {
+public class DrawingBoard extends JComponent implements Subscriber, MouseListener, KeyListener {
 			
 	private DrawingTool currentTool;
 	private DrawingTool[] drawingTools;
@@ -124,11 +123,9 @@ public class DrawingBoard extends JComponent implements FSAObserver, MouseListen
 //	   g2D.addRenderingHints(hints);  // THIS METHOD DOESN'T WORK
 		
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
-		g2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-			   				 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	                         RenderingHints.VALUE_ANTIALIAS_ON);		
 	    g2D.setBackground(Color.white);  // THIS DOESN'T WORK
-	    g2D.setStroke(fineStroke);
+	    g2D.setStroke(wideStroke);
 		graph.draw(g);
 		
 //		 TODO scale or other transformation?
@@ -167,7 +164,7 @@ public class DrawingBoard extends JComponent implements FSAObserver, MouseListen
 	 */
 	public void update() {
 		
-		Automaton a = (Automaton)UIStateModel.instance().getDESModel();
+		FSAModel a = (FSAModel)UIStateModel.instance().getDESModel();
 		Iterator states = a.getStateIterator();
 		State s;
 		

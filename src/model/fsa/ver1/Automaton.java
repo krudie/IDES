@@ -1,10 +1,12 @@
 package model.fsa.ver1;
 import java.util.*;
 
+import ui.Publisher;
+import ui.Subscriber;
+
 
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
-import model.fsa.FSAObserver;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 
@@ -17,8 +19,7 @@ import model.fsa.FSATransition;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Automaton extends FSAModel implements Cloneable {
-	
+public class Automaton extends Publisher implements Cloneable, FSAModel {	
 	
     private LinkedList<FSAState> states;
 
@@ -43,8 +44,8 @@ public class Automaton extends FSAModel implements Cloneable {
     /**
      * @see java.lang.Object#clone()
      */
-    public Automaton clone(){
-        Automaton clone = new Automaton(this.name);
+    public FSAModel clone(){
+        FSAModel clone = new Automaton(this.name);
         ListIterator<FSAEvent> ei = getEventIterator();
         while(ei.hasNext()){
             clone.add(new Event((Event)ei.next()));
@@ -67,46 +68,44 @@ public class Automaton extends FSAModel implements Cloneable {
         return clone;
     }
 
-    /**
-     * @return the name of the automaton
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getName()
+	 */
     public String getName(){
         return name;
     }
 
-    /**
-     * @param name the name of the automaton
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#setName(java.lang.String)
+	 */
     public void setName(String name){
         this.name = name;
     }
 
-    /**
-     * @param s a state that needs to be added.
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#add(model.fsa.FSAState)
+	 */
     public void add(FSAState s){
         states.add(s);
     }
     
-    /**
-     * @return the number of states in the automaton
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getStateCount()
+	 */
     public int getStateCount(){
         return states.size();
     }
     
-    /**
-     * @return the number of transitions in the automaton
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getTransitionCount()
+	 */
     public int getTransitionCount(){
         return transitions.size();
     }
 
-    /**
-     * removes the state from the automaton and all transitions leading to 
-     * the state and originating from the state
-     * @param s the state to be removed
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSAState)
+	 */
     public void remove(FSAState s){
         ListIterator<FSATransition> sources = s.getSourceTransitionsListIterator();
         while(sources.hasNext()){
@@ -125,18 +124,16 @@ public class Automaton extends FSAModel implements Cloneable {
         states.remove(s);
     }
     
-    /**
-     * @return a custom list iterator for the states
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getStateIterator()
+	 */
     public ListIterator<FSAState> getStateIterator(){
         return new StateIterator(states.listIterator(), this);
     }
 
-    /**
-     * searches for the state with the given id.
-     * @param id the id of the state
-     * @return the state, null if it doesn't exist
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getState(int)
+	 */
     public FSAState getState(int id){
         ListIterator<FSAState> si = states.listIterator();
         while(si.hasNext()){
@@ -146,35 +143,27 @@ public class Automaton extends FSAModel implements Cloneable {
         return null;
     }
 
-    /**
-     * Adds a transition the the automaton and adds the transition to
-     * the list of sources and targets in the source and target state of the
-     * transition.
-     * @param t the transition to be added to the state
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#add(model.fsa.FSATransition)
+	 */
     public void add(FSATransition t){
         t.getSource().addSourceTransition(t);
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
     }
 
-    /**
-     * Removes a transition from the automaton. Removes the transition from the 
-     * list of sourcetransitions and the list of target transitions in the 
-     * right states.
-     * @param t the transition to be removed
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSATransition)
+	 */
     public void remove(FSATransition t){
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
     }
 
-    /**
-     * searches for the transition with the given id.
-     * @param Id the id of the transition.
-     * @return the transition, null if the transition is not in the automaton.
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getTransition(int)
+	 */
     public FSATransition getTransition(int Id){
         ListIterator<FSATransition> tli = transitions.listIterator();
         while(tli.hasNext()){
@@ -184,42 +173,38 @@ public class Automaton extends FSAModel implements Cloneable {
         return null;
     }
     
-    /**
-     * @return a custom list iterator for the transitions.
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getTransitionIterator()
+	 */
     public ListIterator<FSATransition> getTransitionIterator(){
         return new TransitionIterator(transitions.listIterator());
     }
 
-    /**
-     * Adds an event to the aotumaton.
-     * @param e the event that shall be added to the automaton.
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#add(model.fsa.FSAEvent)
+	 */
     public void add(FSAEvent e){
         events.add(e);
     }
 
-    /**
-     * Removes an event from the automaton.
-     * @param e the event to be removed
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSAEvent)
+	 */
     public void remove(FSAEvent e){
         events.remove(e);
     }
 
-    /**
-     * @return a custom list iterator for the events.
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getEventIterator()
+	 */
     public ListIterator<FSAEvent> getEventIterator(){
         return new EventIterator(events.listIterator(), this);
     }
 
     
-    /**
-     * searches for the event with the given event id.
-     * @param id the id of the event
-     * @return the event, null if it doesn't exist
-     */
+    /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#getEvent(int)
+	 */
     public FSAEvent getEvent(int id){
         ListIterator<FSAEvent> ei = events.listIterator();
         while(ei.hasNext()){
@@ -236,14 +221,14 @@ public class Automaton extends FSAModel implements Cloneable {
     private class StateIterator implements ListIterator<FSAState>{
         private ListIterator<FSAState> sli;
         private FSAState current;
-        private Automaton a;
+        private FSAModel a;
         
         /**
          * constructs a stateIterator
          * @param sli the listiterator this listiterator shall encapsulate
          * @param a the automaton that is backing the listiterator
          */
-        public StateIterator(ListIterator<FSAState> sli, Automaton a){
+        public StateIterator(ListIterator<FSAState> sli, FSAModel a){
             this.a = a;
             this.sli = sli;
         }
@@ -429,7 +414,7 @@ public class Automaton extends FSAModel implements Cloneable {
     private class EventIterator implements ListIterator<FSAEvent>{
         private FSAEvent current;
         private ListIterator<FSAEvent> eli;
-        private Automaton a;
+        private FSAModel a;
                 
         
         /**
@@ -437,7 +422,7 @@ public class Automaton extends FSAModel implements Cloneable {
          * @param eli the event iterator to be wrapped
          * @param a the automaton the event list is connected to
          */
-        public EventIterator(ListIterator<FSAEvent> eli, Automaton a){
+        public EventIterator(ListIterator<FSAEvent> eli, FSAModel a){
             this.eli = eli;
             this.a = a;
         }

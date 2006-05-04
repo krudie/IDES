@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 
 import presentation.Glyph;
 
@@ -35,6 +36,8 @@ public class SelectionTool extends DrawingTool {
 		startPoint = me.getPoint();
 		context.updateCurrentSelection(startPoint);
 		context.repaint();
+//		Rectangle2D b = context.getCurrentSelection().bounds(); 
+//		context.repaint(0L, (int)b.getX(), (int)b.getY(), (int)b.getWidth(), (int)b.getHeight());
 	}
 
 	@Override

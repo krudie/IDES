@@ -3,8 +3,6 @@ package ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import model.fsa.FSAModel;
-import model.fsa.FSAObserver;
 import presentation.Glyph;
 import ui.command.CommandHistory;
 
@@ -34,7 +32,7 @@ public class UIStateModel {
 		
 	private UIStateModel() {
 		commandHistory = new CommandHistory();
-		views = new LinkedList<FSAObserver>();
+		views = new LinkedList<Subscriber>();
 		desModel = null;
 	}	
 	
@@ -46,22 +44,22 @@ public class UIStateModel {
 	/**
 	 * Abstract data model to keep synchronized with visualModel.
 	 */ 
-	private FSAModel desModel;
+	private Publisher desModel;
 	
 	/**
 	 * Multiple views on the data data.
 	 */
-	private LinkedList<FSAObserver> views;
+	private LinkedList<Subscriber> views;
 	
 	/**
 	 * The currently active view.
 	 */
-	private FSAObserver activeView;
+	private Subscriber activeView;
 	
 	/**
 	 * Add the given DESObserver to the set of views.
 	 */
-	public void addView(FSAObserver view) {
+	public void addView(Subscriber view) {
 		views.add(view);
 	}
 	
@@ -70,10 +68,10 @@ public class UIStateModel {
 	 *
 	 */
 	public void refresh() {
-		desModel.notifyAllObservers();
+		desModel.notifyAllSubscribers();
 	}	
 
-	protected FSAModel getDESModel() {
+	protected Publisher getDESModel() {
 		return desModel;
 	}	
 
@@ -83,19 +81,19 @@ public class UIStateModel {
 	 * 
 	 * @param model is not null
 	 */
-	public void setDESModel(FSAModel model) {
+	public void setDESModel(Publisher model) {
 		desModel = model;
 		Iterator v = views.iterator();
 		while(v.hasNext()){
-			desModel.attach((FSAObserver)v.next());
+			desModel.attach((Subscriber)v.next());
 		}
 	}
 
-	public FSAObserver getActiveView() {
+	public Subscriber getActiveView() {
 		return activeView;
 	}
 
-	public void setActiveView(FSAObserver activeView) {
+	public void setActiveView(Subscriber activeView) {
 		this.activeView = activeView;
 	}
 	

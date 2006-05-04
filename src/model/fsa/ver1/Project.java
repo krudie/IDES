@@ -2,6 +2,8 @@ package model.fsa.ver1;
 
 import java.util.*;
 
+import model.fsa.FSAModel;
+
 /** 
  * The topmost class in the model. 
  * It contains a set of automata.
@@ -57,11 +59,11 @@ public class Project {
     }
 
 
-    public Automaton getAutomatonByName(String name) {
+    public FSAModel getAutomatonByName(String name) {
 
         Iterator<Automaton> ai = automata.iterator();
         while (ai.hasNext()) {
-            Automaton a = ai.next();
+            FSAModel a = ai.next();
             if ((a != null) && (a.getName().equals(name))) {
                 return a;
             }
@@ -73,7 +75,7 @@ public class Project {
      * removes an automaton from the project.
      * @param a the automaton that is to be removed.
      */
-    public void removeAutomaton(Automaton a) {
+    public void removeAutomaton(FSAModel a) {
         automata.remove(a);
     }
 }

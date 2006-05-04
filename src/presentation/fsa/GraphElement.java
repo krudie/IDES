@@ -1,4 +1,4 @@
-package presentation;
+package presentation.fsa;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -6,11 +6,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.awt.geom.Rectangle2D;
 
+import presentation.Glyph;
+
 
 public class GraphElement implements Glyph {
 	
 	private boolean visible;
-	private boolean highlight;
+	private boolean highlighted;
+	private boolean selected;
 	
 	// my states and free labels
 	private LinkedList<Glyph> children;
@@ -90,11 +93,11 @@ public class GraphElement implements Glyph {
 	}
 
 	public boolean isHighlight() {
-		return highlight;
+		return highlighted;
 	}
 
 	public void setHighlight(boolean highlight) {
-		this.highlight = highlight;
+		this.highlighted = highlight;
 	}
 
 	public Glyph getParent() {
@@ -111,6 +114,14 @@ public class GraphElement implements Glyph {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}	
 
 }

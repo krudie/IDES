@@ -10,7 +10,6 @@ import java.awt.geom.Point2D;
 import java.util.Iterator;
 import presentation.Glyph;
 import presentation.GlyphLabel;
-import presentation.GraphElement;
 import presentation.MathUtils;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
@@ -25,18 +24,18 @@ import model.fsa.ver1.Transition;
 public class Node extends GraphElement {
 
 	// the state to be represented
-	private FSAState state;	
+	private FSAState state;
+	// TODO Change to list of labels to be displayed within the bounds of this node
+	private GlyphLabel label;	
 	
 	private StateLayout layout;
-	
-	// list of labels to be displayed within the bounds of this node
-	private GlyphLabel label;	
+	// TODO Move the following into StateLayout class ///////////////////
 	private Ellipse2D circle;
-	
-	// TODO Move to subclasses of Node and move extra drawing logic.
 	private Ellipse2D innerCircle = null;  // only drawn for final states	
 	private ArrowHead arrow = null;  // only draw for initial states
 	private Point2D.Float a1, a2;  // the arrow shaft
+	/////////////////////////////////////////////////////////////////////
+
 	
 	public Node(FSAState s){
 		this.state = s;
@@ -59,7 +58,7 @@ public class Node extends GraphElement {
 		// TODO change to iterate over collection of labels on a state
 		// (requires change to file reading and writing, states be composed of many states)		
 
-	 *
+	 *  FIXME Move this code to GraphModel
 	 */
 	public void update() {
 		
@@ -87,16 +86,20 @@ public class Node extends GraphElement {
 			a2 = MathUtils.subtract(c, MathUtils.scale(dir, offset));
 			arrow = new ArrowHead(dir, a2);					
 			// ??? How long should the shaft be?
-			a1 = MathUtils.subtract(a2, MathUtils.scale(dir, ArrowHead.HEAD_LENGTH));
+			a1 = MathUtils.subtract(a2, MathUtils.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}
 		
 		label.setText(layout.getText());
 		
-		// TODO centre the label in the node; note that width and height of label are both 0.
-		label.setLocation((int)centre.x - radius, (int)centre.y + radius/4);
+		// FIXME centre the label in the node; 
+		// note that width and height of label are both 0.
+					
+		label.setLocation((int)centre.x, (int)centre.y);
+		
 		
 		
 		// FIXME
+		// Move to GraphModel class, 
 		// Create and add all edges from transition lists
 		// Start with only the outgoing edges		
 		clear(); // remove all of my child glyphs

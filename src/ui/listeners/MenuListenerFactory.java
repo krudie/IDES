@@ -11,8 +11,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
 import main.SystemVariables;
-import model.fsa.FSAModel;
 
+import ui.Publisher;
 import ui.UIStateModel;
 import ui.command.Command;
 import ui.command.CommandHistory;
@@ -64,7 +64,7 @@ public class MenuListenerFactory {
 			  JMenuItem item = (JMenuItem)arg0.getSource();			  
 			  Container c = item.getParent();			  
 			  JFileChooser chooser = new JFileChooser("C:/Documents and Settings/helen/My Documents/development/output/");
-			  FSAModel des = null;
+			  Publisher des = null;
 			  int returnVal = chooser.showOpenDialog(c);
 			  if(returnVal == JFileChooser.APPROVE_OPTION) {
 				  File f = chooser.getSelectedFile();

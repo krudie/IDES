@@ -3,12 +3,13 @@ package presentation;
 import java.awt.Color;
 import java.awt.Point;
 
-public abstract class GraphicalLayout {
+public class GraphicalLayout {
 		
 	private Point location;
 	private String text;
 	private Color color = Color.BLACK;
 	private Color highlightColor = Color.RED;
+	private Color selectionColor = Color.DARK_GRAY;
 	
 	public GraphicalLayout(){
 		this(null);		
@@ -61,6 +62,14 @@ public abstract class GraphicalLayout {
 
 	public void setLocation(Point location) {
 		this.location = location;
+	}
+
+	public Color getSelectionColor() {
+		return selectionColor;
+	}
+
+	public void setSelectionColor(Color selectionColor) {
+		this.selectionColor = selectionColor;
 	}
 	
 	

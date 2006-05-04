@@ -6,7 +6,7 @@ import java.awt.Point;
 import presentation.GraphicalLayout;
 
 public class StateLayout extends GraphicalLayout {
-
+	
 	private int radius;		
 	private Point arrow; // the direction vector for arrow if the state is initial
 	

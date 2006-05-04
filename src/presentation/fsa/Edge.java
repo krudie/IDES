@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
 import presentation.Glyph;
-import presentation.GraphElement;
 import presentation.MathUtils;
 
 /**
@@ -76,6 +75,7 @@ public class Edge extends GraphElement {
 	}
 	
 	/**
+	 * FIXME move to GraphModel
 	 * Synchronize my appearance with my transition data.	 	
 	 */
 	public void update() {
