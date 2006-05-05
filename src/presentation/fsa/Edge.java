@@ -1,22 +1,14 @@
 package presentation.fsa;
 
-import io.fsa.ver1.SubElement;
-
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.util.LinkedList;
 
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
-import presentation.Glyph;
 import presentation.MathUtils;
 
 /**
@@ -43,9 +35,9 @@ public class Edge extends GraphElement {
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
 	
-	public Edge(FSATransition t){		
+	public Edge(FSATransition t, TransitionLayout layout){		
 		this.t = t;
-		layout = ((Transition)t).getLayout();
+		this.layout = layout; 
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
 		controlPoints = new Point2D.Float[4];		
 		arrow = new ArrowHead();
@@ -56,7 +48,7 @@ public class Edge extends GraphElement {
 		super.draw(g);
 		Graphics2D g2d = (Graphics2D)g;
 		
-		if(isHighlight()){
+		if(isHighlighted()){
 			g2d.setColor(layout.getHighlightColor());
 		}else{
 			g2d.setColor(Color.BLACK);

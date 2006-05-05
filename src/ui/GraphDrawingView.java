@@ -40,7 +40,7 @@ import ui.tools.SelectionTool;
  * @author helen bretzke
  *
  */
-public class DrawingBoard extends JComponent implements Subscriber, MouseListener, KeyListener {
+public class GraphDrawingView extends JComponent implements Subscriber, MouseListener, KeyListener {
 			
 	private DrawingTool currentTool;
 	private DrawingTool[] drawingTools;
@@ -87,9 +87,16 @@ public class DrawingBoard extends JComponent implements Subscriber, MouseListene
 	 */
 	private Glyph printArea;
 	
+	/**
+	 * An object to handle synchronizing FSA model with the displayed graph.
+	 */
+	private GraphModel graphModel;
+	
 
-	public DrawingBoard() {	
+	public GraphDrawingView() {
+		graphModel = 
 		graph = new GraphElement();
+		
 		currentSelection = new GraphElement();
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
@@ -105,26 +112,10 @@ public class DrawingBoard extends JComponent implements Subscriber, MouseListene
 	
 	public void paint(Graphics g){
 			
-		Graphics2D g2D = (Graphics2D) g; // cast to 2D
-
-//		RenderingHints hints = 
-//		     new RenderingHints(
-//		       RenderingHints.KEY_TEXT_ANTIALIASING, 
-//		         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//	   hints.put(RenderingHints.KEY_DITHERING,
-//		     	RenderingHints.VALUE_DITHER_ENABLE);
-//	   hints.put(RenderingHints.KEY_ANTIALIASING,
-//	            RenderingHints.VALUE_ANTIALIAS_ON);
-//	   hints.put(RenderingHints.KEY_RENDERING,
-//	    		RenderingHints.VALUE_RENDER_QUALITY);
-//	   hints.put(RenderingHints.KEY_FRACTIONALMETRICS,
-//				RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-//	   hints.put
-//	   g2D.addRenderingHints(hints);  // THIS METHOD DOESN'T WORK
-		
+		Graphics2D g2D = (Graphics2D) g; // cast to 2D	
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);		
-	    g2D.setBackground(Color.white);  // THIS DOESN'T WORK
+	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK
 	    g2D.setStroke(wideStroke);
 		graph.draw(g);
 		
@@ -164,25 +155,7 @@ public class DrawingBoard extends JComponent implements Subscriber, MouseListene
 	 */
 	public void update() {
 		
-		FSAModel a = (FSAModel)UIStateModel.instance().getDESModel();
-		Iterator states = a.getStateIterator();
-		State s;
-		
-		// TODO for all states in the model, refresh all of my nodes		
-		// For now, just create everthing new.		
-		graph.clear();
-		while(states.hasNext()){
-			s = (State)states.next();
-			graph.insert(new Node(s), s.getId());
-		}
-		
-		// TODO refresh all free labels
-		
-		
-		// The following two are handled recursively by nodes:
-		// for all transitions in the model, refresh all edges		
-		// for all events, see transitions
-		
+		graph = graphModel.getGraph();
 		repaint();
 	}
 
@@ -248,7 +221,7 @@ public class DrawingBoard extends JComponent implements Subscriber, MouseListene
 		Node g;
 		while(els.hasNext()){
 			g = (Node)els.next();
-			g.setHighlight(false);
+			g.setHighlighted(false);
 		}		
 	}
 	
@@ -267,9 +240,9 @@ public class DrawingBoard extends JComponent implements Subscriber, MouseListene
 		while(els.hasNext()){
 			g = (Node)els.next();
 			if(g.intersects(point)){
-				g.setHighlight(true);
+				g.setHighlighted(true);
 			}else{
-				g.setHighlight(false);
+				g.setHighlighted(false);
 			}
 		}		
 	}

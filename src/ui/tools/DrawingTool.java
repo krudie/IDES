@@ -4,7 +4,7 @@ import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import ui.DrawingBoard;
+import ui.GraphDrawingView;
 
 /**
  * All tools used by the drawing board to handle requests forwarded from keyboard 
@@ -16,7 +16,7 @@ import ui.DrawingBoard;
  */
 public abstract class DrawingTool {
 
-	protected DrawingBoard context;
+	protected GraphDrawingView context;
 	protected Cursor cursor;
 	
 	public abstract void handleMouseClicked(MouseEvent me);

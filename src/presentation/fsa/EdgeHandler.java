@@ -90,7 +90,7 @@ public class EdgeHandler implements Glyph {
 		return null;
 	}
 
-	public void insert(Glyph child, int index) {}
+	public void insert(Glyph child, long index) {}
 	public void remove(Glyph child) {}
 	public Glyph child(int index) {	return null; }
 	public Iterator children() { return null; }

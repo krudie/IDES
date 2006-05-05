@@ -9,7 +9,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import presentation.Glyph;
-import presentation.GlyphLabel;
+import presentation.GraphLabel;
 import presentation.MathUtils;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
@@ -25,21 +25,21 @@ public class Node extends GraphElement {
 
 	// the state to be represented
 	private FSAState state;
-	// TODO Change to list of labels to be displayed within the bounds of this node
-	private GlyphLabel label;	
-	
+	// graphical layout metadata for the state
 	private StateLayout layout;
-	// TODO Move the following into StateLayout class ///////////////////
+	
+	// TODO Change to list of labels to be displayed within the bounds of this node
+	private GraphLabel label;	
+
+	// visualization objects
 	private Ellipse2D circle;
 	private Ellipse2D innerCircle = null;  // only drawn for final states	
 	private ArrowHead arrow = null;  // only draw for initial states
 	private Point2D.Float a1, a2;  // the arrow shaft
-	/////////////////////////////////////////////////////////////////////
-
-	
+		
 	public Node(FSAState s){
 		this.state = s;
-		label = new GlyphLabel("");
+		label = new GraphLabel("");
 		a1 = new Point2D.Float();
 		a2 = new Point2D.Float();
 		update();
@@ -48,24 +48,18 @@ public class Node extends GraphElement {
 	public Node(FSAState s, Glyph parent){
 		super(parent);
 		this.state = s;
-		label = new GlyphLabel("");
+		label = new GraphLabel("");
 		update();
 	}	
+
+	public void setLayout(StateLayout layout){
+		this.layout = layout;
+	}
 	
-	/**
-	 * 	// TODO what about colour and line thickness?
-
-		// TODO change to iterate over collection of labels on a state
-		// (requires change to file reading and writing, states be composed of many states)		
-
-	 *  FIXME Move this code to GraphModel
-	 */
+	// TODO change to iterate over collection of labels on a state
+	// (requires change to file reading and writing, states be composed of many states)		
 	public void update() {
-		
-		// FIXME //////////////////////////////
-		layout = (StateLayout)((State)state).getLayout();		
-		///////////////////////////////////////
-		
+				
 		int radius = layout.getRadius();
 		Point centre = layout.getLocation();
 		
@@ -94,31 +88,19 @@ public class Node extends GraphElement {
 		// FIXME centre the label in the node; 
 		// note that width and height of label are both 0.
 					
-		label.setLocation((int)centre.x, (int)centre.y);
-		
-		
-		
-		// FIXME
-		// Move to GraphModel class, 
-		// Create and add all edges from transition lists
-		// Start with only the outgoing edges		
-		clear(); // remove all of my child glyphs
-		// This class shouldn't know anything about transitions...
-		Iterator t = state.getTargetTransitionListIterator();
-		int i = 0;
-		while(t.hasNext()){						
-			insert(new Edge((Transition)t.next()), i++);			
-		}
-		
-		// TODO figure out how to store the incoming edges as well. 
-		// Since they are highlighted on MouseDown event.
-		
+		label.setLocation((int)centre.x, (int)centre.y);		
+			
 	}
 	
 	public void draw(Graphics g) {				
 		
+		// TODO figure out how to store the incoming edges as well. 
+		// Since they are highlighted on MouseDown event.
+		// don't call super: reimplement to draw only out edges
+		// (i.e. those for which i am a source node)
 		super.draw(g);	// calls draw on all of the outgoing edges
-		if(super.isHighlight()){
+		
+		if(super.isHighlighted()){
 			g.setColor(layout.getHighlightColor());
 		}else{
 			g.setColor(layout.getColor());
@@ -158,11 +140,11 @@ public class Node extends GraphElement {
 		return circle.contains(p);
 	}	
 	
-	public void setHighlight(boolean b){
-		super.setHighlight(b);
+	public void setHighlighted(boolean b){
+		super.setHighlighted(b);
 		Iterator edges = super.children();
 		while(edges.hasNext()){
-			((Edge)edges.next()).setHighlight(b);
+			((Edge)edges.next()).setHighlighted(b);
 		}
 	}
 }

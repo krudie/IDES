@@ -3,13 +3,16 @@ package presentation.fsa;
 import java.awt.Color;
 import java.awt.Point;
 
-import presentation.GraphicalLayout;
 
 public class StateLayout extends GraphicalLayout {
 	
 	private int radius;		
 	private Point arrow; // the direction vector for arrow if the state is initial
+	public static final int DEFAULT_RADIUS = 20;
 	
+	public StateLayout(){
+		this(new Point(), DEFAULT_RADIUS, "");
+	}
 	
 	public StateLayout(Point centre, int radius, String name, Point arrow) {
 		this(centre, radius, name);

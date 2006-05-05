@@ -2,7 +2,9 @@ package model.fsa;
 
 import java.util.ListIterator;
 
-public interface FSAState {
+import model.DESElement;
+
+public interface FSAState extends DESElement {
 
 	/**
 	 * adds a transition that originates from the state.
@@ -38,16 +40,6 @@ public interface FSAState {
 	 * @return an iterator for the transitions ending in this state
 	 */
 	public abstract ListIterator<FSATransition> getTargetTransitionListIterator();
-
-	/**
-	 * @return the id of this state.
-	 */
-	public abstract int getId();
-
-	/**
-	 * @param id the id of this state
-	 */
-	public abstract void setId(int id);
 	
 	/**
 	 * @return true iff this is an initial state

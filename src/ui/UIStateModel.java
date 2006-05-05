@@ -3,13 +3,14 @@ package ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import presentation.Glyph;
 import ui.command.CommandHistory;
 
 /** 
  * Captures the state of the user interface at any point in time.
  * Mediates between the underlying data model and multiple concurrent views.
  * Stores the command history and the currently active view.
+ * 
+ * TODO change this to support a workspace of multiple publishers (DES models).
  * 
  * @author Helen Bretzke
  *
@@ -33,7 +34,7 @@ public class UIStateModel {
 	private UIStateModel() {
 		commandHistory = new CommandHistory();
 		views = new LinkedList<Subscriber>();
-		desModel = null;
+		publisher = null;
 	}	
 	
 	/**
@@ -44,10 +45,10 @@ public class UIStateModel {
 	/**
 	 * Abstract data model to keep synchronized with visualModel.
 	 */ 
-	private Publisher desModel;
+	private Publisher publisher;
 	
 	/**
-	 * Multiple views on the data data.
+	 * Multiple views on the data.
 	 */
 	private LinkedList<Subscriber> views;
 	
@@ -57,7 +58,7 @@ public class UIStateModel {
 	private Subscriber activeView;
 	
 	/**
-	 * Add the given DESObserver to the set of views.
+	 * Add the given Subscriber to the set of views.
 	 */
 	public void addView(Subscriber view) {
 		views.add(view);
@@ -68,31 +69,41 @@ public class UIStateModel {
 	 *
 	 */
 	public void refresh() {
-		desModel.notifyAllSubscribers();
+		publisher.notifyAllSubscribers();
 	}	
 
-	protected Publisher getDESModel() {
-		return desModel;
+	protected Publisher getPublisher() {
+		return publisher;
 	}	
 
 	/**
-	 * Set the underlying data model to the given DESModel and
-	 * attach all views to the model.
+	 * Set the underlying data model and attaches all subscriber views 
+	 * to the given Publisher.
 	 * 
 	 * @param model is not null
 	 */
 	public void setDESModel(Publisher model) {
-		desModel = model;
+		publisher = model;
 		Iterator v = views.iterator();
 		while(v.hasNext()){
-			desModel.attach((Subscriber)v.next());
+			publisher.attach((Subscriber)v.next());
 		}
 	}
 
+	/**
+	 * FIXME Change to support muliple active views.
+	 * 
+	 * @return
+	 */
 	public Subscriber getActiveView() {
 		return activeView;
 	}
 
+	/**
+	 * TODO Change to activate/deactivate multiple views.
+	 * 
+	 * @param activeView
+	 */
 	public void setActiveView(Subscriber activeView) {
 		this.activeView = activeView;
 	}

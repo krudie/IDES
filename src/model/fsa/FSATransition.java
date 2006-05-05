@@ -1,6 +1,8 @@
 package model.fsa;
 
-public interface FSATransition {
+import model.DESElement;
+
+public interface FSATransition extends DESElement {
 
 	/**
 	 * Sets a new source, i.e., state from which this transition originates, for
@@ -44,12 +46,6 @@ public interface FSATransition {
 	 * @return the event this transition fires uppon.
 	 */
 	public abstract FSAEvent getEvent();
-
-	/**
-	 * returns the id of this transition.
-	 * 
-	 * @return the id of this transition.
-	 */
-	public abstract int getId();
+	
 
 }

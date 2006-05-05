@@ -8,13 +8,13 @@ import java.awt.geom.Rectangle2D;
 
 import presentation.Glyph;
 
-import ui.DrawingBoard;
+import ui.GraphDrawingView;
 
 public class SelectionTool extends DrawingTool {
 
 	private Point startPoint, endPoint; 
 	
-	public SelectionTool(DrawingBoard board){
+	public SelectionTool(GraphDrawingView board){
 		context = board;
 		cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	}

@@ -17,13 +17,7 @@ import model.fsa.FSATransition;
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
- */
-/**
- * @author helen
- *
- */
-/**
- * @author helen
+ * @author Helen Bretzke
  *
  */
 public class State extends SubElementContainer implements model.fsa.FSAState {
@@ -31,7 +25,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
     // transitions originating from this state and ending in this state respectively.
     private LinkedList<FSATransition> sourceT, targetT;
 
-    private int id;
+    private long id;
 
     /**
      * constructs a state with the given id.
@@ -116,20 +110,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
      */
     public LinkedList<FSATransition> getTargetTransitions(){
         return targetT;
-    }
-    
-    /**
-     * @return the id of this state.
-     */
-    public int getId(){
-        return id;
-    }
-    /**
-     * @param id the id of this state
-     */
-    public void setId(int id){
-        this.id = id;
-    }
+    }    
 	
 	/**
 	 * @return true iff this is an initial state
@@ -143,32 +124,14 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 */
 	public boolean isMarked() {
 		return getSubElement("properties").getSubElement("marked") != null;		
-	}   
-	
-	/**
-	 * Move to SubElementParser class.
-	 * 
-	 * @return an object encapsulating all of the graphical layout 
-	 * 	information required to display this state.
-	 */
-	public StateLayout getLayout() {
-		// radius, centre point, label text and arrow vector (if initial)
-		SubElement layout = getSubElement("graphic").getSubElement("circle");
-		int radius = Integer.parseInt(layout.getAttribute("r"));
-		Point centre = new Point(Integer.parseInt(layout.getAttribute("x")),
-								 Integer.parseInt(layout.getAttribute("y")));
-				
-		SubElement name = getSubElement("name");
-        String n = (name.getChars() != null) ? name.getChars() : "";
-        
-        if(isInitial()) {
-        	SubElement a = getSubElement("graphic").getSubElement("arrow");
-        	Point arrow = new Point((int)Float.parseFloat(a.getAttribute("x")),
-								 (int)Float.parseFloat(a.getAttribute("y")));
-        	return new StateLayout(centre, radius, n, arrow);
-        } else {
-		 	return new StateLayout(centre, radius, n);
-        }	
+	}	
+
+	public void setId(long id) {
+		this.id = id;		
+	}
+
+	public long getId() {		
+		return id;
 	}
 	
  }

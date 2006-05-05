@@ -2,7 +2,6 @@ package presentation.fsa;
 
 import java.awt.geom.Point2D;
 
-import presentation.GraphicalLayout;
 
 public class TransitionLayout extends GraphicalLayout {
 

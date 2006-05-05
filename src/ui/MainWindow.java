@@ -39,7 +39,7 @@ public class MainWindow extends JFrame {
 		
 		// create tabbed panes and their components: 
 		// canvas, graph specs panel, LaTeX and EPS output text areas.
-		drawingBoard = new DrawingBoard();
+		drawingBoard = new GraphDrawingView();
 		UIStateModel.instance().addView(drawingBoard);		
 		createAndAddTabbedPane();
 //		 TODO add graph spec, latex and eps views to the state model
@@ -286,7 +286,7 @@ public class MainWindow extends JFrame {
 	 * The views.
 	 */
 	private JTabbedPane tabbedViews;
-	private DrawingBoard drawingBoard;
+	private GraphDrawingView drawingBoard;
 	private JPanel graphSpecsView;
 	private JPanel latexView;
 }

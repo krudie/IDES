@@ -29,23 +29,7 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
         super(e);
         this.id = e.id;
     }
-
-    /**
-     * returns the id of the event.
-     * @return the id of the event.
-     */
-    public int getId(){
-        return id;
-    }
-
-    /**
-     * sets the id of the event.
-     * @param id the id to be set.
-     */
-    public void setId(int id){
-        this.id = id;
-    }
-
+    
     /**
      * TODO need constants to access attribute values in hash tables
      * and when reading and writing to file.
@@ -55,6 +39,18 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 	public String getSymbol() {
 		SubElement eventSymbol = getSubElement("SYMBOL"); 
 		return eventSymbol != null ? eventSymbol.getName() : "";
+	}
+
+
+	public long getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	public void setId(long id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -47,7 +47,7 @@ public interface FSAModel {
 	 * @param id the id of the state
 	 * @return the state, null if it doesn't exist
 	 */
-	public abstract FSAState getState(int id);
+	public abstract FSAState getState(long id);
 
 	/**
 	 * Adds a transition the the automaton and adds the transition to
@@ -67,10 +67,10 @@ public interface FSAModel {
 
 	/**
 	 * searches for the transition with the given id.
-	 * @param Id the id of the transition.
+	 * @param id the id of the transition.
 	 * @return the transition, null if the transition is not in the automaton.
 	 */
-	public abstract FSATransition getTransition(int Id);
+	public abstract FSATransition getTransition(long id);
 
 	/**
 	 * @return a custom list iterator for the transitions.
@@ -99,6 +99,6 @@ public interface FSAModel {
 	 * @param id the id of the event
 	 * @return the event, null if it doesn't exist
 	 */
-	public abstract FSAEvent getEvent(int id);
+	public abstract FSAEvent getEvent(long id);
 
 }

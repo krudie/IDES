@@ -1,4 +1,4 @@
-package presentation;
+package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.Point;

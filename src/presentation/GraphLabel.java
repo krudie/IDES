@@ -9,13 +9,13 @@ import java.awt.Rectangle;
 import java.util.Iterator;
 
 
-public class GlyphLabel extends Label implements Glyph {
+public class GraphLabel extends Label implements Glyph {
 
 	private Glyph parent = null;  // either the DrawingBoard, a node or an edge	
 	private Color colour = Color.DARK_GRAY;
 	private Font font;
 	
-	public GlyphLabel(String text){
+	public GraphLabel(String text){
 		super(text);
 		font = new Font("times", Font.ITALIC, 12);
 	}
@@ -24,7 +24,7 @@ public class GlyphLabel extends Label implements Glyph {
 	 * @param text string to display in this label
 	 * @param location the x,y coordinates of the top left corner of this label 
 	 */
-	public GlyphLabel(String text, Point location){
+	public GraphLabel(String text, Point location){
 		this(text);
 		setLocation(location);		
 	}
@@ -36,7 +36,7 @@ public class GlyphLabel extends Label implements Glyph {
 	 * @param parent glyph in which this label is displayed
 	 * @param location the x,y coordinates of the top left corner of this label
 	 */
-	public GlyphLabel(String text, Glyph parent, Point location) {	
+	public GraphLabel(String text, Glyph parent, Point location) {	
 		super(text);
 		setLocation(location);
 		this.parent = parent;
@@ -59,7 +59,7 @@ public class GlyphLabel extends Label implements Glyph {
 		return getBounds().contains(p);
 	}
 
-	public void insert(Glyph child, int index) {}
+	public void insert(Glyph child, long index) {}
 	public void insert(Glyph g) {}
 	public void remove(Glyph child) {}
 	public Glyph child(int index) {	return null; }

@@ -21,7 +21,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
 
     private FSAEvent e = null;
 
-    private int id;
+    private long id;
 
     private TransitionLayout layout = new TransitionLayout();
     
@@ -141,16 +141,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
      */
     public FSAEvent getEvent(){
         return e;
-    }
-
-    /**
-     * returns the id of this transition.
-     * 
-     * @return the id of this transition.
-     */
-    public int getId(){
-        return id;
-    }
+    }    
     
     public TransitionLayout getLayout() {
     	updateLayout();
@@ -169,4 +160,11 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
 								Float.parseFloat(arc.getAttribute("y2"))));  	
 		
     }
+
+    public long getId(){
+        return id;
+    }
+	public void setId(long id) {
+		this.id = id;
+	}
 }

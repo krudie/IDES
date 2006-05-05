@@ -50,7 +50,7 @@ public interface Glyph {
 	 * @param child the child to be added
 	 * @param index the index at which to insert the child
 	 */
-	public void insert(Glyph child, int index);
+	public void insert(Glyph child, long index);
 	
 	public void insert(Glyph g);
 	

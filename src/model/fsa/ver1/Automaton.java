@@ -134,7 +134,7 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getState(int)
 	 */
-    public FSAState getState(int id){
+    public FSAState getState(long id){
         ListIterator<FSAState> si = states.listIterator();
         while(si.hasNext()){
             FSAState s = si.next();
@@ -164,11 +164,11 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getTransition(int)
 	 */
-    public FSATransition getTransition(int Id){
+    public FSATransition getTransition(long id){
         ListIterator<FSATransition> tli = transitions.listIterator();
         while(tli.hasNext()){
             FSATransition t = tli.next();
-            if(t.getId() == Id) return t;
+            if(t.getId() == id) return t;
         }
         return null;
     }
@@ -205,7 +205,7 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getEvent(int)
 	 */
-    public FSAEvent getEvent(int id){
+    public FSAEvent getEvent(long id){
         ListIterator<FSAEvent> ei = events.listIterator();
         while(ei.hasNext()){
             FSAEvent e = ei.next();

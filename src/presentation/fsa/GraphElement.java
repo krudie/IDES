@@ -56,8 +56,9 @@ public class GraphElement implements Glyph {
 		return bounds().contains(p);
 	}
 
-	public void insert(Glyph child, int index) {		
-		children.add(index, child);
+	public void insert(Glyph child, long index) {
+		// KLUGE - change to the index to a String or Long and hash the children
+		children.add((int)index, child);
 	}
 
 	public void insert(Glyph g) {
@@ -92,14 +93,6 @@ public class GraphElement implements Glyph {
 		this.children = children;
 	}
 
-	public boolean isHighlight() {
-		return highlighted;
-	}
-
-	public void setHighlight(boolean highlight) {
-		this.highlighted = highlight;
-	}
-
 	public Glyph getParent() {
 		return parent;
 	}
@@ -124,4 +117,11 @@ public class GraphElement implements Glyph {
 		this.selected = selected;
 	}	
 
+	public boolean isHighlighted() {
+		return highlighted;
+	}
+
+	public void setHighlighted(boolean highlight) {
+		this.highlighted = highlight;
+	}
 }

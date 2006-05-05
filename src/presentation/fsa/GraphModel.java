@@ -1,25 +1,90 @@
 package presentation.fsa;
 
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.Iterator;
 
+import model.DESMetaData;
 import model.fsa.FSAMetaData;
 import model.fsa.FSAModel;
-import presentation.GlyphLabel;
+import model.fsa.ver1.State;
+import model.fsa.ver1.Transition;
+import presentation.Glyph;
+import presentation.GraphLabel;
+import ui.UIStateModel;
 
 public class GraphModel {
 
 	/**
 	 * TODO implement as a more usable form of list or map.
 	 */
-	private Node[] nodes;
-	private Edge[] edges;
-	private GlyphLabel[] labels;
+	private HashMap<Long, Node> nodes;
+	private HashMap<Long, Edge> edges;
+	private HashMap<Long, GraphLabel> labels;
+	
+	/**
+	 * The recursive structure used to draw the graph.
+	 */
+	private Glyph graph;
 	
 	/**
 	 * The data models to keep synchronized.
 	 */	
 	private FSAModel fsa;			// abstract system model
 	private FSAMetaData layoutData; // presentation data for the system model
+	
+	public GraphModel(FSAModel fsa, FSAMetaData data){
+		
+		this.fsa = fsa;
+		this.layoutData = data;
+		
+		nodes = new HashMap<Long, Node>();
+		edges = new HashMap<Long, Edge>();
+		labels = new HashMap<Long, GraphLabel>();
+		
+		// create all nodes
+		// for all states in fsa, 
+		// get the graphic data, 
+		// construct a node and 
+		// add to set of nodes		
+		Iterator iter = fsa.getStateIterator();
+		State s;
+		Node n;
+		// TODO for all states in the model, refresh all of my nodes		
+		// For now, just create everthing new.		
+		graph = new GraphElement();
+		while(iter.hasNext()){
+			s = (State)iter.next();
+			n = new Node(s);
+			n.setLayout(layoutData.getLayoutData(s));
+			graph.insert(n, s.getId());
+			nodes.put(new Long(s.getId()), n);
+		}
+		
+		// create all edges and connect to nodes
+		// for all transitions in fsa
+		iter = fsa.getTransitionIterator();
+		Transition t;
+		Edge e;
+		while(iter.hasNext()){						
+			t = (Transition)iter.next();
+		
+			// TODO get the source and target nodes
+		
+			// get the graphic data for the transition and all associated events
+			// construct the edge			
+			e = new Edge(t, layoutData.getLayoutData(t));
+			
+			// TODO
+			// add this edge to source node's out edges
+			// add this edge to target node's in edges
+			// add to set of edges
+
+		}
+	
+		// TODO for all free labels in metadata
+		
+	}
 	
 	public void addNode(Point p){
 		// create a State corresponding to the point p
