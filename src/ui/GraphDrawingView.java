@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -40,7 +41,7 @@ import ui.tools.SelectionTool;
  * @author helen bretzke
  *
  */
-public class GraphDrawingView extends JComponent implements Subscriber, MouseListener, KeyListener {
+public class GraphDrawingView extends JComponent implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
 			
 	private DrawingTool currentTool;
 	private DrawingTool[] drawingTools;
@@ -91,11 +92,15 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseLis
 	 * An object to handle synchronizing FSA model with the displayed graph.
 	 */
 	private GraphModel graphModel;
-	
+
+	/**
+	 * Presentation model (the composite structure that represents the DES model.)
+	 */	
+	private GraphElement graph;	
 
 	public GraphDrawingView() {
-		graphModel = 
-		graph = new GraphElement();
+		graphModel = null;
+		graph = null;
 		
 		currentSelection = new GraphElement();
 		
@@ -137,24 +142,9 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseLis
 	}
 
 	/**
-	 * Presentation model (the composite structure that represents the DES model.)
-	 */	
-	private GraphElement graph;	
-	
-	/**
-	 * Refresh my visual model from the data in the DESModel (Automaton)
-	 * 
-	 * FIXME spurious updates of graph elements that have not been modified.
-	 * 
-	 * TODO define equals() on all glyph implementations so that don't need
-	 * to update everything. BUT checking every element is almost as expensive as 
-	 * rebuilding the graph every time...
-	 * 
-	 * IDEA Try maintaining a set of dirty bits.
-	 * 
+	 * Refresh my visual model from GraphModel.
 	 */
-	public void update() {
-		
+	public void update() {		
 		graph = graphModel.getGraph();
 		repaint();
 	}
@@ -199,18 +189,19 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseLis
 		currentTool.handleMouseReleased(arg0);		
 	}
 
-
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseDragged(MouseEvent arg0) {
+		currentTool.handleMouseDragged(arg0);
 		
 	}
 
+	public void mouseMoved(MouseEvent arg0) {
+		currentTool.handleMouseMoved(arg0);
+	}	
 
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseEntered(MouseEvent arg0) {}		
+	public void mouseExited(MouseEvent arg0) {}
 		
-	}
-
+	
 // TODO Move these methods into the SelectionTool class; accessor to buffers and graph elements.
 	
 	/**
@@ -253,7 +244,14 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseLis
 	 * @param rectangle
 	 */
 	public void updateCurrentSelection(Rectangle rectangle){
-		//	IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
-		
+		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
+		// that sets highlight(boolean) on all of its elements.
+		// TODO ask GraphModel to compute set of elements hit.
+	}
+
+
+	public void setGraphModel(GraphModel graphModel) {
+		this.graphModel = graphModel;
+		graphModel.attach(this);
 	}
 }

@@ -3,6 +3,9 @@ package ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import model.fsa.ver1.Automaton;
+import model.fsa.ver1.MetaData;
+
 import ui.command.CommandHistory;
 
 /** 
@@ -23,18 +26,15 @@ public class UIStateModel {
 		}
 		return me;
 	}
-	
-	public CommandHistory getCommandHistory() {
-		return commandHistory;
-	}
-
 	// The singleton instance
 	protected static UIStateModel me = null;
 		
 	private UIStateModel() {
 		commandHistory = new CommandHistory();
 		views = new LinkedList<Subscriber>();
-		publisher = null;
+		automaton = null;
+		metadata = null;
+		graphDrawingView = null;
 	}	
 	
 	/**
@@ -44,16 +44,22 @@ public class UIStateModel {
 
 	/**
 	 * Abstract data model to keep synchronized with visualModel.
+	 * TODO Change to a set of publishers to support multiple automata in workspace.
 	 */ 
-	private Publisher publisher;
+	private Automaton automaton;
+	private MetaData metadata;  // extra data, e.g. visualization details for the data model
+	private GraphModel graphModel;
+	private GraphDrawingView graphDrawingView;
 	
 	/**
 	 * Multiple views on the data.
+	 * TODO Change to set of sets: views for each automaton model. 
 	 */
 	private LinkedList<Subscriber> views;
 	
 	/**
 	 * The currently active view.
+	 * TODO change to a set: could be more than one active view.
 	 */
 	private Subscriber activeView;
 	
@@ -68,12 +74,12 @@ public class UIStateModel {
 	 * Synchronize all views with the underlying data model.
 	 *
 	 */
-	public void refresh() {
-		publisher.notifyAllSubscribers();
+	public void refreshViews() {
+		automaton.notifyAllSubscribers();
 	}	
 
-	protected Publisher getPublisher() {
-		return publisher;
+	protected Publisher getAutomaton() {
+		return automaton;
 	}	
 
 	/**
@@ -82,11 +88,11 @@ public class UIStateModel {
 	 * 
 	 * @param model is not null
 	 */
-	public void setDESModel(Publisher model) {
-		publisher = model;
+	public void setAutomaton(Automaton model) {
+		automaton = model;
 		Iterator v = views.iterator();
 		while(v.hasNext()){
-			publisher.attach((Subscriber)v.next());
+			automaton.attach((Subscriber)v.next());
 		}
 	}
 
@@ -107,5 +113,34 @@ public class UIStateModel {
 	public void setActiveView(Subscriber activeView) {
 		this.activeView = activeView;
 	}
-	
+
+	public CommandHistory getCommandHistory() {
+		return commandHistory;
+	}
+
+	public MetaData getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(MetaData metadata) {
+		this.metadata = metadata;
+	}
+
+	public GraphModel getGraphModel() {
+		return graphModel;
+	}
+
+	public void setGraphModel(GraphModel graphModel) {
+		this.graphModel = graphModel;
+		addView(graphModel);
+		graphDrawingView.setGraphModel(graphModel);	
+	}
+
+	public GraphDrawingView getGraphDrawingView() {
+		return graphDrawingView;
+	}
+
+	public void setGraphDrawingView(GraphDrawingView graphDrawingView) {
+		this.graphDrawingView = graphDrawingView;
+	}	
 }

@@ -2,55 +2,32 @@ package io.fsa.ver1;
 
 import java.io.File;
 
-import javax.swing.JFileChooser;
-
-import ui.Publisher;
-
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
-import model.fsa.ver1.MetaData;
 
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.widgets.FileDialog;
-//
-//import projectPresentation.ParsingToolbox;
-//import userinterface.MainWindow;
-//import userinterface.ResourceManager;
-//import userinterface.Userinterface;
-
+/**
+ * TODO extract interface to package io.fsa
+ * 
+ * @author helen bretzke
+ *
+ */
 public class FileOperations {
 	
-	public static Publisher openSystem(File f) {	
+	public static final String DEFAULT_DIRECTORY = "C:/Documents and Settings/helen/My Documents/development/output/";
+	
+	public static FSAModel openSystem(File f) {	
 	    AutomatonParser ap = new AutomatonParser();	    	
         Automaton automaton = ap.parse(f);	        
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
         return automaton;		
 	}
 	
-
-	
-    // Extracts metadata (layout information for graphical presentation) and stores
-    // in a separate object.
-    // IDEA pull the subelement "graphic" from each state, transition and event and store these
-    // in a subelementcontainer.    
-	private MetaData extractMetaData(Automaton model){	
-		SubElementContainer sec = new SubElementContainer(); 
-				
-		
-		return new MetaData(sec);
-	}
-	
-	public void mergeMetaData(Automaton model, MetaData metadata){
-		
-		
-	}
-	
-	public static void saveSystem(Publisher model) {
+	public static void saveSystem(FSAModel model) {
 		// TODO call saveSystemAs with default directory from SystemVariables
 				
 	}
 	
-	public static void saveSystemAs(Publisher model, File f) {
+	public static void saveSystemAs(FSAModel model, File f) {
 		// TODO implement
 		
 		// merge metadata with automaton data structure and use legacy code to write the xml
@@ -60,6 +37,15 @@ public class FileOperations {
 		// write file
 		
 		// handle runtime errors
+		
+	}
+	
+	public static void exportSystemAsLatex(FSAModel model, File f){
+		
+	}
+	
+	public static void exportSystemAsEPS(FSAModel model, File f){
+		
 		
 	}
 }

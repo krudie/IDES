@@ -16,10 +16,13 @@ public class CommandHistory {
 
 	private static final int DEFAULT_COMMAND_HISTORY_LENGTH = 20;
 	
-	// Use a vector and keep track of the size.
+	// Circular STACK abstract data type: Use an implementation from CSC148.
+	// Never full: overwrites the oldest commands
+	
 	private ArrayList history;
 	private int maxLength;
-	private int lastCommand = -1;
+	private int head = -1;
+	private int tail = -1;	
 	private boolean undone = false;
 	
 	/**
@@ -42,21 +45,21 @@ public class CommandHistory {
 	}
 	
 	public void add(Command c) {		
-		history.add(++lastCommand, c);
-		if(lastCommand >= maxLength){
-			lastCommand = maxLength - 1;
+		history.add(++tail, c);
+		if(tail >= maxLength){
+			tail = maxLength - 1;
 			history.remove(0);
 		}
 	}
 	
 	public void undo() {
 		// nothing to do
-		if(lastCommand == -1) return;		
+		if(tail == -1) return;		
 		try{
-			ReversableCommand rc = (ReversableCommand)history.get(lastCommand);
+			ReversableCommand rc = (ReversableCommand)history.get(tail);
 			rc.unexecute();
-			history.add(lastCommand, new UndoCommand(rc));
-			lastCommand--;
+			history.add(tail, new UndoCommand(rc));
+			tail--;
 		}catch(ClassCastException e){
 			// command is not reversible so do nothing.
 		}
@@ -68,14 +71,14 @@ public class CommandHistory {
 	 */
 	public void redo() {
 		// nothing to do
-		if(lastCommand == -1) return;
+		if(tail == -1) return;
 		if(undone){	
-			lastCommand++;
-			Command undone = ((UndoCommand)history.get(lastCommand)).getCommand();
+			tail++;
+			Command undone = ((UndoCommand)history.get(tail)).getCommand();
 			undone.execute();
-			history.add(lastCommand, undone); // replace undo with its subcommand
+			history.add(tail, undone); // replace undo with its subcommand
 		}else{
-			((Command)history.get(lastCommand)).execute();
+			((Command)history.get(tail)).execute();
 		}
 	}	
 }

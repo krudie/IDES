@@ -1,19 +1,30 @@
-package presentation.fsa;
+package ui;
 
+import java.awt.Event;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import model.DESMetaData;
-import model.fsa.FSAMetaData;
-import model.fsa.FSAModel;
+import model.fsa.ver1.Automaton;
+import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.Glyph;
 import presentation.GraphLabel;
-import ui.UIStateModel;
+import presentation.fsa.Edge;
+import presentation.fsa.GraphElement;
+import presentation.fsa.Node;
 
-public class GraphModel {
+/**
+ * Mediates between the Automaton model and the visual representation.
+ * Observes and updates the Automaton.
+ * Updates the graphical visualization metadata and synchronizes it with the Automaton model.
+ * Is observed and updated by the GraphDrawingView.  
+ * 
+ * @author helen bretzke
+ *
+ */
+public class GraphModel extends Publisher implements Subscriber {
 
 	/**
 	 * TODO implement as a more usable form of list or map.
@@ -25,15 +36,15 @@ public class GraphModel {
 	/**
 	 * The recursive structure used to draw the graph.
 	 */
-	private Glyph graph;
+	private GraphElement graph;
 	
 	/**
 	 * The data models to keep synchronized.
 	 */	
-	private FSAModel fsa;			// abstract system model
-	private FSAMetaData layoutData; // presentation data for the system model
+	private Automaton fsa;		 // system model
+	private MetaData layoutData; // presentation data for the system model
 	
-	public GraphModel(FSAModel fsa, FSAMetaData data){
+	public GraphModel(Automaton fsa, MetaData data){
 		
 		this.fsa = fsa;
 		this.layoutData = data;
@@ -41,6 +52,22 @@ public class GraphModel {
 		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
 		labels = new HashMap<Long, GraphLabel>();
+		
+		update();
+	}
+	
+	/**
+	 * TODO Keep a set of dirty bits on the the Automaton
+	 * so that the whole model needn't be rebuilt every time there is a change.
+	 * 
+	 * Although modifying the recursive graph structure will be trickier than simply rebuilding... 
+	 */
+	public void update(){
+		
+		// ??? How expensive is this
+		nodes.clear();
+		edges.clear();
+		labels.clear();
 		
 		// create all nodes
 		// for all states in fsa, 
@@ -84,13 +111,18 @@ public class GraphModel {
 	
 		// TODO for all free labels in metadata
 		
+		notifyAllSubscribers();
 	}
 	
 	public void addNode(Point p){
+		State state = null;
 		// create a State corresponding to the point p
+		fsa.add(state);
 	}
 	
 	public void addEdge(Node n1, Node n2){
+		Transition t = null;
+		Event e = null;
 		
 	}
 	
@@ -113,5 +145,13 @@ public class GraphModel {
 		// get n1 and n2, the source and target nodes for this edge
 		// if e is the only edge adjacent to n1, delete n1
 		// if e is the only edge adjacent to n2, delete n2
+	}
+
+	public GraphElement getGraph() {
+		return graph;
+	}
+
+	public void setGraph(GraphElement graph) {
+		this.graph = graph;
 	}
 }

@@ -19,8 +19,12 @@ import presentation.MathUtils;
  */
 public class Edge extends GraphElement {
 
-	// the transition that this edge represents
+	// the transition that this edge represent
+	// NOTE All that we need is the id to sync with the model
 	private FSATransition t;
+	//////////////////////////////////////////////////////////
+	
+	private Node source, target;
 	private TransitionLayout layout;
 	
 	// The bezier curve.
@@ -43,11 +47,26 @@ public class Edge extends GraphElement {
 		arrow = new ArrowHead();
 		update();
 	}
-
+	
+	public Edge(Node source, Node target, TransitionLayout layout){		
+		this(null, layout);
+		this.source = source;
+		this.target = target;		
+	}
+	
 	public void draw(Graphics g) {
 		super.draw(g);
 		Graphics2D g2d = (Graphics2D)g;
+	
+		// if either my source or target node is highlighted
+		// then I am also hightlighted.
+		if(source.isHighlighted() || target.isHighlighted()){
+			setHighlighted(true);
+		}else{
+			setHighlighted(false);
+		}
 		
+		// Silly duplicate code.
 		if(isHighlighted()){
 			g2d.setColor(layout.getHighlightColor());
 		}else{
@@ -67,15 +86,12 @@ public class Edge extends GraphElement {
 	}
 	
 	/**
-	 * FIXME move to GraphModel
-	 * Synchronize my appearance with my transition data.	 	
+	 * Updates my curve, arrow and label.
 	 */
 	public void update() {
-		
-		// FIXME Transition objects will not have this information. ///////////
+			
 		controlPoints = (Point2D.Float[])layout.getCurve();
-		///////////////////////////////////////////////////////////////////////
-		
+			
 		// Compute and store the arrow layout
 		// the direction vector from base to tip of the arrow 
 	    Point2D.Float dir = new Point2D.Float(controlPoints[P2].x - controlPoints[CTRL2].x, controlPoints[P2].y - controlPoints[CTRL2].y);    	    
@@ -109,6 +125,22 @@ public class Edge extends GraphElement {
 
 	public Point2D.Float getCTRL2() {
 		return controlPoints[CTRL2];		
+	}
+
+	public Node getSource() {
+		return source;
+	}
+
+	public void setSource(Node source) {
+		this.source = source;
+	}
+
+	public Node getTarget() {
+		return target;
+	}
+
+	public void setTarget(Node target) {
+		this.target = target;
 	}
 	
 }

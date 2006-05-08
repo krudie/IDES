@@ -40,9 +40,9 @@ public class MainWindow extends JFrame {
 		// create tabbed panes and their components: 
 		// canvas, graph specs panel, LaTeX and EPS output text areas.
 		drawingBoard = new GraphDrawingView();
-		UIStateModel.instance().addView(drawingBoard);		
+		UIStateModel.instance().setGraphDrawingView(drawingBoard);	
 		createAndAddTabbedPane();
-//		 TODO add graph spec, latex and eps views to the state model
+		// TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
 			
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
@@ -261,8 +261,7 @@ public class MainWindow extends JFrame {
 		 miErrReports = new JCheckBoxMenuItem("Send Error Reports");
 		
 		 // TODO add listeners
-		 
-		 
+		 		 
 		 menuOptions.add(miDrawBorder);
 		 menuOptions.add(miStdNodeSize);
 		 menuOptions.add(miUsePstricks);
@@ -287,6 +286,6 @@ public class MainWindow extends JFrame {
 	 */
 	private JTabbedPane tabbedViews;
 	private GraphDrawingView drawingBoard;
-	private JPanel graphSpecsView;
+	private JPanel eventsView;
 	private JPanel latexView;
 }
