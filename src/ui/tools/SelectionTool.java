@@ -1,7 +1,9 @@
 package ui.tools;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
@@ -18,14 +20,19 @@ import ui.GraphDrawingView;
 public class SelectionTool extends DrawingTool {
 
 	private Point startPoint, endPoint; 
+	Dimension d;
+	Point p;
+	Rectangle box;
 	// TODO more cursors for resizing the bounding box
 	
-	private boolean resizing = false;
-	private Rectangle2D box;
+	private boolean resizing = false;	
 	
 	public SelectionTool(GraphDrawingView board){
 		context = board;
 		cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+		d = new Dimension();
+		p = new Point();
+		box = context.getSelectionArea();
 	}
 	
 	@Override
@@ -39,18 +46,18 @@ public class SelectionTool extends DrawingTool {
 	/**
 	 * Stretch the selection rectangle.
 	 */
-	public void handleMouseDragged(MouseEvent me) {
-		if (inDrag) {
-			// figure out where the current point is in relation to the origin			
+	public void handleMouseDragged(MouseEvent me) {		
+		if (inDrag) {			
 			endPoint = me.getPoint();
-			if(!endPoint.equals(startPoint)){  // TODO check for null?
-				// TODO			
-
-				// recompute the bounding rectangle			
-				
-				// draw the bounding rectangle (dashed)
-				
-				// set the bounding box in the context so it knows what to draw
+			if(!endPoint.equals(startPoint)){  // TODO check for null?			
+				// recompute the bounding rectangle
+				//	figure out relative position of start and endpoint to compute top left corner, width and height.
+				p.setLocation(Math.min(startPoint.x, endPoint.x),
+							  Math.min(startPoint.y, endPoint.y));
+				d.setSize(Math.abs(endPoint.x - startPoint.x), 
+						  Math.abs(endPoint.y - startPoint.y));											
+				box.setLocation(p);
+				box.setSize(d);			
 				context.repaint();	
 			}												
 		}
@@ -84,17 +91,20 @@ public class SelectionTool extends DrawingTool {
 	 */
 	public void handleMouseReleased(MouseEvent me) {
 		// compute the set of graph elements hit by rectangle
-		
-		// highlight all selected elements
-
+		context.updateCurrentSelection(box);
 		// reset flags
 		startPoint = null;
+		endPoint = null; 
 		inDrag = false;
 	}
 
 	@Override
-	public void handleKeyTyped(KeyEvent ke) {}
-
-	
+	public void handleKeyTyped(KeyEvent ke) {
+		
+		// TODO escape key, clear the rectangle
+		if(true){
+			
+		}
+	}
 
 }

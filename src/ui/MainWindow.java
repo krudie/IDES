@@ -53,12 +53,14 @@ public class MainWindow extends JFrame {
 	
 	 private void createAndAddTabbedPane() {
 		tabbedViews = new JTabbedPane();
+		drawingBoard.setName("No-name graph.");
 		JScrollPane sp = new JScrollPane(drawingBoard, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		sp.setName(drawingBoard.getName());
 		
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
-		tabbedViews.addTab("Un-named Graph", sp);
+		tabbedViews.add(sp);
 		tabbedViews.addTab("Graph Specification", null);
 		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");

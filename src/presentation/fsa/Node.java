@@ -17,6 +17,7 @@ import model.fsa.ver1.Transition;
 
 /**
  * The graphical representation of a state in a finite state automaton.
+ * Child glyphs are its out edges.
  * 
  * @author helen bretzke
  *
@@ -29,7 +30,7 @@ public class Node extends GraphElement {
 	private StateLayout layout;
 	
 	// TODO Change to list of labels to be displayed within the bounds of this node
-	private GraphLabel label;	
+	private GraphLabel label;
 
 	// visualization objects
 	private Ellipse2D circle;
@@ -37,11 +38,12 @@ public class Node extends GraphElement {
 	private ArrowHead arrow = null;  // only draw for initial states
 	private Point2D.Float a1, a2;  // the arrow shaft
 		
-	public Node(FSAState s){
+	public Node(FSAState s, StateLayout layout){
 		this.state = s;
+		this.layout = layout;
 		label = new GraphLabel("");
 		a1 = new Point2D.Float();
-		a2 = new Point2D.Float();
+		a2 = new Point2D.Float();		
 		update();
 	}
 	
@@ -59,7 +61,7 @@ public class Node extends GraphElement {
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void update() {
-				
+			
 		int radius = layout.getRadius();
 		Point centre = layout.getLocation();
 		
@@ -88,16 +90,13 @@ public class Node extends GraphElement {
 		// FIXME centre the label in the node; 
 		// note that width and height of label are both 0.
 					
-		label.setLocation((int)centre.x, (int)centre.y);		
-			
+		label.setLocation((int)centre.x, (int)centre.y);			
 	}
 	
-	public void draw(Graphics g) {				
-		
-		// TODO figure out how to store the incoming edges as well. 
-		// Since they are highlighted on MouseDown event.
-		// don't call super: reimplement to draw only out edges
-		// (i.e. those for which i am a source node)
+	/**
+	 * Draws this node and all of its out edges in the given graphics context.
+	 */
+	public void draw(Graphics g) {		
 		super.draw(g);	// calls draw on all of the outgoing edges
 		
 		if(super.isHighlighted()){
@@ -120,17 +119,6 @@ public class Node extends GraphElement {
 		}				
 		label.draw(g);
 	}
-
-		// FIXME to highlight this node, must highlight each incoming edge
-		// only have storage for outgoing edges.
-		// I know my incoming transitions, but must call highlight on each edge.
-		// References for these are stored in their source nodes.
-		// IDEA if I store a reference to my parent graph, I could ask it for these edges.
-		// should update be called on this parent/graph to update all edges and nodes etc.???
-		// instead of doing it recursively?
-	// Better Idea: get the Edges to check if source node or dest node is highlighted
-	// and if so, draw themselves as highlighted.
-	
 	
 	public Rectangle bounds() {		
 		return circle.getBounds();
@@ -140,6 +128,12 @@ public class Node extends GraphElement {
 		return circle.contains(p);
 	}	
 	
+	/**
+	 * Highlights this node and all of its out edges.
+	 * 
+	 * @deprecated since edges now highlight themselves if either of their
+	 * source or target is highlighted. 
+	 */
 	public void setHighlighted(boolean b){
 		super.setHighlighted(b);
 		Iterator edges = super.children();

@@ -19,7 +19,7 @@ import presentation.MathUtils;
  */
 public class Edge extends GraphElement {
 
-	// the transition that this edge represent
+	// the transition that this edge represents
 	// NOTE All that we need is the id to sync with the model
 	private FSATransition t;
 	//////////////////////////////////////////////////////////

@@ -52,7 +52,12 @@ public interface Glyph {
 	 */
 	public void insert(Glyph child, long index);
 	
-	public void insert(Glyph g);
+	/**
+	 * Inserts the given child Glyph.
+	 * 
+	 * @param g
+	 */
+	public void insert(Glyph child);
 	
 	/**
 	 * Removes the first occurrence of the given child from my list of children.

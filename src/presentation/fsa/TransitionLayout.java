@@ -5,14 +5,16 @@ import java.awt.geom.Point2D;
 
 public class TransitionLayout extends GraphicalLayout {
 
+	private String[] eventNames;
 	private Point2D[] bezierControls;
 	
 	public TransitionLayout(){
 		bezierControls = new Point2D.Float[4];
 	}
 	
-	public TransitionLayout(Point2D[] curve){
-		bezierControls = curve;
+	public TransitionLayout(Point2D[] bezierControls, String[] eventNames){
+		this.bezierControls = bezierControls;
+		this.eventNames = eventNames;
 	}
 
 	public Point2D[] getCurve() {
@@ -28,6 +30,14 @@ public class TransitionLayout extends GraphicalLayout {
 		bezierControls[1] = c1;
 		bezierControls[2] = c2;
 		bezierControls[3] = p2;
+	}
+
+	public String[] getEventNames() {
+		return eventNames;
+	}
+
+	public void setEventNames(String[] eventNames) {
+		this.eventNames = eventNames;
 	}
 
 }

@@ -16,6 +16,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 import model.fsa.FSAModel;
 import model.fsa.ver1.State;
 import presentation.Glyph;
+import presentation.GraphLabel;
 import presentation.fsa.GraphElement;
 import presentation.fsa.Node;
 import ui.tools.DrawingTool;
@@ -47,8 +49,8 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	private DrawingTool[] drawingTools;
 	private Font font; 
 	private FontMetrics fontMetrics;
-	private BasicStroke wideStroke, fineStroke;	
-	
+	private BasicStroke wideStroke, fineStroke, dashedStroke;
+		
 //	 Tools types (corresponding to user interaction modes) to 
 	// determine mouse and keyboard responses.
 	public final static int DEFAULT = 0;
@@ -84,6 +86,11 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	private Glyph currentSelection;
 	
 	/**
+	 * Retangle to render as the area selected by mouse. 
+	 */
+	private Rectangle selectionArea;
+		
+	/**
 	 * The selected print area.
 	 */
 	private Glyph printArea;
@@ -100,19 +107,32 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 	public GraphDrawingView() {
 		graphModel = null;
-		graph = null;
+		graph = new GraphElement();
+		// DEBUG
+		graph.insert(new GraphLabel("No Graph.", new Point(100, 100)));
 		
 		currentSelection = new GraphElement();
+		selectionArea = new Rectangle();
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
 		drawingTools[DEFAULT] = new SelectionTool(this);
+		
 		// TODO construct all other drawing tools
 		currentTool = drawingTools[DEFAULT];
 		
 	    wideStroke = new BasicStroke(2);
-	    fineStroke = new BasicStroke(1);	    
+	    fineStroke = new BasicStroke(1);
+	    dashedStroke = new BasicStroke(
+	            1, 
+	            BasicStroke.CAP_BUTT,
+	            BasicStroke.JOIN_MITER,
+	            50,
+	            new float[] {5, 2}, 
+	            0
+	          );
 	    setVisible(true);
-		addMouseListener(this);		
+		addMouseListener(this);
+		addMouseMotionListener(this);
 	}	
 	
 	public void paint(Graphics g){
@@ -122,7 +142,11 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	                         RenderingHints.VALUE_ANTIALIAS_ON);		
 	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK
 	    g2D.setStroke(wideStroke);
-		graph.draw(g);
+		graph.draw(g2D);
+		
+		g2D.setStroke(dashedStroke);
+		g2D.setColor(Color.DARK_GRAY);
+		g2D.draw(selectionArea);
 		
 //		 TODO scale or other transformation?
 		
@@ -155,26 +179,9 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 	public void setCurrentSelection(Glyph currentSelection) {
 		this.currentSelection = currentSelection;
-	}
+	}	
 
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
+	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
 		currentTool.handleMouseClicked(arg0);		
 	}
@@ -200,20 +207,34 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 	public void mouseEntered(MouseEvent arg0) {}		
 	public void mouseExited(MouseEvent arg0) {}
+	
+
+	// Key listener events
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
 		
+	}
+
+
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 // TODO Move these methods into the SelectionTool class; accessor to buffers and graph elements.
 	
 	/**
-	 * Clears and un-highlight the set of selected elements 
+	 * TODO Clears and un-highlight the set of selected elements 
 	 */
 	public void clearCurrentSelection(){
-		Iterator els = graph.children();
-		Node g;
-		while(els.hasNext()){
-			g = (Node)els.next();
-			g.setHighlighted(false);
-		}		
+		
 	}
 	
 	/**
@@ -225,17 +246,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	public void updateCurrentSelection(Point point) {
 		
 		// TODO store and highlight the set of intersected elements
-				
-		Iterator els = graph.children();
-		Node g;
-		while(els.hasNext()){
-			g = (Node)els.next();
-			if(g.intersects(point)){
-				g.setHighlighted(true);
-			}else{
-				g.setHighlighted(false);
-			}
-		}		
+		// Delegate to GraphModel.
 	}
  
 	/**
@@ -251,7 +262,11 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 
 	public void setGraphModel(GraphModel graphModel) {
-		this.graphModel = graphModel;
-		graphModel.attach(this);
+		this.graphModel = graphModel;		
 	}
+
+	public Rectangle getSelectionArea() {
+		return selectionArea;
+	}	
+	
 }

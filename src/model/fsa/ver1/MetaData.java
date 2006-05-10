@@ -1,16 +1,26 @@
 package model.fsa.ver1;
 
-import java.awt.Point;
-
-import presentation.fsa.StateLayout;
-import presentation.fsa.TransitionLayout;
-import ui.Publisher;
 import io.fsa.ver1.SubElement;
+
+import java.awt.Point;
+import java.awt.geom.Point2D;
+
 import model.DESElement;
 import model.fsa.FSAMetaData;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
+import presentation.fsa.Edge;
+import presentation.fsa.StateLayout;
+import presentation.fsa.TransitionLayout;
 
+/**
+ * Store and extracts the metadata for a given Automaton.
+ * TODO  If layout information is missing, call GraphViz to layout the graph
+ * representing the Automaton. 
+ * 
+ * @author helen bretzke
+ *
+ */
 public class MetaData implements FSAMetaData {
 	
 	Automaton automaton;
@@ -78,8 +88,33 @@ public class MetaData implements FSAMetaData {
         }	
 	}
 
-	public TransitionLayout getLayoutData(FSATransition t){
+	/**
+	 * TODO Implement
+	 */
+	public TransitionLayout getLayoutData(FSATransition transition){
+		Transition t = (Transition)transition;
+		SubElement layout = t.getSubElement("graphic").getSubElement("bezier");
+		Point2D.Float[] controls = new Point2D.Float[4];
+		controls[Edge.P1] = new Point2D.Float(Float.parseFloat(layout.getAttribute("x1")),
+				Float.parseFloat(layout.getAttribute("y1")));
+		controls[Edge.P2] = new Point2D.Float(Float.parseFloat(layout.getAttribute("x2")),
+				Float.parseFloat(layout.getAttribute("y2")));
+		controls[Edge.CTRL1] = new Point2D.Float(Float.parseFloat(layout.getAttribute("ctrlx1")),
+				Float.parseFloat(layout.getAttribute("ctrly1")));
+		controls[Edge.CTRL2] = new Point2D.Float(Float.parseFloat(layout.getAttribute("ctrlx2")),
+				Float.parseFloat(layout.getAttribute("ctrly2")));
+						
+		// How many events can fire this transition?
+		// Version 2 has a single event per transition.
+		// Kluge around it.
+		Event e = (Event) t.getEvent();
+		String[] edgeLabels = new String[1];
+		if(e != null){
+			edgeLabels[0] = e.getSymbol();
+		}else{
+			edgeLabels[0] = "";
+		}
 		
-		return null;
+		return new TransitionLayout(controls, edgeLabels);
 	}	
 }

@@ -130,10 +130,19 @@ public class UIStateModel {
 		return graphModel;
 	}
 
+	/** 
+	 * Sets the active graph model for the interface to the given model.  
+	 * Attaches the graph drawing view as a subscriber to the graph model.
+	 * Attaches the given graph model model as a subscriber to the FSA model.
+	 * 
+	 * @param graphModel
+	 */
 	public void setGraphModel(GraphModel graphModel) {
 		this.graphModel = graphModel;
 		addView(graphModel);
-		graphDrawingView.setGraphModel(graphModel);	
+		graphDrawingView.setGraphModel(graphModel);
+		graphModel.attach(graphDrawingView);
+		graphModel.notifyAllSubscribers();
 	}
 
 	public GraphDrawingView getGraphDrawingView() {
@@ -142,5 +151,5 @@ public class UIStateModel {
 
 	public void setGraphDrawingView(GraphDrawingView graphDrawingView) {
 		this.graphDrawingView = graphDrawingView;
-	}	
+	}
 }

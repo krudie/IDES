@@ -64,52 +64,56 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	public void update(){
 		
-		// ??? How expensive is this
+				
+		// For now, just create everthing new.		
+		// TODO OPTIMIZE How expensive is this?
 		nodes.clear();
 		edges.clear();
 		labels.clear();
-		
-		// create all nodes
+				
 		// for all states in fsa, 
 		// get the graphic data, 
 		// construct a node and 
 		// add to set of nodes		
 		Iterator iter = fsa.getStateIterator();
 		State s;
-		Node n;
-		// TODO for all states in the model, refresh all of my nodes		
-		// For now, just create everthing new.		
+		Node n1;
+		
 		graph = new GraphElement();
 		while(iter.hasNext()){
 			s = (State)iter.next();
-			n = new Node(s);
-			n.setLayout(layoutData.getLayoutData(s));
-			graph.insert(n, s.getId());
-			nodes.put(new Long(s.getId()), n);
+			n1 = new Node(s, layoutData.getLayoutData(s));			
+			graph.insert(n1);
+			nodes.put(new Long(s.getId()), n1);
 		}
-		
-		// create all edges and connect to nodes
+
 		// for all transitions in fsa
+		// create all edges and connect to nodes
 		iter = fsa.getTransitionIterator();
 		Transition t;
+		Node n2;
 		Edge e;
 		while(iter.hasNext()){						
 			t = (Transition)iter.next();
 		
-			// TODO get the source and target nodes
-		
+			// get the source and target nodes
+			n1 = nodes.get(new Long(t.getSource().getId()));
+			n2 = nodes.get(new Long(t.getTarget().getId()));
+			
 			// get the graphic data for the transition and all associated events
 			// construct the edge			
-			e = new Edge(t, layoutData.getLayoutData(t));
-			
-			// TODO
+			e = new Edge(n1, n2, layoutData.getLayoutData(t));
+					
 			// add this edge to source node's out edges
-			// add this edge to target node's in edges
+			n1.insert(e);
+			
+			// DON'T add this edge to target node's in edges, since it doesn't store them :)
+						
 			// add to set of edges
-
+			edges.put(new Long(t.getId()), e);
 		}
 	
-		// TODO for all free labels in metadata
+		// TODO for all free labels in metadata				
 		
 		notifyAllSubscribers();
 	}
