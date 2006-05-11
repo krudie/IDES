@@ -2,17 +2,19 @@ package ui;
 
 import java.awt.Event;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.Glyph;
-import presentation.GraphLabel;
 import presentation.fsa.Edge;
 import presentation.fsa.GraphElement;
+import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 
 /**
@@ -157,5 +159,103 @@ public class GraphModel extends Publisher implements Subscriber {
 
 	public void setGraph(GraphElement graph) {
 		this.graph = graph;
+	}
+
+	/**
+	 * Computes and returns the set of graph elements contained by the given rectangle.
+	 * Flags each element as selected.
+	 * 
+	 * @param rectangle
+	 * @return the set of graph elements contained by the given rectangle
+	 */
+	protected Glyph getElementsContainedBy(Rectangle rectangle) {
+		Glyph g = new GraphElement();
+		
+		// check intersection with all nodes		
+		Iterator iter = nodes.entrySet().iterator();
+		Entry entry;
+		Node n;
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			n = (Node)entry.getValue();
+			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
+				g.insert(n);
+				n.setSelected(true);
+			}
+		}
+		
+		// check for intersection with edges
+		iter = edges.entrySet().iterator();
+		Edge e;
+		while(iter.hasNext()){
+			entry = (Entry)iter.next();
+			e = (Edge)entry.getValue();
+			if(rectangle.contains(e.bounds())){ // TODO && do a more thorough intersection test
+				g.insert(e);
+				e.setSelected(true);
+			}
+		}
+		
+		// check for intersection with free labels 
+		iter = labels.entrySet().iterator();
+		GraphLabel l;
+		while(iter.hasNext()){
+			entry = (Entry)iter.next();
+			l = (GraphLabel)entry.getValue();
+			if(rectangle.contains(l.bounds())){
+				g.insert(l);
+				l.setSelected(true);
+			}
+		}
+		
+		return g;
+	}
+	
+	/**
+	 * Computes and returns the graph element intersected by the given point.
+	 * Flags the element as highlighted.
+	 * 
+	 * @param p the point of intersection
+	 * @return the graph element intersected by the given point
+	 */
+	protected Glyph getElementIntersectedBy(Point p){
+		// check intersection with all nodes		
+		Iterator iter = nodes.entrySet().iterator();
+		Entry entry;
+		Glyph g;
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			g = (Glyph)entry.getValue();
+			if(g.intersects(p)){				
+				g.setHighlighted(true);
+				return g;				
+			}
+		}
+		
+		// check for intersection with edges
+		iter = edges.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			g = (Glyph)entry.getValue();
+			if(g.intersects(p)){  // FIXME this isn't working				
+				g.setHighlighted(true);
+				return g;				
+			}
+		}
+		
+		
+		// check for intersection with free labels
+		iter = labels.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			g = (Glyph)entry.getValue();
+			if(g.intersects(p)){ // TODO && do a more thorough intersection test				
+				g.setHighlighted(true);
+				return g;				
+			}
+		}
+		
+		// no intersection
+		return null;
 	}
 }

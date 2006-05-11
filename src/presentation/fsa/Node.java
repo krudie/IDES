@@ -9,7 +9,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import presentation.Glyph;
-import presentation.GraphLabel;
 import presentation.MathUtils;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
@@ -33,26 +32,20 @@ public class Node extends GraphElement {
 	private GraphLabel label;
 
 	// visualization objects
-	private Ellipse2D circle;
+	private Ellipse2D circle = null;
 	private Ellipse2D innerCircle = null;  // only drawn for final states	
 	private ArrowHead arrow = null;  // only draw for initial states
-	private Point2D.Float a1, a2;  // the arrow shaft
+	private Point2D.Float arrow1, arrow2;  // the arrow shaft
 		
 	public Node(FSAState s, StateLayout layout){
 		this.state = s;
 		this.layout = layout;
 		label = new GraphLabel("");
-		a1 = new Point2D.Float();
-		a2 = new Point2D.Float();		
+		circle = new Ellipse2D.Double();
+		arrow1 = new Point2D.Float();
+		arrow2 = new Point2D.Float();		
 		update();
 	}
-	
-	public Node(FSAState s, Glyph parent){
-		super(parent);
-		this.state = s;
-		label = new GraphLabel("");
-		update();
-	}	
 
 	public void setLayout(StateLayout layout){
 		this.layout = layout;
@@ -77,12 +70,12 @@ public class Node extends GraphElement {
 			// The point on the edge of the circle:
 			// centre point - arrow vector
 			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
-			Point2D.Float dir = new Point2D.Float(layout.getArrow().x, layout.getArrow().y);
+			Point2D.Float dir = new Point2D.Float(layout.getArrow().x, layout.getArrow().y);			
 			float offset = layout.getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
-			a2 = MathUtils.subtract(c, MathUtils.scale(dir, offset));
-			arrow = new ArrowHead(dir, a2);					
+			arrow2 = MathUtils.subtract(c, MathUtils.scale(dir, offset));
+			arrow = new ArrowHead(dir, arrow2);					
 			// ??? How long should the shaft be?
-			a1 = MathUtils.subtract(a2, MathUtils.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
+			arrow1 = MathUtils.subtract(arrow2, MathUtils.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}
 		
 		label.setText(layout.getText());
@@ -99,21 +92,26 @@ public class Node extends GraphElement {
 	public void draw(Graphics g) {		
 		super.draw(g);	// calls draw on all of the outgoing edges
 		
-		if(super.isHighlighted()){
-			g.setColor(layout.getHighlightColor());
+		if (isSelected()){
+			g.setColor(layout.getSelectionColor());
+		}else if(isHighlighted()){
+			g.setColor(layout.getHighlightColor());			
 		}else{
-			g.setColor(layout.getColor());
+			g.setColor(layout.getColor());	
 		}
 		
 		Graphics2D g2d = (Graphics2D)g;
+		g2d.setStroke(GraphicalLayout.WIDE_STROKE);		
 		g2d.draw(circle);
 				
 		if(state.isMarked()){
 			g2d.draw(innerCircle);
 		}
 		
+		
 		if(state.isInitial()){
-			g2d.drawLine((int)a1.x, (int)a1.y, (int)a2.x, (int)a2.y);
+			g2d.drawLine((int)arrow1.x, (int)arrow1.y, (int)arrow2.x, (int)arrow2.y);
+			g2d.setStroke(GraphicalLayout.FINE_STROKE);
 			g2d.draw(arrow);
 			g2d.fill(arrow);
 		}				
@@ -128,17 +126,4 @@ public class Node extends GraphElement {
 		return circle.contains(p);
 	}	
 	
-	/**
-	 * Highlights this node and all of its out edges.
-	 * 
-	 * @deprecated since edges now highlight themselves if either of their
-	 * source or target is highlighted. 
-	 */
-	public void setHighlighted(boolean b){
-		super.setHighlighted(b);
-		Iterator edges = super.children();
-		while(edges.hasNext()){
-			((Edge)edges.next()).setHighlighted(b);
-		}
-	}
 }

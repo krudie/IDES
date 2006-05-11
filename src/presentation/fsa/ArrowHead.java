@@ -34,9 +34,17 @@ public class ArrowHead extends Polygon {
         update(dir, base);
     } 
         
+    /**
+     * TODO reimplement to use a table of points for all of 360 possible arrows.
+     * Do all possible rotations on a single initialization.
+     *  
+     * @param dir unit direction vector
+     * @param base base point of the arrow head
+     */
     public void update(Point2D.Float dir, Point2D.Float base){
     	reset();
-    	dir = MathUtils.scale(dir, SHORT_HEAD_LENGTH);
+//    	 TODO replace magic number with the stroke width for the border of node's circle
+    	dir = MathUtils.scale(dir, SHORT_HEAD_LENGTH - 2);  
 	    addPoint((int)(base.x + dir.x), (int)(base.y + dir.y));
 	    Point2D.Float v = MathUtils.scale(MathUtils.rotate(dir, ANGLE),0.75f);
 		addPoint((int)(base.x + v.x), (int)(base.y + v.y));	    

@@ -25,8 +25,8 @@ import javax.swing.JPanel;
 import model.fsa.FSAModel;
 import model.fsa.ver1.State;
 import presentation.Glyph;
-import presentation.GraphLabel;
 import presentation.fsa.GraphElement;
+import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 import ui.tools.DrawingTool;
 import ui.tools.SelectionTool;
@@ -39,13 +39,16 @@ import ui.tools.SelectionTool;
  * * currently selected object in the drawing area,
  * * copy and cut buffers.
  * 
+ * TODO override setName to set name of parent component (i.e. scrollpane) so the name
+ * will appear in the tabbed pane or title area of frame?
+ * OR define a custom (decorated) scrollpane for this component that sets its name to the name of this component.
  * 
  * @author helen bretzke
  *
  */
 public class GraphDrawingView extends JComponent implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
 			
-	private DrawingTool currentTool;
+	private int currentTool = DEFAULT;
 	private DrawingTool[] drawingTools;
 	private Font font; 
 	private FontMetrics fontMetrics;
@@ -118,7 +121,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		drawingTools[DEFAULT] = new SelectionTool(this);
 		
 		// TODO construct all other drawing tools
-		currentTool = drawingTools[DEFAULT];
+		currentTool = DEFAULT;
 		
 	    wideStroke = new BasicStroke(2);
 	    fineStroke = new BasicStroke(1);
@@ -133,6 +136,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	    setVisible(true);
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addKeyListener(this);
 	}	
 	
 	public void paint(Graphics g){
@@ -145,7 +149,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		graph.draw(g2D);
 		
 		g2D.setStroke(dashedStroke);
-		g2D.setColor(Color.DARK_GRAY);
+		g2D.setColor(Color.GRAY);
 		g2D.draw(selectionArea);
 		
 //		 TODO scale or other transformation?
@@ -183,26 +187,26 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
-		currentTool.handleMouseClicked(arg0);		
+		drawingTools[currentTool].handleMouseClicked(arg0);		
 	}
 
 
 	public void mousePressed(MouseEvent arg0) {
-		currentTool.handleMousePressed(arg0);		
+		drawingTools[currentTool].handleMousePressed(arg0);		
 	}
 
 
 	public void mouseReleased(MouseEvent arg0) {
-		currentTool.handleMouseReleased(arg0);		
+		drawingTools[currentTool].handleMouseReleased(arg0);		
 	}
 
 	public void mouseDragged(MouseEvent arg0) {
-		currentTool.handleMouseDragged(arg0);
+		drawingTools[currentTool].handleMouseDragged(arg0);
 		
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
-		currentTool.handleMouseMoved(arg0);
+		drawingTools[currentTool].handleMouseMoved(arg0);
 	}	
 
 	public void mouseEntered(MouseEvent arg0) {}		
@@ -211,14 +215,12 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 	// Key listener events
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		drawingTools[currentTool].handleKeyTyped(arg0);		
 	}
 
 
 	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 
@@ -228,25 +230,26 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	}
 
 	
-// TODO Move these methods into the SelectionTool class; accessor to buffers and graph elements.
-	
 	/**
-	 * TODO Clears and un-highlight the set of selected elements 
+	 * Deselects and un-highlights the set of selected elements. 
 	 */
 	public void clearCurrentSelection(){
-		
+		if(currentSelection != null){
+			currentSelection.setSelected(false);
+			currentSelection.setHighlighted(false);
+			currentSelection = null;
+			selectionArea.setSize(0,0);			
+		}
 	}
 	
-	/**
-	 * IDEA To avoid duplicate code, call overloaded method with a Rectangle with
-	 * the same point for opposite corners?
+	/**	
+	 * FIXME if no graph yet loaded, user can't select anything.
+	 * What should the default behavior of the drawing tool be?
 	 * 
 	 * @param point
 	 */
 	public void updateCurrentSelection(Point point) {
-		
-		// TODO store and highlight the set of intersected elements
-		// Delegate to GraphModel.
+		 currentSelection = graphModel.getElementIntersectedBy(point);
 	}
  
 	/**
@@ -256,8 +259,8 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	 */
 	public void updateCurrentSelection(Rectangle rectangle){
 		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
-		// that sets highlight(boolean) on all of its elements.
-		// TODO ask GraphModel to compute set of elements hit.
+		// that sets highlight(boolean) on all of its elements.		
+		currentSelection = graphModel.getElementsContainedBy(rectangle);		
 	}
 
 
@@ -268,5 +271,6 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	public Rectangle getSelectionArea() {
 		return selectionArea;
 	}	
+	
 	
 }

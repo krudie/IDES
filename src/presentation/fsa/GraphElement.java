@@ -107,6 +107,12 @@ public class GraphElement implements Glyph {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+		Iterator i = children.iterator();
+		Glyph g;
+		while(i.hasNext()){
+			g = (Glyph)i.next();
+			g.setVisible(visible);
+		}
 	}
 
 	public boolean isSelected() {
@@ -115,6 +121,12 @@ public class GraphElement implements Glyph {
 
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+		Iterator i = children.iterator();
+		Glyph g;
+		while(i.hasNext()){
+			g = (Glyph)i.next();
+			g.setSelected(selected);
+		}
 	}	
 
 	public boolean isHighlighted() {
@@ -123,5 +135,11 @@ public class GraphElement implements Glyph {
 
 	public void setHighlighted(boolean highlight) {
 		this.highlighted = highlight;
+		Iterator i = children.iterator();
+		Glyph g;
+		while(i.hasNext()){
+			g = (Glyph)i.next();
+			g.setSelected(highlight);
+		}
 	}
 }

@@ -4,7 +4,6 @@ import java.awt.Point;
 
 import model.fsa.FSAEvent;
 import presentation.Glyph;
-import presentation.GraphLabel;
 
 public class EdgeLabel extends GraphLabel {
 

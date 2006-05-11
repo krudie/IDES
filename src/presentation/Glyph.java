@@ -81,5 +81,17 @@ public interface Glyph {
 	 * @return an iterator of my children
 	 */
 	public Iterator children();
+	
+	public boolean isHighlighted();
+	
+	public void setHighlighted(boolean b);
 		
+	public boolean isSelected();
+	
+	public void setSelected(boolean b);
+	
+	public boolean isVisible();
+	
+	public void setVisible(boolean b);
+	
 }

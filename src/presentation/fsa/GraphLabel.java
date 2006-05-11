@@ -1,4 +1,4 @@
-package presentation;
+package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.Label;
@@ -8,15 +8,19 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.Iterator;
 
+import presentation.Glyph;
 
+@SuppressWarnings("serial")
 public class GraphLabel extends Label implements Glyph {
 
 	private Glyph parent = null;  // either the DrawingBoard, a node or an edge	
-	private Color colour = Color.DARK_GRAY;
+	private Color colour = GraphicalLayout.DEFAULT_COLOR;
 	private Font font;
 	
 	public GraphLabel(String text){
 		super(text);
+		// TODO change to a dynamic value read from a config file and stored in 
+		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
 	}
 	
@@ -67,6 +71,26 @@ public class GraphLabel extends Label implements Glyph {
 	
 	public Glyph parent() {		
 		return parent;
+	}
+
+	public boolean isHighlighted() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setHighlighted(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setSelected(boolean b) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

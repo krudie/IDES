@@ -1,15 +1,26 @@
 package presentation.fsa;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Stroke;
 
 public class GraphicalLayout {
-		
+
+	public static final Color DEFAULT_COLOR = Color.BLACK;
+	public static final Color DEFAULT_HIGHLIGHT_COLOR = Color.RED;
+	public static final Color DEFAULT_SELECTION_COLOR = Color.BLUE;
+	
+	public static final Stroke FINE_STROKE = new BasicStroke(1);
+	public static final Stroke WIDE_STROKE = new BasicStroke(2);
+	public static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT,
+																BasicStroke.JOIN_MITER,         
+																50, new float[] {5, 2}, 0);	
 	private Point location;
 	private String text;
-	private Color color = Color.BLACK;
-	private Color highlightColor = Color.RED;
-	private Color selectionColor = Color.DARK_GRAY;
+	private Color color = DEFAULT_COLOR;
+	private Color highlightColor = DEFAULT_HIGHLIGHT_COLOR;
+	private Color selectionColor = DEFAULT_SELECTION_COLOR;	
 	
 	public GraphicalLayout(){
 		this(null);		
@@ -36,6 +47,10 @@ public class GraphicalLayout {
 		return location;
 	}
 
+	public void setLocation(Point location) {
+		this.location = location;
+	}
+
 	public Color getColor() {
 		return color;
 	}
@@ -59,11 +74,7 @@ public class GraphicalLayout {
 	public void setText(String text) {
 		this.text = text;
 	}
-
-	public void setLocation(Point location) {
-		this.location = location;
-	}
-
+	
 	public Color getSelectionColor() {
 		return selectionColor;
 	}

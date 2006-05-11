@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
@@ -33,6 +34,7 @@ public class Edge extends GraphElement {
 	private GeneralPath path;
 	private Point2D.Float[] controlPoints; // four controls points	
 	private ArrowHead arrow;
+	private EdgeHandler handler;
 	
 	public static final int P1 = 0;	
 	public static final int CTRL1 = 1;
@@ -65,19 +67,18 @@ public class Edge extends GraphElement {
 		}else{
 			setHighlighted(false);
 		}
-		
+				
 		// Silly duplicate code.
 		if(isHighlighted()){
 			g2d.setColor(layout.getHighlightColor());
+		}else if (isSelected()){			
+			handler.draw(g2d);
+			g2d.setColor(layout.getSelectionColor());
 		}else{
-			g2d.setColor(Color.BLACK);
+			g2d.setColor(layout.getColor());
 		}
-				
-		// draw myself as a cubic (bezier) curve 	
-		path.moveTo(controlPoints[P1].x, controlPoints[P1].y);	    
-	    path.curveTo(controlPoints[CTRL1].x, controlPoints[CTRL1].y,
-	    			controlPoints[CTRL2].x, controlPoints[CTRL2].y,
-	    			controlPoints[P2].x, controlPoints[P2].y);		    
+		 
+		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 	    g2d.draw(path);
 	    
 	    // draw an arrowhead
@@ -91,13 +92,18 @@ public class Edge extends GraphElement {
 	public void update() {
 			
 		controlPoints = (Point2D.Float[])layout.getCurve();
-			
-		// Compute and store the arrow layout
-		// the direction vector from base to tip of the arrow 
+		// prepare to draw myself as a cubic (bezier) curve 	
+		path.moveTo(controlPoints[P1].x, controlPoints[P1].y);	    
+	    path.curveTo(controlPoints[CTRL1].x, controlPoints[CTRL1].y,
+	    			controlPoints[CTRL2].x, controlPoints[CTRL2].y,
+	    			controlPoints[P2].x, controlPoints[P2].y);		   	
+		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
 	    Point2D.Float dir = new Point2D.Float(controlPoints[P2].x - controlPoints[CTRL2].x, controlPoints[P2].y - controlPoints[CTRL2].y);    	    
 	    arrow = new ArrowHead(MathUtils.unit(dir), controlPoints[P2]);
 	    
-		// TODO label[s] from associated event[s]		
+	    handler = new EdgeHandler(this);
+		
+	    // TODO label[s] from associated event[s]		
 		
 	}
 	
@@ -141,6 +147,14 @@ public class Edge extends GraphElement {
 
 	public void setTarget(Node target) {
 		this.target = target;
+	}
+	
+	public Rectangle2D bounds(){
+		// compute the bounding rectangle of P1 and P2 (just assume that the edge is a straight line)		
+		return new Rectangle2D.Float(Math.min(controlPoints[P1].x, controlPoints[P2].x),
+					  				Math.min(controlPoints[P1].y, controlPoints[P2].y),
+					  				Math.abs(controlPoints[P2].x - controlPoints[P1].x), 
+					  				Math.abs(controlPoints[P2].y - controlPoints[P1].y));	
 	}
 	
 }

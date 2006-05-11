@@ -1,9 +1,11 @@
 package presentation.fsa;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
@@ -20,8 +22,9 @@ import presentation.Glyph;
 public class EdgeHandler implements Glyph {
 
 	private Edge edge;  // is this the parent Glyph?
-	private Ellipse2D.Double[] anchors;
+	private Ellipse2D.Double[] anchors;	
 	private static final int RADIUS = 5;	
+	
 	
 	public EdgeHandler(Edge edge) {		
 		this.edge = edge;
@@ -54,16 +57,17 @@ public class EdgeHandler implements Glyph {
 		return false;
 	}
 
-
-
 	public void draw(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
+		
+//	TODO set stroke to dashed line
+		g2d.setColor(Color.GREEN);
+		g2d.setStroke(GraphicalLayout.FINE_STROKE);
+		
 		for(int i=0; i<4; i++){
 			g2d.draw(anchors[i]);
 		}
-				
-		// TODO set stroke to dashed line
-		g2d.setColor(Color.GREEN);
+		
 		g2d.drawLine((int)(edge.getP1().x), 
 				(int)(edge.getP1().y), 
 				(int)(edge.getCTRL1().x), 
@@ -72,9 +76,7 @@ public class EdgeHandler implements Glyph {
 		g2d.drawLine((int)(edge.getP2().x), 
 				(int)(edge.getP2().y), 
 				(int)(edge.getCTRL2().x), 
-				(int)(edge.getCTRL2().y));
-		
-		// TODO ? reset color to previous one
+				(int)(edge.getCTRL2().y));		
 	}
 
 	/**
@@ -94,6 +96,36 @@ public class EdgeHandler implements Glyph {
 	public void remove(Glyph child) {}
 	public Glyph child(int index) {	return null; }
 	public Iterator children() { return null; }
-	public void insert(Glyph g) {}	
+	public void insert(Glyph g) {}
+
+	public boolean isHighlighted() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setHighlighted(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setSelected(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean isVisible() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	public void setVisible(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}	
 	
 }

@@ -38,8 +38,7 @@ public class SelectionTool extends DrawingTool {
 	@Override
 	public void handleMouseClicked(MouseEvent me) {		
 		// TODO if keyboard shift or control, add currently selected item to buffer
-		context.updateCurrentSelection(startPoint);
-		context.repaint();
+		
 	}
 
 	@Override
@@ -47,9 +46,13 @@ public class SelectionTool extends DrawingTool {
 	 * Stretch the selection rectangle.
 	 */
 	public void handleMouseDragged(MouseEvent me) {		
-		if (inDrag) {			
+		if (!inDrag) {
+			context.clearCurrentSelection();
+			inDrag = true;
+		}
 			endPoint = me.getPoint();
-			if(!endPoint.equals(startPoint)){  // TODO check for null?			
+			if(!endPoint.equals(startPoint)){		
+		
 				// recompute the bounding rectangle
 				//	figure out relative position of start and endpoint to compute top left corner, width and height.
 				p.setLocation(Math.min(startPoint.x, endPoint.x),
@@ -59,8 +62,10 @@ public class SelectionTool extends DrawingTool {
 				box.setLocation(p);
 				box.setSize(d);			
 				context.repaint();	
-			}												
-		}
+			}else{
+				// ?
+			}
+		//}
 	}
 
 	@Override
@@ -77,11 +82,12 @@ public class SelectionTool extends DrawingTool {
 	 * Handle mouse down events by preparing for a drag.
 	 */
 	public void handleMousePressed(MouseEvent me) {
+		context.clearCurrentSelection();
+		context.updateCurrentSelection(me.getPoint());
+		context.repaint();
 		
 		// store starting point for selection rectangle.
-		startPoint = me.getPoint();
-		inDrag = true;
-		
+		startPoint = me.getPoint();				
 	}
 
 	@Override
@@ -89,22 +95,30 @@ public class SelectionTool extends DrawingTool {
 	 * On mouse up, select or toggle the items under the mouse 
 	 * or in the selection rectangle.
 	 */
-	public void handleMouseReleased(MouseEvent me) {
-		// compute the set of graph elements hit by rectangle
-		context.updateCurrentSelection(box);
-		// reset flags
-		startPoint = null;
-		endPoint = null; 
-		inDrag = false;
+	public void handleMouseReleased(MouseEvent me) {		
+		if(inDrag){
+			// compute the set of graph elements hit by rectangle
+			context.updateCurrentSelection(box);
+					
+			// reset flags
+			startPoint = null;
+			endPoint = null; 
+			inDrag = false;
+		}else{
+			// TODO don't clear the selection, just turn off the highlighting
+			// and turn on the selection colour
+			context.clearCurrentSelection();			
+		}
+		context.repaint();
 	}
 
+	
 	@Override
 	public void handleKeyTyped(KeyEvent ke) {
-		
-		// TODO escape key, clear the rectangle
-		if(true){
-			
-		}
+		//	escape key, clear the rectangle
+		if(ke.getKeyChar() == KeyEvent.VK_ESCAPE){
+			context.clearCurrentSelection();
+			context.repaint();
+		}		
 	}
-
 }
