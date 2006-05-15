@@ -1,7 +1,7 @@
 package ui;
 
 import java.awt.Event;
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,9 +13,11 @@ import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.Glyph;
 import presentation.fsa.Edge;
+import presentation.fsa.EdgeLayout;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
+import presentation.fsa.NodeLayout;
 
 /**
  * Mediates between the Automaton model and the visual representation.
@@ -46,6 +48,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	private Automaton fsa;		 // system model
 	private MetaData layoutData; // presentation data for the system model
 	
+	private long maxStateId, maxEventId, maxTransitionId;
+	
 	public GraphModel(Automaton fsa, MetaData data){
 		
 		this.fsa = fsa;
@@ -54,6 +58,10 @@ public class GraphModel extends Publisher implements Subscriber {
 		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
 		labels = new HashMap<Long, GraphLabel>();
+	
+		maxStateId = fsa.getStateCount();
+		maxTransitionId = fsa.getTransitionCount();
+		maxEventId = fsa.getEventCount();
 		
 		update();
 	}
@@ -104,7 +112,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			
 			// get the graphic data for the transition and all associated events
 			// construct the edge			
-			e = new Edge(n1, n2, layoutData.getLayoutData(t));
+			e = new Edge(t, n1, n2, layoutData.getLayoutData(t));
 					
 			// add this edge to source node's out edges
 			n1.insert(e);
@@ -120,20 +128,51 @@ public class GraphModel extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}
 	
-	public void addNode(Point p){
-		State state = null;
-		// create a State corresponding to the point p
-		fsa.add(state);
+	/**
+	 * Creates a new node with centre at the given point
+	 * and a adds a new state to the automaton.
+	 * 
+	 * @param p the centre point for the new node
+	 * @return the node added
+	 */
+	public Node addNode(Point2D.Float p){
+		State s = new State(maxStateId++);		
+		NodeLayout layout = new NodeLayout(p);			
+		layoutData.setLayoutData(s, layout);
+		fsa.add(s);
+		fsa.notifyAllBut(this);
+		Node n = new Node(s, layout);	
+		nodes.put(new Long(s.getId()), n);		
+		return n;
 	}
 	
+	/**
+	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
+	 * and a adds a new transition to the automaton.
+	 * 
+	 * @param n1 
+	 * @param n2
+	 */
 	public void addEdge(Node n1, Node n2){
-		Transition t = null;
-		Event e = null;
-		
+		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
+		// ?? Who computes layout of new edges (default to straight edge between pair of nodes??
+		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
+		layoutData.setLayoutData(t, layout);
+		fsa.add(t);
+		fsa.notifyAllBut(this);
+		Edge e = new Edge(t, n1, n2, layout);
+		edges.put(new Long(t.getId()), e);
 	}
 	
-	public void addEdgeAndNode(Node n1, Point p){
-		
+	/**
+	 * Creates a node at point <code>p</code> and an edge from the given source node
+	 * to the new node.
+	 * 
+	 * @param source
+	 * @param p
+	 */
+	public void addEdgeAndNode(Node source, Point2D.Float p){		
+		addEdge(source, addNode(p));
 	}
 	
 	public void addLabelToNode(String text){
@@ -218,7 +257,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param p the point of intersection
 	 * @return the graph element intersected by the given point
 	 */
-	protected Glyph getElementIntersectedBy(Point p){
+	protected Glyph getElementIntersectedBy(Point2D p){
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
 		Entry entry;

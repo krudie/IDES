@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import presentation.Glyph;
@@ -52,7 +53,7 @@ public class GraphElement implements Glyph {
 		return bounds;
 	}
 
-	public boolean intersects(Point p) {		
+	public boolean intersects(Point2D p) {		
 		return bounds().contains(p);
 	}
 

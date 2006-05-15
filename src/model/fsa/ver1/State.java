@@ -1,13 +1,9 @@
 package model.fsa.ver1;
 
-import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;
 
-import java.awt.Point;
 import java.util.LinkedList;
 import java.util.ListIterator;
-
-import presentation.fsa.StateLayout;
 
 import model.fsa.FSATransition;
 
@@ -31,7 +27,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
      * constructs a state with the given id.
      * @param id the id of the state.
      */
-    public State(int id){
+    public State(long id){
         this.id = id;
         sourceT = new LinkedList<FSATransition>();
         targetT = new LinkedList<FSATransition>();

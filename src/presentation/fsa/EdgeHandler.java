@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
@@ -44,19 +45,6 @@ public class EdgeHandler implements Glyph {
 		anchors[Edge.P2] = new Ellipse2D.Double(edge.getP2().x - RADIUS, edge.getP2().y - RADIUS, d, d);
 	}
 	
-	
-	/**
-	 * TODO need to know which control point was intersected.
-	 */
-	public boolean intersects(Point p) {
-		for(int i=0; i<4; i++){
-			if(anchors[i]!=null && anchors[i].contains(p)){
-				return true;
-			}			
-		}
-		return false;
-	}
-
 	public void draw(Graphics g) {
 		Graphics2D g2d = (Graphics2D)g;
 		
@@ -126,6 +114,15 @@ public class EdgeHandler implements Glyph {
 	public void setVisible(boolean b) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean intersects(Point2D p) {
+		for(int i=0; i<4; i++){
+			if(anchors[i]!=null && anchors[i].contains(p)){
+				return true;
+			}			
+		}
+		return false;
 	}	
 	
 }

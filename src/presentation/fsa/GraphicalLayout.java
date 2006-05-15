@@ -2,7 +2,7 @@ package presentation.fsa;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.Stroke;
 
 public class GraphicalLayout {
@@ -16,7 +16,7 @@ public class GraphicalLayout {
 	public static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT,
 																BasicStroke.JOIN_MITER,         
 																50, new float[] {5, 2}, 0);	
-	private Point location;
+	private Point2D.Float location;
 	private String text;
 	private Color color = DEFAULT_COLOR;
 	private Color highlightColor = DEFAULT_HIGHLIGHT_COLOR;
@@ -26,28 +26,28 @@ public class GraphicalLayout {
 		this(null);		
 	}
 	
-	public GraphicalLayout(Point location) {
+	public GraphicalLayout(Point2D.Float location) {
 		this.location = location;
 		text = "";
 	}
 
-	public GraphicalLayout(Point location, String text) {
+	public GraphicalLayout(Point2D.Float location, String text) {
 		this.location = location;
 		this.text = text;
 	}
 
-	public GraphicalLayout(Point location, String text, Color color, Color highlightColor) {
+	public GraphicalLayout(Point2D.Float location, String text, Color color, Color highlightColor) {
 		this.location = location;
 		this.text = text;
 		this.color = color;
 		this.highlightColor = highlightColor;
 	}
 
-	public Point getLocation(){
+	public Point2D.Float getLocation(){
 		return location;
 	}
 
-	public void setLocation(Point location) {
+	public void setLocation(Point2D.Float location) {
 		this.location = location;
 	}
 

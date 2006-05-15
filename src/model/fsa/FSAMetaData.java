@@ -1,10 +1,10 @@
 package model.fsa;
 
-import presentation.fsa.StateLayout;
-import presentation.fsa.TransitionLayout;
+import presentation.fsa.NodeLayout;
+import presentation.fsa.EdgeLayout;
 import model.DESMetaData;
 
 public interface FSAMetaData extends DESMetaData {
-	abstract StateLayout getLayoutData(FSAState s);
-	abstract TransitionLayout getLayoutData(FSATransition t);	
+	abstract NodeLayout getLayoutData(FSAState s);
+	abstract EdgeLayout getLayoutData(FSATransition t);	
 }

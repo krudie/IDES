@@ -6,7 +6,7 @@ package presentation.fsa;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 
-import presentation.MathUtils;
+import presentation.Geometry;
 
 /**
  * This is a filled polygon in the shape of an arrowhead.
@@ -44,12 +44,12 @@ public class ArrowHead extends Polygon {
     public void update(Point2D.Float dir, Point2D.Float base){
     	reset();
 //    	 TODO replace magic number with the stroke width for the border of node's circle
-    	dir = MathUtils.scale(dir, SHORT_HEAD_LENGTH - 2);  
+    	dir = Geometry.scale(dir, SHORT_HEAD_LENGTH - 2);  
 	    addPoint((int)(base.x + dir.x), (int)(base.y + dir.y));
-	    Point2D.Float v = MathUtils.scale(MathUtils.rotate(dir, ANGLE),0.75f);
+	    Point2D.Float v = Geometry.scale(Geometry.rotate(dir, ANGLE),0.75f);
 		addPoint((int)(base.x + v.x), (int)(base.y + v.y));	    
 	    addPoint((int)base.x, (int)base.y);
-	    v = MathUtils.scale(MathUtils.rotate(dir, -ANGLE), 0.75f);	
+	    v = Geometry.scale(Geometry.rotate(dir, -ANGLE), 0.75f);	
 	    addPoint((int)(base.x + v.x), (int)(base.y + v.y));
     }    
 }

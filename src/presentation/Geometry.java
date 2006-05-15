@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 
-public class MathUtils {
+public class Geometry {
 
 	/**
 	 * Returns the norm of the given vector.
@@ -18,15 +18,25 @@ public class MathUtils {
 	
 	/**
 	 * 
-	 * @param p
-	 * @return the unit direction vector for p.
+	 * @param v
+	 * @return the unit direction vector for v.
 	 */
-	public static Point2D.Float unit(Point2D.Float p){
-		float n = (float)norm(p);
-		Point2D.Float p1 = new Point2D.Float(p.x/n, p.y/n);
+	public static Point2D.Float unit(Point2D.Float v){
+		float n = (float)norm(v);
+		Point2D.Float p1 = new Point2D.Float(v.x/n, v.y/n);
 		return p1;
 	}
 
+	/**
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return the unit direction vector from p1 to p2 i.e. norm(p2 - p1)
+	 */
+	public static Point2D.Float unitDirection(Point2D.Float p1, Point2D.Float p2){
+		return unit(subtract(p2, p1));
+	}
+	
 	/** 
 	 * @param v vector with origin at (0,0) and given direction
 	 * @return the vector perpendicular to v (rotated 90 degrees clockwise)
@@ -68,4 +78,8 @@ public class MathUtils {
 		return new Point2D.Float(a.x - b.x, a.y - b.y);	
 	}
 
+	public static Point2D.Float add(Point2D.Float a, Point2D.Float b){
+		return new Point2D.Float(a.x + b.x, a.y + b.y);		
+	}
+	
 }

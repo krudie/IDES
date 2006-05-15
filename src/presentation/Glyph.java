@@ -2,6 +2,7 @@ package presentation;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
@@ -38,7 +39,7 @@ public interface Glyph {
 	 * @param p the point
 	 * @return true iff this Glyph intersects with the given point.
 	 */
-	public boolean intersects(Point p);
+	public boolean intersects(Point2D p);
 	
 	/**
 	 * Inserts the given child into my list at the given index, overwrites

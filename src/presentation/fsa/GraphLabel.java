@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.util.Iterator;
 
 import presentation.Glyph;
@@ -59,7 +60,7 @@ public class GraphLabel extends Label implements Glyph {
 		return getBounds();
 	}
 	
-	public boolean intersects(Point p) {
+	public boolean intersects(Point2D p) {
 		return getBounds().contains(p);
 	}
 

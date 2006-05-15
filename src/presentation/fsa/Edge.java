@@ -10,7 +10,7 @@ import java.awt.geom.Rectangle2D;
 
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
-import presentation.MathUtils;
+import presentation.Geometry;
 
 /**
  * The graphical representation of a transition in a finite state automaton.
@@ -22,11 +22,11 @@ public class Edge extends GraphElement {
 
 	// the transition that this edge represents
 	// NOTE All that we need is the id to sync with the model
-	private FSATransition t;
+	private FSATransition transition;
 	//////////////////////////////////////////////////////////
 	
 	private Node source, target;
-	private TransitionLayout layout;
+	private EdgeLayout layout;
 	
 	// The bezier curve.
 	// Review Lenko and Mike's curve code.
@@ -41,8 +41,8 @@ public class Edge extends GraphElement {
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
 	
-	public Edge(FSATransition t, TransitionLayout layout){		
-		this.t = t;
+	public Edge(FSATransition t, EdgeLayout layout){		
+		this.transition = t;
 		this.layout = layout; 
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
 		controlPoints = new Point2D.Float[4];		
@@ -50,10 +50,14 @@ public class Edge extends GraphElement {
 		update();
 	}
 	
-	public Edge(Node source, Node target, TransitionLayout layout){		
-		this(null, layout);
+	public Edge(FSATransition t, Node source, Node target, EdgeLayout layout){		
+		this(t, layout);
 		this.source = source;
 		this.target = target;		
+	}
+	
+	public long getId(){
+		return transition.getId();
 	}
 	
 	public void draw(Graphics g) {
@@ -99,7 +103,7 @@ public class Edge extends GraphElement {
 	    			controlPoints[P2].x, controlPoints[P2].y);		   	
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
 	    Point2D.Float dir = new Point2D.Float(controlPoints[P2].x - controlPoints[CTRL2].x, controlPoints[P2].y - controlPoints[CTRL2].y);    	    
-	    arrow = new ArrowHead(MathUtils.unit(dir), controlPoints[P2]);
+	    arrow = new ArrowHead(Geometry.unit(dir), controlPoints[P2]);
 	    
 	    handler = new EdgeHandler(this);
 		
@@ -109,6 +113,7 @@ public class Edge extends GraphElement {
 	
 	
 	/** 
+	 * FIXME this doesn't work
 	 * NOTE intersects with control point handles will be a different operation.
 	 * 
 	 * @return true iff p intersects with this edge. 
@@ -149,8 +154,11 @@ public class Edge extends GraphElement {
 		this.target = target;
 	}
 	
-	public Rectangle2D bounds(){
-		// compute the bounding rectangle of P1 and P2 (just assume that the edge is a straight line)		
+	/**
+	 * Returns the bounding rectangle with P1 and P2 as vertices.
+	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
+	 */
+	public Rectangle2D bounds(){				
 		return new Rectangle2D.Float(Math.min(controlPoints[P1].x, controlPoints[P2].x),
 					  				Math.min(controlPoints[P1].y, controlPoints[P2].y),
 					  				Math.abs(controlPoints[P2].x - controlPoints[P1].x), 

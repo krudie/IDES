@@ -31,6 +31,11 @@ public interface FSAModel {
 	public abstract int getTransitionCount();
 
 	/**
+	 * @return the number of events in the automaton
+	 */	
+	public abstract int getEventCount();
+	
+	/**
 	 * removes the state from the automaton and all transitions leading to 
 	 * the state and originating from the state
 	 * @param s the state to be removed

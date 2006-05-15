@@ -103,6 +103,10 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         return transitions.size();
     }
 
+    public int getEventCount(){
+    	return events.size();
+    }
+    
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSAState)
 	 */

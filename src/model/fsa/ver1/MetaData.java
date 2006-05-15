@@ -10,8 +10,8 @@ import model.fsa.FSAMetaData;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import presentation.fsa.Edge;
-import presentation.fsa.StateLayout;
-import presentation.fsa.TransitionLayout;
+import presentation.fsa.NodeLayout;
+import presentation.fsa.EdgeLayout;
 
 /**
  * Store and extracts the metadata for a given Automaton.
@@ -29,27 +29,6 @@ public class MetaData implements FSAMetaData {
 		this.automaton = automaton;
 	}
 	
-	/* (non-Javadoc)
-	 * @see model.fsa.FSAMetaData#getData(java.lang.String)
-	 */
-	public Object getData(String moduleID, DESElement el) {
-		if(moduleID.equals("graphic")){
-			try {
-				if(el.getClass().equals(Class.forName("State"))){
-					return getLayoutData((State)el);
-				}else if(el.getClass().equals(Class.forName("Transition"))){
-					return getLayoutData((Transition)el);
-				}else{
-					return null;
-				}
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();			
-			}
-		}
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	/* (non-Javadoc)
 	 * @see model.fsa.FSAMetaData#setData(java.lang.Object)
@@ -64,15 +43,15 @@ public class MetaData implements FSAMetaData {
 	 * (so no synchronization problems since only write it back before writing to file).
 	 * 
 	 * @return an object encapsulating all of the graphical layout 
-	 * 	information required to display this state.
+	 * 	information required to display the given state.
 	 */
-	public StateLayout getLayoutData(FSAState state) {
+	public NodeLayout getLayoutData(FSAState state) {
 		State s = (State)state;
 		
 		// radius, centre point, label text and arrow vector (if initial)
 		SubElement layout = s.getSubElement("graphic").getSubElement("circle");
 		int radius = Integer.parseInt(layout.getAttribute("r"));
-		Point centre = new Point(Integer.parseInt(layout.getAttribute("x")),
+		Point2D.Float centre = new Point2D.Float(Integer.parseInt(layout.getAttribute("x")),
 								 Integer.parseInt(layout.getAttribute("y")));
 				
 		SubElement name = s.getSubElement("name");
@@ -80,18 +59,43 @@ public class MetaData implements FSAMetaData {
         
         if(s.isInitial()) {
         	SubElement a = s.getSubElement("graphic").getSubElement("arrow");
-        	Point arrow = new Point((int)Float.parseFloat(a.getAttribute("x")),
-								 (int)Float.parseFloat(a.getAttribute("y")));
-        	return new StateLayout(centre, radius, n, arrow);
+        	Point2D.Float arrow = new Point2D.Float(Float.parseFloat(a.getAttribute("x")),
+								 					Float.parseFloat(a.getAttribute("y")));
+        	return new NodeLayout(centre, radius, n, arrow);
         } else {
-		 	return new StateLayout(centre, radius, n);
+		 	return new NodeLayout(centre, radius, n);
         }	
 	}
 
 	/**
-	 * TODO Implement
+	 * Sets the graphical layout information required to display the given state
+	 * and if it does not yet exist, adds the state to the FSAModel.
+	 * 
+	 * @param state the state
+	 * @param layout the graphical layout data for a node
 	 */
-	public TransitionLayout getLayoutData(FSATransition transition){
+	public void setLayoutData(FSAState state, NodeLayout layout){
+		// Set the layout data for state
+		
+		// If state is not yet in the model, add it.
+		FSAState s = automaton.getState(state.getId());
+		if(s != null){
+			
+		}
+	}
+	
+	/**
+	 * Sets the graphical layout information required to display the given transition
+	 * and if it does not yet exist, adds the transition to the FSAModel.
+	 * 
+	 * @param transition the transition to be stored
+	 * @param layout the graphical layout data for an edge
+	 */
+	public void setLayoutData(FSATransition transition, EdgeLayout layout){
+		
+	}
+	
+	public EdgeLayout getLayoutData(FSATransition transition){
 		Transition t = (Transition)transition;
 		SubElement layout = t.getSubElement("graphic").getSubElement("bezier");
 		Point2D.Float[] controls = new Point2D.Float[4];
@@ -115,6 +119,30 @@ public class MetaData implements FSAMetaData {
 			edgeLabels[0] = "";
 		}
 		
-		return new TransitionLayout(controls, edgeLabels);
-	}	
+		return new EdgeLayout(controls, edgeLabels);
+	}
+
+	////////////////////////////////////////////////////////////////////////
+	/* (non-Javadoc)
+	 * @see model.fsa.FSAMetaData#getData(java.lang.String)
+	 */
+	public Object getData(String moduleID, DESElement el) {
+		if(moduleID.equals("graphic")){
+			try {
+				if(el.getClass().equals(Class.forName("State"))){
+					return getLayoutData((State)el);
+				}else if(el.getClass().equals(Class.forName("Transition"))){
+					return getLayoutData((Transition)el);
+				}else{
+					return null;
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();			
+			}
+		}
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

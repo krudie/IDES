@@ -8,7 +8,7 @@ import io.fsa.ver1.SubElementContainer;
 
 import java.awt.geom.Point2D;
 
-import presentation.fsa.TransitionLayout;
+import presentation.fsa.EdgeLayout;
 
 /**
  * This class represent a transition in an automaton.
@@ -23,7 +23,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
 
     private long id;
 
-    private TransitionLayout layout = new TransitionLayout();
+    private EdgeLayout layout = new EdgeLayout();
     
     /**
      * Constructs a new transition originating in state source and ending in
@@ -33,7 +33,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
      * @param source the source state.
      * @param target the target state.
      */
-    public Transition(int id, FSAState source, FSAState target){
+    public Transition(long id, FSAState source, FSAState target){
         this.id = id;
         this.sourceS = source;
         this.targetS = target;
@@ -48,7 +48,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
      * @param target the target state.
      * @param e the event this transition fires uppon receival of.
      */
-    public Transition(int id, FSAState source, FSAState target, FSAEvent e){
+    public Transition(long id, FSAState source, FSAState target, FSAEvent e){
         this(id, source, target);
         this.e = e;
     }
@@ -143,7 +143,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
         return e;
     }    
     
-    public TransitionLayout getLayout() {
+    public EdgeLayout getLayout() {
     	updateLayout();
     	return layout;
     }
