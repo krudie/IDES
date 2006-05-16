@@ -22,8 +22,8 @@
 //import com.sun.corba.se.impl.orbutil.graph.Graph;
 //
 ///**
-// * This class is supposed to be created an teared down after every layout of a
-// * graph. It uses the Java interface Grappa for the layout engine Graphviz
+// * This class is supposed to be created and torn down after every layout of a
+// * graph. It uses the Java interface Grappa for the layout engine Graphviz.
 // * 
 // * @see Grappa
 // * @see <a href="http://graphviz.org">graphviz</a>
@@ -31,15 +31,15 @@
 // * @author Kristian edlund
 // * @author Axel Gottlieb Michelsen
 // */
-//public class Layouter{
+//public class GraphLayoutTool{
 //
 //    /**
 //     * The constructor of the layouter Takes an automaton and lays it out
 //     * 
 //     * @param automaton the automaton that needs graphic info
 //     */
-//    public Layouter(AutomatonParser automaton) throws Exception{
-//        final String graphvizPath = SystemVariables.getGraphvizPath() + " -Tdot";
+//    public GraphLayoutTool(AutomatonParser automaton) throws Exception{
+//        final String graphvizPath = SystemVariables.instance().getGraphvizPath() + " -Tdot";
 //
 //        PipedInputStream pis = new PipedInputStream();
 //        PipedOutputStream pos = null;
@@ -315,7 +315,7 @@
 //        automaton.add(new Transition(11, state[12], state[9]));
 //
 //        try{
-//            new Layouter(automaton);
+//            new GraphLayoutTool(automaton);
 //        }
 //        catch(Exception e){
 //            e.printStackTrace();

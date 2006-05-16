@@ -29,7 +29,7 @@ public class NodeLayout extends GraphicalLayout {
 	public NodeLayout(Point2D.Float centre, float radius, String name) {
 		super(centre, name);
 		this.radius = radius;		
-		arrow = null;
+		arrow = new Point2D.Float();
 	}
 	
 	public float getRadius() {

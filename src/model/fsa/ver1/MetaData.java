@@ -53,17 +53,13 @@ public class MetaData implements FSAMetaData {
 		int radius = Integer.parseInt(layout.getAttribute("r"));
 		Point2D.Float centre = new Point2D.Float(Integer.parseInt(layout.getAttribute("x")),
 								 Integer.parseInt(layout.getAttribute("y")));
-				
-		SubElement name = s.getSubElement("name");
-        String n = (name.getChars() != null) ? name.getChars() : "";
-        
-        if(s.isInitial()) {
+		if(s.isInitial()) {
         	SubElement a = s.getSubElement("graphic").getSubElement("arrow");
         	Point2D.Float arrow = new Point2D.Float(Float.parseFloat(a.getAttribute("x")),
 								 					Float.parseFloat(a.getAttribute("y")));
-        	return new NodeLayout(centre, radius, n, arrow);
+        	return new NodeLayout(centre, radius, s.getName(), arrow);
         } else {
-		 	return new NodeLayout(centre, radius, n);
+		 	return new NodeLayout(centre, radius, s.getName());
         }	
 	}
 
@@ -71,18 +67,30 @@ public class MetaData implements FSAMetaData {
 	 * Sets the graphical layout information required to display the given state
 	 * and if it does not yet exist, adds the state to the FSAModel.
 	 * 
+	 * TODO Implement !!!
+	 * 
 	 * @param state the state
 	 * @param layout the graphical layout data for a node
 	 */
 	public void setLayoutData(FSAState state, NodeLayout layout){
 		// Set the layout data for state
-		
-		// If state is not yet in the model, add it.
-		FSAState s = automaton.getState(state.getId());
-		if(s != null){
-			
+		State s = (State)state;
+		SubElement g = new SubElement("graphic");
+		SubElement c = new SubElement("circle");
+		c.setAttribute("r", layout.getRadius()+"");
+		c.setAttribute("x", layout.getLocation().x+"");
+		c.setAttribute("y", layout.getLocation().y+"");
+		g.addSubElement(c);		
+		if(s.isInitial()) {
+        	SubElement a = new SubElement("arrow");
+        	a.setAttribute("x", layout.getArrow().x+"");
+        	a.setAttribute("y", layout.getArrow().y+"");
+        	g.addSubElement(a);
 		}
+		s.addSubElement(g);
 	}
+	
+	
 	
 	/**
 	 * Sets the graphical layout information required to display the given transition

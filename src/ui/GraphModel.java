@@ -99,6 +99,8 @@ public class GraphModel extends Publisher implements Subscriber {
 
 		// for all transitions in fsa
 		// create all edges and connect to nodes
+		// FIXME create a single edge for aggregate of all transitions from same start and end state
+		// add events to collection for that edge.
 		iter = fsa.getTransitionIterator();
 		Transition t;
 		Node n2;
@@ -136,7 +138,9 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @return the node added
 	 */
 	public Node addNode(Point2D.Float p){
-		State s = new State(maxStateId++);		
+		State s = new State(maxStateId++);
+		s.setInitial(false);
+		s.setMarked(false);
 		NodeLayout layout = new NodeLayout(p);			
 		layoutData.setLayoutData(s, layout);
 		fsa.add(s);
@@ -219,7 +223,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			n = (Node)entry.getValue();
 			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
 				g.insert(n);
-				n.setSelected(true);
+				//n.setSelected(true);
 			}
 		}
 		
@@ -231,7 +235,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			e = (Edge)entry.getValue();
 			if(rectangle.contains(e.bounds())){ // TODO && do a more thorough intersection test
 				g.insert(e);
-				e.setSelected(true);
+				//e.setSelected(true);
 			}
 		}
 		
@@ -243,7 +247,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			l = (GraphLabel)entry.getValue();
 			if(rectangle.contains(l.bounds())){
 				g.insert(l);
-				l.setSelected(true);
+				//l.setSelected(true);
 			}
 		}
 		
@@ -266,7 +270,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			g = (Glyph)entry.getValue();
 			if(g.intersects(p)){				
-				g.setHighlighted(true);
+				//g.setHighlighted(true);
 				return g;				
 			}
 		}
@@ -277,7 +281,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			g = (Glyph)entry.getValue();
 			if(g.intersects(p)){  // FIXME this isn't working				
-				g.setHighlighted(true);
+				//g.setHighlighted(true);
 				return g;				
 			}
 		}
@@ -289,7 +293,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			g = (Glyph)entry.getValue();
 			if(g.intersects(p)){ // TODO && do a more thorough intersection test				
-				g.setHighlighted(true);
+				//g.setHighlighted(true);
 				return g;				
 			}
 		}

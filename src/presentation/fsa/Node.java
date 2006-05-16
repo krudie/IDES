@@ -92,7 +92,9 @@ public class Node extends GraphElement {
 		
 		// FIXME centre the label in the node; 
 		// note that width and height of label are both 0.
-					
+		// DEBUG
+		System.out.println(label.getWidth());
+		
 		label.setLocation((int)centre.x, (int)centre.y);			
 	}
 	
@@ -135,5 +137,8 @@ public class Node extends GraphElement {
 	public boolean intersects(Point p) {		
 		return circle.contains(p);
 	}	
-	
+
+	public void setSelected(boolean b){
+		this.selected = b;
+	}
 }

@@ -78,34 +78,40 @@ public class MainWindow extends JFrame {
 		    
 	 }
 	 
+	 /**
+	  * Menu components
+	  */
+	 JMenuBar menuBar = new JMenuBar();
+	 
+	 JMenu menuFile, menuExport;
+	 JMenuItem miNewSystem, miOpen, miSave, miSaveAs, miExit;
+	 JMenuItem miLatex, miGif, miPng;
+	 
+	 JMenu menuEdit;
+	 JMenuItem miUndo, miRedo, miCut, miCopy, miPaste, miDelete;
+	 
+	 JMenu menuGraph;
+	 // TODO add a submenu for all zoom and scale operations
+	 // ? How about a 'Transform' submenu ?
+	 JMenu menuTransform;
+	 JMenuItem miZoomIn, miZoomOut, miScaleBy, miCreate, miModify, miPrintArea, miMove, miAllEdges, miAllLabels;
+	 
+	 JMenu menuOptions; 
+	 JMenuItem miErrReports, miUseLatex, miExportEps, miExportTex, miDrawBorder, miStdNodeSize, miUsePstricks;
+	 
+	 JMenu menuHelp;
+	  
+	 String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/"; 
+	 
 	/**
 	 * FIXME An ugly mess of repetitive code: factor out and use info from SystemVariables.
-	 *
+	 * 
+	 * TODO Disable all but open system, new system, open workspace, new workspace options
+	 * until user has opened something.
+	 * 
 	 */
 	private void createAndAddMenuBar() {
-		 		 
-		 JMenuBar menuBar = new JMenuBar();
-		 
-		 JMenu menuFile, menuExport;
-		 JMenuItem miNewSystem, miOpen, miSave, miSaveAs, miExit;
-		 JMenuItem miLatex, miGif, miPng;
-		 
-		 JMenu menuEdit;
-		 JMenuItem miUndo, miRedo, miCut, miCopy, miPaste, miDelete;
-		 
-		 JMenu menuGraph;
-		 // TODO add a submenu for all zoom and scale operations
-		 // ? How about a 'Transform' submenu ?
-		 JMenu menuTransform;
-		 JMenuItem miZoomIn, miZoomOut, miScaleBy, miCreate, miModify, miPrintArea, miMove, miAllEdges, miAllLabels;
-		 
-		 JMenu menuOptions; 
-		 JMenuItem miErrReports, miUseLatex, miExportEps, miExportTex, miDrawBorder, miStdNodeSize, miUsePstricks;
-		 
-		 JMenu menuHelp;
-		  
-		 String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/"; 
-		 	 
+			 	 
 		 // assemble the file menu
 //		 TODO add listeners
 		 ActionListener fileMenuListener = MenuListenerFactory.makeFileMenuListener();
@@ -216,6 +222,14 @@ public class MainWindow extends JFrame {
 
 		 miCreate = new JMenuItem("Create Nodes or Edges", new ImageIcon(imagePath + "graphic_create.gif"));
 		 miCreate.setMnemonic(KeyEvent.VK_C);
+		 miCreate.addActionListener(new ActionListener() {
+			 public void actionPerformed(ActionEvent arg0) {			  			
+				 // set the current drawing tool to the CreationTool
+				 drawingBoard.setTool(GraphDrawingView.CREATE);
+				 // TODO depress the creation toggle button
+				 
+			 }
+		 });
 		 // miCreate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miCreate);
 
@@ -285,9 +299,11 @@ public class MainWindow extends JFrame {
 	
 	/**
 	 * The views.
+	 * TODO Load as plugins?
 	 */
 	private JTabbedPane tabbedViews;
 	private GraphDrawingView drawingBoard;
+	// TODO private JPanel filmStrip;
 	private JPanel eventsView;
 	private JPanel latexView;
 }

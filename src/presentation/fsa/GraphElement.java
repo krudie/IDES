@@ -12,9 +12,9 @@ import presentation.Glyph;
 
 public class GraphElement implements Glyph {
 	
-	private boolean visible;
-	private boolean highlighted;
-	private boolean selected;
+	protected boolean visible;
+	protected boolean highlighted;
+	protected boolean selected;
 	
 	// my states and free labels
 	private LinkedList<Glyph> children;

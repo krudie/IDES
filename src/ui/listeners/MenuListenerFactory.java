@@ -28,7 +28,7 @@ import ui.command.DeleteCommand;
  * FIXME will need to wire these listeners up to both the menu and the toolbar.
  * Don't want to make duplicates of each object by calling these methods twice.
  * 
- * @author helen
+ * @author helen bretzke
  *
  */
 public class MenuListenerFactory {

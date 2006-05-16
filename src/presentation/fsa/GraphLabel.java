@@ -94,4 +94,10 @@ public class GraphLabel extends Label implements Glyph {
 		
 	}
 
+	public void setText(String s){
+		super.setText(s);
+		this.validate();
+		this.setVisible(true);
+		this.setSize(this.getPreferredSize());		
+	}	
 }

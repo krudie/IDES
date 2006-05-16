@@ -46,12 +46,19 @@ public class SelectionTool extends DrawingTool {
 	 * Stretch the selection rectangle.
 	 */
 	public void handleMouseDragged(MouseEvent me) {		
-		if (!inDrag) {
+		if(!inDrag) {
 			context.clearCurrentSelection();
 			inDrag = true;
 		}
-			endPoint = me.getPoint();
-			if(!endPoint.equals(startPoint)){		
+
+		endPoint = me.getPoint();
+		
+		if(startPoint == null){
+			startPoint = endPoint;
+			return;
+		}
+
+		if(!endPoint.equals(startPoint)){		
 		
 				// recompute the bounding rectangle
 				//	figure out relative position of start and endpoint to compute top left corner, width and height.
@@ -82,12 +89,12 @@ public class SelectionTool extends DrawingTool {
 	 * Handle mouse down events by preparing for a drag.
 	 */
 	public void handleMousePressed(MouseEvent me) {
+//		 store starting point for selection rectangle.
+		startPoint = me.getPoint();						
 		context.clearCurrentSelection();
-		context.updateCurrentSelection(me.getPoint());
-		context.repaint();
-		
-		// store starting point for selection rectangle.
-		startPoint = me.getPoint();				
+		context.updateCurrentSelection(startPoint);
+		context.highlightCurrentSelection(true);
+		context.repaint();	
 	}
 
 	@Override
@@ -99,6 +106,7 @@ public class SelectionTool extends DrawingTool {
 		if(inDrag){
 			// compute the set of graph elements hit by rectangle
 			context.updateCurrentSelection(box);
+			context.highlightCurrentSelection(false);
 					
 			// reset flags
 			startPoint = null;
@@ -107,7 +115,7 @@ public class SelectionTool extends DrawingTool {
 		}else{
 			// TODO don't clear the selection, just turn off the highlighting
 			// and turn on the selection colour
-			context.clearCurrentSelection();			
+			context.highlightCurrentSelection(false);			
 		}
 		context.repaint();
 	}

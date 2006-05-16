@@ -1,7 +1,6 @@
  package ui;
 
 import java.awt.BasicStroke;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -10,24 +9,17 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
-import model.fsa.FSAModel;
-import model.fsa.ver1.State;
 import presentation.Glyph;
 import presentation.fsa.GraphElement;
-import presentation.fsa.GraphLabel;
-import presentation.fsa.Node;
+import ui.tools.CreationTool;
 import ui.tools.DrawingTool;
 import ui.tools.SelectionTool;
 
@@ -46,27 +38,22 @@ import ui.tools.SelectionTool;
  * @author helen bretzke
  *
  */
+@SuppressWarnings("serial")
 public class GraphDrawingView extends JComponent implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
 			
+	protected float scaleFactor = 1f;
+	
 	private int currentTool = DEFAULT;
 	private DrawingTool[] drawingTools;
+	
+	/**
+	 * TODO Move these to a UISettings class that reads, saves and makes
+	 * accessible everything the UI needs to know.
+	 */
 	private Font font; 
 	private FontMetrics fontMetrics;
 	private BasicStroke wideStroke, fineStroke, dashedStroke;
 		
-//	 Tools types (corresponding to user interaction modes) to 
-	// determine mouse and keyboard responses.
-	public final static int DEFAULT = 0;
-	public final static int SELECTION = 1;
-	public final static int ZOOM_IN = 2;
-	public final static int ZOOM_OUT = 7;
-	public final static int SCALE = 8;
-	public final static int CREATE = 3;
-	public final static int MODIFY = 4;
-	public final static int MOVE = 5;
-	public final static int TEXT = 6;
-	public final static int NUMBER_OF_TOOLS = 9;
-	
 	/**
 	 * Copy buffer
 	 */
@@ -112,13 +99,15 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		graphModel = null;
 		graph = new GraphElement();
 		// DEBUG
-		graph.insert(new GraphLabel("No Graph.", new Point(100, 100)));
+		//graph.insert(new GraphLabel("No Graph.", new Point(100, 100)));
 		
 		currentSelection = new GraphElement();
 		selectionArea = new Rectangle();
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
 		drawingTools[DEFAULT] = new SelectionTool(this);
+		drawingTools[SELECTION] = drawingTools[DEFAULT];
+		drawingTools[CREATE] = new CreationTool(this);
 		
 		// TODO construct all other drawing tools
 		currentTool = DEFAULT;
@@ -142,31 +131,28 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	public void paint(Graphics g){
 			
 		Graphics2D g2D = (Graphics2D) g; // cast to 2D	
+
+		
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);		
-	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK
+	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK	    
 	    g2D.setStroke(wideStroke);
-		graph.draw(g2D);
-		
-		g2D.setStroke(dashedStroke);
-		g2D.setColor(Color.GRAY);
-		g2D.draw(selectionArea);
-		
-//		 TODO scale or other transformation?
 		
 		// Warning: scales distance from origin as well as size of nodes
 		// we want to scale everything from the centre of the user's view.
 		// Solution: translate origin before scaling and beware of op precendence.
-//		g2d.translate(-(this.getWidth()/2), -(this.getHeight()/2));
-//		g2d.scale(2.0f, 2.0f);
+	    // FIXME: this is not working
+//	    g2D.translate(-(getWidth()/scaleFactor), -(getHeight()/scaleFactor));
+//	    g2D.scale(scaleFactor, scaleFactor);		
+	    //	TODO other transformation?
 
-		// NOTE This type extends Component and could be inserted in the panel
-//		// if we used an absolute layout manager.
-//		// Then we could use geComponentAt(Point) to get the selected glyph in
-//		// one call (use the container as the presentation model's DS).
-//		// Then would have to make all glyphs extend Component (heavy?).
-//		Glyph glyph = new GlyphLabel("(" + (int)p.getX() + "," + (int)p.getY() + ")", p);
-//		glyph.draw(g2d);
+	    graph.draw(g2D);
+		
+		g2D.setStroke(dashedStroke);
+		g2D.setColor(Color.GRAY);
+
+		g2D.draw(selectionArea);
+
 	}
 
 	/**
@@ -177,10 +163,20 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		repaint();
 	}
 
+	/**
+	 * Returns the set of currently selected elements in this view.
+	 * 
+	 * @return
+	 */
 	public Glyph getCurrentSelection() {
 		return currentSelection;
 	}
 
+	/**
+	 * Precondition: <code>currentSelection</code> != null
+	 * 
+	 * @param currentSelection
+	 */
 	public void setCurrentSelection(Glyph currentSelection) {
 		this.currentSelection = currentSelection;
 	}	
@@ -250,6 +246,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	 */
 	public void updateCurrentSelection(Point point) {
 		 currentSelection = graphModel.getElementIntersectedBy(point);
+		 if(currentSelection != null){ currentSelection.setSelected(true); }
 	}
  
 	/**
@@ -260,17 +257,56 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	public void updateCurrentSelection(Rectangle rectangle){
 		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
 		// that sets highlight(boolean) on all of its elements.		
-		currentSelection = graphModel.getElementsContainedBy(rectangle);		
+		currentSelection = graphModel.getElementsContainedBy(rectangle);
+		currentSelection.setSelected(true);
 	}
 
-
+	/**
+	 * Highlights the graph elements currently selected iff <code>b</code>. 
+	 * 
+	 * @param b boolean flag to toggle highlighting
+	 */
+	public void highlightCurrentSelection(boolean b){
+		if(currentSelection != null){
+			currentSelection.setHighlighted(b);
+			currentSelection.setSelected(!b);
+		}
+	}	
+	
 	public void setGraphModel(GraphModel graphModel) {
 		this.graphModel = graphModel;		
 	}
 
+	public GraphModel getGraphModel(){
+		return graphModel;
+	}
+	
 	public Rectangle getSelectionArea() {
 		return selectionArea;
 	}	
 	
+	/**
+	 * Tools types (corresponding to user interaction modes) to 
+	 * determine mouse and keyboard responses.
+	 */
+	public final static int DEFAULT = 0;
+	public final static int SELECTION = 1;
+	public final static int ZOOM_IN = 2;
+	public final static int ZOOM_OUT = 7;
+	public final static int SCALE = 8;
+	public final static int CREATE = 3;
+	public final static int MODIFY = 4;
+	public final static int MOVE = 5;
+	public final static int TEXT = 6;
+	public final static int NUMBER_OF_TOOLS = 9;
 	
+	/**
+	 * Set the current drawing tool to the one with the given tool id.
+	 * 
+	 * @param toolId 
+	 */
+	public void setTool(int toolId){
+		currentTool = toolId;
+		this.setCursor(drawingTools[currentTool].getCursor());
+	}	
 }

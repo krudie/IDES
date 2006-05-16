@@ -1,6 +1,5 @@
 package presentation.fsa;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -9,7 +8,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import model.fsa.FSATransition;
-import model.fsa.ver1.Transition;
 import presentation.Geometry;
 
 /**
@@ -22,6 +20,7 @@ public class Edge extends GraphElement {
 
 	// the transition that this edge represents
 	// NOTE All that we need is the id to sync with the model
+	// FIXME replace with a collection of transitions (or just the ids)
 	private FSATransition transition;
 	//////////////////////////////////////////////////////////
 	
@@ -29,17 +28,17 @@ public class Edge extends GraphElement {
 	private EdgeLayout layout;
 	
 	// The bezier curve.
-	// Review Lenko and Mike's curve code.
-	// replace the following with Class java.awt.geom.CubicCurve2D
-	private GeneralPath path;
-	private Point2D.Float[] controlPoints; // four controls points	
+	private GeneralPath path;	
 	private ArrowHead arrow;
 	private EdgeHandler handler;
 	
+	// replace the following with Class java.awt.geom.CubicCurve2D	//////////
+	private Point2D.Float[] controlPoints; // four controls points	
 	public static final int P1 = 0;	
 	public static final int CTRL1 = 1;
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
+	//////////////////////////////////////////////////////////////////////////
 	
 	public Edge(FSATransition t, EdgeLayout layout){		
 		this.transition = t;

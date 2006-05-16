@@ -1,5 +1,6 @@
 package model.fsa.ver1;
 
+import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;
 
 import java.util.LinkedList;
@@ -111,17 +112,52 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	/**
 	 * @return true iff this is an initial state
 	 */	
-	public boolean isInitial() {		
-		return getSubElement("properties").getSubElement("initial") != null;
+	public boolean isInitial() {
+		SubElement props = this.getSubElement("properties");
+		return props != null && props.getSubElement("initial") != null;
 	}
 
 	/**
 	 * @return true iff this is marked (final) state
 	 */
 	public boolean isMarked() {
-		return getSubElement("properties").getSubElement("marked") != null;		
+		SubElement props = this.getSubElement("properties");
+		return props != null && props.getSubElement("marked") != null;		
 	}	
 
+	public void setInitial(boolean b){
+		if(b && !isInitial()){
+			SubElement props = this.getSubElement("properties");
+			if(props == null){
+				props = new SubElement("properties");		
+				this.addSubElement(props);
+			}
+			props.addSubElement(new SubElement("initial"));			
+		}
+	}
+	
+	public void setMarked(boolean mark){
+		if(mark && !isMarked()){			
+			SubElement props = this.getSubElement("properties");
+			if(props == null){
+				props = new SubElement("properties");
+				this.addSubElement(props);
+			}
+			props.addSubElement(new SubElement("marked"));				
+		}
+	}
+	
+	public void setName(String name){
+		SubElement n = new SubElement("name");
+		n.setChars(name);
+		addSubElement(n);
+	}
+	
+	public String getName(){
+		SubElement name = getSubElement("name");
+        return (name.getChars() != null) ? name.getChars() : "";
+	}
+	
 	public void setId(long id) {
 		this.id = id;		
 	}
