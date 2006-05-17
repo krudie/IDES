@@ -17,6 +17,8 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JComponent;
 
+import model.Subscriber;
+
 import presentation.Glyph;
 import presentation.fsa.GraphElement;
 import ui.tools.CreationTool;
@@ -46,10 +48,10 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	private int currentTool = DEFAULT;
 	private DrawingTool[] drawingTools;
 	
-	/**
+	/******************************************************************
 	 * TODO Move these to a UISettings class that reads, saves and makes
 	 * accessible everything the UI needs to know.
-	 */
+	 ******************************************************************/
 	private Font font; 
 	private FontMetrics fontMetrics;
 	private BasicStroke wideStroke, fineStroke, dashedStroke;
@@ -135,7 +137,9 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);		
-	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK	    
+	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK
+	    
+	    // TODO what happens to stroke when scaled?
 	    g2D.setStroke(wideStroke);
 		
 		// Warning: scales distance from origin as well as size of nodes
@@ -153,6 +157,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 
 		g2D.draw(selectionArea);
 
+//		g2D.translate((getWidth()/scaleFactor), (getHeight()/scaleFactor));
 	}
 
 	/**

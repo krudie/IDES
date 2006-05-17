@@ -10,13 +10,13 @@ import io.fsa.ver1.SubElementContainer;
  * @author Kristian Edlund
  */
 public class Event extends SubElementContainer implements model.fsa.FSAEvent {
-    private int id;
+    private long id;
 
     /**
      * Constructs an event with the given id.
      * @param id the id of the event.
      */
-    public Event(int id){
+    public Event(long id){
         this.id = id;
     }
 
@@ -44,15 +44,15 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 
 	public long getId() {
 		// TODO Auto-generated method stub
-		return 0;
+		return id;
 	}
 
 
 	public void setId(long id) {
-		// TODO Auto-generated method stub
-		
+		this.id = id;
 	}
 
-
-	
+	public String toString(){
+		return getSymbol();
+	}	
 }

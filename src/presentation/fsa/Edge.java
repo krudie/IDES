@@ -3,11 +3,16 @@ package presentation.fsa;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import model.fsa.FSATransition;
+import model.fsa.ver1.Event;
+import model.fsa.ver1.Transition;
 import presentation.Geometry;
 
 /**
@@ -21,7 +26,7 @@ public class Edge extends GraphElement {
 	// the transition that this edge represents
 	// NOTE All that we need is the id to sync with the model
 	// FIXME replace with a collection of transitions (or just the ids)
-	private FSATransition transition;
+	private ArrayList<FSATransition> transitions;
 	//////////////////////////////////////////////////////////
 	
 	private Node source, target;
@@ -40,11 +45,16 @@ public class Edge extends GraphElement {
 	public static final int P2 = 3;
 	//////////////////////////////////////////////////////////////////////////
 	
-	public Edge(FSATransition t, EdgeLayout layout){		
-		this.transition = t;
+	private CubicCurve2D curve;
+	
+	
+	public Edge(FSATransition t, EdgeLayout layout){
+		transitions = new ArrayList<FSATransition>();
+		transitions.add(t);
 		this.layout = layout; 
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
-		controlPoints = new Point2D.Float[4];		
+		controlPoints = new Point2D.Float[4];
+		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		update();
 	}
@@ -55,9 +65,9 @@ public class Edge extends GraphElement {
 		this.target = target;		
 	}
 	
-	public long getId(){
-		return transition.getId();
-	}
+//	public long getId(){
+//		return transition.getId();
+//	}
 	
 	public void draw(Graphics g) {
 		super.draw(g);
@@ -93,11 +103,13 @@ public class Edge extends GraphElement {
 	 * Updates my curve, arrow and label.
 	 */
 	public void update() {
-			
+				
 		controlPoints = (Point2D.Float[])layout.getCurve();
+		curve.setCurve(controlPoints, 0);
+		
 		// prepare to draw myself as a cubic (bezier) curve 	
-		path.moveTo(controlPoints[P1].x, controlPoints[P1].y);	    
-	    path.curveTo(controlPoints[CTRL1].x, controlPoints[CTRL1].y,
+		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
+	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
 	    			controlPoints[CTRL2].x, controlPoints[CTRL2].y,
 	    			controlPoints[P2].x, controlPoints[P2].y);		   	
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
@@ -106,8 +118,24 @@ public class Edge extends GraphElement {
 	    
 	    handler = new EdgeHandler(this);
 		
-	    // TODO label[s] from associated event[s]		
-		
+	    // assign label from associated event[s]
+	    // NOTE could do this from EdgeLayout if extracted metadata from the right transition.
+	    String s = "";
+	    Iterator iter = transitions.iterator();
+	    Event e;
+	    while(iter.hasNext()){
+	    	e = (Event)((Transition)iter.next()).getEvent();
+	    	if(e != null){
+	    		s += e.getSymbol() + ", ";
+	    	}	    	
+	    }
+//	    if(s.length()>0){
+//	    	s = s.trim().substring(0, s.length());
+//	    }
+	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
+	    curve.subdivide(left, new CubicCurve2D.Float());
+	    // TODO add offset vector to location of label
+		insert(new GraphLabel(s, this, left.getP2()));
 	}
 	
 	
@@ -118,7 +146,7 @@ public class Edge extends GraphElement {
 	 * @return true iff p intersects with this edge. 
 	 */
 	public boolean intersects(Point p){		
-		return path.contains(p) || arrow.contains(p);
+		return curve.contains(p) || arrow.contains(p);
 	}
 	
 	public Point2D.Float getP1() {
@@ -163,5 +191,12 @@ public class Edge extends GraphElement {
 					  				Math.abs(controlPoints[P2].x - controlPoints[P1].x), 
 					  				Math.abs(controlPoints[P2].y - controlPoints[P1].y));	
 	}
+
+	public void addTransition(Transition t) {
+		transitions.add(t);		
+	}
 	
+	public void removeTransition(Transition t){
+		transitions.remove(t);
+	}
 }

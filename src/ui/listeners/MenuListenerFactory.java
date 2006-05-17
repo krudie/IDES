@@ -11,12 +11,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
 import main.SystemVariables;
+import model.Publisher;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 
 import ui.GraphModel;
-import ui.Publisher;
 import ui.UIStateModel;
 import ui.command.Command;
 import ui.command.CommandHistory;

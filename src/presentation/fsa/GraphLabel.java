@@ -11,6 +11,12 @@ import java.util.Iterator;
 
 import presentation.Glyph;
 
+/**
+ * TODO Change so that doesn't extend label; waste of space and rounds the location to int coords.
+ * 
+ * @author helen
+ *
+ */
 @SuppressWarnings("serial")
 public class GraphLabel extends Label implements Glyph {
 
@@ -29,9 +35,9 @@ public class GraphLabel extends Label implements Glyph {
 	 * @param text string to display in this label
 	 * @param location the x,y coordinates of the top left corner of this label 
 	 */
-	public GraphLabel(String text, Point location){
-		this(text);
-		setLocation(location);		
+	public GraphLabel(String text, Point2D location){
+		this(text);		
+		setLocation(new Point((int)location.getX(), (int)location.getY()));		
 	}
 	
 	/**
@@ -41,9 +47,8 @@ public class GraphLabel extends Label implements Glyph {
 	 * @param parent glyph in which this label is displayed
 	 * @param location the x,y coordinates of the top left corner of this label
 	 */
-	public GraphLabel(String text, Glyph parent, Point location) {	
-		super(text);
-		setLocation(location);
+	public GraphLabel(String text, Glyph parent, Point2D location) {	
+		this(text, location);		
 		this.parent = parent;
 	}
 	

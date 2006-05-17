@@ -2,7 +2,6 @@ package model.fsa.ver1;
 
 import io.fsa.ver1.SubElement;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
 
 import model.DESElement;
@@ -10,8 +9,8 @@ import model.fsa.FSAMetaData;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import presentation.fsa.Edge;
-import presentation.fsa.NodeLayout;
 import presentation.fsa.EdgeLayout;
+import presentation.fsa.NodeLayout;
 
 /**
  * Store and extracts the metadata for a given Automaton.
@@ -152,5 +151,5 @@ public class MetaData implements FSAMetaData {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	////////////////////////////////////////////////////////////////////////
 }

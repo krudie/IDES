@@ -1,10 +1,10 @@
 package model.fsa.ver1;
 import java.util.*;
 
-import ui.Publisher;
-import ui.Subscriber;
 
 
+import model.Publisher;
+import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;

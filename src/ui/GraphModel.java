@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import model.Publisher;
+import model.Subscriber;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
@@ -112,22 +114,46 @@ public class GraphModel extends Publisher implements Subscriber {
 			n1 = nodes.get(new Long(t.getSource().getId()));
 			n2 = nodes.get(new Long(t.getTarget().getId()));
 			
-			// get the graphic data for the transition and all associated events
-			// construct the edge			
-			e = new Edge(t, n1, n2, layoutData.getLayoutData(t));
-					
-			// add this edge to source node's out edges
-			n1.insert(e);
-			
-			// DON'T add this edge to target node's in edges, since it doesn't store them :)
+			// if the edge corresponding to t already exists,
+			// add t to the edge's set of transitions
+			e = edgeBetween(n1, n2); 
+			if(e != null){
+				e.addTransition(t);				
+			}else{
+				// get the graphic data for the transition and all associated events
+				// construct the edge			
+				e = new Edge(t, n1, n2, layoutData.getLayoutData(t));
 						
-			// add to set of edges
-			edges.put(new Long(t.getId()), e);
+				// add this edge to source node's out edges
+				n1.insert(e);
+				
+				// DON'T add this edge to target node's in edges, since it doesn't store them :)
+							
+				// add to set of edges
+				edges.put(new Long(t.getId()), e);
+			}
 		}
 	
-		// TODO for all free labels in metadata				
+		// TODO for all free labels in metadata
 		
+		// tell observers that the model has been updated
 		notifyAllSubscribers();
+	}
+	
+	/**
+	 * Returns the edge from <code>source</code> to <code>target</code> if exists.
+	 * Otherwise returns null.
+	 */
+	private Edge edgeBetween(Node source, Node target){
+		Edge e;
+		Iterator i = edges.entrySet().iterator();
+		while(i.hasNext()){
+			e = (Edge)((Entry)i.next()).getValue();
+			if(e.getSource().equals(source) && e.getTarget().equals(target)){
+				return e;
+			}
+		}		
+		return null;
 	}
 	
 	/**
@@ -146,7 +172,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		fsa.add(s);
 		fsa.notifyAllBut(this);
 		Node n = new Node(s, layout);	
-		nodes.put(new Long(s.getId()), n);		
+		nodes.put(new Long(s.getId()), n);
+		graph.insert(n);
+		this.notifyAllSubscribers();
 		return n;
 	}
 	
@@ -166,6 +194,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		fsa.notifyAllBut(this);
 		Edge e = new Edge(t, n1, n2, layout);
 		edges.put(new Long(t.getId()), e);
+		notifyAllSubscribers();
 	}
 	
 	/**
@@ -183,6 +212,24 @@ public class GraphModel extends Publisher implements Subscriber {
 		// TODO Think about rendering the text as LaTeX.		
 	}
 		
+	/**
+	 * The following steps should be done by the text tool in the context 
+	 * of labelling an edge.
+	 * 
+	 * If <code>text</code> corresponds to an event in the local alphabet find the event.
+	 * If <code>text</code> corresponds to an event in the global alphabet find the event, 
+	 * add it to the local alphabet.
+	 * Otherwise, create a new event and add it to both alphabets. 
+	 * 
+	 * Creates a new transitions, assigns the event with symbol corresponding to 
+	 * <code>text</code> to the transition and adds the transition to the given edge.
+	 * 
+	 * @param text an event symbol
+	 */
+	public void addLabelToEdge(String text, Edge edge){
+		
+	}
+	
 	public void delete(Node n1){
 		// delete all adjacent edges
 		// remove n
@@ -280,7 +327,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
 			g = (Glyph)entry.getValue();
-			if(g.intersects(p)){  // FIXME this isn't working				
+			if(g.intersects(p)){		
 				//g.setHighlighted(true);
 				return g;				
 			}

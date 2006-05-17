@@ -3,6 +3,9 @@ package ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import model.Publisher;
+import model.Subscriber;
+import model.fsa.FSAWorkspace;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 
@@ -43,16 +46,26 @@ public class UIStateModel {
 	private CommandHistory commandHistory;
 
 	/**
-	 * Abstract data model to keep synchronized with visualModel.
+	 * 
 	 * TODO Change to a set of publishers to support multiple automata in workspace.
 	 */ 
+	private FSAWorkspace workspace;
+	
+	/**
+	 * Abstract data model for the currently active FSA.
+	 * to keep synchronized with visualModel. 
+	 */
 	private Automaton automaton;
 	private MetaData metadata;  // extra data, e.g. visualization details for the data model
+	
+	/**
+	 * Visual model and display for currently active FSA.
+	 */
 	private GraphModel graphModel;
 	private GraphDrawingView graphDrawingView;
 	
 	/**
-	 * Multiple views on the data.
+	 * Multiple views on current FSA.
 	 * TODO Change to set of sets: views for each automaton model. 
 	 */
 	private LinkedList<Subscriber> views;
