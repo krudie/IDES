@@ -88,14 +88,9 @@ public class Node extends GraphElement {
 			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}
 		
-		label.setText(layout.getText());
-		
-		// FIXME centre the label in the node; 
-		// note that width and height of label are both 0.
-		// DEBUG
-		System.out.println(label.getWidth());
-		
-		label.setLocation((int)centre.x, (int)centre.y);			
+		// TODO relocate based on bounds of label and expand the node size if necessary.
+		label = new GraphLabel(layout.getText(), centre);
+					
 	}
 	
 	/**
@@ -133,12 +128,34 @@ public class Node extends GraphElement {
 		return circle.getBounds();
 	}
 
-	// FIXME or initial arrow intersects with p
+	// FIXME calling RectangularShape.contains(p) which computes intersection with bounding box
+	// instead of with circle.
+	// Also check if initial arrow intersects with p
+	/**
+	 * Try with a rectangle of dimensions 1,1
+	 * public boolean contains(double x,
+                        double y,
+                        double w,
+                        double h)
+
+       Tests if the interior of this Ellipse2D entirely contains the specified rectangular area.
+       
+	 */
 	public boolean intersects(Point p) {		
 		return circle.contains(p);
 	}	
 
 	public void setSelected(boolean b){
 		this.selected = b;
+	}
+	
+	/**
+	 * DEBUG: since we are sharing references to unique node objects, this shouldn't be necessary.
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public boolean equals(Node n){
+		return this.getId() == n.getId();
 	}
 }

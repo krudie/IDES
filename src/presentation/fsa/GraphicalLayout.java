@@ -23,12 +23,16 @@ public class GraphicalLayout {
 	private Color selectionColor = DEFAULT_SELECTION_COLOR;	
 	
 	public GraphicalLayout(){
-		this(null);		
+		this("");		
+	}
+	
+	public GraphicalLayout(String text)	{
+		this.text = text;
+		location = new Point2D.Float();	
 	}
 	
 	public GraphicalLayout(Point2D.Float location) {
-		this.location = location;
-		text = "";
+		this(location, "");
 	}
 
 	public GraphicalLayout(Point2D.Float location, String text) {
@@ -47,8 +51,8 @@ public class GraphicalLayout {
 		return location;
 	}
 
-	public void setLocation(Point2D.Float location) {
-		this.location = location;
+	public void setLocation(float x, float y) {
+		location.setLocation(x,y);
 	}
 
 	public Color getColor() {

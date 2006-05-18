@@ -64,11 +64,7 @@ public class Edge extends GraphElement {
 		this.source = source;
 		this.target = target;		
 	}
-	
-//	public long getId(){
-//		return transition.getId();
-//	}
-	
+
 	public void draw(Graphics g) {
 		super.draw(g);
 		Graphics2D g2d = (Graphics2D)g;
@@ -119,30 +115,29 @@ public class Edge extends GraphElement {
 	    handler = new EdgeHandler(this);
 		
 	    // assign label from associated event[s]
-	    // NOTE could do this from EdgeLayout if extracted metadata from the right transition.
 	    String s = "";
-	    Iterator iter = transitions.iterator();
-	    Event e;
+	    
+	    Iterator iter = layout.getEventNames().iterator();
 	    while(iter.hasNext()){
-	    	e = (Event)((Transition)iter.next()).getEvent();
-	    	if(e != null){
-	    		s += e.getSymbol() + ", ";
-	    	}	    	
+	    	s += (String)iter.next();
+	    	s += ", ";
 	    }
-//	    if(s.length()>0){
-//	    	s = s.trim().substring(0, s.length());
-//	    }
+	    s = s.trim();
+	    if(s.length()>0) s = s.substring(0, s.length() - 1);
+
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());
+	    
 	    // TODO add offset vector to location of label
-		insert(new GraphLabel(s, this, left.getP2()));
+	    Point2D midpoint = left.getP2();
+	    
+	    // TODO optimize: inefficient to remove child glyph and construct new one.
+	    this.clear();
+		insert(new GraphLabel(s, this, midpoint));
 	}
 	
 	
-	/** 
-	 * FIXME this doesn't work
-	 * NOTE intersects with control point handles will be a different operation.
-	 * 
+	/**	 
 	 * @return true iff p intersects with this edge. 
 	 */
 	public boolean intersects(Point p){		
@@ -198,5 +193,13 @@ public class Edge extends GraphElement {
 	
 	public void removeTransition(Transition t){
 		transitions.remove(t);
+	}
+
+	public EdgeLayout getLayout() {
+		return layout;
+	}
+
+	public void setLayout(EdgeLayout layout) {
+		this.layout = layout;
 	}
 }

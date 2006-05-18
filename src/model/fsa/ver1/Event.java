@@ -30,15 +30,12 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
         this.id = e.id;
     }
     
-    /**
-     * TODO need constants to access attribute values in hash tables
-     * and when reading and writing to file.
-     * 
+    /**     
      * @return the symbol that represents this event
      */
 	public String getSymbol() {
-		SubElement eventSymbol = getSubElement("SYMBOL"); 
-		return eventSymbol != null ? eventSymbol.getName() : "";
+		SubElement eventSymbol = getSubElement("name");
+		return eventSymbol != null ? eventSymbol.getChars() : "";
 	}
 
 

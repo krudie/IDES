@@ -92,6 +92,8 @@ public class MetaData implements FSAMetaData {
 	
 	
 	/**
+	 * TODO Implement
+	 * 
 	 * Sets the graphical layout information required to display the given transition
 	 * and if it does not yet exist, adds the transition to the FSAModel.
 	 * 
@@ -114,21 +116,34 @@ public class MetaData implements FSAMetaData {
 				Float.parseFloat(layout.getAttribute("ctrly1")));
 		controls[Edge.CTRL2] = new Point2D.Float(Float.parseFloat(layout.getAttribute("ctrlx2")),
 				Float.parseFloat(layout.getAttribute("ctrly2")));
-						
-		// How many events can fire this transition?
-		// Version 2 has a single event per transition.
-		// Kluge around it.
-		Event e = (Event) t.getEvent();
-		String[] edgeLabels = new String[1];
-		if(e != null){
-			edgeLabels[0] = e.getSymbol();
-		}else{
-			edgeLabels[0] = "";
-		}
+
+		// TODO extract label offset
 		
-		return new EdgeLayout(controls, edgeLabels);
+		EdgeLayout edgeLayout = new EdgeLayout(controls);
+		Event e = (Event) t.getEvent();		
+		if(e != null){
+			edgeLayout.addEventName(e.getSymbol());
+		}		
+		return edgeLayout;
 	}
 
+	/**
+	 * Adds edge layout data (event name if exists) from the given transition 
+	 * to the given layout.
+	 * 
+	 * Precondition: layout != null and transition has same source and target nodes as those in layout.
+	 * 
+	 * @param transition
+	 * @param layout
+	 */
+	public void augmentLayoutData(FSATransition transition, EdgeLayout layout){
+		Transition t = (Transition)transition;
+		Event e = (Event) t.getEvent();
+		if(e != null){			
+			layout.addEventName(e.getSymbol());
+		}
+	}
+	
 	////////////////////////////////////////////////////////////////////////
 	/* (non-Javadoc)
 	 * @see model.fsa.FSAMetaData#getData(java.lang.String)

@@ -1,11 +1,13 @@
 package presentation.fsa;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Label;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
@@ -18,17 +20,22 @@ import presentation.Glyph;
  *
  */
 @SuppressWarnings("serial")
-public class GraphLabel extends Label implements Glyph {
-
+public class GraphLabel implements Glyph {
+	
+	private boolean visible = true;
 	private Glyph parent = null;  // either the DrawingBoard, a node or an edge	
-	private Color colour = GraphicalLayout.DEFAULT_COLOR;
 	private Font font;
+	private GraphicalLayout layout;
 	
 	public GraphLabel(String text){
-		super(text);
+		layout = new GraphicalLayout(text);
 		// TODO change to a dynamic value read from a config file and stored in 
 		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
+	}
+	
+	public GraphLabel(GraphicalLayout layout){		
+		this.layout = layout;	
 	}
 	
 	/**
@@ -37,7 +44,7 @@ public class GraphLabel extends Label implements Glyph {
 	 */
 	public GraphLabel(String text, Point2D location){
 		this(text);		
-		setLocation(new Point((int)location.getX(), (int)location.getY()));		
+		layout.setLocation((float)location.getX(), (float)location.getY());		
 	}
 	
 	/**
@@ -53,20 +60,30 @@ public class GraphLabel extends Label implements Glyph {
 	}
 	
 	public void draw(Graphics g) {
-		// get the bounding box of my parent
-		// and then draw myself correctly oriented to my parent
-		g.setColor(colour);
-		// DEBUG
-		g.setFont(font);
-		g.drawString(getText(), getLocation().x, getLocation().y);
+		if(visible){
+			g.setColor(layout.getColor());		
+			g.setFont(font);
+			
+			// FIXME this computes the position for a Node label but won't work for an edge; see bounds()
+			FontMetrics metrics = g.getFontMetrics();
+			int width = metrics.stringWidth( layout.getText() );
+			int height = metrics.getHeight();
+			int x = (int)layout.getLocation().x - width/2;
+			int y = (int)layout.getLocation().y; // + height/2;
+			
+			g.drawString(layout.getText(), x, y);
+		}
 	}
 
 	public Rectangle bounds() {
-		return getBounds();
+		// FIXME this will be too wide...
+		// Can we use FontMetrics here so parent can resize, relocate this object?
+		// USE Font  method getLineMetrics.
+		return null;				
 	}
 	
-	public boolean intersects(Point2D p) {
-		return getBounds().contains(p);
+	public boolean intersects(Point2D p) {		
+		return bounds().intersects(p.getX(), p.getY(), 1, 1);
 	}
 
 	public void insert(Glyph child, long index) {}
@@ -100,9 +117,17 @@ public class GraphLabel extends Label implements Glyph {
 	}
 
 	public void setText(String s){
-		super.setText(s);
-		this.validate();
-		this.setVisible(true);
-		this.setSize(this.getPreferredSize());		
-	}	
+		layout.setText(s);		
+		setVisible(true);				
+	}
+
+	public boolean isVisible() {		
+		return visible;
+	}
+
+	public void setVisible(boolean b) {
+		visible  = b;
+	}
+
+	
 }

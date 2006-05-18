@@ -2,24 +2,36 @@ package presentation.fsa;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.CubicCurve2D;
+import java.util.ArrayList;
+
 import presentation.Geometry;
 
 
 public class EdgeLayout extends GraphicalLayout {
 
-	private String[] eventNames = {""};
+	private ArrayList eventNames;
 	private Point2D.Float[] bezierControls;
+	private Point2D.Float labelOffset;
 	
 	// TODO use this class instead of mucking about with an array
 	private CubicCurve2D.Float controls;
 	
 	public EdgeLayout(){
-		bezierControls = new Point2D.Float[4];		
+		bezierControls = new Point2D.Float[4];
+		eventNames = new ArrayList();
+		labelOffset = new Point2D.Float(5,5);
 	}
 	
-	public EdgeLayout(Point2D.Float[] bezierControls, String[] eventNames){
+	public EdgeLayout(Point2D.Float[] bezierControls){
+		this.bezierControls = bezierControls;
+		eventNames = new ArrayList();
+		labelOffset = new Point2D.Float(5,5);
+	}
+	
+	public EdgeLayout(Point2D.Float[] bezierControls, ArrayList eventNames){
 		this.bezierControls = bezierControls;
 		this.eventNames = eventNames;
+		labelOffset = new Point2D.Float(5,5);
 	}
 
 	/**
@@ -30,7 +42,9 @@ public class EdgeLayout extends GraphicalLayout {
 	 * @param n2 layout for target node
 	 */
 	public EdgeLayout(NodeLayout n1, NodeLayout n2){
-		bezierControls = getCurve(n1, n2);		
+		bezierControls = getCurve(n1, n2);
+		eventNames = new ArrayList();
+		labelOffset = new Point2D.Float(5,5);
 	}
 	
 	/**
@@ -71,12 +85,24 @@ public class EdgeLayout extends GraphicalLayout {
 		bezierControls[3] = p2;
 	}
 
-	public String[] getEventNames() {
+	public ArrayList getEventNames() {
 		return eventNames;
 	}
 
-	public void setEventNames(String[] eventNames) {
+	public void setEventNames(ArrayList eventNames) {
 		this.eventNames = eventNames;
+	}
+
+	public void addEventName(String symbol) {
+		eventNames.add(symbol);		
+	}
+
+	public Point2D.Float getLabelOffset() {
+		return labelOffset;
+	}
+
+	public void setLabelOffset(Point2D.Float labelOffset) {
+		this.labelOffset = labelOffset;
 	}
 
 }

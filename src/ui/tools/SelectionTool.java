@@ -106,17 +106,14 @@ public class SelectionTool extends DrawingTool {
 		if(inDrag){
 			// compute the set of graph elements hit by rectangle
 			context.updateCurrentSelection(box);
-			context.highlightCurrentSelection(false);
-					
-			// reset flags
+								
+			// reset
+			box.setSize(0,0);
 			startPoint = null;
-			endPoint = null; 
+			endPoint = null;			
 			inDrag = false;
-		}else{
-			// TODO don't clear the selection, just turn off the highlighting
-			// and turn on the selection colour
-			context.highlightCurrentSelection(false);			
 		}
+		context.highlightCurrentSelection(false);
 		context.repaint();
 	}
 

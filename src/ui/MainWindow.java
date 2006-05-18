@@ -24,6 +24,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 /**
+ * TODO Reimplement using gui-commands library.
+ * Commands generate their own toolbuttons and menuitems.
+ * Load configuration from a file.
+ * 
  * @author helen bretzke
  *
  */
@@ -83,22 +87,27 @@ public class MainWindow extends JFrame {
 	  */
 	 JMenuBar menuBar = new JMenuBar();
 	 
+	 public static final int MENU_FILE = 0;
 	 JMenu menuFile, menuExport;
 	 JMenuItem miNewSystem, miOpen, miSave, miSaveAs, miExit;
 	 JMenuItem miLatex, miGif, miPng;
 	 
+	 public static final int MENU_EDIT = 1;
 	 JMenu menuEdit;
 	 JMenuItem miUndo, miRedo, miCut, miCopy, miPaste, miDelete;
 	 
+	 public static final int MENU_GRAPH = 2;
 	 JMenu menuGraph;
 	 // TODO add a submenu for all zoom and scale operations
 	 // ? How about a 'Transform' submenu ?
 	 JMenu menuTransform;
 	 JMenuItem miZoomIn, miZoomOut, miScaleBy, miCreate, miModify, miPrintArea, miMove, miAllEdges, miAllLabels;
 	 
+	 public static final int MENU_OPTIONS = 3;
 	 JMenu menuOptions; 
 	 JMenuItem miErrReports, miUseLatex, miExportEps, miExportTex, miDrawBorder, miStdNodeSize, miUsePstricks;
 	 
+	 public static final int MENU_HELP = 4;
 	 JMenu menuHelp;
 	  
 	 String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/"; 
@@ -295,6 +304,10 @@ public class MainWindow extends JFrame {
 		 
 		 // add menubar to this window
 		 getContentPane().add(menuBar, "North");
+	}
+	
+	protected void enableMenu(int menuID, boolean b){
+		
 	}
 	
 	/**

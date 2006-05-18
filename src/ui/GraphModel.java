@@ -118,6 +118,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			// add t to the edge's set of transitions
 			e = edgeBetween(n1, n2); 
 			if(e != null){
+				layoutData.augmentLayoutData(t, e.getLayout());
 				e.addTransition(t);				
 			}else{
 				// get the graphic data for the transition and all associated events
@@ -130,6 +131,7 @@ public class GraphModel extends Publisher implements Subscriber {
 				// DON'T add this edge to target node's in edges, since it doesn't store them :)
 							
 				// add to set of edges
+				// id may be misleading since it is the id of only the first transition on this edge
 				edges.put(new Long(t.getId()), e);
 			}
 		}
