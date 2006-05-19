@@ -2,6 +2,8 @@ package presentation.fsa;
 
 import java.awt.geom.Point2D;
 
+import presentation.GraphicalLayout;
+
 public class NodeLayout extends GraphicalLayout {
 	
 	private float radius;		

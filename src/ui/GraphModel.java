@@ -13,7 +13,7 @@ import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
-import presentation.Glyph;
+import presentation.PresentationElement;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeLayout;
 import presentation.fsa.GraphElement;
@@ -94,7 +94,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		graph = new GraphElement();
 		while(iter.hasNext()){
 			s = (State)iter.next();
-			n1 = new Node(s, layoutData.getLayoutData(s));			
+			n1 = new Node(s, layoutData.getLayoutData(s));
+			n1.update();  // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			graph.insert(n1);
 			nodes.put(new Long(s.getId()), n1);
 		}
@@ -119,14 +120,17 @@ public class GraphModel extends Publisher implements Subscriber {
 			e = edgeBetween(n1, n2); 
 			if(e != null){
 				layoutData.augmentLayoutData(t, e.getLayout());
-				e.addTransition(t);				
+				e.addTransition(t);
+				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge			
 				e = new Edge(t, n1, n2, layoutData.getLayoutData(t));
-						
+				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+				
 				// add this edge to source node's out edges
 				n1.insert(e);
+				n1.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 				
 				// DON'T add this edge to target node's in edges, since it doesn't store them :)
 							
@@ -139,6 +143,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		// TODO for all free labels in metadata
 		
 		// tell observers that the model has been updated
+		// graph.update();
 		notifyAllSubscribers();
 	}
 	
@@ -260,8 +265,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param rectangle
 	 * @return the set of graph elements contained by the given rectangle
 	 */
-	protected Glyph getElementsContainedBy(Rectangle rectangle) {
-		Glyph g = new GraphElement();
+	protected PresentationElement getElementsContainedBy(Rectangle rectangle) {
+		PresentationElement g = new GraphElement();
 		
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
@@ -310,14 +315,14 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param p the point of intersection
 	 * @return the graph element intersected by the given point
 	 */
-	protected Glyph getElementIntersectedBy(Point2D p){
+	protected PresentationElement getElementIntersectedBy(Point2D p){
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
 		Entry entry;
-		Glyph g;
+		PresentationElement g;
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (Glyph)entry.getValue();
+			g = (PresentationElement)entry.getValue();
 			if(g.intersects(p)){				
 				//g.setHighlighted(true);
 				return g;				
@@ -328,7 +333,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		iter = edges.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (Glyph)entry.getValue();
+			g = (PresentationElement)entry.getValue();
 			if(g.intersects(p)){		
 				//g.setHighlighted(true);
 				return g;				
@@ -340,7 +345,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		iter = labels.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (Glyph)entry.getValue();
+			g = (PresentationElement)entry.getValue();
 			if(g.intersects(p)){ // TODO && do a more thorough intersection test				
 				//g.setHighlighted(true);
 				return g;				

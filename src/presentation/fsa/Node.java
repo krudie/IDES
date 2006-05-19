@@ -8,7 +8,9 @@ import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
-import presentation.Glyph;
+
+import presentation.GraphicalLayout;
+import presentation.PresentationElement;
 import presentation.Geometry;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
@@ -44,7 +46,6 @@ public class Node extends GraphElement {
 		circle = new Ellipse2D.Double();
 		arrow1 = new Point2D.Float();
 		arrow2 = new Point2D.Float();		
-		update();
 	}
 
 	public long getId(){

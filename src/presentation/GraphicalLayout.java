@@ -1,4 +1,4 @@
-package presentation.fsa;
+package presentation;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

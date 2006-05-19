@@ -14,10 +14,12 @@ import ui.GraphDrawingView;
  * Selects and highlights graph elements using either single click or bounding box.
  * Supports resizing of bounding box by handles on borders.
  * 
+ * TODO add movement of elements
+ * 
  * @author helen
  *
  */
-public class SelectionTool extends DrawingTool {
+public class EditingTool extends DrawingTool {
 
 	private Point startPoint, endPoint; 
 	Dimension d;
@@ -27,7 +29,7 @@ public class SelectionTool extends DrawingTool {
 	
 	private boolean resizing = false;	
 	
-	public SelectionTool(GraphDrawingView board){
+	public EditingTool(GraphDrawingView board){
 		context = board;
 		cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 		d = new Dimension();
@@ -108,7 +110,7 @@ public class SelectionTool extends DrawingTool {
 			context.updateCurrentSelection(box);
 								
 			// reset
-			box.setSize(0,0);
+			// box.setSize(0,0);
 			startPoint = null;
 			endPoint = null;			
 			inDrag = false;

@@ -5,6 +5,7 @@ import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 
 import presentation.Geometry;
+import presentation.GraphicalLayout;
 
 
 public class EdgeLayout extends GraphicalLayout {

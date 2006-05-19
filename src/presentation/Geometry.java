@@ -65,21 +65,28 @@ public class Geometry {
 		return new Point2D.Float(Math.round(v.x * s), Math.round(v.y * s));		
 	}
 	
-	/** 
-	 * @param a
-	 * @param b
-	 * @return a new point a - b
+	/**
+	 * This is a bit silly since could scale b by -1 and call add method.
+	 *  
+	 * @param a point
+	 * @param v direction vector
+	 * @return a new point a + v
 	 */
-	public static Point2D.Float subtract(Point2D.Float a, Point2D.Float b){
-		return new Point2D.Float(a.x - b.x, a.y - b.y);		
+	public static Point2D.Float subtract(Point2D.Float a, Point2D.Float v){
+		return new Point2D.Float(a.x - v.x, a.y - v.y);		
 	}
 
 	public static Point2D.Float subtract(Point a, Point b) {		
 		return new Point2D.Float(a.x - b.x, a.y - b.y);	
 	}
 
-	public static Point2D.Float add(Point2D.Float a, Point2D.Float b){
-		return new Point2D.Float(a.x + b.x, a.y + b.y);		
+	/** 
+	 * @param a point
+	 * @param v direction vector
+	 * @return a new point a + v
+	 */
+	public static Point2D.Float add(Point2D.Float a, Point2D.Float v){
+		return new Point2D.Float(a.x + v.x, a.y + v.y);		
 	}
 	
 }

@@ -3,6 +3,8 @@ package ui.tools;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import model.fsa.ver1.EventsModel;
@@ -26,22 +28,29 @@ public class TextTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
-		// TODO Implement
-		int count = me.getClickCount();
-		if(count == 2){
-			// create new label in context of click
-			// on a node
+		
+		// get current selection
+		context.updateCurrentSelection(me.getPoint());
+		
+		// TODO on a node ...
+		
 			
-			// on an edge (open event dialog)
-			dialog.setVisible(true);
-			
-			// free label			
-			
-		}else if(count == 1){
-			// select label intersected by mouse (if any)
-			
-		}
+		// TODO on an edge (open event dialog)
 
+		
+		// TODO on a free label ...
+		
+		// if nothing selected
+		// TODO create a free label ...			
+
+		// For now, open an input dialog and set location at mouse click
+		// TODO set location of dialog close to the selected element or click location
+		// Set any existing text in the dialog before showing
+		// Extract text from dismissed dialog
+		String inputValue = JOptionPane.showInputDialog("Enter label text: ");		
+		System.out.println(inputValue);
+		 
+		
 	}
 
 	@Override

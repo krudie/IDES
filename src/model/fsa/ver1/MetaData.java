@@ -66,8 +66,6 @@ public class MetaData implements FSAMetaData {
 	 * Sets the graphical layout information required to display the given state
 	 * and if it does not yet exist, adds the state to the FSAModel.
 	 * 
-	 * TODO Implement !!!
-	 * 
 	 * @param state the state
 	 * @param layout the graphical layout data for a node
 	 */
@@ -104,21 +102,33 @@ public class MetaData implements FSAMetaData {
 		
 	}
 	
+	/**
+	 * Extracts and returns the graphical layout for the Edge representing
+	 * the given tranistion.
+	 * 
+	 * @return graphical layout for the Edge representing the given transition.
+	 */
 	public EdgeLayout getLayoutData(FSATransition transition){
 		Transition t = (Transition)transition;
-		SubElement layout = t.getSubElement("graphic").getSubElement("bezier");
-		Point2D.Float[] controls = new Point2D.Float[4];
-		controls[Edge.P1] = new Point2D.Float(Float.parseFloat(layout.getAttribute("x1")),
-				Float.parseFloat(layout.getAttribute("y1")));
-		controls[Edge.P2] = new Point2D.Float(Float.parseFloat(layout.getAttribute("x2")),
-				Float.parseFloat(layout.getAttribute("y2")));
-		controls[Edge.CTRL1] = new Point2D.Float(Float.parseFloat(layout.getAttribute("ctrlx1")),
-				Float.parseFloat(layout.getAttribute("ctrly1")));
-		controls[Edge.CTRL2] = new Point2D.Float(Float.parseFloat(layout.getAttribute("ctrlx2")),
-				Float.parseFloat(layout.getAttribute("ctrly2")));
-
-		// TODO extract label offset
+		SubElement layout = t.getSubElement("graphic");
 		
+		SubElement bezier = layout.getSubElement("bezier");
+		Point2D.Float[] controls = new Point2D.Float[4];
+		controls[Edge.P1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x1")),
+				Float.parseFloat(bezier.getAttribute("y1")));
+		controls[Edge.P2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x2")),
+				Float.parseFloat(bezier.getAttribute("y2")));
+		controls[Edge.CTRL1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx1")),
+				Float.parseFloat(bezier.getAttribute("ctrly1")));
+		controls[Edge.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
+				Float.parseFloat(bezier.getAttribute("ctrly2")));
+
+		// extract label offset
+		Point2D.Float offset = new Point2D.Float();
+		SubElement label = layout.getSubElement("label");
+		offset.setLocation(Float.parseFloat(label.getAttribute("x")), Float.parseFloat(label.getAttribute("y")));
+		
+		// extract transition event symbol (if exists)
 		EdgeLayout edgeLayout = new EdgeLayout(controls);
 		Event e = (Event) t.getEvent();		
 		if(e != null){

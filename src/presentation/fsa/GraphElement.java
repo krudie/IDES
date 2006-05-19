@@ -7,27 +7,29 @@ import java.util.LinkedList;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import presentation.Glyph;
+import presentation.GraphicalLayout;
+import presentation.PresentationElement;
 
 
-public class GraphElement implements Glyph {
+public class GraphElement implements PresentationElement {
 	
 	protected boolean visible;
 	protected boolean highlighted;
 	protected boolean selected;
+	protected GraphicalLayout layout;
 	
 	// my states and free labels
-	private LinkedList<Glyph> children;
-	private Glyph parent;
+	private LinkedList<PresentationElement> children;
+	private PresentationElement parent;
 	
 	public GraphElement() {		
 		this.parent = null;
-		children = new LinkedList<Glyph>();
+		children = new LinkedList<PresentationElement>();
 	}
 		
-	public GraphElement(Glyph parent) {		
+	public GraphElement(PresentationElement parent) {		
 		this.parent = parent;
-		children = new LinkedList<Glyph>();
+		children = new LinkedList<PresentationElement>();
 	}
 	
 	/**
@@ -36,7 +38,7 @@ public class GraphElement implements Glyph {
 	public void draw(Graphics g) {		
 		Iterator c = children.iterator();
 		while(c.hasNext()){
-			Glyph child = (Glyph)c.next();
+			PresentationElement child = (PresentationElement)c.next();
 			child.draw(g);
 		}
 	}
@@ -47,7 +49,7 @@ public class GraphElement implements Glyph {
 		Iterator c = children.iterator();
 		Rectangle2D.Float bounds = new Rectangle2D.Float();
 		while(c.hasNext()){
-			Glyph child = (Glyph)c.next();
+			PresentationElement child = (PresentationElement)c.next();
 			bounds.createUnion(child.bounds()); 
 		}		
 		return bounds;
@@ -57,16 +59,16 @@ public class GraphElement implements Glyph {
 		return bounds().contains(p);
 	}
 
-	public void insert(Glyph child, long index) {
+	public void insert(PresentationElement child, long index) {
 		// KLUGE - change to the index to a String or Long and hash the children
 		children.add((int)index, child);
 	}
 
-	public void insert(Glyph g) {
+	public void insert(PresentationElement g) {
 		children.add(g);		
 	}
 	
-	public void remove(Glyph child) {
+	public void remove(PresentationElement child) {
 		children.remove(child);
 	}
 
@@ -74,11 +76,11 @@ public class GraphElement implements Glyph {
 		children.clear();
 	}
 	
-	public Glyph child(int index) {
+	public PresentationElement child(int index) {
 		return children.get(index);		
 	}
 
-	public Glyph parent() {
+	public PresentationElement parent() {
 		return parent;
 	}
 
@@ -86,19 +88,19 @@ public class GraphElement implements Glyph {
 		return children.iterator();
 	}
 
-	public LinkedList<Glyph> getChildren() {
+	public LinkedList<PresentationElement> getChildren() {
 		return children;
 	}
 
-	public void setChildren(LinkedList<Glyph> children) {
+	public void setChildren(LinkedList<PresentationElement> children) {
 		this.children = children;
 	}
 
-	public Glyph getParent() {
+	public PresentationElement getParent() {
 		return parent;
 	}
 
-	public void setParent(Glyph parent) {
+	public void setParent(PresentationElement parent) {
 		this.parent = parent;
 	}
 
@@ -109,9 +111,9 @@ public class GraphElement implements Glyph {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 		Iterator i = children.iterator();
-		Glyph g;
+		PresentationElement g;
 		while(i.hasNext()){
-			g = (Glyph)i.next();
+			g = (PresentationElement)i.next();
 			g.setVisible(visible);
 		}
 	}
@@ -123,9 +125,9 @@ public class GraphElement implements Glyph {
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 		Iterator i = children.iterator();
-		Glyph g;
+		PresentationElement g;
 		while(i.hasNext()){
-			g = (Glyph)i.next();
+			g = (PresentationElement)i.next();
 			g.setSelected(selected);
 		}
 	}	
@@ -137,10 +139,25 @@ public class GraphElement implements Glyph {
 	public void setHighlighted(boolean highlight) {
 		this.highlighted = highlight;
 		Iterator i = children.iterator();
-		Glyph g;
+		PresentationElement g;
 		while(i.hasNext()){
-			g = (Glyph)i.next();
+			g = (PresentationElement)i.next();
 			g.setSelected(highlight);
 		}
 	}
+	
+	/**
+	 * TODO should this be in class Glyph?
+	 * No.  If make this an abstract method, then can't instantiate a generic GraphElement :(
+	 *
+	 */
+	public void update(){}
+
+	public void setLayout(GraphicalLayout layout) {
+		this.layout = layout;		
+	}
+
+	public GraphicalLayout getLayout() {		
+		return layout;
+	};
 }

@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import java.awt.BorderLayout;
 
 import main.SystemVariables;
 
@@ -48,7 +49,9 @@ public class MainWindow extends JFrame {
 		createAndAddTabbedPane();
 		// TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
-			
+		this.filmStrip = new FilmStrip();
+		filmStrip.add(drawingBoard);
+		getContentPane().add(filmStrip, BorderLayout.SOUTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		pack();
 		setSize(800, 600);
@@ -64,7 +67,7 @@ public class MainWindow extends JFrame {
 		sp.setName(drawingBoard.getName());
 		
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
-		tabbedViews.add(sp);
+		//tabbedViews.add(sp);
 		tabbedViews.addTab("Graph Specification", null);
 		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");
@@ -319,4 +322,5 @@ public class MainWindow extends JFrame {
 	// TODO private JPanel filmStrip;
 	private JPanel eventsView;
 	private JPanel latexView;
+	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
 }

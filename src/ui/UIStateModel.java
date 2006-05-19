@@ -165,4 +165,6 @@ public class UIStateModel {
 	public void setGraphDrawingView(GraphDrawingView graphDrawingView) {
 		this.graphDrawingView = graphDrawingView;
 	}
+	
+
 }

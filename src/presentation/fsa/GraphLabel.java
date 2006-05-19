@@ -11,7 +11,8 @@ import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
-import presentation.Glyph;
+import presentation.GraphicalLayout;
+import presentation.PresentationElement;
 
 /**
  * TODO Change so that doesn't extend label; waste of space and rounds the location to int coords.
@@ -20,12 +21,12 @@ import presentation.Glyph;
  *
  */
 @SuppressWarnings("serial")
-public class GraphLabel implements Glyph {
+public class GraphLabel extends GraphElement {
 	
 	private boolean visible = true;
-	private Glyph parent = null;  // either the DrawingBoard, a node or an edge	
+	private PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
 	private Font font;
-	private GraphicalLayout layout;
+	
 	
 	public GraphLabel(String text){
 		layout = new GraphicalLayout(text);
@@ -54,7 +55,7 @@ public class GraphLabel implements Glyph {
 	 * @param parent glyph in which this label is displayed
 	 * @param location the x,y coordinates of the top left corner of this label
 	 */
-	public GraphLabel(String text, Glyph parent, Point2D location) {	
+	public GraphLabel(String text, PresentationElement parent, Point2D location) {	
 		this(text, location);		
 		this.parent = parent;
 	}
@@ -86,34 +87,14 @@ public class GraphLabel implements Glyph {
 		return bounds().intersects(p.getX(), p.getY(), 1, 1);
 	}
 
-	public void insert(Glyph child, long index) {}
-	public void insert(Glyph g) {}
-	public void remove(Glyph child) {}
-	public Glyph child(int index) {	return null; }
+	public void insert(PresentationElement child, long index) {}
+	public void insert(PresentationElement g) {}
+	public void remove(PresentationElement child) {}
+	public PresentationElement child(int index) {	return null; }
 	public Iterator children() { return null; }
 	
-	public Glyph parent() {		
+	public PresentationElement parent() {		
 		return parent;
-	}
-
-	public boolean isHighlighted() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void setHighlighted(boolean b) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void setSelected(boolean b) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void setText(String s){
@@ -129,5 +110,4 @@ public class GraphLabel implements Glyph {
 		visible  = b;
 	}
 
-	
 }

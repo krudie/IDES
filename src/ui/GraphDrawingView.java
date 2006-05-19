@@ -8,7 +8,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -19,11 +18,9 @@ import javax.swing.JComponent;
 
 import model.Subscriber;
 
-import presentation.Glyph;
+import presentation.PresentationElement;
 import presentation.fsa.GraphElement;
-import ui.tools.CreationTool;
-import ui.tools.DrawingTool;
-import ui.tools.SelectionTool;
+import ui.tools.*;
 
 /**
  * The area in which users view, create and modify graphs.
@@ -41,62 +38,45 @@ import ui.tools.SelectionTool;
  *
  */
 @SuppressWarnings("serial")
-public class GraphDrawingView extends JComponent implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
+public class GraphDrawingView extends GraphView implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
 			
-	protected float scaleFactor = 1f;
-	
 	private int currentTool = DEFAULT;
 	private DrawingTool[] drawingTools;
-	
-	/******************************************************************
-	 * TODO Move these to a UISettings class that reads, saves and makes
-	 * accessible everything the UI needs to know.
-	 ******************************************************************/
-	private Font font; 
-	private FontMetrics fontMetrics;
-	private BasicStroke wideStroke, fineStroke, dashedStroke;
-		
-	/**
-	 * Copy buffer
-	 */
-	private Glyph copyBuffer;
-	
-	/**
-	 * Cut buffer 
-	 */
-	private Glyph cutBuffer;
-	
-	/**
-	 * Delete and restore buffer
-	 */
-	private Glyph deleteBuffer;
-	
-	
-	/**
-	 * Currently selected group or item.
-	 */
-	private Glyph currentSelection;
 	
 	/**
 	 * Retangle to render as the area selected by mouse. 
 	 */
 	private Rectangle selectionArea;
-		
+	
+	// ??? Do I really need these buffers?  
+	// Won't associated elements be stored with most recently executed commands in the history?
+	
+	/**
+	 * Copy buffer
+	 */
+	private PresentationElement copyBuffer;
+	
+	/**
+	 * Cut buffer 
+	 */
+	private PresentationElement cutBuffer;
+	
+	/**
+	 * Delete and restore buffer
+	 */
+	private PresentationElement deleteBuffer;
+	
+	
+	/**
+	 * Currently selected group or item.
+	 */
+	private PresentationElement currentSelection;
+	
 	/**
 	 * The selected print area.
 	 */
-	private Glyph printArea;
+	private PresentationElement printArea;
 	
-	/**
-	 * An object to handle synchronizing FSA model with the displayed graph.
-	 */
-	private GraphModel graphModel;
-
-	/**
-	 * Presentation model (the composite structure that represents the DES model.)
-	 */	
-	private GraphElement graph;	
-
 	public GraphDrawingView() {
 		graphModel = null;
 		graph = new GraphElement();
@@ -107,23 +87,14 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		selectionArea = new Rectangle();
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
-		drawingTools[DEFAULT] = new SelectionTool(this);
-		drawingTools[SELECTION] = drawingTools[DEFAULT];
+		drawingTools[DEFAULT] = new EditingTool(this);
+		drawingTools[EDIT] = drawingTools[DEFAULT];
 		drawingTools[CREATE] = new CreationTool(this);
+		drawingTools[TEXT] = new TextTool(this);
 		
 		// TODO construct all other drawing tools
-		currentTool = DEFAULT;
-		
-	    wideStroke = new BasicStroke(2);
-	    fineStroke = new BasicStroke(1);
-	    dashedStroke = new BasicStroke(
-	            1, 
-	            BasicStroke.CAP_BUTT,
-	            BasicStroke.JOIN_MITER,
-	            50,
-	            new float[] {5, 2}, 
-	            0
-	          );
+		currentTool = DEFAULT;		
+	    
 	    setVisible(true);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -131,49 +102,22 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	}	
 	
 	public void paint(Graphics g){
-			
-		Graphics2D g2D = (Graphics2D) g; // cast to 2D	
-
-		
-		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	                         RenderingHints.VALUE_ANTIALIAS_ON);		
-	    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK
-	    
-	    // TODO what happens to stroke when scaled?
-	    g2D.setStroke(wideStroke);
-		
-		// Warning: scales distance from origin as well as size of nodes
-		// we want to scale everything from the centre of the user's view.
-		// Solution: translate origin before scaling and beware of op precendence.
-	    // FIXME: this is not working
-//	    g2D.translate(-(getWidth()/scaleFactor), -(getHeight()/scaleFactor));
-//	    g2D.scale(scaleFactor, scaleFactor);		
-	    //	TODO other transformation?
-
-	    graph.draw(g2D);
-		
-		g2D.setStroke(dashedStroke);
-		g2D.setColor(Color.GRAY);
-
+		Graphics2D g2D = (Graphics2D)g;
+		float temp = scaleFactor;
+		scaleFactor = 1f;
+		super.paint(g);
+		g2D.setStroke(GUISettings.instance().getDashedStroke());
+		g2D.setColor(Color.LIGHT_GRAY);
 		g2D.draw(selectionArea);
-
-//		g2D.translate((getWidth()/scaleFactor), (getHeight()/scaleFactor));
+		scaleFactor = temp;
 	}
-
-	/**
-	 * Refresh my visual model from GraphModel.
-	 */
-	public void update() {		
-		graph = graphModel.getGraph();
-		repaint();
-	}
-
+	
 	/**
 	 * Returns the set of currently selected elements in this view.
 	 * 
 	 * @return
 	 */
-	public Glyph getCurrentSelection() {
+	public PresentationElement getCurrentSelection() {
 		return currentSelection;
 	}
 
@@ -182,12 +126,16 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	 * 
 	 * @param currentSelection
 	 */
-	public void setCurrentSelection(Glyph currentSelection) {
+	public void setCurrentSelection(PresentationElement currentSelection) {
 		this.currentSelection = currentSelection;
 	}	
 
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
+		// If double click, always assumed to be a text event.
+		if(arg0.getClickCount() == 2){
+			drawingTools[TEXT].handleMouseClicked(arg0);
+		}
 		drawingTools[currentTool].handleMouseClicked(arg0);		
 	}
 
@@ -263,7 +211,9 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
 		// that sets highlight(boolean) on all of its elements.		
 		currentSelection = graphModel.getElementsContainedBy(rectangle);
-		currentSelection.setSelected(true);
+		currentSelection.setSelected(true);		
+		rectangle.setSize((int)currentSelection.bounds().getWidth(),
+							(int)currentSelection.bounds().getHeight());
 	}
 
 	/**
@@ -278,14 +228,6 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 		}
 	}	
 	
-	public void setGraphModel(GraphModel graphModel) {
-		this.graphModel = graphModel;		
-	}
-
-	public GraphModel getGraphModel(){
-		return graphModel;
-	}
-	
 	public Rectangle getSelectionArea() {
 		return selectionArea;
 	}	
@@ -295,7 +237,7 @@ public class GraphDrawingView extends JComponent implements Subscriber, MouseMot
 	 * determine mouse and keyboard responses.
 	 */
 	public final static int DEFAULT = 0;
-	public final static int SELECTION = 1;
+	public final static int EDIT = 1;
 	public final static int ZOOM_IN = 2;
 	public final static int ZOOM_OUT = 7;
 	public final static int SCALE = 8;
