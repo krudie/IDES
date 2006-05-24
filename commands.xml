@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE commands SYSTEM "commands.dtd">
+<commands version="1.1.0">
+   <command id="edit.command">
+      <face>
+         <text>Edit</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <description>Select or move graph elements</description>
+         <accelerator key="e">
+            <modifier value="control"/>
+         </accelerator>
+      </face>
+    </command>
+    <command id="create.command">
+      <face>
+         <text>Create</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\graphic_create.gif</icon>
+         <description>Create nodes or edges</description>
+         <accelerator key="c">
+    	     <modifier value="control"/>
+	         <modifier value="alt"/>
+         </accelerator>         
+      </face>
+    </command>
+</commands>

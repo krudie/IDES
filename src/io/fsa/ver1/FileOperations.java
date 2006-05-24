@@ -4,9 +4,12 @@ import java.io.File;
 
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
+import model.fsa.ver1.Workspace;
 
 /**
- * TODO extract interface to package io.fsa
+ * TODO 
+ * extract interface to package io.fsa
+ * implement most methods
  * 
  * @author helen bretzke
  *
@@ -47,5 +50,9 @@ public class FileOperations {
 	public static void exportSystemAsEPS(FSAModel model, File f){
 		
 		
+	}
+	
+	public static Workspace loadWorkspace(File f){
+		return null;
 	}
 }

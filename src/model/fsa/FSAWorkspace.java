@@ -8,9 +8,10 @@ package model.fsa;
  *
  */
 public interface FSAWorkspace {
-
+	
 	public FSAModel getFSAModel(String name);
 	public void addFSAModel(FSAModel fsa);
+	public void removeFSAModel(String name);
 	public FSAEventsModel getEventsModel();
 		
 }

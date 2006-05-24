@@ -6,6 +6,8 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import org.pietschy.command.ActionCommand;
+
 import ui.GraphDrawingView;
 import ui.UIStateModel;
 import ui.command.Command;
@@ -24,7 +26,7 @@ public class CreationTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
-		  Command cmd;
+		  ActionCommand cmd;
 		  // ??? use click count??
 		  
 		  // if first click just created a node,

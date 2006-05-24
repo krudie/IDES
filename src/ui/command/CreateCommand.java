@@ -3,10 +3,12 @@ package ui.command;
 import java.awt.Point;
 import java.awt.geom.Point2D.Float;
 
+import org.pietschy.command.ActionCommand;
+
 import presentation.fsa.GraphElement;
 import ui.GraphDrawingView;
 
-public class CreateCommand implements Command {
+public class CreateCommand extends ActionCommand {
 
 	private GraphDrawingView context;
 	private int elementType;
@@ -25,7 +27,7 @@ public class CreateCommand implements Command {
 		this.location = location;
 	}
 	
-	public void execute() {
+	public void handleExecute() {
 		// only after element has been created and added, add this event to the command history
 		// NOTE: this must be a reversible command to be entered in the history
 		switch(elementType){

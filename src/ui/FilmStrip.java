@@ -11,10 +11,18 @@ import javax.swing.JOptionPane;
 
 import javax.swing.JPanel;
 
+/**
+ * A panel of graph thumbnail views that highlights the border
+ * on the graph that has focus.
+ * 
+ * @author Helen Bretzke
+ *
+ */
 public class FilmStrip extends JPanel implements ActionListener {
 
 	// This may be unnecessary since can simply use my contentpane
 	protected ArrayList<GraphView> miniGraphs;
+	protected GraphView activeView;
 	
 	public FilmStrip(){
 		miniGraphs = new ArrayList<GraphView>(5);
@@ -35,19 +43,21 @@ public class FilmStrip extends JPanel implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent arg0) {
 		try{
-			GraphView source = (GraphView)arg0.getSource();
-			source.setBorder(BorderFactory.createLoweredBevelBorder());
 			Component[] components = this.getComponents();
 			if(components != null){
 				int n = components.length;
 				for(int i=0; i<n; i++){
-					if(!components[i].equals(source)){
-						((JComponent)components[i]).setBorder(BorderFactory.createEmptyBorder());
-					}
-				}
-			}		
+					((JComponent)components[i]).setBorder(BorderFactory.createEmptyBorder());
+				}				
+			}
+			activeView = (GraphView)arg0.getSource();
+			activeView.setBorder(BorderFactory.createLoweredBevelBorder());
 		}catch(Exception e){
 			JOptionPane.showMessageDialog(this, "Unable to select and highlight graph.", "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	
+	public GraphView getActiveView() {
+		return activeView;
 	}
 }

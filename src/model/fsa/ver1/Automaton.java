@@ -1,10 +1,8 @@
 package model.fsa.ver1;
-import java.util.*;
-
-
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 import model.Publisher;
-import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;

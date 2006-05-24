@@ -10,6 +10,8 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
+import org.pietschy.command.ActionCommand;
+
 import main.SystemVariables;
 import model.Publisher;
 import model.fsa.FSAModel;
@@ -41,7 +43,7 @@ public class MenuListenerFactory {
   public static ActionListener makeCopyListener () {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
-			  Command cmd = new CopyCommand("copied item", "drawing area"); 
+			  ActionCommand cmd = new CopyCommand("copied item", "drawing area"); 
 			  UIStateModel.instance().getCommandHistory().add(cmd);
 			  cmd.execute();	  
 		  }
@@ -57,7 +59,7 @@ public class MenuListenerFactory {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  	
 			  Command cmd = new DeleteCommand("deleted item", "drawing area"); 
-			  UIStateModel.instance().getCommandHistory().add(cmd);
+			  //UIStateModel.instance().getCommandHistory().add(cmd);
 			  cmd.execute();	  
 		  }
 	  };
@@ -72,7 +74,7 @@ public class MenuListenerFactory {
 	  return new ActionListener() {
 		  public void actionPerformed(ActionEvent arg0) {			  			
 			  Command cmd = new CutCommand("cut item", "drawing area"); 
-			  UIStateModel.instance().getCommandHistory().add(cmd);
+			  //UIStateModel.instance().getCommandHistory().add(cmd);
 			  cmd.execute();
 		  }
 	  };

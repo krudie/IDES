@@ -49,8 +49,7 @@ public class MainWindow extends JFrame {
 		createAndAddTabbedPane();
 		// TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
-		this.filmStrip = new FilmStrip();
-		filmStrip.add(drawingBoard);
+		this.filmStrip = new FilmStrip();		
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		pack();
@@ -313,6 +312,7 @@ public class MainWindow extends JFrame {
 		
 	}
 	
+	
 	/**
 	 * The views.
 	 * TODO Load as plugins?
@@ -323,4 +323,8 @@ public class MainWindow extends JFrame {
 	private JPanel eventsView;
 	private JPanel latexView;
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
+
+	public FilmStrip getFilmStrip() {
+		return filmStrip;
+	}
 }

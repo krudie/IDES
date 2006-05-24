@@ -2,6 +2,8 @@ package ui.command;
 
 import java.util.ArrayList;
 
+import org.pietschy.command.ActionCommand;
+
 import ui.command.Command;
 
 /**
@@ -44,7 +46,7 @@ public class CommandHistory {
 		history = new ArrayList(n);
 	}
 	
-	public void add(Command c) {		
+	public void add(ActionCommand c) {		
 		history.add(++tail, c);
 		if(tail >= maxLength){
 			tail = maxLength - 1;

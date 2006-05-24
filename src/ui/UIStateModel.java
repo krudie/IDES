@@ -8,6 +8,7 @@ import model.Subscriber;
 import model.fsa.FSAWorkspace;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
+import model.fsa.ver1.Workspace;
 
 import ui.command.CommandHistory;
 
@@ -17,6 +18,10 @@ import ui.command.CommandHistory;
  * Stores the command history and the currently active view.
  * 
  * TODO change this to support a workspace of multiple publishers (DES models).
+ * Mediate between the Workspace (set of FSA) and the MainWindow, need access to the filmstrip
+ * so can add, remove and update thumbnails of each graph.
+ * 
+ * TODO support set of multiple graph models, one for each FSA.
  * 
  * @author Helen Bretzke
  *
@@ -38,6 +43,7 @@ public class UIStateModel {
 		automaton = null;
 		metadata = null;
 		graphDrawingView = null;
+		workspace = new Workspace();
 	}	
 	
 	/**
@@ -63,6 +69,11 @@ public class UIStateModel {
 	 */
 	private GraphModel graphModel;
 	private GraphDrawingView graphDrawingView;
+	
+	// DEBUG should be a set of these managed and synch'd with changes to the Workspace
+	private GraphView thumbNail;
+	
+	private MainWindow window;
 	
 	/**
 	 * Multiple views on current FSA.
@@ -107,6 +118,9 @@ public class UIStateModel {
 		while(v.hasNext()){
 			automaton.attach((Subscriber)v.next());
 		}
+		
+		// TODO the filmstrip of thumbnails will now toggle highlighting the given model.
+		
 	}
 
 	/**
@@ -120,7 +134,8 @@ public class UIStateModel {
 
 	/**
 	 * TODO Change to activate/deactivate multiple views.
-	 * 
+	 * To be called by the main window when a different document or tab is selected.
+	 *  
 	 * @param activeView
 	 */
 	public void setActiveView(Subscriber activeView) {
@@ -135,14 +150,45 @@ public class UIStateModel {
 		return metadata;
 	}
 
+	/**
+	 * @param name
+	 * @return metadata for the FSA with the given name
+	 */
+	public MetaData getMetadata(String name) {
+		return metadata;
+	}
+
+	
 	public void setMetadata(MetaData metadata) {
+		this.metadata = metadata;
+	}
+
+/**
+ * Sets the metadata for the FSA with the given name.
+ * 
+ * @param metadata
+ * @param name
+ */
+	public void setMetadata(MetaData metadata, String name) {
 		this.metadata = metadata;
 	}
 
 	public GraphModel getGraphModel() {
 		return graphModel;
 	}
+	
+	/** 
+	 * TODO implement set of more than one graph model
+	 * 
+	 * @param name
+	 * @return the graph model for the FSA with the given name.
+	 */
+	public GraphModel getGraphModel(String name) {
+		return graphModel;
+	}
 
+	///////////////////////////////////////////////////////
+	
 	/** 
 	 * Sets the active graph model for the interface to the given model.  
 	 * Attaches the graph drawing view as a subscriber to the graph model.
@@ -155,6 +201,15 @@ public class UIStateModel {
 		addView(graphModel);
 		graphDrawingView.setGraphModel(graphModel);
 		graphModel.attach(graphDrawingView);
+		// DEBUG
+		thumbNail = new GraphView();
+		thumbNail.setGraphModel(graphModel);
+		graphModel.attach(thumbNail);
+		// TODO don't add if it is already in the filmstrip
+		// IDEA FilmStrip listens for changes to the Workspace model.
+		window.getFilmStrip().add(thumbNail);
+		window.pack();
+		/////////////////////////////////////
 		graphModel.notifyAllSubscribers();
 	}
 
@@ -164,6 +219,10 @@ public class UIStateModel {
 
 	public void setGraphDrawingView(GraphDrawingView graphDrawingView) {
 		this.graphDrawingView = graphDrawingView;
+	}
+
+	public void setWindow(MainWindow window) {
+		this.window = window;
 	}
 	
 
