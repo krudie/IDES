@@ -2,9 +2,9 @@ package io.fsa.ver1;
 
 import java.io.File;
 
+import main.IDESWorkspace;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
-import model.fsa.ver1.Workspace;
 
 /**
  * TODO 
@@ -52,7 +52,7 @@ public class FileOperations {
 		
 	}
 	
-	public static Workspace loadWorkspace(File f){
+	public static IDESWorkspace loadWorkspace(File f){
 		return null;
 	}
 }

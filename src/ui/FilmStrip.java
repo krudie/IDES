@@ -4,12 +4,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.Iterator;
+
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-
 import javax.swing.JPanel;
+
+import main.IDESWorkspace;
+import model.Subscriber;
 
 /**
  * A panel of graph thumbnail views that highlights the border
@@ -18,21 +22,21 @@ import javax.swing.JPanel;
  * @author Helen Bretzke
  *
  */
-public class FilmStrip extends JPanel implements ActionListener {
-
-	// This may be unnecessary since can simply use my contentpane
-	protected ArrayList<GraphView> miniGraphs;
+public class FilmStrip extends JPanel implements ActionListener, Subscriber {
+	
 	protected GraphView activeView;
+	protected IDESWorkspace workspace;
 	
 	public FilmStrip(){
-		miniGraphs = new ArrayList<GraphView>(5);
-		
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		this.setPreferredSize(new Dimension(750, 100));
 	}
 	
 	public void add(GraphView gv){
-		miniGraphs.add(gv);
 		super.add(gv);
-		this.setPreferredSize(new Dimension(100, 100));
+		// Set active MODEL in the workspace, don't bother keeping a reference here.
+		activeView = gv;
+		gv.repaint();		
 	}
 
 	/**
@@ -51,6 +55,7 @@ public class FilmStrip extends JPanel implements ActionListener {
 				}				
 			}
 			activeView = (GraphView)arg0.getSource();
+			workspace.setActiveModel(activeView.getName());
 			activeView.setBorder(BorderFactory.createLoweredBevelBorder());
 		}catch(Exception e){
 			JOptionPane.showMessageDialog(this, "Unable to select and highlight graph.", "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
@@ -59,5 +64,17 @@ public class FilmStrip extends JPanel implements ActionListener {
 	
 	public GraphView getActiveView() {
 		return activeView;
+	}
+
+	public void update() {
+		// TODO get all graph models from the workspace and render them here,
+		// each in its own GraphView object.  NOTE add() method will change.
+		Iterator iter = workspace.getGraphModels();
+		
+	}
+
+	public void setWorkspace(IDESWorkspace workspace) {
+		this.workspace = workspace;
+		workspace.attach(this);
 	}
 }

@@ -57,7 +57,8 @@ public class GraphView extends JComponent implements Subscriber {
 	}
 
 	public void setGraphModel(GraphModel graphModel) {
-		this.graphModel = graphModel;		
+		this.graphModel = graphModel;
+		this.setName(graphModel.getName());
 	}
 
 	public GraphModel getGraphModel() {

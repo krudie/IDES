@@ -6,6 +6,12 @@ import model.fsa.FSAEvent;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
 
+/**
+ * A model of global events set (alphabet) and all local alphabets
+ * 
+ * @author helen bretzke
+ *
+ */
 public class EventsModel extends model.Publisher implements FSAEventsModel {
 
 	

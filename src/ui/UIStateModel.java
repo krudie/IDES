@@ -3,12 +3,12 @@ package ui;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import main.IDESWorkspace;
+import main.Workspace;
 import model.Publisher;
 import model.Subscriber;
-import model.fsa.FSAWorkspace;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
-import model.fsa.ver1.Workspace;
 
 import ui.command.CommandHistory;
 
@@ -43,11 +43,12 @@ public class UIStateModel {
 		automaton = null;
 		metadata = null;
 		graphDrawingView = null;
-		workspace = new Workspace();
+		workspace = new IDESWorkspace();
 	}	
 	
 	/**
 	 * The command history for the user interface
+	 * FIXME local history for each view
 	 */
 	private CommandHistory commandHistory;
 
@@ -55,7 +56,7 @@ public class UIStateModel {
 	 * 
 	 * TODO Change to a set of publishers to support multiple automata in workspace.
 	 */ 
-	private FSAWorkspace workspace;
+	private Workspace workspace;
 	
 	/**
 	 * Abstract data model for the currently active FSA.
@@ -68,11 +69,7 @@ public class UIStateModel {
 	 * Visual model and display for currently active FSA.
 	 */
 	private GraphModel graphModel;
-	private GraphDrawingView graphDrawingView;
-	
-	// DEBUG should be a set of these managed and synch'd with changes to the Workspace
-	private GraphView thumbNail;
-	
+	private GraphDrawingView graphDrawingView;		
 	private MainWindow window;
 	
 	/**
@@ -198,16 +195,17 @@ public class UIStateModel {
 	 */
 	public void setGraphModel(GraphModel graphModel) {
 		this.graphModel = graphModel;
+		// graphModel is treated as a view of the (single) automaton
 		addView(graphModel);
 		graphDrawingView.setGraphModel(graphModel);
 		graphModel.attach(graphDrawingView);
 		// DEBUG
-		thumbNail = new GraphView();
+		// FilmStrip will do all of this itself when Workspace is notified of change.
+		GraphView thumbNail = new GraphView();
 		thumbNail.setGraphModel(graphModel);
-		graphModel.attach(thumbNail);
-		// TODO don't add if it is already in the filmstrip
-		// IDEA FilmStrip listens for changes to the Workspace model.
+		graphModel.attach(thumbNail);		
 		window.getFilmStrip().add(thumbNail);
+		
 		window.pack();
 		/////////////////////////////////////
 		graphModel.notifyAllSubscribers();

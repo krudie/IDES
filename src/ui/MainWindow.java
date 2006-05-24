@@ -15,6 +15,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import main.SystemVariables;
 
@@ -45,6 +46,7 @@ public class MainWindow extends JFrame {
 		// create tabbed panes and their components: 
 		// canvas, graph specs panel, LaTeX and EPS output text areas.
 		drawingBoard = new GraphDrawingView();
+		drawingBoard.setPreferredSize(new Dimension(750, 550));
 		UIStateModel.instance().setGraphDrawingView(drawingBoard);	
 		createAndAddTabbedPane();
 		// TODO add graph spec, latex and eps views to the state model
@@ -66,8 +68,8 @@ public class MainWindow extends JFrame {
 		sp.setName(drawingBoard.getName());
 		
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
-		//tabbedViews.add(sp);
-		tabbedViews.addTab("Graph Specification", null);
+		tabbedViews.add(sp);
+		tabbedViews.addTab("Events", null);
 		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");
 	}

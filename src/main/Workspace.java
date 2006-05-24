@@ -1,4 +1,7 @@
-package model.fsa;
+package main;
+
+import model.fsa.FSAEventsModel;
+import model.fsa.FSAModel;
 
 /**
  * Manages a collection of FSAModels.
@@ -7,7 +10,7 @@ package model.fsa;
  * @author helen bretzke
  *
  */
-public interface FSAWorkspace {
+public interface Workspace {
 	
 	public FSAModel getFSAModel(String name);
 	public void addFSAModel(FSAModel fsa);

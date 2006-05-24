@@ -24,6 +24,13 @@ import model.fsa.ver1.Event;
 import model.fsa.ver1.EventsModel;
 import presentation.fsa.Edge;
 
+/**
+ * Dialog window for assigning multiple events from the global events model
+ * to transitions represented by an edge in the graph model. 
+ * 
+ * @author helen bretzke
+ *
+ */
 public class EdgeLabellingDialog extends JDialog implements Subscriber {
 
 	public EdgeLabellingDialog(){
@@ -31,7 +38,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	}
 	
 	public EdgeLabellingDialog(Frame owner, EventsModel eventsModel){
-		super(owner, "Edge/Transition Labelling Dialog", true);
+		super(owner, "Edge Labelling Dialog", true);
 		this.eventsModel = eventsModel;
 		eventsModel.attach(this);
 		
