@@ -22,7 +22,7 @@ import presentation.fsa.NodeLayout;
  */
 public class MetaData implements FSAMetaData {
 	
-	Automaton automaton;
+	private Automaton automaton;
 	
 	public MetaData(Automaton automaton){
 		this.automaton = automaton;
@@ -89,9 +89,7 @@ public class MetaData implements FSAMetaData {
 	
 	
 	
-	/**
-	 * TODO Implement
-	 * 
+	/**	
 	 * Sets the graphical layout information required to display the given transition
 	 * and if it does not yet exist, adds the transition to the FSAModel.
 	 * 
@@ -99,7 +97,23 @@ public class MetaData implements FSAMetaData {
 	 * @param layout the graphical layout data for an edge
 	 */
 	public void setLayoutData(FSATransition transition, EdgeLayout layout){
-		
+		Transition t = (Transition)transition;
+		SubElement g = new SubElement("graphic");
+		SubElement b = new SubElement("bezier");
+		SubElement l = new SubElement("label");
+		b.setAttribute("x1", "" + layout.getCurve()[Edge.P1].x);
+		b.setAttribute("y1", "" + layout.getCurve()[Edge.P1].y);
+		b.setAttribute("x2", "" + layout.getCurve()[Edge.P2].x);
+		b.setAttribute("y2", "" + layout.getCurve()[Edge.P2].y);
+		b.setAttribute("ctrlx1", "" + layout.getCurve()[Edge.CTRL1].x);
+		b.setAttribute("ctrly1", "" + layout.getCurve()[Edge.CTRL1].y);
+		b.setAttribute("ctrlx2", "" + layout.getCurve()[Edge.CTRL2].x);
+		b.setAttribute("ctrly2", "" + layout.getCurve()[Edge.CTRL2].y);
+		l.setAttribute("x", "" + layout.getLabelOffset().x);
+		l.setAttribute("y", "" + layout.getLabelOffset().y);
+		g.addSubElement(b);
+		g.addSubElement(l);
+		t.addSubElement(g);
 	}
 	
 	/**
@@ -123,13 +137,15 @@ public class MetaData implements FSAMetaData {
 		controls[Edge.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
+		EdgeLayout edgeLayout = new EdgeLayout(controls);
+		
 		// extract label offset
 		Point2D.Float offset = new Point2D.Float();
 		SubElement label = layout.getSubElement("label");
 		offset.setLocation(Float.parseFloat(label.getAttribute("x")), Float.parseFloat(label.getAttribute("y")));
+		edgeLayout.setLabelOffset(offset);		
 		
 		// extract transition event symbol (if exists)
-		EdgeLayout edgeLayout = new EdgeLayout(controls);
 		Event e = (Event) t.getEvent();		
 		if(e != null){
 			edgeLayout.addEventName(e.getSymbol());
