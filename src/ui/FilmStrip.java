@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -33,9 +34,11 @@ public class FilmStrip extends JPanel implements ActionListener, Subscriber {
 	}
 	
 	public void add(GraphView gv){
-		super.add(gv);
+		
 		// Set active MODEL in the workspace, don't bother keeping a reference here.
 		activeView = gv;
+		gv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+		super.add(gv);
 		gv.repaint();		
 	}
 
@@ -48,6 +51,8 @@ public class FilmStrip extends JPanel implements ActionListener, Subscriber {
 	public void actionPerformed(ActionEvent arg0) {
 		try{
 			Component[] components = this.getComponents();
+			
+			// TODO Factor out toggleBorders code and call from add(gv)
 			if(components != null){
 				int n = components.length;
 				for(int i=0; i<n; i++){

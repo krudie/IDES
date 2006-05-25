@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE commands SYSTEM "commands.dtd">
 <commands version="1.1.0">
+
+	<group id="file.group">
+      <face>
+         <text>File</text>         
+      </face>
+      <members>  
+         <member command-id="open.model.command"/>
+         <member command-id="open.workspace.command"/>         
+         <separator/>
+         <member command-id="save.model.command"/>
+         <member command-id="save.workspace.command"/>
+      </members>  
+   </group>
+   
+   <command id="open.model.command">
+      <face>
+         <text>_Open automaton</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <description>Open an existing automaton</description>
+         <accelerator key="o">
+         </accelerator>
+      </face>
+    </command>
+    <command id="open.workspace.command">
+      <face>
+         <text>Open _workspace</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <description>Open a workspace of automata</description>
+         <accelerator key="w">
+         </accelerator>
+      </face>
+    </command>
+   <command id="save.model.command">
+      <face>
+         <text>Sa_ve automaton</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <description>Save automaton</description>
+         <accelerator key="v">
+         </accelerator>
+      </face>
+    </command>
+    <command id="save.workspace.command">
+      <face>
+         <text>_Save workspace</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <description>Save workspace settings</description>
+         <accelerator key="s">
+         </accelerator>
+      </face>
+    </command>
+    
+    <group id="graph.group">
+    <face>
+         <text>File</text>         
+      </face>
+      <members>  
+         <member command-id="edit.command"/>
+         <member command-id="create.command"/>
+         <member command-id="move.command"/>
+      </members>
+    </group> 
+       
    <command id="edit.command">
       <face>
          <text>Edit</text>
@@ -13,12 +75,10 @@
     </command>
     <command id="create.command">
       <face>
-         <text>Create</text>
+         <text>_Create</text>
          <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\graphic_create.gif</icon>
          <description>Create nodes or edges</description>
-         <accelerator key="c">
-    	     <modifier value="control"/>
-	         <modifier value="alt"/>
+         <accelerator key="c">	         	
          </accelerator>         
       </face>
     </command>

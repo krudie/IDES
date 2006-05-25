@@ -20,7 +20,8 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	// Unique name of the currently active FSAModel
 	String activeModelName;
 	
-	// ??? Do I even need to store this?  is this not simply the component with the current UI focus?
+	// ??? Do I even need to store this?  
+	// is this not simply the component with the current UI focus?
 	Object activeView;
 	
 	// A model of global events set (alphabet) and all local alphabets
@@ -31,6 +32,21 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	HashMap<String, Automaton> systems;
 	HashMap<String, GraphModel> graphs;
 	HashMap<String, MetaData> metadata;
+	
+	static IDESWorkspace me;
+	
+	public static IDESWorkspace instance(){
+		if(me == null){
+			me = new IDESWorkspace();
+		}
+		return me;
+	}
+	
+	private IDESWorkspace(){
+		systems = new HashMap<String, Automaton>();
+		graphs = new HashMap<String, GraphModel>();
+		metadata = new HashMap<String, MetaData>();	
+	}
 	
 	public void addFSAModel(FSAModel fsa) {
 		systems.put(fsa.getName(), (Automaton) fsa);
@@ -46,6 +62,9 @@ public class IDESWorkspace extends Publisher implements Workspace {
 
 	public void removeFSAModel(String name) {
 		// TODO Auto-generated method stub
+		if(systems.isEmpty()){
+			activeModelName = null;
+		}
 		this.notifyAllSubscribers();
 	}
 

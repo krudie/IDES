@@ -56,13 +56,21 @@ public class Edge extends GraphElement {
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
 		controlPoints = new Point2D.Float[4];
 		curve = new CubicCurve2D.Float();
-		arrow = new ArrowHead();		
+		arrow = new ArrowHead();
+		update();
 	}
 	
 	public Edge(FSATransition t, Node source, Node target, EdgeLayout layout){		
-		this(t, layout);
 		this.source = source;
-		this.target = target;		
+		this.target = target;
+		transitions = new ArrayList<FSATransition>();
+		transitions.add(t);
+		this.layout = layout; 
+		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
+		controlPoints = new Point2D.Float[4];
+		curve = new CubicCurve2D.Float();
+		arrow = new ArrowHead();
+		update();
 	}
 
 	public void draw(Graphics g) {		
@@ -169,7 +177,7 @@ public class Edge extends GraphElement {
 	}
 
 	public void setSource(Node source) {
-		this.source = source;
+		this.source = source;		
 	}
 
 	public Node getTarget() {

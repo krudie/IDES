@@ -16,5 +16,6 @@ public interface Workspace {
 	public void addFSAModel(FSAModel fsa);
 	public void removeFSAModel(String name);
 	public FSAEventsModel getEventsModel();
-		
+	public FSAModel getActiveModel();	
+	
 }

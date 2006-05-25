@@ -3,6 +3,8 @@
  */
 package ui;
 
+import io.fsa.ver1.FileOperations;
+
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -14,11 +16,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+
+import org.pietschy.command.CommandGroup;
+import org.pietschy.command.CommandManager;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import main.IDESWorkspace;
 import main.SystemVariables;
+import model.Subscriber;
 
+import ui.command.*;
 import ui.listeners.MenuListenerFactory;
 
 import java.awt.event.ActionEvent;
@@ -33,26 +42,27 @@ import java.awt.event.KeyEvent;
  * @author helen bretzke
  *
  */
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements Subscriber {
 
 	public MainWindow() {
-		super("IDES : Integrated Discrete-Event System Software 2.1"); // Call super.
-		
-		// create and add the menu
-		createAndAddMenuBar();
-		
-		// TODO create and add the toolbars
-		
-		// create tabbed panes and their components: 
-		// canvas, graph specs panel, LaTeX and EPS output text areas.
+		super("IDES : Integrated Discrete-Event System Software 2.1");
+		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
+	
 		drawingBoard = new GraphDrawingView();
 		drawingBoard.setPreferredSize(new Dimension(750, 550));
-		UIStateModel.instance().setGraphDrawingView(drawingBoard);	
 		createAndAddTabbedPane();
+		
+		UIStateModel.instance().setGraphDrawingView(drawingBoard);		
+		
 		// TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
 		this.filmStrip = new FilmStrip();		
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
+		
+		FileOperations.loadCommandManager("commands.xml");
+		createAndAddMenuBar();
+		createAndAddToolBar();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		pack();
 		setSize(800, 600);
@@ -79,15 +89,15 @@ public class MainWindow extends JFrame {
 		    JToolBar toolbar = new JToolBar();
 		    toolbar.setRollover(true);
 		    
-		 // add buttons with icons and listeners
+		 // TODO add buttons with icons; use CommandGroup
 		    
-		 // add toolbar to this window
-		    
+		 // TODO add toolbar to this window		    
 		    
 	 }
 	 
 	 /**
 	  * Menu components
+	  * TODO May be redundant once gui-commands fully coded.
 	  */
 	 JMenuBar menuBar = new JMenuBar();
 	 
@@ -116,19 +126,30 @@ public class MainWindow extends JFrame {
 	  
 	 String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/"; 
 	 
-	/**
-	 * FIXME An ugly mess of repetitive code: factor out and use info from SystemVariables.
-	 * 
-	 * TODO Disable all but open system, new system, open workspace, new workspace options
-	 * until user has opened something.
-	 * 
-	 */
 	private void createAndAddMenuBar() {
-			 	 
-		 // assemble the file menu
-//		 TODO add listeners
-		 ActionListener fileMenuListener = MenuListenerFactory.makeFileMenuListener();
+	 	 
+		 menuBar.add(createFileMenu());		  
+		 menuBar.add(createEditMenu());
+		 menuBar.add(createGraphMenu());
+		 menuBar.add(createOptionsMenu());
+		 	 
+		 // TODO assemble the help menu
+		 menuHelp = new JMenu("Help");
+		 menuHelp.setMnemonic(KeyEvent.VK_H);
 		 
+		 menuBar.add(menuHelp);
+		 
+		 // add menubar to this window
+		 getContentPane().add(menuBar, "North");
+	}
+	
+	/**
+	 * Assembles and returns the file menu.
+	 * TODO add listeners
+	 * 
+	 * @return the file menu
+	 */
+	private JMenu createFileMenu(){
 		 menuFile = new JMenu("File");
 		 menuFile.setMnemonic(KeyEvent.VK_F);
 		 
@@ -148,6 +169,9 @@ public class MainWindow extends JFrame {
 		 miNewSystem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		 menuFile.add(miNewSystem);
 		 
+		 // TODO replace this listener with a open.model.command
+		 ActionListener fileMenuListener = MenuListenerFactory.makeFileMenuListener();	
+		 
 		 miOpen = new JMenuItem("Open", new ImageIcon(imagePath + "file_open.gif"));
 		 miOpen.setMnemonic(KeyEvent.VK_O);
 		 miOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -165,54 +189,68 @@ public class MainWindow extends JFrame {
 		 
 		 miExit = new JMenuItem("Exit");
 		 miExit.setMnemonic(KeyEvent.VK_X);
-		 menuFile.add(miExit);
+		 menuFile.add(miExit);	 
+		return menuFile;		
+	}
+	
+	/**
+	 * Assembles and returns the edit menu.
+	 * TODO add listeners
+	 * 
+	 * @return the edit menu
+	 */
+	private JMenu createEditMenu(){
+		menuEdit = new JMenu("Edit");
+		menuEdit.setMnemonic(KeyEvent.VK_E);
 		 
-		 menuBar.add(menuFile);
+		miUndo = new JMenuItem("Undo", new ImageIcon(imagePath + "edit_undo.gif"));
+		miUndo.setMnemonic(KeyEvent.VK_U);
+		miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		menuEdit.add(miUndo);
 		 
-		 // assemble the edit menu
-//		 TODO add listeners
-		 menuEdit = new JMenu("Edit");
-		 menuEdit.setMnemonic(KeyEvent.VK_E);
+		miRedo = new JMenuItem("Redo", new ImageIcon(imagePath + "edit_redo.gif"));
+		miRedo.setMnemonic(KeyEvent.VK_R);
+		miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		menuEdit.add(miRedo);
 		 
-		 miUndo = new JMenuItem("Undo", new ImageIcon(imagePath + "edit_undo.gif"));
-		 miUndo.setMnemonic(KeyEvent.VK_U);
-		 miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miUndo);
+		menuEdit.addSeparator();
+		
+		miCut = new JMenuItem("Cut", new ImageIcon(imagePath + "edit_cut16.gif"));
+		miCut.setMnemonic(KeyEvent.VK_T);
+		miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+		miCut.addActionListener(MenuListenerFactory.makeCutListener());
+		menuEdit.add(miCut);
 		 
-		 miRedo = new JMenuItem("Redo", new ImageIcon(imagePath + "edit_redo.gif"));
-		 miRedo.setMnemonic(KeyEvent.VK_R);
-		 miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miRedo);
+		miCopy = new JMenuItem("Copy", new ImageIcon(imagePath + "edit_copy.gif"));
+		miCopy.setMnemonic(KeyEvent.VK_C);
+		miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		miCopy.addActionListener(MenuListenerFactory.makeCopyListener());
+		menuEdit.add(miCopy);
 		 
-		 menuEdit.addSeparator();
+		miPaste = new JMenuItem("Paste", new ImageIcon(imagePath + "edit_paste.gif"));
+		miPaste.setMnemonic(KeyEvent.VK_V);
+		miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+		menuEdit.add(miPaste);
 		 
-		 miCut = new JMenuItem("Cut", new ImageIcon(imagePath + "edit_cut16.gif"));
-		 miCut.setMnemonic(KeyEvent.VK_T);
-		 miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		 miCut.addActionListener(MenuListenerFactory.makeCutListener());
-		 menuEdit.add(miCut);
+		miDelete = new JMenuItem("Delete", new ImageIcon(imagePath + "edit_delete.gif"));
+		miDelete.setMnemonic(KeyEvent.VK_D);
+		miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+		miDelete.addActionListener(MenuListenerFactory.makeDeleteListener());
+		menuEdit.add(miDelete); 		 		 
+		
+		return menuEdit;
+	}
+	
+	/**
+	 * Assembles and returns the graph menu.
+	 * 
+	 * TODO This can all be done by CommandGroup in a few lines.
+	 * @return the graph menu
+	 */
+	private JMenu createGraphMenu(){
+		
 		 
-		 miCopy = new JMenuItem("Copy", new ImageIcon(imagePath + "edit_copy.gif"));
-		 miCopy.setMnemonic(KeyEvent.VK_C);
-		 miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-		 miCopy.addActionListener(MenuListenerFactory.makeCopyListener());
-		 menuEdit.add(miCopy);
-		 
-		 miPaste = new JMenuItem("Paste", new ImageIcon(imagePath + "edit_paste.gif"));
-		 miPaste.setMnemonic(KeyEvent.VK_V);
-		 miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-		 menuEdit.add(miPaste);
-		 
-		 miDelete = new JMenuItem("Delete", new ImageIcon(imagePath + "edit_delete.gif"));
-		 miDelete.setMnemonic(KeyEvent.VK_D);
-		 miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-		 miDelete.addActionListener(MenuListenerFactory.makeDeleteListener());
-		 menuEdit.add(miDelete);
-	 		 		 
-		 menuBar.add(menuEdit);
-		 
-		 // assemble the graph menu
-//		 TODO add listeners
+//		 TODO add listeners; NOT if commands are defined with a handleExecute method.
 		 menuGraph = new JMenu("Graph");
 		 menuGraph.setMnemonic(KeyEvent.VK_G);
 		 
@@ -232,17 +270,17 @@ public class MainWindow extends JFrame {
 		 // TODO Think up a memorable accelerator: ctrl+shift+S ?
 		 // miScaleBy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miScaleBy);
-
-		 miCreate = new JMenuItem("Create Nodes or Edges", new ImageIcon(imagePath + "graphic_create.gif"));
-		 miCreate.setMnemonic(KeyEvent.VK_C);
-		 miCreate.addActionListener(new ActionListener() {
-			 public void actionPerformed(ActionEvent arg0) {			  			
-				 // set the current drawing tool to the CreationTool
-				 drawingBoard.setTool(GraphDrawingView.CREATE);
-				 // TODO depress the creation toggle button
-				 
-			 }
-		 });
+		 CreateCommand cmd = new CreateCommand(drawingBoard);
+		 cmd.export();
+		 miCreate = cmd.createMenuItem();  // new JMenuItem("Create Nodes or Edges", new ImageIcon(imagePath + "graphic_create.gif"));		 
+//		 miCreate.addActionListener(new ActionListener() {
+//			 public void actionPerformed(ActionEvent arg0) {			  			
+//				 // set the current drawing tool to the CreationTool
+//				 drawingBoard.setTool(GraphDrawingView.CREATE);
+//				 // TODO Use groups and command manager to toggle this tool selection				 
+//			 }
+//		 });
+//		 
 		 // miCreate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miCreate);
 
@@ -265,22 +303,24 @@ public class MainWindow extends JFrame {
 		 miAllEdges.setMnemonic(KeyEvent.VK_E);
 		 //miAllEdges.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miAllEdges);
- 
+
 		 miAllLabels = new JMenuItem("Select All Labels", new ImageIcon(imagePath + "graphic_alllabels.gif"));
 		 miAllLabels.setMnemonic(KeyEvent.VK_N);
 		 //miAllNodes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miAllLabels);
-
-		 menuBar.add(menuGraph);
-		 
-		 // assemble the options menu
+		 return menuGraph;
+	}
+	
+	private JMenu createOptionsMenu(){
+//		 assemble the options menu
 		 menuOptions = new JMenu("Options");
 		 menuOptions.setMnemonic(KeyEvent.VK_O);		 
 		 
 		 // NOTE these items are toggles, some are dependent.
 		 // TODO export eps or tex should be mutually exclusive and disabled(?) if not using LaTeX for labels.
 		 // TODO change the order of these items; move frequently used to top of list.
-		 // TODO add listeners
+		 
+//		 TODO add listeners; NOT if commands are defined with a handleExecute method.
 		 miDrawBorder = new JCheckBoxMenuItem("Draw a border when exporting");
 		 miStdNodeSize =  new JCheckBoxMenuItem("Use standard node size");
 		 miUsePstricks =  new JCheckBoxMenuItem("Use pstricks in LaTeX output");
@@ -289,7 +329,7 @@ public class MainWindow extends JFrame {
 		 miExportTex = new JCheckBoxMenuItem("Export to TEX");		 
 		 miErrReports = new JCheckBoxMenuItem("Send Error Reports");
 		
-		 // TODO add listeners
+		 // TODO add listeners; NOT if commands are defined with a handleExecute method.
 		 		 
 		 menuOptions.add(miDrawBorder);
 		 menuOptions.add(miStdNodeSize);
@@ -298,22 +338,8 @@ public class MainWindow extends JFrame {
 		 menuOptions.add(miExportEps);
 		 menuOptions.add(miExportTex);
 		 menuOptions.add(miErrReports);
-		 menuBar.add(menuOptions);
-		 	 
-		 // TODO assemble the help menu
-		 menuHelp = new JMenu("Help");
-		 menuHelp.setMnemonic(KeyEvent.VK_H);
-		 
-		 menuBar.add(menuHelp);
-		 
-		 // add menubar to this window
-		 getContentPane().add(menuBar, "North");
+		 return menuOptions;
 	}
-	
-	protected void enableMenu(int menuID, boolean b){
-		
-	}
-	
 	
 	/**
 	 * The views.
@@ -328,5 +354,26 @@ public class MainWindow extends JFrame {
 
 	public FilmStrip getFilmStrip() {
 		return filmStrip;
+	}
+
+	/**
+	 * Enables appropriate menus and tools depending on state of workspace.
+	 */
+	public void update() {
+		// TODO Auto-generated method stub
+		
+		CommandManager commandManager = CommandManager.defaultInstance();
+		CommandGroup graphGroup = commandManager.getGroup("graph.group");
+		CommandGroup fileGroup = commandManager.getGroup("file.group");
+		
+		if(IDESWorkspace.instance().getActiveModel() == null){
+			// TODO disable edit and graph command groups
+			graphGroup.setEnabled(false);
+			fileGroup.setEnabled(true);
+			// enable file and options groups
+		}else{
+			// enable all commands
+		}
+		// TODO If active view is not the GraphDrawingView then disable the graph commands group
 	}
 }

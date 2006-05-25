@@ -12,6 +12,7 @@ import org.pietschy.command.HoverEvent;
 import org.pietschy.command.HoverListener;
 import org.pietschy.command.LoadException;
 
+import ui.command.CreateCommand;
 import ui.command.EditCommand;
 
 public class TestGuiCommands {
@@ -24,15 +25,20 @@ public class TestGuiCommands {
 		{
 		   CommandManager.defaultInstance().load(myCommandFile);
 //		 create a new instance of the command.
-		   EditCommand editCommand = new EditCommand();
-
+		   EditCommand editCommand = new EditCommand();		   
+		   
 //		    and use it!
 		   AbstractButton button = editCommand.createButton();
 		   JMenuItem menu = editCommand.createMenuItem();
-		   JFrame window = new JFrame();		   
-		   window.getContentPane().add(button);
 		   
+		   
+		   CreateCommand createCommand = new CreateCommand();
+		   menu = createCommand.createMenuItem();		   
+		   
+		   JFrame window = new JFrame();		   
+		   window.getContentPane().add(button);		   
 		   window.pack();
+		   
 		   CommandManager.defaultInstance().addHoverListener(new HoverListener() 
 				   {
 				      public void hoverStarted(HoverEvent e)

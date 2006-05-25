@@ -1,5 +1,7 @@
 package ui;
 
+import io.fsa.ver1.FileOperations;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -37,26 +39,20 @@ public class UIStateModel {
 	// The singleton instance
 	protected static UIStateModel me = null;
 		
-	private UIStateModel() {
+	private UIStateModel() {		
 		commandHistory = new CommandHistory();
 		views = new LinkedList<Subscriber>();
 		automaton = null;
 		metadata = null;
-		graphDrawingView = null;
-		workspace = new IDESWorkspace();
+		graphDrawingView = null;		
 	}	
 	
 	/**
 	 * The command history for the user interface
-	 * FIXME local history for each view
+	 * FIXME local history for each view 
+	 * @see javax.swing.undo.UndoManager
 	 */
 	private CommandHistory commandHistory;
-
-	/**
-	 * 
-	 * TODO Change to a set of publishers to support multiple automata in workspace.
-	 */ 
-	private Workspace workspace;
 	
 	/**
 	 * Abstract data model for the currently active FSA.
@@ -222,6 +218,4 @@ public class UIStateModel {
 	public void setWindow(MainWindow window) {
 		this.window = window;
 	}
-	
-
 }

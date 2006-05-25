@@ -2,6 +2,9 @@ package io.fsa.ver1;
 
 import java.io.File;
 
+import org.pietschy.command.CommandManager;
+import org.pietschy.command.LoadException;
+
 import main.IDESWorkspace;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
@@ -54,5 +57,25 @@ public class FileOperations {
 	
 	public static IDESWorkspace loadWorkspace(File f){
 		return null;
+	}
+	
+	/**
+	 * TODO move this to the io or ui.command package; it doesn't do anything with FSAs. 
+	 * 
+	 * Loads the command configuration files and initializes the CommandManager 
+	 * (i.e. the singleton class that manages and locates ActionCommand and CommandGroup instances.)
+	 * 
+	 * @param commandFileName the absolute path to the command configuration file.
+	 */
+	public static void loadCommandManager(String commandFileName){
+//		load the xml command definition and initialize the manager.
+		File myCommandFile = new File(commandFileName);
+		try {
+		   CommandManager.defaultInstance().load(myCommandFile);
+		} catch (LoadException e){
+		   // oops
+		   e.printStackTrace();
+		   System.exit(1);	
+		}		
 	}
 }

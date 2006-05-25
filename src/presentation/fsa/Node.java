@@ -45,7 +45,8 @@ public class Node extends GraphElement {
 		label = new GraphLabel("");
 		circle = new Ellipse2D.Double();
 		arrow1 = new Point2D.Float();
-		arrow2 = new Point2D.Float();		
+		arrow2 = new Point2D.Float();
+		update();
 	}
 
 	public long getId(){
@@ -54,6 +55,7 @@ public class Node extends GraphElement {
 	
 	public void setLayout(NodeLayout layout){
 		this.layout = layout;
+		update();
 	}
 	
 	public NodeLayout getLayout(){
@@ -147,12 +149,13 @@ public class Node extends GraphElement {
 	}	
 
 	public void setSelected(boolean b){
-		this.selected = b;
+		this.selected = b;		
 	}
 	
 	/**
-	 * DEBUG: since we are sharing references to unique node objects, this shouldn't be necessary.
-	 * 
+	 * DEBUG: since we are sharing references to unique node objects, 
+	 * this shouldn't be necessary.
+	 *  
 	 * @param n
 	 * @return
 	 */

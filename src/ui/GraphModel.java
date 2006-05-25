@@ -198,12 +198,13 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	public void addEdge(Node n1, Node n2){
 		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
-		// ?? Who computes layout of new edges (default to straight edge between pair of nodes??
+		// computes layout of new edges (default to straight edge between pair of nodes)
 		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
 		layoutData.setLayoutData(t, layout);
 		fsa.add(t);
 		fsa.notifyAllBut(this);
 		Edge e = new Edge(t, n1, n2, layout);
+		n1.insert(e);
 		edges.put(new Long(t.getId()), e);
 		notifyAllSubscribers();
 	}

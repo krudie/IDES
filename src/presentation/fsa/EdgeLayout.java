@@ -52,22 +52,29 @@ public class EdgeLayout extends GraphicalLayout {
 	 * Returns an array of 4 control points for a straight, directed edge from
 	 * <code>n1</code> to <code>n2</code>.
 	 * 
-	 * @param n1 layout for source node
-	 * @param n2 layout for target node
+	 * @param s layout for source node
+	 * @param t layout for target node
 	 * @return array of 4 control points for a straight, directed edge from n1 to n2
 	 */
-	public Point2D.Float[] getCurve(NodeLayout n1, NodeLayout n2){
+	public Point2D.Float[] getCurve(NodeLayout s, NodeLayout t){
 		Point2D.Float[] ctrls = new Point2D.Float[4];
-		Point2D.Float c1 = n1.getLocation();
-		Point2D.Float c2 = n2.getLocation();
-		// compute intersection of straight line from c1 to c2 with arcs of nodes
-		Point2D.Float dir = Geometry.subtract(c2, c1);
-		float norm = (float)Geometry.norm(dir);
-		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-		ctrls[Edge.P1] = Geometry.add(c1, Geometry.scale(unit, n1.getRadius()));
-		ctrls[Edge.CTRL1] = Geometry.add(c1, Geometry.scale(dir, norm/3));
-		ctrls[Edge.CTRL2] = Geometry.add(c1, Geometry.scale(dir, 2*norm/3));
-		ctrls[Edge.P2] = Geometry.add(c2, Geometry.scale(dir, -n2.getRadius()));      
+		// if source and target nodes are the same, compute a self-loop
+		if(s.equals(t)){
+			// TODO
+			throw new UnsupportedOperationException("Self-loops not net implemented.");
+		}else{		
+			// otherwise compute a straight edge		
+			Point2D.Float c1 = s.getLocation();
+			Point2D.Float c2 = t.getLocation();
+			// compute intersection of straight line from c1 to c2 with arcs of nodes
+			Point2D.Float dir = Geometry.subtract(c2, c1);
+			float norm = (float)Geometry.norm(dir);
+			Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
+			ctrls[Edge.P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
+			ctrls[Edge.CTRL1] = Geometry.add(c1, Geometry.scale(unit, norm/3));
+			ctrls[Edge.CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
+			ctrls[Edge.P2] = Geometry.add(c2, Geometry.scale(unit, -t.getRadius()-ArrowHead.SHORT_HEAD_LENGTH));
+		}
 		return ctrls;
 	}
 	
