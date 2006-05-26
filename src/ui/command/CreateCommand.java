@@ -5,6 +5,7 @@ import java.awt.geom.Point2D.Float;
 
 import org.pietschy.command.ActionCommand;
 
+import presentation.fsa.Edge;
 import presentation.fsa.GraphElement;
 import presentation.fsa.Node;
 import ui.GraphDrawingView;
@@ -14,6 +15,7 @@ public class CreateCommand extends ActionCommand {
 	private GraphDrawingView context;
 	private int elementType;
 	private Node source, target;
+	private Edge edge;
 	private Point location;
 	
 	/**
@@ -21,7 +23,7 @@ public class CreateCommand extends ActionCommand {
 	 */
 	public static final int UNKNOWN = -1;
 	public static final int NODE = 0;
-	public static final int EDGE = 1;
+	public static final int EDGE = 1;	
 	public static final int NODE_AND_EDGE = 2;
 	
 	/**
@@ -69,15 +71,21 @@ public class CreateCommand extends ActionCommand {
 			context.getGraphModel().addNode(new Float(location.x, location.y));
 			break;
 		case NODE_AND_EDGE:
-			context.getGraphModel().addEdgeAndNode(source, new Float(location.x, location.y));			
+			context.getGraphModel().finishEdgeAndAddNode(edge, new Float(location.x, location.y));
+			// context.getGraphModel().addEdgeAndNode(source, new Float(location.x, location.y));			
 			break;
 		case EDGE:
-			context.getGraphModel().addEdge(source, target);
+			context.getGraphModel().finishEdge(edge, target);
+			// context.getGraphModel().addEdge(source, target);
 			break;
 		default:
 			// TODO set the tool in the *currently active* drawing view
 			// set the current drawing tool to the CreationTool
 			 context.setTool(GraphDrawingView.CREATE);
 		}		
+	}
+
+	public void setEdge(Edge edge) {
+		this.edge = edge;
 	}
 }

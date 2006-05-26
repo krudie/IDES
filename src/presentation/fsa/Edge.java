@@ -24,11 +24,8 @@ import presentation.GraphicalLayout;
  */
 public class Edge extends GraphElement {
 
-	// the transition that this edge represents
-	// NOTE All that we need is the id to sync with the model
-	// FIXME replace with a collection of transitions (or just the ids)
-	private ArrayList<FSATransition> transitions;
-	//////////////////////////////////////////////////////////
+	// the transitions that this edge represents
+	private ArrayList<FSATransition> transitions;	
 	
 	private Node source, target;
 	private EdgeLayout layout;
@@ -46,8 +43,19 @@ public class Edge extends GraphElement {
 	public static final int P2 = 3;
 	//////////////////////////////////////////////////////////////////////////
 	
-	private CubicCurve2D curve;
+	private CubicCurve2D curve;	
 	
+	public Edge(EdgeLayout layout, Node source){
+		this.layout = layout;
+		this.source = source;
+		target = null;
+		transitions = new ArrayList<FSATransition>();		 
+		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
+		controlPoints = new Point2D.Float[4];
+		curve = new CubicCurve2D.Float();
+		arrow = new ArrowHead();
+		update();
+	}
 	
 	public Edge(FSATransition t, EdgeLayout layout){
 		transitions = new ArrayList<FSATransition>();
@@ -77,7 +85,8 @@ public class Edge extends GraphElement {
 		Graphics2D g2d = (Graphics2D)g;		
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.
-		if(source.isHighlighted() || target.isHighlighted()){
+		if(source.isHighlighted() || 
+				target != null && target.isHighlighted()){
 			setHighlighted(true);
 		}else{
 			setHighlighted(false);

@@ -1,10 +1,13 @@
 package ui.tools;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D.Float;
 
+import presentation.fsa.Edge;
 import presentation.fsa.Node;
 import ui.GraphDrawingView;
 import ui.UIStateModel;
@@ -20,7 +23,7 @@ public class CreationTool extends DrawingTool {
 	
 	private boolean drawingEdge = false;
 	private Node sourceNode;
-	private Point startPoint;
+	private Edge edge;
 	
 	public CreationTool(GraphDrawingView board){
 		context = board;		
@@ -53,8 +56,9 @@ public class CreationTool extends DrawingTool {
 					// TODO pass source and target nodes to CreateCommand
 					cmd = new CreateCommand(context, CreateCommand.EDGE, me
 							.getPoint());
-					cmd.setSourceNode(sourceNode);
+					// cmd.setSourceNode(sourceNode);
 					cmd.setTargetNode(n);
+					cmd.setEdge(edge);
 				} else {
 					// else create target node and create an edge
 					
@@ -63,9 +67,11 @@ public class CreationTool extends DrawingTool {
 										
 					cmd = new CreateCommand(context,
 							CreateCommand.NODE_AND_EDGE, me.getPoint());
-					cmd.setSourceNode(sourceNode);
+					// cmd.setSourceNode(sourceNode);
+					cmd.setEdge(edge);
 				}
 				drawingEdge = false;
+				context.clearCurrentSelection();				
 			} else {
 				if (n != null) {// if intersects with node, start drawing an
 								// edge
@@ -73,12 +79,14 @@ public class CreationTool extends DrawingTool {
 					// DEBUG
 					System.out.println("intersected target node; starting edge drawing");
 					sourceNode = n;
+					edge = context.getGraphModel().beginEdge(sourceNode);
 					drawingEdge = true;
 				} else {
 					// otherwise, just create a node
 					cmd = new CreateCommand(context, CreateCommand.NODE, me
 							.getPoint());
 					drawingEdge = false;
+					context.clearCurrentSelection();
 				}
 			}
 			  // FIXME this will never happen since context always forwards dblclick to TextTool
@@ -88,7 +96,7 @@ public class CreationTool extends DrawingTool {
 				// FIXME change this to a CreateCommand so is added to history
 				context.getGraphModel().addEdge(n, n);
 				drawingEdge = false;
-				
+				context.clearCurrentSelection();
 			} else { // otherwise, create a node and start drawing an edge
 				cmd = new CreateCommand(context, CreateCommand.NODE, me
 						.getPoint());
@@ -98,21 +106,26 @@ public class CreationTool extends DrawingTool {
 		if (cmd != null) {
 			cmd.execute();
 			UIStateModel.instance().getCommandHistory().add(cmd);
-		}
-		// oddClick = !oddClick;
+		}		
 		context.repaint();
 	}
 
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
-		// TODO if drawing an edge, set P2, recompute curve and repaint
-		
+		// if drawing an edge, recompute the curve
+		if(drawingEdge){
+			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
+			context.repaint();
+		}
 	}
 
 	@Override
 	public void handleMouseMoved(MouseEvent me) {
-		// TODO if drawing an edge, set P2, recompute curve and repaint
-		
+		// if drawing an edge, recompute the curve
+		if(drawingEdge){
+			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
+			context.repaint();
+		}
 	}
 
 	@Override

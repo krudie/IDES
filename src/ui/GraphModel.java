@@ -1,8 +1,7 @@
 package ui;
 
-import java.awt.Event;
-import java.awt.geom.Point2D;
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -78,8 +77,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * 
 	 * Although modifying the recursive graph structure will be trickier than simply rebuilding... 
 	 */
-	public void update(){
-		
+	public void update(){	
 				
 		// For now, just create everthing new.		
 		// TODO OPTIMIZE How expensive is this?
@@ -106,7 +104,7 @@ public class GraphModel extends Publisher implements Subscriber {
 
 		// for all transitions in fsa
 		// create all edges and connect to nodes
-		// FIXME create a single edge for aggregate of all transitions from same start and end state
+		// create a single edge for aggregate of all transitions from same start and end state
 		// add events to collection for that edge.
 		iter = fsa.getTransitionIterator();
 		Transition t;
@@ -187,9 +185,78 @@ public class GraphModel extends Publisher implements Subscriber {
 		graph.insert(n);
 		this.notifyAllSubscribers();
 		return n;
+	}	
+	
+	/**
+	 * Creates and returns an Edge with source node <code>n1</code>, 
+	 * undefined target node, and terminating at the centre of node <code>n1</code>.
+	 * 
+	 * FIXME should the target point be something more sensible?
+	 * 
+	 * @param n1
+	 * @return a new Edge with source node n1
+	 */
+	public Edge beginEdge(Node n1){
+		EdgeLayout layout = new EdgeLayout();
+		layout.setCurve(layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation()));
+		Edge e = new Edge(layout, n1);
+		n1.insert(e);
+		return e;
 	}
 	
 	/**
+	 * Updates the layout for the given edge so it extends to the given target point.
+	 * 
+	 * @param e the Edge to be updated
+	 * @param p the target point
+	 */
+	public void updateEdge(Edge e, Point2D.Float p){
+		EdgeLayout layout = e.getLayout();
+		NodeLayout s = e.getSource().getLayout();
+		layout.setCurve(layout.computeCurve(s, p));
+		e.update();
+	}
+	
+	/**
+	 * Recompute the layout for the given edge, add a new node at point <code>p</code>,
+	 * and create a new transition for this edge. 
+	 * 
+	 * @param e
+	 * @param p
+	 */
+	public void finishEdgeAndAddNode(Edge e, Point2D.Float p){		
+		Node n2 = addNode(p);
+		e.setTarget(n2);
+		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
+		updateEdge(e, p);  // FIXME subtract radius of n2 from p
+		layoutData.setLayoutData(t, e.getLayout());
+		fsa.add(t);
+		fsa.notifyAllBut(this);
+		edges.put(new Long(t.getId()), e);
+		notifyAllSubscribers();
+	}
+	
+	 /**
+	  * Updates the given edge from node <code>n1</code> to node <code>n2</code>.
+	  * and a adds a new transition to the automaton.
+	  * 
+	  * @param n1 
+	  * @param n2	
+	  */
+	public void finishEdge(Edge e, Node n2){
+		e.setTarget(n2);
+		EdgeLayout layout = new EdgeLayout(e.getSource().getLayout(), n2.getLayout());
+		e.setLayout(layout);		
+		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
+		layoutData.setLayoutData(t, layout);
+		fsa.add(t);
+		fsa.notifyAllBut(this);
+		edges.put(new Long(t.getId()), e);
+		notifyAllSubscribers();
+	}
+	
+	/**
+	 * @deprecated
 	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
 	 * and a adds a new transition to the automaton.
 	 * 
@@ -208,8 +275,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		edges.put(new Long(t.getId()), e);
 		notifyAllSubscribers();
 	}
-	
 	/**
+	 * @deprecated
 	 * Creates a node at point <code>p</code> and an edge from the given source node
 	 * to the new node.
 	 * 

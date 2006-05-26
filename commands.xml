@@ -15,10 +15,10 @@
       </members>  
    </group>
    
-   <command id="open.model.command">
+   <command id="open.system.command">
       <face>
          <text>_Open automaton</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\file_open.gif</icon>
          <description>Open an existing automaton</description>
          <accelerator key="o">
          </accelerator>
@@ -33,10 +33,10 @@
          </accelerator>
       </face>
     </command>
-   <command id="save.model.command">
+   <command id="save.system.command">
       <face>
          <text>Sa_ve automaton</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\file_save.gif</icon>
          <description>Save automaton</description>
          <accelerator key="v">
          </accelerator>
@@ -76,9 +76,10 @@
     <command id="create.command">
       <face>
          <text>_Create</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\graphic_create.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\graphic_create.gif</icon>
          <description>Create nodes or edges</description>
-         <accelerator key="c">	         	
+         <accelerator key="c">
+	         <modifier value="control"/>	         	
          </accelerator>         
       </face>
     </command>

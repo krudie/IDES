@@ -1,6 +1,10 @@
 package io.fsa.ver1;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Iterator;
 
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.LoadException;
@@ -78,4 +82,68 @@ public class FileOperations {
 		   System.exit(1);	
 		}		
 	}
+	
+	/**
+     * Method for getting a printstream wrapped around a file
+     * @param file the file that needs a printstream wrapped around it
+     * @return The printstream pointing to a the file
+     */
+    private static PrintStream getPrintStream(File file){
+        PrintStream ps = null;
+        if(!file.exists()){
+            try{
+                file.createNewFile();
+            }
+            catch(IOException ioe){
+                System.err.println("ProjectManager: unable to create file, message: "
+                        + ioe.getMessage());
+                return null;
+            }
+        }
+        if(!file.isFile()){
+            System.err.println("ProjectManager: " + file.getName() + " is not a file. ");
+            return null;
+        }
+        if(!file.canWrite()){
+            System.err.println("ProjectManager: can not write to file: " + file.getName());
+            return null;
+        }
+        try{
+            ps = new PrintStream(file);
+        }
+        catch(FileNotFoundException fnfe){
+            System.out.println("ProjectManager: file missing: " + fnfe.getMessage());
+            return null;
+        }
+        return ps;
+    }
+
+  
+    /**
+     * @see projectPresentation.ProjectPresentation#saveProject(java.lang.String)
+     */
+    public static void saveProject(String path){
+        File file = new File(path, IDESWorkspace.instance().getName() + ".xml");
+        PrintStream ps = getPrintStream(file);
+        if(ps == null) return;
+  // TODO  XMLexporter.workspaceToXML(IDESWorkspace.instance(), ps);
+        Iterator<Automaton> ai = IDESWorkspace.instance().getAutomata();
+        while(ai.hasNext()){
+            Automaton a = ai.next();
+            saveAutomaton(a, path);
+        }
+    }
+
+    /**
+     * Saves an automaton to a file
+     * @param a the automaton to save
+     * @param path the path to save it to
+     */      
+    public static void saveAutomaton(Automaton a, String path){
+        File file = new File(path, a.getName() + ".xml");
+        PrintStream ps = getPrintStream(file);
+        if(ps == null) return;
+        XMLexporter.automatonToXML(a, ps);        
+    }  
+    
 }

@@ -12,8 +12,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-import ui.command.CommandHistory;
-
 /**
  * This singleton class provides a simple read/write interface to a plain text file.
  * An OS independent registry.

@@ -43,20 +43,21 @@ public class EdgeLayout extends GraphicalLayout {
 	 * @param n2 layout for target node
 	 */
 	public EdgeLayout(NodeLayout n1, NodeLayout n2){
-		bezierControls = getCurve(n1, n2);
+		bezierControls = computeCurve(n1, n2);
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
 	}
 	
 	/**
 	 * Returns an array of 4 control points for a straight, directed edge from
-	 * <code>n1</code> to <code>n2</code>.
+	 * <code>s</code>, the layout for the source node to <code>t</code>, the 
+	 * layout for the target node.
 	 * 
 	 * @param s layout for source node
 	 * @param t layout for target node
-	 * @return array of 4 control points for a straight, directed edge from n1 to n2
+	 * @return array of 4 Bezier control points for a straight, directed edge
 	 */
-	public Point2D.Float[] getCurve(NodeLayout s, NodeLayout t){
+	public static Point2D.Float[] computeCurve(NodeLayout s, NodeLayout t){
 		Point2D.Float[] ctrls = new Point2D.Float[4];
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t)){
@@ -75,6 +76,27 @@ public class EdgeLayout extends GraphicalLayout {
 			ctrls[Edge.CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
 			ctrls[Edge.P2] = Geometry.add(c2, Geometry.scale(unit, -t.getRadius()-ArrowHead.SHORT_HEAD_LENGTH));
 		}
+		return ctrls;
+	}
+	
+	/**
+	 * Returns an array of 4 control points for a straight, directed edge from
+	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
+	 * 
+	 * @param s layout for source node
+	 * @param c2 endpoint for the edge
+	 * @return array of 4 Bezier control points for a straight, directed edge from s to c2. 
+	 */
+	public static Point2D.Float[] computeCurve(NodeLayout s, Point2D.Float c2){
+		Point2D.Float[] ctrls = new Point2D.Float[4];
+		Point2D.Float c1 = s.getLocation();
+		Point2D.Float dir = Geometry.subtract(c2, c1);
+		float norm = (float)Geometry.norm(dir);
+		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
+		ctrls[Edge.P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
+		ctrls[Edge.CTRL1] = Geometry.add(c1, Geometry.scale(unit, norm/3));
+		ctrls[Edge.CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
+		ctrls[Edge.P2] = c2;		
 		return ctrls;
 	}
 	
