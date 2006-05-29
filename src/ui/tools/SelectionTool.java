@@ -19,7 +19,7 @@ import ui.GraphDrawingView;
  * @author helen
  *
  */
-public class EditingTool extends DrawingTool {
+public class SelectionTool extends DrawingTool {
 
 	private Point startPoint, endPoint; 
 	Dimension d;
@@ -29,7 +29,7 @@ public class EditingTool extends DrawingTool {
 	
 	private boolean resizing = false;	
 	
-	public EditingTool(GraphDrawingView board){
+	public SelectionTool(GraphDrawingView board){
 		context = board;
 		cursor = new Cursor(Cursor.DEFAULT_CURSOR);
 		d = new Dimension();
@@ -39,8 +39,7 @@ public class EditingTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {		
-		// TODO if keyboard shift or control, add currently selected item to buffer
-		
+		// TODO if keyboard shift or control, add currently selected item to buffer		
 	}
 
 	@Override
@@ -83,6 +82,7 @@ public class EditingTool extends DrawingTool {
 		// if selection rectangle exists, figure out if hovering over a boundary
 		// what kind of width is reasonable (surely 1 pixel is a bit mean)
 		// set the cursor to the appropriate resize icon
+		// Easier to just allow resizing on corner handles (see MagicDraw UML)
 		
 	}
 	

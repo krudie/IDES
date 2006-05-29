@@ -47,14 +47,14 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * The data models to keep synchronized.
 	 */	
 	private Automaton fsa;		 // system model
-	private MetaData layoutData; // presentation data for the system model
+	private MetaData metaData; // presentation data for the system model
 	
 	private long maxStateId, maxEventId, maxTransitionId;
 	
 	public GraphModel(Automaton fsa, MetaData data){
 		
 		this.fsa = fsa;
-		this.layoutData = data;
+		this.metaData = data;
 		
 		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
@@ -96,7 +96,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		graph = new GraphElement();
 		while(iter.hasNext()){
 			s = (State)iter.next();
-			n1 = new Node(s, layoutData.getLayoutData(s));
+			n1 = new Node(s, metaData.getLayoutData(s));
 			n1.update();  // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			graph.insert(n1);
 			nodes.put(new Long(s.getId()), n1);
@@ -121,13 +121,13 @@ public class GraphModel extends Publisher implements Subscriber {
 			// add t to the edge's set of transitions
 			e = edgeBetween(n1, n2); 
 			if(e != null){
-				layoutData.augmentLayoutData(t, e.getLayout());
+				metaData.augmentLayoutData(t, e.getLayout());
 				e.addTransition(t);
 				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge			
-				e = new Edge(t, n1, n2, layoutData.getLayoutData(t));
+				e = new Edge(t, n1, n2, metaData.getLayoutData(t));
 				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 				
 				// add this edge to source node's out edges
@@ -177,7 +177,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		s.setInitial(false);
 		s.setMarked(false);
 		NodeLayout layout = new NodeLayout(p);			
-		layoutData.setLayoutData(s, layout);
+		metaData.setLayoutData(s, layout);
 		fsa.add(s);
 		fsa.notifyAllBut(this);
 		Node n = new Node(s, layout);	
@@ -198,7 +198,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	public Edge beginEdge(Node n1){
 		EdgeLayout layout = new EdgeLayout();
-		layout.setCurve(layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation()));
+		layout.setCurve(EdgeLayout.computeCurve(n1.getLayout(), n1.getLayout().getLocation()));
 		Edge e = new Edge(layout, n1);
 		n1.insert(e);
 		return e;
@@ -213,7 +213,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void updateEdge(Edge e, Point2D.Float p){
 		EdgeLayout layout = e.getLayout();
 		NodeLayout s = e.getSource().getLayout();
-		layout.setCurve(layout.computeCurve(s, p));
+		layout.setCurve(EdgeLayout.computeCurve(s, p));
 		e.update();
 	}
 	
@@ -226,14 +226,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	public void finishEdgeAndAddNode(Edge e, Point2D.Float p){		
 		Node n2 = addNode(p);
-		e.setTarget(n2);
-		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
-		updateEdge(e, p);  // FIXME subtract radius of n2 from p
-		layoutData.setLayoutData(t, e.getLayout());
-		fsa.add(t);
-		fsa.notifyAllBut(this);
-		edges.put(new Long(t.getId()), e);
-		notifyAllSubscribers();
+		finishEdge(e, n2);
 	}
 	
 	 /**
@@ -245,10 +238,9 @@ public class GraphModel extends Publisher implements Subscriber {
 	  */
 	public void finishEdge(Edge e, Node n2){
 		e.setTarget(n2);
-		EdgeLayout layout = new EdgeLayout(e.getSource().getLayout(), n2.getLayout());
-		e.setLayout(layout);		
+		e.getLayout().setCurve(EdgeLayout.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout()));
 		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
-		layoutData.setLayoutData(t, layout);
+		metaData.setLayoutData(t, e.getLayout());
 		fsa.add(t);
 		fsa.notifyAllBut(this);
 		edges.put(new Long(t.getId()), e);
@@ -267,7 +259,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
 		// computes layout of new edges (default to straight edge between pair of nodes)
 		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
-		layoutData.setLayoutData(t, layout);
+		metaData.setLayoutData(t, layout);
 		fsa.add(t);
 		fsa.notifyAllBut(this);
 		Edge e = new Edge(t, n1, n2, layout);

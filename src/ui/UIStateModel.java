@@ -1,7 +1,5 @@
 package ui;
 
-import io.fsa.ver1.FileOperations;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -11,8 +9,6 @@ import model.Publisher;
 import model.Subscriber;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
-
-import ui.command.CommandHistory;
 
 /** 
  * Captures the state of the user interface at any point in time.
@@ -28,7 +24,7 @@ import ui.command.CommandHistory;
  * @author Helen Bretzke
  *
  */
-public class UIStateModel {
+public class UIStateModel  {
 		
 	public static UIStateModel instance() {
 		if(me == null) {
@@ -40,19 +36,11 @@ public class UIStateModel {
 	protected static UIStateModel me = null;
 		
 	private UIStateModel() {		
-		commandHistory = new CommandHistory();
 		views = new LinkedList<Subscriber>();
 		automaton = null;
 		metadata = null;
 		graphDrawingView = null;		
-	}	
-	
-	/**
-	 * The command history for the user interface
-	 * FIXME local history for each view 
-	 * @see javax.swing.undo.UndoManager
-	 */
-	private CommandHistory commandHistory;
+	}
 	
 	/**
 	 * Abstract data model for the currently active FSA.
@@ -134,11 +122,6 @@ public class UIStateModel {
 	public void setActiveView(Subscriber activeView) {
 		this.activeView = activeView;
 	}
-
-	public CommandHistory getCommandHistory() {
-		return commandHistory;
-	}
-
 	public MetaData getMetadata() {
 		return metadata;
 	}

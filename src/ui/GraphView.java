@@ -28,8 +28,7 @@ public class GraphView extends JComponent implements Subscriber {
 	public void paint(Graphics g) {
 				
 			Graphics2D g2D = (Graphics2D) g; // cast to 2D	
-	
-			
+				
 			g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 		                         RenderingHints.VALUE_ANTIALIAS_ON);		
 		    g2D.setBackground(Color.white);  // FIXME THIS DOESN'T WORK
@@ -45,7 +44,8 @@ public class GraphView extends JComponent implements Subscriber {
 		    g2D.scale(scaleFactor, scaleFactor);		
 		    //	TODO other transformation?
 	
-		    graph.draw(g2D);		
+		    graph.draw(g2D);
+		    g2D.dispose();
 	}
 
 	/**

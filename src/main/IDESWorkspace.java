@@ -45,7 +45,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return me;
 	}
 	
-	private IDESWorkspace(){
+	protected IDESWorkspace(){
 		systems = new HashMap<String, Automaton>();
 		graphs = new HashMap<String, GraphModel>();
 		metadata = new HashMap<String, MetaData>();	

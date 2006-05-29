@@ -28,10 +28,12 @@ import main.SystemVariables;
 import model.Subscriber;
 
 import ui.command.*;
+import ui.command.FileCommands.*;
+import ui.command.GraphCommands.*;
+
 import ui.listeners.MenuListenerFactory;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 /**
@@ -49,10 +51,12 @@ public class MainWindow extends JFrame implements Subscriber {
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
 		drawingBoard = new GraphDrawingView();
+		IDESWorkspace.instance().attach(drawingBoard);
+		// TODO set size based on screen size; use a real estate manager for plugins
 		drawingBoard.setPreferredSize(new Dimension(750, 550));
 		createAndAddTabbedPane();
 		
-		UIStateModel.instance().setGraphDrawingView(drawingBoard);		
+		// UIStateModel.instance().setGraphDrawingView(drawingBoard);		
 		
 		// TODO add graph spec, latex and eps views to the state model
 		// UIStateModel.instance().addView(???);
@@ -62,7 +66,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		FileOperations.loadCommandManager("commands.xml");
 		createAndAddMenuBar();
 		createAndAddToolBar();
-		
+		update();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		pack();
 		setSize(800, 600);
@@ -136,73 +140,18 @@ public class MainWindow extends JFrame implements Subscriber {
 	 */
 	private void loadAndExportCommands() {
 		
-		new FileCommands.OpenAutomatonCommand(CommandManager.defaultInstance(), "open.automaton.command", null).export();
+		new FileCommands.OpenAutomatonCommand(null).export();
 		new FileCommands.SaveAutomatonCommand().export();
-		new FileCommands.OpenWorkspaceCommand().export();
-		new FileCommands.SaveWorkspaceCommand().export();		
-		new EditCommand().export();
+		new FileCommands.OpenWorkspaceCommand(null).export();
+		new FileCommands.SaveWorkspaceCommand().export();
+		new FileCommands.ExportToGIFCommand(null).export();
+		new FileCommands.ExportToLatexCommand(null).export();
+		new FileCommands.ExportToPNGCommand(null).export();
+		new SelectCommand().export();
 		new MoveCommand().export();
 		new CreateCommand(drawingBoard).export();
 	}
 
-	/**
-	 * Assembles and returns the file menu.
-	 * TODO add listeners
-	 * 
-	 * @return the file menu
-	 */
-	private JMenu createFileMenu(){
-		 JMenu menuFile = new JMenu("File");
-		 menuFile.setMnemonic(KeyEvent.VK_F);
-		 
-		 menuFile.add(new FileCommands.OpenAutomatonCommand(CommandManager.defaultInstance(), "open.automaton.command", null).createMenuItem());
-		 menuFile.add(new FileCommands.SaveAutomatonCommand().createMenuItem());
-		 menuFile.add(new FileCommands.OpenWorkspaceCommand().createMenuItem());
-		 menuFile.add(new FileCommands.SaveWorkspaceCommand().createMenuItem());
-		 menuFile.add(CommandManager.defaultInstance().getGroup("export.group").createMenuItem());
-//		 CommandGroup fileGroup = CommandManager.defaultInstance().getGroup("file.group");
-//		 menuFile.add(fileGroup.createMenuItem());
-		 
-//		 menuExport = new JMenu("Export");
-//		 miLatex = new JMenuItem("LaTeX", new ImageIcon(imagePath + "file_export_latex.gif"));
-//		 miGif = new JMenuItem("GIF", new ImageIcon(imagePath + "file_export_gif.gif"));
-//		 miPng = new JMenuItem("PNG", new ImageIcon(imagePath + "file_export_png.gif"));
-//		 menuExport.add(miLatex);
-//		 menuExport.add(miGif);
-//		 menuExport.add(miPng);		 
-//		 menuFile.add(menuExport);
-//		 
-//		 menuFile.addSeparator();
-//		 		 
-//		 miNewSystem = new JMenuItem("New System", new ImageIcon(imagePath + "file_new.gif"));
-//		 miNewSystem.setMnemonic(KeyEvent.VK_N);
-//		 miNewSystem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-//		 menuFile.add(miNewSystem);
-//		 
-//		 // TODO replace this listener with a open.model.command
-//		 ActionListener fileMenuListener = MenuListenerFactory.makeFileMenuListener();	
-//		 
-//		 miOpen = new JMenuItem("Open", new ImageIcon(imagePath + "file_open.gif"));
-//		 miOpen.setMnemonic(KeyEvent.VK_O);
-//		 miOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-//		 miOpen.addActionListener(fileMenuListener);
-//		 menuFile.add(miOpen);
-//		 
-//		 miSave = new JMenuItem("Save", new ImageIcon(imagePath + "file_save.gif"));
-//		 miSave.setMnemonic(KeyEvent.VK_S);
-//		 miSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-//		 menuFile.add(miSave);
-//		 
-//		 miSaveAs = new JMenuItem("Save As...", new ImageIcon(imagePath + "file_saveas.gif"));
-//		 miSaveAs.setMnemonic(KeyEvent.VK_A);		 
-//		 menuFile.add(miSaveAs);
-//		 
-//		 miExit = new JMenuItem("Exit");
-//		 miExit.setMnemonic(KeyEvent.VK_X);
-//		 menuFile.add(miExit);	 
-		return menuFile;		
-	}
-	
 	/**
 	 * Assembles and returns the edit menu.
 	 * TODO add listeners
@@ -225,28 +174,28 @@ public class MainWindow extends JFrame implements Subscriber {
 		 
 		menuEdit.addSeparator();
 		
-		JMenuItem miCut = new JMenuItem("Cut", new ImageIcon(imagePath + "edit_cut16.gif"));
-		miCut.setMnemonic(KeyEvent.VK_T);
-		miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		miCut.addActionListener(MenuListenerFactory.makeCutListener());
-		menuEdit.add(miCut);
-		 
-		JMenuItem miCopy = new JMenuItem("Copy", new ImageIcon(imagePath + "edit_copy.gif"));
-		miCopy.setMnemonic(KeyEvent.VK_C);
-		miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-		miCopy.addActionListener(MenuListenerFactory.makeCopyListener());
-		menuEdit.add(miCopy);
-		 
-		JMenuItem miPaste = new JMenuItem("Paste", new ImageIcon(imagePath + "edit_paste.gif"));
-		miPaste.setMnemonic(KeyEvent.VK_V);
-		miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-		menuEdit.add(miPaste);
-		 
-		JMenuItem miDelete = new JMenuItem("Delete", new ImageIcon(imagePath + "edit_delete.gif"));
-		miDelete.setMnemonic(KeyEvent.VK_D);
-		miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-		miDelete.addActionListener(MenuListenerFactory.makeDeleteListener());
-		menuEdit.add(miDelete); 		 		 
+//		JMenuItem miCut = new JMenuItem("Cut", new ImageIcon(imagePath + "edit_cut16.gif"));
+//		miCut.setMnemonic(KeyEvent.VK_T);
+//		miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+//		miCut.addActionListener(MenuListenerFactory.makeCutListener());
+//		menuEdit.add(miCut);
+//		 
+//		JMenuItem miCopy = new JMenuItem("Copy", new ImageIcon(imagePath + "edit_copy.gif"));
+//		miCopy.setMnemonic(KeyEvent.VK_C);
+//		miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+//		miCopy.addActionListener(MenuListenerFactory.makeCopyListener());
+//		menuEdit.add(miCopy);
+//		 
+//		JMenuItem miPaste = new JMenuItem("Paste", new ImageIcon(imagePath + "edit_paste.gif"));
+//		miPaste.setMnemonic(KeyEvent.VK_V);
+//		miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+//		menuEdit.add(miPaste);
+//		 
+//		JMenuItem miDelete = new JMenuItem("Delete", new ImageIcon(imagePath + "edit_delete.gif"));
+//		miDelete.setMnemonic(KeyEvent.VK_D);
+//		miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+//		miDelete.addActionListener(MenuListenerFactory.makeDeleteListener());
+//		menuEdit.add(miDelete); 		 		 
 		
 		return menuEdit;
 	}
@@ -368,21 +317,23 @@ public class MainWindow extends JFrame implements Subscriber {
 	/**
 	 * Enables appropriate menus and tools depending on state of workspace.
 	 */
-	public void update() {
-		// TODO Auto-generated method stub
-		
+	public void update() {		
 		CommandManager commandManager = CommandManager.defaultInstance();
-		CommandGroup graphGroup = commandManager.getGroup("graph.group");
-		CommandGroup fileGroup = commandManager.getGroup("file.group");
-		CommandGroup editGroup = commandManager.getGroup("edit.group");
+		
 		if(IDESWorkspace.instance().getActiveModel() == null){
-			// TODO disable edit and graph command groups
-			graphGroup.setEnabled(false);
-			fileGroup.setEnabled(true);
-			// enable file and options groups
+			// TODO disable edit command group
+			commandManager.getGroup("graph.group").setEnabled(false);
+			commandManager.getGroup("ides.toolbar.group").setEnabled(false);
+			commandManager.getGroup("file.group").setEnabled(true);
+			// enable options groups
+			
+			// disable save commands
+			// FIXME this doesn't work
+			commandManager.getGroup("file.save.group").setEnabled(false);
 		}else{
-			// enable all commands
+			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
+			commandManager.getGroup("ides.toolbar.group").setEnabled(true);
 		}
-		// TODO If active view is not the GraphDrawingView then disable the graph commands group
+		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 	}
 }

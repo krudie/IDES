@@ -37,63 +37,37 @@ public class FileCommands {
 	
 	public static class OpenAutomatonCommand extends AbstractFileOpenCommand {
 		
-		public OpenAutomatonCommand(CommandManager cm, String id, FileFilter filter) {
-			super(cm, id, filter);			
+		public OpenAutomatonCommand(FileFilter filter) {
+			super(CommandManager.defaultInstance(), "open.automaton.command", filter);			
 		}
-
-//		public OpenSystemCommand(){
-//			
-//		}
-		
-//		@Override
-//		protected void handleExecute() {
-//			
-//			JFileChooser chooser = new JFileChooser(FileOperations.DEFAULT_DIRECTORY);
-//			  Automaton fsa = null;
-//			  // TODO move this to a place that can attach the dialog to a container 
-//			  int returnVal = chooser.showOpenDialog(null);
-//			  if(returnVal == JFileChooser.APPROVE_OPTION) {
-//				  File f = chooser.getSelectedFile();
-//				  // DEBUG
-//				  // System.out.println(f.getAbsolutePath());
-//				  fsa = (Automaton)FileOperations.openSystem(f);
-//			  }
-//			  
-//			  // TODO figure out which file menu item was selected
-//			  //if(item.getName().equals(""))
-//			  // For now just open an existing system			  
-//			  if(fsa != null){
-//				  UIStateModel uism = UIStateModel.instance(); 
-//				  uism.setAutomaton(fsa);
-//				  uism.setMetadata(new MetaData(fsa));
-//				  uism.setGraphModel(new GraphModel(fsa, uism.getMetadata()));
-//				  uism.refreshViews();
-//			  }
-//		  }
 
 		@Override
 		protected void performOpen(File[] files) {			
 			Automaton fsa = (Automaton)FileOperations.openSystem(files[0]);
 			if(fsa != null){
-				  UIStateModel uism = UIStateModel.instance(); 
-				  uism.setAutomaton(fsa);
-				  uism.setMetadata(new MetaData(fsa));
-				  uism.setGraphModel(new GraphModel(fsa, uism.getMetadata()));
-				  uism.refreshViews();
+				IDESWorkspace.instance().addFSAModel(fsa);
+				IDESWorkspace.instance().notifyAllSubscribers();
+				
+//				  UIStateModel uism = UIStateModel.instance(); 
+//				  uism.setAutomaton(fsa);
+//				  uism.setMetadata(new MetaData(fsa));
+//				  uism.setGraphModel(new GraphModel(fsa, uism.getMetadata()));
+//				  uism.refreshViews();
 			  }
 		}
 	}	
 	
 	
-	public static class OpenWorkspaceCommand extends ActionCommand {
+	public static class OpenWorkspaceCommand extends AbstractFileOpenCommand {
 		
-		public OpenWorkspaceCommand(){
-			super("open.workspace.command");
+		public OpenWorkspaceCommand(FileFilter defaultFileFilter){
+			super(CommandManager.defaultInstance(), "open.workspace.command", defaultFileFilter);
 		}
 		
 		@Override
-		protected void handleExecute() {
-			// TODO implement
+		protected void performOpen(File[] arg0) {
+			// TODO Auto-generated method stub
+			
 		}
 	
 	}
@@ -112,8 +86,8 @@ public class FileCommands {
 	
 	public static class ExportToGIFCommand extends AbstractSaveAsCommand {
 
-		public ExportToGIFCommand(CommandManager arg0, String arg1, FileFilter arg2) {
-			super(arg0, arg1, arg2);
+		public ExportToGIFCommand(FileFilter arg2) {
+			super(CommandManager.defaultInstance(), "export.gif.command", arg2);
 			// TODO Auto-generated constructor stub
 		}
 
@@ -127,8 +101,8 @@ public class FileCommands {
 	
 	public static class ExportToLatexCommand extends AbstractSaveAsCommand {
 
-		public ExportToLatexCommand(CommandManager arg0, String arg1, FileFilter arg2) {
-			super(arg0, arg1, arg2);
+		public ExportToLatexCommand(FileFilter arg2) {
+			super(CommandManager.defaultInstance(), "export.latex.command", arg2);
 			// TODO Auto-generated constructor stub
 		}
 
@@ -136,6 +110,21 @@ public class FileCommands {
 		protected void performSave(File arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("TODO: Save as LaTeX");
+		}
+		
+	}
+	
+	public static class ExportToPNGCommand extends AbstractSaveAsCommand {
+
+		public ExportToPNGCommand(FileFilter arg2) {
+			super(CommandManager.defaultInstance(), "export.png.command", arg2);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		protected void performSave(File arg0) {
+			// TODO Auto-generated method stub
+			System.out.println("TODO: Save as PNG");
 		}
 		
 	}

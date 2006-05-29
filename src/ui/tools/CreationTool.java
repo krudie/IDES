@@ -1,7 +1,6 @@
 package ui.tools;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -11,7 +10,7 @@ import presentation.fsa.Edge;
 import presentation.fsa.Node;
 import ui.GraphDrawingView;
 import ui.UIStateModel;
-import ui.command.CreateCommand;
+import ui.command.GraphCommands.CreateCommand;
 
 /**
  * NOTE: Can NOT just make changes to the graph model from here because must
@@ -80,7 +79,7 @@ public class CreationTool extends DrawingTool {
 					System.out.println("intersected target node; starting edge drawing");
 					sourceNode = n;
 					edge = context.getGraphModel().beginEdge(sourceNode);
-					drawingEdge = true;
+					drawingEdge = true;					
 				} else {
 					// otherwise, just create a node
 					cmd = new CreateCommand(context, CreateCommand.NODE, me
@@ -100,12 +99,12 @@ public class CreationTool extends DrawingTool {
 			} else { // otherwise, create a node and start drawing an edge
 				cmd = new CreateCommand(context, CreateCommand.NODE, me
 						.getPoint());
-				drawingEdge = true;
+				drawingEdge = true;				
 			}
 		}
 		if (cmd != null) {
 			cmd.execute();
-			UIStateModel.instance().getCommandHistory().add(cmd);
+			// TODO add to command history
 		}		
 		context.repaint();
 	}
@@ -122,7 +121,7 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseMoved(MouseEvent me) {
 		// if drawing an edge, recompute the curve
-		if(drawingEdge){
+		if(drawingEdge){			
 			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			context.repaint();
 		}
@@ -149,7 +148,9 @@ public class CreationTool extends DrawingTool {
 
 	@Override
 	public void handleKeyTyped(KeyEvent ke) {
-		// TODO Auto-generated method stub
+		// TODO 
+		// If drawing edge and user typed ESCAPE
+		// Delete the edge from it's source node's children
 		
 	}	
 }

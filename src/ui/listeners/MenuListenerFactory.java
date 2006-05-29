@@ -10,21 +10,10 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
-import org.pietschy.command.ActionCommand;
-
-import main.SystemVariables;
-import model.Publisher;
-import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
-
 import ui.GraphModel;
 import ui.UIStateModel;
-import ui.command.Command;
-import ui.command.CommandHistory;
-import ui.command.CopyCommand;
-import ui.command.CutCommand;
-import ui.command.DeleteCommand;
 
 /**
  * FIXME will need to wire these listeners up to both the menu and the toolbar.
@@ -35,50 +24,50 @@ import ui.command.DeleteCommand;
  */
 public class MenuListenerFactory {
 
-	/**
-	 * STUB 
-	 * 
-	 * @return
-	 */
-  public static ActionListener makeCopyListener () {
-	  return new ActionListener() {
-		  public void actionPerformed(ActionEvent arg0) {			  			
-			  ActionCommand cmd = new CopyCommand("copied item", "drawing area"); 
-			  UIStateModel.instance().getCommandHistory().add(cmd);
-			  cmd.execute();	  
-		  }
-	  };
-  }
-
-	/**
-	 * STUB 
-	 * 
-	 * @return
-	 */
-  public static ActionListener makeDeleteListener () {
-	  return new ActionListener() {
-		  public void actionPerformed(ActionEvent arg0) {			  	
-			  Command cmd = new DeleteCommand("deleted item", "drawing area"); 
-			  //UIStateModel.instance().getCommandHistory().add(cmd);
-			  cmd.execute();	  
-		  }
-	  };
-  }
-  
-	/**
-	 * STUB 
-	 * 
-	 * @return
-	 */
-  public static ActionListener makeCutListener () {
-	  return new ActionListener() {
-		  public void actionPerformed(ActionEvent arg0) {			  			
-			  Command cmd = new CutCommand("cut item", "drawing area"); 
-			  //UIStateModel.instance().getCommandHistory().add(cmd);
-			  cmd.execute();
-		  }
-	  };
-  }
+//	/**
+//	 * STUB 
+//	 * 
+//	 * @return
+//	 */
+//  public static ActionListener makeCopyListener () {
+//	  return new ActionListener() {
+//		  public void actionPerformed(ActionEvent arg0) {			  			
+//			  ActionCommand cmd = new CopyCommand("copied item", "drawing area"); 
+//			  UIStateModel.instance().getCommandHistory().add(cmd);
+//			  cmd.execute();	  
+//		  }
+//	  };
+//  }
+//
+//	/**
+//	 * STUB 
+//	 * 
+//	 * @return
+//	 */
+//  public static ActionListener makeDeleteListener () {
+//	  return new ActionListener() {
+//		  public void actionPerformed(ActionEvent arg0) {			  	
+//			  Command cmd = new DeleteCommand("deleted item", "drawing area"); 
+//			  //UIStateModel.instance().getCommandHistory().add(cmd);
+//			  cmd.execute();	  
+//		  }
+//	  };
+//  }
+//  
+//	/**
+//	 * STUB 
+//	 * 
+//	 * @return
+//	 */
+//  public static ActionListener makeCutListener () {
+//	  return new ActionListener() {
+//		  public void actionPerformed(ActionEvent arg0) {			  			
+//			  Command cmd = new CutCommand("cut item", "drawing area"); 
+//			  //UIStateModel.instance().getCommandHistory().add(cmd);
+//			  cmd.execute();
+//		  }
+//	  };
+//  }
 
   /**
    * Note that file operations do not go into the command history

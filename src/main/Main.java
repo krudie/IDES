@@ -9,6 +9,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {				
-		UIStateModel.instance().setWindow(new MainWindow());
+		IDESWorkspace.instance().attach(new MainWindow());		
+		//UIStateModel.instance().setWindow(new MainWindow());
 	}
 }

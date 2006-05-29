@@ -87,7 +87,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		selectionArea = new Rectangle();
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
-		drawingTools[DEFAULT] = new EditingTool(this);
+		drawingTools[DEFAULT] = new SelectionTool(this);
 		drawingTools[EDIT] = drawingTools[DEFAULT];
 		drawingTools[CREATE] = new CreationTool(this);
 		drawingTools[TEXT] = new TextTool(this);
@@ -198,8 +198,10 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * @param point
 	 */
 	public void updateCurrentSelection(Point point) {
+		if(graphModel != null){
 		 currentSelection = graphModel.getElementIntersectedBy(point);
 		 if(currentSelection != null){ currentSelection.setSelected(true); }
+		}		
 	}
  
 	/**
@@ -209,11 +211,13 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 */
 	public void updateCurrentSelection(Rectangle rectangle){
 		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
-		// that sets highlight(boolean) on all of its elements.		
-		currentSelection = graphModel.getElementsContainedBy(rectangle);
-		currentSelection.setSelected(true);		
-		rectangle.setSize((int)currentSelection.bounds().getWidth(),
-							(int)currentSelection.bounds().getHeight());
+		// that sets highlight(boolean) on all of its elements.
+		if(graphModel != null){
+			currentSelection = graphModel.getElementsContainedBy(rectangle);
+			currentSelection.setSelected(true);		
+			rectangle.setSize((int)currentSelection.bounds().getWidth(),
+								(int)currentSelection.bounds().getHeight());
+		}
 	}
 
 	/**

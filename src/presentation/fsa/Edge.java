@@ -125,7 +125,8 @@ public class Edge extends GraphElement {
 		controlPoints = (Point2D.Float[])layout.getCurve();
 		curve.setCurve(controlPoints, 0);
 		
-		// prepare to draw myself as a cubic (bezier) curve 	
+		// prepare to draw myself as a cubic (bezier) curve
+		path.reset();
 		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
 	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
 	    			controlPoints[CTRL2].x, controlPoints[CTRL2].y,
