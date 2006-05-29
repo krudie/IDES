@@ -6,10 +6,17 @@ import java.awt.geom.Point2D.Float;
 import org.pietschy.command.ActionCommand;
 
 import presentation.fsa.Edge;
-import presentation.fsa.GraphElement;
 import presentation.fsa.Node;
 import ui.GraphDrawingView;
 
+/**
+ * Creates nodes and edges in a GraphDrawingView.
+ * 
+ * TODO move to outer class GraphCommands.
+ * 
+ * @author Helen Bretzke
+ *
+ */
 public class CreateCommand extends ActionCommand {
 
 	private GraphDrawingView context;

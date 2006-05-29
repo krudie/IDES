@@ -18,7 +18,7 @@ public class EditCommand extends ActionCommand {
 	@Override
 	protected void handleExecute() {
 		// TODO Auto-generated method stub
-		System.out.println("Edit command executed.");
+		System.out.println("Edit command executed (select for deletion, copy, paste and move).");
 	}
 
 }

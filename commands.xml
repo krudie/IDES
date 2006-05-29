@@ -2,59 +2,119 @@
 <!DOCTYPE commands SYSTEM "commands.dtd">
 <commands version="1.1.0">
 
+	<group id="ides.toolbar.group">
+		<face>
+			<text>IDES 2.1</text>
+		</face>
+		<members>
+			<member command-id="create.command"/>
+			<member command-id="move.command"/>
+		</members>	
+	</group>
+
+	<group id="ides.menu.group">
+		<face>
+			<text>IDES 2.1</text>
+		</face>
+		<members>
+			<member command-id="file.group"/>
+			<member command-id="graph.group"/>
+			<member command-id="edit.group"/>
+		</members>	
+	</group>
+
 	<group id="file.group">
       <face>
-         <text>File</text>         
+         <text>_File</text>         
       </face>
       <members>  
-         <member command-id="open.model.command"/>
+         <member command-id="open.automaton.command"/>
          <member command-id="open.workspace.command"/>         
          <separator/>
-         <member command-id="save.model.command"/>
+         <member command-id="save.automaton.command"/>
          <member command-id="save.workspace.command"/>
+         <member group-id="export.group"/>
       </members>  
    </group>
    
-   <command id="open.system.command">
+   <command id="open.automaton.command">
       <face>
          <text>_Open automaton</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\file_open.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_open_automaton.gif</icon>
          <description>Open an existing automaton</description>
-         <accelerator key="o">
+         <accelerator key="O">
+	         <modifier value="control"/>
          </accelerator>
       </face>
     </command>
     <command id="open.workspace.command">
       <face>
          <text>Open _workspace</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_open_workspace.gif</icon>
          <description>Open a workspace of automata</description>
-         <accelerator key="w">
+         <accelerator key="W">
+         	<modifier value="control"/>
          </accelerator>
       </face>
     </command>
-   <command id="save.system.command">
+   <command id="save.automaton.command">
       <face>
-         <text>Sa_ve automaton</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\file_save.gif</icon>
+         <text>Save auto_maton</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_save_automaton.gif</icon>
          <description>Save automaton</description>
-         <accelerator key="v">
+         <accelerator key="M">
+	         <modifier value="control"/>
          </accelerator>
       </face>
     </command>
     <command id="save.workspace.command">
       <face>
          <text>_Save workspace</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_save_workspace.gif</icon>
          <description>Save workspace settings</description>
-         <accelerator key="s">
+         <accelerator key="S">
+	         <modifier value="control"/>
          </accelerator>
       </face>
+    </command>    
+    
+    <group id="export.group">
+      <face>
+         <text>_Export</text>
+         <description>Export automaton</description>
+      </face>
+      <members>  
+         <member command-id="export.gif.command"/>
+         <member command-id="export.latex.command"/>         
+         <member command-id="export.png.command"/>
+         <separator/>
+      </members>  
+    </group>
+    <command id="export.gif.command">    
+      <face>
+         <text>Export to GIF</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_export_gif.gif</icon>
+         <description>Export to GIF</description>
+      </face>
     </command>
+    <command id="export.latex.command">    
+      <face>
+         <text>Export to LaTeX</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_export_gif.gif</icon>
+         <description>Export to LaTeX</description>
+      </face>
+    </command>
+    <command id="export.png.command">    
+      <face>
+         <text>Export to PNG</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\file_export_png.gif</icon>
+         <description>Export to PNG</description>
+      </face>
+    </command>    
     
     <group id="graph.group">
     <face>
-         <text>File</text>         
+         <text>_Graph</text>         
       </face>
       <members>  
          <member command-id="edit.command"/>
@@ -66,7 +126,7 @@
    <command id="edit.command">
       <face>
          <text>Edit</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\modify.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\graphic_modify.gif</icon>
          <description>Select or move graph elements</description>
          <accelerator key="e">
             <modifier value="control"/>
@@ -76,11 +136,80 @@
     <command id="create.command">
       <face>
          <text>_Create</text>
-         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\cursors\graphic_create.gif</icon>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\graphic_create.gif</icon>
          <description>Create nodes or edges</description>
-         <accelerator key="c">
-	         <modifier value="control"/>	         	
-         </accelerator>         
       </face>
     </command>
+    <command id="move.command">
+      <face>
+         <text>Move</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\graphic_grab.gif</icon>
+         <description>Move nodes and adjacent edges</description>
+      </face>
+    </command>
+    
+    <group id="edit.group">
+    	<face>
+    		<text>_Edit</text>
+    	</face>
+    	<members>
+    		<member command-id="copy.command"/>
+    		<member command-id="cut.command"/>
+    		<member command-id="paste.command"/>
+    		<member command-id="delete.command"/>
+    		<member command-id="redo.command"/>
+    		<member command-id="undo.command"/>
+    	</members>
+    </group>
+    <command id="copy.command">
+      <face>
+         <text>Copy</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\edit_copy.gif</icon>
+         <description>Copy selected elements or text</description>
+         <accelerator key="C">
+	         <modifier value="control"/>
+         </accelerator>
+      </face>
+    </command>
+	<command id="cut.command">
+	  <face>
+         <text>Cut</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\edit_cut24.gif</icon>
+         <description>Cut selected elements or text</description>
+         <accelerator key="X">
+	         <modifier value="control"/>
+         </accelerator>
+      </face>
+	</command>    
+	<command id="paste.command">
+	  <face>
+         <text>Paste</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\edit_paste.gif</icon>
+         <description>Paste cut or copied elements</description>
+         <accelerator key="V">
+	         <modifier value="control"/>
+         </accelerator>
+      </face>
+	</command>    
+	<command id="undo.command">
+	  <face>
+         <text>Undo</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\edit_undo.gif</icon>
+         <description>Undo last change</description>
+         <accelerator key="Z">
+	         <modifier value="control"/>
+         </accelerator>
+      </face>
+	</command>    
+	<command id="redo.command">
+	  <face>
+         <text>Redo</text>
+         <icon type="file">C:\Documents and Settings\Helen\workspace\IDES2.1\src\images\icons\edit_redo.gif</icon>
+         <description>Redo most recent change</description>
+         <accelerator key="Y">
+	         <modifier value="control"/>
+         </accelerator>
+      </face>
+	</command>
+
 </commands>

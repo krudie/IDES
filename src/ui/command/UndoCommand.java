@@ -1,6 +1,12 @@
 package ui.command;
 
-
+/**
+ * @deprecated
+ * Using gui-commands library instead of reinventing the wheel.
+ * 
+ * @author Helen Bretzke
+ *
+ */
 public class UndoCommand implements Command {
 
 	ReversableCommand rc;

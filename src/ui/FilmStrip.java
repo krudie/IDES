@@ -37,7 +37,9 @@ public class FilmStrip extends JPanel implements ActionListener, Subscriber {
 		
 		// Set active MODEL in the workspace, don't bother keeping a reference here.
 		activeView = gv;
+		// FIXME why is the border not visible?
 		gv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+		gv.setToolTipText(gv.getName());
 		super.add(gv);
 		gv.repaint();		
 	}
@@ -56,12 +58,12 @@ public class FilmStrip extends JPanel implements ActionListener, Subscriber {
 			if(components != null){
 				int n = components.length;
 				for(int i=0; i<n; i++){
-					((JComponent)components[i]).setBorder(BorderFactory.createEmptyBorder());
+					((JComponent)components[i]).setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 				}				
 			}
 			activeView = (GraphView)arg0.getSource();
 			workspace.setActiveModel(activeView.getName());
-			activeView.setBorder(BorderFactory.createLoweredBevelBorder());
+			activeView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 		}catch(Exception e){
 			JOptionPane.showMessageDialog(this, "Unable to select and highlight graph.", "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
 		}
