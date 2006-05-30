@@ -16,6 +16,7 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
+import org.pietschy.command.file.ExtensionFileFilter;
 
 import ui.GraphModel;
 import ui.UIStateModel;
@@ -37,31 +38,29 @@ public class FileCommands {
 	
 	public static class OpenAutomatonCommand extends AbstractFileOpenCommand {
 		
-		public OpenAutomatonCommand(FileFilter filter) {
-			super(CommandManager.defaultInstance(), "open.automaton.command", filter);			
+		public OpenAutomatonCommand() {
+			super(CommandManager.defaultInstance(), "open.automaton.command", 
+					new ExtensionFileFilter("xml", "eXtensible Markup Language"));			
 		}
 
 		@Override
+		/**
+		 * FIXME Don't add workspace files as if they were automata...
+		 */
 		protected void performOpen(File[] files) {			
 			Automaton fsa = (Automaton)FileOperations.openSystem(files[0]);
 			if(fsa != null){
-				IDESWorkspace.instance().addFSAModel(fsa);
-				IDESWorkspace.instance().notifyAllSubscribers();
-				
-//				  UIStateModel uism = UIStateModel.instance(); 
-//				  uism.setAutomaton(fsa);
-//				  uism.setMetadata(new MetaData(fsa));
-//				  uism.setGraphModel(new GraphModel(fsa, uism.getMetadata()));
-//				  uism.refreshViews();
-			  }
+				IDESWorkspace.instance().addFSAModel(fsa);			
+			}
 		}
 	}	
 	
 	
 	public static class OpenWorkspaceCommand extends AbstractFileOpenCommand {
 		
-		public OpenWorkspaceCommand(FileFilter defaultFileFilter){
-			super(CommandManager.defaultInstance(), "open.workspace.command", defaultFileFilter);
+		public OpenWorkspaceCommand(){
+			super(CommandManager.defaultInstance(), "open.workspace.command", 
+					new ExtensionFileFilter("xml", "eXtensible Markup Language"));
 		}
 		
 		@Override
@@ -86,9 +85,9 @@ public class FileCommands {
 	
 	public static class ExportToGIFCommand extends AbstractSaveAsCommand {
 
-		public ExportToGIFCommand(FileFilter arg2) {
-			super(CommandManager.defaultInstance(), "export.gif.command", arg2);
-			// TODO Auto-generated constructor stub
+		public ExportToGIFCommand() {
+			super(CommandManager.defaultInstance(), "export.gif.command", 
+					new ExtensionFileFilter("gif", "Graphical Interchange Format"));
 		}
 
 		@Override
@@ -101,9 +100,9 @@ public class FileCommands {
 	
 	public static class ExportToLatexCommand extends AbstractSaveAsCommand {
 
-		public ExportToLatexCommand(FileFilter arg2) {
-			super(CommandManager.defaultInstance(), "export.latex.command", arg2);
-			// TODO Auto-generated constructor stub
+		public ExportToLatexCommand() {
+			super(CommandManager.defaultInstance(), "export.latex.command", 
+					new ExtensionFileFilter("tex", "LaTeX"));
 		}
 
 		@Override
@@ -116,9 +115,9 @@ public class FileCommands {
 	
 	public static class ExportToPNGCommand extends AbstractSaveAsCommand {
 
-		public ExportToPNGCommand(FileFilter arg2) {
-			super(CommandManager.defaultInstance(), "export.png.command", arg2);
-			// TODO Auto-generated constructor stub
+		public ExportToPNGCommand() {
+			super(CommandManager.defaultInstance(), "export.png.command",
+					new ExtensionFileFilter("png", "Portable Network Graphic"));			
 		}
 
 		@Override

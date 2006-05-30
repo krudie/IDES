@@ -14,6 +14,11 @@ import presentation.fsa.NodeLayout;
 
 /**
  * Store and extracts the metadata for a given Automaton.
+ * 
+ * ??? Is this class a publisher or a subscriber?  
+ * to Automaton (pushes and pulls)? 
+ * to GraphModel (pushes and pulls)?
+ * 
  * TODO  If layout information is missing, call GraphViz to layout the graph
  * representing the Automaton. 
  * 
@@ -84,7 +89,7 @@ public class MetaData implements FSAMetaData {
         	a.setAttribute("y", layout.getArrow().y+"");
         	g.addSubElement(a);
 		}
-		s.addSubElement(g);
+		s.addSubElement(g);		
 	}
 	
 	

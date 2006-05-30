@@ -13,6 +13,7 @@ import model.fsa.FSAEventsModel;
 import model.fsa.FSAMetaData;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
+import model.fsa.ver1.EventsModel;
 import model.fsa.ver1.MetaData;
 
 public class IDESWorkspace extends Publisher implements Workspace {
@@ -22,11 +23,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	
 	// Unique name of the currently active FSAModel
 	private String activeModelName;
-	
-	// ??? Do I even need to store this?  
-	// is this not simply the component with the current UI focus?
-	private Object activeView;
-	
+		
 	// A model of global events set (alphabet) and all local alphabets
 	private FSAEventsModel eventsModel;
 	
@@ -48,17 +45,17 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	protected IDESWorkspace(){
 		systems = new HashMap<String, Automaton>();
 		graphs = new HashMap<String, GraphModel>();
-		metadata = new HashMap<String, MetaData>();	
+		metadata = new HashMap<String, MetaData>();
+		eventsModel = new EventsModel();
 	}
 	
-	/**
-	 * Adds the given FSAModel to the set of models in this workspace.
-	 */
+	
 	public void addFSAModel(FSAModel fsa) {
-		systems.put(fsa.getName(), (Automaton) fsa);
-		metadata.put(fsa.getName(), new MetaData((Automaton)fsa));
-		graphs.put(fsa.getName(), new GraphModel((Automaton)fsa, metadata.get(fsa.getName())));
-		eventsModel.addLocalEvents(fsa);
+		activeModelName = fsa.getName();
+		systems.put(activeModelName, (Automaton) fsa);
+		metadata.put(activeModelName, new MetaData((Automaton)fsa));
+		graphs.put(activeModelName, new GraphModel((Automaton)fsa, metadata.get(activeModelName)));
+		eventsModel.addLocalEvents(fsa);		
 		this.notifyAllSubscribers();
 		unsaved = true;
 	}
@@ -67,6 +64,10 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return systems.get(name);
 	}
 
+	public boolean hasFSAModel(String name) {
+		return getFSAModel(name) != null;
+	}
+	
 	public void removeFSAModel(String name) {
 		// TODO Auto-generated method stub
 		if(systems.isEmpty()){
@@ -91,7 +92,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	
 	public void setActiveModel(String name) {
 		this.activeModelName = name;
-		unsaved = true;
+		unsaved = true;			
 	}
 	
 	/**
@@ -140,5 +141,9 @@ public class IDESWorkspace extends Publisher implements Workspace {
 
 	public boolean isEmpty() {
 		return systems.isEmpty();
+	}
+
+	public GraphModel getActiveGraphModel() {		
+		return graphs.get(activeModelName);
 	}
 }

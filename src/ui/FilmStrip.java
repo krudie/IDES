@@ -3,8 +3,11 @@ package ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
@@ -23,49 +26,29 @@ import model.Subscriber;
  * @author Helen Bretzke
  *
  */
-public class FilmStrip extends JPanel implements ActionListener, Subscriber {
+@SuppressWarnings("serial")
+public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
 	protected GraphView activeView;
-	protected IDESWorkspace workspace;
 	
 	public FilmStrip(){
+		IDESWorkspace.instance().attach(this);
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		this.setPreferredSize(new Dimension(750, 100));
+		this.setAlignmentY(Component.LEFT_ALIGNMENT);
+
+	    // Get the screen dimensions.
+	    Toolkit tk = Toolkit.getDefaultToolkit ();
+	    Dimension screen = tk.getScreenSize ();    
+	    this.setSize (screen.width, screen.height/4);
+		this.setPreferredSize(this.getSize());
+		
+		this.addMouseListener(this);
 	}
 	
-	public void add(GraphView gv){
-		
-		// Set active MODEL in the workspace, don't bother keeping a reference here.
-		activeView = gv;
-		// FIXME why is the border not visible?
-		gv.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		gv.setToolTipText(gv.getName());
-		super.add(gv);
-		gv.repaint();		
-	}
-
-	/**
-	 * Figure out which graph was selected, toggle it's border (clear all others)
-	 * and make it known to the UIStateModel as the currently active graph. 
-	 * 
-	 * @param arg0
-	 */
-	public void actionPerformed(ActionEvent arg0) {
-		try{
-			Component[] components = this.getComponents();
-			
-			// TODO Factor out toggleBorders code and call from add(gv)
-			if(components != null){
-				int n = components.length;
-				for(int i=0; i<n; i++){
-					((JComponent)components[i]).setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-				}				
-			}
-			activeView = (GraphView)arg0.getSource();
-			workspace.setActiveModel(activeView.getName());
-			activeView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		}catch(Exception e){
-			JOptionPane.showMessageDialog(this, "Unable to select and highlight graph.", "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
+	public void remove(GraphView gv){
+		super.remove(gv);
+		if(activeView == gv){
+			activeView = null;
 		}
 	}
 	
@@ -74,14 +57,89 @@ public class FilmStrip extends JPanel implements ActionListener, Subscriber {
 	}
 
 	public void update() {
-		// TODO get all graph models from the workspace and render them here,
-		// each in its own GraphView object.  NOTE add() method will change.
-		Iterator iter = workspace.getGraphModels();
+		// Get all graph models from the workspace and render them here,
+		// each in its own GraphView object.	
 		
+		// Detach each GraphView from its model before attaching to the new model.		
+		Component[] views = this.getComponents();
+		int n=this.getComponentCount();
+		for(int i = 0; i < n; i++){
+			GraphView gv = (GraphView)views[i];
+			gv.setGraphModel(null);
+		}		
+		
+		/*
+		 * Update the graphmodel for each view
+		 */
+		Iterator graphs = IDESWorkspace.instance().getGraphModels();
+		views = this.getComponents();		
+		int i=0;
+		while(graphs.hasNext() && i < n) {
+			GraphView gv = (GraphView)views[i];
+			GraphModel gm = (GraphModel)graphs.next();			
+			gv.setGraphModel(gm);		
+			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
+				activeView = gv;
+			}
+			i++;
+		}
+		
+		/*
+		 * More graphs than views
+		 */
+		while(graphs.hasNext()){
+			GraphModel gm = (GraphModel)graphs.next();
+			GraphView gv = new GraphView(gm);
+			gv.setPreferredSize(new Dimension(this.getSize().height, this.getSize().height));
+			add(gv);
+			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
+				activeView = gv;
+			}
+		}
+		
+		/*
+		 * More views than graphs so remove them.
+		 */		
+		while(i < n){
+			remove(views[i]);			
+			i++;
+		}
+
+		// FIXME why is the border not visible?
+		activeView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+		this.validate();
 	}
 
-	public void setWorkspace(IDESWorkspace workspace) {
-		this.workspace = workspace;
-		workspace.attach(this);
+	/**
+	 * Figure out which graph was selected, toggle it's border (clear all others)
+	 * and make it known to the UIStateModel as the currently active graph. 
+	 * 
+	 * @param arg0
+	 */
+	public void mouseClicked(MouseEvent arg0) {
+		try{
+			Component[] components = getComponents();			
+			if(components != null){
+				int n = components.length;
+				for(int i=0; i<n; i++){
+					((JComponent)components[i]).setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+				}				
+			}
+			
+			activeView = (GraphView)arg0.getComponent().getComponentAt(arg0.getPoint());// (GraphView)arg0.getSource();
+			IDESWorkspace.instance().setActiveModel(activeView.getName());
+			IDESWorkspace.instance().notifyAllBut(this);
+			activeView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+		}catch(Exception e){
+			JOptionPane.showMessageDialog(activeView, "Unable to select and highlight graph: " + e.getStackTrace(), "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
+		}	
 	}
+
+	public void mousePressed(MouseEvent arg0) {}
+
+	public void mouseReleased(MouseEvent arg0) {}
+
+	public void mouseEntered(MouseEvent arg0) {}
+
+	public void mouseExited(MouseEvent arg0) {}
 }

@@ -7,11 +7,11 @@ import java.awt.FontMetrics;
 /**
  * A singleton GUISettings class that reads, saves and makes accessible everything the GUI needs to know.
  * 
- * STOP Don't waste time on this if reimplementing using XML settings loading.
+ * STOP Don't waste time on this if reimplementing loading XML settings.
  * TODO make a list of all GUI settings required by this application and write load and save ops.
  */
 public class GUISettings {
-
+	
 	private Font font;
 	private FontMetrics fontMetrics;
 	private BasicStroke wideStroke = new BasicStroke(2);

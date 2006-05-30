@@ -173,21 +173,15 @@ public class UIStateModel  {
 	 * @param graphModel
 	 */
 	public void setGraphModel(GraphModel graphModel) {
-		this.graphModel = graphModel;
-		// graphModel is treated as a view of the (single) automaton
-		addView(graphModel);
-		graphDrawingView.setGraphModel(graphModel);
-		graphModel.attach(graphDrawingView);
+		
+//		graphDrawingView.setGraphModel(graphModel);		
 		// DEBUG
 		// FilmStrip will do all of this itself when Workspace is notified of change.
-		GraphView thumbNail = new GraphView();
-		thumbNail.setGraphModel(graphModel);
-		graphModel.attach(thumbNail);		
-		window.getFilmStrip().add(thumbNail);
-		
-		window.pack();
+//		GraphView thumbNail = new GraphView(graphModel);			
+//		window.getFilmStrip().add(thumbNail);		
+//		window.pack();
 		/////////////////////////////////////
-		graphModel.notifyAllSubscribers();
+//		graphModel.notifyAllSubscribers();
 	}
 
 	public GraphDrawingView getGraphDrawingView() {

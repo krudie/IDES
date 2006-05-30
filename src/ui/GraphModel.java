@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import main.IDESWorkspace;
 import model.Publisher;
 import model.Subscriber;
 import model.fsa.ver1.Automaton;
@@ -54,6 +55,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	public GraphModel(Automaton fsa, MetaData data){
 		
 		this.fsa = fsa;
+		fsa.attach(this);
+		
 		this.metaData = data;
 		
 		nodes = new HashMap<Long, Node>();

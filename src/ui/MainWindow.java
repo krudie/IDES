@@ -5,6 +5,13 @@ package ui;
 
 import io.fsa.ver1.FileOperations;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Iterator;
+
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -17,24 +24,17 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
-import org.pietschy.command.CommandGroup;
-import org.pietschy.command.CommandManager;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
 import main.IDESWorkspace;
 import main.SystemVariables;
 import model.Subscriber;
 
-import ui.command.*;
-import ui.command.FileCommands.*;
-import ui.command.GraphCommands.*;
+import org.pietschy.command.ActionCommand;
+import org.pietschy.command.CommandManager;
 
-import ui.listeners.MenuListenerFactory;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import ui.command.FileCommands;
+import ui.command.GraphCommands.CreateCommand;
+import ui.command.GraphCommands.MoveCommand;
+import ui.command.GraphCommands.SelectCommand;
 
 /**
  * TODO Reimplement using gui-commands library.
@@ -50,27 +50,24 @@ public class MainWindow extends JFrame implements Subscriber {
 		super("IDES : Integrated Discrete-Event System Software 2.1");
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
-		drawingBoard = new GraphDrawingView();
-		IDESWorkspace.instance().attach(drawingBoard);
-		// TODO set size based on screen size; use a real estate manager for plugins
-		drawingBoard.setPreferredSize(new Dimension(750, 550));
+		drawingBoard = new GraphDrawingView();		
+//		 Get the screen dimensions.
+	    Toolkit tk = Toolkit.getDefaultToolkit ();
+	    Dimension screen = tk.getScreenSize();
+	    setSize(screen.width, screen.height);
+		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.8), (int) (getSize().height*0.75)));
 		createAndAddTabbedPane();
 		
 		// UIStateModel.instance().setGraphDrawingView(drawingBoard);		
 		
-		// TODO add graph spec, latex and eps views to the state model
-		// UIStateModel.instance().addView(???);
+		// TODO add graph spec, latex and eps views to the state model		
 		this.filmStrip = new FilmStrip();		
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
-		
-		FileOperations.loadCommandManager("commands.xml");
 		createAndAddMenuBar();
 		createAndAddToolBar();
 		update();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
-		pack();
-		setSize(800, 600);
-		setVisible(true);
+		pack();		
 	}
 	
 	 private void createAndAddTabbedPane() {
@@ -139,17 +136,29 @@ public class MainWindow extends JFrame implements Subscriber {
 	 * command-id and reference to command manager and filter.
 	 */
 	private void loadAndExportCommands() {
+
+		FileOperations.loadCommandManager("commands.xml");
 		
-		new FileCommands.OpenAutomatonCommand(null).export();
+		new CreateCommand(drawingBoard).export();
+		
+//		Iterator commands = CommandManager.defaultInstance().commandIterator();
+//		while(commands.hasNext()){
+//			ActionCommand cmd = (ActionCommand)commands.next();
+//			cmd.export();
+//		}
+		
+		new FileCommands.OpenAutomatonCommand().export();
+		//new FileCommands.CloseAutomatonCommand().export();
 		new FileCommands.SaveAutomatonCommand().export();
-		new FileCommands.OpenWorkspaceCommand(null).export();
+		new FileCommands.OpenWorkspaceCommand().export();
+		//new FileCommands.CloseWorkspaceCommand().export();
 		new FileCommands.SaveWorkspaceCommand().export();
-		new FileCommands.ExportToGIFCommand(null).export();
-		new FileCommands.ExportToLatexCommand(null).export();
-		new FileCommands.ExportToPNGCommand(null).export();
+		new FileCommands.ExportToGIFCommand().export();
+		new FileCommands.ExportToLatexCommand().export();
+		new FileCommands.ExportToPNGCommand().export();
 		new SelectCommand().export();
 		new MoveCommand().export();
-		new CreateCommand(drawingBoard).export();
+		
 	}
 
 	/**
@@ -335,5 +344,7 @@ public class MainWindow extends JFrame implements Subscriber {
 			commandManager.getGroup("ides.toolbar.group").setEnabled(true);
 		}
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
+		
+		pack();
 	}
 }

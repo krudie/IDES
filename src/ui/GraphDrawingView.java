@@ -1,9 +1,6 @@
 package ui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,16 +11,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import javax.swing.JComponent;
-
+import main.IDESWorkspace;
 import model.Subscriber;
-
 import presentation.PresentationElement;
 import presentation.fsa.GraphElement;
-import ui.tools.*;
+import ui.tools.CreationTool;
+import ui.tools.DrawingTool;
+import ui.tools.SelectionTool;
+import ui.tools.TextTool;
 
 /**
- * The area in which users view, create and modify graphs.
+ * The component in which users view, create and modify a graph representation
+ * of an automaton.
  * 
  * 
  * * current interaction mode,
@@ -78,11 +77,12 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	private PresentationElement printArea;
 	
 	public GraphDrawingView() {
-		graphModel = null;
-		graph = new GraphElement();
-		// DEBUG
-		//graph.insert(new GraphLabel("No Graph.", new Point(100, 100)));
+		super();
+		IDESWorkspace.instance().attach(this);
 		
+		graph = new GraphElement();
+		scaleFactor = 1f;
+			
 		currentSelection = new GraphElement();
 		selectionArea = new Rectangle();
 		
@@ -101,15 +101,19 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		addKeyListener(this);
 	}	
 	
+	public void update(){
+		// get the active graph model
+		graphModel = IDESWorkspace.instance().getActiveGraphModel();
+		// update the graph view part of me
+		super.update();
+	}
+	
 	public void paint(Graphics g){
-		Graphics2D g2D = (Graphics2D)g;
-		float temp = scaleFactor;
-		scaleFactor = 1f;
+		Graphics2D g2D = (Graphics2D)g;	
 		super.paint(g);
 		g2D.setStroke(GUISettings.instance().getDashedStroke());
 		g2D.setColor(Color.LIGHT_GRAY);
-		g2D.draw(selectionArea);
-		scaleFactor = temp;
+		g2D.draw(selectionArea);		
 	}
 	
 	/**
