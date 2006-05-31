@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -29,20 +30,27 @@ import model.Subscriber;
 @SuppressWarnings("serial")
 public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
-	protected GraphView activeView;
+	private GraphView activeView;
+	private Box box;
 	
 	public FilmStrip(){
 		IDESWorkspace.instance().attach(this);
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		this.setAlignmentY(Component.LEFT_ALIGNMENT);
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setAlignmentY(Component.LEFT_ALIGNMENT);
+		
+		// Create a Box with horizontal alignment
+//	    box = Box.createHorizontalBox ();
+//		add(Box.createHorizontalGlue());
+//		add(box);
 
 	    // Get the screen dimensions.
 	    Toolkit tk = Toolkit.getDefaultToolkit ();
 	    Dimension screen = tk.getScreenSize ();    
-	    this.setSize (screen.width, screen.height/4);
-		this.setPreferredSize(this.getSize());
+	    setSize (screen.width, screen.height/4);
+		setPreferredSize(this.getSize());
+		//setBackground(Color.BLACK);
 		
-		this.addMouseListener(this);
+		addMouseListener(this);
 	}
 	
 	public void remove(GraphView gv){
@@ -62,10 +70,10 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		
 		// Detach each GraphView from its model before attaching to the new model.		
 		Component[] views = this.getComponents();
-		int n=this.getComponentCount();
-		for(int i = 0; i < n; i++){
-			GraphView gv = (GraphView)views[i];
-			gv.setGraphModel(null);
+		int n= this.getComponentCount();
+		for(int i = 0; i < n; i++){			
+				GraphView gv = (GraphView)views[i];
+				gv.setGraphModel(null);		
 		}		
 		
 		/*
@@ -91,7 +99,7 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 			GraphModel gm = (GraphModel)graphs.next();
 			GraphView gv = new GraphView(gm);
 			gv.setPreferredSize(new Dimension(this.getSize().height, this.getSize().height));
-			add(gv);
+			add(gv);			
 			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
 				activeView = gv;
 			}
@@ -106,8 +114,9 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		}
 
 		// FIXME why is the border not visible?
-		activeView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		this.validate();
+		activeView.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		// box.validate();
+		validate();
 	}
 
 	/**

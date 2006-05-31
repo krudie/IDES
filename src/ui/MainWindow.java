@@ -10,7 +10,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -28,7 +27,6 @@ import main.IDESWorkspace;
 import main.SystemVariables;
 import model.Subscriber;
 
-import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 
 import ui.command.FileCommands;
@@ -46,8 +44,11 @@ import ui.command.GraphCommands.SelectCommand;
  */
 public class MainWindow extends JFrame implements Subscriber {
 
+	String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/";
+	
 	public MainWindow() {
-		super("IDES : Integrated Discrete-Event System Software 2.1");
+		super("Integrated Discrete-Event System Software 2.1");
+		setIconImage(new ImageIcon(imagePath + "logo.gif").getImage());
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
 		drawingBoard = new GraphDrawingView();		
@@ -87,13 +88,11 @@ public class MainWindow extends JFrame implements Subscriber {
 
 	 private void createAndAddToolBar() {
 		 // Create a vertical toolbar
-		 JToolBar toolbar =  CommandManager.defaultInstance().getGroup("ides.toolbar.group").createToolBar(); // new JToolBar();
+		 JToolBar toolbar =  CommandManager.defaultInstance().getGroup("graph.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
 		 toolbar.setRollover(true);
 		 toolbar.setOrientation(JToolBar.VERTICAL);
 		 this.getContentPane().add(toolbar, BorderLayout.EAST);	    
-	 }
-	    
-	 String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/"; 
+	 } 
 	 
 	private void createAndAddMenuBar() {
 	 	 
@@ -108,16 +107,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		 loadAndExportCommands();
 		 JMenuBar menuBar = CommandManager.defaultInstance().getGroup("ides.menu.group").createMenuBar(); // new JMenuBar();
-		 
-		 /**
-		  * TODO Call update to enable only the appropriate commands.
-		  */
-		 
-//		 menuBar.add(createFileMenu());		  
-//		 menuBar.add(createEditMenu());
-//		 menuBar.add(createGraphMenu());
-//		 menuBar.add(createOptionsMenu());
-		 	 
+	 	 
 		 // TODO assemble the help menu
 		 JMenu menuHelp = new JMenu("Help");
 		 menuHelp.setMnemonic(KeyEvent.VK_H);
@@ -156,58 +146,12 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.ExportToGIFCommand().export();
 		new FileCommands.ExportToLatexCommand().export();
 		new FileCommands.ExportToPNGCommand().export();
-		new SelectCommand().export();
+		
+		new SelectCommand(drawingBoard).export();
 		new MoveCommand().export();
 		
 	}
 
-	/**
-	 * Assembles and returns the edit menu.
-	 * TODO add listeners
-	 * 
-	 * @return the edit menu
-	 */
-	private JMenu createEditMenu(){
-		JMenu menuEdit = new JMenu("Edit");
-		menuEdit.setMnemonic(KeyEvent.VK_E);
-		 
-		JMenuItem miUndo = new JMenuItem("Undo", new ImageIcon(imagePath + "edit_undo.gif"));
-		miUndo.setMnemonic(KeyEvent.VK_U);
-		miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		menuEdit.add(miUndo);
-		 
-		JMenuItem miRedo = new JMenuItem("Redo", new ImageIcon(imagePath + "edit_redo.gif"));
-		miRedo.setMnemonic(KeyEvent.VK_R);
-		miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
-		menuEdit.add(miRedo);
-		 
-		menuEdit.addSeparator();
-		
-//		JMenuItem miCut = new JMenuItem("Cut", new ImageIcon(imagePath + "edit_cut16.gif"));
-//		miCut.setMnemonic(KeyEvent.VK_T);
-//		miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-//		miCut.addActionListener(MenuListenerFactory.makeCutListener());
-//		menuEdit.add(miCut);
-//		 
-//		JMenuItem miCopy = new JMenuItem("Copy", new ImageIcon(imagePath + "edit_copy.gif"));
-//		miCopy.setMnemonic(KeyEvent.VK_C);
-//		miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-//		miCopy.addActionListener(MenuListenerFactory.makeCopyListener());
-//		menuEdit.add(miCopy);
-//		 
-//		JMenuItem miPaste = new JMenuItem("Paste", new ImageIcon(imagePath + "edit_paste.gif"));
-//		miPaste.setMnemonic(KeyEvent.VK_V);
-//		miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-//		menuEdit.add(miPaste);
-//		 
-//		JMenuItem miDelete = new JMenuItem("Delete", new ImageIcon(imagePath + "edit_delete.gif"));
-//		miDelete.setMnemonic(KeyEvent.VK_D);
-//		miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-//		miDelete.addActionListener(MenuListenerFactory.makeDeleteListener());
-//		menuEdit.add(miDelete); 		 		 
-		
-		return menuEdit;
-	}
 	
 	/**
 	 * Assembles and returns the graph menu.
@@ -279,6 +223,11 @@ public class MainWindow extends JFrame implements Subscriber {
 		 return menuGraph;
 	}
 	
+	/**
+	 * TODO Move these into commands.xml and load into menu.
+	 * 
+	 * @return
+	 */
 	private JMenu createOptionsMenu(){
 //		 assemble the options menu
 		JMenu menuOptions = new JMenu("Options");
@@ -342,6 +291,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		}else{
 			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
 			commandManager.getGroup("ides.toolbar.group").setEnabled(true);
+			commandManager.getGroup("graph.group").setEnabled(true);
 		}
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 		

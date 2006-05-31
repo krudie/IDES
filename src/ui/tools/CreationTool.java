@@ -52,12 +52,14 @@ public class CreationTool extends DrawingTool {
 					
 					// DEBUG
 					System.out.println("create edge from source to target");
+					
 					// TODO pass source and target nodes to CreateCommand
 					cmd = new CreateCommand(context, CreateCommand.EDGE, me
 							.getPoint());
 					// cmd.setSourceNode(sourceNode);
 					cmd.setTargetNode(n);
 					cmd.setEdge(edge);
+					context.clearCurrentSelection();
 				} else {
 					// else create target node and create an edge
 					
@@ -121,8 +123,10 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseMoved(MouseEvent me) {
 		// if drawing an edge, recompute the curve
+		// TODO and highlight any node under the mouse
 		if(drawingEdge){			
 			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
+			//context.updateCurrentSelection(me.getPoint());
 			context.repaint();
 		}
 	}
@@ -150,6 +154,7 @@ public class CreationTool extends DrawingTool {
 	public void handleKeyTyped(KeyEvent ke) {
 		// TODO 
 		// If drawing edge and user typed ESCAPE
+		// drawingEdge = false;
 		// Delete the edge from it's source node's children
 		
 	}	

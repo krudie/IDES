@@ -221,15 +221,14 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	/**
-	 * Recompute the layout for the given edge, add a new node at point <code>p</code>,
-	 * and create a new transition for this edge. 
-	 * 
-	 * @param e
-	 * @param p
+	 * Adds a new node at point <code>p</code> and completes the edge from 
+	 * <code>e</code>'s source node to the new node.
+	 *
+	 * @param e the edge to be finished
+	 * @param p the location of the new node
 	 */
 	public void finishEdgeAndAddNode(Edge e, Point2D.Float p){		
-		Node n2 = addNode(p);
-		finishEdge(e, n2);
+		finishEdge(e, addNode(p));
 	}
 	
 	 /**
@@ -242,6 +241,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void finishEdge(Edge e, Node n2){
 		e.setTarget(n2);
 		e.getLayout().setCurve(EdgeLayout.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout()));
+		e.update();
 		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 		metaData.setLayoutData(t, e.getLayout());
 		fsa.add(t);

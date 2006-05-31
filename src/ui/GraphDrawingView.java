@@ -69,7 +69,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	/**
 	 * Currently selected group or item.
 	 */
-	private PresentationElement currentSelection;
+	private GraphElement currentSelection;
 	
 	/**
 	 * The selected print area.
@@ -88,7 +88,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
 		drawingTools[DEFAULT] = new SelectionTool(this);
-		drawingTools[EDIT] = drawingTools[DEFAULT];
+		drawingTools[SELECT] = drawingTools[DEFAULT];
 		drawingTools[CREATE] = new CreationTool(this);
 		drawingTools[TEXT] = new TextTool(this);
 		
@@ -130,7 +130,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * 
 	 * @param currentSelection
 	 */
-	public void setCurrentSelection(PresentationElement currentSelection) {
+	public void setCurrentSelection(GraphElement currentSelection) {
 		this.currentSelection = currentSelection;
 	}	
 
@@ -195,19 +195,31 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		}
 	}
 	
+	public void updateCurrentSelection(Point point) {
+		if(graphModel != null){
+			currentSelection = (GraphElement)graphModel.getElementIntersectedBy(point);
+			if(currentSelection != null){
+				currentSelection.setSelected(true);
+			}
+		}				
+	}	
+
 	/**	
-	 * FIXME if no graph yet loaded, user can't select anything.
-	 * What should the default behavior of the drawing tool be?
+	 * If exists, adds the graph element intersected by <code>point</code> to the current
+	 * selection set.
 	 * 
 	 * @param point
 	 */
-	public void updateCurrentSelection(Point point) {
+	public void augmentCurrentSelection(Point point){
 		if(graphModel != null){
-		 currentSelection = graphModel.getElementIntersectedBy(point);
-		 if(currentSelection != null){ currentSelection.setSelected(true); }
-		}		
+			PresentationElement el = graphModel.getElementIntersectedBy(point);
+			if(el != null){				
+				currentSelection.insert(el);
+				currentSelection.setSelected(true);
+			}
+		}
 	}
- 
+	
 	/**
 	 * Set the current selection to all elements contained by the given rectangle.
 	 * 
@@ -217,7 +229,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
 		// that sets highlight(boolean) on all of its elements.
 		if(graphModel != null){
-			currentSelection = graphModel.getElementsContainedBy(rectangle);
+			currentSelection = (GraphElement)graphModel.getElementsContainedBy(rectangle);
 			currentSelection.setSelected(true);		
 			rectangle.setSize((int)currentSelection.bounds().getWidth(),
 								(int)currentSelection.bounds().getHeight());
@@ -245,7 +257,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * determine mouse and keyboard responses.
 	 */
 	public final static int DEFAULT = 0;
-	public final static int EDIT = 1;
+	public final static int SELECT = 1;
 	public final static int ZOOM_IN = 2;
 	public final static int ZOOM_OUT = 7;
 	public final static int SCALE = 8;

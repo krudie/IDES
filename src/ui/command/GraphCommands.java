@@ -21,20 +21,24 @@ public class GraphCommands {
 	 */
 	public static class SelectCommand extends ActionCommand {
 
-		public SelectCommand(){
-			super("edit.command");
+		private GraphDrawingView context;
+		
+		public SelectCommand(GraphDrawingView context){
+			super("select.command");
+			this.context = context;
 		}
 		@Override
-		protected void handleExecute() {
-			// TODO Auto-generated method stub
-			System.out.println("Selection command executed (select for deletion, copy, paste and move).");
+		protected void handleExecute() {			
+			// TODO set the tool in the *currently active* drawing view
+			context.setTool(GraphDrawingView.SELECT);
 		}
 	}
 	
 	/**
 	 * Creates nodes and edges in a GraphDrawingView.
 	 * 
-	 * TODO move to outer class GraphCommands.
+	 * TODO change to undoable command and 
+	 * figure out how to delete the edge or node that was created.
 	 * 
 	 * @author Helen Bretzke
 	 *
@@ -89,29 +93,30 @@ public class GraphCommands {
 		
 		public void setTargetNode(Node t){
 			target = t;
+			t.setHighlighted(true);
 		}
 		
 		@Override
 		protected void handleExecute() {		
-			// Only AFTER element has been created and added, add this event to the command history
-			// NOTE: this must be a reversible command to be entered in the history
 			switch(elementType){
 			case NODE:
+				// TODO store the new node
 				context.getGraphModel().addNode(new Float(location.x, location.y));
 				break;
 			case NODE_AND_EDGE:
-				context.getGraphModel().finishEdgeAndAddNode(edge, new Float(location.x, location.y));
-				// context.getGraphModel().addEdgeAndNode(source, new Float(location.x, location.y));			
+				// TODO store the new node
+				context.getGraphModel().finishEdgeAndAddNode(edge, new Float(location.x, location.y));							
 				break;
 			case EDGE:
-				context.getGraphModel().finishEdge(edge, target);
-				// context.getGraphModel().addEdge(source, target);
+				context.getGraphModel().finishEdge(edge, target);				
 				break;
 			default:
 				// TODO set the tool in the *currently active* drawing view
 				// set the current drawing tool to the CreationTool
 				 context.setTool(GraphDrawingView.CREATE);
 			}		
+			// Only AFTER element has been created and added, add this event to the command history
+			// NOTE: this must be a reversible command to be entered in the history		
 		}
 
 		public void setEdge(Edge edge) {

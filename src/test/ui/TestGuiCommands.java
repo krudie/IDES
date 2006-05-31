@@ -24,8 +24,8 @@ public class TestGuiCommands {
 		try 
 		{
 		   CommandManager.defaultInstance().load(myCommandFile);
-//		 create a new instance of the command.
-		   SelectCommand editCommand = new SelectCommand();		   
+		   //	create a new instance of the command.
+		   SelectCommand editCommand = new SelectCommand(null);		   
 		   
 //		    and use it!
 		   AbstractButton button = editCommand.createButton();

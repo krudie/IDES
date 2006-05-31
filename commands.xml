@@ -7,6 +7,7 @@
 			<text>IDES 2.1</text>
 		</face>
 		<members>
+			<member command-id="select.command"/>
 			<member command-id="create.command"/>
 			<member command-id="move.command"/>
 		</members>	
@@ -213,6 +214,11 @@
          <member command-id="select.command"/>
          <member command-id="create.command"/>
          <member command-id="move.command"/>
+         <member command-id="zoomin.command"/>
+         <member command-id="zoomout.command"/>
+         <member command-id="modify.command"/>
+         <member command-id="selectalllabels.command"/>
+         <member command-id="selectalledges.command"/>
       </members>
     </group> 
        
@@ -249,6 +255,8 @@
          <text/>
       </face>
     </command>
+    
+    
     
     <group id="edit.group">
     	<face>
@@ -328,23 +336,70 @@
          <text/>
       </face>
 	</command>
+	<command id="delete.command">
+	  <face>
+         <text>Delete</text>
+         <icon type="file">C:/Documents and Settings/Helen/workspace/IDES2.1/src/images/icons/edit_delete.gif</icon>
+         <description>Delete</description>
+         <accelerator key="delete">
+         </accelerator>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+	</command>	
+	
 	
 	<group id="options.menu.group">
 		<face>
     		<text>_Options</text>
     	</face>
 	<members>
-		
+
 	</members>
 	</group>
+	
 	
 	<group id="operations.menu.group">
 		<face>
     		<text>O_perations</text>
     	</face>
-	<members>
-	
-	</members>
+		<members>
+			<member command-id="unary.group"/>		
+			<member command-id="compositions.group"/>
+			<member command-id="supervisory.group"/>		
+		</members>
 	</group>
-
+	
+	<group id="unary.group">
+		<face>
+    		<text>Unary</text>
+    	</face>	
+		<members>
+			<member command-id="accessible.command"/>
+			<member command-id="coaccessible.command"/>
+			<member command-id="trim.command"/>
+			<member command-id="prefixclosure.command"/>
+		</members>
+	</group>
+	<group id="compositions.group">
+		<face>
+    		<text>Compositions</text>
+    	</face>	
+		<members>
+			<member command-id="product.command"/>
+			<member command-id="parallelcomposition.command"/>
+			<member command-id="observer.command"/>
+		</members>
+	</group>
+	<group id="supervisory.group">
+		<face>
+    		<text>Supervisory</text>
+    	</face>	
+		<members>
+			<member command-id="supc.command"/>
+			<member command-id="controllability.command"/>
+		</members>
+	</group>
+	
 </commands>
