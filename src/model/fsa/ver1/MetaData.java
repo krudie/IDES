@@ -56,7 +56,7 @@ public class MetaData implements FSAMetaData {
 		SubElement layout = s.getSubElement("graphic").getSubElement("circle");
 		int radius = Integer.parseInt(layout.getAttribute("r"));
 		Point2D.Float centre = new Point2D.Float(Integer.parseInt(layout.getAttribute("x")),
-								 Integer.parseInt(layout.getAttribute("y")));
+								 				Integer.parseInt(layout.getAttribute("y")));
 		if(s.isInitial()) {
         	SubElement a = s.getSubElement("graphic").getSubElement("arrow");
         	Point2D.Float arrow = new Point2D.Float(Float.parseFloat(a.getAttribute("x")),
@@ -79,14 +79,14 @@ public class MetaData implements FSAMetaData {
 		State s = (State)state;
 		SubElement g = new SubElement("graphic");
 		SubElement c = new SubElement("circle");
-		c.setAttribute("r", layout.getRadius()+"");
-		c.setAttribute("x", layout.getLocation().x+"");
-		c.setAttribute("y", layout.getLocation().y+"");
+		c.setAttribute("r", Math.round(layout.getRadius()) + "");
+		c.setAttribute("x", Math.round(layout.getLocation().x) + "");
+		c.setAttribute("y", Math.round(layout.getLocation().y) + "");
 		g.addSubElement(c);		
 		if(s.isInitial()) {
         	SubElement a = new SubElement("arrow");
-        	a.setAttribute("x", layout.getArrow().x+"");
-        	a.setAttribute("y", layout.getArrow().y+"");
+        	a.setAttribute("x", layout.getArrow().x + "");
+        	a.setAttribute("y", layout.getArrow().y + "");
         	g.addSubElement(a);
 		}
 		s.addSubElement(g);		

@@ -58,15 +58,19 @@ public class MainWindow extends JFrame implements Subscriber {
 	    setSize(screen.width, screen.height);
 		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.8), (int) (getSize().height*0.75)));
 		createAndAddTabbedPane();
-		
-		// UIStateModel.instance().setGraphDrawingView(drawingBoard);		
+				
 		
 		// TODO add graph spec, latex and eps views to the state model		
-		this.filmStrip = new FilmStrip();		
+		filmStrip = new FilmStrip();		
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
+	
+		//FileOperations.loadAndExportCommands("commands.txt"); 
+		loadAndExportCommands();
 		createAndAddMenuBar();
 		createAndAddToolBar();
 		update();
+		
+		// TODO fire exit.command to make sure that system variables are saved
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
 		pack();		
 	}
@@ -104,8 +108,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		  * package ui.command.
 		  * ??? This is tricky for file commands since need name and reference to command manager and filter.
 		  */
-		
-		 loadAndExportCommands();
+				 
 		 JMenuBar menuBar = CommandManager.defaultInstance().getGroup("ides.menu.group").createMenuBar(); // new JMenuBar();
 	 	 
 		 // TODO assemble the help menu
@@ -130,26 +133,19 @@ public class MainWindow extends JFrame implements Subscriber {
 		FileOperations.loadCommandManager("commands.xml");
 		
 		new CreateCommand(drawingBoard).export();
-		
-//		Iterator commands = CommandManager.defaultInstance().commandIterator();
-//		while(commands.hasNext()){
-//			ActionCommand cmd = (ActionCommand)commands.next();
-//			cmd.export();
-//		}
+		new SelectCommand(drawingBoard).export();
+		new MoveCommand().export();
 		
 		new FileCommands.OpenAutomatonCommand().export();
-		//new FileCommands.CloseAutomatonCommand().export();
-		new FileCommands.SaveAutomatonCommand().export();
-		new FileCommands.OpenWorkspaceCommand().export();
-		//new FileCommands.CloseWorkspaceCommand().export();
+		new FileCommands.CloseAutomatonCommand().export();
+		new FileCommands.SaveAutomatonCommand().export();		
+		new FileCommands.OpenWorkspaceCommand().export();		
 		new FileCommands.SaveWorkspaceCommand().export();
 		new FileCommands.ExportToGIFCommand().export();
 		new FileCommands.ExportToLatexCommand().export();
 		new FileCommands.ExportToPNGCommand().export();
-		
-		new SelectCommand(drawingBoard).export();
-		new MoveCommand().export();
-		
+		new FileCommands.ExitCommand().export();
+			
 	}
 
 	

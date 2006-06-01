@@ -1,16 +1,14 @@
 package ui.command;
 
+import io.fsa.ver1.FileOperations;
+
 import java.io.File;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
-import io.fsa.ver1.FileOperations;
+import javax.swing.JOptionPane;
 
 import main.IDESWorkspace;
 import main.SystemVariables;
 import model.fsa.ver1.Automaton;
-import model.fsa.ver1.MetaData;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
@@ -18,21 +16,19 @@ import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
-import ui.GraphModel;
-import ui.UIStateModel;
-
 
 public class FileCommands {	
 	
-	public static class SaveAutomatonCommand extends ActionCommand {
-	
-		public SaveAutomatonCommand(){
-			super("save.automaton.command");
+	public static class NewAutomatonCommand extends ActionCommand {
+		
+		public NewAutomatonCommand(){
+			super("new.automaton.command");
 		}
 		
 		@Override
 		protected void handleExecute() {
-			FileOperations.saveAutomaton((Automaton)IDESWorkspace.instance().getActiveModel(), SystemVariables.instance().getLast_used_path());
+			// TODO
+			JOptionPane.showMessageDialog(null, "Create new automaton");
 		}	
 	}
 	
@@ -51,10 +47,50 @@ public class FileCommands {
 			Automaton fsa = (Automaton)FileOperations.openSystem(files[0]);
 			if(fsa != null){
 				IDESWorkspace.instance().addFSAModel(fsa);			
+				SystemVariables.instance().setLast_used_path(files[0].getPath());
 			}
 		}
 	}	
 	
+	public static class SaveAutomatonCommand extends ActionCommand {
+		
+		public SaveAutomatonCommand(){
+			super("save.automaton.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+			FileOperations.saveAutomaton((Automaton)IDESWorkspace.instance().getActiveModel(), SystemVariables.instance().getLast_used_path());
+			setEnabled(false);
+		}	
+	}
+	
+	public static class CloseAutomatonCommand extends ActionCommand {
+		
+		public CloseAutomatonCommand(){
+			super("close.automaton.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+			// TODO
+			JOptionPane.showMessageDialog(null, "Close automaton");
+		}	
+	}
+		
+	
+	public static class NewWorkspaceCommand extends ActionCommand {
+			
+			public NewWorkspaceCommand(){
+				super("new.workspace.command");
+			}
+			
+			@Override
+			protected void handleExecute() {
+				// TODO
+				JOptionPane.showMessageDialog(null, "Create new workspace");
+			}	
+	}
 	
 	public static class OpenWorkspaceCommand extends AbstractFileOpenCommand {
 		
@@ -66,7 +102,7 @@ public class FileCommands {
 		@Override
 		protected void performOpen(File[] arg0) {
 			// TODO Auto-generated method stub
-			
+			JOptionPane.showMessageDialog(null, "Open workspace");
 		}
 	
 	}
@@ -79,7 +115,8 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			// TODO Auto-generated method stub
-			
+			JOptionPane.showMessageDialog(null, "Save workspace");
+			setEnabled(false);
 		}
 	}
 	
@@ -126,5 +163,25 @@ public class FileCommands {
 			System.out.println("TODO: Save as PNG");
 		}
 		
+	}
+	
+public static class ExitCommand extends ActionCommand {
+		
+		public ExitCommand(){
+			super("exit.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+			// TODO check all dirty bits and display confirm exit/do you wish to save
+			// dialogs and then fire appropriate save commands.
+			int retVal = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit IDES 2.1?");
+			if(retVal == JOptionPane.OK_OPTION){
+				SystemVariables.instance().saveSettings();
+				System.exit(0);
+			}else{
+				// TODO
+			}
+		}	
 	}
 }

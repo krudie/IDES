@@ -38,11 +38,13 @@
          <member command-id="open.automaton.command"/>
          <member command-id="save.automaton.command"/>
          <member command-id="saveas.automaton.command"/>
+         <member command-id="close.automaton.command"/>
          <separator/>
          <member command-id="export.group" inline="true"/>
          <expansion-point separator="before"/>
+         <member command-id="exit.command"/>
       </members>  
-   </group>
+   </group>   
    
    <group id="file.save.group">
       <members>  
@@ -160,6 +162,15 @@
          <text/>
       </face>
     </command>    
+    <command id="close.automaton.command">
+      <face>
+         <text>_Close automaton</text>
+         <description>Close automaton.</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>    
     
     
     <group id="export.group">
@@ -204,7 +215,12 @@
       </face>
     </command>    
     
-    
+    <command id="exit.command">    
+      <face>
+         <text>E_xit</text>
+         <description>Exit IDES</description>
+      </face>
+    </command>    
     
     <group id="graph.group">
       <face>

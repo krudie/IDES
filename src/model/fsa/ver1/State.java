@@ -32,6 +32,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
         this.id = id;
         sourceT = new LinkedList<FSATransition>();
         targetT = new LinkedList<FSATransition>();
+        this.addSubElement(new SubElement("properties"));
     }
 
     /**
@@ -153,9 +154,19 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		addSubElement(n);
 	}
 	
+	/**
+	 * If this state has been labelled, returns the name
+	 * otherwise returns the empty string.
+	 * 
+	 * @return the name of this state
+	 */
 	public String getName(){
 		SubElement name = getSubElement("name");
-        return (name.getChars() != null) ? name.getChars() : "";
+		if(name != null){
+			return (name.getChars() != null) ? name.getChars() : "";
+		}else{
+			return "";
+		}
 	}
 	
 	public void setId(long id) {

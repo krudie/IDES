@@ -1,15 +1,22 @@
 package io.fsa.ver1;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 
+import javax.swing.filechooser.FileFilter;
+
+import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.LoadException;
 
 import main.IDESWorkspace;
+import main.SystemVariables;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
@@ -84,6 +91,46 @@ public class FileOperations {
 	}
 	
 	/**
+	 * Loads all ActionCommand subclasses in the package with the given name
+	 * and exports them so they can be seen by menu and toolbar groups. 
+	 * 
+	 * Precondition: the given package name contains only classes that extend ActionCommand
+	 * 
+	 * @param packageName
+	 */
+	public static void loadAndExportCommands(String commandsFileName){	
+		//ClassLoader loader = ClassLoader.getSystemClassLoader();
+		BufferedReader in;
+		String s;
+	    
+		try {	
+			in = new BufferedReader(new FileReader(SystemVariables.instance().getSystem_path() + commandsFileName));
+			s = in.readLine();
+		    while (s != null) {
+					ActionCommand cmd = (ActionCommand)Class.forName(s).newInstance();
+					cmd.export();
+					s = in.readLine();
+		    }
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	/**
      * Method for getting a printstream wrapped around a file
      * @param file the file that needs a printstream wrapped around it
      * @return The printstream pointing to a the file
@@ -95,24 +142,24 @@ public class FileOperations {
                 file.createNewFile();
             }
             catch(IOException ioe){
-                System.err.println("ProjectManager: unable to create file, message: "
+                System.err.println("FileOperations: unable to create file, message: "
                         + ioe.getMessage());
                 return null;
             }
         }
         if(!file.isFile()){
-            System.err.println("ProjectManager: " + file.getName() + " is not a file. ");
+            System.err.println("FileOperations: " + file.getName() + " is not a file. ");
             return null;
         }
         if(!file.canWrite()){
-            System.err.println("ProjectManager: can not write to file: " + file.getName());
+            System.err.println("FileOperations: can not write to file: " + file.getName());
             return null;
         }
         try{
             ps = new PrintStream(file);
         }
         catch(FileNotFoundException fnfe){
-            System.out.println("ProjectManager: file missing: " + fnfe.getMessage());
+            System.out.println("FileOperations: file missing: " + fnfe.getMessage());
             return null;
         }
         return ps;
@@ -146,4 +193,10 @@ public class FileOperations {
         XMLexporter.automatonToXML(a, ps);        
     }  
     
-}
+    private static class ClassFileFilter implements FilenameFilter{    	
+		    public boolean accept(File dir, String name) {
+		        return (name.endsWith(".class"));
+		    }
+    }
+ }
+

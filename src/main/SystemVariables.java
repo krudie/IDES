@@ -68,14 +68,14 @@ public class SystemVariables
 		(new File(system_path)).mkdir();
 		(new File(tex_path)).mkdir();
 		
-		fetchValues();
+		fetchSettings();
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// miscelaneous ///////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
-	private  void fetchValues()
+	private  void fetchSettings()
 	{
 		try
 		{ 
@@ -112,10 +112,13 @@ public class SystemVariables
 		    }
 			in.close();
 	    }
-	    catch (Exception e)	{ }
+	    catch (Exception e)	{ 
+	    	System.err.println("SystemVariables unable to fetch settings: " +
+	    						e.getMessage());
+	    }
 	}
 	
-	public void saveValues()
+	public void saveSettings()
 	{
 	    try 
 		{ 

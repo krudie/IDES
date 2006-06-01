@@ -9,7 +9,6 @@ import java.awt.geom.Point2D.Float;
 import presentation.fsa.Edge;
 import presentation.fsa.Node;
 import ui.GraphDrawingView;
-import ui.UIStateModel;
 import ui.command.GraphCommands.CreateCommand;
 
 /**
