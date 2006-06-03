@@ -95,4 +95,7 @@ public interface PresentationElement {
 	
 	public GraphicalLayout getLayout();
 	
+	public void translate(float x, float y);
+	
+	public void setLocation(Point2D p);
 }

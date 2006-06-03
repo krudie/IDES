@@ -33,7 +33,11 @@ public class ArrowHead extends Polygon {
     public ArrowHead(Point2D.Float dir, Point2D.Float base){
         update(dir, base);
     } 
-        
+      
+    public ArrowHead(Point2D.Float dir, Point2D base){
+        update(dir, new Point2D.Float((float)base.getX(), (float)base.getY()));
+    } 
+    
     /**
      * TODO reimplement to use a table of points for all of 360 possible arrows.
      * Do all possible rotations on a single initialization.

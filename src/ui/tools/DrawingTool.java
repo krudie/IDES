@@ -22,7 +22,7 @@ public abstract class DrawingTool {
 // Dragging flag -- set to true when user presses mouse button over checker
 // and cleared to false when user releases mouse button.
 
-	protected boolean inDrag = false;
+	protected boolean dragging = false;
 	
 	public abstract void handleMouseClicked(MouseEvent me);
 	public abstract void handleMouseDragged(MouseEvent me);

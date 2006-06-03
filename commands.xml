@@ -242,7 +242,7 @@
       <face>
          <text>Select</text>
          <icon type="file">C:/Documents and Settings/Helen/workspace/IDES2.1/src/images/icons/graphic_modify.gif</icon>
-         <description>Select or move graph elements</description>
+         <description>Select graph elements</description>
          <accelerator key="e">
             <modifier value="control"/>
          </accelerator>

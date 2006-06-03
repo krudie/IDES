@@ -13,9 +13,11 @@ public class EdgeLayout extends GraphicalLayout {
 	private ArrayList eventNames;
 	private Point2D.Float[] bezierControls;
 	private Point2D.Float labelOffset;
-	
-	// TODO use this class instead of mucking about with an array
-	private CubicCurve2D.Float controls;
+		
+	public static final int P1 = 0;	
+	public static final int CTRL1 = 1;
+	public static final int CTRL2 = 2;
+	public static final int P2 = 3;
 	
 	public EdgeLayout(){
 		bezierControls = new Point2D.Float[4];
@@ -71,10 +73,10 @@ public class EdgeLayout extends GraphicalLayout {
 			Point2D.Float dir = Geometry.subtract(c2, c1);
 			float norm = (float)Geometry.norm(dir);
 			Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-			ctrls[Edge.P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
-			ctrls[Edge.CTRL1] = Geometry.add(c1, Geometry.scale(unit, norm/3));
-			ctrls[Edge.CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
-			ctrls[Edge.P2] = Geometry.add(c2, Geometry.scale(unit, -t.getRadius()-ArrowHead.SHORT_HEAD_LENGTH));
+			ctrls[P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
+			ctrls[CTRL1] = Geometry.add(c1, Geometry.scale(unit, norm/3));
+			ctrls[CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
+			ctrls[P2] = Geometry.add(c2, Geometry.scale(unit, -t.getRadius()-ArrowHead.SHORT_HEAD_LENGTH));
 		}
 		return ctrls;
 	}
@@ -93,10 +95,10 @@ public class EdgeLayout extends GraphicalLayout {
 		Point2D.Float dir = Geometry.subtract(c2, c1);
 		float norm = (float)Geometry.norm(dir);
 		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-		ctrls[Edge.P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
-		ctrls[Edge.CTRL1] = Geometry.add(c1, Geometry.scale(unit, norm/3));
-		ctrls[Edge.CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
-		ctrls[Edge.P2] = c2;		
+		ctrls[P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
+		ctrls[CTRL1] = Geometry.add(c1, Geometry.scale(unit, norm/3));
+		ctrls[CTRL2] = Geometry.add(c1, Geometry.scale(unit, 2*norm/3));
+		ctrls[P2] = c2;		
 		return ctrls;
 	}
 	
@@ -108,6 +110,13 @@ public class EdgeLayout extends GraphicalLayout {
 		this.bezierControls = bezierControls;
 	}
 	
+	public void setCurve(Point2D p1, Point2D c1, Point2D c2, Point2D p2) {		
+		bezierControls[P1] = new Point2D.Float((float)p1.getX(), (float)p1.getY());
+		bezierControls[CTRL1] = new Point2D.Float((float)c1.getX(), (float)c1.getY());
+		bezierControls[CTRL2] = new Point2D.Float((float)c2.getX(), (float)c2.getY());;
+		bezierControls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());
+	}
+
 	public void setCurve(Point2D.Float p1, Point2D.Float c1, Point2D.Float c2, Point2D.Float p2){
 		bezierControls[0] = p1;
 		bezierControls[1] = c1;

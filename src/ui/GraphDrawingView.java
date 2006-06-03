@@ -14,12 +14,9 @@ import java.awt.event.MouseMotionListener;
 import main.IDESWorkspace;
 import model.Subscriber;
 import presentation.PresentationElement;
+import presentation.fsa.BoundingBox;
 import presentation.fsa.GraphElement;
-import ui.tools.CreationTool;
-import ui.tools.DrawingTool;
-import ui.tools.SelectionTool;
-import ui.tools.TextTool;
-
+import ui.tools.*;
 /**
  * The component in which users view, create and modify a graph representation
  * of an automaton.
@@ -45,7 +42,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	/**
 	 * Retangle to render as the area selected by mouse. 
 	 */
-	private Rectangle selectionArea;
+	private BoundingBox selectionArea;
 	
 	// ??? Do I really need these buffers?  
 	// Won't associated elements be stored with most recently executed commands in the history?
@@ -84,13 +81,14 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		scaleFactor = 1f;
 			
 		currentSelection = new GraphElement();
-		selectionArea = new Rectangle();
+		selectionArea = new BoundingBox();
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
 		drawingTools[DEFAULT] = new SelectionTool(this);
 		drawingTools[SELECT] = drawingTools[DEFAULT];
 		drawingTools[CREATE] = new CreationTool(this);
 		drawingTools[TEXT] = new TextTool(this);
+		drawingTools[MOVE] = new MovementTool(this);
 		
 		// TODO construct all other drawing tools
 		currentTool = DEFAULT;		
@@ -229,7 +227,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
 		// that sets highlight(boolean) on all of its elements.
 		if(graphModel != null){
-			currentSelection = (GraphElement)graphModel.getElementsContainedBy(rectangle);
+			currentSelection = graphModel.getElementsContainedBy(rectangle);
 			currentSelection.setSelected(true);		
 			rectangle.setSize((int)currentSelection.bounds().getWidth(),
 								(int)currentSelection.bounds().getHeight());

@@ -8,11 +8,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
+import presentation.PresentationElement;
+import presentation.fsa.GraphElement;
+
 import ui.GraphDrawingView;
 
 /**
  * Selects and highlights graph elements using either single click or bounding box.
- * Supports resizing of bounding box by handles on borders.
+ * TODO Supports resizing of bounding box by handles on corners.
  * 
  * TODO add movement of elements
  * 
@@ -27,7 +30,8 @@ public class SelectionTool extends DrawingTool {
 	Rectangle box;
 	// TODO more cursors for resizing the bounding box
 	
-	private boolean resizing = false;	
+	private boolean resizing = false;
+	private boolean moving = false;
 	
 	public SelectionTool(GraphDrawingView board){
 		context = board;
@@ -47,9 +51,9 @@ public class SelectionTool extends DrawingTool {
 	 * Stretch the selection rectangle.
 	 */
 	public void handleMouseDragged(MouseEvent me) {		
-		if(!inDrag) {
+		if(!dragging) {
 			context.clearCurrentSelection();
-			inDrag = true;
+			dragging = true;
 		}
 
 		endPoint = me.getPoint();
@@ -91,12 +95,21 @@ public class SelectionTool extends DrawingTool {
 	 * Handle mouse down events by preparing for a drag.
 	 */
 	public void handleMousePressed(MouseEvent me) {
-//		 store starting point for selection rectangle.
+		// if i have pressed the mouse on the current selection
+		
+		PresentationElement selection = context.getCurrentSelection();
+		if(selection != null && selection.intersects(me.getPoint())){
+			//prepare to move the selection on drag event
+			moving = true;
+			context.setTool(GraphDrawingView.MOVE);
+		}
+		
+		// store starting point for selection rectangle.
 		startPoint = me.getPoint();						
 		context.clearCurrentSelection();
 		context.updateCurrentSelection(startPoint);
 		context.highlightCurrentSelection(true);
-		context.repaint();	
+		context.repaint();
 	}
 
 	@Override
@@ -105,7 +118,7 @@ public class SelectionTool extends DrawingTool {
 	 * or in the selection rectangle.
 	 */
 	public void handleMouseReleased(MouseEvent me) {		
-		if(inDrag){
+		if(dragging){
 			// compute the set of graph elements hit by rectangle
 			context.updateCurrentSelection(box);
 								
@@ -113,7 +126,7 @@ public class SelectionTool extends DrawingTool {
 			// box.setSize(0,0);
 			startPoint = null;
 			endPoint = null;			
-			inDrag = false;
+			dragging = false;
 		}
 		context.highlightCurrentSelection(false);
 		context.repaint();

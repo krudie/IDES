@@ -55,6 +55,10 @@ public class GraphicalLayout {
 		location.setLocation(x,y);
 	}
 
+	public void translate(float x, float y){
+		location.setLocation(location.x + x, location.y + y);
+	}
+
 	public Color getColor() {
 		return color;
 	}
@@ -86,6 +90,4 @@ public class GraphicalLayout {
 	public void setSelectionColor(Color selectionColor) {
 		this.selectionColor = selectionColor;
 	}
-	
-	
 }

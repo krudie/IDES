@@ -27,9 +27,7 @@ public class Node extends GraphElement {
 
 	// the state to be represented
 	private FSAState state;
-	// graphical layout metadata for the state
-	private NodeLayout layout;
-	
+		
 	// TODO Change to list of labels to be displayed within the bounds of this node
 	private GraphLabel label;
 
@@ -59,15 +57,15 @@ public class Node extends GraphElement {
 	}
 	
 	public NodeLayout getLayout(){
-		return layout;
+		return (NodeLayout)layout;
 	}
 	
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void update() {
 			
-		float radius = layout.getRadius();
-		Point2D.Float centre = layout.getLocation();
+		float radius = ((NodeLayout)layout).getRadius();
+		Point2D.Float centre = ((NodeLayout)layout).getLocation();
 		
 		// upper left corner, width and height
 		float d = 2*radius;
@@ -83,8 +81,8 @@ public class Node extends GraphElement {
 			// The point on the edge of the circle:
 			// centre point - arrow vector
 			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
-			Point2D.Float dir = new Point2D.Float(layout.getArrow().x, layout.getArrow().y);			
-			float offset = layout.getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
+			Point2D.Float dir = new Point2D.Float(((NodeLayout)layout).getArrow().x, ((NodeLayout)layout).getArrow().y);			
+			float offset = ((NodeLayout)layout).getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
 			arrow2 = Geometry.subtract(c, Geometry.scale(dir, offset));
 			arrow = new ArrowHead(dir, arrow2);					
 			// ??? How long should the shaft be?
@@ -161,5 +159,11 @@ public class Node extends GraphElement {
 	 */
 	public boolean equals(Node n){
 		return this.getId() == n.getId();
+	}
+	
+	public void translate(float x, float y){
+		super.translate(x,y);
+		// TODO translate all INCOMING edges as well as outgoing
+		update();
 	}
 }

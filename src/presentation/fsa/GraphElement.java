@@ -23,13 +23,13 @@ public class GraphElement implements PresentationElement {
 	private PresentationElement parent;
 	
 	public GraphElement() {		
-		this.parent = null;
-		children = new LinkedList<PresentationElement>();
+		this(null);		
 	}
 		
 	public GraphElement(PresentationElement parent) {		
 		this.parent = parent;
 		children = new LinkedList<PresentationElement>();
+		layout = new GraphicalLayout();
 	}
 	
 	/**
@@ -147,7 +147,7 @@ public class GraphElement implements PresentationElement {
 	}
 	
 	/**
-	 * TODO should this be in class Glyph?
+	 * TODO should this be in class PresentationElement?
 	 * No.  If make this an abstract method, then can't instantiate a generic GraphElement :(
 	 *
 	 */
@@ -160,4 +160,17 @@ public class GraphElement implements PresentationElement {
 	public GraphicalLayout getLayout() {		
 		return layout;
 	};
+	
+	public void translate(float x, float y){
+		layout.translate(x, y);
+		Iterator c = children.iterator();
+		while(c.hasNext()){
+			PresentationElement child = (PresentationElement)c.next();
+			child.translate(x,y);
+		}
+	}
+
+	public void setLocation(Point2D p) {
+		layout.setLocation((float)p.getX(), (float)p.getY());		
+	}
 }

@@ -3,8 +3,12 @@ package ui.command;
 import java.awt.Point;
 import java.awt.geom.Point2D.Float;
 
-import org.pietschy.command.ActionCommand;
+import javax.swing.undo.UndoableEdit;
 
+import org.pietschy.command.ActionCommand;
+import org.pietschy.command.undo.UndoableActionCommand;
+
+import presentation.PresentationElement;
 import presentation.fsa.Edge;
 import presentation.fsa.Node;
 import ui.GraphDrawingView;
@@ -125,16 +129,36 @@ public class GraphCommands {
 	}
 	
 	
-	public static class MoveCommand extends ActionCommand {
+	public static class MoveCommand extends UndoableActionCommand {
 
+		GraphDrawingView context;
+		PresentationElement currentSelection;
+		Point displacement;
+		
 		public MoveCommand() {
 			super("move.command");
 		}
-		
-		@Override
-		protected void handleExecute() {
-			// TODO Auto-generated method stub
-			System.out.println("Move command executed.");
+
+		/**
+		 * 
+		 * @param context
+		 * @param currentSelection
+		 * @param displacement
+		 */
+		public MoveCommand(GraphDrawingView context, PresentationElement currentSelection, Point displacement) {
+			this.currentSelection = currentSelection;
+			this.context = context;
+			this.displacement = displacement;
 		}
+
+		@Override
+		protected UndoableEdit performEdit() {
+			// TODO finalize movement of current selection in graph model
+			
+			// TODO create an UndoableEdit object using
+			// my instance variables and return it.
+			
+			return null;
+		}	
 	}
 }

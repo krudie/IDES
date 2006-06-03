@@ -29,6 +29,7 @@ import model.Subscriber;
 
 import org.pietschy.command.CommandManager;
 
+import ui.command.EditCommands;
 import ui.command.FileCommands;
 import ui.command.GraphCommands.CreateCommand;
 import ui.command.GraphCommands.MoveCommand;
@@ -56,7 +57,7 @@ public class MainWindow extends JFrame implements Subscriber {
 	    Toolkit tk = Toolkit.getDefaultToolkit ();
 	    Dimension screen = tk.getScreenSize();
 	    setSize(screen.width, screen.height);
-		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.8), (int) (getSize().height*0.75)));
+		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.8), (int) (getSize().height*0.7)));
 		createAndAddTabbedPane();
 				
 		
@@ -71,7 +72,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		update();
 		
 		// TODO fire exit.command to make sure that system variables are saved
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();		
 	}
 	
@@ -135,6 +136,11 @@ public class MainWindow extends JFrame implements Subscriber {
 		new CreateCommand(drawingBoard).export();
 		new SelectCommand(drawingBoard).export();
 		new MoveCommand().export();
+		
+		new EditCommands.DeleteCommand().export();
+		new EditCommands.CutCommand().export();
+		new EditCommands.CopyCommand().export();
+		new EditCommands.PasteCommand().export();
 		
 		new FileCommands.OpenAutomatonCommand().export();
 		new FileCommands.CloseAutomatonCommand().export();
@@ -278,8 +284,10 @@ public class MainWindow extends JFrame implements Subscriber {
 			// TODO disable edit command group
 			commandManager.getGroup("graph.group").setEnabled(false);
 			commandManager.getGroup("ides.toolbar.group").setEnabled(false);
+			commandManager.getGroup("edit.group").setEnabled(false);
+			
 			commandManager.getGroup("file.group").setEnabled(true);
-			// enable options groups
+			// TODO enable options groups
 			
 			// disable save commands
 			// FIXME this doesn't work
@@ -288,6 +296,7 @@ public class MainWindow extends JFrame implements Subscriber {
 			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
 			commandManager.getGroup("ides.toolbar.group").setEnabled(true);
 			commandManager.getGroup("graph.group").setEnabled(true);
+			commandManager.getGroup("edit.group").setEnabled(true);
 		}
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 		

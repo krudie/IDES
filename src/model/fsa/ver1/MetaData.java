@@ -8,6 +8,7 @@ import model.DESElement;
 import model.fsa.FSAMetaData;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
+import presentation.GraphicalLayout;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeLayout;
 import presentation.fsa.NodeLayout;
@@ -106,14 +107,14 @@ public class MetaData implements FSAMetaData {
 		SubElement g = new SubElement("graphic");
 		SubElement b = new SubElement("bezier");
 		SubElement l = new SubElement("label");
-		b.setAttribute("x1", "" + layout.getCurve()[Edge.P1].x);
-		b.setAttribute("y1", "" + layout.getCurve()[Edge.P1].y);
-		b.setAttribute("x2", "" + layout.getCurve()[Edge.P2].x);
-		b.setAttribute("y2", "" + layout.getCurve()[Edge.P2].y);
-		b.setAttribute("ctrlx1", "" + layout.getCurve()[Edge.CTRL1].x);
-		b.setAttribute("ctrly1", "" + layout.getCurve()[Edge.CTRL1].y);
-		b.setAttribute("ctrlx2", "" + layout.getCurve()[Edge.CTRL2].x);
-		b.setAttribute("ctrly2", "" + layout.getCurve()[Edge.CTRL2].y);
+		b.setAttribute("x1", "" + layout.getCurve()[EdgeLayout.P1].x);
+		b.setAttribute("y1", "" + layout.getCurve()[EdgeLayout.P1].y);
+		b.setAttribute("x2", "" + layout.getCurve()[EdgeLayout.P2].x);
+		b.setAttribute("y2", "" + layout.getCurve()[EdgeLayout.P2].y);
+		b.setAttribute("ctrlx1", "" + layout.getCurve()[EdgeLayout.CTRL1].x);
+		b.setAttribute("ctrly1", "" + layout.getCurve()[EdgeLayout.CTRL1].y);
+		b.setAttribute("ctrlx2", "" + layout.getCurve()[EdgeLayout.CTRL2].x);
+		b.setAttribute("ctrly2", "" + layout.getCurve()[EdgeLayout.CTRL2].y);
 		l.setAttribute("x", "" + layout.getLabelOffset().x);
 		l.setAttribute("y", "" + layout.getLabelOffset().y);
 		g.addSubElement(b);
@@ -133,13 +134,13 @@ public class MetaData implements FSAMetaData {
 		
 		SubElement bezier = layout.getSubElement("bezier");
 		Point2D.Float[] controls = new Point2D.Float[4];
-		controls[Edge.P1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x1")),
+		controls[EdgeLayout.P1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x1")),
 				Float.parseFloat(bezier.getAttribute("y1")));
-		controls[Edge.P2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x2")),
+		controls[EdgeLayout.P2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x2")),
 				Float.parseFloat(bezier.getAttribute("y2")));
-		controls[Edge.CTRL1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx1")),
+		controls[EdgeLayout.CTRL1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx1")),
 				Float.parseFloat(bezier.getAttribute("ctrly1")));
-		controls[Edge.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
+		controls[EdgeLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
 		EdgeLayout edgeLayout = new EdgeLayout(controls);

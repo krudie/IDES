@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.util.Iterator;
 
 import javax.swing.filechooser.FileFilter;
+import javax.swing.JFileChooser;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
@@ -34,7 +35,8 @@ public class FileOperations {
 	
 	public static FSAModel openSystem(File f) {	
 	    AutomatonParser ap = new AutomatonParser();	    	
-        Automaton automaton = ap.parse(f);	        
+        Automaton automaton = ap.parse(f);
+        SystemVariables.instance().setLast_used_path(f.getParent());
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
         return automaton;		
 	}
@@ -137,30 +139,41 @@ public class FileOperations {
      */
     private static PrintStream getPrintStream(File file){
         PrintStream ps = null;
-        if(!file.exists()){
-            try{
-                file.createNewFile();
-            }
-            catch(IOException ioe){
-                System.err.println("FileOperations: unable to create file, message: "
-                        + ioe.getMessage());
-                return null;
-            }
-        }
-        if(!file.isFile()){
-            System.err.println("FileOperations: " + file.getName() + " is not a file. ");
-            return null;
-        }
-        if(!file.canWrite()){
-            System.err.println("FileOperations: can not write to file: " + file.getName());
-            return null;
-        }
-        try{
-            ps = new PrintStream(file);
-        }
-        catch(FileNotFoundException fnfe){
-            System.out.println("FileOperations: file missing: " + fnfe.getMessage());
-            return null;
+        boolean successful = false;
+        while(!successful){
+	        if(!file.exists()){
+	            try{
+	                file.createNewFile();
+	            }
+	            catch(IOException ioe){
+	                System.err.println("FileOperations: unable to create file, message: "
+	                        + ioe.getMessage());
+	                //return null;
+	            }
+	        }
+	        if(!file.isFile()){
+	            System.err.println("FileOperations: " + file.getName() + " is not a file. ");
+	            //return null;
+	        }
+	        if(!file.canWrite()){
+	            System.err.println("FileOperations: can not write to file: " + file.getName());
+	            //return null;
+	        } 
+	        
+	        
+	        try{
+	            ps = new PrintStream(file);
+	            successful=true;
+	        }
+	        catch(FileNotFoundException fnfe){	        	
+	            System.out.println("FileOperations: file missing: " + fnfe.getMessage());
+	            //return null;
+	        }
+	        JFileChooser fc = new JFileChooser();
+        	int retVal = fc.showSaveDialog(null);
+        	if(retVal == JFileChooser.APPROVE_OPTION){
+        		file = fc.getSelectedFile();
+        	}
         }
         return ps;
     }

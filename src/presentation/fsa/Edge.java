@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import model.fsa.FSATransition;
-import model.fsa.ver1.Event;
 import model.fsa.ver1.Transition;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
@@ -28,30 +27,22 @@ public class Edge extends GraphElement {
 	private ArrayList<FSATransition> transitions;	
 	
 	private Node source, target;
-	private EdgeLayout layout;
+	
+	// Handles for modifying control points/tangents to the curve.
 	private EdgeHandler handler;
 	
 	// The bezier curve.
+	private CubicCurve2D curve;
+	// Visualization of the curve
 	private GeneralPath path;	
-	private ArrowHead arrow;	
-	
-	// replace the following with Class java.awt.geom.CubicCurve2D	//////////
-	private Point2D.Float[] controlPoints; // four controls points	
-	public static final int P1 = 0;	
-	public static final int CTRL1 = 1;
-	public static final int CTRL2 = 2;
-	public static final int P2 = 3;
-	//////////////////////////////////////////////////////////////////////////
-	
-	private CubicCurve2D curve;	
+	private ArrowHead arrow;		
 	
 	public Edge(EdgeLayout layout, Node source){
 		this.layout = layout;
 		this.source = source;
 		target = null;
 		transitions = new ArrayList<FSATransition>();		 
-		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
-		controlPoints = new Point2D.Float[4];
+		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		update();
@@ -61,8 +52,7 @@ public class Edge extends GraphElement {
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
 		this.layout = layout; 
-		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
-		controlPoints = new Point2D.Float[4];
+		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		update();
@@ -74,8 +64,7 @@ public class Edge extends GraphElement {
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
 		this.layout = layout; 
-		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
-		controlPoints = new Point2D.Float[4];
+		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		update();
@@ -115,25 +104,24 @@ public class Edge extends GraphElement {
 	}
 	
 	/**
-	 * Updates my curve, arrow and label.
+	 * Updates my visualization of curve, arrow and label.
 	 */
 	public void update() {
 		// TODO optimize: inefficient to remove child glyphs and construct new ones.
 		// At least make sure there are no other references to the children 
 		// or you will have an evil memory leak.
 	    clear();		
-		controlPoints = (Point2D.Float[])layout.getCurve();
-		curve.setCurve(controlPoints, 0);
+		curve.setCurve((Point2D.Float[])((EdgeLayout)layout).getCurve(), 0);
 		
 		// prepare to draw myself as a cubic (bezier) curve
 		path.reset();
 		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
 	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
-	    			controlPoints[CTRL2].x, controlPoints[CTRL2].y,
-	    			controlPoints[P2].x, controlPoints[P2].y);		   	
+	    			(float)curve.getCtrlX2(), (float)curve.getCtrlY2(),
+	    			(float)curve.getX2(), (float)curve.getY2());		   	
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
-	    Point2D.Float dir = new Point2D.Float(controlPoints[P2].x - controlPoints[CTRL2].x, controlPoints[P2].y - controlPoints[CTRL2].y);    	    
-	    arrow = new ArrowHead(Geometry.unit(dir), controlPoints[P2]);
+	    Point2D.Float dir = new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2()));    	    
+	    arrow = new ArrowHead(Geometry.unit(dir), curve.getP2());
 	    	    
 	    handler = new EdgeHandler(this);
 	    handler.setVisible(false);
@@ -142,7 +130,7 @@ public class Edge extends GraphElement {
 	    // assign label from associated event[s]
 	    String s = "";
 	    
-	    Iterator iter = layout.getEventNames().iterator();
+	    Iterator iter = ((EdgeLayout)layout).getEventNames().iterator();
 	    while(iter.hasNext()){
 	    	s += (String)iter.next();
 	    	s += ", ";
@@ -155,7 +143,7 @@ public class Edge extends GraphElement {
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	   	   
 		insert(new GraphLabel(s, this, 
-					Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	layout.getLabelOffset())));
+					Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	((EdgeLayout)layout).getLabelOffset())));
 	}
 	
 	
@@ -167,19 +155,19 @@ public class Edge extends GraphElement {
 	}
 	
 	public Point2D.Float getP1() {
-		return controlPoints[P1];
+		return new Point2D.Float((float)curve.getX1(), (float)curve.getY1());
 	}
 
 	public Point2D.Float getP2() {
-		return controlPoints[P2];
+		return new Point2D.Float((float)curve.getX2(), (float)curve.getY2());
 	}
 	
 	public Point2D.Float getCTRL1() {
-		return controlPoints[CTRL1];		
+		return new Point2D.Float((float)curve.getCtrlX1(), (float)curve.getCtrlY1());		
 	}
 
 	public Point2D.Float getCTRL2() {
-		return controlPoints[CTRL2];		
+		return new Point2D.Float((float)curve.getCtrlX2(), (float)curve.getCtrlY2());		
 	}
 
 	public Node getSource() {
@@ -203,10 +191,10 @@ public class Edge extends GraphElement {
 	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
 	 */
 	public Rectangle2D bounds(){				
-		return new Rectangle2D.Float(Math.min(controlPoints[P1].x, controlPoints[P2].x),
-					  				Math.min(controlPoints[P1].y, controlPoints[P2].y),
-					  				Math.abs(controlPoints[P2].x - controlPoints[P1].x), 
-					  				Math.abs(controlPoints[P2].y - controlPoints[P1].y));	
+		return new Rectangle2D.Float((float)Math.min(curve.getX1(), curve.getX2()),
+					  				(float)Math.min(curve.getY1(), curve.getY2()),					  				
+					  				(float)Math.abs(curve.getX2() - curve.getX1()), 
+					  				(float)Math.abs(curve.getY2() - curve.getY1()));	
 	}
 
 	public void addTransition(Transition t) {
@@ -217,12 +205,21 @@ public class Edge extends GraphElement {
 		transitions.remove(t);
 	}
 
-	public EdgeLayout getLayout() {
-		return layout;
-	}
-
 	public void setLayout(EdgeLayout layout) {
-		this.layout = layout;
+		super.setLayout(layout);
 		update();
 	}
+	
+	public void translate(float x, float y){
+		// Translate the whole curve assuming that its
+		// source and target nodes have been translated by the same displacement.
+		curve.setCurve(curve.getX1()+x, curve.getY1()+y,
+						curve.getCtrlX1()+x, curve.getCtrlY1()+y,
+						curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
+						curve.getX2(), curve.getY2()+y);
+		((EdgeLayout)layout).setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());
+		// reset the control points in the layout object
+		update();
+	}
+		
 }

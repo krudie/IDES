@@ -20,6 +20,7 @@ import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 import presentation.fsa.NodeLayout;
+import presentation.fsa.SelectionGroup;
 
 /**
  * Mediates between the Automaton model and the visual representation.
@@ -124,7 +125,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			// add t to the edge's set of transitions
 			e = edgeBetween(n1, n2); 
 			if(e != null){
-				metaData.augmentLayoutData(t, e.getLayout());
+				metaData.augmentLayoutData(t, (EdgeLayout)e.getLayout());
 				e.addTransition(t);
 				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			}else{
@@ -214,7 +215,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param p the target point
 	 */
 	public void updateEdge(Edge e, Point2D.Float p){
-		EdgeLayout layout = e.getLayout();
+		EdgeLayout layout = (EdgeLayout)e.getLayout();
 		NodeLayout s = e.getSource().getLayout();
 		layout.setCurve(EdgeLayout.computeCurve(s, p));
 		e.update();
@@ -240,10 +241,12 @@ public class GraphModel extends Publisher implements Subscriber {
 	  */
 	public void finishEdge(Edge e, Node n2){
 		e.setTarget(n2);
-		e.getLayout().setCurve(EdgeLayout.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout()));
+		// Note: shouldn't access layout in this manner since now have to call update separately
+		// should use setlayout in class Edge
+		((EdgeLayout)e.getLayout()).setCurve(EdgeLayout.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout()));
 		e.update();
 		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
-		metaData.setLayoutData(t, e.getLayout());
+		metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
 		fsa.add(t);
 		fsa.notifyAllBut(this);
 		edges.put(new Long(t.getId()), e);
@@ -332,8 +335,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param rectangle
 	 * @return the set of graph elements contained by the given rectangle
 	 */
-	protected PresentationElement getElementsContainedBy(Rectangle rectangle) {
-		PresentationElement g = new GraphElement();
+	protected GraphElement getElementsContainedBy(Rectangle rectangle) {
+		GraphElement g = new SelectionGroup();
 		
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
@@ -382,14 +385,14 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param p the point of intersection
 	 * @return the graph element intersected by the given point
 	 */
-	protected PresentationElement getElementIntersectedBy(Point2D p){
+	protected GraphElement getElementIntersectedBy(Point2D p){
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
 		Entry entry;
-		PresentationElement g;
+		GraphElement g;
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (PresentationElement)entry.getValue();
+			g = (GraphElement)entry.getValue();
 			if(g.intersects(p)){				
 				//g.setHighlighted(true);
 				return g;				
@@ -400,7 +403,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		iter = edges.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (PresentationElement)entry.getValue();
+			g = (GraphElement)entry.getValue();
 			if(g.intersects(p)){		
 				//g.setHighlighted(true);
 				return g;				
@@ -412,7 +415,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		iter = labels.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (PresentationElement)entry.getValue();
+			g = (GraphElement)entry.getValue();
 			if(g.intersects(p)){ // TODO && do a more thorough intersection test				
 				//g.setHighlighted(true);
 				return g;				

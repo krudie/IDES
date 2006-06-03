@@ -19,6 +19,13 @@ public class EditCommands {
 		private Object buffer; // ???
 		
 		/**
+		 * Default constructor; handy for exporting this command for group setup.
+		 *
+		 */
+		public CopyCommand(){
+			super("copy.command");
+		}
+		/**
 		 * Creates a command that, when executed, will copy 
 		 * <code>element</code> from the given context.
 		 * 
@@ -43,6 +50,10 @@ public class EditCommands {
 	
 	public static class PasteCommand extends UndoableActionCommand {
 
+		public PasteCommand(){
+			super("paste.command");
+		}
+		
 		@Override
 		protected UndoableEdit performEdit() {
 			// TODO Auto-generated method stub
@@ -58,6 +69,13 @@ public class EditCommands {
 		private Object element; 
 		private Object context;
 		
+		/**
+		 * Default constructor; handy for exporting this command for group setup.
+		 *
+		 */
+		public CutCommand(){
+			super("cut.command");
+		}
 		/**
 		 * Creates a command that, when executed, will cut 
 		 * <code>element</code> from the given context.
@@ -92,6 +110,14 @@ public class EditCommands {
 		
 		private Object element;	 // TODO decide on type, GraphElement composite type?
 		private Object context;  // Does this need to be stored?
+		
+		/**
+		 * Default constructor; handy for exporting this command for group setup.
+		 *
+		 */
+		public DeleteCommand(){
+			super("delete.command");
+		}
 		
 		/**
 		 * Creates a command that, when executed, will cut 
