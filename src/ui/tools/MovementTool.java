@@ -5,8 +5,12 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
+
+import main.SystemVariables;
+
 import ui.GraphDrawingView;
-import ui.command.GraphCommands;
+import ui.command.GraphCommands.MoveCommand;
 
 public class MovementTool extends DrawingTool {
 
@@ -46,9 +50,9 @@ public class MovementTool extends DrawingTool {
 		Point displacement = new Point(end.x - start.x, end.y - start.y);
 		// undo needs to know the selection of moved objects
 		// and the total translation
-		GraphCommands.MoveCommand moveCmd = new GraphCommands.MoveCommand(context, 
-												context.getCurrentSelection(), 
-												displacement);
+		MoveCommand moveCmd = new MoveCommand(context, 
+											context.getCurrentSelection(), 
+											displacement);
 		// finalize movement changes in graph model by calling
 		moveCmd.execute();
 		dragging = false;
@@ -68,6 +72,18 @@ public class MovementTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {}
+
+	@Override
+	public void handleKeyPressed(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleKeyReleased(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	
 

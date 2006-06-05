@@ -6,11 +6,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 
 import presentation.PresentationElement;
-import presentation.fsa.GraphElement;
-
+import presentation.fsa.BoundingBox;
 import ui.GraphDrawingView;
 
 /**
@@ -140,5 +138,17 @@ public class SelectionTool extends DrawingTool {
 			context.clearCurrentSelection();
 			context.repaint();
 		}		
+	}
+
+	@Override
+	public void handleKeyPressed(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleKeyReleased(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
 	}
 }

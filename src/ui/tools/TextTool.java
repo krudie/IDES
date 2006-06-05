@@ -14,8 +14,7 @@ import ui.GraphDrawingView;
 import ui.tools.DrawingTool;
 
 public class TextTool extends DrawingTool {
-
-	private JTextArea textArea;
+	
 	private EdgeLabellingDialog dialog;
 	private GraphDrawingView context;
 	
@@ -82,5 +81,17 @@ public class TextTool extends DrawingTool {
 	@Override
 	public void handleMouseReleased(MouseEvent me) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void handleKeyPressed(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleKeyReleased(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
 	}
 }

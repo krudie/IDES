@@ -281,7 +281,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		CommandManager commandManager = CommandManager.defaultInstance();
 		
 		if(IDESWorkspace.instance().getActiveModel() == null){
-			// TODO disable edit command group
+			
 			commandManager.getGroup("graph.group").setEnabled(false);
 			commandManager.getGroup("ides.toolbar.group").setEnabled(false);
 			commandManager.getGroup("edit.group").setEnabled(false);
@@ -297,6 +297,8 @@ public class MainWindow extends JFrame implements Subscriber {
 			commandManager.getGroup("ides.toolbar.group").setEnabled(true);
 			commandManager.getGroup("graph.group").setEnabled(true);
 			commandManager.getGroup("edit.group").setEnabled(true);
+			// set the name of the current model in the tabbed pane
+			tabbedViews.setTitleAt(0, IDESWorkspace.instance().getActiveModelName());
 		}
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 		

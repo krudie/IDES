@@ -157,7 +157,8 @@ public class GraphCommands {
 			
 			// TODO create an UndoableEdit object using
 			// my instance variables and return it.
-			
+			// DEBUG
+			System.out.println("MoveCommand.performEdit() called.");
 			return null;
 		}	
 	}

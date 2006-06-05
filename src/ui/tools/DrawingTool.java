@@ -30,6 +30,7 @@ public abstract class DrawingTool {
 	public abstract void handleMousePressed(MouseEvent me);	
 	public abstract void handleMouseReleased(MouseEvent me);
 	public abstract void handleKeyTyped(KeyEvent ke);	
-	
+	public abstract void handleKeyPressed(KeyEvent ke);
+	public abstract void handleKeyReleased(KeyEvent ke);
 	public Cursor getCursor() { return cursor; }	
 }

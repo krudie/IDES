@@ -42,7 +42,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	/**
 	 * Retangle to render as the area selected by mouse. 
 	 */
-	private BoundingBox selectionArea;
+	private Rectangle selectionArea;
 	
 	// ??? Do I really need these buffers?  
 	// Won't associated elements be stored with most recently executed commands in the history?
@@ -67,6 +67,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * Currently selected group or item.
 	 */
 	private GraphElement currentSelection;
+	private GraphElement hoverElement;
 	
 	/**
 	 * The selected print area.
@@ -81,7 +82,8 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		scaleFactor = 1f;
 			
 		currentSelection = new GraphElement();
-		selectionArea = new BoundingBox();
+		selectionArea = new Rectangle();
+		hoverElement = null;
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
 		drawingTools[DEFAULT] = new SelectionTool(this);
@@ -97,6 +99,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
+		this.setFocusable(true);
 	}	
 	
 	public void update(){
@@ -108,9 +111,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	
 	public void paint(Graphics g){
 		Graphics2D g2D = (Graphics2D)g;	
-		super.paint(g);
+		super.paint(g);	
 		g2D.setStroke(GUISettings.instance().getDashedStroke());
-		g2D.setColor(Color.LIGHT_GRAY);
+		g2D.setColor(Color.BLACK);
 		g2D.draw(selectionArea);		
 	}
 	
@@ -135,9 +138,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
 		// If double click, always assumed to be a text event.
-		if(arg0.getClickCount() == 2){
-			drawingTools[TEXT].handleMouseClicked(arg0);
-		}
+//		if(arg0.getClickCount() == 2){
+//			drawingTools[TEXT].handleMouseClicked(arg0);
+//		}
 		drawingTools[currentTool].handleMouseClicked(arg0);		
 	}
 
@@ -166,18 +169,21 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 	// Key listener events
 	public void keyTyped(KeyEvent arg0) {
+		// DEBUG
+		System.out.println("key typed");
 		drawingTools[currentTool].handleKeyTyped(arg0);		
 	}
 
 
 	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub		
+		// DEBUG
+		drawingTools[currentTool].handleKeyPressed(arg0);	
 	}
 
 
 	public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		drawingTools[currentTool].handleKeyReleased(arg0);
 	}
 
 	
@@ -197,7 +203,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		if(graphModel != null){
 			currentSelection = (GraphElement)graphModel.getElementIntersectedBy(point);
 			if(currentSelection != null){
-				currentSelection.setSelected(true);
+				currentSelection.setSelected(true);				
 			}
 		}				
 	}	
@@ -229,8 +235,8 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		if(graphModel != null){
 			currentSelection = graphModel.getElementsContainedBy(rectangle);
 			currentSelection.setSelected(true);		
-			rectangle.setSize((int)currentSelection.bounds().getWidth(),
-								(int)currentSelection.bounds().getHeight());
+			// snap to size of smallest bounding box
+			//rectangle.setSize((int)currentSelection.bounds().getWidth(), (int)currentSelection.bounds().getHeight());
 		}
 	}
 

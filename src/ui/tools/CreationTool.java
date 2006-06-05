@@ -32,6 +32,7 @@ public class CreationTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
+		context.clearCurrentSelection();
 		context.updateCurrentSelection(me.getPoint());
 		Node n;
 		try{
@@ -57,8 +58,7 @@ public class CreationTool extends DrawingTool {
 							.getPoint());
 					// cmd.setSourceNode(sourceNode);
 					cmd.setTargetNode(n);
-					cmd.setEdge(edge);
-					context.clearCurrentSelection();
+					cmd.setEdge(edge);					
 				} else {
 					// else create target node and create an edge
 					
@@ -89,7 +89,7 @@ public class CreationTool extends DrawingTool {
 					context.clearCurrentSelection();
 				}
 			}
-			  // FIXME this will never happen since context always forwards dblclick to TextTool
+	    // FIXME this will never happen since context always forwards dblclick to TextTool
 		} else if (me.getClickCount() == 2) {
 			// if intersect a node, draw self-loop
 			if (n != null) {
@@ -104,8 +104,7 @@ public class CreationTool extends DrawingTool {
 			}
 		}
 		if (cmd != null) {
-			cmd.execute();
-			// TODO add to command history
+			cmd.execute();			
 		}		
 		context.repaint();
 	}
@@ -155,6 +154,18 @@ public class CreationTool extends DrawingTool {
 		// If drawing edge and user typed ESCAPE
 		// drawingEdge = false;
 		// Delete the edge from it's source node's children
+		
+	}
+
+	@Override
+	public void handleKeyPressed(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleKeyReleased(KeyEvent ke) {
+		// TODO Auto-generated method stub
 		
 	}	
 }
