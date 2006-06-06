@@ -3,7 +3,7 @@ package main;
 import ui.MainWindow;
 
 public class Main {
-
+	
 	/**
 	 * @param args
 	 */

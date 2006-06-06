@@ -32,9 +32,10 @@ import presentation.fsa.Edge;
  *
  */
 public class EdgeLabellingDialog extends JDialog implements Subscriber {
-
+	
 	public EdgeLabellingDialog(){
 		this(null, new EventsModel());
+		
 	}
 	
 	public EdgeLabellingDialog(Frame owner, EventsModel eventsModel){
@@ -114,9 +115,13 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 	}
 
+	public void setEdge(Edge edge){
+		this.edge = edge;
+	}
+	
 	// Data
-	private GraphModel graphModel;
-	private GraphDrawingView context;
+//	private GraphModel graphModel;
+//	private GraphDrawingView context;
 	private Edge edge;
 	private Event[] globalEvents;
 	private Event[] selectedEvents;

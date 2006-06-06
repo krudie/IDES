@@ -3,14 +3,18 @@ package ui.command;
 import java.awt.Point;
 import java.awt.geom.Point2D.Float;
 
+import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
-import presentation.PresentationElement;
 import presentation.fsa.Edge;
+import presentation.fsa.GraphElement;
+import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
+import presentation.fsa.SelectionGroup;
+import ui.EdgeLabellingDialog;
 import ui.GraphDrawingView;
 
 public class GraphCommands {
@@ -132,11 +136,12 @@ public class GraphCommands {
 	public static class MoveCommand extends UndoableActionCommand {
 
 		GraphDrawingView context;
-		PresentationElement currentSelection;
+		SelectionGroup currentSelection = null;
 		Point displacement;
 		
-		public MoveCommand() {
+		public MoveCommand(GraphDrawingView context) {
 			super("move.command");
+			this.context = context;
 		}
 
 		/**
@@ -145,7 +150,7 @@ public class GraphCommands {
 		 * @param currentSelection
 		 * @param displacement
 		 */
-		public MoveCommand(GraphDrawingView context, PresentationElement currentSelection, Point displacement) {
+		public MoveCommand(GraphDrawingView context, SelectionGroup currentSelection, Point displacement) {
 			this.currentSelection = currentSelection;
 			this.context = context;
 			this.displacement = displacement;
@@ -153,13 +158,121 @@ public class GraphCommands {
 
 		@Override
 		protected UndoableEdit performEdit() {
-			// TODO finalize movement of current selection in graph model
+			if(currentSelection == null){
+				context.setTool(GraphDrawingView.MOVE);
+				return null;
+			}else{
+				// finalize movement of current selection in graph model
+				context.getGraphModel().saveMovement(currentSelection);
+				// TODO create an UndoableEdit object using
+				// my instance variables and return it.
+				
+				currentSelection = null;
+				// TODO return undoableEdit object
+				return null;
+			}
 			
+		}	
+	}
+	
+	
+	public static class TextCommand extends UndoableActionCommand {
+		
+		GraphDrawingView context;
+		String text;
+		GraphElement currentSelection = null;
+		
+		public TextCommand(GraphDrawingView context){
+			super("text.command");
+			this.context = context;
+		}
+		
+		public TextCommand(GraphDrawingView context, GraphElement currentSelection, String text) {
+			super("text.command");
+			this.currentSelection = currentSelection;
+			this.context = context;
+			this.text = text;
+		}
+	
+		public TextCommand(GraphDrawingView context, GraphElement currentSelection) {
+			super("text.command");
+			this.currentSelection = currentSelection;
+			this.context = context;
+		}
+
+		@Override
+		protected UndoableEdit performEdit() {
+			if(currentSelection == null){
+				context.setTool(GraphDrawingView.TEXT);
+			}else{				
+				if(currentSelection == null){
+					// TODO create a new free label
+					
+				// KLUGE: instanceof is rotten style, fix this
+				}else if (currentSelection instanceof Node){				
+					Node node = (Node)currentSelection;
+					// if selection is a node				
+					String text = JOptionPane.showInputDialog("Enter state name: ");
+					if(text != null){
+						context.getGraphModel().labelNode(node, text);
+					}
+
+				// TODO if selection is an edge, open the edge-labelling dialog
+				}else if(currentSelection instanceof Edge){
+					Edge edge = (Edge)currentSelection;
+					// FIXME: Don't show a new one; set an existing one visible
+					EdgeLabellingDialog dialog = new EdgeLabellingDialog();
+					dialog.setEdge(edge);
+					dialog.setVisible(true);
+					// NOTE the undoable edit for an edge will be different for a node
+					
+				}else{
+					// TODO on a free label
+					GraphLabel label = (GraphLabel)currentSelection;
+					String inputValue = JOptionPane.showInputDialog("Enter label text: ");
+					if(inputValue != null){
+						context.getGraphModel().addGraphLabel(label, text);
+					}
+
+				}
+			}			
+			// DEBUG
+			//System.out.println("TextCommand.performEdit(): text = " + text);
+			currentSelection = null;
+			text = null;
 			// TODO create an UndoableEdit object using
 			// my instance variables and return it.
-			// DEBUG
-			System.out.println("MoveCommand.performEdit() called.");
 			return null;
-		}	
+		}
+	}
+	
+	public static class ZoomInCommand extends ActionCommand {
+
+		private GraphDrawingView context;
+		
+		public ZoomInCommand(GraphDrawingView context){
+			super("zoomin.command");
+			this.context = context;
+		}
+		@Override
+		protected void handleExecute() {			
+			// TODO set the tool in the *currently active* drawing view
+			context.setTool(GraphDrawingView.ZOOM_IN);
+		}
+	}
+	
+	public static class ZoomOutCommand extends ActionCommand {
+
+		private GraphDrawingView context;
+		
+		public ZoomOutCommand(GraphDrawingView context){
+			super("zoomout.command");
+			this.context = context;
+		}
+		@Override
+		protected void handleExecute() {			
+			// TODO set the tool in the *currently active* drawing view
+			context.setTool(GraphDrawingView.ZOOM_OUT);
+		}
 	}
 }

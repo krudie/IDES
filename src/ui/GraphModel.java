@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import main.IDESWorkspace;
 import model.Publisher;
 import model.Subscriber;
+import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
@@ -251,42 +252,57 @@ public class GraphModel extends Publisher implements Subscriber {
 		fsa.notifyAllBut(this);
 		edges.put(new Long(t.getId()), e);
 		notifyAllSubscribers();
-	}
+	}	
 	
-	/**
-	 * @deprecated
-	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
-	 * and a adds a new transition to the automaton.
-	 * 
-	 * @param n1 
-	 * @param n2
-	 */
-	public void addEdge(Node n1, Node n2){
-		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
-		// computes layout of new edges (default to straight edge between pair of nodes)
-		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
-		metaData.setLayoutData(t, layout);
-		fsa.add(t);
+	public void saveMovement(SelectionGroup selection){
+		Iterator children = selection.children();
+		while(children.hasNext()){
+			try{
+				saveMovement((Node)children.next());			
+			}catch(ClassCastException cce){
+				// Not a node; keep going
+				// TODO what if it is a label??
+			}
+		}
 		fsa.notifyAllBut(this);
-		Edge e = new Edge(t, n1, n2, layout);
-		n1.insert(e);
-		edges.put(new Long(t.getId()), e);
-		notifyAllSubscribers();
+		this.notifyAllSubscribers();
 	}
-	/**
-	 * @deprecated
-	 * Creates a node at point <code>p</code> and an edge from the given source node
-	 * to the new node.
-	 * 
-	 * @param source
-	 * @param p
-	 */
-	public void addEdgeAndNode(Node source, Point2D.Float p){		
-		addEdge(source, addNode(p));
+		
+	protected void saveMovement(Node node){
+		// save location of node to metadata
+		State s = (State)fsa.getState(node.getId());
+		metaData.setLayoutData(s, node.getLayout());
+		// for all edges adjacent to node, save layout
+		Iterator children = node.children();
+		while(children.hasNext()){
+			Edge e = (Edge)children.next();
+			saveMovement(e);
+		}
 	}
 	
-	public void addLabelToNode(String text){
-		// TODO Think about rendering the text as LaTeX.		
+	protected void saveMovement(Edge e){
+		// for all transitions in e
+		Iterator<FSATransition> t = e.getTransitions();
+		while(t.hasNext()){
+			metaData.setLayoutData(t.next(), (EdgeLayout)e.getLayout());
+		}		
+	}
+	
+	/**
+	 * Precondition: <code>n</code> and <code>text</code> are not null
+	 * 
+	 * @param n the node to be labelled
+	 * @param text the name for the node
+	 */
+	public void labelNode(Node n, String text){
+		// TODO Think about rendering the text as LaTeX.
+		State s = (State)fsa.getState(n.getId());
+		s.setName(text);
+		n.getLayout().setText(text);
+		n.update();
+//		metaData.setLayoutData(s, n.getLayout());
+		fsa.notifyAllBut(this);
+		this.notifyAllSubscribers();
 	}
 		
 	/**
@@ -330,13 +346,12 @@ public class GraphModel extends Publisher implements Subscriber {
 
 	/**
 	 * Computes and returns the set of graph elements contained by the given rectangle.
-	 * Flags each element as selected.
 	 * 
 	 * @param rectangle
 	 * @return the set of graph elements contained by the given rectangle
 	 */
-	protected GraphElement getElementsContainedBy(Rectangle rectangle) {
-		GraphElement g = new SelectionGroup();
+	protected SelectionGroup getElementsContainedBy(Rectangle rectangle) {
+		SelectionGroup g = new SelectionGroup();
 		
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
@@ -380,10 +395,10 @@ public class GraphModel extends Publisher implements Subscriber {
 	
 	/**
 	 * Computes and returns the graph element intersected by the given point.
-	 * Flags the element as highlighted.
+	 * If nothing hit, returns null. 
 	 * 
 	 * @param p the point of intersection
-	 * @return the graph element intersected by the given point
+	 * @return the graph element intersected by the given point or null if nothing hit.
 	 */
 	protected GraphElement getElementIntersectedBy(Point2D p){
 		// check intersection with all nodes		
@@ -394,7 +409,6 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			g = (GraphElement)entry.getValue();
 			if(g.intersects(p)){				
-				//g.setHighlighted(true);
 				return g;				
 			}
 		}
@@ -405,7 +419,6 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			g = (GraphElement)entry.getValue();
 			if(g.intersects(p)){		
-				//g.setHighlighted(true);
 				return g;				
 			}
 		}
@@ -417,12 +430,47 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			g = (GraphElement)entry.getValue();
 			if(g.intersects(p)){ // TODO && do a more thorough intersection test				
-				//g.setHighlighted(true);
 				return g;				
 			}
-		}
-		
+		}		
 		// no intersection
 		return null;
+	}
+	
+	/**
+	 * @deprecated
+	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
+	 * and a adds a new transition to the automaton.
+	 * 
+	 * @param n1 
+	 * @param n2
+	 */
+	public void addEdge(Node n1, Node n2){
+		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
+		// computes layout of new edges (default to straight edge between pair of nodes)
+		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
+		metaData.setLayoutData(t, layout);
+		fsa.add(t);
+		fsa.notifyAllBut(this);
+		Edge e = new Edge(t, n1, n2, layout);
+		n1.insert(e);
+		edges.put(new Long(t.getId()), e);
+		notifyAllSubscribers();
+	}
+	/**
+	 * @deprecated
+	 * Creates a node at point <code>p</code> and an edge from the given source node
+	 * to the new node.
+	 * 
+	 * @param source
+	 * @param p
+	 */
+	public void addEdgeAndNode(Node source, Point2D.Float p){		
+		addEdge(source, addNode(p));
+	}
+
+	public void addGraphLabel(GraphLabel label, String text) {
+		// TODO Auto-generated method stub
+		
 	}
 }

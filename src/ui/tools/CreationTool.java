@@ -27,20 +27,22 @@ public class CreationTool extends DrawingTool {
 		context = board;		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		// FIXME dynamic cursor names in UISettings class
+		System.out.println(toolkit.getBestCursorSize(10, 10));
 		cursor = toolkit.createCustomCursor(toolkit.createImage("C:/Documents and Settings/helen/workspace/IDES2.1/src/images/cursors/create.gif"), new Point(3,3), "CREATE_NODES_OR_EDGES");
 	}
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
 		context.clearCurrentSelection();
-		context.updateCurrentSelection(me.getPoint());
-		Node n;
-		try{
-			n = (Node)context.getCurrentSelection();
-		}catch(ClassCastException e){
-			n = null;
-		}
 		
+		Node n = null;
+		if(context.updateCurrentSelection(me.getPoint())){
+			try{		
+				n = (Node)context.getCurrentSelection().child(0);
+			}catch(ClassCastException e){
+				n = null;
+			}
+		}
 		CreateCommand cmd = null;
 		
 		if(me.getClickCount() == 1){		  
@@ -48,7 +50,7 @@ public class CreationTool extends DrawingTool {
 				// if intersects with a node
 				if (n != null) {
 					// get target node and create an edge
-					n = (Node) context.getCurrentSelection();
+					n = (Node) context.getCurrentSelection().child(0);
 					
 					// DEBUG
 					System.out.println("create edge from source to target");

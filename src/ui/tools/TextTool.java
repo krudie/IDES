@@ -5,13 +5,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
-import model.fsa.ver1.EventsModel;
-
+import presentation.fsa.GraphElement;
 import ui.EdgeLabellingDialog;
 import ui.GraphDrawingView;
 import ui.tools.DrawingTool;
+import ui.command.GraphCommands;
 
 public class TextTool extends DrawingTool {
 	
@@ -29,26 +28,21 @@ public class TextTool extends DrawingTool {
 	public void handleMouseClicked(MouseEvent me) {
 		
 		// get current selection
-		context.updateCurrentSelection(me.getPoint());
-		
-		// TODO on a node ...
-		
+		if(context.updateCurrentSelection(me.getPoint())){		
+			// TODO on a node ...
+			new GraphCommands.TextCommand(context, (GraphElement)context.getCurrentSelection().child(0)).execute();			
 			
-		// TODO on an edge (open event dialog)
-
-		
-		// TODO on a free label ...
-		
-		// if nothing selected
-		// TODO create a free label ...			
-
-		// For now, open an input dialog and set location at mouse click
-		// TODO set location of dialog close to the selected element or click location
-		// Set any existing text in the dialog before showing
-		// Extract text from dismissed dialog
-		String inputValue = JOptionPane.showInputDialog("Enter label text: ");		
-		System.out.println(inputValue);
-		 
+		}else{
+			// if nothing selected
+			// TODO create a free label ...			
+	
+			// For now, open an input dialog and set location at mouse click
+			// TODO set location of dialog close to the selected element or click location
+			// Set any existing text in the dialog before showing
+			// Extract text from dismissed dialog
+			String inputValue = JOptionPane.showInputDialog("Enter label text: ");		
+			System.out.println(inputValue);
+		}
 		
 	}
 

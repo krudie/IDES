@@ -221,5 +221,9 @@ public class Edge extends GraphElement {
 		// reset the control points in the layout object
 		update();
 	}
+
+	public Iterator<FSATransition> getTransitions() {		
+		return transitions.iterator();
+	}
 		
 }

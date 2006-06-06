@@ -34,6 +34,7 @@ import ui.command.FileCommands;
 import ui.command.GraphCommands.CreateCommand;
 import ui.command.GraphCommands.MoveCommand;
 import ui.command.GraphCommands.SelectCommand;
+import ui.command.GraphCommands.TextCommand;
 
 /**
  * TODO Reimplement using gui-commands library.
@@ -135,13 +136,15 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		new CreateCommand(drawingBoard).export();
 		new SelectCommand(drawingBoard).export();
-		new MoveCommand().export();
+		new MoveCommand(drawingBoard).export();
+		new TextCommand(drawingBoard).export();
 		
 		new EditCommands.DeleteCommand().export();
 		new EditCommands.CutCommand().export();
 		new EditCommands.CopyCommand().export();
 		new EditCommands.PasteCommand().export();
 		
+		// IDEA: pass this to all file commands so can set Wait cursor
 		new FileCommands.OpenAutomatonCommand().export();
 		new FileCommands.CloseAutomatonCommand().export();
 		new FileCommands.SaveAutomatonCommand().export();		

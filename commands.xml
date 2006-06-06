@@ -10,6 +10,7 @@
 			<member command-id="select.command"/>
 			<member command-id="create.command"/>
 			<member command-id="move.command"/>
+			<member command-id="text.command"/>
 		</members>	
 	</group>
 
@@ -230,6 +231,7 @@
          <member command-id="select.command"/>
          <member command-id="create.command"/>
          <member command-id="move.command"/>
+         <member command-id="text.command"/>
          <member command-id="zoomin.command"/>
          <member command-id="zoomout.command"/>
          <member command-id="modify.command"/>
@@ -266,6 +268,16 @@
          <text>Move</text>
          <icon type="file">C:/Documents and Settings/Helen/workspace/IDES2.1/src/images/icons/graphic_grab.gif</icon>
          <description>Move nodes and adjacent edges</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>
+   <command id="text.command">
+      <face>
+         <text>Text</text>
+         <icon type="file">C:/Documents and Settings/Helen/workspace/IDES2.1/src/images/icons/machine_alpha.gif</icon>
+         <description>Label graph elements</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>

@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 
 import presentation.PresentationElement;
 import presentation.fsa.BoundingBox;
+import presentation.fsa.SelectionGroup;
 import ui.GraphDrawingView;
 
 /**
@@ -33,7 +34,7 @@ public class SelectionTool extends DrawingTool {
 	
 	public SelectionTool(GraphDrawingView board){
 		context = board;
-		cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+		cursor = new Cursor(Cursor.HAND_CURSOR);
 		d = new Dimension();
 		p = new Point();
 		box = context.getSelectionArea();
@@ -56,10 +57,10 @@ public class SelectionTool extends DrawingTool {
 
 		endPoint = me.getPoint();
 		
-		if(startPoint == null){
-			startPoint = endPoint;
-			return;
-		}
+//		if(startPoint == null){
+//			startPoint = endPoint;
+//			return;
+//		}
 
 		if(!endPoint.equals(startPoint)){		
 		
@@ -93,19 +94,23 @@ public class SelectionTool extends DrawingTool {
 	 * Handle mouse down events by preparing for a drag.
 	 */
 	public void handleMousePressed(MouseEvent me) {
-		// if i have pressed the mouse on the current selection
+		// if i have pressed the mouse on the current selection		
+		SelectionGroup selection = context.getCurrentSelection();
+//		if(selection != null && selection.intersects(me.getPoint())){
+//			//prepare to move the selection on drag event
+//			moving = true;
+//			context.setTool(GraphDrawingView.MOVE);
+//		}
 		
-		PresentationElement selection = context.getCurrentSelection();
-		if(selection != null && selection.intersects(me.getPoint())){
-			//prepare to move the selection on drag event
-			moving = true;
-			context.setTool(GraphDrawingView.MOVE);
-		}
+		// TODO if an edge is selected and i have hit a control point handle
+		// start modifying the edge
 		
 		// store starting point for selection rectangle.
-		startPoint = me.getPoint();						
+		startPoint = me.getPoint();
 		context.clearCurrentSelection();
 		context.updateCurrentSelection(startPoint);
+		
+		// FIXME this is not appearing in red
 		context.highlightCurrentSelection(true);
 		context.repaint();
 	}

@@ -44,7 +44,7 @@ public class FileCommands {
 		 * FIXME Don't add workspace files as if they were automata...
 		 */
 		protected void performOpen(File[] files) {			
-			Automaton fsa = (Automaton)FileOperations.openSystem(files[0]);
+			Automaton fsa = (Automaton)FileOperations.openAutomaton(files[0]);
 			if(fsa != null){
 				IDESWorkspace.instance().addFSAModel(fsa);			
 				SystemVariables.instance().setLast_used_path(files[0].getPath());
@@ -60,6 +60,7 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
+			// setCursor(new Cursor(Cursor.WAIT_CURSOR));
 			FileOperations.saveAutomaton((Automaton)IDESWorkspace.instance().getActiveModel(), SystemVariables.instance().getLast_used_path());
 			setEnabled(false);
 		}	

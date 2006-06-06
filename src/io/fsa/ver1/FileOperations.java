@@ -33,7 +33,7 @@ public class FileOperations {
 	
 	public static final String DEFAULT_DIRECTORY = "C:/Documents and Settings/helen/My Documents/development/output/";
 	
-	public static FSAModel openSystem(File f) {	
+	public static FSAModel openAutomaton(File f) {		
 	    AutomatonParser ap = new AutomatonParser();	    	
         Automaton automaton = ap.parse(f);
         SystemVariables.instance().setLast_used_path(f.getParent());
@@ -46,7 +46,7 @@ public class FileOperations {
 				
 	}
 	
-	public static void saveSystemAs(FSAModel model, File f) {
+	public static void saveAutomatonAs(FSAModel model, File f) {
 		// TODO implement
 		
 		// merge metadata with automaton data structure and use legacy code to write the xml
@@ -139,8 +139,7 @@ public class FileOperations {
      */
     private static PrintStream getPrintStream(File file){
         PrintStream ps = null;
-        boolean successful = false;
-        while(!successful){
+
 	        if(!file.exists()){
 	            try{
 	                file.createNewFile();
@@ -148,33 +147,26 @@ public class FileOperations {
 	            catch(IOException ioe){
 	                System.err.println("FileOperations: unable to create file, message: "
 	                        + ioe.getMessage());
-	                //return null;
+	                return null;
 	            }
 	        }
 	        if(!file.isFile()){
 	            System.err.println("FileOperations: " + file.getName() + " is not a file. ");
-	            //return null;
+	            return null;
 	        }
 	        if(!file.canWrite()){
 	            System.err.println("FileOperations: can not write to file: " + file.getName());
-	            //return null;
+	            return null;
 	        } 
-	        
-	        
+   
 	        try{
-	            ps = new PrintStream(file);
-	            successful=true;
+	            ps = new PrintStream(file);	            
 	        }
 	        catch(FileNotFoundException fnfe){	        	
-	            System.out.println("FileOperations: file missing: " + fnfe.getMessage());
-	            //return null;
+	            System.err.println("FileOperations: file missing: " + fnfe.getMessage());
+	            return null;
 	        }
-	        JFileChooser fc = new JFileChooser();
-        	int retVal = fc.showSaveDialog(null);
-        	if(retVal == JFileChooser.APPROVE_OPTION){
-        		file = fc.getSelectedFile();
-        	}
-        }
+	            
         return ps;
     }
 
@@ -202,7 +194,15 @@ public class FileOperations {
     public static void saveAutomaton(Automaton a, String path){
         File file = new File(path, a.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
-        if(ps == null) return;
+        if(ps == null) {
+	        JFileChooser fc = new JFileChooser();
+        	int retVal = fc.showSaveDialog(null);
+        	if(retVal == JFileChooser.APPROVE_OPTION){
+        		file = fc.getSelectedFile();
+        		ps = getPrintStream(file);
+        		if(ps == null) return;
+        	}
+        }
         XMLexporter.automatonToXML(a, ps);        
     }  
     

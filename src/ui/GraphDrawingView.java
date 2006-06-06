@@ -16,6 +16,7 @@ import model.Subscriber;
 import presentation.PresentationElement;
 import presentation.fsa.BoundingBox;
 import presentation.fsa.GraphElement;
+import presentation.fsa.SelectionGroup;
 import ui.tools.*;
 /**
  * The component in which users view, create and modify a graph representation
@@ -66,7 +67,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	/**
 	 * Currently selected group or item.
 	 */
-	private GraphElement currentSelection;
+	private SelectionGroup currentSelection;
 	private GraphElement hoverElement;
 	
 	/**
@@ -81,7 +82,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		graph = new GraphElement();
 		scaleFactor = 1f;
 			
-		currentSelection = new GraphElement();
+		currentSelection = new SelectionGroup();
 		selectionArea = new Rectangle();
 		hoverElement = null;
 		
@@ -122,7 +123,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * 
 	 * @return
 	 */
-	public PresentationElement getCurrentSelection() {
+	public SelectionGroup getCurrentSelection() {
 		return currentSelection;
 	}
 
@@ -131,7 +132,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * 
 	 * @param currentSelection
 	 */
-	public void setCurrentSelection(GraphElement currentSelection) {
+	protected void setCurrentSelection(SelectionGroup currentSelection) {
 		this.currentSelection = currentSelection;
 	}	
 
@@ -186,43 +187,45 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		drawingTools[currentTool].handleKeyReleased(arg0);
 	}
 
+	/**
+	 * 
+	 * @return true iff there is a current selection of elements
+	 */
+	public boolean hasSelection(){
+		return currentSelection.children().hasNext();
+	}
 	
 	/**
 	 * Deselects and un-highlights the set of selected elements. 
 	 */
 	public void clearCurrentSelection(){
-		if(currentSelection != null){
+		//if(currentSelection != null){
 			currentSelection.setSelected(false);
 			currentSelection.setHighlighted(false);
-			currentSelection = null;
+			//currentSelection = null;
+			currentSelection.clear();
 			selectionArea.setSize(0,0);			
-		}
+		//}
 	}
 	
-	public void updateCurrentSelection(Point point) {
-		if(graphModel != null){
-			currentSelection = (GraphElement)graphModel.getElementIntersectedBy(point);
-			if(currentSelection != null){
-				currentSelection.setSelected(true);				
-			}
-		}				
-	}	
-
-	/**	
-	 * If exists, adds the graph element intersected by <code>point</code> to the current
-	 * selection set.
+	/**
+	 * Updates the selection group to the element hit by <code>point</code> and returns true.
+	 * If nothing intersected, returns false.
 	 * 
 	 * @param point
+	 * @return true iff something hit.
 	 */
-	public void augmentCurrentSelection(Point point){
+	public boolean updateCurrentSelection(Point point) {
 		if(graphModel != null){
-			PresentationElement el = graphModel.getElementIntersectedBy(point);
+			GraphElement el = graphModel.getElementIntersectedBy(point);
 			if(el != null){				
 				currentSelection.insert(el);
 				currentSelection.setSelected(true);
+				return true;
 			}
 		}
-	}
+		return false;				
+	}	
 	
 	/**
 	 * Set the current selection to all elements contained by the given rectangle.
@@ -246,10 +249,10 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * @param b boolean flag to toggle highlighting
 	 */
 	public void highlightCurrentSelection(boolean b){
-		if(currentSelection != null){
+		//if(currentSelection != null){
 			currentSelection.setHighlighted(b);
 			currentSelection.setSelected(!b);
-		}
+		//}
 	}	
 	
 	public Rectangle getSelectionArea() {
