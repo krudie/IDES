@@ -23,9 +23,9 @@ import presentation.PresentationElement;
 @SuppressWarnings("serial")
 public class GraphLabel extends GraphElement {
 	
-	private boolean visible = true;
-	private PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
-	private Font font;
+	protected boolean visible = true;
+	protected PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
+	protected Font font;
 	
 	
 	public GraphLabel(String text){
