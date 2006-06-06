@@ -142,7 +142,7 @@ public class Edge extends GraphElement {
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	   	   
-		insert(new GraphLabel(s, this, 
+		insert(new LatexLabel(s, this, 
 					Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	((EdgeLayout)layout).getLabelOffset())));
 	}
 	

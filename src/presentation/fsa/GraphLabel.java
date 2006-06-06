@@ -99,7 +99,6 @@ public class GraphLabel extends GraphElement {
 
 	public void setText(String s){
 		layout.setText(s);		
-		setVisible(true);				
 	}
 
 	public boolean isVisible() {		
@@ -107,7 +106,7 @@ public class GraphLabel extends GraphElement {
 	}
 
 	public void setVisible(boolean b) {
-		visible  = b;
+		visible = b;
 	}
 
 }

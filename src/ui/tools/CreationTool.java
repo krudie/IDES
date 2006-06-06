@@ -7,8 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D.Float;
 
 import presentation.fsa.Edge;
+import presentation.fsa.GraphDrawingView;
 import presentation.fsa.Node;
-import ui.GraphDrawingView;
 import ui.command.GraphCommands.CreateCommand;
 
 /**

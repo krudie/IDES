@@ -1,4 +1,4 @@
-package ui;
+package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,7 +8,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
-import presentation.fsa.GraphElement;
+import ui.GUISettings;
 
 import model.Subscriber;
 
@@ -37,15 +37,13 @@ public class GraphView extends JComponent implements Subscriber {
 	public void paint(Graphics g) {			
 		Graphics2D g2D = (Graphics2D) g;			
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	                         RenderingHints.VALUE_ANTIALIAS_ON);		
-	    g2D.setBackground(Color.YELLOW);  // FIXME THIS DOESN'T seem to WORK
+	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
 	    g2D.setStroke(GUISettings.instance().getWideStroke());
 
 	    g2D.scale(scaleFactor, scaleFactor);		
 	    //	TODO other transformation?
 
-	    graph.draw(g2D);
-	    g2D.dispose();
+	    graph.draw(g2D);	    
 	}
 
 	/**

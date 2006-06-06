@@ -29,6 +29,8 @@ import model.Subscriber;
 
 import org.pietschy.command.CommandManager;
 
+import presentation.fsa.GraphDrawingView;
+
 import ui.command.EditCommands;
 import ui.command.FileCommands;
 import ui.command.GraphCommands.CreateCommand;

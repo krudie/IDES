@@ -4,7 +4,8 @@ import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import ui.GraphDrawingView;
+import presentation.fsa.GraphDrawingView;
+
 
 /**
  * All tools used by the drawing board to handle requests forwarded from keyboard 

@@ -98,7 +98,16 @@ public class Node extends GraphElement {
 	 * Draws this node and all of its out edges in the given graphics context.
 	 */
 	public void draw(Graphics g) {		
-		super.draw(g);	// calls draw on all of the outgoing edges
+		//super.draw(g);	// calls draw on all edges
+		// override so only calls draw on all of the outgoing edges
+		Iterator c = children();
+		while(c.hasNext()){
+			Edge child = (Edge)c.next();
+			if(child.getSource().equals(this)){
+				child.draw(g);
+			}
+		}
+		
 		
 		if (isSelected()){
 			g.setColor(layout.getSelectionColor());

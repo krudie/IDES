@@ -5,7 +5,8 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import ui.GraphDrawingView;
+import presentation.fsa.GraphDrawingView;
+
 import ui.command.GraphCommands.MoveCommand;
 
 public class MovementTool extends DrawingTool {

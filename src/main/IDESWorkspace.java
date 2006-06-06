@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import ui.GraphModel;
-import ui.GraphView;
+import presentation.fsa.GraphModel;
+import presentation.fsa.GraphView;
+
 
 import model.Publisher;
 import model.fsa.FSAEventsModel;

@@ -142,7 +142,7 @@ public class GraphElement implements PresentationElement {
 		PresentationElement g;
 		while(i.hasNext()){
 			g = (PresentationElement)i.next();
-			g.setSelected(highlight);
+			g.setHighlighted(highlight);
 		}
 	}
 	

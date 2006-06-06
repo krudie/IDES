@@ -102,6 +102,25 @@ public class EdgeLayout extends GraphicalLayout {
 		return ctrls;
 	}
 	
+	
+	/**
+	 * Returns a cubic bezier curve representing a self-loop for the
+	 * given node.
+	 * 
+	 * @param n the node
+	 * @return a self-loop
+	 */
+	public static CubicCurve2D computeSelfLoop(Node n){
+		// TODO find a clear bit of arc - this is why we need node
+		// instead of just NodeLayout
+		
+		// For now, loop above node by default
+		// direction vectors (-r, 2r) (r, 2r)
+		
+		
+		return null;
+	}
+	
 	public Point2D.Float[] getCurve() {
 		return bezierControls;
 	}

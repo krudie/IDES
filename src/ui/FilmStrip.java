@@ -17,6 +17,9 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import presentation.fsa.GraphModel;
+import presentation.fsa.GraphView;
+
 import main.IDESWorkspace;
 import model.Subscriber;
 

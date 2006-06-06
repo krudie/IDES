@@ -1,4 +1,4 @@
-package ui;
+package presentation.fsa;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -15,13 +15,6 @@ import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.PresentationElement;
-import presentation.fsa.Edge;
-import presentation.fsa.EdgeLayout;
-import presentation.fsa.GraphElement;
-import presentation.fsa.GraphLabel;
-import presentation.fsa.Node;
-import presentation.fsa.NodeLayout;
-import presentation.fsa.SelectionGroup;
 
 /**
  * Mediates between the Automaton model and the visual representation.
@@ -140,7 +133,9 @@ public class GraphModel extends Publisher implements Subscriber {
 				n1.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 				
 				// DON'T add this edge to target node's in edges, since it doesn't store them :)
-							
+				n2.insert(e);
+				n2.update();
+				
 				// add to set of edges
 				// id may be misleading since it is the id of only the first transition on this edge
 				edges.put(new Long(t.getId()), e);
@@ -300,7 +295,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		s.setName(text);
 		n.getLayout().setText(text);
 		n.update();
-//		metaData.setLayoutData(s, n.getLayout());
+//		metaData.setLayoutData(s, n.getLayout());  Design offense: Doesn't do anything with state name
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}

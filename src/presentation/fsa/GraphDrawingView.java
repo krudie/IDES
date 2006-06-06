@@ -1,4 +1,4 @@
-package ui;
+package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,11 +13,13 @@ import java.awt.event.MouseMotionListener;
 
 import main.IDESWorkspace;
 import model.Subscriber;
+import presentation.GraphicalLayout;
 import presentation.PresentationElement;
-import presentation.fsa.BoundingBox;
-import presentation.fsa.GraphElement;
-import presentation.fsa.SelectionGroup;
-import ui.tools.*;
+import ui.tools.CreationTool;
+import ui.tools.DrawingTool;
+import ui.tools.MovementTool;
+import ui.tools.SelectionTool;
+import ui.tools.TextTool;
 /**
  * The component in which users view, create and modify a graph representation
  * of an automaton.
@@ -96,11 +98,14 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		// TODO construct all other drawing tools
 		currentTool = DEFAULT;		
 	    
-	    setVisible(true);
-		addMouseListener(this);
+		//addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseListener(this);
 		addKeyListener(this);
 		this.setFocusable(true);
+		this.requestFocus();
+		
+	    setVisible(true);
 	}	
 	
 	public void update(){
@@ -113,8 +118,11 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	public void paint(Graphics g){
 		Graphics2D g2D = (Graphics2D)g;	
 		super.paint(g);	
-		g2D.setStroke(GUISettings.instance().getDashedStroke());
-		g2D.setColor(Color.BLACK);
+		g2D.setStroke(GraphicalLayout.DASHED_STROKE);
+		g2D.setColor(Color.DARK_GRAY);
+		// DEBUG
+		//System.err.println(selectionArea.getSize() + " " + selectionArea.getLocation());		
+		//g2D.drawRect(selectionArea.x, selectionArea.y, selectionArea.width, selectionArea.height);
 		g2D.draw(selectionArea);		
 	}
 	
@@ -171,7 +179,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	// Key listener events
 	public void keyTyped(KeyEvent arg0) {
 		// DEBUG
-		System.out.println("key typed");
+		System.out.println("key typed (dammit)");
 		drawingTools[currentTool].handleKeyTyped(arg0);		
 	}
 
@@ -237,7 +245,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		// that sets highlight(boolean) on all of its elements.
 		if(graphModel != null){
 			currentSelection = graphModel.getElementsContainedBy(rectangle);
-			currentSelection.setSelected(true);		
+			currentSelection.setSelected(true);	
+			// DEBUG
+			//System.err.println(selectionArea.getSize());
 			// snap to size of smallest bounding box
 			//rectangle.setSize((int)currentSelection.bounds().getWidth(), (int)currentSelection.bounds().getHeight());
 		}

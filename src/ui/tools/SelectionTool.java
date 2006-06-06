@@ -9,8 +9,8 @@ import java.awt.event.MouseEvent;
 
 import presentation.PresentationElement;
 import presentation.fsa.BoundingBox;
+import presentation.fsa.GraphDrawingView;
 import presentation.fsa.SelectionGroup;
-import ui.GraphDrawingView;
 
 /**
  * Selects and highlights graph elements using either single click or bounding box.
@@ -63,7 +63,6 @@ public class SelectionTool extends DrawingTool {
 //		}
 
 		if(!endPoint.equals(startPoint)){		
-		
 				// recompute the bounding rectangle
 				//	figure out relative position of start and endpoint to compute top left corner, width and height.
 				p.setLocation(Math.min(startPoint.x, endPoint.x),
@@ -71,12 +70,10 @@ public class SelectionTool extends DrawingTool {
 				d.setSize(Math.abs(endPoint.x - startPoint.x), 
 						  Math.abs(endPoint.y - startPoint.y));											
 				box.setLocation(p);
-				box.setSize(d);			
+				box.setSize(d);
+				context.updateCurrentSelection(box);				
 				context.repaint();	
-			}else{
-				// ?
 			}
-		//}
 	}
 
 	@Override
@@ -95,7 +92,7 @@ public class SelectionTool extends DrawingTool {
 	 */
 	public void handleMousePressed(MouseEvent me) {
 		// if i have pressed the mouse on the current selection		
-		SelectionGroup selection = context.getCurrentSelection();
+		//SelectionGroup selection = context.getCurrentSelection();
 //		if(selection != null && selection.intersects(me.getPoint())){
 //			//prepare to move the selection on drag event
 //			moving = true;
@@ -126,7 +123,7 @@ public class SelectionTool extends DrawingTool {
 			context.updateCurrentSelection(box);
 								
 			// reset
-			// box.setSize(0,0);
+			box.setSize(0,0);
 			startPoint = null;
 			endPoint = null;			
 			dragging = false;

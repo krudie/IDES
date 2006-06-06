@@ -10,12 +10,12 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 import presentation.fsa.Edge;
+import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 import presentation.fsa.SelectionGroup;
 import ui.EdgeLabellingDialog;
-import ui.GraphDrawingView;
 
 public class GraphCommands {
 
@@ -214,7 +214,7 @@ public class GraphCommands {
 					// if selection is a node				
 					String text = JOptionPane.showInputDialog("Enter state name: ");
 					if(text != null){
-						context.getGraphModel().labelNode(node, text);
+						context.getGraphModel().labelNode(node, text);						
 					}
 
 				// TODO if selection is an edge, open the edge-labelling dialog
@@ -233,8 +233,8 @@ public class GraphCommands {
 					if(inputValue != null){
 						context.getGraphModel().addGraphLabel(label, text);
 					}
-
 				}
+				context.repaint();
 			}			
 			// DEBUG
 			//System.out.println("TextCommand.performEdit(): text = " + text);

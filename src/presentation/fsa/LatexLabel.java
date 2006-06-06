@@ -20,6 +20,7 @@ import util.Renderer;
 
 public class LatexLabel extends GraphLabel {
 	
+	//protected static Renderer latexRenderer=Renderer.getRenderer(new java.io.File("c:/texmf/miktex/bin"),new java.io.File("C:/Program Files/gs/gs8.53/bin/gswin32c.exe"));
 	protected static Renderer latexRenderer=Renderer.getRenderer(new java.io.File("/usr/bin"),new java.io.File("/usr/bin/gs"));
 	protected BufferedImage rendered=null;
 	
