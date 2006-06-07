@@ -9,6 +9,6 @@ export_latex_to_tex=true
 export_with_border=false
 use_standard_node_size=false
 use_pstricks=true
-floating_text_size=java.awt.Point[x=194,y=67]
+floating_text_size=java.awt.Point[x=0,y=0]
 path_to_tex=C:\texmf\miktex\bin
 path_to_ps=C:\gs\gs8.11\bin

@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -23,6 +25,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
+import main.Hub;
 import main.IDESWorkspace;
 import main.SystemVariables;
 import model.Subscriber;
@@ -46,12 +49,13 @@ import ui.command.GraphCommands.TextCommand;
  * @author helen bretzke
  *
  */
-public class MainWindow extends JFrame implements Subscriber {
+public class MainWindow extends JFrame implements Subscriber,WindowListener {
 
 	String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/";
 	
 	public MainWindow() {
 		super("Integrated Discrete-Event System Software 2.1");
+		addWindowListener(this);
 		setIconImage(new ImageIcon(imagePath + "logo.gif").getImage());
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
@@ -308,5 +312,34 @@ public class MainWindow extends JFrame implements Subscriber {
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 		
 		pack();
+	}
+
+	/**
+	 * Calls {@link main.Main.onExit()} to notify it about the termination of the
+	 * program.
+	 * @see main.Main.onExit() 
+	 */
+	public void windowClosing(WindowEvent e)
+	{
+		Hub.storePersistentData();
+	}
+
+	public void windowActivated(WindowEvent e)
+	{
+	}
+	public void windowClosed(WindowEvent e)
+	{
+	}
+	public void windowDeactivated(WindowEvent e)
+	{
+	}
+	public void windowDeiconified(WindowEvent e)
+	{
+	}
+	public void windowIconified(WindowEvent e)
+	{
+	}
+	public void windowOpened(WindowEvent e)
+	{
 	}
 }

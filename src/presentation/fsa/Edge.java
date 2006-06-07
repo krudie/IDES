@@ -10,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import main.Main;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
 import presentation.Geometry;
@@ -141,8 +142,8 @@ public class Edge extends GraphElement {
 	    // Compute location of label: midpoint of curve plus label offset vector 
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
-	    Point2D midpoint = left.getP2();	   	   
-		insert(new LatexLabel(s, this, 
+	    Point2D midpoint = left.getP2();
+		insert(new GraphLabel(s, this, 
 					Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	((EdgeLayout)layout).getLabelOffset())));
 	}
 	
