@@ -7,9 +7,11 @@ import io.fsa.ver1.FileOperations;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -36,6 +38,7 @@ import presentation.fsa.GraphDrawingView;
 
 import ui.command.EditCommands;
 import ui.command.FileCommands;
+import ui.command.OptionsCommands;
 import ui.command.GraphCommands.CreateCommand;
 import ui.command.GraphCommands.MoveCommand;
 import ui.command.GraphCommands.SelectCommand;
@@ -49,13 +52,17 @@ import ui.command.GraphCommands.TextCommand;
  * @author helen bretzke
  *
  */
-public class MainWindow extends JFrame implements Subscriber,WindowListener {
+public class MainWindow extends JFrame implements Subscriber {
 
 	String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/";
 	
 	public MainWindow() {
-		super("Integrated Discrete-Event System Software 2.1");
-		addWindowListener(this);
+		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));
+		addWindowListener(new WindowAdapter() {
+		    public void windowClosing(WindowEvent e) {
+		    	Hub.storePersistentData();
+		    }
+		});
 		setIconImage(new ImageIcon(imagePath + "logo.gif").getImage());
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
@@ -160,6 +167,8 @@ public class MainWindow extends JFrame implements Subscriber,WindowListener {
 		new FileCommands.ExportToLatexCommand().export();
 		new FileCommands.ExportToPNGCommand().export();
 		new FileCommands.ExitCommand().export();
+		
+		new OptionsCommands.MoreOptionsCommand().export();
 			
 	}
 
@@ -314,32 +323,4 @@ public class MainWindow extends JFrame implements Subscriber,WindowListener {
 		pack();
 	}
 
-	/**
-	 * Calls {@link main.Main.onExit()} to notify it about the termination of the
-	 * program.
-	 * @see main.Main.onExit() 
-	 */
-	public void windowClosing(WindowEvent e)
-	{
-		Hub.storePersistentData();
-	}
-
-	public void windowActivated(WindowEvent e)
-	{
-	}
-	public void windowClosed(WindowEvent e)
-	{
-	}
-	public void windowDeactivated(WindowEvent e)
-	{
-	}
-	public void windowDeiconified(WindowEvent e)
-	{
-	}
-	public void windowIconified(WindowEvent e)
-	{
-	}
-	public void windowOpened(WindowEvent e)
-	{
-	}
 }

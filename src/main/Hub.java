@@ -8,6 +8,11 @@ import java.io.IOException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+
+import ui.MainWindow;
+
 /**
  * The main hub of the program. Serves to get references to all objects
  * of interest (such as settings, main window, loaded resources, etc.) Plugins are
@@ -37,6 +42,12 @@ public class Hub {
 	 * @see #string(String)
 	 */
 	private static ResourceBundle stringResource[]=new ResourceBundle[0];
+	
+	/**
+	 * The main window of the application.
+	 * @see #setMainWindow(JFrame)
+	 */
+	private static JFrame mainWindow=null;
 	
 	/**
 	 * Gets from the resource bundle {@link #stringResource} the string
@@ -128,5 +139,24 @@ public class Hub {
 					out.close();
 			}catch(IOException e){}
 		}
+	}
+	
+	/**
+	 * Sets the main window (JFrame) of the application so that it is accessible
+	 * to other parts of the software.
+	 * @param window the main window
+	 */
+	static void setMainWindow(JFrame window)
+	{
+		mainWindow=window;
+	}
+	
+	/**
+	 * Gets the main window of the application.
+	 * @return the main window
+	 */
+	public static JFrame getMainWindow()
+	{
+		return mainWindow;
 	}
 }

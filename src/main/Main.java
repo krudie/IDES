@@ -50,6 +50,7 @@ public class Main {
 		
 		// TODO load UISettings and workspace in a thread
 		// show splash screen
-		new MainWindow().setVisible(true);		
+		Hub.setMainWindow(new MainWindow());
+		Hub.getMainWindow().setVisible(true);
 	}
 }
