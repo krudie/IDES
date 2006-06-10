@@ -8,6 +8,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import services.latex.LatexManager;
 import ui.MainWindow;
 
 public class Main {
@@ -18,8 +19,14 @@ public class Main {
 	 */
 	public static void onExit()
 	{
-		//store settings
-		Hub.storePersistentData();
+		try
+		{
+			//store settings
+			Hub.storePersistentData();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -51,6 +58,10 @@ public class Main {
 		// TODO load UISettings and workspace in a thread
 		// show splash screen
 		Hub.setMainWindow(new MainWindow());
+		
+		//setup other stuff
+		LatexManager.init();
+		
 		Hub.getMainWindow().setVisible(true);
 	}
 }

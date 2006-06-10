@@ -29,6 +29,7 @@ import javax.swing.KeyStroke;
 
 import main.Hub;
 import main.IDESWorkspace;
+import main.Main;
 import main.SystemVariables;
 import model.Subscriber;
 
@@ -60,7 +61,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));
 		addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent e) {
-		    	Hub.storePersistentData();
+		    	Main.onExit();
 		    }
 		});
 		setIconImage(new ImageIcon(imagePath + "logo.gif").getImage());
@@ -168,6 +169,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.ExportToPNGCommand().export();
 		new FileCommands.ExitCommand().export();
 		
+		new OptionsCommands.UseLatexCommand().export();
 		new OptionsCommands.MoreOptionsCommand().export();
 			
 	}

@@ -22,6 +22,7 @@
 			<member command-id="file.group"/>
 			<member command-id="graph.group"/>
 			<member command-id="edit.group"/>
+			<member command-id="options.group"/>
 		</members>	
 	</group>
 
@@ -378,14 +379,35 @@
 	</command>	
 	
 	
-	<group id="options.menu.group">
-		<face>
-    		<text>_Options</text>
-    	</face>
-	<members>
+	<group id="options.group">
+      <face>
+         <text>_Options</text>         
+      </face>
+      <members>
+         <member command-id="uselatex.command"/>
+         <separator/>
+         <member command-id="moreoptions.command"/>
+      </members>  
+   </group>   
+	<command id="uselatex.command">
+	  <face>
+         <text>Use LaTeX rendering</text>
+         <description>Turn on or off LaTeX rendering of labels</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+	</command>	
+    <command id="moreoptions.command">
+      <face>
+         <text>More options...</text>
+         <description>Opens a dialog with more options and pluggin settings</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>
 
-	</members>
-	</group>
 	
 	
 	<group id="operations.menu.group">

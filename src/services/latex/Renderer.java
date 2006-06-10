@@ -1,4 +1,4 @@
-package util;
+package services.latex;
 
 import java.io.*;
 import java.awt.*;

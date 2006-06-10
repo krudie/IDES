@@ -1,0 +1,160 @@
+package services.latex;
+
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import main.Hub;
+
+import pluggable.ui.OptionsPane;
+
+/**
+ * Implements the {@link pluggable.ui.OptionsPane} for the LaTeX rendering options.
+ * @see {@link pluggable.ui.OptionsPane}
+ * 
+ * @author Lenko Grigorov
+ *
+ */
+public class LatexOptionsPane extends JPanel implements OptionsPane {
+
+	/**
+	 * Text field with the path to the <code>latex</code> and
+	 * <code>dvips</code> executables.
+	 */
+	protected JTextField latexPath;
+	/**
+	 * Text field with the path to the GhostScript executable file.
+	 */
+	protected JTextField gsPath;
+	
+	/**
+	 * Constructs the LaTeX options pane.
+	 * @see pluggable.ui.OptionsPane 
+	 */
+	public LatexOptionsPane() {
+		super();
+		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+		
+		//latex
+		JLabel latexPathLabel=new JLabel(Hub.string("latexPathLabel"));
+		Box latexLabelBox=Box.createHorizontalBox();
+		latexLabelBox.add(latexPathLabel);
+		latexLabelBox.add(Box.createHorizontalGlue());
+		latexPath=new JTextField(LatexManager.getLatexPath(),30);
+		latexPath.setMaximumSize(new Dimension(latexPath.getMaximumSize().width,
+				latexPath.getPreferredSize().height));
+		JButton latexBrowse=new JButton(Hub.string("browseDirectory"));
+		latexBrowse.setPreferredSize(new Dimension(latexPath.getPreferredSize().height,
+				latexPath.getPreferredSize().height));
+		latexBrowse.addActionListener(
+				new ActionListener()
+				{
+					public void actionPerformed(ActionEvent e)
+					{
+						JFileChooser fc=new JFileChooser();
+						fc.setDialogTitle(Hub.string("latexBrowseTitle"));
+						fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						int r=fc.showDialog(getParent(),Hub.string("select"));
+						if(r==JFileChooser.APPROVE_OPTION)
+						{
+							try
+							{
+								latexPath.setText(fc.getSelectedFile().getCanonicalPath());
+							}catch(java.io.IOException ex)
+							{
+								javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantParsePath"));
+							}
+						}
+						
+					}
+				}
+		);
+		Box latexPathBox=Box.createHorizontalBox();
+		latexPathBox.add(latexPath);
+		latexPathBox.add(latexBrowse);
+		add(latexLabelBox);
+		add(latexPathBox);
+		
+		add(Box.createRigidArea(new Dimension(0,5)));
+		
+		//ghostscript
+		JLabel gsPathLabel=new JLabel(Hub.string("gsPathLabel"));
+		Box gsLabelBox=Box.createHorizontalBox();
+		gsLabelBox.add(gsPathLabel);
+		gsLabelBox.add(Box.createHorizontalGlue());
+		gsPath=new JTextField(LatexManager.getGSPath(),30);
+		gsPath.setMaximumSize(new Dimension(gsPath.getMaximumSize().width,
+				gsPath.getPreferredSize().height));
+		JButton gsBrowse=new JButton(Hub.string("browseDirectory"));
+		gsBrowse.setPreferredSize(new Dimension(gsPath.getPreferredSize().height,
+				gsPath.getPreferredSize().height));
+		gsBrowse.addActionListener(
+				new ActionListener()
+				{
+					public void actionPerformed(ActionEvent e)
+					{
+						JFileChooser fc=new JFileChooser();
+						fc.setDialogTitle(Hub.string("gsBrowseTitle"));
+						fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+						int r=fc.showDialog(getParent(),Hub.string("select"));
+						if(r==JFileChooser.APPROVE_OPTION)
+						{
+							try
+							{
+								gsPath.setText(fc.getSelectedFile().getCanonicalPath());
+							}catch(java.io.IOException ex)
+							{
+								javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantParsePath"));
+							}
+						}
+						
+					}
+				}
+		);
+		Box gsPathBox=Box.createHorizontalBox();
+		gsPathBox.add(gsPath);
+		gsPathBox.add(gsBrowse);
+		add(gsLabelBox);
+		add(gsPathBox);
+	}
+
+	/**
+	 * Returns the title of the LaTeX options section.
+	 */
+	public String getTitle()
+	{
+		return Hub.string("latexOptionsTitle");
+	}
+	
+	/**
+	 * Returns the {@link javax.swing.JPanel} with the options controls.
+	 */
+	public JPanel getPane() {
+		return this;
+	}
+
+	/**
+	 * Resets all options controls on the options pane.
+	 */
+	public void resetOptions() {
+		latexPath.setText(LatexManager.getLatexPath());
+		gsPath.setText(LatexManager.getGSPath());
+	}
+
+	/**
+	 * Commits the changes to the LaTeX settings.
+	 */
+	public void commitOptions() {
+		LatexManager.setLatexPath(latexPath.getText());
+		LatexManager.setGSPath(gsPath.getText());
+	}
+
+}

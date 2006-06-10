@@ -15,8 +15,8 @@ import java.io.IOException;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
-import util.LatexRenderException;
-import util.Renderer;
+import services.latex.LatexRenderException;
+import services.latex.Renderer;
 
 public class LatexLabel extends GraphLabel {
 	

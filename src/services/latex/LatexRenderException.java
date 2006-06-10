@@ -1,4 +1,4 @@
-package util;
+package services.latex;
 
 /**
  * Exception used by {@link Renderer} to announce problems pertaining to LaTeX rendering.

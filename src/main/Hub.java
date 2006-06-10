@@ -11,7 +11,10 @@ import java.util.ResourceBundle;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
+import pluggable.ui.OptionsPane;
+
 import ui.MainWindow;
+import ui.OptionsWindow;
 
 /**
  * The main hub of the program. Serves to get references to all objects
@@ -68,7 +71,8 @@ public class Hub {
 			}
 			catch(MissingResourceException e){}
 		}
-		throw new MissingResourceException(stringResource[0].getString("missingResourceKey"),"main.Main",key);
+		javax.swing.JOptionPane.showMessageDialog(null, string("missingResourceKey"));
+		throw new MissingResourceException("Cannot look up the text string requested by a module of the program.","main.Main",key);
 	}
 	
 	/**
@@ -121,12 +125,13 @@ public class Hub {
 	 */
 	public synchronized static void storePersistentData()
 	{
+		String comments=Hub.string("settingsFileComments");
 		BufferedOutputStream out=null;
 		try
 		{
 			out=new BufferedOutputStream(
 					new FileOutputStream("settings.ini"));
-			Hub.persistentData.store(out,Hub.string("settingsFileComments"));
+			Hub.persistentData.store(out,comments);
 		} catch(IOException e)
 		{
 			javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantStoreSettings"));
@@ -158,5 +163,29 @@ public class Hub {
 	public static JFrame getMainWindow()
 	{
 		return mainWindow;
+	}
+	
+	/**
+	 * Register an options pane with the options dialog box. To be called just once
+	 * per session for each options pane (e.g., when loading IDES or a plugin).
+	 * @param pane the {@link pluggable.ui.OptionsPane} that will be registered
+	 * @see pluggable.ui.OptionsPane
+	 * @see ui.OptionsWindow
+	 */
+	public static void registerOptionsPane(OptionsPane pane)
+	{
+		OptionsWindow.registerOptionsPane(pane);
+	}
+	
+	/**
+	 * Request that the options dialog box opens up on the screen and shows the
+	 * options for the {@link pluggable.ui.OptionsPane} with the given title.
+	 * @param title the title of the {@link pluggable.ui.OptionsPane} to be displayed
+	 * @see pluggable.ui.OptionsPane
+	 * @see ui.OptionsWindow
+	 */
+	public static void openOptionsPane(String title)
+	{
+		new OptionsWindow(title);
 	}
 }
