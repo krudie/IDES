@@ -31,6 +31,7 @@ import model.fsa.ver1.Automaton;
  */
 public class FileOperations {
 	
+	// DEBUG
 	public static final String DEFAULT_DIRECTORY = "C:/Documents and Settings/helen/My Documents/development/output/";
 	
 	public static FSAModel openAutomaton(File f) {		

@@ -33,25 +33,20 @@ import model.Subscriber;
 @SuppressWarnings("serial")
 public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
-	private GraphView activeView;
-	private Box box;
+	private GraphView activeView;	
 	
 	public FilmStrip(){
 		IDESWorkspace.instance().attach(this);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setAlignmentY(Component.LEFT_ALIGNMENT);
-		
-		// Create a Box with horizontal alignment
-//	    box = Box.createHorizontalBox ();
-//		add(Box.createHorizontalGlue());
-//		add(box);
 
 	    // Get the screen dimensions.
+		// FIXME should use parent dimensions or request space from 
+		// GUI real estate manager
 	    Toolkit tk = Toolkit.getDefaultToolkit ();
 	    Dimension screen = tk.getScreenSize ();    
 	    setSize (screen.width, screen.height/4);
 		setPreferredSize(this.getSize());
-		//setBackground(Color.BLACK);
 		
 		addMouseListener(this);
 	}

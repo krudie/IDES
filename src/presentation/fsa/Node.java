@@ -97,7 +97,12 @@ public class Node extends GraphElement {
 	/**
 	 * Draws this node and all of its out edges in the given graphics context.
 	 */
-	public void draw(Graphics g) {		
+	public void draw(Graphics g) {
+		
+		if(layout.isDirty()){
+			update();
+		}
+		
 		//super.draw(g);	// calls draw on all edges
 		// override so only calls draw on all of the outgoing edges
 		Iterator c = children();

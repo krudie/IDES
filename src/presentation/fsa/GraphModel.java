@@ -289,13 +289,14 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param n the node to be labelled
 	 * @param text the name for the node
 	 */
-	public void labelNode(Node n, String text){
-		// TODO Think about rendering the text as LaTeX.
+	public void labelNode(Node n, String text){		
 		State s = (State)fsa.getState(n.getId());
-		s.setName(text);
+		
+		// TODO set a dirty bit in layout object and only call update before drawing
+		// if bit is set
 		n.getLayout().setText(text);
 		n.update();
-//		metaData.setLayoutData(s, n.getLayout());  Design offense: Doesn't do anything with state name
+		metaData.setLayoutData(s, n.getLayout());
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}
@@ -309,7 +310,9 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * add it to the local alphabet.
 	 * Otherwise, create a new event and add it to both alphabets. 
 	 * 
-	 * Creates a new transitions, assigns the event with symbol corresponding to 
+	 * For nows: 
+	 * Open the EdgeLabellingDialog and then
+	 * Creates a new transition, assigns the event with symbol corresponding to 
 	 * <code>text</code> to the transition and adds the transition to the given edge.
 	 * 
 	 * @param text an event symbol

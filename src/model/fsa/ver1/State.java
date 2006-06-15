@@ -32,7 +32,8 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
         this.id = id;
         sourceT = new LinkedList<FSATransition>();
         targetT = new LinkedList<FSATransition>();
-        this.addSubElement(new SubElement("properties"));
+        addSubElement(new SubElement("properties"));
+        addSubElement(new SubElement("name"));
     }
 
     /**
@@ -42,9 +43,11 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
      */
     public State(State s){
         super(s);
+        this.id = s.id;
         sourceT = new LinkedList<FSATransition>();
         targetT = new LinkedList<FSATransition>();
-        this.id = s.id;
+        addSubElement(new SubElement("properties"));
+        addSubElement(new SubElement("name"));
     }
 
     /**
@@ -114,7 +117,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * @return true iff this is an initial state
 	 */	
 	public boolean isInitial() {
-		SubElement props = this.getSubElement("properties");
+		SubElement props = getSubElement("properties");
 		return props != null && props.getSubElement("initial") != null;
 	}
 
@@ -122,13 +125,13 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * @return true iff this is marked (final) state
 	 */
 	public boolean isMarked() {
-		SubElement props = this.getSubElement("properties");
+		SubElement props = getSubElement("properties");
 		return props != null && props.getSubElement("marked") != null;		
 	}	
 
 	public void setInitial(boolean b){
 		if(b && !isInitial()){
-			SubElement props = this.getSubElement("properties");
+			SubElement props = getSubElement("properties");
 			if(props == null){
 				props = new SubElement("properties");		
 				this.addSubElement(props);
@@ -139,7 +142,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	
 	public void setMarked(boolean mark){
 		if(mark && !isMarked()){			
-			SubElement props = this.getSubElement("properties");
+			SubElement props = getSubElement("properties");
 			if(props == null){
 				props = new SubElement("properties");
 				this.addSubElement(props);
@@ -148,26 +151,33 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		}
 	}
 	
-	public void setName(String name){
-		SubElement n = new SubElement("name");
-		n.setChars(name);
-		addSubElement(n);
-	}
-	
-	/**
-	 * If this state has been labelled, returns the name
-	 * otherwise returns the empty string.
-	 * 
-	 * @return the name of this state
-	 */
-	public String getName(){
-		SubElement name = getSubElement("name");
-		if(name != null){
-			return (name.getChars() != null) ? name.getChars() : "";
-		}else{
-			return "";
-		}
-	}
+//	/******************************************************************
+//	 * REMOVE from this class, the name is graphical layout information, 
+//	 * not pertinent to the machine.
+//	 * 
+//	 * @param name
+//	 */
+//	public void setName(String name){
+//		SubElement n = new SubElement("name");
+//		n.setChars(name);
+//		addSubElement(n);
+//	}
+//	
+//	/**
+//	 * If this state has been labelled, returns the name
+//	 * otherwise returns the empty string.
+//	 * 
+//	 * @return the name of this state
+//	 */
+//	public String getName(){
+//		SubElement name = getSubElement("name");
+//		if(name != null){
+//			return (name.getChars() != null) ? name.getChars() : "";
+//		}else{
+//			return "";
+//		}
+//	}
+//	/********************************************************************/
 	
 	public void setId(long id) {
 		this.id = id;		
@@ -176,5 +186,32 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	public long getId() {		
 		return id;
 	}
-	
+
+	/**
+	 * Sets the given attribute to the given value.
+	 * If <code>attribute</code> is not a valid attribute name,
+	 * does nothing.	 
+	 * 
+	 * TODO change string literals to constants in a set of valid attribute names. 
+	 */
+	public void set(String attribute, String value) {
+		// TODO Auto-generated method stub
+		if(attribute.equals("marked")){
+			setMarked(Boolean.parseBoolean(value)); 
+			return;
+		}
+		
+		if(attribute.equals("intial")){
+			setInitial(Boolean.parseBoolean(value));
+			return;
+		}
+
+		// DEBUG
+		System.err.println("State: cannot set attribute " + attribute);
+	}
+
+	public String get(String attribute) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
  }

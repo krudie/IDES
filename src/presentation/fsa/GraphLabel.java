@@ -25,8 +25,7 @@ public class GraphLabel extends GraphElement {
 	
 	protected boolean visible = true;
 	protected PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
-	protected Font font;
-	
+	protected Font font;	
 	
 	public GraphLabel(String text){
 		layout = new GraphicalLayout(text);
@@ -61,6 +60,10 @@ public class GraphLabel extends GraphElement {
 	}
 	
 	public void draw(Graphics g) {
+//		if(layout.isDirty()){
+//			update();
+//		}
+			
 		if(visible){
 			g.setColor(layout.getColor());		
 			g.setFont(font);

@@ -155,11 +155,19 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 
 	public void mousePressed(MouseEvent arg0) {
+		if(arg0.isPopupTrigger()){
+			// from both mousePressed and mouseReleased to be truly platform independant.
+			drawingTools[currentTool].handleRightClick(arg0);
+		}
 		drawingTools[currentTool].handleMousePressed(arg0);		
 	}
 
 
 	public void mouseReleased(MouseEvent arg0) {
+		if(arg0.isPopupTrigger()){
+			// from both mousePressed and mouseReleased to be truly platform independant.
+			drawingTools[currentTool].handleRightClick(arg0);
+		}
 		drawingTools[currentTool].handleMouseReleased(arg0);		
 	}
 
@@ -177,21 +185,20 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	
 
 	// Key listener events
+	// FIXME move all key listening to the main window since it seems events don't make it this far...
 	public void keyTyped(KeyEvent arg0) {
-		// DEBUG
+		// DEBUG	
 		System.out.println("key typed (dammit)");
 		drawingTools[currentTool].handleKeyTyped(arg0);		
 	}
 
 
-	public void keyPressed(KeyEvent arg0) {
-		// DEBUG
+	public void keyPressed(KeyEvent arg0) {		
 		drawingTools[currentTool].handleKeyPressed(arg0);	
 	}
 
 
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+	public void keyReleased(KeyEvent arg0) {		
 		drawingTools[currentTool].handleKeyReleased(arg0);
 	}
 

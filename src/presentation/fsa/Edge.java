@@ -71,7 +71,11 @@ public class Edge extends GraphElement {
 		update();
 	}
 
-	public void draw(Graphics g) {		
+	public void draw(Graphics g) {	
+		if(layout.isDirty()){
+			update();
+		}
+		
 		Graphics2D g2d = (Graphics2D)g;		
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.

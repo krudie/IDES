@@ -13,7 +13,7 @@ public class NodeLayout extends GraphicalLayout {
      * The default radius of the circle which represents this Node, and the
      * fixed distance between outer and inner circles for marked Nodes.
      */    
-	public static final float DEFAULT_RADIUS = 15, RDIF = 4;;
+	public static final float DEFAULT_RADIUS = 15, RDIF = 4;
 		
 	public NodeLayout(){
 		this(new Point2D.Float(), DEFAULT_RADIUS, "");
@@ -40,5 +40,15 @@ public class NodeLayout extends GraphicalLayout {
 	
 	public Point2D.Float getArrow(){		
 		return arrow;
+	}
+
+	public void setArrow(Point2D.Float arrow) {
+		this.arrow = arrow;
+		setDirty(true);
+	}
+
+	public void setRadius(float radius) {
+		this.radius = radius;
+		setDirty(true);
 	}	
 }

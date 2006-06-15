@@ -7,6 +7,8 @@ import java.awt.Stroke;
 
 public class GraphicalLayout {
 
+	private boolean dirty = false;
+	
 	public static final Color DEFAULT_COLOR = Color.BLACK;
 	public static final Color DEFAULT_HIGHLIGHT_COLOR = Color.RED;
 	public static final Color DEFAULT_SELECTION_COLOR = Color.BLUE;
@@ -53,10 +55,12 @@ public class GraphicalLayout {
 
 	public void setLocation(float x, float y) {
 		location.setLocation(x,y);
+		dirty = true;
 	}
 
 	public void translate(float x, float y){
 		location.setLocation(location.x + x, location.y + y);
+		dirty = true;
 	}
 
 	public Color getColor() {
@@ -81,6 +85,7 @@ public class GraphicalLayout {
 
 	public void setText(String text) {
 		this.text = text;
+		dirty = true;
 	}
 	
 	public Color getSelectionColor() {
@@ -89,5 +94,13 @@ public class GraphicalLayout {
 
 	public void setSelectionColor(Color selectionColor) {
 		this.selectionColor = selectionColor;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 }

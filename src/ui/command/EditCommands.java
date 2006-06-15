@@ -2,13 +2,13 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
+import model.DESElement;
+
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 public class EditCommands {
 
-	// ??? Should this set of commands share a common static context instance?
-	
 	/* Does copy need to be undoable?
 	 * 
 	 */
@@ -139,5 +139,42 @@ public class EditCommands {
 		
 	}
 
+	/**
+	 * An undoable command that sets the value of an attribute for a DES element.
+	 * 
+	 * @author helen bretzke
+	 *
+	 */
+	public static class SetAttributeCommand extends UndoableActionCommand {
+
+		private DESElement element;
+		private String attributeName;
+		private String previousValue;
+		private String value;
+		
+		public SetAttributeCommand(DESElement element, String attributeName, String value) {
+			super("set.attribute.command");			
+			this.element = element;
+			this.attributeName = attributeName;
+			this.value = value;			
+		}
+
+		public SetAttributeCommand(){
+			super("set.attribute.command");
+		}
+		
+		
+		@Override
+		protected UndoableEdit performEdit() {
+			// TODO save previous value and store in undoable edit
+		
+			element.set(attributeName, value);
+			// TODO return undoable edit object
+			return null;
+		}
+		
+		// TODO construct and return a menu item with a checkbox (?)
+		
+	}
 	
 }

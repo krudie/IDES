@@ -140,11 +140,11 @@
     <command id="save.workspace.command">
       <face>
          <text>_Save workspace</text>
-         <icon type="file">src/images/icons/file_save_workspace.gif</icon>
-         <description>Save workspace settings</description>
+         <icon type="file">src/images/icons/file_save_workspace.gif</icon>         
          <accelerator key="S">
 	         <modifier value="control"/>
          </accelerator>
+         <description>Save workspace settings  (@accelerator)</description>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -401,14 +401,14 @@
     <command id="moreoptions.command">
       <face>
          <text>More options...</text>
-         <description>Opens a dialog with more options and pluggin settings</description>
+         <description>Opens a dialog with more options and plugin settings</description>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
       </face>
     </command>
 
-	
+	<command id="set.attribute.command"></command>	
 	
 	<group id="operations.menu.group">
 		<face>

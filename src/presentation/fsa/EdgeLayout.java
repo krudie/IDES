@@ -127,6 +127,7 @@ public class EdgeLayout extends GraphicalLayout {
 	
 	public void setCurve(Point2D.Float[] bezierControls) {
 		this.bezierControls = bezierControls;
+		setDirty(true);
 	}
 	
 	public void setCurve(Point2D p1, Point2D c1, Point2D c2, Point2D p2) {		
@@ -134,6 +135,7 @@ public class EdgeLayout extends GraphicalLayout {
 		bezierControls[CTRL1] = new Point2D.Float((float)c1.getX(), (float)c1.getY());
 		bezierControls[CTRL2] = new Point2D.Float((float)c2.getX(), (float)c2.getY());;
 		bezierControls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());
+		setDirty(true);
 	}
 
 	public void setCurve(Point2D.Float p1, Point2D.Float c1, Point2D.Float c2, Point2D.Float p2){
@@ -141,6 +143,7 @@ public class EdgeLayout extends GraphicalLayout {
 		bezierControls[1] = c1;
 		bezierControls[2] = c2;
 		bezierControls[3] = p2;
+		setDirty(true);
 	}
 
 	public ArrayList getEventNames() {
@@ -149,10 +152,12 @@ public class EdgeLayout extends GraphicalLayout {
 
 	public void setEventNames(ArrayList eventNames) {
 		this.eventNames = eventNames;
+		setDirty(true);
 	}
 
 	public void addEventName(String symbol) {
-		eventNames.add(symbol);		
+		eventNames.add(symbol);
+		setDirty(true);
 	}
 
 	public Point2D.Float getLabelOffset() {
@@ -161,6 +166,7 @@ public class EdgeLayout extends GraphicalLayout {
 
 	public void setLabelOffset(Point2D.Float labelOffset) {
 		this.labelOffset = labelOffset;
+		setDirty(true);
 	}
 
 }

@@ -18,6 +18,8 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
      */
     public Event(long id){
         this.id = id;
+        addSubElement(new SubElement("properties"));
+        addSubElement(new SubElement("name"));
     }
 
     
@@ -28,6 +30,8 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
     public Event(Event e){
         super(e);
         this.id = e.id;
+        addSubElement(new SubElement("properties"));
+        addSubElement(new SubElement("name"));
     }
     
     /**     
@@ -38,9 +42,15 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 		return eventSymbol != null ? eventSymbol.getChars() : "";
 	}
 
+	public void setSymbol(String symbol){		
+		SubElement eventSymbol = getSubElement("name");
+		if(eventSymbol == null){
+			eventSymbol = new SubElement("name");					
+		}
+		eventSymbol.setChars(symbol);	
+	}
 
 	public long getId() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 
@@ -51,5 +61,64 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 
 	public String toString(){
 		return getSymbol();
+	}
+
+	/**
+	 * Sets the given attribute to the given value.
+	 * If <code>attribute</code> is not a valid attribute name,
+	 * does nothing.  
+	 */
+	public void set(String attribute, String value) {
+		if(attribute.equals("controllable")){
+			
+			return;
+		}
+		if(attribute.equals("observable")){
+			
+			return;
+		}
+		if(attribute.equals("symbol")){
+			setSymbol(value);
+			return;
+		}
+		// DEBUG
+		System.err.println("State: cannot set attribute " + attribute);		
+	}
+	
+	public String get(String attribute) {
+		if(attribute.equals("controllable")){
+			
+			return null;
+		}
+		if(attribute.equals("observable")){
+			
+			return null;
+		}
+		if(attribute.equals("symbol")){
+			
+			return null;
+		}
+		// DEBUG
+		System.err.println("State: cannot get attribute " + attribute);		
+		return null;
+	}
+
+	public void setControllable(boolean b){
+		
+	}
+	
+	public void setObservable(boolean b){
+		
+	}
+	
+	public boolean isControllable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	public boolean isObservable() {
+		// TODO Auto-generated method stub
+		return false;
 	}	
 }

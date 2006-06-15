@@ -58,13 +58,23 @@ public class MetaData implements FSAMetaData {
 		int radius = Integer.parseInt(layout.getAttribute("r"));
 		Point2D.Float centre = new Point2D.Float(Integer.parseInt(layout.getAttribute("x")),
 								 				Integer.parseInt(layout.getAttribute("y")));
+		String name;
+		SubElement n = s.getSubElement("name");
+		if(n != null){
+			name = (n.getChars() != null) ? n.getChars() : "";
+		}else{
+			name = "";
+		}
+		
 		if(s.isInitial()) {
         	SubElement a = s.getSubElement("graphic").getSubElement("arrow");
         	Point2D.Float arrow = new Point2D.Float(Float.parseFloat(a.getAttribute("x")),
 								 					Float.parseFloat(a.getAttribute("y")));
-        	return new NodeLayout(centre, radius, s.getName(), arrow);
+        	
+        	
+        	return new NodeLayout(centre, radius, name, arrow);
         } else {
-		 	return new NodeLayout(centre, radius, s.getName());
+		 	return new NodeLayout(centre, radius, name);
         }	
 	}
 
@@ -78,6 +88,12 @@ public class MetaData implements FSAMetaData {
 	public void setLayoutData(FSAState state, NodeLayout layout){
 		// Set the layout data for state
 		State s = (State)state;
+		
+		// ??? What if the state doesn't have a name?  Should we be creating this subelement?
+		SubElement n = new SubElement("name");
+		n.setChars(layout.getText());
+		s.addSubElement(n);
+		
 		SubElement g = new SubElement("graphic");
 		SubElement c = new SubElement("circle");
 		c.setAttribute("r", Math.round(layout.getRadius()) + "");
