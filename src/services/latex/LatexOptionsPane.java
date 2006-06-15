@@ -23,8 +23,13 @@ import pluggable.ui.OptionsPane;
  * @author Lenko Grigorov
  *
  */
-public class LatexOptionsPane extends JPanel implements OptionsPane {
+public class LatexOptionsPane implements OptionsPane {
 
+	/**
+	 * The pane with the options controls.
+	 */
+	JPanel pane=null;
+	
 	/**
 	 * Text field with the path to the <code>latex</code> and
 	 * <code>dvips</code> executables.
@@ -36,12 +41,24 @@ public class LatexOptionsPane extends JPanel implements OptionsPane {
 	protected JTextField gsPath;
 	
 	/**
-	 * Constructs the LaTeX options pane.
-	 * @see pluggable.ui.OptionsPane 
+	 * Returns the title of the LaTeX options section.
 	 */
-	public LatexOptionsPane() {
-		super();
-		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+	public String getTitle()
+	{
+		return Hub.string("latexOptionsTitle");
+	}
+	
+	/**
+	 * Constructs (if necessary) and returns the {@link javax.swing.JPanel}
+	 * with the options controls.
+	 */
+	public JPanel getPane() {
+		
+		if(pane!=null)
+			return pane;
+
+		pane=new JPanel();
+		pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
 		
 		//latex
 		JLabel latexPathLabel=new JLabel(Hub.string("latexPathLabel"));
@@ -62,7 +79,7 @@ public class LatexOptionsPane extends JPanel implements OptionsPane {
 						JFileChooser fc=new JFileChooser();
 						fc.setDialogTitle(Hub.string("latexBrowseTitle"));
 						fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-						int r=fc.showDialog(getParent(),Hub.string("select"));
+						int r=fc.showDialog(pane.getParent(),Hub.string("select"));
 						if(r==JFileChooser.APPROVE_OPTION)
 						{
 							try
@@ -80,10 +97,10 @@ public class LatexOptionsPane extends JPanel implements OptionsPane {
 		Box latexPathBox=Box.createHorizontalBox();
 		latexPathBox.add(latexPath);
 		latexPathBox.add(latexBrowse);
-		add(latexLabelBox);
-		add(latexPathBox);
+		pane.add(latexLabelBox);
+		pane.add(latexPathBox);
 		
-		add(Box.createRigidArea(new Dimension(0,5)));
+		pane.add(Box.createRigidArea(new Dimension(0,5)));
 		
 		//ghostscript
 		JLabel gsPathLabel=new JLabel(Hub.string("gsPathLabel"));
@@ -104,7 +121,7 @@ public class LatexOptionsPane extends JPanel implements OptionsPane {
 						JFileChooser fc=new JFileChooser();
 						fc.setDialogTitle(Hub.string("gsBrowseTitle"));
 						fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-						int r=fc.showDialog(getParent(),Hub.string("select"));
+						int r=fc.showDialog(pane.getParent(),Hub.string("select"));
 						if(r==JFileChooser.APPROVE_OPTION)
 						{
 							try
@@ -122,29 +139,17 @@ public class LatexOptionsPane extends JPanel implements OptionsPane {
 		Box gsPathBox=Box.createHorizontalBox();
 		gsPathBox.add(gsPath);
 		gsPathBox.add(gsBrowse);
-		add(gsLabelBox);
-		add(gsPathBox);
-	}
-
-	/**
-	 * Returns the title of the LaTeX options section.
-	 */
-	public String getTitle()
-	{
-		return Hub.string("latexOptionsTitle");
-	}
-	
-	/**
-	 * Returns the {@link javax.swing.JPanel} with the options controls.
-	 */
-	public JPanel getPane() {
-		return this;
+		pane.add(gsLabelBox);
+		pane.add(gsPathBox);
+		return pane;
 	}
 
 	/**
 	 * Resets all options controls on the options pane.
 	 */
 	public void resetOptions() {
+		if(pane==null)
+			return;
 		latexPath.setText(LatexManager.getLatexPath());
 		gsPath.setText(LatexManager.getGSPath());
 	}
@@ -153,8 +158,21 @@ public class LatexOptionsPane extends JPanel implements OptionsPane {
 	 * Commits the changes to the LaTeX settings.
 	 */
 	public void commitOptions() {
+		if(pane==null)
+			return;
 		LatexManager.setLatexPath(latexPath.getText());
 		LatexManager.setGSPath(gsPath.getText());
 	}
 
+	/**
+	 * Disposes of the {@link javax.swing.JPanel} with the options controls.
+	 */
+	public void disposePane()
+	{
+		if(pane==null)
+			return;
+		latexPath=null;
+		gsPath=null;
+		pane=null;
+	}
 }

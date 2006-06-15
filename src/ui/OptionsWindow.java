@@ -176,6 +176,7 @@ public class OptionsWindow extends EscapeDialog {
 					public void actionPerformed(ActionEvent e)
 					{
 						commitAll();
+						disposeAll();
 						close();
 					}
 				});
@@ -243,6 +244,7 @@ public class OptionsWindow extends EscapeDialog {
 	protected void onEscapeEvent()
 	{
 		resetAll();
+		disposeAll();
 		close();
 	}
 	
@@ -313,5 +315,14 @@ public class OptionsWindow extends EscapeDialog {
 	{
 		for(Enumeration<String> i=optionsRegistry.keys();i.hasMoreElements();)
 			optionsRegistry.get(i.nextElement()).commitOptions();
+	}
+	
+	/**
+	 * Disposes of all registered option panes.
+	 */
+	protected void disposeAll()
+	{
+		for(Enumeration<String> i=optionsRegistry.keys();i.hasMoreElements();)
+			optionsRegistry.get(i.nextElement()).disposePane();
 	}
 }
