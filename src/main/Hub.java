@@ -71,7 +71,7 @@ public class Hub {
 			}
 			catch(MissingResourceException e){}
 		}
-		javax.swing.JOptionPane.showMessageDialog(null, string("missingResourceKey"));
+		displayAlert(string("missingResourceKey"));
 		throw new MissingResourceException("Cannot look up the text string requested by a module of the program.","main.Main",key);
 	}
 	
@@ -134,7 +134,7 @@ public class Hub {
 			Hub.persistentData.store(out,comments);
 		} catch(IOException e)
 		{
-			javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantStoreSettings"));
+			displayAlert(string("cantStoreSettings"));
 		}
 		finally
 		{
@@ -187,5 +187,16 @@ public class Hub {
 	public static void openOptionsPane(String title)
 	{
 		new OptionsWindow(title);
+	}
+	
+	/**
+	 * Displays a dialog box that shows an alert message to the user. Intended
+	 * use is to announce errors and problems in an aesthetically-pleasing way.
+	 * @param message message to be displayed
+	 */
+	public static void displayAlert(String message)
+	{
+		javax.swing.JOptionPane.showMessageDialog(
+				getMainWindow(), message, string("message"), javax.swing.JOptionPane.WARNING_MESSAGE);
 	}
 }
