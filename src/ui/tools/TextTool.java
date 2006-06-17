@@ -6,22 +6,18 @@ import java.awt.event.MouseEvent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
-import ui.EdgeLabellingDialog;
 import ui.tools.DrawingTool;
 import ui.command.GraphCommands;
 
 public class TextTool extends DrawingTool {
-	
-	private EdgeLabellingDialog dialog;
+		
 	private GraphDrawingView context;
 	
 	public TextTool(GraphDrawingView context){
-		this.context = context;
-		
-		// DEBUG
-		dialog = new EdgeLabellingDialog();
+		this.context = context;		
 	}
 	
 	@Override
@@ -43,7 +39,7 @@ public class TextTool extends DrawingTool {
 			String inputValue = JOptionPane.showInputDialog("Enter label text: ");		
 			System.out.println(inputValue);
 		}
-		
+		context.clearCurrentSelection();
 	}
 
 	@Override

@@ -10,12 +10,12 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 import presentation.fsa.Edge;
+import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 import presentation.fsa.SelectionGroup;
-import ui.EdgeLabellingDialog;
 
 public class GraphCommands {
 
@@ -51,7 +51,7 @@ public class GraphCommands {
 	 * @author Helen Bretzke
 	 *
 	 */
-	public static class CreateCommand extends ActionCommand {
+	public static class CreateCommand extends UndoableActionCommand {
 
 		private GraphDrawingView context;
 		private int elementType;
@@ -104,8 +104,13 @@ public class GraphCommands {
 			t.setHighlighted(true);
 		}
 		
+
+		public void setEdge(Edge edge) {
+			this.edge = edge;
+		}
+
 		@Override
-		protected void handleExecute() {		
+		protected UndoableEdit performEdit() {
 			switch(elementType){
 			case NODE:
 				// TODO store the new node
@@ -123,12 +128,9 @@ public class GraphCommands {
 				// set the current drawing tool to the CreationTool
 				 context.setTool(GraphDrawingView.CREATE);
 			}		
-			// Only AFTER element has been created and added, add this event to the command history
-			// NOTE: this must be a reversible command to be entered in the history		
-		}
-
-		public void setEdge(Edge edge) {
-			this.edge = edge;
+			 
+			// TODO create and UndoableEdit object and return
+			return null;
 		}
 	}
 	

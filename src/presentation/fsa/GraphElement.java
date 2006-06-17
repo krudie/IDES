@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Iterator;
@@ -173,4 +174,7 @@ public class GraphElement implements PresentationElement {
 	public void setLocation(Point2D p) {
 		layout.setLocation((float)p.getX(), (float)p.getY());		
 	}
+	
+	// TODO what is a generic response to this call?
+	public void showPopup(Component context){}
 }

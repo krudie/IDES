@@ -6,6 +6,7 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
+import main.Hub;
 import main.IDESWorkspace;
 import main.SystemVariables;
 import model.fsa.ver1.Automaton;
@@ -29,6 +30,8 @@ public class FileCommands {
 		protected void handleExecute() {
 			// TODO
 			JOptionPane.showMessageDialog(null, "Create new automaton");
+			Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
+			IDESWorkspace.instance().addFSAModel(fsa);
 		}	
 	}
 	
@@ -60,8 +63,12 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			// setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			FileOperations.saveAutomaton((Automaton)IDESWorkspace.instance().getActiveModel(), SystemVariables.instance().getLast_used_path());
+			Automaton fsa = (Automaton)IDESWorkspace.instance().getActiveModel();			
+			if( fsa.getName().equals(Hub.string("newAutomatonName"))){
+				FileOperations.saveAutomatonAs(fsa);
+			}else{			
+				FileOperations.saveAutomaton(fsa);				
+			}
 			setEnabled(false);
 		}	
 	}
@@ -103,6 +110,10 @@ public class FileCommands {
 		@Override
 		protected void performOpen(File[] arg0) {
 			// TODO Auto-generated method stub
+			// NOTE 
+			// Get the list of automata from loadWorkspace and then execute
+			// a set of OpenAutomatonCommands
+			// NOT e.g. in a loop in FileOperations.loadWorkspace(File)
 			JOptionPane.showMessageDialog(null, "Open workspace");
 		}
 	

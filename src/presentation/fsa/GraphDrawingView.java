@@ -156,6 +156,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 	public void mousePressed(MouseEvent arg0) {
 		if(arg0.isPopupTrigger()){
+			setTool(SELECT);  // just to change the cursor ...
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
 		}
@@ -165,6 +166,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 	public void mouseReleased(MouseEvent arg0) {
 		if(arg0.isPopupTrigger()){
+			setTool(SELECT);  // just to change the cursor ...
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
 		}

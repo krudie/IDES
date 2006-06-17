@@ -112,7 +112,7 @@ public class EdgeLayout extends GraphicalLayout {
 	 */
 	public static CubicCurve2D computeSelfLoop(Node n){
 		// TODO find a clear bit of arc - this is why we need node
-		// instead of just NodeLayout
+		// instead of just NodeLayout.
 		
 		// For now, loop above node by default
 		// direction vectors (-r, 2r) (r, 2r)

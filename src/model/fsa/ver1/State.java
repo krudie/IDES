@@ -196,12 +196,12 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 */
 	public void set(String attribute, String value) {
 		// TODO Auto-generated method stub
-		if(attribute.equals("marked")){
+		if(attribute.equals(ATTR_MARKED)){
 			setMarked(Boolean.parseBoolean(value)); 
 			return;
 		}
 		
-		if(attribute.equals("intial")){
+		if(attribute.equals(ATTR_INITIAL)){
 			setInitial(Boolean.parseBoolean(value));
 			return;
 		}
@@ -213,5 +213,8 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	public String get(String attribute) {
 		// TODO Auto-generated method stub
 		return null;
-	}	
+	}
+	
+	public static final String ATTR_MARKED = "marked";
+	public static final String ATTR_INITIAL = "initial";
  }

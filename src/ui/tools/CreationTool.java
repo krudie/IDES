@@ -26,9 +26,13 @@ public class CreationTool extends DrawingTool {
 	public CreationTool(GraphDrawingView board){
 		context = board;		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		// FIXME dynamic cursor names in UISettings class
-		System.out.println(toolkit.getBestCursorSize(10, 10));
+		
+		// JAVA BUG: for any preferred dimension, always 32 X 32 on Windows (works on MAC, what about Linux?)!!
+		//System.out.println(toolkit.getBestCursorSize(10, 10));
+		
+//		 FIXME dynamic cursor names in UISettings class
 		cursor = toolkit.createCustomCursor(toolkit.createImage("C:/Documents and Settings/helen/workspace/IDES2.1/src/images/cursors/create.gif"), new Point(3,3), "CREATE_NODES_OR_EDGES");
+		
 	}
 	
 	@Override
@@ -53,7 +57,7 @@ public class CreationTool extends DrawingTool {
 					n = (Node) context.getCurrentSelection().child(0);
 					
 					// DEBUG
-					System.out.println("create edge from source to target");
+					//System.out.println("create edge from source to target");
 					
 					// TODO pass source and target nodes to CreateCommand
 					cmd = new CreateCommand(context, CreateCommand.EDGE, me
@@ -65,7 +69,7 @@ public class CreationTool extends DrawingTool {
 					// else create target node and create an edge
 					
 					// DEBUG
-					System.out.println("create target node and edge");
+					//System.out.println("create target node and edge");
 										
 					cmd = new CreateCommand(context,
 							CreateCommand.NODE_AND_EDGE, me.getPoint());
@@ -79,7 +83,7 @@ public class CreationTool extends DrawingTool {
 								// edge
 					
 					// DEBUG
-					System.out.println("intersected target node; starting edge drawing");
+					//System.out.println("intersected target node; starting edge drawing");
 					sourceNode = n;
 					edge = context.getGraphModel().beginEdge(sourceNode);
 					drawingEdge = true;					
@@ -91,7 +95,7 @@ public class CreationTool extends DrawingTool {
 					context.clearCurrentSelection();
 				}
 			}
-	    // FIXME this will never happen since context always forwards dblclick to TextTool
+	    // FIXME this will never happen if context always forwards dblclick to TextTool
 		} else if (me.getClickCount() == 2) {
 			// if intersect a node, draw self-loop
 			if (n != null) {

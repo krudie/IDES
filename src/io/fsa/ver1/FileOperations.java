@@ -41,23 +41,43 @@ public class FileOperations {
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
         return automaton;		
 	}
+		
+	/**
+     * TODO give user opportunity to choose a different file if something screws up.
+     * 
+     * Saves an automaton to a file
+     * @param a the automaton to save
+     * @param path the path to save it to
+     */      
+    public static void saveAutomaton(Automaton a){
+        File file = new File(SystemVariables.instance().getLast_used_path(), a.getName() + ".xml");
+        PrintStream ps = getPrintStream(file);
+        if(ps == null) {
+	        JFileChooser fc = new JFileChooser();
+        	int retVal = fc.showSaveDialog(null);
+        	if(retVal == JFileChooser.APPROVE_OPTION){
+        		file = fc.getSelectedFile();
+        		ps = getPrintStream(file);
+        		if(ps == null) return;
+        	}
+        }
+        XMLexporter.automatonToXML(a, ps);        
+    }  
+    
 	
-	public static void saveSystem(FSAModel model) {
-		// TODO call saveSystemAs with default directory from SystemVariables
-				
-	}
-	
-	public static void saveAutomatonAs(FSAModel model, File f) {
-		// TODO implement
-		
-		// merge metadata with automaton data structure and use legacy code to write the xml
-		
-		// open file output stream
-		
-		// write file
-		
-		// handle runtime errors
-		
+	public static void saveAutomatonAs(Automaton a) {		
+		File file;
+		PrintStream ps;
+		JFileChooser fc = new JFileChooser(SystemVariables.instance().getLast_used_path());
+    	int retVal = fc.showSaveDialog(null);
+    	if(retVal == JFileChooser.APPROVE_OPTION){
+    		file = fc.getSelectedFile();
+    		ps = getPrintStream(file);
+    		if(ps == null) return;
+    		a.setName(file.getName().substring(0, file.getName().lastIndexOf(".")));
+    		a.notifyAllSubscribers();
+    		XMLexporter.automatonToXML(a, ps);
+    	}    	
 	}
 	
 	public static void exportSystemAsLatex(FSAModel model, File f){
@@ -73,6 +93,25 @@ public class FileOperations {
 		return null;
 	}
 	
+	
+	/**
+     * TODO give user opportunity to choose a different file if something screws up.
+     * 
+     * @see projectPresentation.ProjectPresentation#saveWorkspace(java.lang.String)
+     */
+    public static void saveWorkspace(String path){
+        File file = new File(path, IDESWorkspace.instance().getName() + ".xml");
+        PrintStream ps = getPrintStream(file);
+        if(ps == null) return;
+  // TODO  XMLexporter.workspaceToXML(IDESWorkspace.instance(), ps);
+        Iterator<Automaton> ai = IDESWorkspace.instance().getAutomata();
+        while(ai.hasNext()){
+            Automaton a = ai.next();
+            saveAutomaton(a);
+        }
+    }
+
+    	
 	/**
 	 * TODO move this to the io or ui.command package; it doesn't do anything with FSAs. 
 	 * 
@@ -172,40 +211,6 @@ public class FileOperations {
     }
 
   
-    /**
-     * @see projectPresentation.ProjectPresentation#saveProject(java.lang.String)
-     */
-    public static void saveProject(String path){
-        File file = new File(path, IDESWorkspace.instance().getName() + ".xml");
-        PrintStream ps = getPrintStream(file);
-        if(ps == null) return;
-  // TODO  XMLexporter.workspaceToXML(IDESWorkspace.instance(), ps);
-        Iterator<Automaton> ai = IDESWorkspace.instance().getAutomata();
-        while(ai.hasNext()){
-            Automaton a = ai.next();
-            saveAutomaton(a, path);
-        }
-    }
-
-    /**
-     * Saves an automaton to a file
-     * @param a the automaton to save
-     * @param path the path to save it to
-     */      
-    public static void saveAutomaton(Automaton a, String path){
-        File file = new File(path, a.getName() + ".xml");
-        PrintStream ps = getPrintStream(file);
-        if(ps == null) {
-	        JFileChooser fc = new JFileChooser();
-        	int retVal = fc.showSaveDialog(null);
-        	if(retVal == JFileChooser.APPROVE_OPTION){
-        		file = fc.getSelectedFile();
-        		ps = getPrintStream(file);
-        		if(ps == null) return;
-        	}
-        }
-        XMLexporter.automatonToXML(a, ps);        
-    }  
     
     private static class ClassFileFilter implements FilenameFilter{    	
 		    public boolean accept(File dir, String name) {

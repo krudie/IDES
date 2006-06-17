@@ -1,4 +1,4 @@
-package ui;
+package presentation.fsa;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -22,7 +22,6 @@ import model.Subscriber;
 import model.fsa.FSAEventsModel;
 import model.fsa.ver1.Event;
 import model.fsa.ver1.EventsModel;
-import presentation.fsa.Edge;
 
 /**
  * Dialog window for assigning multiple events from the global events model

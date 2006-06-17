@@ -159,11 +159,14 @@ public class MainWindow extends JFrame implements Subscriber {
 		new EditCommands.PasteCommand().export();
 		
 		// IDEA: pass this to all file commands so can set Wait cursor
+		new FileCommands.NewAutomatonCommand().export();
 		new FileCommands.OpenAutomatonCommand().export();
 		new FileCommands.CloseAutomatonCommand().export();
 		new FileCommands.SaveAutomatonCommand().export();		
+		
 		new FileCommands.OpenWorkspaceCommand().export();		
 		new FileCommands.SaveWorkspaceCommand().export();
+		
 		new FileCommands.ExportToGIFCommand().export();
 		new FileCommands.ExportToLatexCommand().export();
 		new FileCommands.ExportToPNGCommand().export();

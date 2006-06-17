@@ -167,7 +167,7 @@ public class EditCommands {
 		@Override
 		protected UndoableEdit performEdit() {
 			// TODO save previous value and store in undoable edit
-		
+			previousValue = element.get(attributeName);
 			element.set(attributeName, value);
 			// TODO return undoable edit object
 			return null;

@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -179,5 +180,13 @@ public class Node extends GraphElement {
 		super.translate(x,y);
 		// TODO translate all INCOMING edges as well as outgoing
 		update();
+	}
+	
+	public void showPopup(Component context){
+		NodePropertiesPopup.showPopup(context, this);
+	}
+
+	protected FSAState getState(){
+		return state;
 	}
 }

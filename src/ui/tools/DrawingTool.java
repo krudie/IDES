@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
 
 import presentation.fsa.GraphDrawingView;
+import presentation.fsa.GraphElement;
 import presentation.fsa.SelectionGroup;
 
 
@@ -34,10 +35,10 @@ public abstract class DrawingTool {
 		context.clearCurrentSelection();
 		if(context.updateCurrentSelection(m.getPoint())){
 			SelectionGroup g = context.getCurrentSelection();
-						
+			((GraphElement)g.child(0)).showPopup(context);			
 		}
 		// DEBUG
-		JOptionPane.showMessageDialog(context, "Right clicked!");		 
+		// JOptionPane.showMessageDialog(context, "Right clicked!");		 
 	}
 	
 	public abstract void handleMouseClicked(MouseEvent m);
