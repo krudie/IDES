@@ -1,7 +1,5 @@
 package util;
 
-import java.util.Properties;
-
 public class ProperSingleton {
 	
 	private static ProperSingleton me=null;

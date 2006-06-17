@@ -18,7 +18,7 @@ import pluggable.ui.OptionsPane;
 
 /**
  * Implements the {@link pluggable.ui.OptionsPane} for the LaTeX rendering options.
- * @see {@link pluggable.ui.OptionsPane}
+ * @see pluggable.ui.OptionsPane
  * 
  * @author Lenko Grigorov
  *
@@ -87,7 +87,7 @@ public class LatexOptionsPane implements OptionsPane {
 								latexPath.setText(fc.getSelectedFile().getCanonicalPath());
 							}catch(java.io.IOException ex)
 							{
-								javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantParsePath"));
+								Hub.displayAlert(Hub.string("cantParsePath"));
 							}
 						}
 						
@@ -129,7 +129,7 @@ public class LatexOptionsPane implements OptionsPane {
 								gsPath.setText(fc.getSelectedFile().getCanonicalPath());
 							}catch(java.io.IOException ex)
 							{
-								javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantParsePath"));
+								Hub.displayAlert(Hub.string("cantParsePath"));
 							}
 						}
 						

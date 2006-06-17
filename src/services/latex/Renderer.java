@@ -162,21 +162,53 @@ public class Renderer {
 	 * @return	the image which was saved in the file
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
 	 * @see #renderDocument(String) 
 	 */
-	public BufferedImage renderStringToFile(String s, File f) throws IOException,LatexRenderException
+	public BufferedImage renderString(String s, File f) throws IOException,LatexRenderException
 	{
-		return renderStringToFile(s,"",f);
+		return renderString(s,"",f);
 	}
 	
+	/**
+	 * Render a piece of LaTeX code into a PNG image and output to a stream.
+	 * @param s	LaTeX code (the code goes in the body of a LaTeX document)
+	 * @param out	stream where to output image. The stream will not be closed.
+	 * @return	the image which was saved in the file
+	 * @throws IOException	if there was a problem with the IO
+	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
+	 * @see #renderString(String)
+	 * @see #renderString(String, String)
+	 * @see #renderDocument(File)
+	 * @see #renderDocument(InputStream)
+	 * @see #renderDocument(String) 
+	 */
+	public BufferedImage renderString(String s, OutputStream out) throws IOException,LatexRenderException
+	{
+		return renderString(s,"",out);
+	}
+
 	/**
 	 * Render a piece of LaTeX code into a PNG image file.
 	 * @param s	LaTeX code (the code goes in the body of a LaTeX document)
@@ -187,21 +219,55 @@ public class Renderer {
 	 * @return	the image which was saved in the file
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
-	 * @see #renderStringToFile(String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
 	 * @see #renderDocument(String) 
 	 */
-	public BufferedImage renderStringToFile(String s, String header, File f) throws IOException, LatexRenderException
+	public BufferedImage renderString(String s, String header, File f) throws IOException, LatexRenderException
 	{
-		return renderDocumentToFile("\\documentclass{article}\n"+header+"\n\\pagestyle{empty}\n\\setlength{\\parindent}{0pt}\n\\begin{document}\n"+s+"\n\\end{document}",f);
+		return renderDocument("\\documentclass{article}\n"+header+"\n\\pagestyle{empty}\n\\setlength{\\parindent}{0pt}\n\\begin{document}\n"+s+"\n\\end{document}",f);
 	}
 	
+	/**
+	 * Render a piece of LaTeX code into a PNG image and output to a stream.
+	 * @param s	LaTeX code (the code goes in the body of a LaTeX document)
+	 * @param header	LaTeX environment setup, such as <code>usepackage</code>
+	 * 					(the code goes before the body of a LaTeX document)   
+	 * @param out	stream where to output image. The stream will not be closed.
+	 * @return	the image which was saved in the file
+	 * @throws IOException	if there was a problem with the IO
+	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
+	 * @see #renderString(String)
+	 * @see #renderString(String, String)
+	 * @see #renderDocument(File)
+	 * @see #renderDocument(InputStream)
+	 * @see #renderDocument(String) 
+	 */
+	public BufferedImage renderString(String s, String header, OutputStream out) throws IOException, LatexRenderException
+	{
+		return renderDocument("\\documentclass{article}\n"+header+"\n\\pagestyle{empty}\n\\setlength{\\parindent}{0pt}\n\\begin{document}\n"+s+"\n\\end{document}",out);
+	}
+
 	/**
 	 * Render the first page of a LaTeX document into a PNG image file.
 	 * @param doc	LaTeX document
@@ -210,20 +276,54 @@ public class Renderer {
 	 * @return	the image which was saved in the file
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
-	 * @see #renderStringToFile(String, File)
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
 	 * @see #renderDocument(String) 
 	 */
-	public BufferedImage renderDocumentToFile(String doc, File f) throws IOException, LatexRenderException
+	public BufferedImage renderDocument(String doc, File f) throws IOException, LatexRenderException
 	{
 		BufferedImage im=renderDocument(doc);
 		ImageIO.write(im,"png",f);
+		return im;
+	}
+
+	/**
+	 * Render the first page of a LaTeX document into a PNG image and output to a stream.
+	 * @param doc	LaTeX document
+	 * @param out	stream where to output image. The stream will not be closed.
+	 * @return	the image which was saved in the file
+	 * @throws IOException	if there was a problem with the IO
+	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderString(String)
+	 * @see #renderString(String, String)
+	 * @see #renderDocument(File)
+	 * @see #renderDocument(InputStream)
+	 * @see #renderDocument(String) 
+	 */
+	public BufferedImage renderDocument(String doc, OutputStream out) throws IOException, LatexRenderException
+	{
+		BufferedImage im=renderDocument(doc);
+		ImageIO.write(im,"png",out);
 		return im;
 	}
 
@@ -235,19 +335,51 @@ public class Renderer {
 	 * @return	the image which was saved in the file
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
-	 * @see #renderStringToFile(String, File)
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
 	 * @see #renderDocument(String) 
 	 */
-	public BufferedImage renderDocumentToFile(File doc, File f) throws IOException, LatexRenderException
+	public BufferedImage renderDocument(File doc, File f) throws IOException, LatexRenderException
 	{
-		return renderDocumentToFile(new FileInputStream(doc),f);
+		return renderDocument(new FileInputStream(doc),f);
+	}
+
+	/**
+	 * Render the first page of a LaTeX document into a PNG image and output to a stream.
+	 * @param doc	file containing the LaTeX document
+	 * @param out	stream where to output image. The stream will not be closed.
+	 * @return	the image which was saved in the file
+	 * @throws IOException	if there was a problem with the IO
+	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
+	 * @see #renderString(String)
+	 * @see #renderString(String, String)
+	 * @see #renderDocument(File)
+	 * @see #renderDocument(InputStream)
+	 * @see #renderDocument(String) 
+	 */
+	public BufferedImage renderDocument(File doc, OutputStream out) throws IOException, LatexRenderException
+	{
+		return renderDocument(new FileInputStream(doc),out);
 	}
 	
 	/**
@@ -259,38 +391,78 @@ public class Renderer {
 	 * @return	the image which was saved in the file
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
-	 * @see #renderStringToFile(String, File)
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
 	 * @see #renderDocument(String) 
 	 */
-	public BufferedImage renderDocumentToFile(InputStream doc, File f) throws IOException, LatexRenderException
+	public BufferedImage renderDocument(InputStream doc, File f) throws IOException, LatexRenderException
 	{
 		BufferedImage im=renderDocument(doc);
 		ImageIO.write(im,"png",f);
 		return im;
 	}
-	
+
+	/**
+	 * Render the first page of a LaTeX document into a PNG image and output to a stream.
+	 * @param doc	InputStream from which the LaTeX document will be read.
+	 * 				The stream is closed after reading the document. 
+	 * @param out	stream where to output image. The stream will not be closed.
+	 * @return	the image which was saved in the file
+	 * @throws IOException	if there was a problem with the IO
+	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
+	 * @see #renderString(String)
+	 * @see #renderString(String, String)
+	 * @see #renderDocument(File)
+	 * @see #renderDocument(InputStream)
+	 * @see #renderDocument(String) 
+	 */
+	public BufferedImage renderDocument(InputStream doc, OutputStream out) throws IOException, LatexRenderException
+	{
+		BufferedImage im=renderDocument(doc);
+		ImageIO.write(im,"png",out);
+		return im;
+	}
+
 	/**
 	 * Render a piece of LaTeX code.
 	 * @param s	LaTeX code (the code goes in the body of a LaTeX document)
 	 * @return	the image with the rendition
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
-	 * @see #renderDocument(String)
-	 * @see #renderStringToFile(String, File) 
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderDocument(String) 
 	 */
 	public BufferedImage renderString(String s) throws IOException,LatexRenderException
 	{
@@ -305,15 +477,20 @@ public class Renderer {
 	 * @return	the image with the rendition
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
-	 * @see #renderDocument(String)
-	 * @see #renderStringToFile(String, File) 
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderDocument(String) 
 	 */
 	public BufferedImage renderString(String s, String header) throws IOException, LatexRenderException
 	{
@@ -326,15 +503,20 @@ public class Renderer {
 	 * @return	the image with the rendition
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
-	 * @see #renderStringToFile(String, File) 
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
 	 */
 	public BufferedImage renderDocument(String doc) throws IOException, LatexRenderException
 	{
@@ -351,15 +533,20 @@ public class Renderer {
 	 * @return	the image with the rendition
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(InputStream)
-	 * @see #renderDocument(String)
-	 * @see #renderStringToFile(String, File) 
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderDocument(String) 
 	 */
 	public BufferedImage renderDocument(File doc) throws IOException, LatexRenderException
 	{
@@ -373,15 +560,20 @@ public class Renderer {
 	 * @return	the image with the rendition
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
-	 * @see #renderDocument(String)
-	 * @see #renderStringToFile(String, File) 
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderDocument(String) 
 	 */
 	public BufferedImage renderDocument(InputStream doc) throws IOException, LatexRenderException
 	{
@@ -405,16 +597,21 @@ public class Renderer {
 	 * @return	image with the rendition
 	 * @throws IOException	if there was a problem with the IO
 	 * @throws LatexRenderException	if there was a problem while rendering the LaTeX code 
+	 * @see #renderString(String, File)
+	 * @see #renderString(String, OutputStream)
+	 * @see #renderString(String, String, File)
+	 * @see #renderString(String, String, OutputStream)
+	 * @see #renderDocument(File, File)
+	 * @see #renderDocument(File, OutputStream)
+	 * @see #renderDocument(InputStream, File)
+	 * @see #renderDocument(InputStream, OutputStream)
+	 * @see #renderDocument(String, File)
+	 * @see #renderDocument(String, OutputStream)
 	 * @see #renderString(String)
 	 * @see #renderString(String, String)
 	 * @see #renderDocument(File)
 	 * @see #renderDocument(InputStream)
-	 * @see #renderDocument(String)
-	 * @see #renderStringToFile(String, File) 
-	 * @see #renderStringToFile(String, String, File)
-	 * @see #renderDocumentToFile(File, File)
-	 * @see #renderDocumentToFile(InputStream, File)
-	 * @see #renderDocumentToFile(String, File)
+	 * @see #renderDocument(String) 
 	 */
 	protected BufferedImage renderTempFile(File latexFile) throws IOException, LatexRenderException
 	{

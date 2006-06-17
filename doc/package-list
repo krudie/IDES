@@ -8,6 +8,7 @@ model.fsa.ver1
 pluggable.ui
 presentation
 presentation.fsa
+services.cache
 services.latex
 test.ui
 ui

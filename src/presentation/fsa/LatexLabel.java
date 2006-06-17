@@ -11,17 +11,24 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import main.Hub;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
+import services.cache.Cache;
+import services.cache.NotInCacheException;
+import services.latex.LatexManager;
 import services.latex.LatexRenderException;
 import services.latex.Renderer;
 
 public class LatexLabel extends GraphLabel {
 	
-	//protected static Renderer latexRenderer=Renderer.getRenderer(new java.io.File("c:/texmf/miktex/bin"),new java.io.File("C:/Program Files/gs/gs8.53/bin/gswin32c.exe"));
-	protected static Renderer latexRenderer=Renderer.getRenderer(new java.io.File("/usr/bin"),new java.io.File("/usr/bin/gs"));
 	protected BufferedImage rendered=null;
 	
 	public LatexLabel(String text){
@@ -48,35 +55,53 @@ public class LatexLabel extends GraphLabel {
 	}
 
 	public void draw(Graphics g) {
-		if(visible){
+		if(visible&&!layout.getText().equals("")){
 			if(rendered==null)
+			{
+				BufferedImage image=null;
 				try
 				{
-					BufferedImage image=latexRenderer.renderString(layout.getText());
-					ColorConvertOp conv=new ColorConvertOp(image.getColorModel().getColorSpace(),ColorModel.getRGBdefault().getColorSpace(),null);
-					rendered=conv.createCompatibleDestImage(image,ColorModel.getRGBdefault());
-					conv.filter(image,rendered);
+					byte[] data=(byte[])Cache.get(layout.getText());
+					image=ImageIO.read(new ByteArrayInputStream(data));
+				}catch(NotInCacheException e)
+				{
+					try
+					{
+						image=LatexManager.getRenderer().renderString(layout.getText());
+						ByteArrayOutputStream pngStream=new ByteArrayOutputStream();
+						ImageIO.write(image,"png",pngStream);
+						pngStream.close();
+						Cache.put(layout.getText(),pngStream.toByteArray());
 					//rendered=new BufferedImage(ColorModel.getRGBdefault(),
 						//	rendered.getRaster(),false,null);
-				} catch(LatexRenderException e)
-				{
-					throw new RuntimeException(e);
+					} catch(LatexRenderException ex)
+					{
+						throw new RuntimeException(ex);
+					}
+					catch(IOException ex)
+					{
+						throw new RuntimeException(ex);
+					}
 				}
 				catch(IOException e)
 				{
 					throw new RuntimeException(e);
 				}
-			WritableRaster raster=rendered.getAlphaRaster();
-			Color bg=((Graphics2D)g).getBackground();
-			int bgShade=(bg.getRed()+bg.getGreen()+bg.getBlue())/3;
-			for(int i=0;i<raster.getWidth();++i)
-				for(int j=0;j<raster.getHeight();++j)
-				{
-					if(rendered.getRaster().getSample(i,j,0)>bgShade)
-						raster.setSample(i,j,0,0);
-					else
-						raster.setSample(i,j,0,255);
-				}
+				ColorConvertOp conv=new ColorConvertOp(image.getColorModel().getColorSpace(),ColorModel.getRGBdefault().getColorSpace(),null);
+				rendered=conv.createCompatibleDestImage(image,ColorModel.getRGBdefault());
+				conv.filter(image,rendered);
+				WritableRaster raster=rendered.getAlphaRaster();
+				Color bg=Hub.getMainWindow().getBackground();
+				int bgShade=(bg.getRed()+bg.getGreen()+bg.getBlue())/3;
+				for(int i=0;i<raster.getWidth();++i)
+					for(int j=0;j<raster.getHeight();++j)
+					{
+						if(rendered.getRaster().getSample(i,j,0)>bgShade)
+							raster.setSample(i,j,0,0);
+						else
+							raster.setSample(i,j,0,255);
+					}
+			}
 			((Graphics2D)g).drawImage(rendered,null,(int)layout.getLocation().x,(int)layout.getLocation().y);
 //			g.setColor(layout.getColor());		
 //			g.setFont(font);

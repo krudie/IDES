@@ -8,10 +8,20 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
 
 public class Main {
+	
+	private Main()
+	{
+	}
+	
+	public Object clone()
+	{
+	    throw new RuntimeException("Cloning of "+this.getClass().toString()+" not supported."); 
+	}
 	
 	/**
 	 * Handles stuff that has to be done before the application terminates.
@@ -51,17 +61,25 @@ public class Main {
 			Hub.loadPersistentData();
 		} catch(IOException e)
 		{
-			javax.swing.JOptionPane.showMessageDialog(null, Hub.string("cantLoadSettings"));
+			Hub.displayAlert(Hub.string("cantLoadSettings"));
 			System.exit(2);
 		}
 		
+		//setup other stuff
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		
+		Cache.init();
+		
+		LatexManager.init();
+
+
 		// TODO load UISettings and workspace in a thread
 		// show splash screen
 		Hub.setMainWindow(new MainWindow());
 		
-		//setup other stuff
-		LatexManager.init();
-		
+		//setup stuff that needs the main window
+
+		//go live!
 		Hub.getMainWindow().setVisible(true);
 	}
 }

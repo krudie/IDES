@@ -1,5 +1,7 @@
 package services.latex;
 
+import java.io.File;
+
 import main.Hub;
 
 /**
@@ -9,12 +11,24 @@ import main.Hub;
  */
 public class LatexManager {
 
+	private LatexManager()
+	{
+	}
+	
+	public Object clone()
+	{
+	    throw new RuntimeException("Cloning of "+this.getClass().toString()+" not supported."); 
+	}
+
+	private static Renderer renderer=null; 
+	
 	/**
 	 * Initializes the LaTeX rendering subsystem.
 	 */
 	public static void init()
 	{
-		Hub.registerOptionsPane(new LatexOptionsPane());	
+		Hub.registerOptionsPane(new LatexOptionsPane());
+		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
 	}
 
 	/**
@@ -44,6 +58,7 @@ public class LatexManager {
 	static void setLatexPath(String path)
 	{
 		Hub.persistentData.setProperty("latexPath",path);
+		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
 	}
 	
 	/**
@@ -53,6 +68,7 @@ public class LatexManager {
 	static void setGSPath(String path)
 	{
 		Hub.persistentData.setProperty("gsPath",path);
+		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
 	}
 	
 	/**
@@ -72,5 +88,16 @@ public class LatexManager {
 	public static void setLatexEnabled(boolean b)
 	{
 		Hub.persistentData.setBoolean("useLatexLabels",b);
+	}
+
+	/**
+	 * Returns the {@link Renderer} to be used for rendering LaTeX.
+	 * @return the {@link Renderer} to be used for rendering LaTeX
+	 */
+	public static Renderer getRenderer()
+	{
+		if(renderer==null)
+			renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
+		return renderer;
 	}
 }
