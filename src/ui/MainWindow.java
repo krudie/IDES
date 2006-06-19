@@ -77,7 +77,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		// TODO add graph spec, latex and eps views to the state model		
 		filmStrip = new FilmStrip();	
-		filmStrip.setPreferredSize(new Dimension(getSize().width, (int)(getSize().height * 0.3)));
+		filmStrip.setSize(new Dimension((int)(getSize().width * 0.9), (int)(getSize().height * 0.3)));
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
 	
 		//FileOperations.loadAndExportCommands("commands.txt"); 
@@ -158,8 +158,9 @@ public class MainWindow extends JFrame implements Subscriber {
 		new EditCommands.CutCommand().export();
 		new EditCommands.CopyCommand().export();
 		new EditCommands.PasteCommand().export();
-		
-		// IDEA: pass this to all file commands so can set Wait cursor
+		new EditCommands.SetBooleanAttributeCommand().export();
+		new EditCommands.SetAttributeCommand().export();
+			
 		new FileCommands.NewAutomatonCommand().export();
 		new FileCommands.OpenAutomatonCommand().export();
 		new FileCommands.CloseAutomatonCommand().export();
@@ -306,8 +307,7 @@ public class MainWindow extends JFrame implements Subscriber {
 	public void update() {		
 		CommandManager commandManager = CommandManager.defaultInstance();
 		
-		if(IDESWorkspace.instance().getActiveModel() == null){
-			
+		if(IDESWorkspace.instance().getActiveModel() == null){			
 			toolbar.setEnabled(false);
 			commandManager.getGroup("graph.group").setEnabled(false);
 			//commandManager.getGroup("ides.toolbar.group").setEnabled(false);
@@ -325,6 +325,12 @@ public class MainWindow extends JFrame implements Subscriber {
 			toolbar.setEnabled(true);
 			commandManager.getGroup("graph.group").setEnabled(true);
 			commandManager.getGroup("edit.group").setEnabled(true);
+			if(IDESWorkspace.instance().hasUnsavedData()){
+				// KLUGE
+				commandManager.getCommand("save.automaton.command").setEnabled(true);
+				// FIXME this doesn't work
+				commandManager.getGroup("file.save.group").setEnabled(true);
+			}
 			// set the name of the current model in the tabbed pane
 			tabbedViews.setTitleAt(0, IDESWorkspace.instance().getActiveModelName());
 		}

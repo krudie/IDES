@@ -26,6 +26,7 @@ public class MovementTool extends DrawingTool {
 		prev = start;
 		if(!context.hasCurrentSelection()){
 			context.updateCurrentSelection(start);
+			context.repaint();
 		}			
 		dragging = true;
 	}

@@ -1,11 +1,7 @@
 package presentation.fsa;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D.Float;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -13,20 +9,19 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import model.fsa.ver1.State;
-
-import ui.command.EditCommands.SetAttributeCommand; 
+import ui.command.EditCommands.SetBooleanAttributeCommand;
 
 public class NodePropertiesPopup extends JPopupMenu {
 
 	private Node node;
-	private JMenuItem miLabelNode, miSelfLoop;
-	private JCheckBoxMenuItem miSetMarked, miSetInitial;
+	private JMenuItem miSetMarked, miLabelNode, miSelfLoop, miSetInitial;
 	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
 	// rather than initializing here since otherwise get java.lang.NoClassDefFoundError error
 	private static NodePropertiesPopup popup;
+	
+	private SetBooleanAttributeCommand booleanCmd;
 	
 	/**
 	 * 
@@ -48,12 +43,12 @@ public class NodePropertiesPopup extends JPopupMenu {
 		
 	protected NodePropertiesPopup(Node n) {
 		super("State Properties");		
-		node = n;
-	
+		booleanCmd = new SetBooleanAttributeCommand();
 		ActionListener menuListener = new Listener();
 		
 		// TODO change to undoable commands
-		miSetMarked = new JCheckBoxMenuItem("Marked");
+		miSetMarked = booleanCmd.createMenuItem();
+		miSetMarked.setText("Marked");
 		miSetInitial = new JCheckBoxMenuItem("Initial");
 		miLabelNode = new JMenuItem("Label");
 		miSelfLoop = new JMenuItem("Self Loop");		
@@ -62,18 +57,24 @@ public class NodePropertiesPopup extends JPopupMenu {
 		miSetInitial.addActionListener(menuListener);
 		miLabelNode.addActionListener(menuListener);
 		miSelfLoop.addActionListener(menuListener);
-		
+				
 		add(miSetMarked);
 		add(miSetInitial);		
 		add(new JPopupMenu.Separator());
 		add(miLabelNode);
 		
 		// TODO should be checkbox to add or remove self loop
-		add(miSelfLoop);			
+		add(miSelfLoop);
+		
+		setNode(n);
 	}
 
 	protected void setNode(Node n){
 		node = n;
+		
+		booleanCmd.setAttributeName("marked");
+		booleanCmd.setElement(n.getState());
+		
 		miSetMarked.setSelected(node.getState().isMarked());
 		miSetInitial.setSelected(node.getState().isInitial());
 	}
@@ -82,32 +83,8 @@ public class NodePropertiesPopup extends JPopupMenu {
 
 		public void actionPerformed(ActionEvent e) {
 			
-			Object o = e.getSource();
-			
-			// FIXME Publisher (Automaton that holds the state) must be notified of update !!!
-			// Should be done through GraphModel object which then notifies the FSA 
-			
-			if(o.equals(miSetMarked)){
-				// construct and execute a SetAttributeCommand
-	// 			DEBUG
-//				JOptionPane.showMessageDialog(null, "mark");
-				if(node.getState().isMarked()){
-					new SetAttributeCommand(node.getState(), State.ATTR_MARKED, "false").execute();
-				}else{
-					new SetAttributeCommand(node.getState(), State.ATTR_MARKED, "true").execute();
-				}
-				node.update();
-				view.getGraphModel().notifyAllSubscribers(); // KLUGE
-				//JOptionPane.showMessageDialog(null, "FIXME call notifyAllBut(GraphModel)");
-			}else if(o.equals(miSetInitial)){
-				// construct and execute a SetAttributeCommand
-	//			 DEBUG
-				// JOptionPane.showMessageDialog(null, "initial");				
-				new SetAttributeCommand(node.getState(), State.ATTR_MARKED, Boolean.toString(miSetMarked.isSelected())).execute();
-				node.update();
-				view.getGraphModel().notifyAllBut(view.getGraphModel()); // KLUGE
-				//JOptionPane.showMessageDialog(null, "FIXME call notifyAllBut(GraphModel)");
-			}else if(o.equals(miLabelNode)){
+			Object o = e.getSource();			
+			if(o.equals(miLabelNode)){
 				// create and execute a Text command
 				// open labeling input box as in text tool
 	//			 DEBUG

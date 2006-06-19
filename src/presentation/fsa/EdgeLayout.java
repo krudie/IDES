@@ -31,8 +31,8 @@ public class EdgeLayout extends GraphicalLayout {
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
 	private double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
 	private double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
-	private float angle1 = 0; // angle between  (CTRL1 - P1) and (P2-P1)
-	private float angle2 = 0; // angle between  (CTRL2 - P2) and (P1-P2)
+	private double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
+	private double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)
 	
 	public EdgeLayout(){
 		ctrls = new Point2D.Float[4];
@@ -208,14 +208,8 @@ public class EdgeLayout extends GraphicalLayout {
 		Point2D.Float p2c2 = Geometry.subtract(ctrls[CTRL2], ctrls[P2]);
 		s1 = Geometry.norm(p1c1)/n;
 		s2 = Geometry.norm(p2c2)/n;
-		
-		// TODO compute angles
-		Point2D.Float unitp1c1 = Geometry.unit(p1c1);
-		Point2D.Float unitp2c2 = Geometry.unit(p2c2);
-		Point2D.Float unitBase = Geometry.unit(p1p2);
-		
-		
-		
+		angle1 = Geometry.angleBetween(p1c1, p1p2);
+		angle1 = Geometry.angleBetween(p2c2, Geometry.scale(p1p2, -1f));		
 	}
 
 	protected boolean isRigidTranslation() {

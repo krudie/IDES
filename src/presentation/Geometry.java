@@ -83,14 +83,24 @@ public class Geometry {
 	
 	/**
 	 * 
+	 * a · b  =  cos ? 
+
+To use this formula with non-unit vectors: 
+(1) normalize each vector, 
+(2) compute the dot product, 
+(3) take the arc cos to get the angle. 
+
+	 * 
 	 * @param v1
 	 * @param v2
 	 * @return the angle between the given vectors in radians
 	 */
 	public static double angleBetween(Point2D.Float v1, Point2D.Float v2){
-		
-		
-		return 0.0;
+		Point2D.Float unitV1, unitV2;
+		unitV1 = unit(v1);
+		unitV2 = unit(v2);
+		double dot = unitV1.x * unitV2.x + unitV1.y * unitV2.y;				
+		return Math.acos(dot);
 	}
 	
 }

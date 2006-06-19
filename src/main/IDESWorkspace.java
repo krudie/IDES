@@ -69,8 +69,10 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return getFSAModel(name) != null;
 	}
 	
-	public void removeFSAModel(String name) {
-		// TODO Auto-generated method stub
+	public void removeFSAModel(String name) {		
+		systems.remove(name);	
+		metadata.remove(name);
+		graphs.remove(name);
 		if(systems.isEmpty()){
 			activeModelName = null;
 		}

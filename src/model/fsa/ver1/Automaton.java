@@ -77,7 +77,7 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 	 * @see model.fsa.ver1.FSAModel#setName(java.lang.String)
 	 */
     public void setName(String name){
-        this.name = name;     
+        this.name = name;    
     }
 
     /* (non-Javadoc)

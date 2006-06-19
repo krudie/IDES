@@ -2,9 +2,11 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
+import main.IDESWorkspace;
 import model.DESElement;
 
 import org.pietschy.command.ActionCommand;
+import org.pietschy.command.ToggleVetoException;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 public class EditCommands {
@@ -140,11 +142,54 @@ public class EditCommands {
 	}
 
 	/**
-	 * An undoable command that sets the value of an attribute for a DES element.
+	 * A command that sets the value of a boolean attribute for a DES element.
+	 * 
+	 * TODO figure out how to make this an undoable edit.
 	 * 
 	 * @author helen bretzke
 	 *
 	 */
+	public static class SetBooleanAttributeCommand extends org.pietschy.command.ToggleCommand {
+
+		private DESElement element;
+		private String attributeName;
+		private boolean previousValue; // for undoable edit		
+		
+		public SetBooleanAttributeCommand(DESElement element, String attributeName) {
+			super("set.boolean.attribute.command");			
+			this.element = element;
+			this.attributeName = attributeName;					
+		}
+
+		public SetBooleanAttributeCommand(){
+			super("set.boolean.attribute.command");
+		}	
+
+		public void setElement(DESElement element){
+			this.element = element;
+		}
+		
+		public void setAttributeName(String name){
+			attributeName = name;
+		}		
+		
+		@Override
+		protected void handleSelection(boolean arg0) throws ToggleVetoException {
+			// FIXME do this in GraphModel and split this command into 
+			// mark.node.command and initial.node.command
+			
+			previousValue = Boolean.parseBoolean(element.get(attributeName));
+			element.set(attributeName, Boolean.toString(arg0));
+			
+			// FIXME
+//			node.update();
+//			view.repaint();
+//			view.getGraphModel().notifyAllSubscribers(); 
+			
+			IDESWorkspace.instance().getActiveGraphModel().notifyAllSubscribers(); 			
+		}	
+	}
+		
 	public static class SetAttributeCommand extends UndoableActionCommand {
 
 		private DESElement element;
@@ -163,18 +208,14 @@ public class EditCommands {
 			super("set.attribute.command");
 		}
 		
-		
 		@Override
 		protected UndoableEdit performEdit() {
 			// TODO save previous value and store in undoable edit
 			previousValue = element.get(attributeName);
 			element.set(attributeName, value);
+			IDESWorkspace.instance().getActiveGraphModel().notifyAllSubscribers();
 			// TODO return undoable edit object
 			return null;
-		}
-		
-		// TODO construct and return a menu item with a checkbox (?)
-		
+		}		
 	}
-	
 }

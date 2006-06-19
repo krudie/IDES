@@ -3,29 +3,25 @@ package ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import presentation.fsa.GraphModel;
-import presentation.fsa.GraphView;
+import javax.swing.border.Border;
 
 import main.IDESWorkspace;
 import model.Subscriber;
+import presentation.fsa.GraphModel;
+import presentation.fsa.GraphView;
 
 /**
- * A panel of graph thumbnail views that highlights the border
- * on the graph that has focus.
+ * A panel of graph thumbnail views to navigate among multiple automata 
+ * and highlight the border of the currently active graph.
  * 
  * @author Helen Bretzke
  *
@@ -34,17 +30,13 @@ import model.Subscriber;
 public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
 	private GraphView activeView;	
+	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(Color.BLUE, 2);
+	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(Color.BLACK, 2);
 	
 	public FilmStrip(){
 		IDESWorkspace.instance().attach(this);
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setLayout(new GridLayout(1,6));
 		setAlignmentY(Component.LEFT_ALIGNMENT);
-
-//	    Toolkit tk = Toolkit.getDefaultToolkit ();
-//	    Dimension space = tk.getScreenSize ();    
-//	    setSize (space.width, space.height/4);
-//		setPreferredSize(this.getSize());
-		
 		addMouseListener(this);
 	}
 	
@@ -64,10 +56,11 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		// each in its own GraphView object.	
 		
 		// Detach each GraphView from its model before attaching to the new model.		
-		Component[] views = this.getComponents();
+		Component[] panels = this.getComponents();
 		int n= this.getComponentCount();
-		for(int i = 0; i < n; i++){			
-				GraphView gv = (GraphView)views[i];
+		for(int i = 0; i < n; i++){		
+				JPanel p = (JPanel)panels[i];
+				GraphView gv = (GraphView)p.getComponent(0);
 				gv.setGraphModel(null);		
 		}		
 		
@@ -75,16 +68,21 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		 * Update the graphmodel for each view
 		 */
 		Iterator graphs = IDESWorkspace.instance().getGraphModels();
-		views = this.getComponents();		
+		panels = this.getComponents();		
 		int i=0;
 		while(graphs.hasNext() && i < n) {
-			GraphView gv = (GraphView)views[i];
+			JPanel p = (JPanel)panels[i];
+			GraphView gv = (GraphView)p.getComponent(0);
 			GraphModel gm = (GraphModel)graphs.next();			
-			gv.setGraphModel(gm);		
+			gv.setGraphModel(gm);			
 			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
 				activeView = gv;
-			}
+				p.setBorder(SELECTED_BORDER);
+			}else{
+				p.setBorder(PLAIN_BORDER);
+			}			
 			i++;
+			p.validate();
 		}
 		
 		/*
@@ -93,28 +91,28 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		while(graphs.hasNext()){
 			GraphModel gm = (GraphModel)graphs.next();
 			GraphView gv = new GraphView(gm);
-			gv.setPreferredSize(new Dimension(this.getSize().height, this.getSize().height));
-			add(gv);			
+			JPanel p = new JPanel();
+			p.add(gv);
+			gv.setPreferredSize(new Dimension(200, 200));
+			gv.setVisible(true);
+			p.setPreferredSize(gv.getPreferredSize());
 			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
 				activeView = gv;
+				p.setBorder(SELECTED_BORDER);
+			}else{
+				p.setBorder(PLAIN_BORDER);
 			}
+			add(p);
+			p.validate();
 		}
 		
 		/*
 		 * More views than graphs so remove them.
 		 */		
 		while(i < n){
-			remove(views[i]);			
+			remove(panels[i]);			
 			i++;
 		}
-
-		// FIXME why is the border not visible?
-		// Do I need to put this into a JPanel with a border?
-		// YUP.
-		activeView.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
-		
-		
-		// box.validate();
 		validate();
 	}
 
@@ -133,11 +131,11 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 					((JComponent)components[i]).setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 				}				
 			}
-			
-			activeView = (GraphView)arg0.getComponent().getComponentAt(arg0.getPoint());// (GraphView)arg0.getSource();
+			JPanel p = (JPanel)arg0.getComponent().getComponentAt(arg0.getPoint());// (GraphView)arg0.getSource();
+			activeView = (GraphView)p.getComponent(0);
 			IDESWorkspace.instance().setActiveModel(activeView.getName());
 			IDESWorkspace.instance().notifyAllBut(this);
-			activeView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+			p.setBorder(SELECTED_BORDER);
 		}catch(Exception e){
 			JOptionPane.showMessageDialog(activeView, "Unable to select and highlight graph: " + e.getStackTrace(), "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
 		}	

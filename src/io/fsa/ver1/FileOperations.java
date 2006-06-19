@@ -72,19 +72,23 @@ public class FileOperations {
 		JFileChooser fc = new JFileChooser(SystemVariables.instance().getLast_used_path());
     	int retVal = fc.showSaveDialog(null);
     	if(retVal == JFileChooser.APPROVE_OPTION){    		
-    		file = fc.getSelectedFile();    		
+    		file = fc.getSelectedFile();  
+    		
+    		// FIXME this doesn't seem to work
     		file.renameTo(new File(file.getName() + ".xml"));
     		ps = getPrintStream(file);
     		if(ps == null) return;
-    		int i = file.getName().lastIndexOf(".");
+    		int i = file.getName().lastIndexOf(".");    		
+    		IDESWorkspace.instance().removeFSAModel(a.getName());
     		if(i > -1) {
     			a.setName(file.getName().substring(0, file.getName().lastIndexOf(".")));
     		}else{
     			a.setName(file.getName());
     		}
-    		a.notifyAllSubscribers();
-    		IDESWorkspace.instance().notifyAllSubscribers();
+    		a.notifyAllSubscribers();   		
+    		IDESWorkspace.instance().addFSAModel(a);    		
     		XMLexporter.automatonToXML(a, ps);
+    		SystemVariables.instance().setLast_used_path(file.getAbsolutePath());
     	}    	
 	}
 	
