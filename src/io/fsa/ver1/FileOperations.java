@@ -16,6 +16,7 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.LoadException;
 
+import main.Hub;
 import main.IDESWorkspace;
 import main.SystemVariables;
 import model.fsa.FSAModel;
@@ -70,12 +71,19 @@ public class FileOperations {
 		PrintStream ps;
 		JFileChooser fc = new JFileChooser(SystemVariables.instance().getLast_used_path());
     	int retVal = fc.showSaveDialog(null);
-    	if(retVal == JFileChooser.APPROVE_OPTION){
-    		file = fc.getSelectedFile();
+    	if(retVal == JFileChooser.APPROVE_OPTION){    		
+    		file = fc.getSelectedFile();    		
+    		file.renameTo(new File(file.getName() + ".xml"));
     		ps = getPrintStream(file);
     		if(ps == null) return;
-    		a.setName(file.getName().substring(0, file.getName().lastIndexOf(".")));
+    		int i = file.getName().lastIndexOf(".");
+    		if(i > -1) {
+    			a.setName(file.getName().substring(0, file.getName().lastIndexOf(".")));
+    		}else{
+    			a.setName(file.getName());
+    		}
     		a.notifyAllSubscribers();
+    		IDESWorkspace.instance().notifyAllSubscribers();
     		XMLexporter.automatonToXML(a, ps);
     	}    	
 	}

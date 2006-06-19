@@ -33,7 +33,9 @@ public class Edge extends GraphElement {
 	private EdgeHandler handler;
 	
 	// The bezier curve.
+	// TODO this should be stored in EdgeLayout class.
 	private CubicCurve2D curve;
+	
 	// Visualization of the curve
 	private GeneralPath path;	
 	private ArrowHead arrow;		
@@ -74,6 +76,7 @@ public class Edge extends GraphElement {
 	public void draw(Graphics g) {	
 		if(layout.isDirty()){
 			update();
+			layout.setDirty(false);
 		}
 		
 		Graphics2D g2d = (Graphics2D)g;		
@@ -112,7 +115,7 @@ public class Edge extends GraphElement {
 	 * Updates my visualization of curve, arrow and label.
 	 */
 	public void update() {
-		// TODO optimize: inefficient to remove child glyphs and construct new ones.
+		// FIXME optimize: inefficient to remove child glyphs and construct new ones.
 		// At least make sure there are no other references to the children 
 		// or you will have an evil memory leak.
 	    clear();		
@@ -216,19 +219,28 @@ public class Edge extends GraphElement {
 	}
 	
 	public void translate(float x, float y){
+		EdgeLayout l = (EdgeLayout)layout;
+		if(l.isRigidTranslation()){
 		// Translate the whole curve assuming that its
 		// source and target nodes have been translated by the same displacement.
 		curve.setCurve(curve.getX1()+x, curve.getY1()+y,
 						curve.getCtrlX1()+x, curve.getCtrlY1()+y,
 						curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
 						curve.getX2(), curve.getY2()+y);
-		((EdgeLayout)layout).setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());
+		l.setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());
+		l.setRigidTranslation(false);
 		// reset the control points in the layout object
-		update();
+		}else{
+			l.computeCurve(source.getLayout(), target.getLayout());
+		}		
 	}
 
 	public Iterator<FSATransition> getTransitions() {		
 		return transitions.iterator();
+	}
+
+	protected EdgeHandler getHandler() {
+		return handler;
 	}
 		
 }

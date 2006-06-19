@@ -19,11 +19,17 @@ import presentation.PresentationElement;
  */
 public class EdgeHandler extends GraphElement {
 
-	private Edge edge;  // is this the parent Glyph?
+	private Edge edge;
 	private Ellipse2D.Double[] anchors;	
-	private static final int RADIUS = 5;	
+	private static final int RADIUS = 5;
+	public static final int NO_INTERSECTION = -1;
 	
-	
+	/**
+	 * Index of last intersected control point anchor
+	 * @see EdgeLayout.P1, EdgeLayout.CTRL1 etc.
+	 */
+	private int lastIntersected = NO_INTERSECTION;  
+		
 	public EdgeHandler(Edge edge) {		
 		this.edge = edge;
 		anchors = new Ellipse2D.Double[4];		                               
@@ -83,9 +89,19 @@ public class EdgeHandler extends GraphElement {
 	public boolean intersects(Point2D p) {
 		for(int i=0; i<4; i++){
 			if(anchors[i]!=null && anchors[i].contains(p)){
+				lastIntersected = i;
 				return true;
 			}			
 		}
+		lastIntersected = NO_INTERSECTION;
 		return false;
+	}
+
+	/** 
+	 * @return index of the last intersected control point handle, if no intersection
+	 * returns <code>NO_INTERSECTION</code>. 
+	 */
+	public int getLastIntersected() {
+		return lastIntersected;
 	}		
 }

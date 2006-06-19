@@ -40,13 +40,10 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setAlignmentY(Component.LEFT_ALIGNMENT);
 
-	    // Get the screen dimensions.
-		// FIXME should use parent dimensions or request space from 
-		// GUI real estate manager
-	    Toolkit tk = Toolkit.getDefaultToolkit ();
-	    Dimension screen = tk.getScreenSize ();    
-	    setSize (screen.width, screen.height/4);
-		setPreferredSize(this.getSize());
+//	    Toolkit tk = Toolkit.getDefaultToolkit ();
+//	    Dimension space = tk.getScreenSize ();    
+//	    setSize (space.width, space.height/4);
+//		setPreferredSize(this.getSize());
 		
 		addMouseListener(this);
 	}
@@ -112,7 +109,11 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		}
 
 		// FIXME why is the border not visible?
+		// Do I need to put this into a JPanel with a border?
+		// YUP.
 		activeView.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+		
+		
 		// box.validate();
 		validate();
 	}

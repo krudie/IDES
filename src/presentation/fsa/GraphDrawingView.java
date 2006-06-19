@@ -301,5 +301,12 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	public void setTool(int toolId){
 		currentTool = toolId;
 		this.setCursor(drawingTools[currentTool].getCursor());
+	}
+
+	/**
+	 * @return true iff there are elements in the currentSelection
+	 */
+	public boolean hasCurrentSelection() {		
+		return currentSelection.hasChildren();
 	}	
 }

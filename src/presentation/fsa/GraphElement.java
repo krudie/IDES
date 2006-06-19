@@ -3,8 +3,10 @@ package presentation.fsa;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Vector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -20,7 +22,7 @@ public class GraphElement implements PresentationElement {
 	protected GraphicalLayout layout;
 	
 	// my states and free labels
-	private LinkedList<PresentationElement> children;
+	private ArrayList<PresentationElement> children;
 	private PresentationElement parent;
 	
 	public GraphElement() {		
@@ -29,7 +31,7 @@ public class GraphElement implements PresentationElement {
 		
 	public GraphElement(PresentationElement parent) {		
 		this.parent = parent;
-		children = new LinkedList<PresentationElement>();
+		children = new ArrayList<PresentationElement>();
 		layout = new GraphicalLayout();
 	}
 	
@@ -65,8 +67,12 @@ public class GraphElement implements PresentationElement {
 		children.add((int)index, child);
 	}
 
-	public void insert(PresentationElement g) {
-		children.add(g);		
+	public void insert(PresentationElement e) {
+		children.add(e);		
+	}
+	
+	public boolean contains(PresentationElement e){
+		return children.contains(e);		
 	}
 	
 	public void remove(PresentationElement child) {
@@ -89,11 +95,11 @@ public class GraphElement implements PresentationElement {
 		return children.iterator();
 	}
 
-	public LinkedList<PresentationElement> getChildren() {
-		return children;
-	}
+//	public ArrayList<PresentationElement> getChildren() {
+//		return children;
+//	}
 
-	public void setChildren(LinkedList<PresentationElement> children) {
+	public void setChildren(ArrayList<PresentationElement> children) {
 		this.children = children;
 	}
 
@@ -177,4 +183,8 @@ public class GraphElement implements PresentationElement {
 	
 	// TODO what is a generic response to this call?
 	public void showPopup(Component context){}
+	
+	public boolean hasChildren() {		
+		return !children.isEmpty();
+	}
 }

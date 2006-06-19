@@ -29,7 +29,7 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			// TODO
-			JOptionPane.showMessageDialog(null, "Create new automaton");
+			// DEBUG JOptionPane.showMessageDialog(null, "Create new automaton");
 			Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
 			IDESWorkspace.instance().addFSAModel(fsa);
 		}	
@@ -72,6 +72,20 @@ public class FileCommands {
 			setEnabled(false);
 		}	
 	}
+	
+	public static class SaveAutomatonAsCommand extends ActionCommand {
+		
+		public SaveAutomatonAsCommand(){
+			super("saveas.automaton.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+			Automaton fsa = (Automaton)IDESWorkspace.instance().getActiveModel();			
+			FileOperations.saveAutomatonAs(fsa);			
+		}	
+	}
+	
 	
 	public static class CloseAutomatonCommand extends ActionCommand {
 		

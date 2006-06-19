@@ -72,12 +72,12 @@ public class MainWindow extends JFrame implements Subscriber {
 	    Toolkit tk = Toolkit.getDefaultToolkit ();
 	    Dimension screen = tk.getScreenSize();
 	    setSize(screen.width, screen.height);
-		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.8), (int) (getSize().height*0.7)));
-		createAndAddTabbedPane();
-				
+		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.7), (int) (getSize().height*0.7)));
+		createAndAddTabbedPane();				
 		
 		// TODO add graph spec, latex and eps views to the state model		
-		filmStrip = new FilmStrip();		
+		filmStrip = new FilmStrip();	
+		filmStrip.setPreferredSize(new Dimension(getSize().width, (int)(getSize().height * 0.3)));
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
 	
 		//FileOperations.loadAndExportCommands("commands.txt"); 
@@ -93,7 +93,7 @@ public class MainWindow extends JFrame implements Subscriber {
 	
 	 private void createAndAddTabbedPane() {
 		tabbedViews = new JTabbedPane();
-		drawingBoard.setName("No-name graph.");
+		drawingBoard.setName("No graph");
 		JScrollPane sp = new JScrollPane(drawingBoard, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -108,10 +108,11 @@ public class MainWindow extends JFrame implements Subscriber {
 
 	 private void createAndAddToolBar() {
 		 // Create a vertical toolbar
-		 JToolBar toolbar =  CommandManager.defaultInstance().getGroup("graph.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
+		 toolbar =  CommandManager.defaultInstance().getGroup("graph.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
 		 toolbar.setRollover(true);
 		 toolbar.setOrientation(JToolBar.VERTICAL);
-		 this.getContentPane().add(toolbar, BorderLayout.EAST);	    
+		 this.getContentPane().add(toolbar, BorderLayout.EAST);
+		 	    
 	 } 
 	 
 	private void createAndAddMenuBar() {
@@ -163,6 +164,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.OpenAutomatonCommand().export();
 		new FileCommands.CloseAutomatonCommand().export();
 		new FileCommands.SaveAutomatonCommand().export();		
+		new FileCommands.SaveAutomatonAsCommand().export();
 		
 		new FileCommands.OpenWorkspaceCommand().export();		
 		new FileCommands.SaveWorkspaceCommand().export();
@@ -284,7 +286,6 @@ public class MainWindow extends JFrame implements Subscriber {
 	
 	/**
 	 * The views.
-	 * TODO Load as plugins?
 	 */
 	private JTabbedPane tabbedViews;
 	private GraphDrawingView drawingBoard;
@@ -292,7 +293,9 @@ public class MainWindow extends JFrame implements Subscriber {
 	private JPanel eventsView;
 	private JPanel latexView;
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
-
+	private JToolBar toolbar;
+	
+	
 	public FilmStrip getFilmStrip() {
 		return filmStrip;
 	}
@@ -305,11 +308,12 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		if(IDESWorkspace.instance().getActiveModel() == null){
 			
+			toolbar.setEnabled(false);
 			commandManager.getGroup("graph.group").setEnabled(false);
-			commandManager.getGroup("ides.toolbar.group").setEnabled(false);
-			commandManager.getGroup("edit.group").setEnabled(false);
-			
+			//commandManager.getGroup("ides.toolbar.group").setEnabled(false);
+			commandManager.getGroup("edit.group").setEnabled(false);			
 			commandManager.getGroup("file.group").setEnabled(true);
+			// TODO disable save and close commands
 			// TODO enable options groups
 			
 			// disable save commands
@@ -317,7 +321,8 @@ public class MainWindow extends JFrame implements Subscriber {
 			commandManager.getGroup("file.save.group").setEnabled(false);
 		}else{
 			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
-			commandManager.getGroup("ides.toolbar.group").setEnabled(true);
+			//commandManager.getGroup("ides.toolbar.group").setEnabled(true);
+			toolbar.setEnabled(true);
 			commandManager.getGroup("graph.group").setEnabled(true);
 			commandManager.getGroup("edit.group").setEnabled(true);
 			// set the name of the current model in the tabbed pane

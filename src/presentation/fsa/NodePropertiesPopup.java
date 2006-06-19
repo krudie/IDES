@@ -22,6 +22,7 @@ public class NodePropertiesPopup extends JPopupMenu {
 	private Node node;
 	private JMenuItem miLabelNode, miSelfLoop;
 	private JCheckBoxMenuItem miSetMarked, miSetInitial;
+	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
 	// rather than initializing here since otherwise get java.lang.NoClassDefFoundError error
@@ -32,7 +33,8 @@ public class NodePropertiesPopup extends JPopupMenu {
 	 */
 	private static final long serialVersionUID = 6664241416811568136L;
 
-	protected static void showPopup(Component context, Node n){
+	protected static void showPopup(GraphDrawingView context, Node n){
+		view = context;
 		if(popup == null) {
 			popup = new NodePropertiesPopup(n);
 		}else{		
@@ -89,14 +91,22 @@ public class NodePropertiesPopup extends JPopupMenu {
 				// construct and execute a SetAttributeCommand
 	// 			DEBUG
 //				JOptionPane.showMessageDialog(null, "mark");
-				new SetAttributeCommand(node.getState(), State.ATTR_MARKED, Boolean.toString(miSetMarked.isSelected())).execute();
+				if(node.getState().isMarked()){
+					new SetAttributeCommand(node.getState(), State.ATTR_MARKED, "false").execute();
+				}else{
+					new SetAttributeCommand(node.getState(), State.ATTR_MARKED, "true").execute();
+				}
 				node.update();
+				view.getGraphModel().notifyAllSubscribers(); // KLUGE
+				//JOptionPane.showMessageDialog(null, "FIXME call notifyAllBut(GraphModel)");
 			}else if(o.equals(miSetInitial)){
 				// construct and execute a SetAttributeCommand
 	//			 DEBUG
-				// JOptionPane.showMessageDialog(null, "initial");
+				// JOptionPane.showMessageDialog(null, "initial");				
 				new SetAttributeCommand(node.getState(), State.ATTR_MARKED, Boolean.toString(miSetMarked.isSelected())).execute();
 				node.update();
+				view.getGraphModel().notifyAllBut(view.getGraphModel()); // KLUGE
+				//JOptionPane.showMessageDialog(null, "FIXME call notifyAllBut(GraphModel)");
 			}else if(o.equals(miLabelNode)){
 				// create and execute a Text command
 				// open labeling input box as in text tool

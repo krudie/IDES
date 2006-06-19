@@ -91,6 +91,7 @@ public class Node extends GraphElement {
 		}
 		
 		// TODO relocate based on bounds of label and expand the node size if necessary.
+		// make sure that node is big enough to fit text inside inner circle if isMarked.
 		label = new GraphLabel(layout.getText(), centre);
 					
 	}
@@ -102,6 +103,7 @@ public class Node extends GraphElement {
 		
 		if(layout.isDirty()){
 			update();
+			layout.setDirty(false);
 		}
 		
 		//super.draw(g);	// calls draw on all edges
@@ -178,12 +180,12 @@ public class Node extends GraphElement {
 	
 	public void translate(float x, float y){
 		super.translate(x,y);
-		// TODO translate all INCOMING edges as well as outgoing
+		// FIXME translate all INCOMING edges as well as outgoing
 		update();
 	}
 	
 	public void showPopup(Component context){
-		NodePropertiesPopup.showPopup(context, this);
+		NodePropertiesPopup.showPopup((GraphDrawingView)context, this); // KLUGE
 	}
 
 	protected FSAState getState(){

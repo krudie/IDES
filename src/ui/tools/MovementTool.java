@@ -16,7 +16,7 @@ public class MovementTool extends DrawingTool {
 	public MovementTool(GraphDrawingView context){
 		this.context = context;
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		this.cursor = toolkit.createCustomCursor(toolkit.createImage("C:/Documents and Settings/helen/workspace/IDES2.1/src/images/cursors/hand.gif"), new Point(5,5), "MOVE_NODES_OR_EDGES"); //new Cursor(Cursor.MOVE_CURSOR);
+		this.cursor = toolkit.createCustomCursor(toolkit.createImage("src/images/cursors/hand.gif"), new Point(5,5), "MOVE_NODES_OR_EDGES"); //new Cursor(Cursor.MOVE_CURSOR);
 	}
 	
 	@Override
@@ -24,8 +24,9 @@ public class MovementTool extends DrawingTool {
 		// get the object to be moved
 		start = me.getPoint();
 		prev = start;
-		context.clearCurrentSelection();
-		context.updateCurrentSelection(start);
+		if(!context.hasCurrentSelection()){
+			context.updateCurrentSelection(start);
+		}			
 		dragging = true;
 	}
 	

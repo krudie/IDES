@@ -198,7 +198,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	public Edge beginEdge(Node n1){
 		EdgeLayout layout = new EdgeLayout();
-		layout.setCurve(EdgeLayout.computeCurve(n1.getLayout(), n1.getLayout().getLocation()));
+		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());
 		Edge e = new Edge(layout, n1);
 		n1.insert(e);
 		return e;
@@ -213,8 +213,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void updateEdge(Edge e, Point2D.Float p){
 		EdgeLayout layout = (EdgeLayout)e.getLayout();
 		NodeLayout s = e.getSource().getLayout();
-		layout.setCurve(EdgeLayout.computeCurve(s, p));
-		e.update();
+		layout.computeCurve(s, p);		
 	}
 	
 	/**
@@ -239,8 +238,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		e.setTarget(n2);
 		// Note: shouldn't access layout in this manner since now have to call update separately
 		// should use setlayout in class Edge
-		((EdgeLayout)e.getLayout()).setCurve(EdgeLayout.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout()));
-		e.update();
+		((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
 		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 		metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
 		fsa.add(t);
