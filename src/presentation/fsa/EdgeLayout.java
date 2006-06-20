@@ -44,12 +44,14 @@ public class EdgeLayout extends GraphicalLayout {
 		this.ctrls = bezierControls;
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
+		update();
 	}
 	
 	public EdgeLayout(Point2D.Float[] bezierControls, ArrayList eventNames){
 		this.ctrls = bezierControls;
 		this.eventNames = eventNames;
 		labelOffset = new Point2D.Float(5,5);
+		update();
 	}
 
 	/**
@@ -64,6 +66,7 @@ public class EdgeLayout extends GraphicalLayout {
 		computeCurve(n1, n2);
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
+		update();
 	}
 	
 	/**
@@ -83,27 +86,37 @@ public class EdgeLayout extends GraphicalLayout {
 			// return;
 		}
 		
-		Point2D.Float c1 = s.getLocation();
-		Point2D.Float c2 = t.getLocation();
+		Point2D.Float centre1 = s.getLocation();
+		Point2D.Float centre2 = t.getLocation();
 		// compute intersection of straight line from c1 to c2 with arcs of nodes
-		Point2D.Float dir = Geometry.subtract(c2, c1);
-		float norm = (float)Geometry.norm(dir);
-		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-		ctrls[P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
+		Point2D.Float base = Geometry.subtract(centre2, centre1);
+		float norm = (float)Geometry.norm(base);
+		Point2D.Float unitBase = Geometry.unit(base);  // computing norm twice :(
+		
+		// FIXME endpoints must be spaced around node arc; need to know about fellow edges.
+		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));
 	
 		if(angle1 == 0 && angle2 == 0){		
 			// compute a straight edge		
 			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
 			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
 			
-			ctrls[CTRL1] = Geometry.add(c1, Geometry.scale(unit, (float)(norm * s1)));
-			ctrls[CTRL2] = Geometry.add(c1, Geometry.scale(unit, (float)(2 * norm * s2)));			
+			ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(norm * s1)));
+			ctrls[CTRL2] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(2 * norm * s2)));			
 			
-			// This looks wrong: P2 should be on the circumference of the target node.
-			ctrls[P2] = Geometry.add(c2, Geometry.scale(unit, -t.getRadius()-ArrowHead.SHORT_HEAD_LENGTH));			
-		}else{ // TODO recompute the edge preserving the shape of the curve
+		}else{ // recompute the edge preserving the shape of the curve
+			// compute CTRL1
+			Point2D.Float v = Geometry.rotate(Geometry.scale(base, (float)s1), angle1);
+			ctrls[CTRL1] = Geometry.add(v, ctrls[P1]);	
 			
+			// compute CTRL2			
+			v = Geometry.rotate(Geometry.scale(base, -1 * (float)s2), angle2);
+			ctrls[CTRL2] = Geometry.add(v, ctrls[P2]);			
 		}
+				
+		// FIXME endpoints must be spaced around node arc; need to know about fellow edges.
+		ctrls[P2] = Geometry.add(centre2, Geometry.scale(unitBase, -t.getRadius())); // -ArrowHead.SHORT_HEAD_LENGTH));		
+	
 		setDirty(true);
 	}
 	

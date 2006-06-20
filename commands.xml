@@ -408,7 +408,17 @@
       </face>
     </command>
 
-	<command id="set.attribute.command"></command>	
+	<command id="set.attribute.command">
+		<face>
+			<text>Attribute to be set</text>
+		</face>	
+	</command>	
+		
+	<command id="set.boolean.attribute.command">
+		<face>
+			<text>Boolean attribute to be set</text>
+		</face>
+	</command>
 	
 	<group id="operations.menu.group">
 		<face>

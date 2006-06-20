@@ -22,7 +22,7 @@ import presentation.PresentationElement;
  */
 @SuppressWarnings("serial")
 public class GraphLabel extends GraphElement {
-	
+	protected Rectangle bounds;
 	protected boolean visible = true;
 	protected PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
 	protected Font font;	
@@ -32,10 +32,12 @@ public class GraphLabel extends GraphElement {
 		// TODO change to a dynamic value read from a config file and stored in 
 		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
+		bounds = new Rectangle();
 	}
 	
 	public GraphLabel(GraphicalLayout layout){		
 		this.layout = layout;	
+		bounds = new Rectangle();
 	}
 	
 	/**
@@ -63,27 +65,36 @@ public class GraphLabel extends GraphElement {
 //		if(layout.isDirty()){
 //			update();
 //		}
-			
+		
+		// FIXME this computes the position for a Node label but won't work for an edge; see bounds()
+		// If this is a NodeLabel, set the location at the centre of the node.
+		g.setFont(font);
+		FontMetrics metrics = g.getFontMetrics();
+		int width = metrics.stringWidth( layout.getText() );
+		int height = metrics.getHeight();
+		bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
+				(int)(layout.getLocation().y/2)));
+		
+		int x = (int)layout.getLocation().x - width/2;
+		int y = (int)layout.getLocation().y + metrics.getAscent()/2;
+		bounds.setSize(width, height);
 		if(visible){
 			g.setColor(layout.getColor());		
-			g.setFont(font);
-			
-			// FIXME this computes the position for a Node label but won't work for an edge; see bounds()
-			FontMetrics metrics = g.getFontMetrics();
-			int width = metrics.stringWidth( layout.getText() );
-			int height = metrics.getHeight();
-			int x = (int)layout.getLocation().x - width/2;
-			int y = (int)layout.getLocation().y; // + height/2;
-			
 			g.drawString(layout.getText(), x, y);
 		}
 	}
 
 	public Rectangle bounds() {
-		// FIXME this will be too wide...
-		// Can we use FontMetrics here so parent can resize, relocate this object?
-		// USE Font  method getLineMetrics.
-		return null;				
+		// TODO annoying that we can't compute the bounds until we have a graphics context in the draw method ...
+		// NOTE have to draw the label before drawing the node in case node needs to be resized.
+		if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
+			Toolkit tk = Toolkit.getDefaultToolkit();
+			FontMetrics metrics = tk.getFontMetrics(font);
+			bounds.setSize(metrics.stringWidth(layout.getText()), metrics.getHeight() );
+			bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
+										(int)(layout.getLocation().y - bounds.height/2)));			
+		}
+		return bounds;				
 	}
 	
 	public boolean intersects(Point2D p) {		

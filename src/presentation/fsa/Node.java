@@ -13,6 +13,7 @@ import java.util.Iterator;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import presentation.Geometry;
+import main.Hub;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
@@ -64,9 +65,26 @@ public class Node extends GraphElement {
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void update() {
-			
-		float radius = ((NodeLayout)layout).getRadius();
+		
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
+		// TODO relocate based on bounds of label and expand the node size if necessary.
+		// make sure that node is big enough to fit text inside inner circle if isMarked.
+		// FIXME bounds of label aren't computed until it is drawn...
+		
+		label = new GraphLabel(layout.getText(), centre);
+		Rectangle labelBounds = label.bounds();
+		if( ! bounds().contains(labelBounds) ){
+			// DEBUG Hub.displayAlert("Label too big for node :( ");
+			// compute new radius
+			double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();
+			((NodeLayout)layout).setRadius((float)max/2 + NodeLayout.RDIF);
+			
+			// TODO recompute all edges (endpoints will have changed)
+			
+		}
+		
+		float radius = ((NodeLayout)layout).getRadius();
+
 		
 		// upper left corner, width and height
 		float d = 2*radius;
@@ -89,10 +107,6 @@ public class Node extends GraphElement {
 			// ??? How long should the shaft be?
 			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}
-		
-		// TODO relocate based on bounds of label and expand the node size if necessary.
-		// make sure that node is big enough to fit text inside inner circle if isMarked.
-		label = new GraphLabel(layout.getText(), centre);
 					
 	}
 	
@@ -145,10 +159,7 @@ public class Node extends GraphElement {
 	public Rectangle bounds() {		
 		return circle.getBounds();
 	}
-
-	// FIXME calling RectangularShape.contains(p) which computes intersection with bounding box
-	// instead of with circle.
-	// Also check if initial arrow intersects with p
+	
 	/**
 	 * Try with a rectangle of dimensions 1,1
 	 * public boolean contains(double x,
@@ -158,9 +169,15 @@ public class Node extends GraphElement {
 
        Tests if the interior of this Ellipse2D entirely contains the specified rectangular area.
        
+   	// FIXME this is calling RectangularShape.contains(p) which computes intersection with bounding box
+	// instead of with circle.
+
 	 */
-	public boolean intersects(Point p) {		
-		return circle.contains(p);
+	public boolean intersects(Point p) {
+		if(state.isInitial()){
+			return circle.contains(p) || arrow.contains(p); 
+		}
+		return circle.contains(p); 
 	}	
 
 	public void setSelected(boolean b){
@@ -179,8 +196,7 @@ public class Node extends GraphElement {
 	}
 	
 	public void translate(float x, float y){
-		super.translate(x,y);
-		// FIXME translate all INCOMING edges as well as outgoing
+		super.translate(x,y);		
 		update();
 	}
 	

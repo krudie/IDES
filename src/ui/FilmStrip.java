@@ -54,6 +54,9 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	public void update() {
 		// Get all graph models from the workspace and render them here,
 		// each in its own GraphView object.	
+		int panelWidth = getWidth()/6;
+		
+		// IDEA pad the empty spaces so frames don't expand to fill the filmstrip
 		
 		// Detach each GraphView from its model before attaching to the new model.		
 		Component[] panels = this.getComponents();
@@ -93,7 +96,8 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 			GraphView gv = new GraphView(gm);
 			JPanel p = new JPanel();
 			p.add(gv);
-			gv.setPreferredSize(new Dimension(200, 200));
+			p.setPreferredSize(new Dimension(panelWidth, panelWidth));
+			gv.setPreferredSize(new Dimension(panelWidth, panelWidth));
 			gv.setVisible(true);
 			p.setPreferredSize(gv.getPreferredSize());
 			if(gm == IDESWorkspace.instance().getActiveGraphModel()){

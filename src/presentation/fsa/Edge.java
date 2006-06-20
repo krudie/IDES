@@ -128,8 +128,8 @@ public class Edge extends GraphElement {
 	    			(float)curve.getCtrlX2(), (float)curve.getCtrlY2(),
 	    			(float)curve.getX2(), (float)curve.getY2());		   	
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
-	    Point2D.Float dir = new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2()));    	    
-	    arrow = new ArrowHead(Geometry.unit(dir), curve.getP2());
+	    Point2D.Float unitDir = Geometry.unit(new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2())));	    
+	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));
 	    	    
 	    handler = new EdgeHandler(this);
 	    handler.setVisible(false);
@@ -229,6 +229,7 @@ public class Edge extends GraphElement {
 						curve.getX2(), curve.getY2()+y);
 		l.setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());
 		l.setRigidTranslation(false);
+		
 		// reset the control points in the layout object
 		}else{
 			l.computeCurve(source.getLayout(), target.getLayout());
