@@ -16,15 +16,15 @@ import model.fsa.ver1.State;
 import ui.command.GraphCommands.TextCommand;
 import ui.command.NodeCommands.*;
 
-public class NodePropertiesPopup extends JPopupMenu {
+public class NodePopup extends JPopupMenu {
 
 	private Node node;
-	private JMenuItem miSetMarked, miLabelNode, miSelfLoop, miSetInitial;
+	private JMenuItem miSetMarked, miLabelNode, miSelfLoop, miSetInitial, miDeleteNode;
 	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
 	// rather than initializing here since otherwise get java.lang.NoClassDefFoundError error
-	private static NodePropertiesPopup popup;
+	private static NodePopup popup;
 	
 	private SetMarkedCommand markedCmd;
 	private SetInitialCommand initialCmd;
@@ -39,7 +39,7 @@ public class NodePropertiesPopup extends JPopupMenu {
 	protected static void showPopup(GraphDrawingView context, Node n){
 		view = context;
 		if(popup == null) {
-			popup = new NodePropertiesPopup(n);
+			popup = new NodePopup(n);
 		}else{		
 			popup.setNode(n);
 		}
@@ -49,29 +49,28 @@ public class NodePropertiesPopup extends JPopupMenu {
 		popup.show(context, (int)(p.x + r), (int)(p.y + r));
 	}
 		
-	protected NodePropertiesPopup(Node n) {
-		super("State Properties");		
+	protected NodePopup(Node n) {
+		super("Node Properties");		
 		markedCmd = new SetMarkedCommand();
 		initialCmd = new SetInitialCommand();
 		selfLoopCmd = new SelfLoopCommand();
-		ActionListener menuListener = new Listener();
 		
+		ActionListener menuListener = new Listener();		
 		
 		miSetMarked = markedCmd.createMenuItem();
 		miSetInitial = initialCmd.createMenuItem();
 		miSelfLoop = selfLoopCmd.createMenuItem();
 		
-//		 TODO change to commands
+//	TODO change to commands
 		miLabelNode = new JMenuItem("Label");
+		miDeleteNode = new JMenuItem("Delete");
 				
 		miLabelNode.addActionListener(menuListener);
 					
 		add(miSetMarked);
 		add(miSetInitial);		
 		add(new JPopupMenu.Separator());
-		add(miLabelNode);
-		
-		// TODO should be checkbox to add or remove self loop
+		add(miLabelNode);		
 		add(miSelfLoop);
 		addPopupMenuListener(new PopupListener());
 		setNode(n);

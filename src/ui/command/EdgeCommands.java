@@ -1,6 +1,12 @@
 package ui.command;
 
+import javax.swing.undo.UndoableEdit;
+
 import org.pietschy.command.ActionCommand;
+import org.pietschy.command.undo.UndoableActionCommand;
+
+import presentation.fsa.Edge;
+import presentation.fsa.EdgeLayout;
 
 public class EdgeCommands {
 
@@ -46,5 +52,30 @@ public class EdgeCommands {
 		
 	}
 
-	
+	public static class ModifyEdgeCommand extends UndoableActionCommand {
+
+		private Edge edge;
+		private EdgeLayout previousLayout;
+		
+		public ModifyEdgeCommand(){
+			super("modify.edge.command");
+		}
+		
+		public void setEdge(Edge edge){
+			this.edge = edge;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.pietschy.command.undo.UndoableActionCommand#performEdit()
+		 */
+		@Override
+		protected UndoableEdit performEdit() {
+			// TODO   IDESWorkspace.instance().getActiveGraphModel().???
+			
+			// UndoableEdit containing the Edge id and a clone of the previous layout OR
+			// just of the curve.
+			return null;
+		}
+		
+	}
 }

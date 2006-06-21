@@ -52,7 +52,7 @@ public class EdgeHandler extends GraphElement {
 		if(visible){
 			Graphics2D g2d = (Graphics2D)g;
 					
-			g2d.setColor(Color.GREEN);
+			g2d.setColor(Color.BLUE);
 			g2d.setStroke(GraphicalLayout.FINE_STROKE);
 			
 			for(int i=0; i<4; i++){

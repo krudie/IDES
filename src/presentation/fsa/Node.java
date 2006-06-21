@@ -200,7 +200,7 @@ public class Node extends GraphElement {
 	}
 	
 	public void showPopup(Component context){
-		NodePropertiesPopup.showPopup((GraphDrawingView)context, this); // KLUGE
+		NodePopup.showPopup((GraphDrawingView)context, this); // KLUGE
 	}
 
 	protected FSAState getState(){
