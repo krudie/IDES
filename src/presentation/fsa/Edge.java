@@ -251,5 +251,25 @@ public class Edge extends GraphElement {
 	public boolean isSelfLoop() {		
 		return source.equals(target);
 	}
-		
+
+	/**
+	 * Gets the label of the node.
+	 * @return the label of the node
+	 */
+	public GraphLabel getLabel()
+	{
+		//FIXME: this is a big hack
+		GraphLabel label=null;
+		Iterator i=children();
+		while(i.hasNext())
+		{
+			Object o=i.next();
+			if(o instanceof GraphLabel)
+			{
+				label=(GraphLabel)o;
+				break;
+			}
+		}
+		return label;
+	}
 }

@@ -219,4 +219,13 @@ public class Node extends GraphElement {
 		}
 		return false;
 	}
+	
+	/**
+	 * Gets the label of the node.
+	 * @return the label of the node
+	 */
+	public GraphLabel getLabel()
+	{
+		return label;
+	}
 }

@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -502,6 +503,33 @@ public class GraphModel extends Publisher implements Subscriber {
 		}		
 		// no intersection
 		return null;
+	}
+	
+	/**
+	 * Returns the set of all nodes in the graph.
+	 * @return the set of all nodes in the graph
+	 */
+	public Collection<Node> getNodes()
+	{
+		return nodes.values();
+	}
+	
+	/**
+	 * Returns the set of all edges in the graph.
+	 * @return the set of all edges in the graph
+	 */
+	public Collection<Edge> getEdges()
+	{
+		return edges.values();
+	}
+	
+	/**
+	 * Returns the set of all free labels in the graph.
+	 * @return the set of all free labels in the graph
+	 */
+	public Collection<GraphLabel> getLabels()
+	{
+		return labels.values();
 	}
 	
 	/**

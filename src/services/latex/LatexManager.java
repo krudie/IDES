@@ -5,6 +5,8 @@ import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.pietschy.command.ToggleCommand;
+
 import ui.OptionsWindow;
 import ui.command.OptionsCommands;
 
@@ -31,8 +33,10 @@ public class LatexManager {
 	 */
 	private static Renderer renderer=null; 
 	
-	//TODO this has to be fixed
-	static OptionsCommands.UseLatexCommand menu;
+	/**
+	 * The "Use LaTeX rendering" menu item.
+	 */
+	static ToggleCommand menuItem=null;
 	
 	/**
 	 * Initializes the LaTeX rendering subsystem.
@@ -41,8 +45,8 @@ public class LatexManager {
 	{
 		Hub.registerOptionsPane(new LatexOptionsPane());
 		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
-		menu=new OptionsCommands.UseLatexCommand();
-		menu.export();
+		menuItem=new UseLatexCommand();
+		menuItem.export();
 	}
 
 	/**
@@ -99,9 +103,11 @@ public class LatexManager {
 	 * Switches LaTeX rendering of labels on and off.
 	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off  
 	 */
-	public static void setLatexEnabled(boolean b)
+	public synchronized static void setLatexEnabled(boolean b)
 	{
 		Hub.persistentData.setBoolean("useLatexLabels",b);
+		if(menuItem!=null)
+			menuItem.setSelected(b);
 	}
 
 	/**
@@ -116,13 +122,12 @@ public class LatexManager {
 	}
 	
 	/**
-	 * Handle the situation when a LaTeX rendering problem occurs. Asks the user
-	 * if they wish to verify the LaTeX settings. 
+	 * Handle the situation when a LaTeX rendering problem occurs. Turns off
+	 * LaTeX rendering of the labels. Asks the user if they wish to verify the LaTeX settings. 
 	 */
 	public static void handleRenderingProblem()
 	{
 		setLatexEnabled(false);
-		menu.setSelected(false);
 		//TODO notify presentation layer of problem - or done through the command?
 		SwingUtilities.invokeLater(new Runnable()
 			{

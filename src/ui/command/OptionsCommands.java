@@ -12,29 +12,31 @@ import ui.OptionsWindow;
  */
 public class OptionsCommands {
 
-	/**
-	 * The class for the "Use LaTeX rendering" menu item.
-	 * 
-	 * @author Lenko Grigorov
-	 */
-	public static class UseLatexCommand extends org.pietschy.command.ToggleCommand
-	{
-		/**
-		 * Default constructor; handy for exporting this command for group setup.
-		 */
-		public UseLatexCommand(){
-			super("uselatex.command");
-			setSelected(LatexManager.isLatexEnabled());
-		}
-		
-		/**
-		 * Changes the property state.
-		 */
-		public void handleSelection(boolean state) {
-			LatexManager.setLatexEnabled(state);		
-		}
-		
-	}
+// NOTE: migrated to services.latex
+//-----------------------------------
+//	/**
+//	 * The class for the "Use LaTeX rendering" menu item.
+//	 * 
+//	 * @author Lenko Grigorov
+//	 */
+//	public static class UseLatexCommand extends org.pietschy.command.ToggleCommand
+//	{
+//		/**
+//		 * Default constructor; handy for exporting this command for group setup.
+//		 */
+//		public UseLatexCommand(){
+//			super("uselatex.command");
+//			setSelected(LatexManager.isLatexEnabled());
+//		}
+//		
+//		/**
+//		 * Changes the property state.
+//		 */
+//		public void handleSelection(boolean state) {
+//			LatexManager.setLatexEnabled(state);		
+//		}
+//		
+//	}
 	
 	/**
 	 * The class for the "More options..." menu item.

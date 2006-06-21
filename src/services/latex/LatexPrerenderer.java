@@ -1,44 +1,113 @@
 package services.latex;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import javax.swing.SwingUtilities;
+
+import presentation.fsa.Edge;
+import presentation.fsa.GraphLabel;
+import presentation.fsa.GraphModel;
+import presentation.fsa.Node;
 
 import main.Hub;
 import util.InterruptableProgressDialog;
 
 public class LatexPrerenderer extends InterruptableProgressDialog {
 
-	private int loaded;
+	protected GraphModel model;
 	private boolean cancel=false;
-	int i=0;
+	protected enum Elements{NODES,EDGES,LABELS};
 	
-	public LatexPrerenderer()
+	public LatexPrerenderer(GraphModel model)
 	{
-		super(Hub.getMainWindow(),"Happy!");
+		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),Hub.string("renderPrerender"));
+		this.model=model;
 	}
 	
 	public void interrupt()
 	{
-		System.out.println("doo");
 		cancel=true;
 	}
 	
 	public void run()
 	{
-		setVisible(true);
+		Collection<Node> nodes=model.getNodes();
+		Collection<Edge> edges=model.getEdges();
+		Collection<GraphLabel> labels=model.getLabels();
+		int total=nodes.size()+edges.size()+labels.size();
+		progressBar.setMinimum(0);
+		progressBar.setMaximum((int)total);
+		int current=0;
+		
+		Elements idx=Elements.NODES;
+		Iterator i=nodes.iterator();
 		while(!cancel)
 		{
-			System.out.print("foo");
-			SwingUtilities.invokeLater(
-					new Runnable()
+			if(idx==Elements.NODES)
+			{
+				if(i.hasNext())
+				{
+					Node n=(Node)i.next();
+					try
 					{
-						public void run()
-						{
-			progressBar.setValue(i++);
-						}
-					});
-			try{
-			Thread.sleep(1000);
-			}catch(Exception e){}
+						n.getLabel().render();
+					}catch(LatexRenderException e)
+					{
+						dispose();
+						LatexManager.handleRenderingProblem();
+						return;
+					}
+					current++;
+				}
+				else
+				{
+					idx=Elements.EDGES;
+					i=edges.iterator();
+				}
+			}
+			else if(idx==Elements.EDGES)
+			{
+				if(i.hasNext())
+				{
+					Edge d=(Edge)i.next();
+					try
+					{
+						d.getLabel().render();
+					}catch(LatexRenderException e)
+					{
+						dispose();
+						LatexManager.handleRenderingProblem();
+						return;
+					}
+					current++;
+				}
+				else
+				{
+					idx=Elements.LABELS;
+					i=labels.iterator();
+				}
+			}
+			else if(idx==Elements.LABELS)
+			{
+				if(i.hasNext())
+				{
+					GraphLabel l=(GraphLabel)i.next();
+					try
+					{
+						l.render();
+					}catch(LatexRenderException e)
+					{
+						dispose();
+						LatexManager.handleRenderingProblem();
+						return;
+					}
+					current++;
+				}
+				else
+					cancel=true;
+			}
+			progressBar.setValue(current);			
 		}
 		dispose();
 		return;

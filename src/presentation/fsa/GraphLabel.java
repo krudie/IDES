@@ -166,8 +166,13 @@ public class GraphLabel extends GraphElement {
 	 * Renders label using LaTeX.
 	 * @see #rendered
 	 */
-	protected void render() throws LatexRenderException
+	public void render() throws LatexRenderException
 	{
+		if(layout.getText()==null||"".equals(layout.getText()))
+		{
+			//TODO return empty picture
+			return;
+		}
 		try
 		{
 			byte[] data=(byte[])Cache.get(getClass().getName()+layout.getText());

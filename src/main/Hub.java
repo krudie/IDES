@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -214,6 +216,33 @@ public class Hub {
 							getMainWindow(), message, string("message"), javax.swing.JOptionPane.WARNING_MESSAGE);
 //				}
 //			});
+	}
+	
+	/**
+	 * Suggests the position of the top-left corner for a dialog box with the given dimensions
+	 * so that it is located in the center of the main window of the application.
+	 * @param d the dimension of the dialog box
+	 * @return the suggested position of the top-left corner of the dialog box 
+	 */
+	public static Point getCenteredLocationForDialog(Dimension d)
+	{
+		Point p=new Point();
+		p.x=(getMainWindow().getWidth()-d.width)/2+getMainWindow().getLocation().x;
+		p.y=(getMainWindow().getHeight()-d.height)/3+getMainWindow().getLocation().y;
+		if(p.x<0)
+			p.x=0;
+		if(p.y<0)
+			p.y=0;
+		return p;
+	}
+	
+	/**
+	 * Gets the main workspace.
+	 * @return the main workspace
+	 */
+	public static IDESWorkspace getWorkspace()
+	{
+		return IDESWorkspace.instance();
 	}
 
 }

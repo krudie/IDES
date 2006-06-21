@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -200,8 +201,8 @@ public class OptionsWindow extends EscapeDialog {
 		getContentPane().add(mainPane);
 
 		setPreferredSize(new Dimension(WIDTH,HEIGHT));
-		Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((screen.width-WIDTH)/2,(screen.height-HEIGHT)/2);
+		Point location=Hub.getCenteredLocationForDialog(new Dimension(WIDTH,HEIGHT));
+		setLocation(location.x,location.y);
 		pack();
 		
 		// make buttons of the same size

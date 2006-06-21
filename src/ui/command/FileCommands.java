@@ -53,12 +53,14 @@ public class FileCommands {
 		protected void performOpen(File[] files) {			
 			Automaton fsa = (Automaton)FileOperations.openAutomaton(files[0]);
 			if(fsa != null){
-				
-//				LatexPrerenderer o=new LatexPrerenderer();
-//				new Thread(o).start();
-				
 				IDESWorkspace.instance().addFSAModel(fsa);			
 				SystemVariables.instance().setLast_used_path(files[0].getPath());
+
+				if(services.latex.LatexManager.isLatexEnabled())
+				{
+					LatexPrerenderer o=new LatexPrerenderer(Hub.getWorkspace().getActiveGraphModel());
+					new Thread(o).start();
+				}
 			}
 		}
 	}	
