@@ -8,8 +8,13 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
-import ui.command.EditCommands.SetBooleanAttributeCommand;
+import model.fsa.ver1.State;
+
+import ui.command.GraphCommands.TextCommand;
+import ui.command.NodeCommands.*;
 
 public class NodePropertiesPopup extends JPopupMenu {
 
@@ -21,7 +26,10 @@ public class NodePropertiesPopup extends JPopupMenu {
 	// rather than initializing here since otherwise get java.lang.NoClassDefFoundError error
 	private static NodePropertiesPopup popup;
 	
-	private SetBooleanAttributeCommand booleanCmd;
+	private SetMarkedCommand markedCmd;
+	private SetInitialCommand initialCmd;
+	private TextCommand textCmd;
+	private SelfLoopCommand selfLoopCmd;
 	
 	/**
 	 * 
@@ -43,21 +51,21 @@ public class NodePropertiesPopup extends JPopupMenu {
 		
 	protected NodePropertiesPopup(Node n) {
 		super("State Properties");		
-		booleanCmd = new SetBooleanAttributeCommand();
+		markedCmd = new SetMarkedCommand();
+		initialCmd = new SetInitialCommand();
+		selfLoopCmd = new SelfLoopCommand();
 		ActionListener menuListener = new Listener();
 		
-		// TODO change to undoable commands
-		miSetMarked = booleanCmd.createMenuItem();
-		miSetMarked.setText("Marked");
-		miSetInitial = new JCheckBoxMenuItem("Initial");
-		miLabelNode = new JMenuItem("Label");
-		miSelfLoop = new JMenuItem("Self Loop");		
 		
-		miSetMarked.addActionListener(menuListener);
-		miSetInitial.addActionListener(menuListener);
-		miLabelNode.addActionListener(menuListener);
-		miSelfLoop.addActionListener(menuListener);
+		miSetMarked = markedCmd.createMenuItem();
+		miSetInitial = initialCmd.createMenuItem();
+		miSelfLoop = selfLoopCmd.createMenuItem();
+		
+//		 TODO change to commands
+		miLabelNode = new JMenuItem("Label");
 				
+		miLabelNode.addActionListener(menuListener);
+					
 		add(miSetMarked);
 		add(miSetInitial);		
 		add(new JPopupMenu.Separator());
@@ -65,24 +73,23 @@ public class NodePropertiesPopup extends JPopupMenu {
 		
 		// TODO should be checkbox to add or remove self loop
 		add(miSelfLoop);
-		
+		addPopupMenuListener(new PopupListener());
 		setNode(n);
 	}
 
 	protected void setNode(Node n){
 		node = n;
 		
-		booleanCmd.setAttributeName("marked");
-		booleanCmd.setElement(n.getState());
+		markedCmd.setNode(n);
+		initialCmd.setNode(n);
+		selfLoopCmd.setNode(n);
 		
 		miSetMarked.setSelected(node.getState().isMarked());
 		miSetInitial.setSelected(node.getState().isInitial());
 	}
 
 	private class Listener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			
+		public void actionPerformed(ActionEvent e) {			
 			Object o = e.getSource();			
 			if(o.equals(miLabelNode)){
 				// create and execute a Text command
@@ -94,8 +101,28 @@ public class NodePropertiesPopup extends JPopupMenu {
 	//			 DEBUG
 				JOptionPane.showMessageDialog(null, "TODO add or remove self loop");
 			}else{
-				JOptionPane.showMessageDialog(null, "Can't figure out which item selected...", "Node Properties Dialog", JOptionPane.ERROR_MESSAGE);
-			}
+				//OptionPane.showMessageDialog(null, "Can't figure out which item selected...", "Node Properties Dialog", JOptionPane.ERROR_MESSAGE);
+			}		
 		}		    			
 	}
+	
+	  class PopupListener implements PopupMenuListener {
+
+		/* (non-Javadoc)
+		 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
+		 */
+		public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
+			view.repaint();
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent)
+		 */
+		public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.event.PopupMenuListener#popupMenuCanceled(javax.swing.event.PopupMenuEvent)
+		 */
+		public void popupMenuCanceled(PopupMenuEvent arg0) {}
+	  }	  
 }

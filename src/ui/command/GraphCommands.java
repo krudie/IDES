@@ -211,6 +211,7 @@ public class GraphCommands {
 					// TODO create a new free label
 					
 				// KLUGE: instanceof is rotten style, fix this
+				// FIXME Move to NodeCommands.LabelCommand
 				}else if (currentSelection instanceof Node){				
 					Node node = (Node)currentSelection;
 					// if selection is a node				

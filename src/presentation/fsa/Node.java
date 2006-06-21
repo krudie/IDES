@@ -29,7 +29,7 @@ public class Node extends GraphElement {
 
 	// the state to be represented
 	private FSAState state;
-		
+
 	// TODO Change to list of labels to be displayed within the bounds of this node
 	private GraphLabel label;
 
@@ -73,7 +73,7 @@ public class Node extends GraphElement {
 		
 		label = new GraphLabel(layout.getText(), centre);
 		Rectangle labelBounds = label.bounds();
-		if( ! bounds().contains(labelBounds) ){
+		if( ! bounds().contains(labelBounds ) ){
 			// DEBUG Hub.displayAlert("Label too big for node :( ");
 			// compute new radius
 			double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();
@@ -84,7 +84,6 @@ public class Node extends GraphElement {
 		}
 		
 		float radius = ((NodeLayout)layout).getRadius();
-
 		
 		// upper left corner, width and height
 		float d = 2*radius;
@@ -206,5 +205,18 @@ public class Node extends GraphElement {
 
 	protected FSAState getState(){
 		return state;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean hasSelfLoop() {
+		Iterator edges = children();
+		while(edges.hasNext()){
+			if(((Edge)edges.next()).isSelfLoop()){
+				return true;
+			}
+		}
+		return false;
 	}
 }

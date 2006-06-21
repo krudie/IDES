@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import main.Hub;
 import main.IDESWorkspace;
 import model.Publisher;
 import model.Subscriber;
@@ -247,6 +248,26 @@ public class GraphModel extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}	
 	
+	/** 
+	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
+	 * and a adds a new transition to the automaton.
+	 * 
+	 * @param n1 source node 
+	 * @param n2 target node
+	 */
+	public void addEdge(Node n1, Node n2){
+		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
+		// computes layout of new edges (default to straight edge between pair of nodes)
+		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
+		metaData.setLayoutData(t, layout);
+		fsa.add(t);
+		fsa.notifyAllBut(this);
+		Edge e = new Edge(t, n1, n2, layout);
+		n1.insert(e);
+		edges.put(new Long(t.getId()), e);
+		notifyAllSubscribers();
+	}
+
 	public void saveMovement(SelectionGroup selection){
 		Iterator children = selection.children();
 		while(children.hasNext()){
@@ -299,6 +320,52 @@ public class GraphModel extends Publisher implements Subscriber {
 		this.notifyAllSubscribers();
 	}
 		
+	public void setInitial(Node n, boolean b){
+		// update the state
+		((State)n.getState()).setInitial(b);
+		// add an arrow to the node layout
+		NodeLayout layout = n.getLayout();
+		if(b){
+			// TODO compute best position for arrow
+			layout.setArrow(new Point2D.Float(1,0));
+		}else{			
+			layout.setArrow(null);
+		}
+		// notify subscribers
+		fsa.notifyAllBut(this);
+		this.notifyAllSubscribers();
+	}
+	
+	public void setMarked(Node n, boolean b){
+		// update the state
+		((State)n.getState()).setMarked(b);		
+		// update the node
+		n.update();
+		// notify subscribers
+		fsa.notifyAllBut(this);
+		this.notifyAllSubscribers();
+	}
+	
+	/**
+	 * @param node
+	 * @param arg0
+	 */
+	public void setSelfLoop(Node node, boolean b) {
+		Edge selfLoop = edgeBetween(node, node);
+		if(!b && selfLoop != null){			
+			delete(selfLoop);		
+		}
+		// if b and node doesn't have a self loop
+		if(b && selfLoop == null){
+			// add the edge
+			addEdge(node, node);
+		}
+		// update the node
+		
+		// notify subscribers
+		
+	}
+
 	/**
 	 * The following steps should be done by the text tool in the context 
 	 * of labelling an edge.
@@ -322,6 +389,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void delete(Node n1){
 		// delete all adjacent edges
 		// remove n
+		// DEBUG
+		Hub.displayAlert("GraphModel: Implement delete(Node) ASAP");
 	}
 	
 	public void delete(Edge e){
@@ -330,6 +399,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		// get n1 and n2, the source and target nodes for this edge
 		// if e is the only edge adjacent to n1, delete n1
 		// if e is the only edge adjacent to n2, delete n2
+		// DEBUG
+		Hub.displayAlert("GraphModel: Implement delete(Edge) ASAP");
 	}
 
 	public GraphElement getGraph() {
@@ -433,26 +504,6 @@ public class GraphModel extends Publisher implements Subscriber {
 		return null;
 	}
 	
-	/**
-	 * @deprecated
-	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
-	 * and a adds a new transition to the automaton.
-	 * 
-	 * @param n1 
-	 * @param n2
-	 */
-	public void addEdge(Node n1, Node n2){
-		Transition t = new Transition(maxTransitionId++, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
-		// computes layout of new edges (default to straight edge between pair of nodes)
-		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
-		metaData.setLayoutData(t, layout);
-		fsa.add(t);
-		fsa.notifyAllBut(this);
-		Edge e = new Edge(t, n1, n2, layout);
-		n1.insert(e);
-		edges.put(new Long(t.getId()), e);
-		notifyAllSubscribers();
-	}
 	/**
 	 * @deprecated
 	 * Creates a node at point <code>p</code> and an edge from the given source node

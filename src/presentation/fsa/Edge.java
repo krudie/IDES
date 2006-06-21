@@ -126,7 +126,8 @@ public class Edge extends GraphElement {
 		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
 	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
 	    			(float)curve.getCtrlX2(), (float)curve.getCtrlY2(),
-	    			(float)curve.getX2(), (float)curve.getY2());		   	
+	    			(float)curve.getX2(), (float)curve.getY2());
+	    
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
 	    Point2D.Float unitDir = Geometry.unit(new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2())));	    
 	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));
@@ -242,6 +243,13 @@ public class Edge extends GraphElement {
 
 	protected EdgeHandler getHandler() {
 		return handler;
+	}
+
+	/**
+	 * @return true iff source node is same as target node
+	 */
+	public boolean isSelfLoop() {		
+		return source.equals(target);
 	}
 		
 }

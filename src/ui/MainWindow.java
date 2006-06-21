@@ -111,8 +111,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		 toolbar =  CommandManager.defaultInstance().getGroup("graph.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
 		 toolbar.setRollover(true);
 		 toolbar.setOrientation(JToolBar.VERTICAL);
-		 this.getContentPane().add(toolbar, BorderLayout.EAST);
-		 	    
+		 this.getContentPane().add(toolbar, BorderLayout.WEST);		 	    
 	 } 
 	 
 	private void createAndAddMenuBar() {
@@ -158,8 +157,6 @@ public class MainWindow extends JFrame implements Subscriber {
 		new EditCommands.CutCommand().export();
 		new EditCommands.CopyCommand().export();
 		new EditCommands.PasteCommand().export();
-		new EditCommands.SetBooleanAttributeCommand().export();
-		new EditCommands.SetAttributeCommand().export();
 			
 		new FileCommands.NewAutomatonCommand().export();
 		new FileCommands.OpenAutomatonCommand().export();

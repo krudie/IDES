@@ -2,7 +2,7 @@ package ui.command;
 
 import org.pietschy.command.ActionCommand;
 
-public class EventsCommands {
+public class EdgeCommands {
 
 	public static class CreateEventCommand extends ActionCommand {
 

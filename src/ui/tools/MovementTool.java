@@ -1,5 +1,6 @@
 package ui.tools;
 
+import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -15,8 +16,9 @@ public class MovementTool extends DrawingTool {
 
 	public MovementTool(GraphDrawingView context){
 		this.context = context;
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		this.cursor = toolkit.createCustomCursor(toolkit.createImage("src/images/cursors/hand.gif"), new Point(5,5), "MOVE_NODES_OR_EDGES"); //new Cursor(Cursor.MOVE_CURSOR);
+//		Toolkit toolkit = Toolkit.getDefaultToolkit();
+//		this.cursor = toolkit.createCustomCursor(toolkit.createImage("src/images/cursors/hand.gif"), new Point(5,5), "MOVE_NODES_OR_EDGES"); //new Cursor(Cursor.MOVE_CURSOR);
+		this.cursor = new Cursor(Cursor.MOVE_CURSOR);
 	}
 	
 	@Override
@@ -89,8 +91,6 @@ public class MovementTool extends DrawingTool {
 	public void handleKeyReleased(KeyEvent ke) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	
+	}	
 
 }

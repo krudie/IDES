@@ -118,7 +118,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 */	
 	public boolean isInitial() {
 		SubElement props = getSubElement("properties");
-		return props != null && props.getSubElement("initial") != null;
+		return props.getSubElement("initial") != null;
 	}
 
 	/**
@@ -126,28 +126,26 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 */
 	public boolean isMarked() {
 		SubElement props = getSubElement("properties");
-		return props != null && props.getSubElement("marked") != null;		
+		return props.getSubElement("marked") != null;		
 	}	
 
 	public void setInitial(boolean b){
-		if(b && !isInitial()){
-			SubElement props = getSubElement("properties");
-			if(props == null){
-				props = new SubElement("properties");		
-				this.addSubElement(props);
-			}
+		SubElement props = getSubElement("properties");
+		if(b && !isInitial()){			
 			props.addSubElement(new SubElement("initial"));			
+		}
+		if(!b && isInitial()){
+			props.removeSubElement("initial");
 		}
 	}
 	
 	public void setMarked(boolean mark){
-		if(mark && !isMarked()){			
-			SubElement props = getSubElement("properties");
-			if(props == null){
-				props = new SubElement("properties");
-				this.addSubElement(props);
-			}
+		SubElement props = getSubElement("properties");
+		if(mark && !isMarked()){					
 			props.addSubElement(new SubElement("marked"));				
+		}
+		if(!mark && isMarked()){
+			props.removeSubElement("marked");
 		}
 	}
 	
