@@ -37,6 +37,7 @@ public class Main {
 		{
 			e.printStackTrace();
 		}
+		Cache.close();
 	}
 	
 	/**
@@ -69,16 +70,14 @@ public class Main {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		
 		Cache.init();
-		
-		LatexManager.init();
-
 
 		// TODO load UISettings and workspace in a thread
 		// show splash screen
 		Hub.setMainWindow(new MainWindow());
-		
-		//setup stuff that needs the main window
 
+		//setup stuff that needs the main window
+		LatexManager.init(); //TODO revamp the whole commands stuff 
+		
 		//go live!
 		Hub.getMainWindow().setVisible(true);
 	}

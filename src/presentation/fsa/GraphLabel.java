@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.Label;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -9,10 +10,26 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
+
+import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
+
+import main.Hub;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
+import services.cache.Cache;
+import services.cache.NotInCacheException;
+import services.latex.LatexManager;
+import services.latex.LatexRenderException;
 
 /**
  * TODO Change so that doesn't extend label; waste of space and rounds the location to int coords.
@@ -25,7 +42,8 @@ public class GraphLabel extends GraphElement {
 	protected Rectangle bounds;
 	protected boolean visible = true;
 	protected PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
-	protected Font font;	
+	protected Font font;
+	protected BufferedImage rendered=null;
 	
 	public GraphLabel(String text){
 		layout = new GraphicalLayout(text);
@@ -66,21 +84,42 @@ public class GraphLabel extends GraphElement {
 //			update();
 //		}
 		
-		// FIXME this computes the position for a Node label but won't work for an edge; see bounds()
-		// If this is a NodeLabel, set the location at the centre of the node.
-		g.setFont(font);
-		FontMetrics metrics = g.getFontMetrics();
-		int width = metrics.stringWidth( layout.getText() );
-		int height = metrics.getHeight();
-		bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
-				(int)(layout.getLocation().y/2)));
-		
-		int x = (int)layout.getLocation().x - width/2;
-		int y = (int)layout.getLocation().y + metrics.getAscent()/2;
-		bounds.setSize(width, height);
-		if(visible){
-			g.setColor(layout.getColor());		
-			g.drawString(layout.getText(), x, y);
+		if(LatexManager.isLatexEnabled())
+		{
+			if(!visible||"".equals(layout.getText()))
+				return;
+			if(rendered==null)
+			{
+				try
+				{
+					render();
+				}catch(LatexRenderException e)
+				{
+					LatexManager.handleRenderingProblem();
+					draw(g);
+					return;
+				}
+			}
+			((Graphics2D)g).drawImage(rendered,null,(int)layout.getLocation().x,(int)layout.getLocation().y);
+		}
+		else
+		{
+			// FIXME this computes the position for a Node label but won't work for an edge; see bounds()
+			// If this is a NodeLabel, set the location at the centre of the node.
+			g.setFont(font);
+			FontMetrics metrics = g.getFontMetrics();
+			int width = metrics.stringWidth( layout.getText() );
+			int height = metrics.getHeight();
+			bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
+					(int)(layout.getLocation().y/2)));
+			
+			int x = (int)layout.getLocation().x - width/2;
+			int y = (int)layout.getLocation().y + metrics.getAscent()/2;
+			bounds.setSize(width, height);
+			if(visible){
+				g.setColor(layout.getColor());		
+				g.drawString(layout.getText(), x, y);
+			}
 		}
 	}
 
@@ -123,4 +162,49 @@ public class GraphLabel extends GraphElement {
 		visible = b;
 	}
 
+	/**
+	 * Renders label using LaTeX.
+	 * @see #rendered
+	 */
+	protected void render() throws LatexRenderException
+	{
+		try
+		{
+			byte[] data=(byte[])Cache.get(getClass().getName()+layout.getText());
+			rendered=ImageIO.read(new ByteArrayInputStream(data));
+		}catch (NotInCacheException e)
+		{
+			try
+			{
+				BufferedImage image=LatexManager.getRenderer().renderString(layout.getText());
+				ColorConvertOp conv=new ColorConvertOp(image.getColorModel().getColorSpace(),ColorModel.getRGBdefault().getColorSpace(),null);
+				rendered=conv.createCompatibleDestImage(image,ColorModel.getRGBdefault());
+				conv.filter(image,rendered);
+				ByteArrayOutputStream pngStream=new ByteArrayOutputStream();
+				ImageIO.write(rendered,"png",pngStream);
+				pngStream.close();
+				Cache.put(getClass().getName()+layout.getText(),pngStream.toByteArray());
+			}
+			catch(IOException ex)
+			{
+				throw new RuntimeException(ex);
+			}
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+		//adjust the transparency of the label
+		WritableRaster raster=rendered.getAlphaRaster();
+		Color bg=Hub.getMainWindow().getBackground();
+		int bgShade=(bg.getRed()+bg.getGreen()+bg.getBlue())/3;
+		for(int i=0;i<raster.getWidth();++i)
+			for(int j=0;j<raster.getHeight();++j)
+			{
+				if(rendered.getRaster().getSample(i,j,0)>bgShade)
+					raster.setSample(i,j,0,0);
+				else
+					raster.setSample(i,j,0,255);
+			}
+	}
 }

@@ -5,6 +5,7 @@ import io.fsa.ver1.FileOperations;
 import java.io.File;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import main.Hub;
 import main.IDESWorkspace;
@@ -16,6 +17,9 @@ import org.pietschy.command.CommandManager;
 import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
+
+import services.latex.LatexPrerenderer;
+import util.InterruptableProgressDialog;
 
 
 public class FileCommands {	
@@ -49,6 +53,10 @@ public class FileCommands {
 		protected void performOpen(File[] files) {			
 			Automaton fsa = (Automaton)FileOperations.openAutomaton(files[0]);
 			if(fsa != null){
+				
+//				LatexPrerenderer o=new LatexPrerenderer();
+//				new Thread(o).start();
+				
 				IDESWorkspace.instance().addFSAModel(fsa);			
 				SystemVariables.instance().setLast_used_path(files[0].getPath());
 			}

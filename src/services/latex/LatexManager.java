@@ -2,6 +2,12 @@ package services.latex;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import ui.OptionsWindow;
+import ui.command.OptionsCommands;
+
 import main.Hub;
 
 /**
@@ -20,7 +26,13 @@ public class LatexManager {
 	    throw new RuntimeException("Cloning of "+this.getClass().toString()+" not supported."); 
 	}
 
+	/**
+	 * The LaTeX renderer to be used for rendering throughout the program.
+	 */
 	private static Renderer renderer=null; 
+	
+	//TODO this has to be fixed
+	static OptionsCommands.UseLatexCommand menu;
 	
 	/**
 	 * Initializes the LaTeX rendering subsystem.
@@ -29,6 +41,8 @@ public class LatexManager {
 	{
 		Hub.registerOptionsPane(new LatexOptionsPane());
 		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
+		menu=new OptionsCommands.UseLatexCommand();
+		menu.export();
 	}
 
 	/**
@@ -99,5 +113,29 @@ public class LatexManager {
 		if(renderer==null)
 			renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
 		return renderer;
+	}
+	
+	/**
+	 * Handle the situation when a LaTeX rendering problem occurs. Asks the user
+	 * if they wish to verify the LaTeX settings. 
+	 */
+	public static void handleRenderingProblem()
+	{
+		setLatexEnabled(false);
+		menu.setSelected(false);
+		//TODO notify presentation layer of problem - or done through the command?
+		SwingUtilities.invokeLater(new Runnable()
+			{
+				public void run()
+				{
+					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+							Hub.string("renderProblem"),Hub.string("renderProblemTitle"),
+							JOptionPane.YES_NO_OPTION);
+					if(choice==JOptionPane.YES_OPTION)
+					{
+						new OptionsWindow(Hub.string("latexOptionsTitle"));
+					}
+				}
+			});
 	}
 }

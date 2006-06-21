@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import pluggable.ui.OptionsPane;
 
@@ -205,7 +206,14 @@ public class Hub {
 	 */
 	public static void displayAlert(String message)
 	{
-		javax.swing.JOptionPane.showMessageDialog(
-				getMainWindow(), message, string("message"), javax.swing.JOptionPane.WARNING_MESSAGE);
+//		SwingUtilities.invokeLater(new Runnable()
+//			{
+//				public void run()
+//				{					
+					javax.swing.JOptionPane.showMessageDialog(
+							getMainWindow(), message, string("message"), javax.swing.JOptionPane.WARNING_MESSAGE);
+//				}
+//			});
 	}
+
 }

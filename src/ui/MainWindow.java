@@ -175,7 +175,8 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.ExportToPNGCommand().export();
 		new FileCommands.ExitCommand().export();
 		
-		new OptionsCommands.UseLatexCommand().export();
+		//moved to LatexManager
+		//new OptionsCommands.UseLatexCommand().export();
 		new OptionsCommands.MoreOptionsCommand().export();
 			
 	}
