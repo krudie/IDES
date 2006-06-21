@@ -9,8 +9,7 @@
 		<members>
 			<member command-id="select.command"/>
 			<member command-id="create.command"/>
-			<member command-id="move.command"/>
-			<member command-id="text.command"/>
+			<member command-id="move.command"/>			
 		</members>	
 	</group>
 
@@ -22,6 +21,7 @@
 			<member command-id="file.group"/>
 			<member command-id="graph.group"/>
 			<member command-id="edit.group"/>
+			<member command-id="operations.menu.group"/>
 			<member command-id="options.group"/>
 		</members>	
 	</group>
@@ -140,10 +140,7 @@
     <command id="save.workspace.command">
       <face>
          <text>_Save workspace</text>
-         <icon type="file">src/images/icons/file_save_workspace.gif</icon>         
-         <accelerator key="S">
-	         <modifier value="control"/>
-         </accelerator>
+         <icon type="file">src/images/icons/file_save_workspace.gif</icon>                  
          <description>Save workspace settings  (@accelerator)</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -154,11 +151,7 @@
       <face>
          <text>Sa_ve workspace as...</text>
          <icon type="file">src/images/icons/file_saveas.gif</icon>
-         <description>Save workspace as...</description>
-         <accelerator key="A">
-	         <modifier value="control"/>
-  	         <modifier value="alt"/>
-         </accelerator>
+         <description>Save workspace as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -278,14 +271,12 @@
       <face>
          <text>Text</text>
          <icon type="file">src/images/icons/machine_alpha.gif</icon>
-         <description>Label graph elements</description>         
+         <description>Label graph element</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
       </face>
-    </command>
-    
-    
+    </command>    
     
     <group id="edit.group">
     	<face>
@@ -408,17 +399,24 @@
       </face>
     </command>
 
-	<command id="set.attribute.command">
+	<command id="set.marked.command">
 		<face>
-			<text>Attribute to be set</text>
-		</face>	
-	</command>	
-		
-	<command id="set.boolean.attribute.command">
+    		<text>Marked</text>
+    	</face>
+    </command>	
+    
+	<command id="set.initial.command">
 		<face>
-			<text>Boolean attribute to be set</text>
-		</face>
-	</command>
+    		<text>Initial</text>
+    	</face>
+    </command>
+    
+    <command id="set.selfloop.command">
+		<face>
+    		<text>Self Loop</text>
+    	</face>
+    </command>
+    
 	
 	<group id="operations.menu.group">
 		<face>
@@ -442,6 +440,7 @@
 			<member command-id="prefixclosure.command"/>
 		</members>
 	</group>
+	
 	<group id="compositions.group">
 		<face>
     		<text>Compositions</text>
@@ -452,6 +451,7 @@
 			<member command-id="observer.command"/>
 		</members>
 	</group>
+	
 	<group id="supervisory.group">
 		<face>
     		<text>Supervisory</text>
@@ -462,4 +462,57 @@
 		</members>
 	</group>
 	
+	<command id="accessible.command">	 
+	<face>
+		<text>Accessible</text>
+	</face>
+	</command>
+
+	<command id="coaccessible.command"> 
+	<face>
+		<text>Coaccessible</text>
+	</face>
+	</command>
+
+	<command id="trim.command">
+	<face>
+		<text></text>
+	</face>
+	</command>
+
+	<command id="prefixclosure.command"> 
+	<face>
+		<text>Prefix Closure</text>
+	</face>
+	</command>
+
+	<command id="product.command"> 
+	<face>
+		<text>Product</text>
+	</face>
+	</command>
+
+	<command id="parallelcomposition.command"> 
+	<face>
+		<text>Parallel Composition</text>
+	</face>
+	</command>
+
+	<command id="observer.command"> 
+	<face>
+		<text>Observer</text>
+	</face>
+	</command>
+
+	<command id="supc.command"> 
+	<face>
+		<text>Supc</text>
+	</face>
+	</command>
+
+	<command id="controllability.command"> 
+	<face>
+		<text>Controllability</text>
+	</face>
+	</command>
 </commands>
