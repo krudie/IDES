@@ -224,10 +224,8 @@ public class GraphCommands {
 				}else if(currentSelection instanceof Edge){
 					Edge edge = (Edge)currentSelection;
 					// FIXME: Don't show a new one; set an existing one visible
-					EdgeLabellingDialog dialog = new EdgeLabellingDialog();
-					dialog.setEdge(edge);
-					dialog.setVisible(true);
-					// NOTE the undoable edit for an edge will be different for a node
+					EdgeLabellingDialog.showDialog(context, edge);
+					// NOTE don't need an undoable edit since dialog has ok, apply and cancel buttons
 					
 				}else{
 					// TODO on a free label

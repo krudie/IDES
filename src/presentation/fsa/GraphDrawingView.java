@@ -17,6 +17,7 @@ import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import ui.tools.CreationTool;
 import ui.tools.DrawingTool;
+import ui.tools.ModifyEdgeTool;
 import ui.tools.MovementTool;
 import ui.tools.SelectionTool;
 import ui.tools.TextTool;
@@ -94,6 +95,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		drawingTools[CREATE] = new CreationTool(this);
 		drawingTools[TEXT] = new TextTool(this);
 		drawingTools[MOVE] = new MovementTool(this);
+		drawingTools[MODIFY] = new ModifyEdgeTool(this);
 		
 		// TODO construct all other drawing tools
 		currentTool = DEFAULT;		

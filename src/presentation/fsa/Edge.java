@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -120,7 +121,6 @@ public class Edge extends GraphElement {
 		// or you will have an evil memory leak.
 	    clear();		
 		curve.setCurve((Point2D.Float[])((EdgeLayout)layout).getCurve(), 0);
-		
 		// prepare to draw myself as a cubic (bezier) curve
 		path.reset();
 		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
@@ -159,8 +159,12 @@ public class Edge extends GraphElement {
 	/**	 
 	 * @return true iff p intersects with this edge. 
 	 */
-	public boolean intersects(Point p){		
-		return curve.contains(p) || arrow.contains(p);
+	public boolean intersects(Point p){
+		if(isSelected()){
+			return curve.contains(p) || arrow.contains(p) || handler.intersects(p);
+		}else{
+			return curve.contains(p) || arrow.contains(p);
+		}		
 	}
 	
 	public Point2D.Float getP1() {
@@ -241,7 +245,7 @@ public class Edge extends GraphElement {
 		return transitions.iterator();
 	}
 
-	protected EdgeHandler getHandler() {
+	public EdgeHandler getHandler() {
 		return handler;
 	}
 
@@ -271,5 +275,9 @@ public class Edge extends GraphElement {
 			}
 		}
 		return label;
+	}
+	
+	public void showPopup(Component c){
+		EdgePopup.showPopup((GraphDrawingView)c, this);
 	}
 }

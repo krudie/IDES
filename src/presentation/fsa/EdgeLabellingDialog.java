@@ -60,23 +60,20 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	public static void showDialog(JComponent comp, Edge e){
 		if (dialog == null) {
           initialize(comp, null);
-        } else {
-        	dialog.setEdge(e);
-            dialog.setLocationRelativeTo(comp);
-            dialog.setVisible(true);
-        }		
+        } 
+        dialog.setEdge(e);
+        dialog.setLocationRelativeTo(comp);
+        dialog.setVisible(true);        		
 	}
 	
-	public EdgeLabellingDialog(){
+	private EdgeLabellingDialog(){
 		this(null, new EventsModel());		
 	}		
 	
-	public EdgeLabellingDialog(Frame owner, EventsModel eventsModel){
-		super(owner, "Assign Events to Edge", true);		
+	private EdgeLabellingDialog(Frame owner, EventsModel eventsModel){
+		super(owner, "Assign and Edit Events", true);		
 		this.eventsModel = eventsModel;
 //		 NOT YET	eventsModel.attach(this);
-//		selectedEvents = new ArrayList<FSAEvent>();
-//		availableEvents = new ArrayList<FSAEvent>();	
 		
 		text = new JTextField();
 		text.setPreferredSize(new Dimension(200, 20));
@@ -104,80 +101,13 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 		p = new JPanel(); //new BorderLayout());
 		listAvailableEvents = new FilteringJList();
-		JScrollPane pane = new JScrollPane(listAvailableEvents);
-		add(pane, BorderLayout.CENTER);		
+		listAvailableEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 		listAvailableEvents.installJTextField(text);		
-		listAvailableEvents.setPreferredSize(new Dimension(150, 300));		
-		listAvailableEvents.setSelectionModel(new ToggleSelectionModel());
+		listAvailableEvents.setPreferredSize(new Dimension(150, 300));	
+		JScrollPane pane = new JScrollPane(listAvailableEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Available"));
+		add(pane, BorderLayout.CENTER);		
 		p.add(pane); //, BorderLayout.WEST);		
-
-//		 DEBUG ////////////////////////////////////////////
-		String[] data = {"Alpha", "Beta", "Gamma", "Delta"};
-		String elements[] = {
-	             "Partridge in a pear tree",
-	             "Turtle Doves",
-	             "French Hens",
-	             "Calling Birds",
-	             "Golden Rings",
-	             "Geese-a-laying",
-	             "Swans-a-swimming",
-	             "Maids-a-milking",
-	             "Ladies dancing",
-	             "Lords-a-leaping",
-	             "Pipers piping",
-	             "Drummers drumming",
-	             "Dasher",
-	             "Dancer",
-	             "Prancer",
-	             "Vixen",
-	             "Comet",
-	             "Cupid",
-	             "Donner",
-	             "Blitzen",
-	             "Rudolf",
-	             "Bakerloo",
-	             "Center",
-	             "Circle",
-	             "District",
-	             "East London",
-	             "Hammersmith and City",
-	             "Jubilee",
-	             "Metropolitan",
-	             "Northern",
-	             "Piccadilly Royal",
-	             "Victoria",
-	             "Waterloo and City",
-	             "Alpha",
-	             "Beta",
-	             "Gamma",
-	             "Delta",
-	             "Epsilon",
-	             "Zeta",
-	             "Eta",
-	             "Theta",
-	             "Iota",
-	             "Kapa",
-	             "Lamda",
-	             "Mu",
-	             "Nu",
-	             "Xi",
-	             "Omikron",
-	             "Pi",
-	             "Rho",
-	             "Sigma",
-	             "Tau",
-	             "Upsilon",
-	             "Phi",
-	             "Chi",
-	             "Psi",
-	             "Omega"
-	           };   
-	   
-	           for (String element: elements) {
-	             listAvailableEvents.addElement(element);
-	           }   
-		/////////////////////////////////////////////////////
 		
 	    buttonAdd = new JButton(">>");
 	    buttonAdd.addActionListener(new AddButtonListener());
@@ -190,13 +120,11 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		pCentre.add(buttonRemove);		
 
 		p.add(pCentre); //, BorderLayout.CENTER);
-
-		// DEBUG ////////////////////////////////////////////
-		listSelectedEvents = new MutableList(data);
-		// DEBUG ////////////////////////////////////////////
-		
-		listSelectedEvents.setPreferredSize(new Dimension(150, 300));
-		listSelectedEvents.setSelectionModel(new ToggleSelectionModel());
+		listSelectedEvents = new MutableList();
+		// TODO Only one item can be selected: change to MULTIPLE_INTERVAL_SELECTION later
+		listSelectedEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+    
+		listSelectedEvents.setPreferredSize(new Dimension(150, 300));		
 		pane = new JScrollPane(listSelectedEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Selected"));
 		
@@ -263,13 +191,87 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	
 	public void setEdge(Edge edge){
 		this.edge = edge;
-		update();
+		if(edge != null){
+			update();
+		}else{
+			setDummyData();
+		}
+	}
+	
+	private void setDummyData(){
+//		 DEBUG ////////////////////////////////////////////
+		String[] data = {"Alpha", "Beta", "Gamma", "Delta"};
+		String elements[] = {
+	             "Partridge in a pear tree",
+	             "Turtle Doves",
+	             "French Hens",
+	             "Calling Birds",
+	             "Golden Rings",
+	             "Geese-a-laying",
+	             "Swans-a-swimming",
+	             "Maids-a-milking",
+	             "Ladies dancing",
+	             "Lords-a-leaping",
+	             "Pipers piping",
+	             "Drummers drumming",
+	             "Dasher",
+	             "Dancer",
+	             "Prancer",
+	             "Vixen",
+	             "Comet",
+	             "Cupid",
+	             "Donner",
+	             "Blitzen",
+	             "Rudolf",
+	             "Bakerloo",
+	             "Center",
+	             "Circle",
+	             "District",
+	             "East London",
+	             "Hammersmith and City",
+	             "Jubilee",
+	             "Metropolitan",
+	             "Northern",
+	             "Piccadilly Royal",
+	             "Victoria",
+	             "Waterloo and City",
+	             "Alpha",
+	             "Beta",
+	             "Gamma",
+	             "Delta",
+	             "Epsilon",
+	             "Zeta",
+	             "Eta",
+	             "Theta",
+	             "Iota",
+	             "Kapa",
+	             "Lamda",
+	             "Mu",
+	             "Nu",
+	             "Xi",
+	             "Omikron",
+	             "Pi",
+	             "Rho",
+	             "Sigma",
+	             "Tau",
+	             "Upsilon",
+	             "Phi",
+	             "Chi",
+	             "Psi",
+	             "Omega"
+	           };   
+	   
+	           for (String element: elements) {
+	             listAvailableEvents.addElement(element);
+	           }	           
+	        
+	   		listSelectedEvents = new MutableList(data);
+	   		
+		/////////////////////////////////////////////////////
 	}
 	
 	// Data
 	private Edge edge;
-//	private ArrayList<FSAEvent> availableEvents;
-//	private ArrayList<FSAEvent> selectedEvents;
 	private Event newEvent;
 	
 	// LATER /////////////////////////////////////////////////////////////
@@ -282,28 +284,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	private MutableList listSelectedEvents;
 	private FilteringJList listAvailableEvents;
 	private JButton buttonCreate, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
-	
-	// private classes	
-	private class ToggleSelectionModel extends DefaultListSelectionModel
-	{
-	    boolean gestureStarted = false;
-	    
-	    public void setSelectionInterval(int index0, int index1) {
-		if (isSelectedIndex(index0) && !gestureStarted) {
-		    super.removeSelectionInterval(index0, index1);
-		}
-		else {
-		    super.setSelectionInterval(index0, index1);
-		}
-		gestureStarted = true;
-	    }
-
-	    public void setValueIsAdjusting(boolean isAdjusting) {
-		if (isAdjusting == false) {
-		    gestureStarted = false;
-		}
-	    }
-	}
+		
 		
 	@SuppressWarnings("serial") 
 	private class MutableList extends JList {
@@ -311,8 +292,12 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	    	super(new DefaultListModel());
 	    }
 	    
-	    MutableList(Object[] data){
-	    	super(data);
+	    MutableList(Object[] elements){
+	    	this();
+	    	DefaultListModel model = getContents();
+	    	for(Object element: elements){
+	    		model.addElement(element);
+	    	}
 	    }
 	    
 	    DefaultListModel getContents() {

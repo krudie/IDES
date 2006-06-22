@@ -13,6 +13,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
+import main.IDESWorkspace;
 
 import presentation.fsa.NodePopup.PopupListener;
 
@@ -36,9 +37,18 @@ public class EdgePopup extends JPopupMenu {
 	protected EdgePopup(Edge e) {
 		// TODO Auto-generated constructor stub
 		miModify = new JMenuItem("Modify curve");
-		miEditEvents = new JMenuItem("Add/Remove/Edit Events");
+		MenuListener listener = new MenuListener();
+		miModify.addActionListener(listener);
+		add(miModify);
+		miEditEvents = new JMenuItem("Label with Events");
+		miEditEvents.addActionListener(listener);
+		add(miEditEvents);
 		miStraighten = new JMenuItem("Straighten");
+		miStraighten.setEnabled(false);
+		add(miStraighten);
 		miDeleteEdge = new JMenuItem("Delete");
+		add(miDeleteEdge);
+		miDeleteEdge.setEnabled(false);
 		addPopupMenuListener(new PopupListener());
 		setEdge(e);
 	}
@@ -67,16 +77,13 @@ public class EdgePopup extends JPopupMenu {
 			Object source = arg0.getSource();
 			if(source.equals(miModify)){
 				edge.setSelected(true);  // Is this necessary?				
-				view.setTool(view.MODIFY);
+				view.setTool(GraphDrawingView.MODIFY);
 			}else if(source.equals(miEditEvents)){
-				
+				EdgeLabellingDialog.showDialog(view, edge);
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
-			}
-			
-		}
-		
-		
+			}			
+		}		
 	}
 	
 	class PopupListener implements PopupMenuListener {

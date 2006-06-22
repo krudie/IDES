@@ -158,7 +158,7 @@ public class GraphElement implements PresentationElement {
 	 * No.  If make this an abstract method, then can't instantiate a generic GraphElement :(
 	 *
 	 */
-	public void update(){}
+	//public void update(){}
 
 	public void setLayout(GraphicalLayout layout) {
 		this.layout = layout;		
@@ -182,7 +182,9 @@ public class GraphElement implements PresentationElement {
 	}
 	
 	// TODO what is a generic response to this call?
-	public void showPopup(Component context){}
+	public void showPopup(Component context){
+		main.Hub.displayAlert("Kluge: define showPopup(Component) for this subclass");
+	}
 	
 	public boolean hasChildren() {		
 		return !children.isEmpty();

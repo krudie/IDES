@@ -2,6 +2,8 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
+import main.Hub;
+
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
@@ -65,13 +67,17 @@ public class EdgeCommands {
 			this.edge = edge;
 		}
 		
+		public void setLayout(EdgeLayout layout){
+			this.previousLayout = layout;
+		}
+		
 		/* (non-Javadoc)
 		 * @see org.pietschy.command.undo.UndoableActionCommand#performEdit()
 		 */
 		@Override
 		protected UndoableEdit performEdit() {
 			// TODO   IDESWorkspace.instance().getActiveGraphModel().???
-			
+			Hub.displayAlert("ModifyEdgeCommand: Please implement performEdit method");
 			// UndoableEdit containing the Edge id and a clone of the previous layout OR
 			// just of the curve.
 			return null;

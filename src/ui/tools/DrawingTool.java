@@ -31,10 +31,12 @@ public abstract class DrawingTool {
 	public Cursor getCursor() { return cursor; }
 	
 	public void handleRightClick(MouseEvent m){
-		// TODO get intersected element and display appropriate popup menu
+		// get intersected element and display appropriate popup menu
 		context.clearCurrentSelection();
 		if(context.updateCurrentSelection(m.getPoint())){
 			SelectionGroup g = context.getCurrentSelection();
+			
+			// FIXME this is not triggering the Edge popup
 			((GraphElement)g.child(0)).showPopup(context);			
 		}
 		// DEBUG

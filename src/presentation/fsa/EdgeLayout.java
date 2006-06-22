@@ -82,8 +82,7 @@ public class EdgeLayout extends GraphicalLayout {
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t)){
 			// TODO
-			throw new UnsupportedOperationException("Self-loops not net implemented.");
-			// return;
+			throw new UnsupportedOperationException("Self-loops not net implemented.");			
 		}
 		
 		Point2D.Float centre1 = s.getLocation();
@@ -94,9 +93,11 @@ public class EdgeLayout extends GraphicalLayout {
 		Point2D.Float unitBase = Geometry.unit(base);  // computing norm twice :(
 		
 		// FIXME endpoints must be spaced around node arc; need to know about fellow edges.
+		// IDEA have the NodeLayout wiggle (rotate edges about centre) the desired/ideal adjacent edge 
+		// endpoints as calculated by EdgeLayout.
 		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));
 	
-		if(angle1 == 0 && angle2 == 0){		
+		if(Math.round(angle1) == 0 && Math.round(angle2) == 0){		
 			// compute a straight edge		
 			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
 			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
@@ -156,6 +157,17 @@ public class EdgeLayout extends GraphicalLayout {
 		// direction vectors (-r, 2r) (r, 2r)
 		
 		
+		setDirty(true);
+	}
+	
+	/**
+	 * FIXME if move control points, endpoints must adjust too.
+	 * 
+	 * @param point
+	 * @param index
+	 */
+	public void setPoint(Point2D.Float point, int index){
+		ctrls[index] = point;		
 		setDirty(true);
 	}
 	
@@ -222,7 +234,8 @@ public class EdgeLayout extends GraphicalLayout {
 		s1 = Geometry.norm(p1c1)/n;
 		s2 = Geometry.norm(p2c2)/n;
 		angle1 = Geometry.angleBetween(p1c1, p1p2);
-		angle1 = Geometry.angleBetween(p2c2, Geometry.scale(p1p2, -1f));		
+		angle2 = Geometry.angleBetween(p2c2, Geometry.scale(p1p2, -1f));
+		setLocation(ctrls[P2].x, ctrls[P2].y);
 	}
 
 	protected boolean isRigidTranslation() {
