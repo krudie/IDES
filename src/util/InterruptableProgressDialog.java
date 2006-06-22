@@ -53,6 +53,8 @@ public abstract class InterruptableProgressDialog extends EscapeDialog
 	 * @see #run()
 	 */
 	protected JProgressBar progressBar;
+	
+	//protected JLabel 
 
 	/**
 	 * Constructs a new dialog box with a progress bar and sets it up
@@ -63,7 +65,7 @@ public abstract class InterruptableProgressDialog extends EscapeDialog
 	 */
 	protected InterruptableProgressDialog(Frame owner, String title, String message)
 	{
-		super(owner, title);
+		super(owner, title, true);
 		addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent e) {
 		    	onEscapeEvent();
@@ -101,7 +103,6 @@ public abstract class InterruptableProgressDialog extends EscapeDialog
 		setLocation(location.x,location.y);
 
 		pack();
-		setVisible(true);
 	}
 	
 	/**

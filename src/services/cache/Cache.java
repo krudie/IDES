@@ -3,6 +3,10 @@ package services.cache;
 import java.io.File;
 import java.util.Properties;
 
+import presentation.fsa.GraphLabel;
+
+import services.latex.Renderer;
+
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
@@ -56,6 +60,7 @@ public class Cache {
 		cacheConfig.put("cache.persistence.class","com.opensymphony.oscache.plugins.diskpersistence.HashDiskPersistenceListener");
 		cacheConfig.put("cache.path",CACHE_DIR);
 		cache=new com.opensymphony.oscache.general.GeneralCacheAdministrator(cacheConfig);
+		cache.putInCache(GraphLabel.class.getName(),new byte[0]);
 	}
 
 	/**

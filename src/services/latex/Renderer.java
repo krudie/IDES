@@ -587,6 +587,19 @@ public class Renderer {
 		out.close();
 		return renderTempFile(latexFile);
 	}
+	
+	/**
+	 * Returns an empty image (1x1 pixel, white).
+	 * @return a 1x1 pixel white image
+	 */
+	public static BufferedImage getEmptyImage()
+	{
+        BufferedImage empty=new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);
+        Graphics g=empty.getGraphics();
+        g.setColor(Color.WHITE);
+        g.drawLine(0,0,0,0);
+        return empty;		
+	}
 
 	/**
 	 * Render the first page of the LaTeX document contained in a temporary file.
@@ -656,14 +669,7 @@ public class Renderer {
         File latexOutputFile=new File(latexFile.getParentFile().getCanonicalPath()+File.separator+
                 latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".dvi");
         if(!latexOutputFile.exists())
-        {
-            //return empty image
-            BufferedImage empty=new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);
-            Graphics g=empty.getGraphics();
-            g.setColor(Color.WHITE);
-            g.drawLine(0,0,0,0);
-            return empty;
-        }
+        	return getEmptyImage();
 		
 		//DVIPS
 		command=new String[3];
@@ -974,7 +980,7 @@ public class Renderer {
 		in.close();
 		out.close();
 	}
-
+	
 	/* here just for reference
 	public static void main(String[] args) throws Exception
 	{

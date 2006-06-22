@@ -55,12 +55,6 @@ public class FileCommands {
 			if(fsa != null){
 				IDESWorkspace.instance().addFSAModel(fsa);			
 				SystemVariables.instance().setLast_used_path(files[0].getPath());
-
-				if(services.latex.LatexManager.isLatexEnabled())
-				{
-					LatexPrerenderer o=new LatexPrerenderer(Hub.getWorkspace().getActiveGraphModel());
-					new Thread(o).start();
-				}
 			}
 		}
 	}	

@@ -88,17 +88,13 @@ public class GraphLabel extends GraphElement {
 		{
 			if(!visible||"".equals(layout.getText()))
 				return;
-			if(rendered==null)
+			try
 			{
-				try
-				{
-					render();
-				}catch(LatexRenderException e)
-				{
-					LatexManager.handleRenderingProblem();
-					draw(g);
-					return;
-				}
+				renderIfNeeded();
+			}catch(LatexRenderException e)
+			{
+				LatexManager.handleRenderingProblem();
+				return;
 			}
 			((Graphics2D)g).drawImage(rendered,null,(int)layout.getLocation().x,(int)layout.getLocation().y);
 		}
@@ -123,6 +119,7 @@ public class GraphLabel extends GraphElement {
 
 	public Rectangle bounds() {
 		// TODO Compute bounds for LaTeX image
+		// Lenko writes: use the size of "rendered"
 		
 		// NOTE Unless we use deprecated getFontMetrics method, we have to compute 
 		// the bounds until via a graphics context object in the draw method.
@@ -163,14 +160,16 @@ public class GraphLabel extends GraphElement {
 	}
 
 	/**
-	 * Renders label using LaTeX.
+	 * Renders the label using LaTeX.
+	 * @throws LatexRenderException if rendering fails
 	 * @see #rendered
+	 * @see #renderIfNeeded()
 	 */
 	public void render() throws LatexRenderException
 	{
 		if(layout.getText()==null||"".equals(layout.getText()))
 		{
-			//TODO return empty picture
+			rendered=LatexManager.getRenderer().getEmptyImage();
 			return;
 		}
 		try
@@ -211,5 +210,17 @@ public class GraphLabel extends GraphElement {
 				else
 					raster.setSample(i,j,0,255);
 			}
+	}
+	
+	/**
+	 * If the label has not been rendered yet, it gets rendered using LaTeX
+	 * @throws LatexRenderException if rendering fails
+	 * @see #rendered
+	 * @see #render()
+	 */
+	public void renderIfNeeded() throws LatexRenderException
+	{
+		if(rendered==null)
+			render();
 	}
 }

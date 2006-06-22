@@ -1,12 +1,16 @@
 package main;
 
+import java.awt.Cursor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import javax.swing.SwingUtilities;
+
 import presentation.fsa.GraphModel;
 import presentation.fsa.GraphView;
+import util.InterruptableProgressDialog;
 
 
 import model.Publisher;
@@ -33,7 +37,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	private HashMap<String, Automaton> systems;
 	private HashMap<String, GraphModel> graphs;
 	private HashMap<String, MetaData> metadata;
-	
+
 	static IDESWorkspace me;
 	
 	public static IDESWorkspace instance(){
@@ -57,7 +61,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		metadata.put(activeModelName, new MetaData((Automaton)fsa));
 		graphs.put(activeModelName, new GraphModel((Automaton)fsa, metadata.get(activeModelName)));
 		eventsModel.addLocalEvents(fsa);		
-		this.notifyAllSubscribers();
+		notifyAllSubscribers();
 		unsaved = true;
 	}
 

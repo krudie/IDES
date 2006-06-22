@@ -18,6 +18,8 @@ import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.PresentationElement;
+import services.latex.LatexManager;
+import services.latex.LatexPrerenderer;
 
 /**
  * Mediates between the Automaton model and the visual representation.
@@ -66,6 +68,11 @@ public class GraphModel extends Publisher implements Subscriber {
 		maxEventId = fsa.getEventCount();
 		
 		update();
+
+		if(LatexManager.isLatexEnabled())
+		{
+			new LatexPrerenderer(this);
+		}
 	}
 	
 	public String getName(){
