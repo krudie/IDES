@@ -19,6 +19,7 @@ public class GraphElement implements PresentationElement {
 	protected boolean visible;
 	protected boolean highlighted;
 	protected boolean selected;
+	protected boolean dirty;
 	protected GraphicalLayout layout;
 	
 	// my states and free labels
@@ -180,13 +181,29 @@ public class GraphElement implements PresentationElement {
 	public void setLocation(Point2D p) {
 		layout.setLocation((float)p.getX(), (float)p.getY());		
 	}
+
+	public boolean isDirty() { 
+		return dirty;
+	}
+
+	public void setDirty(boolean d){
+		dirty = d;
+		Iterator c = children.iterator();
+		while(c.hasNext()){
+			PresentationElement child = (PresentationElement)c.next();
+			child.setDirty(d);
+		}
+	}
 	
 	// TODO what is a generic response to this call?
 	public void showPopup(Component context){
-		main.Hub.displayAlert("Kluge: define showPopup(Component) for this subclass");
+		//DEBUG
+		main.Hub.displayAlert("TODO: define showPopup(Component) for this subclass");
 	}
 	
 	public boolean hasChildren() {		
 		return !children.isEmpty();
 	}
+
+	
 }

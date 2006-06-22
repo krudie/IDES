@@ -39,7 +39,9 @@ public class Edge extends GraphElement {
 	
 	// Visualization of the curve
 	private GeneralPath path;	
-	private ArrowHead arrow;		
+	private ArrowHead arrow;
+
+	private GraphLabel label;		
 	
 	public Edge(EdgeLayout layout, Node source){
 		this.layout = layout;
@@ -49,6 +51,8 @@ public class Edge extends GraphElement {
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
+		label = new GraphLabel("");
+		insert(label);
 		update();
 	}
 	
@@ -59,6 +63,8 @@ public class Edge extends GraphElement {
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
+		label = new GraphLabel("");
+		insert(label);
 		update();
 	}
 	
@@ -71,6 +77,8 @@ public class Edge extends GraphElement {
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
+		label = new GraphLabel("");
+		insert(label);
 		update();
 	}
 
@@ -115,11 +123,7 @@ public class Edge extends GraphElement {
 	/**
 	 * Updates my visualization of curve, arrow and label.
 	 */
-	public void update() {
-		// FIXME optimize: inefficient to remove child glyphs and construct new ones.
-		// At least make sure there are no other references to the children 
-		// or you will have an evil memory leak.
-	    clear();		
+	public void update() {		
 		curve.setCurve((Point2D.Float[])((EdgeLayout)layout).getCurve(), 0);
 		// prepare to draw myself as a cubic (bezier) curve
 		path.reset();
@@ -136,9 +140,8 @@ public class Edge extends GraphElement {
 	    handler.setVisible(false);
 	    insert(handler);
 		
-	    // assign label from associated event[s]
-	    String s = "";
-	    
+	    // Concat label from associated event[s]
+	    String s = "";	    
 	    Iterator iter = ((EdgeLayout)layout).getEventNames().iterator();
 	    while(iter.hasNext()){
 	    	s += (String)iter.next();
@@ -146,13 +149,16 @@ public class Edge extends GraphElement {
 	    }
 	    s = s.trim();
 	    if(s.length()>0) s = s.substring(0, s.length() - 1);
-
-	    // Compute location of label: midpoint of curve plus label offset vector 
+	    label.setText(s);
+	    
+	    // Compute location of label: midpoint of curve (ignore label offset vector from V2) 
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();
-		insert(new GraphLabel(s, this, 
-					Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	((EdgeLayout)layout).getLabelOffset())));
+	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());
+	    label.getLayout().setLocation((float)location.getX(), (float)location.getY());
+	    
+		//new GraphLabel(s, this, Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	((EdgeLayout)layout).getLabelOffset())));
 	}
 	
 	
@@ -262,22 +268,14 @@ public class Edge extends GraphElement {
 	 */
 	public GraphLabel getLabel()
 	{
-		//FIXME: this is a big hack
-		GraphLabel label=null;
-		Iterator i=children();
-		while(i.hasNext())
-		{
-			Object o=i.next();
-			if(o instanceof GraphLabel)
-			{
-				label=(GraphLabel)o;
-				break;
-			}
-		}
 		return label;
 	}
 	
 	public void showPopup(Component c){
 		EdgePopup.showPopup((GraphDrawingView)c, this);
+	}
+	
+	public boolean isDirty(){
+		return super.isDirty() || layout.isDirty();
 	}
 }

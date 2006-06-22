@@ -104,8 +104,6 @@ public class GraphLabel extends GraphElement {
 		}
 		else
 		{
-			// FIXME this computes the position for a Node label but won't work for an edge; see bounds()
-			// If this is a NodeLabel, set the location at the centre of the node.
 			g.setFont(font);
 			FontMetrics metrics = g.getFontMetrics();
 			int width = metrics.stringWidth( layout.getText() );
@@ -124,8 +122,10 @@ public class GraphLabel extends GraphElement {
 	}
 
 	public Rectangle bounds() {
-		// TODO annoying that we can't compute the bounds until we have a graphics context in the draw method ...
-		// NOTE have to draw the label before drawing the node in case node needs to be resized.
+		// TODO Compute bounds for LaTeX image
+		
+		// NOTE Unless we use deprecated getFontMetrics method, we have to compute 
+		// the bounds until via a graphics context object in the draw method.
 		if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
 			Toolkit tk = Toolkit.getDefaultToolkit();
 			FontMetrics metrics = tk.getFontMetrics(font);

@@ -30,7 +30,6 @@ public class Node extends GraphElement {
 	// the state to be represented
 	private FSAState state;
 
-	// TODO Change to list of labels to be displayed within the bounds of this node
 	private GraphLabel label;
 
 	// visualization objects
@@ -69,8 +68,7 @@ public class Node extends GraphElement {
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
 		// TODO relocate based on bounds of label and expand the node size if necessary.
 		// make sure that node is big enough to fit text inside inner circle if isMarked.
-		// FIXME bounds of label aren't computed until it is drawn...
-		
+	
 		label = new GraphLabel(layout.getText(), centre);
 		Rectangle labelBounds = label.bounds();
 		if( ! bounds().contains(labelBounds ) ){
@@ -119,13 +117,16 @@ public class Node extends GraphElement {
 			layout.setDirty(false);
 		}
 		
-		//super.draw(g);	// calls draw on all edges
-		// override so only calls draw on all of the outgoing edges
+		// only calls draw on all of the outgoing edges
 		Iterator c = children();
 		while(c.hasNext()){
+			try{
 			Edge child = (Edge)c.next();
-			if(child.getSource().equals(this)){
-				child.draw(g);
+				if(child.getSource().equals(this)){
+					child.draw(g);
+				}
+			}catch(ClassCastException cce){ // skip the label and keep going
+				// continue;
 			}
 		}
 		
@@ -200,25 +201,25 @@ public class Node extends GraphElement {
 	}
 	
 	public void showPopup(Component context){
-		NodePopup.showPopup((GraphDrawingView)context, this); // KLUGE
+		NodePopup.showPopup((GraphDrawingView)context, this); // cast is a KLUGE
 	}
 
 	protected FSAState getState(){
 		return state;
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean hasSelfLoop() {
-		Iterator edges = children();
-		while(edges.hasNext()){
-			if(((Edge)edges.next()).isSelfLoop()){
-				return true;
-			}
-		}
-		return false;
-	}
+//	/**
+//	 * @return
+//	 */
+//	public boolean hasSelfLoop() {
+//		Iterator edges = children();
+//		while(edges.hasNext()){
+//			if(((Edge)edges.next()).isSelfLoop()){
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * Gets the label of the node.
@@ -228,4 +229,9 @@ public class Node extends GraphElement {
 	{
 		return label;
 	}
+	
+	public boolean isDirty(){
+		return super.isDirty() || layout.isDirty();
+	}
+
 }

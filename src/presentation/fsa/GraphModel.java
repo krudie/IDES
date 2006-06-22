@@ -13,6 +13,7 @@ import model.Publisher;
 import model.Subscriber;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
+import model.fsa.ver1.Event;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
@@ -376,14 +377,31 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * add it to the local alphabet.
 	 * Otherwise, create a new event and add it to both alphabets. 
 	 * 
-	 * For nows: 
+	 * For now: 
 	 * Open the EdgeLabellingDialog and then
 	 * Creates a new transition, assigns the event with symbol corresponding to 
 	 * <code>text</code> to the transition and adds the transition to the given edge.
 	 * 
 	 * @param text an event symbol
 	 */
-	public void addLabelToEdge(String text, Edge edge){
+	public void assignEvent(Event event, Edge edge){
+		
+	}
+	
+	/**
+	 * Assigns the set of events to <code>edge</code> and commits any
+	 * changes to the FSAModel.
+	 * 
+	 * @param events
+	 * @param edge
+	 */
+	public void assignEvents(Event[] events, Edge edge){
+		for(Event e : events){
+			assignEvent(e, edge);
+		}
+	}
+	
+	public void commitEdgeLayout(Edge edge){
 		
 	}
 	

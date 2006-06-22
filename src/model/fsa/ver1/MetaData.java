@@ -179,7 +179,8 @@ public class MetaData implements FSAMetaData {
 	 * Adds edge layout data (event name if exists) from the given transition 
 	 * to the given layout.
 	 * 
-	 * Precondition: layout != null and transition has same source and target nodes as those in layout.
+	 * Precondition: layout != null 
+	 * and transition has same source and target nodes as those in layout.
 	 * 
 	 * @param transition
 	 * @param layout

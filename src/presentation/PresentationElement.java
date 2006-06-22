@@ -99,4 +99,8 @@ public interface PresentationElement {
 	
 	public void setLocation(Point2D p);	
 	
+	public void setDirty(boolean b);
+	
+	public boolean isDirty();
+	
 }
