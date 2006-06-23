@@ -29,19 +29,12 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	/**
 	 * The DES model whose labels will be rendered.
 	 */
-	protected GraphModel model;
+	protected Iterator<GraphModel> models;
 
 	/**
 	 * Set to <code>true</code> if the rendering has to be interrupted.
 	 */
 	private boolean cancel=false;
-	
-	/**
-	 * If process was interrupted (canceled by the user), this is set to <code>true</code>.
-	 * @see #interrupt()
-	 * @see #wasInterrupted()
-	 */
-	private boolean interrupted=false;
 	
 	/**
 	 * Displays a dialog box with a progress bar and starts rendering the labels of a
@@ -51,21 +44,33 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	 */
 	public LatexPrerenderer(GraphModel model)
 	{
-		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),
-				Hub.string("renderPrerender")+model.getName());
-		this.model=model;
+		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),"");
+		HashSet<GraphModel> set=new HashSet<GraphModel>();
+		set.add(model);
+		this.models=set.iterator();
+		new Thread(this).start();
+		setVisible(true);
+	}
+	
+	/**
+	 * Displays a dialog box with a progress bar and starts rendering the labels of a
+	 * set of {@link GraphModel}s. The user may cancel the process
+	 * using the controls in the dialog box. 
+	 * @param models an iterator over the set of DES models whose labels have to be rendered
+	 */
+	public LatexPrerenderer(Iterator<GraphModel> models)
+	{
+		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),"");
+		this.models=models;
 		new Thread(this).start();
 		setVisible(true);
 	}
 	
 	/**
 	 * Interrupts the process of rendering.
-	 * @see #interrupted 
 	 */
 	public void interrupt()
 	{
-		interrupted=true;
-		Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		LatexManager.setLatexEnabled(false);
 		cancel=true;
 	}
@@ -78,42 +83,47 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	{
 		while(!isVisible())
 			Thread.yield();
-		HashSet<GraphLabel> labels=new HashSet<GraphLabel>();
-		Collection<Node> nodes=model.getNodes();
-		for(Node n: nodes)
+		while(models.hasNext())
 		{
-			labels.add(n.getLabel());
-		}
-		Collection<Edge> edges=model.getEdges();
-		for(Edge e: edges)
-		{
-			labels.add(e.getLabel());
-		}
-		labels.addAll(model.getLabels());
-		progressBar.setMinimum(0);
-		progressBar.setMaximum(labels.size());
-		int current=0;
-		
-		Iterator<GraphLabel> i=labels.iterator();
-		while(!cancel)
-		{
-			if(i.hasNext())
+			if(cancel)
+				break;
+			GraphModel model=models.next();
+			label.setText(Hub.string("renderPrerender")+model.getName());
+			HashSet<GraphLabel> labels=new HashSet<GraphLabel>();
+			Collection<Node> nodes=model.getNodes();
+			for(Node n: nodes)
 			{
+				labels.add(n.getLabel());
+			}
+			Collection<Edge> edges=model.getEdges();
+			for(Edge e: edges)
+			{
+				labels.add(e.getLabel());
+			}
+			labels.addAll(model.getLabels());
+			progressBar.setMinimum(0);
+			progressBar.setMaximum(labels.size());
+			int current=0;
+			progressBar.setValue(current);
+			
+			Iterator<GraphLabel> i=labels.iterator();
+			while(i.hasNext())
+			{
+				if(cancel)
+					break;
 				GraphLabel l=i.next();
 				try
 				{
 					l.renderIfNeeded();
 				}catch(LatexRenderException e)
 				{
-					close();
 					LatexManager.handleRenderingProblem();
+					close();
 					return;
 				}
 				current++;
+				progressBar.setValue(current);
 			}
-			else
-				cancel=true;
-			progressBar.setValue(current);
 		}
 		close();
 		return;
@@ -125,18 +135,6 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	 */
 	protected void close()
 	{
-		Hub.getMainWindow().setCursor(Cursor.getDefaultCursor());
 		dispose();
-	}
-	
-	/**
-	 * Returns if the process was interrupted.
-	 * @return <code>true</code> if the process was interrupted; <code>false</code> otherwise
-	 * @see #interrupted
-	 * @see #interrupt()
-	 */
-	public boolean wasInterrupted()
-	{
-		return interrupted;
 	}
 }

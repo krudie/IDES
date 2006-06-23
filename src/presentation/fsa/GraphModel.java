@@ -68,11 +68,6 @@ public class GraphModel extends Publisher implements Subscriber {
 		maxEventId = fsa.getEventCount();
 		
 		update();
-
-		if(LatexManager.isLatexEnabled())
-		{
-			new LatexPrerenderer(this);
-		}
 	}
 	
 	public String getName(){

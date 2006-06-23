@@ -54,7 +54,10 @@ public abstract class InterruptableProgressDialog extends EscapeDialog
 	 */
 	protected JProgressBar progressBar;
 	
-	//protected JLabel 
+	/**
+	 * The label in the dialog box.
+	 */
+	protected JLabel label; 
 
 	/**
 	 * Constructs a new dialog box with a progress bar and sets it up
@@ -86,7 +89,8 @@ public abstract class InterruptableProgressDialog extends EscapeDialog
 		pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
 		pane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		Box labelBox=Box.createHorizontalBox();
-		labelBox.add(new JLabel(message));
+		label=new JLabel(message);
+		labelBox.add(label);
 		labelBox.add(Box.createHorizontalGlue());
 		pane.add(labelBox);
 		pane.add(Box.createRigidArea(new Dimension(0,2)));

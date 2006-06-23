@@ -10,6 +10,8 @@ import javax.swing.SwingUtilities;
 
 import presentation.fsa.GraphModel;
 import presentation.fsa.GraphView;
+import services.latex.LatexManager;
+import services.latex.LatexPrerenderer;
 import util.InterruptableProgressDialog;
 
 
@@ -54,13 +56,16 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		eventsModel = new EventsModel();
 	}
 	
-	
 	public void addFSAModel(FSAModel fsa) {
 		activeModelName = fsa.getName();
 		systems.put(activeModelName, (Automaton) fsa);
 		metadata.put(activeModelName, new MetaData((Automaton)fsa));
 		graphs.put(activeModelName, new GraphModel((Automaton)fsa, metadata.get(activeModelName)));
 		eventsModel.addLocalEvents(fsa);
+		if(LatexManager.isLatexEnabled())
+		{
+			new LatexPrerenderer(getActiveGraphModel());
+		}
 		notifyAllSubscribers();
 		unsaved = true;
 	}

@@ -136,19 +136,16 @@ public class LatexManager {
 		{
 			Hub.persistentData.setBoolean("useLatexLabels",setting);
 			if(setting)
-			{
-				Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();
-				while(i.hasNext()&&!new LatexPrerenderer(i.next()).wasInterrupted());
-			}
+				new LatexPrerenderer(Hub.getWorkspace().getGraphModels());
 			Hub.getWorkspace().notifyAllSubscribers();			
 		}
 	}
-	
+
 	/**
 	 * Called when LaTeX rendering of labels is turned on or off from the menu.
 	 * <p>A separate method is needed because {@link #setLatexEnabled(boolean)}
-	 * modifies the menu item which triggers a call back from the menu item,
-	 * which would lead to an infinite loop of calls. 
+	 * modifies the menu item which in turn triggers a call back from the menu item,
+	 * leading to an infinite loop of calls. 
 	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off
 	 * @see #setLatexEnabled(boolean)
 	 * @see LatexManager.SetLatexUpdater  
@@ -164,12 +161,30 @@ public class LatexManager {
 	 * @see #setLatexEnabledFromMenu(boolean)
 	 * @see LatexManager.SetLatexUpdater  
 	 */
-	public synchronized static void setLatexEnabled(boolean b)
+	public static void setLatexEnabled(boolean b)
 	{
-		if(menuItem==null)
-			setLatexEnabledFromMenu(b);
+		Hub.persistentData.setBoolean("useLatexLabels",b);
+		if(menuItem!=null)
+		{
+			if(b)
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						menuItem.setSelected(true);
+					}
+				});
+			else
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						menuItem.setSelected(false);
+					}
+				});
+		}
 		else
-			menuItem.setSelected(b);
+			setLatexEnabledFromMenu(b);
 	}
 
 	/**
@@ -190,7 +205,6 @@ public class LatexManager {
 	public static void handleRenderingProblem()
 	{
 		setLatexEnabled(false);
-		//TODO notify presentation layer of problem - or done through the command?
 		SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
