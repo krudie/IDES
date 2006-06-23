@@ -15,6 +15,7 @@ import javax.swing.JFileChooser;
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.LoadException;
+import org.pietschy.command.file.ExtensionFileFilter;
 
 import main.Hub;
 import main.IDESWorkspace;
@@ -38,23 +39,25 @@ public class FileOperations {
 	public static FSAModel openAutomaton(File f) {		
 	    AutomatonParser ap = new AutomatonParser();	    	
         Automaton automaton = ap.parse(f);
+        // DEBUG
+        System.out.println("Parent: " + f.getParent());
         SystemVariables.instance().setLast_used_path(f.getParent());
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
         return automaton;		
 	}
 		
 	/**
-     * TODO give user opportunity to choose a different file if something screws up.
-     * 
      * Saves an automaton to a file
      * @param a the automaton to save
      * @param path the path to save it to
      */      
     public static void saveAutomaton(Automaton a){
+    	System.out.println("Last used path: " + SystemVariables.instance().getLast_used_path());
         File file = new File(SystemVariables.instance().getLast_used_path(), a.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) {
 	        JFileChooser fc = new JFileChooser();
+	        fc.setFileFilter(new ExtensionFileFilter("xml", "eXtensible Markup Language"));
         	int retVal = fc.showSaveDialog(null);
         	if(retVal == JFileChooser.APPROVE_OPTION){
         		file = fc.getSelectedFile();
@@ -70,6 +73,7 @@ public class FileOperations {
 		File file;
 		PrintStream ps;
 		JFileChooser fc = new JFileChooser(SystemVariables.instance().getLast_used_path());
+		fc.setFileFilter(new ExtensionFileFilter("xml", "eXtensible Markup Language"));
     	int retVal = fc.showSaveDialog(null);
     	if(retVal == JFileChooser.APPROVE_OPTION){    		
     		file = fc.getSelectedFile();  

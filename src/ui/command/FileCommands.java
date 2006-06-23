@@ -2,10 +2,10 @@ package ui.command;
 
 import io.fsa.ver1.FileOperations;
 
+import java.awt.Cursor;
 import java.io.File;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import main.Hub;
 import main.IDESWorkspace;
@@ -19,7 +19,6 @@ import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
 import services.latex.LatexPrerenderer;
-import util.InterruptableProgressDialog;
 
 
 public class FileCommands {	
@@ -53,8 +52,15 @@ public class FileCommands {
 		protected void performOpen(File[] files) {			
 			Automaton fsa = (Automaton)FileOperations.openAutomaton(files[0]);
 			if(fsa != null){
-				IDESWorkspace.instance().addFSAModel(fsa);			
-				SystemVariables.instance().setLast_used_path(files[0].getPath());
+
+				IDESWorkspace.instance().addFSAModel(fsa);
+				
+				if(services.latex.LatexManager.isLatexEnabled())
+				{
+					LatexPrerenderer o=new LatexPrerenderer(Hub.getWorkspace().getActiveGraphModel());
+					new Thread(o).start();
+				}
+
 			}
 		}
 	}	
@@ -67,12 +73,15 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = (Automaton)IDESWorkspace.instance().getActiveModel();			
+			Automaton fsa = (Automaton)IDESWorkspace.instance().getActiveModel();
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if( fsa.getName().equals(Hub.string("newAutomatonName"))){
 				FileOperations.saveAutomatonAs(fsa);
 			}else{			
 				FileOperations.saveAutomaton(fsa);				
 			}
+			Hub.getMainWindow().setCursor(cursor);
 			setEnabled(false);
 		}	
 	}

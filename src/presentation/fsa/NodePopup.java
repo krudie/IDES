@@ -95,10 +95,7 @@ public class NodePopup extends JPopupMenu {
 				// open labeling input box as in text tool
 	//			 DEBUG
 				JOptionPane.showMessageDialog(null, "TODO open labeling dialog");
-			}else if(o.equals(miSelfLoop)){
-				// Create and elecute a create edge command
-	//			 DEBUG
-				JOptionPane.showMessageDialog(null, "TODO add or remove self loop");
+			
 			}else{
 				//OptionPane.showMessageDialog(null, "Can't figure out which item selected...", "Node Properties Dialog", JOptionPane.ERROR_MESSAGE);
 			}		

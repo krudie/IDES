@@ -82,7 +82,9 @@ public class EdgeLayout extends GraphicalLayout {
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t)){
 			// TODO
-			throw new UnsupportedOperationException("Self-loops not net implemented.");			
+			// throw new UnsupportedOperationException("Self-loops not net implemented.");
+			computeSelfLoop(s);
+			return;
 		}
 		
 		Point2D.Float centre1 = s.getLocation();
@@ -126,42 +128,49 @@ public class EdgeLayout extends GraphicalLayout {
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
 	 * 
 	 * @param s layout for source node
-	 * @param c2 endpoint for the edge
+	 * @param centre2 endpoint for the edge
 	 * @return array of 4 Bezier control points for a straight, directed edge from s to c2. 
 	 */
-	public void computeCurve(NodeLayout s, Point2D.Float c2){		
-		Point2D.Float c1 = s.getLocation();
-		Point2D.Float dir = Geometry.subtract(c2, c1);
+	public void computeCurve(NodeLayout s, Point2D.Float centre2){		
+		Point2D.Float centre1 = s.getLocation();
+		Point2D.Float dir = Geometry.subtract(centre2, centre1);
 		float norm = (float)Geometry.norm(dir);
 		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-		ctrls[P1] = Geometry.add(c1, Geometry.scale(unit, s.getRadius()));
-		ctrls[CTRL1] = Geometry.add(c1, Geometry.scale(unit, (float)(norm * s1)));
-		ctrls[CTRL2] = Geometry.add(c2, Geometry.scale(unit, (float)(-1 * norm * s2)));
-		ctrls[P2] = c2;
+		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
+		ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unit, (float)(norm * s1)));
+		ctrls[CTRL2] = Geometry.add(centre2, Geometry.scale(unit, (float)(-1 * norm * s2)));
+		ctrls[P2] = centre2;
 		setDirty(true);		
 	}
 	
 	
 	/**
 	 * Returns a cubic bezier curve representing a self-loop for the
-	 * given node.
+	 * given node layout.
 	 * 
-	 * @param n the node
+	 * @param s the node layout
 	 * @return a self-loop
 	 */
-	public void computeSelfLoop(Node n){
-		// TODO find a clear bit of arc - this is why we need node
-		// instead of just NodeLayout.
+	public void computeSelfLoop(NodeLayout s){
+		// Draw default loop above node and let node rotate it if necessary.
+		// direction vectors rotate (0, r) by pi/4 and -pi/4
+		angle1 = Math.PI/6;
+		angle2 = Math.PI/-6;
+		s1 = s2 = 0.0;
 		
-		// For now, loop above node by default
-		// direction vectors (-r, 2r) (r, 2r)
-		
-		
+		Point2D.Float vert = new Point2D.Float(0, -1*s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
+		Point2D.Float v1 = Geometry.rotate(vert, angle1);
+		Point2D.Float v2 = Geometry.rotate(vert, angle2);
+		ctrls[P1] = Geometry.add(s.getLocation(), v1);
+		ctrls[P2] = Geometry.add(s.getLocation(), v2);
+		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(v1, 3));
+		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(v2, 3));
 		setDirty(true);
 	}
 	
 	/**
 	 * FIXME if move control points, endpoints must adjust too.
+	 * Let Node or NodeLayout wiggle the endpoints?
 	 * 
 	 * @param point
 	 * @param index
@@ -176,7 +185,7 @@ public class EdgeLayout extends GraphicalLayout {
 	}
 	
 	public void setCurve(Point2D.Float[] bezierControls) {
-		this.ctrls = bezierControls;
+		this.ctrls = bezierControls;		
 		setDirty(true);
 	}
 	
@@ -184,7 +193,7 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[P1] = new Point2D.Float((float)p1.getX(), (float)p1.getY());
 		ctrls[CTRL1] = new Point2D.Float((float)c1.getX(), (float)c1.getY());
 		ctrls[CTRL2] = new Point2D.Float((float)c2.getX(), (float)c2.getY());;
-		ctrls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());
+		ctrls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());		
 		setDirty(true);
 	}
 
@@ -192,7 +201,7 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[0] = p1;
 		ctrls[1] = c1;
 		ctrls[2] = c2;
-		ctrls[3] = p2;
+		ctrls[3] = p2;		
 		setDirty(true);
 	}
 

@@ -408,8 +408,20 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 	}
 	
+	/**
+	 * Stores the layout for the given edge for every transition represented
+	 * by this edge.
+	 * 
+	 * @param edge
+	 */
 	public void commitEdgeLayout(Edge edge){
-		
+		EdgeLayout layout = (EdgeLayout)edge.getLayout();
+		Iterator<FSATransition> transitions = edge.getTransitions();
+		while(transitions.hasNext()){
+			metaData.setLayoutData(transitions.next(), layout);
+		}
+		fsa.notifyAllBut(this);
+		this.notifyAllSubscribers();
 	}
 	
 	public void delete(Node n1){
@@ -420,13 +432,15 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	public void delete(Edge e){
-		// remove the edge from the list
-		// don't remove the event
-		// get n1 and n2, the source and target nodes for this edge
-		// if e is the only edge adjacent to n1, delete n1
-		// if e is the only edge adjacent to n2, delete n2
-		// DEBUG
-		Hub.displayAlert("GraphModel: Implement delete(Edge) ASAP");
+		Iterator<FSATransition> transitions = e.getTransitions();
+		while(transitions.hasNext()){
+			fsa.remove(transitions.next());
+		}
+		e.getSource().remove(e);
+		e.getTarget().remove(e);
+		edges.remove(e);
+		fsa.notifyAllBut(this);
+		this.notifyAllSubscribers();
 	}
 
 	public GraphElement getGraph() {

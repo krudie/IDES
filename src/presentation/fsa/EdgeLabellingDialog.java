@@ -79,6 +79,8 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		text.setPreferredSize(new Dimension(200, 20));
 		buttonCreate = new JButton("Create");
 		buttonCreate.setEnabled(false);
+		buttonDelete = new JButton("Delete");
+		buttonDelete.setEnabled(false);
 		checkObservable = new JCheckBox("Observable");
 		checkObservable.setEnabled(false);
 		checkControllable = new JCheckBox("Controllable");
@@ -158,7 +160,6 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		// For now just refresh list models with local event sets from the active FSA
 		
 		// Selected events are those assigned to transitions on the edge
-		//selectedEvents.clear();
 		listSelectedEvents.removeAll();
 		Iterator<FSATransition> trans = edge.getTransitions();
 		while(trans.hasNext()){
@@ -169,15 +170,10 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 		if(!listSelectedEvents.getContents().isEmpty()){
 			// TODO Set the current event to the first one in the selected list
-			
+			listSelectedEvents.setSelectedIndex(0);
 		}
-		
-		refreshAvailableEvents();
-	}
 
-	private void refreshAvailableEvents(){
-//		 Available events are those in the active FSA minus those already selected
-		//availableEvents.clear();
+		// Available events are those in the active FSA minus those already selected		
 		listAvailableEvents.removeAll();
 		Iterator<FSAEvent> events = IDESWorkspace.instance().getActiveModel().getEventIterator();
 		while(events.hasNext()){
@@ -188,7 +184,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 			}
 		}
 	}
-	
+
 	public void setEdge(Edge edge){
 		this.edge = edge;
 		if(edge != null){
@@ -273,6 +269,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	// Data
 	private Edge edge;
 	private Event newEvent;
+	private Event selectedEvent;
 	
 	// LATER /////////////////////////////////////////////////////////////
 	private FSAEventsModel eventsModel; // the publisher to which i attach
@@ -283,7 +280,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	private JCheckBox checkObservable, checkControllable;	
 	private MutableList listSelectedEvents;
 	private FilteringJList listAvailableEvents;
-	private JButton buttonCreate, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
+	private JButton buttonCreate, buttonDelete, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
 		
 		
 	@SuppressWarnings("serial") 

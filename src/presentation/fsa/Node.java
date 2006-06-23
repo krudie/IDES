@@ -207,19 +207,6 @@ public class Node extends GraphElement {
 	protected FSAState getState(){
 		return state;
 	}
-
-//	/**
-//	 * @return
-//	 */
-//	public boolean hasSelfLoop() {
-//		Iterator edges = children();
-//		while(edges.hasNext()){
-//			if(((Edge)edges.next()).isSelfLoop()){
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
 	
 	/**
 	 * Gets the label of the node.

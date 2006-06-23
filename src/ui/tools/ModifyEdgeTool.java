@@ -53,7 +53,6 @@ public class ModifyEdgeTool extends DrawingTool {
 		if(dragging){  // ??? Why was I using a dragging flag if I'm inside this method ?
 			// set the selected control point to the current location
 			layout.setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
-			// layout.computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());
 			// repaint the context
 			context.repaint();			
 		}
@@ -67,8 +66,12 @@ public class ModifyEdgeTool extends DrawingTool {
 		// Did we hit an edge? So far yes, since we set this tool from the EdgePopup.
 		if(context.hasCurrentSelection()){
 			// FIXME might have a class cast exception
-			edge = (Edge)context.getCurrentSelection().child(0); 
+			edge = (Edge)context.getCurrentSelection().child(0);
 			layout = (EdgeLayout) edge.getLayout();
+			
+			// TODO if selected a different edge, from the one stored in edge variable,
+			// toggle the selection colour and modify the new edge.
+			
 			// TODO previousLayout = layout.clone();
 		
 			// get control point selected
@@ -94,14 +97,12 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMouseReleased(MouseEvent m) {
-		// TODO execute a ModifyEdgeCommand which should commit the changes to
-		// the edge and its layout via the GraphModel
-		ModifyEdgeCommand cmd = new ModifyEdgeCommand();
-		cmd.setEdge(edge);
-		cmd.setLayout(previousLayout);
-		cmd.execute();
-		context.repaint();
-		dragging = false;
+		if(edge != null){
+			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
+			cmd.execute();
+			context.repaint();
+		}
+		dragging = false;		
 	}
 
 	public void handleKeyTyped(KeyEvent ke) {}

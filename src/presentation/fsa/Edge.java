@@ -53,6 +53,9 @@ public class Edge extends GraphElement {
 		arrow = new ArrowHead();
 		label = new GraphLabel("");
 		insert(label);
+	    handler = new EdgeHandler(this);
+	    insert(handler);
+
 		update();
 	}
 	
@@ -65,6 +68,9 @@ public class Edge extends GraphElement {
 		arrow = new ArrowHead();
 		label = new GraphLabel("");
 		insert(label);
+	    handler = new EdgeHandler(this);
+	    insert(handler);
+
 		update();
 	}
 	
@@ -77,14 +83,18 @@ public class Edge extends GraphElement {
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
-		label = new GraphLabel("");
+		label = new GraphLabel("");		
 		insert(label);
+	    handler = new EdgeHandler(this);
+	    insert(handler);
+
 		update();
 	}
 
 	public void draw(Graphics g) {	
 		if(layout.isDirty()){
 			update();
+			handler.update();
 			layout.setDirty(false);
 		}
 		
@@ -135,10 +145,7 @@ public class Edge extends GraphElement {
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
 	    Point2D.Float unitDir = Geometry.unit(new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2())));	    
 	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));
-	    	    
-	    handler = new EdgeHandler(this);
 	    handler.setVisible(false);
-	    insert(handler);
 		
 	    // Concat label from associated event[s]
 	    String s = "";	    

@@ -3,6 +3,7 @@ package ui.command;
 import javax.swing.undo.UndoableEdit;
 
 import main.Hub;
+import main.IDESWorkspace;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
@@ -24,6 +25,26 @@ public class EdgeCommands {
 			System.out.println("Create an event and add to global and local alphabets.");
 		}
 		
+	}
+	
+	public static class DeleteEdgeCommand extends UndoableActionCommand {
+
+		private Edge edge;
+		
+		public DeleteEdgeCommand(Edge edge){
+			super("delete.edge.command");
+			this.edge = edge;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.pietschy.command.undo.UndoableActionCommand#performEdit()
+		 */
+		@Override
+		protected UndoableEdit performEdit() {
+			IDESWorkspace.instance().getActiveGraphModel().delete(edge);
+			// TODO Store and return edge
+			return null;
+		}		
 	}
 	
 	public static class RemoveEventCommand extends ActionCommand {
@@ -63,6 +84,15 @@ public class EdgeCommands {
 			super("modify.edge.command");
 		}
 		
+		/**
+		 * @param edge2
+		 * @param previousLayout2
+		 */
+		public ModifyEdgeCommand(Edge edge2, EdgeLayout previousLayout2) {
+			setEdge(edge2);
+			setLayout(previousLayout2);
+		}
+
 		public void setEdge(Edge edge){
 			this.edge = edge;
 		}
@@ -75,13 +105,11 @@ public class EdgeCommands {
 		 * @see org.pietschy.command.undo.UndoableActionCommand#performEdit()
 		 */
 		@Override
-		protected UndoableEdit performEdit() {
-			// TODO   IDESWorkspace.instance().getActiveGraphModel().???
-			Hub.displayAlert("ModifyEdgeCommand: Please implement performEdit method");
-			// UndoableEdit containing the Edge id and a clone of the previous layout OR
+		protected UndoableEdit performEdit() {			
+			IDESWorkspace.instance().getActiveGraphModel().commitEdgeLayout(edge);
+			// TODO UndoableEdit containing the Edge id and a clone of the previous layout OR
 			// just of the curve.
 			return null;
-		}
-		
+		}		
 	}
 }
