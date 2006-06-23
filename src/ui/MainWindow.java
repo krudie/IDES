@@ -24,6 +24,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -56,6 +57,13 @@ import ui.command.GraphCommands.TextCommand;
  */
 public class MainWindow extends JFrame implements Subscriber {
 
+
+	protected JPanel center=new JPanel(new BorderLayout());
+	protected JPanel left=new JPanel();
+	protected JPanel right=new JPanel();
+	protected JPanel bottom=new JPanel();
+
+	
 	String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/";
 	
 	public MainWindow() {
@@ -66,18 +74,22 @@ public class MainWindow extends JFrame implements Subscriber {
 		    }
 		});
 		setIconImage(new ImageIcon(imagePath + "logo.gif").getImage());
+		
+		JSplitPane bottomTop=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,center,bottom);
+		//getContentPane().add(bottomTop);
+		
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
-		drawingBoard = new GraphDrawingView();		
+		drawingBoard = new GraphDrawingView();
 //		 Get the screen dimensions.
 	    Toolkit tk = Toolkit.getDefaultToolkit ();
 	    Dimension screen = tk.getScreenSize();
 	    setSize(screen.width, screen.height);
 		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.7), (int) (getSize().height*0.7)));
-		createAndAddTabbedPane();				
+		createAndAddTabbedPane();
 		
 		// TODO add graph spec, latex and eps views to the state model		
-		filmStrip = new FilmStrip();	
+		filmStrip = new FilmStrip();
 		filmStrip.setSize(new Dimension((int)(getSize().width * 0.9), (int)(getSize().height * 0.3)));
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
 	

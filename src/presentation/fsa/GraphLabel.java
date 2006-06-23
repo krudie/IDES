@@ -118,9 +118,21 @@ public class GraphLabel extends GraphElement {
 	}
 
 	public Rectangle bounds() {
-		// TODO Compute bounds for LaTeX image
-		// Lenko writes: use the size of "rendered"
-		
+		if(LatexManager.isLatexEnabled())
+		{
+			if(rendered!=null)
+			{
+				bounds.height=rendered.getHeight();
+				bounds.width=rendered.getWidth();
+			}
+			else //arbitrary dimensions: has to be recomputed after rendering
+			{
+				bounds.height=10;
+				bounds.width=10;
+			}					
+		}
+		else{
+		//Lenko writes: TODO update bounds on label change
 		// NOTE Unless we use deprecated getFontMetrics method, we have to compute 
 		// the bounds until via a graphics context object in the draw method.
 		if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
@@ -129,6 +141,7 @@ public class GraphLabel extends GraphElement {
 			bounds.setSize(metrics.stringWidth(layout.getText()), metrics.getHeight() );
 			bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
 										(int)(layout.getLocation().y - bounds.height/2)));			
+		}
 		}
 		return bounds;				
 	}
@@ -167,6 +180,7 @@ public class GraphLabel extends GraphElement {
 	 */
 	public void render() throws LatexRenderException
 	{
+		dirty=true;
 		if(layout.getText()==null||"".equals(layout.getText()))
 		{
 			rendered=LatexManager.getRenderer().getEmptyImage();
