@@ -60,7 +60,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		systems.put(activeModelName, (Automaton) fsa);
 		metadata.put(activeModelName, new MetaData((Automaton)fsa));
 		graphs.put(activeModelName, new GraphModel((Automaton)fsa, metadata.get(activeModelName)));
-		eventsModel.addLocalEvents(fsa);		
+		eventsModel.addLocalEvents(fsa);
 		notifyAllSubscribers();
 		unsaved = true;
 	}
@@ -106,7 +106,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	 * 
 	 * @return an iterator of all graph models in this workspace
 	 */
-	public Iterator getGraphModels(){
+	public Iterator<GraphModel> getGraphModels(){
 		ArrayList g = new ArrayList();
 		Iterator iter = graphs.entrySet().iterator();
 		while(iter.hasNext()){

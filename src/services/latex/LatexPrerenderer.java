@@ -37,6 +37,13 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	private boolean cancel=false;
 	
 	/**
+	 * If process was interrupted (canceled by the user), this is set to <code>true</code>.
+	 * @see #interrupt()
+	 * @see #wasInterrupted()
+	 */
+	private boolean interrupted=false;
+	
+	/**
 	 * Displays a dialog box with a progress bar and starts rendering the labels of a
 	 * {@link GraphModel}. The user may cancel the process
 	 * using the controls in the dialog box. 
@@ -44,18 +51,22 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	 */
 	public LatexPrerenderer(GraphModel model)
 	{
-		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),Hub.string("renderPrerender"));
+		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),
+				Hub.string("renderPrerender")+model.getName());
 		this.model=model;
 		new Thread(this).start();
 		setVisible(true);
 	}
 	
 	/**
-	 * Interrupts the process of rendering. 
+	 * Interrupts the process of rendering.
+	 * @see #interrupted 
 	 */
 	public void interrupt()
 	{
+		interrupted=true;
 		Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		LatexManager.setLatexEnabled(false);
 		cancel=true;
 	}
 	
@@ -65,6 +76,8 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	 */
 	public void run()
 	{
+		while(!isVisible())
+			Thread.yield();
 		HashSet<GraphLabel> labels=new HashSet<GraphLabel>();
 		Collection<Node> nodes=model.getNodes();
 		for(Node n: nodes)
@@ -114,5 +127,16 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	{
 		Hub.getMainWindow().setCursor(Cursor.getDefaultCursor());
 		dispose();
+	}
+	
+	/**
+	 * Returns if the process was interrupted.
+	 * @return <code>true</code> if the process was interrupted; <code>false</code> otherwise
+	 * @see #interrupted
+	 * @see #interrupt()
+	 */
+	public boolean wasInterrupted()
+	{
+		return interrupted;
 	}
 }

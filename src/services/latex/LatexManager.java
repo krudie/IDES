@@ -1,11 +1,14 @@
 package services.latex;
 
 import java.io.File;
+import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.pietschy.command.ToggleCommand;
+
+import presentation.fsa.GraphModel;
 
 import ui.OptionsWindow;
 import ui.command.OptionsCommands;
@@ -100,13 +103,72 @@ public class LatexManager {
 	}
 	
 	/**
+	 * A {@link Runnable} that updates the LaTeX redering settings.
+	 * This is needed since the {@link LatexPrerenderer} displays its
+	 * progress; thus the updating cannot be done inside the Swing
+	 * event loop.
+	 * @see LatexManager#setLatexEnabled(boolean)
+	 * @see LatexManager#setLatexEnabledFromMenu(boolean)
+	 *
+	 * @author Lenko Grigorov
+	 */
+	private static class SetLatexUpdater implements Runnable
+	{
+		/**
+		 * The setting that has to be effected. <code>true</code> to
+		 * enable LaTeX rendering; <code>false</code> otherwise.
+		 */
+		private boolean setting;
+		
+		/**
+		 * Constructs the updater object.
+		 * @param b <code>true</code> to enable LaTeX rendering; <code>false</code> otherwise
+		 */
+		public SetLatexUpdater(boolean b)
+		{
+			setting=b;
+		}
+		
+		/**
+		 * Update the LaTeX rendering setting.
+		 */
+		public void run()
+		{
+			Hub.persistentData.setBoolean("useLatexLabels",setting);
+			if(setting)
+			{
+				Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();
+				while(i.hasNext()&&!new LatexPrerenderer(i.next()).wasInterrupted());
+			}
+			Hub.getWorkspace().notifyAllSubscribers();			
+		}
+	}
+	
+	/**
+	 * Called when LaTeX rendering of labels is turned on or off from the menu.
+	 * <p>A separate method is needed because {@link #setLatexEnabled(boolean)}
+	 * modifies the menu item which triggers a call back from the menu item,
+	 * which would lead to an infinite loop of calls. 
+	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off
+	 * @see #setLatexEnabled(boolean)
+	 * @see LatexManager.SetLatexUpdater  
+	 */
+	protected static void setLatexEnabledFromMenu(boolean b)
+	{
+		SwingUtilities.invokeLater(new SetLatexUpdater(b));
+	}
+	
+	/**
 	 * Switches LaTeX rendering of labels on and off.
-	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off  
+	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off
+	 * @see #setLatexEnabledFromMenu(boolean)
+	 * @see LatexManager.SetLatexUpdater  
 	 */
 	public synchronized static void setLatexEnabled(boolean b)
 	{
-		Hub.persistentData.setBoolean("useLatexLabels",b);
-		if(menuItem!=null)
+		if(menuItem==null)
+			setLatexEnabledFromMenu(b);
+		else
 			menuItem.setSelected(b);
 	}
 

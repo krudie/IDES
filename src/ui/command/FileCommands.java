@@ -54,12 +54,6 @@ public class FileCommands {
 			if(fsa != null){
 
 				IDESWorkspace.instance().addFSAModel(fsa);
-				
-				if(services.latex.LatexManager.isLatexEnabled())
-				{
-					LatexPrerenderer o=new LatexPrerenderer(Hub.getWorkspace().getActiveGraphModel());
-					new Thread(o).start();
-				}
 
 			}
 		}
