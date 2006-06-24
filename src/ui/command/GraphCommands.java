@@ -138,7 +138,7 @@ public class GraphCommands {
 	public static class MoveCommand extends UndoableActionCommand {
 
 		GraphDrawingView context;
-		SelectionGroup currentSelection = null;
+		SelectionGroup selection = null;		
 		Point displacement;
 		
 		public MoveCommand(GraphDrawingView context) {
@@ -153,23 +153,22 @@ public class GraphCommands {
 		 * @param displacement
 		 */
 		public MoveCommand(GraphDrawingView context, SelectionGroup currentSelection, Point displacement) {
-			this.currentSelection = currentSelection;
+			this.selection = currentSelection.copy();
 			this.context = context;
 			this.displacement = displacement;
 		}
 
 		@Override
 		protected UndoableEdit performEdit() {
-			if(currentSelection == null){
+			if(selection == null){
 				context.setTool(GraphDrawingView.MOVE);
 				return null;
 			}else{
 				// finalize movement of current selection in graph model
-				context.getGraphModel().saveMovement(currentSelection);
+				context.getGraphModel().saveMovement(context.getCurrentSelection());
 				// TODO create an UndoableEdit object using
-				// my instance variables and return it.
-				
-				currentSelection = null;
+				// copy of currentSelection and return it.
+
 				// TODO return undoableEdit object
 				return null;
 			}
@@ -182,7 +181,7 @@ public class GraphCommands {
 		
 		GraphDrawingView context;
 		String text;
-		GraphElement currentSelection = null;
+		GraphElement element = null;
 		
 		public TextCommand(GraphDrawingView context){
 			super("text.command");
@@ -191,55 +190,55 @@ public class GraphCommands {
 		
 		public TextCommand(GraphDrawingView context, GraphElement currentSelection, String text) {
 			super("text.command");
-			this.currentSelection = currentSelection;
+			this.element = currentSelection;
 			this.context = context;
 			this.text = text;
 		}
 	
 		public TextCommand(GraphDrawingView context, GraphElement currentSelection) {
 			super("text.command");
-			this.currentSelection = currentSelection;
+			this.element = currentSelection;
 			this.context = context;
 		}
 
+		public void setElement(GraphElement element){
+			this.element = element;
+		}
+		
 		@Override
 		protected UndoableEdit performEdit() {
-			if(currentSelection == null){
+			if(element == null){
 				context.setTool(GraphDrawingView.TEXT);
 			}else{				
-				if(currentSelection == null){
+				if(element == null){
 					// TODO create a new free label
 					
 				// KLUGE: instanceof is rotten style, fix this
 				// FIXME Move to NodeCommands.LabelCommand
-				}else if (currentSelection instanceof Node){				
-					Node node = (Node)currentSelection;
+				}else if (element instanceof Node){				
+					Node node = (Node)element;
 					// if selection is a node				
 					String text = JOptionPane.showInputDialog("Enter state name: ");
 					if(text != null){
 						context.getGraphModel().labelNode(node, text);						
 					}
 
-				// TODO if selection is an edge, open the edge-labelling dialog
-				}else if(currentSelection instanceof Edge){
-					Edge edge = (Edge)currentSelection;
-					// FIXME: Don't show a new one; set an existing one visible
+				}else if(element instanceof Edge){
+					Edge edge = (Edge)element;			
 					EdgeLabellingDialog.showDialog(context, edge);
 					// NOTE don't need an undoable edit since dialog has ok, apply and cancel buttons
 					
 				}else{
 					// TODO on a free label
-					GraphLabel label = (GraphLabel)currentSelection;
+					GraphLabel label = (GraphLabel)element;
 					String inputValue = JOptionPane.showInputDialog("Enter label text: ");
 					if(inputValue != null){
 						context.getGraphModel().addGraphLabel(label, text);
 					}
 				}
 				context.repaint();
-			}			
-			// DEBUG
-			//System.out.println("TextCommand.performEdit(): text = " + text);
-			currentSelection = null;
+			}
+			element = null;
 			text = null;
 			// TODO create an UndoableEdit object using
 			// my instance variables and return it.
@@ -276,4 +275,56 @@ public class GraphCommands {
 			context.setTool(GraphDrawingView.ZOOM_OUT);
 		}
 	}
+
+	/**
+	 * Represent a user issued command to delete an element of the graph.
+	 * ??? What about deleting elements of a text label? 
+	 * 
+	 * @author helen bretzke
+	 *
+	 */
+	public static class DeleteCommand extends UndoableActionCommand {
+		
+		private GraphElement element;	 // TODO decide on type, GraphElement composite type?
+		private GraphDrawingView context;  // Does this need to be stored?
+		
+		/**
+		 * Default constructor; handy for exporting this command for group setup.
+		 *
+		 */
+		public DeleteCommand(){
+			super("delete.command");
+		}
+		
+		public DeleteCommand(GraphDrawingView context){
+			this(null, context);
+		}
+		
+		/**
+		 * Creates a command that, when executed, will cut 
+		 * <code>element</code> from the given context.
+		 * 
+		 * @param element
+		 * @param context
+		 */
+		public DeleteCommand(GraphElement element, GraphDrawingView context) {
+			this();
+			this.element = element;
+			this.context = context;
+		}		
+
+		public void setElement(GraphElement element){
+			this.element = element;
+		}
+		
+		@Override
+		protected UndoableEdit performEdit() {
+			// TODO return Undoable edit containing removed element and where it should be restored to
+			// the view is not enough since view changes models; need to know the model...
+			context.getGraphModel().delete(element);
+			return null;
+		}
+		
+	}
+
 }

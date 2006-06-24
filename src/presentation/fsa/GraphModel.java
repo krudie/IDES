@@ -241,8 +241,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	  */
 	public void finishEdge(Edge e, Node n2){
 		e.setTarget(n2);
-		// Note: shouldn't access layout in this manner since now have to call update separately
-		// should use setlayout in class Edge
+		n2.insert(e);		
 		((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
 		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 		metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
@@ -266,9 +265,10 @@ public class GraphModel extends Publisher implements Subscriber {
 		metaData.setLayoutData(t, layout);
 		fsa.add(t);
 		fsa.notifyAllBut(this);
-		Edge e = new Edge(t, n1, n2, layout);
+		Edge e = new Edge(t, n1, n2, layout);		
 		n1.insert(e);
-		edges.put(new Long(t.getId()), e);
+		n2.insert(e);
+		edges.put(new Long(t.getId()), e);		
 		notifyAllSubscribers();
 	}
 
@@ -300,9 +300,11 @@ public class GraphModel extends Publisher implements Subscriber {
 	
 	protected void saveMovement(Edge e){
 		// for all transitions in e
+		EdgeLayout layout = (EdgeLayout)e.getLayout();
+		layout.update();
 		Iterator<FSATransition> t = e.getTransitions();
 		while(t.hasNext()){
-			metaData.setLayoutData(t.next(), (EdgeLayout)e.getLayout());
+			metaData.setLayoutData(t.next(), layout);
 		}		
 	}
 	
@@ -363,11 +365,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		if(b && selfLoop == null){
 			// add the edge
 			addEdge(node, node);
-		}
-		// update the node
-		
-		// notify subscribers
-		
+		}		
 	}
 
 	/**
@@ -407,26 +405,36 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * Stores the layout for the given edge for every transition represented
 	 * by this edge.
 	 * 
+	 * FIXME changes undone when adjacent node is moved.
+	 * 
 	 * @param edge
 	 */
 	public void commitEdgeLayout(Edge edge){
-		EdgeLayout layout = (EdgeLayout)edge.getLayout();
-		Iterator<FSATransition> transitions = edge.getTransitions();
-		while(transitions.hasNext()){
-			metaData.setLayoutData(transitions.next(), layout);
-		}
+		saveMovement(edge);
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}
 	
-	public void delete(Node n1){
+	public void delete(GraphElement el){
+		// KLUGE This is worse (less efficient) than using instance of ...
+		if(nodes.containsValue(el)){
+			delete((Node)el);			
+		}else if(edges.containsValue(el)){
+			delete((Edge)el);
+		}else{
+			labels.remove(el);
+		}
+		notifyAllSubscribers();
+	}
+	
+	private void delete(Node n1){
 		// delete all adjacent edges
 		// remove n
 		// DEBUG
 		Hub.displayAlert("GraphModel: Implement delete(Node) ASAP");
 	}
 	
-	public void delete(Edge e){
+	private void delete(Edge e){
 		Iterator<FSATransition> transitions = e.getTransitions();
 		while(transitions.hasNext()){
 			fsa.remove(transitions.next());
@@ -506,33 +514,34 @@ public class GraphModel extends Publisher implements Subscriber {
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
 		Entry entry;
-		GraphElement g;
+		Node n;
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (GraphElement)entry.getValue();
-			if(g.intersects(p)){				
-				return g;				
+			n = (Node)entry.getValue();
+			if(n.intersects(p)){				
+				return n;				
 			}
 		}
 		
+		Edge e;
 		// check for intersection with edges
 		iter = edges.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (GraphElement)entry.getValue();
-			if(g.intersects(p)){		
-				return g;				
+			e = (Edge)entry.getValue();
+			if(e.intersects(p)){		
+				return e;				
 			}
 		}
 		
-		
+		GraphLabel l;
 		// check for intersection with free labels
 		iter = labels.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			g = (GraphElement)entry.getValue();
-			if(g.intersects(p)){ // TODO && do a more thorough intersection test				
-				return g;				
+			l = (GraphLabel)entry.getValue();
+			if(l.intersects(p)){				
+				return l;				
 			}
 		}		
 		// no intersection

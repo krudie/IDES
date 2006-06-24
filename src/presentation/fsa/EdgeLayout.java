@@ -17,6 +17,7 @@ public class EdgeLayout extends GraphicalLayout {
 	public static final int CTRL1 = 1;
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
+	public static final double EPSILON = 0.01; // lower bound for angle below which is treated as zero 
 		
 	// Indicates whether an edge can be rigidly translated 
 	// with both of its nodes or must be recomputed.
@@ -78,7 +79,8 @@ public class EdgeLayout extends GraphicalLayout {
 	 * @param t layout for target node
 	 * @return array of 4 Bezier control points for a straight, directed edge
 	 */
-	public void computeCurve(NodeLayout s, NodeLayout t){		
+	public void computeCurve(NodeLayout s, NodeLayout t){
+		
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t)){
 			// TODO
@@ -99,13 +101,15 @@ public class EdgeLayout extends GraphicalLayout {
 		// endpoints as calculated by EdgeLayout.
 		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));
 	
-		if(Math.round(angle1) == 0 && Math.round(angle2) == 0){		
+		if(angle1 < EPSILON && angle2 < EPSILON){		
 			// compute a straight edge		
 			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
 			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
 			
 			ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(norm * s1)));
-			ctrls[CTRL2] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(2 * norm * s2)));			
+			ctrls[CTRL2] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(2 * norm * s2)));
+			
+			setLocation(ctrls[P2].x, ctrls[P2].y);
 			
 		}else{ // recompute the edge preserving the shape of the curve
 			// compute CTRL1
@@ -140,6 +144,7 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unit, (float)(norm * s1)));
 		ctrls[CTRL2] = Geometry.add(centre2, Geometry.scale(unit, (float)(-1 * norm * s2)));
 		ctrls[P2] = centre2;
+		setLocation(ctrls[P2].x, ctrls[P2].y);
 		setDirty(true);		
 	}
 	
@@ -165,6 +170,7 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[P2] = Geometry.add(s.getLocation(), v2);
 		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(v1, 3));
 		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(v2, 3));
+		setLocation(ctrls[P2].x, ctrls[P2].y);
 		setDirty(true);
 	}
 	
@@ -193,7 +199,7 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[P1] = new Point2D.Float((float)p1.getX(), (float)p1.getY());
 		ctrls[CTRL1] = new Point2D.Float((float)c1.getX(), (float)c1.getY());
 		ctrls[CTRL2] = new Point2D.Float((float)c2.getX(), (float)c2.getY());;
-		ctrls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());		
+		ctrls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());	
 		setDirty(true);
 	}
 

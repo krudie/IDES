@@ -25,9 +25,8 @@ import ui.command.EdgeCommands.ModifyEdgeCommand;
 public class ModifyEdgeTool extends DrawingTool {
 	
 	private Edge edge;
-	private EdgeLayout previousLayout;
-	private EdgeLayout layout;
-	private Float previousCtrlPt;  // store original position of control point for undo
+	private EdgeLayout previousLayout;  // TODO clone for undo
+	private EdgeLayout layout; 
 	private int pointType = EdgeHandler.NO_INTERSECTION;  // CTRL1 or CTRL2
 	
 	public ModifyEdgeTool(GraphDrawingView context){
@@ -78,11 +77,11 @@ public class ModifyEdgeTool extends DrawingTool {
 			if(edge.getHandler().intersects(m.getPoint())){
 				edge.setSelected(true);
 				pointType = edge.getHandler().getLastIntersected();
-				if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){
-					previousCtrlPt = layout.getCurve()[pointType];			
+				if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
 					dragging = true;
 				}else{
 					pointType = EdgeHandler.NO_INTERSECTION;
+					// context.clearCurrentSelection();
 					dragging = false;					
 				}
 			}else{
@@ -97,9 +96,9 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMouseReleased(MouseEvent m) {
-		if(edge != null){
+		if(edge != null){ // TODO check to see if edge has been changed
 			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
-			cmd.execute();
+			cmd.execute();		
 			context.repaint();
 		}
 		dragging = false;		

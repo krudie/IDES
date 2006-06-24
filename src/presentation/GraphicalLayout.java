@@ -14,7 +14,7 @@ public class GraphicalLayout {
 	public static final Color DEFAULT_SELECTION_COLOR = Color.BLUE;
 	
 	public static final Stroke FINE_STROKE = new BasicStroke(1);
-	public static final Stroke WIDE_STROKE = new BasicStroke(2);
+	public static final Stroke WIDE_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
 	public static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT,
 																BasicStroke.JOIN_MITER,         
 																50, new float[] {5, 2}, 0);	

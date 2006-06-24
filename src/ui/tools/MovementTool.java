@@ -23,14 +23,23 @@ public class MovementTool extends DrawingTool {
 	
 	@Override
 	public void handleMousePressed(MouseEvent me) {
-		// get the object to be moved
+		// get the object to be moved		
 		start = me.getPoint();
 		prev = start;
-		if(!context.hasCurrentSelection()){
-			context.updateCurrentSelection(start);
-			context.repaint();
-		}			
-		dragging = true;
+		
+		// a group has been selected, move the whole thing
+		if(!context.hasCurrentSelection() && context.getCurrentSelection().hasMultipleElements()){
+		// otherwise update the currently selected element
+			dragging = true;
+		}else{
+			context.clearCurrentSelection();
+			context.updateCurrentSelection(start);			
+					
+			if(context.hasCurrentSelection()){
+				dragging = true;
+			}
+		}
+		context.repaint();
 	}
 	
 	public void handleMouseDragged(MouseEvent me) {
@@ -55,7 +64,7 @@ public class MovementTool extends DrawingTool {
 		// save the set of selected objects for undo purposes
 		// NOTE: must make COPIES of all references in the selection group		
 		MoveCommand moveCmd = new MoveCommand(context, 
-											context.getCurrentSelection().copy(), 
+											context.getCurrentSelection(), 
 											displacement);
 		// finalize movement changes in graph model
 		moveCmd.execute();

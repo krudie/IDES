@@ -50,4 +50,14 @@ public class SelectionGroup extends GraphElement {
 		}
 		super.translate(x,y);
 	}
+
+	/**
+	 * @return
+	 */
+	public boolean hasMultipleElements() {
+		if(hasChildren()){
+			return this.child(1) != null;
+		}
+		return false;
+	}
 }

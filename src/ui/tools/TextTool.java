@@ -24,10 +24,8 @@ public class TextTool extends DrawingTool {
 	public void handleMouseClicked(MouseEvent me) {
 		
 		// get current selection
-		if(context.updateCurrentSelection(me.getPoint())){		
-			// TODO on a node ...
+		if(context.updateCurrentSelection(me.getPoint())){			
 			new GraphCommands.TextCommand(context, (GraphElement)context.getCurrentSelection().child(0)).execute();			
-			
 		}else{
 			// if nothing selected
 			// TODO create a free label ...			

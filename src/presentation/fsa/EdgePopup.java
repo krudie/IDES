@@ -76,7 +76,8 @@ public class EdgePopup extends JPopupMenu {
 		public void actionPerformed(ActionEvent arg0) {
 			Object source = arg0.getSource();
 			if(source.equals(miModify)){
-				edge.setSelected(true);  // Is this necessary?				
+				//edge.setSelected(true);  // Is this necessary?
+				edge.getHandler().setVisible(true);
 				view.setTool(GraphDrawingView.MODIFY);
 			}else if(source.equals(miEditEvents)){
 				EdgeLabellingDialog.showDialog(view, edge);

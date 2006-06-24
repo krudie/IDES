@@ -39,8 +39,6 @@ public class FileOperations {
 	public static FSAModel openAutomaton(File f) {		
 	    AutomatonParser ap = new AutomatonParser();	    	
         Automaton automaton = ap.parse(f);
-        // DEBUG
-        System.out.println("Parent: " + f.getParent());
         SystemVariables.instance().setLast_used_path(f.getParent());
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
         return automaton;		
@@ -51,8 +49,7 @@ public class FileOperations {
      * @param a the automaton to save
      * @param path the path to save it to
      */      
-    public static void saveAutomaton(Automaton a){
-    	System.out.println("Last used path: " + SystemVariables.instance().getLast_used_path());
+    public static void saveAutomaton(Automaton a){    	
         File file = new File(SystemVariables.instance().getLast_used_path(), a.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) {

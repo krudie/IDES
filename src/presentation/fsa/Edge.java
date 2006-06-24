@@ -104,20 +104,26 @@ public class Edge extends GraphElement {
 		if(source.isHighlighted() || 
 				target != null && target.isHighlighted()){
 			setHighlighted(true);
+			g2d.setColor(layout.getHighlightColor());
 		}else{
 			setHighlighted(false);
+			g2d.setColor(layout.getColor());
 		}
 				
 		// Silly duplicate code.
-		if(isHighlighted()){
-			g2d.setColor(layout.getHighlightColor());
-		}else if (isSelected()){
-			handler.setVisible(true);
+//		if(isHighlighted()){
+//			g2d.setColor(layout.getHighlightColor());
+//		}else if (isSelected()){
+//			handler.setVisible(true);
+//			g2d.setColor(layout.getSelectionColor());
+//		}else{
+//			handler.setVisible(false);
+//			g2d.setColor(layout.getColor());
+//		}		
+		
+		if(isSelected()){
 			g2d.setColor(layout.getSelectionColor());
-		}else{
-			handler.setVisible(false);
-			g2d.setColor(layout.getColor());
-		}		
+		}
 		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 	    g2d.draw(path);
@@ -158,14 +164,13 @@ public class Edge extends GraphElement {
 	    if(s.length()>0) s = s.substring(0, s.length() - 1);
 	    label.setText(s);
 	    
-	    // Compute location of label: midpoint of curve (ignore label offset vector from V2) 
+	    // Compute location of label: midpoint of curve 
+	    // TODO ignore label offset vector from V2, let the EdgeLayout store that info... 
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());
-	    label.getLayout().setLocation((float)location.getX(), (float)location.getY());
-	    
-		//new GraphLabel(s, this, Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()),	((EdgeLayout)layout).getLabelOffset())));
+	    label.getLayout().setLocation((float)location.getX(), (float)location.getY());	    	
 	}
 	
 	
@@ -173,7 +178,7 @@ public class Edge extends GraphElement {
 	 * @return true iff p intersects with this edge. 
 	 */
 	public boolean intersects(Point p){
-		if(isSelected()){
+		if(isSelected() && handler.isVisible()){
 			return curve.contains(p) || arrow.contains(p) || handler.intersects(p);
 		}else{
 			return curve.contains(p) || arrow.contains(p);

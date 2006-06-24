@@ -98,47 +98,5 @@ public class EditCommands {
 		}
 
 	}
-	
-
-	
-	/**
-	 * Represent a user issued command to delete an element of the graph.
-	 * ??? What about deleting elements of a text label? 
-	 * 
-	 * @author helen bretzke
-	 *
-	 */
-	public static class DeleteCommand extends UndoableActionCommand {
 		
-		private Object element;	 // TODO decide on type, GraphElement composite type?
-		private Object context;  // Does this need to be stored?
-		
-		/**
-		 * Default constructor; handy for exporting this command for group setup.
-		 *
-		 */
-		public DeleteCommand(){
-			super("delete.command");
-		}
-		
-		/**
-		 * Creates a command that, when executed, will cut 
-		 * <code>element</code> from the given context.
-		 * 
-		 * @param element
-		 * @param context
-		 */
-		public DeleteCommand(Object element, Object context) {
-			this.element = element;
-			this.context = context;
-		}		
-
-		@Override
-		protected UndoableEdit performEdit() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
-	
 }
