@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import main.Hub;
 import main.IDESWorkspace;
 import main.SystemVariables;
+import main.WorkspaceDescriptor;
 import model.fsa.ver1.Automaton;
 
 import org.pietschy.command.ActionCommand;
@@ -129,13 +130,16 @@ public class FileCommands {
 		}
 		
 		@Override
-		protected void performOpen(File[] arg0) {
+		protected void performOpen(File[] files) {
 			// TODO Auto-generated method stub
 			// NOTE 
 			// Get the list of automata from loadWorkspace and then execute
 			// a set of OpenAutomatonCommands
 			// NOT e.g. in a loop in FileOperations.loadWorkspace(File)
-			JOptionPane.showMessageDialog(null, "Open workspace");
+			WorkspaceDescriptor wd = FileOperations.openWorkspace(files[0]);
+			if(wd != null){
+				Hub.getWorkspace().replaceWorkspace(wd);
+			}			
 		}
 	
 	}

@@ -158,4 +158,9 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	public GraphModel getActiveGraphModel() {		
 		return graphs.get(activeModelName);
 	}
+	
+	public void replaceWorkspace(WorkspaceDescriptor wd)
+	{
+		
+	}
 }

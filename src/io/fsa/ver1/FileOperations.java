@@ -1,5 +1,8 @@
 package io.fsa.ver1;
 
+import io.ParsingToolbox;
+import io.WorkspaceParser;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +23,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 import main.Hub;
 import main.IDESWorkspace;
 import main.SystemVariables;
+import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
@@ -34,12 +38,13 @@ import model.fsa.ver1.Automaton;
 public class FileOperations {
 	
 	// DEBUG
-	public static final String DEFAULT_DIRECTORY = "C:/Documents and Settings/helen/My Documents/development/output/";
+	//public static final String DEFAULT_DIRECTORY = "C:/Documents and Settings/helen/My Documents/development/output/";
+	public static final String LAST_PATH_SETTING_NAME="lastUsedPath";
 	
 	public static FSAModel openAutomaton(File f) {		
 	    AutomatonParser ap = new AutomatonParser();	    	
         Automaton automaton = ap.parse(f);
-        SystemVariables.instance().setLast_used_path(f.getParent());
+        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
         automaton.setName(ParsingToolbox.removeFileType(f.getName()));
         return automaton;		
 	}
@@ -50,7 +55,7 @@ public class FileOperations {
      * @param path the path to save it to
      */      
     public static void saveAutomaton(Automaton a){    	
-        File file = new File(SystemVariables.instance().getLast_used_path(), a.getName() + ".xml");
+        File file = new File(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME), a.getName() + ".xml");
         PrintStream ps = getPrintStream(file);
         if(ps == null) {
 	        JFileChooser fc = new JFileChooser();
@@ -69,7 +74,7 @@ public class FileOperations {
 	public static void saveAutomatonAs(Automaton a) {		
 		File file;
 		PrintStream ps;
-		JFileChooser fc = new JFileChooser(SystemVariables.instance().getLast_used_path());
+		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		fc.setFileFilter(new ExtensionFileFilter("xml", "eXtensible Markup Language"));
     	int retVal = fc.showSaveDialog(null);
     	if(retVal == JFileChooser.APPROVE_OPTION){    		
@@ -89,7 +94,7 @@ public class FileOperations {
     		a.notifyAllSubscribers();   		
     		IDESWorkspace.instance().addFSAModel(a);    		
     		XMLexporter.automatonToXML(a, ps);
-    		SystemVariables.instance().setLast_used_path(file.getAbsolutePath());
+    		Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
     	}    	
 	}
 	
@@ -102,8 +107,12 @@ public class FileOperations {
 		
 	}
 	
-	public static IDESWorkspace loadWorkspace(File f){
-		return null;
+	public static WorkspaceDescriptor openWorkspace(File f){
+	    WorkspaceParser wdp = new WorkspaceParser();	    	
+        WorkspaceDescriptor wd = wdp.parse(f);
+        //System.out.println(wdp.getParsingErrors());
+        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
+        return wd;
 	}
 	
 	

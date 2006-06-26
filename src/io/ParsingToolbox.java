@@ -1,4 +1,4 @@
-package io.fsa.ver1;
+package io;
 
 /**
  * This class contains various methods helpful while parsing.

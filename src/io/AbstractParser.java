@@ -1,4 +1,4 @@
-package io.fsa.ver1;
+package io;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -17,7 +17,7 @@ import org.xml.sax.XMLReader;
 public class AbstractParser implements ContentHandler {
 
     protected static final String ELEMENT_AUTOMATON = "automaton",
-            ELEMENT_PROJECT = "project", ELEMENT_STATE = "state",
+            ELEMENT_STATE = "state",
             ELEMENT_TRANSITION = "transition", ELEMENT_EVENT = "event";
 
     protected static final String ATTRIBUTE_ID = "id",
