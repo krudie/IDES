@@ -1,14 +1,17 @@
 package ui.command;
 
+import io.IOUtilities;
 import io.fsa.ver1.FileOperations;
 
 import java.awt.Cursor;
 import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import main.Hub;
 import main.IDESWorkspace;
+import main.IncompleteWorkspaceDescriptorException;
 import main.SystemVariables;
 import main.WorkspaceDescriptor;
 import model.fsa.ver1.Automaton;
@@ -32,30 +35,35 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			// TODO
-			// DEBUG JOptionPane.showMessageDialog(null, "Create new automaton");
 			Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
 			IDESWorkspace.instance().addFSAModel(fsa);
 		}	
 	}
 	
-	public static class OpenAutomatonCommand extends AbstractFileOpenCommand {
+	public static class OpenAutomatonCommand extends ActionCommand {
 		
 		public OpenAutomatonCommand() {
-			super(CommandManager.defaultInstance(), "open.automaton.command", 
-					new ExtensionFileFilter("xml", "eXtensible Markup Language"));			
+			super("open.automaton.command");			
 		}
 
 		@Override
 		/**
 		 * FIXME Don't add workspace files as if they were automata...
 		 */
-		protected void performOpen(File[] files) {			
-			Automaton fsa = (Automaton)FileOperations.openAutomaton(files[0]);
-			if(fsa != null){
-
-				IDESWorkspace.instance().addFSAModel(fsa);
-
+		protected void handleExecute() {
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
+			fc.setDialogTitle(Hub.string("openModelTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	    	int retVal = fc.showOpenDialog(Hub.getMainWindow());
+	    	if(retVal == JFileChooser.APPROVE_OPTION){
+				Cursor cursor = Hub.getMainWindow().getCursor();
+				Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+	    		Automaton fsa = (Automaton)FileOperations.openAutomaton(fc.getSelectedFile());
+	    		if(fsa != null){
+	    			Hub.getWorkspace().addFSAModel(fsa);
+	    		}
+				Hub.getMainWindow().setCursor(cursor);
 			}
 		}
 	}	
@@ -68,16 +76,12 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = (Automaton)IDESWorkspace.instance().getActiveModel();
+			Automaton fsa = (Automaton)Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-			if( fsa.getName().equals(Hub.string("newAutomatonName"))){
-				FileOperations.saveAutomatonAs(fsa);
-			}else{			
-				FileOperations.saveAutomaton(fsa);				
-			}
+			if(fsa!=null)
+				FileOperations.saveAutomaton(fsa,fsa.getFile());				
 			Hub.getMainWindow().setCursor(cursor);
-			setEnabled(false);
 		}	
 	}
 	
@@ -89,8 +93,12 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = (Automaton)IDESWorkspace.instance().getActiveModel();			
-			FileOperations.saveAutomatonAs(fsa);			
+			Automaton fsa = (Automaton)Hub.getWorkspace().getActiveModel();			
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			if(fsa!=null)
+				FileOperations.saveAutomatonAs(fsa);				
+			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}
 	
@@ -122,26 +130,29 @@ public class FileCommands {
 			}	
 	}
 	
-	public static class OpenWorkspaceCommand extends AbstractFileOpenCommand {
+	public static class OpenWorkspaceCommand extends ActionCommand {
 		
 		public OpenWorkspaceCommand(){
-			super(CommandManager.defaultInstance(), "open.workspace.command", 
-					new ExtensionFileFilter("xml", "eXtensible Markup Language"));
+			super("open.workspace.command");
 		}
 		
 		@Override
-		protected void performOpen(File[] files) {
-			// TODO Auto-generated method stub
-			// NOTE 
-			// Get the list of automata from loadWorkspace and then execute
-			// a set of OpenAutomatonCommands
-			// NOT e.g. in a loop in FileOperations.loadWorkspace(File)
-			WorkspaceDescriptor wd = FileOperations.openWorkspace(files[0]);
-			if(wd != null){
-				Hub.getWorkspace().replaceWorkspace(wd);
-			}			
-		}
-	
+		protected void handleExecute() {
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
+			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	    	int retVal = fc.showOpenDialog(Hub.getMainWindow());
+	    	if(retVal == JFileChooser.APPROVE_OPTION){
+				Cursor cursor = Hub.getMainWindow().getCursor();
+				Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+	    		WorkspaceDescriptor wd = FileOperations.openWorkspace(fc.getSelectedFile());
+	    		if(wd != null){
+	    			Hub.getWorkspace().replaceWorkspace(wd);
+	    		}
+				Hub.getMainWindow().setCursor(cursor);
+	    	}
+		}	
 	}
 	
 	public static class SaveWorkspaceCommand extends ActionCommand {
@@ -151,9 +162,14 @@ public class FileCommands {
 		}
 		@Override
 		protected void handleExecute() {
-			// TODO Auto-generated method stub
-			JOptionPane.showMessageDialog(null, "Save workspace");
-			setEnabled(false);
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			try
+			{
+				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
+				FileOperations.saveWorkspace(wd,wd.getFile());
+			}catch(IncompleteWorkspaceDescriptorException e){}
+			Hub.getMainWindow().setCursor(cursor);
 		}
 	}
 	

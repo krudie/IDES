@@ -1,9 +1,15 @@
 package main;
 
+import io.ParsingToolbox;
+import io.PrintUtilities;
+import io.fsa.ver1.FileOperations;
+
 import java.awt.Cursor;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.swing.SwingUtilities;
@@ -27,6 +33,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 
 	private boolean unsaved; // dirty bit
 	private String name = "New Project";
+	private File myFile = null;
 	
 	// Unique name of the currently active FSAModel
 	private String activeModelName;
@@ -112,10 +119,10 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	 * @return an iterator of all graph models in this workspace
 	 */
 	public Iterator<GraphModel> getGraphModels(){
-		ArrayList g = new ArrayList();
-		Iterator iter = graphs.entrySet().iterator();
+		ArrayList<GraphModel> g = new ArrayList<GraphModel>();
+		Iterator<GraphModel> iter = graphs.values().iterator();
 		while(iter.hasNext()){
-			g.add(((Entry)iter.next()).getValue());
+			g.add(iter.next());
 		}
 		return g.iterator();
 	}
@@ -124,11 +131,11 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	 * 
 	 * @return an iterator of all automata in this workspace
 	 */
-    public Iterator getAutomata() {
-    	ArrayList g = new ArrayList();
-		Iterator iter = systems.entrySet().iterator();
+    public Iterator<FSAModel> getAutomata() {
+    	ArrayList<FSAModel> g = new ArrayList<FSAModel>();
+		Iterator<Automaton> iter = systems.values().iterator();
 		while(iter.hasNext()){
-			g.add(((Entry)iter.next()).getValue());
+			g.add(iter.next());
 		}
 		return g.iterator();
     }
@@ -159,8 +166,82 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return graphs.get(activeModelName);
 	}
 	
+	/**
+	 * Replaces the current workspace with the workspace given in the descriptor. 
+	 * @param wd the descriptor of the replacement workspace
+	 */
 	public void replaceWorkspace(WorkspaceDescriptor wd)
 	{
+		if(hasUnsavedData())
+		{
+			//TODO call save
+		}
 		
+		Iterator<FSAModel> iter=getAutomata();
+		while(iter.hasNext())
+		{
+			removeFSAModel(iter.next().getName());
+			iter=getAutomata();
+		}
+		
+		myFile=wd.getFile();
+		name=myFile.getName();
+		Hub.getMainWindow().setTitle(Hub.string("IDES_SHORT_NAME")+" "+
+				Hub.string("IDES_VER")+": "+name);
+		Vector<String> files=wd.getModels();
+		int idx=wd.getSelectedModel();
+		String selectedModel=null;
+		for(int i=0;i<files.size();++i)
+		{
+			Automaton fsa = (Automaton)FileOperations.openAutomaton(
+					new java.io.File(files.elementAt(i)));
+			if(fsa != null)
+			{
+				Hub.getWorkspace().addFSAModel(fsa);
+				if(i==idx)
+					selectedModel=fsa.getName();
+			}
+		}
+		if(selectedModel!=null)
+		{
+			setActiveModel(selectedModel);
+			notifyAllSubscribers();
+		}
+	}
+
+	/**
+	 * Returns a descriptor of the current workspace.
+	 * @return descriptor of the current workspace
+	 * @throws IncompleteWorkspaceDescriptorException when the descriptor can't be created due to unsaved models
+	 */
+	public WorkspaceDescriptor getDescriptor() throws IncompleteWorkspaceDescriptorException
+	{
+		WorkspaceDescriptor wd=new WorkspaceDescriptor(myFile);
+		int counter=0;
+		for(Iterator i=getAutomata();i.hasNext();++counter)
+		{
+			Automaton a=(Automaton)i.next();
+			if(a.getFile()==null)
+			{
+				FileOperations.saveAutomatonAs(a);
+				if(a.getFile()==null)
+					throw new IncompleteWorkspaceDescriptorException();
+			}
+			wd.insertModel(a.getFile().getName(),counter);
+			if(a.getName().equals(getActiveModelName()))
+				wd.setSelectedModel(counter);
+		}
+		return wd;
+	}
+	
+	/**
+	 * Sets the file for the current workspace. This file will be
+	 * used when creating descriptors of the workspace.
+	 * @param f the new file for the workspace
+	 * @see #getDescriptor()
+	 */
+	public void setFile(File f)
+	{
+		myFile=f;
 	}
 }

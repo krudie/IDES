@@ -1,5 +1,6 @@
 package io.fsa.ver1;
 
+import io.IOUtilities;
 import io.ParsingToolbox;
 import io.WorkspaceParser;
 
@@ -37,16 +38,26 @@ import model.fsa.ver1.Automaton;
  */
 public class FileOperations {
 	
-	// DEBUG
-	//public static final String DEFAULT_DIRECTORY = "C:/Documents and Settings/helen/My Documents/development/output/";
 	public static final String LAST_PATH_SETTING_NAME="lastUsedPath";
 	
-	public static FSAModel openAutomaton(File f) {		
-	    AutomatonParser ap = new AutomatonParser();	    	
-        Automaton automaton = ap.parse(f);
+	public static FSAModel openAutomaton(File f) {
+        Automaton a = null;
+        if(!f.canRead())
+        {
+        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
+        	return a;
+        }
+    	AutomatonParser ap = new AutomatonParser();
+        a = ap.parse(f);
+        if(!"".equals(ap.getParsingErrors()))
+        {
+        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
+        			"\n"+Hub.string("errorsParsingXMLFileL2"));
+        }
+        a.setName(ParsingToolbox.removeFileType(f.getName()));
+        a.setFile(f);
         Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
-        automaton.setName(ParsingToolbox.removeFileType(f.getName()));
-        return automaton;		
+        return a;
 	}
 		
 	/**
@@ -54,48 +65,32 @@ public class FileOperations {
      * @param a the automaton to save
      * @param path the path to save it to
      */      
-    public static void saveAutomaton(Automaton a){    	
-        File file = new File(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME), a.getName() + ".xml");
-        PrintStream ps = getPrintStream(file);
-        if(ps == null) {
-	        JFileChooser fc = new JFileChooser();
-	        fc.setFileFilter(new ExtensionFileFilter("xml", "eXtensible Markup Language"));
-        	int retVal = fc.showSaveDialog(null);
-        	if(retVal == JFileChooser.APPROVE_OPTION){
-        		file = fc.getSelectedFile();
-        		ps = getPrintStream(file);
-        		if(ps == null) return;
-        	}
+    public static void saveAutomaton(Automaton a, File file){    	
+        PrintStream ps = IOUtilities.getPrintStream(file);
+        if(ps == null)
+        	saveAutomatonAs(a);
+        else
+        {
+        	XMLexporter.automatonToXML(a, ps);
+        	a.setName(ParsingToolbox.removeFileType(file.getName()));
+        	a.setFile(file);
+            Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
+            a.notifyAllSubscribers();
         }
-        XMLexporter.automatonToXML(a, ps);        
     }  
     
 	
 	public static void saveAutomatonAs(Automaton a) {		
-		File file;
-		PrintStream ps;
 		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
-		fc.setFileFilter(new ExtensionFileFilter("xml", "eXtensible Markup Language"));
-    	int retVal = fc.showSaveDialog(null);
-    	if(retVal == JFileChooser.APPROVE_OPTION){    		
-    		file = fc.getSelectedFile();  
-    		
-    		// FIXME this doesn't seem to work
-    		file.renameTo(new File(file.getName() + ".xml"));
-    		ps = getPrintStream(file);
-    		if(ps == null) return;
-    		int i = file.getName().lastIndexOf(".");    		
-    		IDESWorkspace.instance().removeFSAModel(a.getName());
-    		if(i > -1) {
-    			a.setName(file.getName().substring(0, file.getName().lastIndexOf(".")));
-    		}else{
-    			a.setName(file.getName());
-    		}
-    		a.notifyAllSubscribers();   		
-    		IDESWorkspace.instance().addFSAModel(a);    		
-    		XMLexporter.automatonToXML(a, ps);
-    		Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
-    	}    	
+		fc.setDialogTitle(Hub.string("saveModelTitle"));
+		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
+    	int retVal = fc.showSaveDialog(Hub.getMainWindow());
+    	if(retVal == JFileChooser.APPROVE_OPTION){
+    		File file=fc.getSelectedFile();
+    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
+    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+    		saveAutomaton(a,file);
+    	}
 	}
 	
 	public static void exportSystemAsLatex(FSAModel model, File f){
@@ -107,33 +102,60 @@ public class FileOperations {
 		
 	}
 	
-	public static WorkspaceDescriptor openWorkspace(File f){
-	    WorkspaceParser wdp = new WorkspaceParser();	    	
-        WorkspaceDescriptor wd = wdp.parse(f);
-        //System.out.println(wdp.getParsingErrors());
-        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
+	public static WorkspaceDescriptor openWorkspace(File file){
+        WorkspaceDescriptor wd = null;
+        if(!file.canRead())
+        {
+        	Hub.displayAlert(Hub.string("fileCantRead")+file.getPath());
+        	return wd;
+        }
+        WorkspaceParser wdp = new WorkspaceParser();	    	
+        wd = wdp.parse(file);
+        if(!"".equals(wdp.getParsingErrors()))
+        {
+        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+file.getPath()+
+        			"\n"+Hub.string("errorsParsingXMLFileL2"));
+        }
+        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());    		
         return wd;
 	}
 	
-	
+
 	/**
-     * TODO give user opportunity to choose a different file if something screws up.
-     * 
-     * @see projectPresentation.ProjectPresentation#saveWorkspace(java.lang.String)
-     */
-    public static void saveWorkspace(String path){
-        File file = new File(path, IDESWorkspace.instance().getName() + ".xml");
-        PrintStream ps = getPrintStream(file);
-        if(ps == null) return;
-  // TODO  XMLexporter.workspaceToXML(IDESWorkspace.instance(), ps);
-        Iterator<Automaton> ai = IDESWorkspace.instance().getAutomata();
-        while(ai.hasNext()){
-            Automaton a = ai.next();
-            saveAutomaton(a);
+	 * Saves the workspace. If the file name is invalid, calls
+	 * {@link #saveWorkspaceAs(WorkspaceDescriptor)} to get a new file name.
+	 * @param wd the description of the workspace
+	 * @param file the file where the workspace will be written
+	 */
+    public static void saveWorkspace(WorkspaceDescriptor wd, File file){
+        PrintStream ps = IOUtilities.getPrintStream(file);
+        if(ps == null)
+        	saveWorkspaceAs(wd);
+        else
+        {
+        	XMLexporter.workspaceToXML(wd, ps);
+        	Hub.getWorkspace().setFile(file);
+            Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
         }
     }
 
-    	
+    /**
+     * Ask the user for a file name and then call {@link #saveWorkspace(WorkspaceDescriptor, File)}.
+     * @param wd the description of the workspace
+     */
+    public static void saveWorkspaceAs(WorkspaceDescriptor wd){
+		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
+		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
+		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+    	int retVal = fc.showSaveDialog(Hub.getMainWindow());
+    	if(retVal == JFileChooser.APPROVE_OPTION){
+    		File file=fc.getSelectedFile();
+    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.WORKSPACE_FILE_EXT))
+    			file=new File(file.getPath()+"."+IOUtilities.WORKSPACE_FILE_EXT);
+    		saveWorkspace(wd,file);
+    	}
+    }
+
 	/**
 	 * TODO move this to the io or ui.command package; it doesn't do anything with FSAs. 
 	 * 
@@ -194,43 +216,7 @@ public class FileOperations {
 	
 	}
 	
-	/**
-     * Method for getting a printstream wrapped around a file
-     * @param file the file that needs a printstream wrapped around it
-     * @return The printstream pointing to a the file
-     */
-    private static PrintStream getPrintStream(File file){
-        PrintStream ps = null;
 
-	        if(!file.exists()){
-	            try{
-	                file.createNewFile();
-	            }
-	            catch(IOException ioe){
-	                System.err.println("FileOperations: unable to create file, message: "
-	                        + ioe.getMessage());
-	                return null;
-	            }
-	        }
-	        if(!file.isFile()){
-	            System.err.println("FileOperations: " + file.getName() + " is not a file. ");
-	            return null;
-	        }
-	        if(!file.canWrite()){
-	            System.err.println("FileOperations: can not write to file: " + file.getName());
-	            return null;
-	        } 
-   
-	        try{
-	            ps = new PrintStream(file);	            
-	        }
-	        catch(FileNotFoundException fnfe){	        	
-	            System.err.println("FileOperations: file missing: " + fnfe.getMessage());
-	            return null;
-	        }
-	            
-        return ps;
-    }
 
   
     

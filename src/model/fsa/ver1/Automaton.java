@@ -1,4 +1,5 @@
 package model.fsa.ver1;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -27,6 +28,7 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 
     private String name = null;
 
+    private File myFile = null;
     
     /**
      * constructs a nem automaton with the name name
@@ -507,5 +509,23 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         public void add(FSAEvent e){
             eli.add(e);
         }
-    }	
+    }
+    
+    /**
+     * Set the file for this automaton.
+     * @param f the file
+     */
+    public void setFile(File f)
+    {
+    	myFile=f;
+    }
+    
+    /**
+     * Get this automaton's file.
+     * @return
+     */
+    public File getFile()
+    {
+    	return myFile;
+    }
 }

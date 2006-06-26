@@ -23,7 +23,8 @@ public class WorkspaceParser extends AbstractFileParser {
 	ELEMENT_MODEL = "model";
 	
 	protected static final String ATTRIBUTE_POSITION = "position",
-    ATTRIBUTE_SELECTED = "selected", ATTRIBUTE_FILE = "file";
+    ATTRIBUTE_SELECTED = "selected", ATTRIBUTE_FILE = "file",
+    ATTRIBUTE_VERSION = "version";
 	
 	protected WorkspaceDescriptor workSpace;
 
@@ -51,7 +52,7 @@ public class WorkspaceParser extends AbstractFileParser {
         file = f;
         state = STATE_IDLE;
         parsingErrors = "";
-        workSpace=new WorkspaceDescriptor(f.getPath());
+        workSpace=new WorkspaceDescriptor(f);
         try {
             xmlReader.parse(new InputSource(new FileInputStream(f)));
         } catch (FileNotFoundException fnfe) {
@@ -123,7 +124,11 @@ public class WorkspaceParser extends AbstractFileParser {
             break;
         case STATE_DOCUMENT:
             if (qName.equals(ELEMENT_WORKSPACE)) {
-                state = STATE_WORKSPACE;
+            	if(!"2.1".equals(atts.getValue(ATTRIBUTE_VERSION)))
+            	{
+            		parsingErrors+=file.getName()+": wrong file format version.";
+            	}
+            	state = STATE_WORKSPACE;
             } else
                 parsingErrors += file.getName()
                         + ": encountered wrong element while in state document.\n";

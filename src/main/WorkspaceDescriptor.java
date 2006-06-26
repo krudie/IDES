@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.util.Vector;
 
 /**
@@ -10,15 +11,17 @@ public class WorkspaceDescriptor {
 	
 	protected Vector<String> models=new Vector<String>();
 	protected int selectedModel=0;
-	protected String fileName="";
+	protected File file=null;
 	
-	public WorkspaceDescriptor(String fileName)
+	public WorkspaceDescriptor(File file)
 	{
-		this.fileName=fileName;
+		this.file=file;
 	}
 
 	public void insertModel(String model,int idx)
 	{
+		if(idx>models.size())
+			idx=0;
 		models.insertElementAt(model,idx);
 	}
 	
@@ -37,8 +40,8 @@ public class WorkspaceDescriptor {
 		return selectedModel;
 	}
 
-	public String getFileName()
+	public File getFile()
 	{
-		return fileName;
+		return file;
 	}
 }

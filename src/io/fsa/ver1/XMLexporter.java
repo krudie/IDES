@@ -4,7 +4,9 @@ import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Vector;
 
+import main.WorkspaceDescriptor;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -31,15 +33,18 @@ public class XMLexporter{
      * @param p the project to convert to XML
      * @param ps the printstream this object should be printed to.
      */
-    public static void projectToXML(Project p, PrintStream ps) {
+    public static void workspaceToXML(WorkspaceDescriptor wd, PrintStream ps) {
         ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        ps.println("<project>");
-        Iterator<Automaton> ai = p.getAutomata().iterator();        
-        while (ai.hasNext()) {
-            Automaton a = ai.next();
-            ps.println("  <automaton file=\"" + a.getName() + ".xml\" />");
+        ps.println("<workspace version=\"2.1\">");
+        Vector<String> models=wd.getModels();
+        for(int i=0;i<models.size();++i)
+        {
+        	ps.print("\t<model file=\""+models.elementAt(i)+"\" position=\""+i+"\"");
+        	if(i==wd.getSelectedModel())
+        		ps.print(" selected=\"true\"");
+        	ps.println("/>");
         }
-        ps.println("</project>");
+        ps.println("</workspace>");
     }
     
     /**
