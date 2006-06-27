@@ -141,6 +141,11 @@ public class Edge extends GraphElement {
 	 */
 	public void update() {		
 		curve.setCurve((Point2D.Float[])((EdgeLayout)layout).getCurve(), 0);
+		
+		if(!isSelected()){
+			handler.setVisible(false);
+		}
+		
 		// prepare to draw myself as a cubic (bezier) curve
 		path.reset();
 		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
@@ -149,11 +154,12 @@ public class Edge extends GraphElement {
 	    			(float)curve.getX2(), (float)curve.getY2());
 	    
 		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
-	    Point2D.Float unitDir = Geometry.unit(new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2())));	    
+	    Point2D.Float unitDir = Geometry.unit(new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2())));
+	    
+	    // FIXME arrow direction vector is incorrect
 	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));
-	    handler.setVisible(false);
-		
-	    // Concat label from associated event[s]
+	    
+		// Concat label from associated event[s]
 	    String s = "";	    
 	    Iterator iter = ((EdgeLayout)layout).getEventNames().iterator();
 	    while(iter.hasNext()){
@@ -170,7 +176,7 @@ public class Edge extends GraphElement {
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());
-	    label.getLayout().setLocation((float)location.getX(), (float)location.getY());	    	
+	    label.getLayout().setLocation((float)midpoint.getX(), (float)midpoint.getX());	    	
 	}
 	
 	
@@ -250,7 +256,7 @@ public class Edge extends GraphElement {
 						curve.getCtrlX1()+x, curve.getCtrlY1()+y,
 						curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
 						curve.getX2(), curve.getY2()+y);
-		l.setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());
+		l.setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());		
 		l.setRigidTranslation(false);
 		
 		// reset the control points in the layout object

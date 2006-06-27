@@ -88,16 +88,16 @@ public class EdgeCommands {
 		 * @param edge2
 		 * @param previousLayout2
 		 */
-		public ModifyEdgeCommand(Edge edge2, EdgeLayout previousLayout2) {
-			setEdge(edge2);
-			setLayout(previousLayout2);
+		public ModifyEdgeCommand(Edge edge, EdgeLayout previousLayout) {
+			setEdge(edge);
+			setPreviousLayout(previousLayout);
 		}
 
 		public void setEdge(Edge edge){
 			this.edge = edge;
 		}
 		
-		public void setLayout(EdgeLayout layout){
+		public void setPreviousLayout(EdgeLayout layout){
 			this.previousLayout = layout;
 		}
 		

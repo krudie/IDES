@@ -93,14 +93,23 @@ To use this formula with non-unit vectors:
 	 * 
 	 * @param v1
 	 * @param v2
-	 * @return the angle between the given vectors in radians
+	 * @return the angle to rotate v1 to make it a scalar of v2
 	 */
-	public static double angleBetween(Point2D.Float v1, Point2D.Float v2){
-		Point2D.Float unitV1, unitV2;
-		unitV1 = unit(v1);
-		unitV2 = unit(v2);
-		double dot = unitV1.x * unitV2.x + unitV1.y * unitV2.y;				
-		return Math.acos(dot);
+	public static double angleFrom(Point2D.Float v1, Point2D.Float v2){
+		Point2D.Float u1, u2;
+		u1 = unit(v1);
+		u2 = unit(v2);
+		double a = Math.acos(dot(u1, u2));
+		double e = 0.001;
+		Float test = rotate(u1, a);
+		if((Math.abs(test.x - u2.x) < e) && (Math.abs(test.y - u2.y) < e)){
+			return a;
+		}else{
+			return -a;
+		}		
 	}
 	
+	public static double dot(Point2D.Float v1, Point2D.Float v2){		
+		return v1.x * v2.x + v1.y * v2.y;
+	}
 }

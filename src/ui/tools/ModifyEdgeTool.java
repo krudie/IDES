@@ -26,7 +26,6 @@ public class ModifyEdgeTool extends DrawingTool {
 	
 	private Edge edge;
 	private EdgeLayout previousLayout;  // TODO clone for undo
-	private EdgeLayout layout; 
 	private int pointType = EdgeHandler.NO_INTERSECTION;  // CTRL1 or CTRL2
 	
 	public ModifyEdgeTool(GraphDrawingView context){
@@ -49,9 +48,9 @@ public class ModifyEdgeTool extends DrawingTool {
 	@Override
 	public void handleMouseDragged(MouseEvent m) {
 		// if dragging 
-		if(dragging){  // ??? Why was I using a dragging flag if I'm inside this method ?
+		if(dragging){  // ??? Why was I using a dragging flag if I'm inside this method ?			
 			// set the selected control point to the current location
-			layout.setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
+			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
 			// repaint the context
 			context.repaint();			
 		}
@@ -62,33 +61,49 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m) {
-		// Did we hit an edge? So far yes, since we set this tool from the EdgePopup.
-		if(context.hasCurrentSelection()){
-			// FIXME might have a class cast exception
-			edge = (Edge)context.getCurrentSelection().child(0);
-			layout = (EdgeLayout) edge.getLayout();
-			
-			// TODO if selected a different edge, from the one stored in edge variable,
-			// toggle the selection colour and modify the new edge.
-			
-			// TODO previousLayout = layout.clone();
-		
-			// get control point selected
-			if(edge.getHandler().intersects(m.getPoint())){
-				edge.setSelected(true);
-				pointType = edge.getHandler().getLastIntersected();
-				if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
-					dragging = true;
-				}else{
-					pointType = EdgeHandler.NO_INTERSECTION;
-					// context.clearCurrentSelection();
-					dragging = false;					
+		if(edge != null){
+			if(edge.intersects(m.getPoint())){ // have clicked on selected edge
+				// get control point to be moved
+				if(edge.getHandler().intersects(m.getPoint())){				
+					pointType = edge.getHandler().getLastIntersected();
+					if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
+						dragging = true;
+					}else{
+						pointType = EdgeHandler.NO_INTERSECTION;
+						// context.clearCurrentSelection();
+						dragging = false;					
+					}
 				}
-			}else{
-				// DEBUG
-				//Hub.displayAlert("No intersection with EdgeHandler");
+			}else{ // see if we've clicked on a different edge
+				Edge oldEdge = edge;
+				context.clearCurrentSelection();
+				context.updateCurrentSelection(m.getPoint());
+				if(context.hasCurrentSelection()){
+					try{
+						edge = (Edge)context.getCurrentSelection().child(0);
+						edge.getHandler().setVisible(true);
+						oldEdge.getHandler().setVisible(false);
+					}catch(ClassCastException cce){
+						// clicked on some other kind of graph element
+						edge = null;
+					}
+				}
 			}
-		}
+		}else{
+			if( ! context.hasCurrentSelection() ){			
+				context.updateCurrentSelection(m.getPoint());				
+			}
+			
+			if( context.hasCurrentSelection() ){
+				try{
+					edge = (Edge)context.getCurrentSelection().child(0);				
+					edge.getHandler().setVisible(true);
+				}catch(ClassCastException cce){
+					// clicked on some other kind of graph element
+					edge = null;
+				}
+			}
+		}		
 	}
 
 	/* (non-Javadoc)

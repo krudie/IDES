@@ -25,7 +25,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 
+import main.Hub;
 import main.IDESWorkspace;
 import model.Subscriber;
 import model.fsa.FSAEvent;
@@ -34,6 +36,8 @@ import model.fsa.FSATransition;
 import model.fsa.ver1.Event;
 import model.fsa.ver1.EventsModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import ui.FilteringJList;
 /**
@@ -75,8 +79,8 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		this.eventsModel = eventsModel;
 //		 NOT YET	eventsModel.attach(this);
 		
-		text = new JTextField();
-		text.setPreferredSize(new Dimension(200, 20));
+		textField = new JTextField();
+		textField.setPreferredSize(new Dimension(100, 20));
 		buttonCreate = new JButton("Create");
 		buttonCreate.setEnabled(false);
 		buttonDelete = new JButton("Delete");
@@ -93,18 +97,50 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 		JPanel p = new JPanel(); //new BorderLayout());
 		p.setBorder(BorderFactory.createTitledBorder("Enter event symbol"));
-		p.add(text, BorderLayout.WEST);
-		p.add(buttonCreate, BorderLayout.CENTER);
+		p.add(textField, BorderLayout.WEST);
+		JPanel p2 = new JPanel(new FlowLayout());
+		p2.add(buttonCreate);
+		p2.add(buttonDelete);
+		p.add(p2, BorderLayout.CENTER);
 		p.add(checkObservable, BorderLayout.EAST);
 		p.add(checkControllable, BorderLayout.EAST);
 	
 		panel.add(p, BorderLayout.NORTH);		
 						
 		
-		p = new JPanel(); //new BorderLayout());
+		p = new JPanel();
 		listAvailableEvents = new FilteringJList();
 		listAvailableEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
-		listAvailableEvents.installJTextField(text);		
+		listAvailableEvents.installJTextField(textField);
+		listAvailableEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {			 
+				ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+				int index = listAvailableEvents.getSelectedIndex();
+				if (lsm.isSelectionEmpty()) {
+					checkObservable.setEnabled(false);
+					checkControllable.setEnabled(false);
+					buttonCreate.setEnabled(true);
+					buttonDelete.setEnabled(false);
+				}else{				
+					Object o = listAvailableEvents.getSelectedValue();
+					if(o != null){
+						selectedObject = o;
+						textField.setText(selectedObject.toString());
+						// FIXME selected index is being cleared.
+						// FilteringListener (document listener) is firing a ContentsChanged event
+						// Try a different kind of listener.
+						// The following doesn't fix it.
+						listAvailableEvents.setSelectedIndex(index);
+						////////////////////////////////////////////
+						checkObservable.setEnabled(true);
+						checkControllable.setEnabled(true);
+						buttonCreate.setEnabled(false);
+						buttonDelete.setEnabled(true);
+					}
+				}
+			}
+			}
+		);
 		listAvailableEvents.setPreferredSize(new Dimension(150, 300));	
 		JScrollPane pane = new JScrollPane(listAvailableEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Available"));
@@ -125,7 +161,14 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		listSelectedEvents = new MutableList();
 		// TODO Only one item can be selected: change to MULTIPLE_INTERVAL_SELECTION later
 		listSelectedEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
-    
+		listSelectedEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+			public void valueChanged(ListSelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		listSelectedEvents.setPreferredSize(new Dimension(150, 300));		
 		pane = new JScrollPane(listSelectedEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Selected"));
@@ -194,89 +237,22 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		}
 	}
 	
-	private void setDummyData(){
-//		 DEBUG ////////////////////////////////////////////
-		String[] data = {"Alpha", "Beta", "Gamma", "Delta"};
-		String elements[] = {
-	             "Partridge in a pear tree",
-	             "Turtle Doves",
-	             "French Hens",
-	             "Calling Birds",
-	             "Golden Rings",
-	             "Geese-a-laying",
-	             "Swans-a-swimming",
-	             "Maids-a-milking",
-	             "Ladies dancing",
-	             "Lords-a-leaping",
-	             "Pipers piping",
-	             "Drummers drumming",
-	             "Dasher",
-	             "Dancer",
-	             "Prancer",
-	             "Vixen",
-	             "Comet",
-	             "Cupid",
-	             "Donner",
-	             "Blitzen",
-	             "Rudolf",
-	             "Bakerloo",
-	             "Center",
-	             "Circle",
-	             "District",
-	             "East London",
-	             "Hammersmith and City",
-	             "Jubilee",
-	             "Metropolitan",
-	             "Northern",
-	             "Piccadilly Royal",
-	             "Victoria",
-	             "Waterloo and City",
-	             "Alpha",
-	             "Beta",
-	             "Gamma",
-	             "Delta",
-	             "Epsilon",
-	             "Zeta",
-	             "Eta",
-	             "Theta",
-	             "Iota",
-	             "Kapa",
-	             "Lamda",
-	             "Mu",
-	             "Nu",
-	             "Xi",
-	             "Omikron",
-	             "Pi",
-	             "Rho",
-	             "Sigma",
-	             "Tau",
-	             "Upsilon",
-	             "Phi",
-	             "Chi",
-	             "Psi",
-	             "Omega"
-	           };   
-	   
-	           for (String element: elements) {
-	             listAvailableEvents.addElement(element);
-	           }	           
-	        
-	   		listSelectedEvents = new MutableList(data);
-	   		
-		/////////////////////////////////////////////////////
-	}
+	
 	
 	// Data
 	private Edge edge;
 	private Event newEvent;
 	private Event selectedEvent;
 	
+	// DEBUG
+	private Object selectedObject;
+	
 	// LATER /////////////////////////////////////////////////////////////
 	private FSAEventsModel eventsModel; // the publisher to which i attach
 	//////////////////////////////////////////////////////////////////////
 
 	// GUI controls
-	private JTextField text;
+	private JTextField textField;
 	private JCheckBox checkObservable, checkControllable;	
 	private MutableList listSelectedEvents;
 	private FilteringJList listAvailableEvents;
@@ -364,8 +340,132 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 			if(arg0.getSource().equals(buttonOK)){
 				dialog.setVisible(false);
 			}
-		}		
+		}
+		
 	}
 	
+	private class DeleteListener implements ActionListener {
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO remove the currently selected event from the FSA 
+			// (must remove it from all transitions in the FSA). 
+			Hub.displayAlert("TODO Implement delete event.");			
+		}
+		
+	}
 	
+//	private class SelectionListener implements ListSelectionListener {
+//
+//		/* (non-Javadoc)
+//		 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+//		 */
+//		public void valueChanged(ListSelectionEvent e) {
+//			// TODO 
+//			ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+//
+//			int i = lsm.getMinSelectionIndex();
+			
+			
+			
+//			StringBuffer output = new StringBuffer();
+//	        int firstIndex = e.getFirstIndex();
+//	        int lastIndex = e.getLastIndex();
+//	        boolean isAdjusting = e.getValueIsAdjusting();
+//	        output.append("Event for indexes "
+//	                      + firstIndex + " - " + lastIndex
+//	                      + "; isAdjusting is " + isAdjusting
+//	                      + "; selected indexes:");
+//
+//	        if (lsm.isSelectionEmpty()) {
+//	            output.append(" <none>");
+//	        } else {
+//	            // Find out which indexes are selected.
+//	            int minIndex = lsm.getMinSelectionIndex();
+//	            int maxIndex = lsm.getMaxSelectionIndex();
+//	            for (int i = minIndex; i <= maxIndex; i++) {
+//	                if (lsm.isSelectedIndex(i)) {
+//	                    output.append(" " + i);
+//	                }
+//	            }
+//	        }
+//	        output.append("\n");
+//	        System.out.println(output.toString());
+//		}	
+//		
+//	}
+	
+	private void setDummyData(){
+//		 DEBUG ////////////////////////////////////////////
+		String[] data = {"Alpha", "Beta", "Gamma", "Delta"};
+		String elements[] = {
+	             "Partridge in a pear tree",
+	             "Turtle Doves",
+	             "French Hens",
+	             "Calling Birds",
+	             "Golden Rings",
+	             "Geese-a-laying",
+	             "Swans-a-swimming",
+	             "Maids-a-milking",
+	             "Ladies dancing",
+	             "Lords-a-leaping",
+	             "Pipers piping",
+	             "Drummers drumming",
+	             "Dasher",
+	             "Dancer",
+	             "Prancer",
+	             "Vixen",
+	             "Comet",
+	             "Cupid",
+	             "Donner",
+	             "Blitzen",
+	             "Rudolf",
+	             "Bakerloo",
+	             "Center",
+	             "Circle",
+	             "District",
+	             "East London",
+	             "Hammersmith and City",
+	             "Jubilee",
+	             "Metropolitan",
+	             "Northern",
+	             "Piccadilly Royal",
+	             "Victoria",
+	             "Waterloo and City",
+	             "Alpha",
+	             "Beta",
+	             "Gamma",
+	             "Delta",
+	             "Epsilon",
+	             "Zeta",
+	             "Eta",
+	             "Theta",
+	             "Iota",
+	             "Kapa",
+	             "Lamda",
+	             "Mu",
+	             "Nu",
+	             "Xi",
+	             "Omikron",
+	             "Pi",
+	             "Rho",
+	             "Sigma",
+	             "Tau",
+	             "Upsilon",
+	             "Phi",
+	             "Chi",
+	             "Psi",
+	             "Omega"
+	           };   
+	   
+	           for (String element: elements) {
+	             listAvailableEvents.addElement(element);
+	           }	           
+	        
+	   		listSelectedEvents = new MutableList(data);
+	   		
+		/////////////////////////////////////////////////////
+	}
 }

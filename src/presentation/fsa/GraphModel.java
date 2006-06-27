@@ -293,6 +293,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		// for all edges adjacent to node, save layout
 		Iterator children = node.children();
 		while(children.hasNext()){
+			// FIXME not all children are Edges (GraphLabels)
 			Edge e = (Edge)children.next();
 			saveMovement(e);
 		}
@@ -300,8 +301,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	
 	protected void saveMovement(Edge e){
 		// for all transitions in e
-		EdgeLayout layout = (EdgeLayout)e.getLayout();
-		layout.update();
+		EdgeLayout layout = (EdgeLayout)e.getLayout();		
 		Iterator<FSATransition> t = e.getTransitions();
 		while(t.hasNext()){
 			metaData.setLayoutData(t.next(), layout);
