@@ -42,6 +42,8 @@ public class AutomatonParser extends AbstractFileParser{
     private Automaton a;
 
     private SubElementContainer sec;
+    
+    private boolean layoutRead=false;
 
     /**
      * creates an automatonParser.
@@ -58,6 +60,7 @@ public class AutomatonParser extends AbstractFileParser{
         a = null;
         file = f;
         parsingErrors = "";
+        layoutRead=false;
         try{
             xmlReader.parse(new InputSource(new FileInputStream(f)));
         }
@@ -89,6 +92,8 @@ public class AutomatonParser extends AbstractFileParser{
     public void endDocument(){
         if(state != STATE_DOCUMENT) parsingErrors += file.getName()
                 + ": wrong state at end of document.\n";
+        if(!layoutRead)
+        	parsingErrors += file.getName() + ": layout data missing.";
         state = STATE_IDLE;
     }
 
@@ -119,11 +124,14 @@ public class AutomatonParser extends AbstractFileParser{
     			state = STATE_IGNORE;
     		}
     		else
+    		{
+                a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
+                a.setID(atts.getValue(ATTRIBUTE_ID));
     			state = STATE_MODEL;
+    		}
             break;
         case (STATE_MODEL):
             if(qName.equals(ELEMENT_DATA)){
-                a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
                 state = STATE_DATA;
             }
             else if(qName.equals(ELEMENT_META))
@@ -146,6 +154,7 @@ public class AutomatonParser extends AbstractFileParser{
             	{
            			LayoutDataParser ldp=new LayoutDataParser(a);
            			ldp.parse(this.xmlReader,parsingErrors);
+           			layoutRead=true;
             	}
             }
             else

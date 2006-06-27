@@ -47,15 +47,40 @@ public class FileOperations {
         	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
         	return a;
         }
-    	AutomatonParser20 ap = new AutomatonParser20();
-        a = ap.parse(f);
-        if(!"".equals(ap.getParsingErrors()))
+        String errors="";
+        try
+        {
+        	BufferedReader head=new BufferedReader(new FileReader(f));
+        	head.readLine();
+        	String line=head.readLine();
+        	head.close();
+        	if(line.trim().startsWith("<automaton"))
+        	{
+            	AutomatonParser20 ap = new AutomatonParser20();
+                a = ap.parse(f);
+                errors=ap.getParsingErrors();
+        	}
+        	else
+        	{
+            	AutomatonParser ap = new AutomatonParser();
+                a = ap.parse(f);
+                errors=ap.getParsingErrors();
+        	}
+        }catch(Exception e)
+        {
+        	a=null;
+        	errors+=e.getMessage();
+        }
+        if(!"".equals(errors))
         {
         	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
         			"\n"+Hub.string("errorsParsingXMLFileL2"));
         }
-        a.setName(ParsingToolbox.removeFileType(f.getName()));
-        a.setFile(f);
+        if(a!=null)
+        {
+        	a.setName(ParsingToolbox.removeFileType(f.getName()));
+        	a.setFile(f);
+        }
         Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
         return a;
 	}
@@ -71,7 +96,7 @@ public class FileOperations {
         	saveAutomatonAs(a);
         else
         {
-        	XMLexporter20.automatonToXML(a, ps);
+        	XMLexporter.automatonToXML(a, ps);
         	a.setName(ParsingToolbox.removeFileType(file.getName()));
         	a.setFile(file);
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());

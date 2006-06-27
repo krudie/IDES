@@ -14,6 +14,8 @@ import java.util.Map.Entry;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import presentation.fsa.GraphModel;
 import presentation.fsa.GraphView;
 import services.latex.LatexManager;
@@ -243,5 +245,20 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	public void setFile(File f)
 	{
 		myFile=f;
+	}
+	
+	public String getRandomId()
+	{
+		String data=new Double(Math.random()).toString()+
+			new Long(System.currentTimeMillis()).toString()+
+			systems.size()+System.getProperty("user.name");
+		for(Iterator<FSAModel> i=getAutomata();i.hasNext();)
+		{
+			FSAModel a=i.next();
+			data+=a.getEventCount();
+			data+=a.getStateCount();
+			data+=a.getTransitionCount();
+		}
+		return DigestUtils.md5Hex(data);
 	}
 }

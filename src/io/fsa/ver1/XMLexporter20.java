@@ -1,5 +1,7 @@
 package io.fsa.ver1;
 
+import io.IOUtilities;
+
 import java.io.PrintStream;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -34,7 +36,7 @@ public class XMLexporter20{
      * @param ps the printstream this object should be printed to.
      */
     public static void workspaceToXML(WorkspaceDescriptor wd, PrintStream ps) {
-        ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         ps.println("<workspace version=\"2.1\">");
         Vector<String> models=wd.getModels();
         for(int i=0;i<models.size();++i)
@@ -53,7 +55,7 @@ public class XMLexporter20{
      * @param ps a printstream that the automaton should be written to.
      */
     public static void automatonToXML(Automaton a, PrintStream ps){
-        ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
+        ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         ps.println("<automaton>");
         ListIterator<FSAState> si = a.getStateIterator();
         while(si.hasNext()){
@@ -112,12 +114,12 @@ public class XMLexporter20{
             ps.print("\n");
             subElementContainerToXML(se, ps, indent + INDENT);
             if(se.getChars() != null && !se.getChars().trim().equals(""))
-                ps.println(indent + INDENT +se.getChars());
+                ps.println(indent + INDENT +IOUtilities.encodeForXML(se.getChars()));
             ps.println(indent + "</" + se.getName() + ">");
             return;
         }
         if(se.getChars() != null && !se.getChars().trim().equals(""))
-            ps.print(se.getChars());
+            ps.print(IOUtilities.encodeForXML(se.getChars()));
         ps.print("</" + se.getName() + ">\n");    
     }
     

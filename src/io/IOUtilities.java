@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.net.QCodec;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 import main.Hub;
 
@@ -61,11 +64,15 @@ public class IOUtilities {
 	        	throw new RuntimeException();
 	        }
 	        try{
-	            ps = new PrintStream(file);	            
+	            ps = new PrintStream(file,"UTF-8");	            
 	        }
 	        catch(FileNotFoundException fnfe){
 	        	errorMsg=Hub.string("fileNotFound");
 	        	throw new RuntimeException();	        	
+	        }
+	        catch(java.io.UnsupportedEncodingException e)
+	        {
+	        	throw new RuntimeException(e);
 	        }
         }catch(RuntimeException e)
         {
@@ -82,5 +89,27 @@ public class IOUtilities {
     public static byte[] encodeBase64(byte[] data)
     {	
     	return Base64.encodeBase64(data);
+    }
+    
+    public static String encodeForXML(String s)
+    {
+    	   StringBuffer buffer = new StringBuffer();
+    	   for(int i = 0;i < s.length();i++)
+    	   {
+    	      char c = s.charAt(i);
+    	      if(c == '<')
+    	         buffer.append("&lt;");
+    	      else if(c == '>')
+    	         buffer.append("&gt;");
+    	      else if(c == '&')
+    	         buffer.append("&amp;");
+    	      else if(c == '"')
+    	         buffer.append("&quot;");
+    	      else if(c == '\'')
+    	         buffer.append("&apos;");
+    	      else
+    	         buffer.append(c);
+    	   }
+    	   return buffer.toString();
     }
 }

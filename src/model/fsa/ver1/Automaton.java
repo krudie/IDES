@@ -30,6 +30,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 
     private File myFile = null;
     
+    protected String id = "";
+    
     /**
      * constructs a nem automaton with the name name
      * @param name the name of the automaton
@@ -68,6 +70,16 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         return clone;
     }
 
+    public String getID()
+    {
+    	return id;
+    }
+    
+    public void setID(String id)
+    {
+    	this.id=id;
+    }
+    
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getName()
 	 */

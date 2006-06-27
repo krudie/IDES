@@ -6,6 +6,16 @@ import java.util.ListIterator;
 public interface FSAModel {
 
 	/**
+	 * @return the ID of the automaton
+	 */
+	public abstract String getID();
+	
+	/**
+	 * @param id the ID of the automaton
+	 */
+	public abstract void setID(String id);
+	
+	/**
 	 * @return the name of the automaton
 	 */
 	public abstract String getName();
