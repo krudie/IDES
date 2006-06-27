@@ -109,20 +109,12 @@ public class Edge extends GraphElement {
 			setHighlighted(false);
 			g2d.setColor(layout.getColor());
 		}
-				
-		// Silly duplicate code.
-//		if(isHighlighted()){
-//			g2d.setColor(layout.getHighlightColor());
-//		}else if (isSelected()){
-//			handler.setVisible(true);
-//			g2d.setColor(layout.getSelectionColor());
-//		}else{
-//			handler.setVisible(false);
-//			g2d.setColor(layout.getColor());
-//		}		
+			
 		
 		if(isSelected()){
 			g2d.setColor(layout.getSelectionColor());
+		}else{
+			handler.setVisible(false); // KLUGE to clean up after modify edge tool
 		}
 		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);

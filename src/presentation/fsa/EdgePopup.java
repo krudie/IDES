@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D.Float;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
@@ -36,7 +37,7 @@ public class EdgePopup extends JPopupMenu {
 	 */
 	protected EdgePopup(Edge e) {
 		// TODO Auto-generated constructor stub
-		miModify = new JMenuItem("Modify curve");
+		miModify = new JMenuItem("Modify curve", new ImageIcon("images/icons/graphic_alledges.gif"));
 		MenuListener listener = new MenuListener();
 		miModify.addActionListener(listener);
 		add(miModify);
@@ -75,11 +76,10 @@ public class EdgePopup extends JPopupMenu {
 		 */
 		public void actionPerformed(ActionEvent arg0) {
 			Object source = arg0.getSource();
-			if(source.equals(miModify)){
-				//edge.setSelected(true);  // Is this necessary?
+			if(source.equals(miModify)){				
 				edge.getHandler().setVisible(true);
 				view.setTool(GraphDrawingView.MODIFY);
-			}else if(source.equals(miEditEvents)){
+			}else if(source.equals(miEditEvents)){				
 				EdgeLabellingDialog.showDialog(view, edge);
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());

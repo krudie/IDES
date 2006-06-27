@@ -62,7 +62,42 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 	public String toString(){
 		return getSymbol();
 	}
+	
+	public void setControllable(boolean b){
+		SubElement props = getSubElement("properties");
+		if(b && !isControllable()){			
+			props.addSubElement(new SubElement("controllable"));			
+		}
+		if(!b && isControllable()){
+			props.removeSubElement("controllable");
+		}		
+	}
+	
+	public void setObservable(boolean b){
+		SubElement props = getSubElement("properties");
+		if(b && !isObservable()){			
+			props.addSubElement(new SubElement("observable"));			
+		}
+		if(!b && isObservable()){
+			props.removeSubElement("observable");
+		}
+		
+	}
+	
+	public boolean isControllable() {
+		SubElement properties = this.getSubElement("properties");
+		return properties.getSubElement("controllable") != null;
+	}
 
+
+	public boolean isObservable() {
+		SubElement properties = this.getSubElement("properties");
+		return properties.getSubElement("observable") != null;
+	}
+	
+	////////////////////////////////////////////////////////////
+	// Not using this code yet.  Had an idea that we'd keep property
+	// access generic to reduce number of commands kicking around ...
 	/**
 	 * Sets the given attribute to the given value.
 	 * If <code>attribute</code> is not a valid attribute name,
@@ -102,23 +137,5 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 		System.err.println("State: cannot get attribute " + attribute);		
 		return null;
 	}
-
-	public void setControllable(boolean b){
-		
-	}
-	
-	public void setObservable(boolean b){
-		
-	}
-	
-	public boolean isControllable() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	public boolean isObservable() {
-		// TODO Auto-generated method stub
-		return false;
-	}	
+	///////////////////////////////////////////////////////////////////
 }

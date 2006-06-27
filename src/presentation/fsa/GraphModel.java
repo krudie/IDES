@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -124,7 +125,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			// add t to the edge's set of transitions
 			e = edgeBetween(n1, n2); 
 			if(e != null){
-				metaData.augmentLayoutData(t, (EdgeLayout)e.getLayout());
+				metaData.addToLayout(t, (EdgeLayout)e.getLayout());
 				e.addTransition(t);
 				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			}else{
@@ -368,6 +369,20 @@ public class GraphModel extends Publisher implements Subscriber {
 		}		
 	}
 
+	public void setControllable(Event event, boolean b){
+		// update the event
+		event.setControllable(b);
+		// notify subscribers
+		fsa.notifyAllBut(this);
+	}
+	
+	public void setObservable(Event event, boolean b){
+		// update the event
+		event.setObservable(b);
+		// notify subscribers
+		fsa.notifyAllBut(this);
+	}
+	
 	/**
 	 * The following steps should be done by the text tool in the context 
 	 * of labelling an edge.
@@ -375,39 +390,102 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * If <code>text</code> corresponds to an event in the local alphabet find the event.
 	 * If <code>text</code> corresponds to an event in the global alphabet find the event, 
 	 * add it to the local alphabet.
-	 * Otherwise, create a new event and add it to both alphabets. 
-	 * 
-	 * For now: 
-	 * Open the EdgeLabellingDialog and then
-	 * Creates a new transition, assigns the event with symbol corresponding to 
-	 * <code>text</code> to the transition and adds the transition to the given edge.
+	 * Otherwise, create a new event and add it to both alphabets.
 	 * 
 	 * @param text an event symbol
 	 */
-	public void assignEvent(Event event, Edge edge){
+	public void assignEvent(Event event, Edge edge){	
 		
 	}
 	
 	/**
-	 * Assigns the set of events to <code>edge</code> and commits any
-	 * changes to the FSAModel.
+	 * Assigns the set of events to <code>edge</code>, removes any events from edge
+	 * that are not in the given list and commits any changes to the FSAModel.
 	 * 
-	 * @param events
-	 * @param edge
+	 * @param events a non-null, non-empty list of FSA events
+	 * @param edge the edge to which the edges will be assigned
 	 */
-	public void assignEvents(Event[] events, Edge edge){
-		for(Event e : events){
-			assignEvent(e, edge);
+	protected void assignEvents(Event[] events, Edge edge){
+
+		// get the transitions for edge
+		Iterator<FSATransition> trans = edge.getTransitions();
+		FSATransition t;			
+		// temp lists for adding or removing transitions since can't change
+		// collection while iterating over it
+		ArrayList<Transition> toAdd = new ArrayList<Transition>();
+		ArrayList<Transition> toRemove = new ArrayList<Transition>();
+
+		// reset the EdgeLayout's event labels
+		while(trans.hasNext()){
+			metaData.removeFromLayout(trans.next(), (EdgeLayout)edge.getLayout());
 		}
+		
+		trans = edge.getTransitions();
+		// Boundary case:  if there are no events on the edge
+		// there has to be exactly one transition.
+		if(events.length == 0){
+			if(trans.hasNext()){
+				t = trans.next();
+				t.setEvent(null);
+			}
+			while(trans.hasNext()){
+				toRemove.add((Transition)trans.next());
+			}
+		}				
+		
+		for(Event e : events){
+			if(trans.hasNext()){
+				 t = trans.next();			
+				 t.setEvent(e);
+			}else{ // more events than transitions
+				// create a new transition
+				toAdd.add(new Transition(maxTransitionId++, edge.getSource().getState(), edge.getTarget().getState(), e));
+			}
+		}
+		
+		// more transitions than events
+		while(trans.hasNext()){			
+			toRemove.add((Transition)trans.next());			
+		}
+		 
+		// remove extra transitions	
+		Iterator iter = toRemove.iterator();
+		while(iter.hasNext()){
+			t = (Transition)iter.next();		
+			edge.removeTransition((Transition)t);						
+			fsa.remove(t);
+		}	
+		
+		// add transitions to accommodate added events
+		iter = toAdd.iterator();
+		while(iter.hasNext()){
+			t = (Transition)iter.next();
+			// add the transition to the edge
+			edge.addTransition((Transition)t);		
+			// add the transition to the FSA					
+			fsa.add(t);
+		}		
+		
+		// Update the event labels in the layout
+		trans = edge.getTransitions();
+		while(trans.hasNext()){
+			t = trans.next();
+			// add the transition data to the layout
+			metaData.addToLayout(t, (EdgeLayout)edge.getLayout());	
+			// set the layout data for the transition in metadata model
+			metaData.setLayoutData(t, (EdgeLayout)edge.getLayout());
+		}		
+		
+		// notify observers
+		fsa.notifyAllBut(this);
+		this.notifyAllSubscribers();
 	}
 	
 	/**
 	 * Stores the layout for the given edge for every transition represented
 	 * by this edge.
 	 * 
-	 * FIXME changes undone when adjacent node is moved.
-	 * 
-	 * @param edge
+	 * @parasm edge
 	 */
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);

@@ -185,11 +185,19 @@ public class MetaData implements FSAMetaData {
 	 * @param transition
 	 * @param layout
 	 */
-	public void augmentLayoutData(FSATransition transition, EdgeLayout layout){
+	public void addToLayout(FSATransition transition, EdgeLayout layout){
 		Transition t = (Transition)transition;
 		Event e = (Event) t.getEvent();
 		if(e != null){			
 			layout.addEventName(e.getSymbol());
+		}
+	}
+	
+	public void removeFromLayout(FSATransition transition, EdgeLayout layout){
+		Transition t = (Transition)transition;
+		Event e = (Event) t.getEvent();
+		if(e != null){			
+			layout.removeEventName(e.getSymbol());
 		}
 	}
 	

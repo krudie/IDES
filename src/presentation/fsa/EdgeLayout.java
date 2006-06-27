@@ -17,7 +17,7 @@ public class EdgeLayout extends GraphicalLayout {
 	public static final int CTRL1 = 1;
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
-	public static final double EPSILON = 0.0001; // lower bound for angle below which is treated as zero 
+	public static final double EPSILON = 0.0001; // lower bound for abs(angles), below which is treated as zero 
 		
 	// Indicates whether an edge can be rigidly translated 
 	// with both of its nodes or must be recomputed.
@@ -255,6 +255,14 @@ public class EdgeLayout extends GraphicalLayout {
 	public void addEventName(String symbol) {
 		eventNames.add(symbol);
 		setDirty(true);
+	}
+
+	/**
+	 * @param symbol
+	 */
+	public void removeEventName(String symbol) {
+		eventNames.remove(symbol);
+		setDirty(true);		
 	}
 
 	public Point2D.Float getLabelOffset() {

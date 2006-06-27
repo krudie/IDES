@@ -58,16 +58,16 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	
 	/**
 	 *
-	 * @param comp parent component
+	 * @param view parent component
 	 * @param e the edge to be labelled
 	 */
-	public static void showDialog(JComponent comp, Edge e){
+	public static void showDialog(JComponent view, Edge e){
 		if (dialog == null) {
-          initialize(comp, null);
+          initialize(view, null);
         } 
         dialog.setEdge(e);
-        dialog.setLocationRelativeTo(comp);
-        dialog.setVisible(true);        		
+        dialog.setLocationRelativeTo(view);  
+        dialog.setVisible(true);        	
 	}
 	
 	private EdgeLabellingDialog(){
@@ -80,14 +80,30 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 //		 NOT YET	eventsModel.attach(this);
 		
 		textField = new JTextField();
-		textField.setPreferredSize(new Dimension(100, 20));
+		textField.setPreferredSize(new Dimension(150, 20));
 		buttonCreate = new JButton("Create");
 		buttonCreate.setEnabled(false);
 		buttonDelete = new JButton("Delete");
 		buttonDelete.setEnabled(false);
+		
 		checkObservable = new JCheckBox("Observable");
+		checkObservable.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {			
+				IDESWorkspace.instance().getActiveGraphModel().setObservable(selectedEvent, checkObservable.isSelected());
+			}
+			
+		});		
 		checkObservable.setEnabled(false);
+		
 		checkControllable = new JCheckBox("Controllable");
+		checkControllable.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				IDESWorkspace.instance().getActiveGraphModel().setControllable(selectedEvent, checkControllable.isSelected());				
+			}
+			
+		});
 		checkControllable.setEnabled(false);
 		
 		Container c = getContentPane();
@@ -105,8 +121,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		p.add(checkObservable, BorderLayout.EAST);
 		p.add(checkControllable, BorderLayout.EAST);
 	
-		panel.add(p, BorderLayout.NORTH);		
-						
+		panel.add(p, BorderLayout.NORTH);						
 		
 		p = new JPanel();
 		listAvailableEvents = new FilteringJList();
@@ -114,9 +129,11 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		listAvailableEvents.installJTextField(textField);
 		listAvailableEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {			 
-				ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-				int index = listAvailableEvents.getSelectedIndex();
+				ListSelectionModel lsm = (ListSelectionModel)e.getSource();				
 				if (lsm.isSelectionEmpty()) {
+					
+					// TODO see if contents of textField matches any of the events in the assigned list
+					// NOTE wouldn't need to do this if we used a sorted list instead of a filtered one...
 					checkObservable.setEnabled(false);
 					checkControllable.setEnabled(false);
 					buttonCreate.setEnabled(true);
@@ -124,16 +141,13 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 				}else{				
 					Object o = listAvailableEvents.getSelectedValue();
 					if(o != null){
-						selectedObject = o;
-						textField.setText(selectedObject.toString());
-						// FIXME selected index is being cleared.
-						// FilteringListener (document listener) is firing a ContentsChanged event
-						// Try a different kind of listener.
-						// The following doesn't fix it.
-						listAvailableEvents.setSelectedIndex(index);
-						////////////////////////////////////////////
+						selectedEvent = (Event)o;
+						textField.setText(selectedEvent.getSymbol());						
+						listAvailableEvents.setSelectedValue(o, true);		
 						checkObservable.setEnabled(true);
+						checkObservable.setSelected(selectedEvent.isObservable());
 						checkControllable.setEnabled(true);
+						checkControllable.setSelected(selectedEvent.isControllable());
 						buttonCreate.setEnabled(false);
 						buttonDelete.setEnabled(true);
 					}
@@ -145,11 +159,13 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		JScrollPane pane = new JScrollPane(listAvailableEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Available"));
 		add(pane, BorderLayout.CENTER);		
-		p.add(pane); //, BorderLayout.WEST);		
+		p.add(pane);		
 		
 	    buttonAdd = new JButton(">>");
+	    buttonAdd.setToolTipText("Assign events to edge");
 	    buttonAdd.addActionListener(new AddButtonListener());
 		buttonRemove = new JButton("<<");		
+		buttonRemove.setToolTipText("Remove events from edge");
 		buttonRemove.addActionListener(new RemoveButtonListener());
 		JPanel pCentre = new JPanel();
 		BoxLayout boxLayout = new BoxLayout(pCentre, BoxLayout.Y_AXIS);
@@ -157,23 +173,41 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		pCentre.add(buttonAdd);
 		pCentre.add(buttonRemove);		
 
-		p.add(pCentre); //, BorderLayout.CENTER);
-		listSelectedEvents = new MutableList();
+		p.add(pCentre);
+		listAssignedEvents = new MutableList();
 		// TODO Only one item can be selected: change to MULTIPLE_INTERVAL_SELECTION later
-		listSelectedEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
-		listSelectedEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+		listAssignedEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+		listAssignedEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 
-			public void valueChanged(ListSelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void valueChanged(ListSelectionEvent e) {
+				ListSelectionModel lsm = (ListSelectionModel)e.getSource();				
+				if (lsm.isSelectionEmpty()) {
+					checkObservable.setEnabled(false);
+					checkControllable.setEnabled(false);
+					buttonCreate.setEnabled(true);
+					buttonDelete.setEnabled(false);
+				}else{				
+					Object o = listAssignedEvents.getSelectedValue();
+					if(o != null){
+						selectedEvent = (Event)o;
+						textField.setText(selectedEvent.getSymbol());						
+						listAssignedEvents.setSelectedValue(o, true);		
+						checkObservable.setEnabled(true);
+						checkObservable.setSelected(selectedEvent.isObservable());
+						checkControllable.setEnabled(true);
+						checkControllable.setSelected(selectedEvent.isControllable());
+						buttonCreate.setEnabled(false);
+						buttonDelete.setEnabled(true);
+					}
+				}
 			}
 			
 		});
-		listSelectedEvents.setPreferredSize(new Dimension(150, 300));		
-		pane = new JScrollPane(listSelectedEvents);
-		pane.setBorder(BorderFactory.createTitledBorder("Selected"));
+		listAssignedEvents.setPreferredSize(new Dimension(150, 300));		
+		pane = new JScrollPane(listAssignedEvents);
+		pane.setBorder(BorderFactory.createTitledBorder("Assigned to Edge"));
 		
-		p.add(pane); //, BorderLayout.WEST);				
+		p.add(pane);				
 		
 		panel.add(p, BorderLayout.CENTER);
 		
@@ -192,6 +226,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 		p = new JPanel(new FlowLayout());
 		p.add(buttonOK);
+		p.add(buttonApply);
 		p.add(buttonCancel);
 		panel.add(p, BorderLayout.SOUTH);
 		c.add(panel);
@@ -203,17 +238,18 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		// For now just refresh list models with local event sets from the active FSA
 		
 		// Selected events are those assigned to transitions on the edge
-		listSelectedEvents.removeAll();
+		listAssignedEvents.removeAll();
 		Iterator<FSATransition> trans = edge.getTransitions();
 		while(trans.hasNext()){
 			FSATransition t = trans.next();
-			//selectedEvents.add(t.getEvent());
-			listSelectedEvents.addElement(t.getEvent());
+			if(t.getEvent() != null){
+				listAssignedEvents.addElement(t.getEvent());
+			}
 		}
 		
-		if(!listSelectedEvents.getContents().isEmpty()){
+		if(!listAssignedEvents.getContents().isEmpty()){
 			// TODO Set the current event to the first one in the selected list
-			listSelectedEvents.setSelectedIndex(0);
+			listAssignedEvents.setSelectedIndex(0);
 		}
 
 		// Available events are those in the active FSA minus those already selected		
@@ -221,11 +257,12 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		Iterator<FSAEvent> events = IDESWorkspace.instance().getActiveModel().getEventIterator();
 		while(events.hasNext()){
 			FSAEvent e = events.next();
-			if(!listSelectedEvents.getContents().contains(e)){
-				//availableEvents.add(e);
+			if(!listAssignedEvents.getContents().contains(e)){				
 				listAvailableEvents.addElement(e);
 			}
 		}
+		
+		textField.setText("");
 	}
 
 	public void setEdge(Edge edge){
@@ -233,19 +270,18 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		if(edge != null){
 			update();
 		}else{
-			setDummyData();
+			textField.setText("");
+			// TODO clear out lists
 		}
-	}
-	
+	}	
 	
 	
 	// Data
 	private Edge edge;
 	private Event newEvent;
+		
 	private Event selectedEvent;
 	
-	// DEBUG
-	private Object selectedObject;
 	
 	// LATER /////////////////////////////////////////////////////////////
 	private FSAEventsModel eventsModel; // the publisher to which i attach
@@ -254,7 +290,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	// GUI controls
 	private JTextField textField;
 	private JCheckBox checkObservable, checkControllable;	
-	private MutableList listSelectedEvents;
+	private MutableList listAssignedEvents;
 	private FilteringJList listAvailableEvents;
 	private JButton buttonCreate, buttonDelete, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
 		
@@ -285,6 +321,10 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	    void removeElement(Object o){
 	    	getContents().removeElement(o);
 	    }
+	    
+	    public void removeAll(){
+	    	getContents().removeAllElements();
+	    }
 	}   
 	
 	/**
@@ -302,7 +342,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 			// get elements selected from available events list
 			Object selected = listAvailableEvents.getSelectedValue();
 			if(selected != null){
-				listSelectedEvents.addElement(selected);
+				listAssignedEvents.addElement(selected);
 				listAvailableEvents.removeElement(selected);
 			}	
 		}		
@@ -320,9 +360,9 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		public void actionPerformed(ActionEvent arg0) {
-			Object selected = listSelectedEvents.getSelectedValue();
+			Object selected = listAssignedEvents.getSelectedValue();
 			if(selected != null){
-				listSelectedEvents.removeElement(selected);
+				listAssignedEvents.removeElement(selected);
 				listAvailableEvents.addElement(selected);
 			}	
 		}
@@ -334,11 +374,19 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Apply any changes to edge's events
-			// Ask GraphModel class to do this
+			// Apply any changes to edge's events
+			Event[] events = new Event[listAssignedEvents.getContents().size()];
+			Object[] contents = listAssignedEvents.getContents().toArray();
+			for(int i = 0; i < contents.length; i++){
+				events[i] = (Event)contents[i];
+			}				
+			IDESWorkspace.instance().getActiveGraphModel().assignEvents(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
 				dialog.setVisible(false);
+				if(dialog.getParent() != null){
+					dialog.getParent().repaint();
+				}
 			}
 		}
 		
@@ -357,45 +405,6 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 	}
 	
-//	private class SelectionListener implements ListSelectionListener {
-//
-//		/* (non-Javadoc)
-//		 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-//		 */
-//		public void valueChanged(ListSelectionEvent e) {
-//			// TODO 
-//			ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-//
-//			int i = lsm.getMinSelectionIndex();
-			
-			
-			
-//			StringBuffer output = new StringBuffer();
-//	        int firstIndex = e.getFirstIndex();
-//	        int lastIndex = e.getLastIndex();
-//	        boolean isAdjusting = e.getValueIsAdjusting();
-//	        output.append("Event for indexes "
-//	                      + firstIndex + " - " + lastIndex
-//	                      + "; isAdjusting is " + isAdjusting
-//	                      + "; selected indexes:");
-//
-//	        if (lsm.isSelectionEmpty()) {
-//	            output.append(" <none>");
-//	        } else {
-//	            // Find out which indexes are selected.
-//	            int minIndex = lsm.getMinSelectionIndex();
-//	            int maxIndex = lsm.getMaxSelectionIndex();
-//	            for (int i = minIndex; i <= maxIndex; i++) {
-//	                if (lsm.isSelectedIndex(i)) {
-//	                    output.append(" " + i);
-//	                }
-//	            }
-//	        }
-//	        output.append("\n");
-//	        System.out.println(output.toString());
-//		}	
-//		
-//	}
 	
 	private void setDummyData(){
 //		 DEBUG ////////////////////////////////////////////
@@ -464,7 +473,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	             listAvailableEvents.addElement(element);
 	           }	           
 	        
-	   		listSelectedEvents = new MutableList(data);
+	   		listAssignedEvents = new MutableList(data);
 	   		
 		/////////////////////////////////////////////////////
 	}

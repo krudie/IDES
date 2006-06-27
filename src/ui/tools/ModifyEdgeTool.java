@@ -34,33 +34,14 @@ public class ModifyEdgeTool extends DrawingTool {
 	}
 	
 	/* (non-Javadoc)
-	 * @see ui.tools.DrawingTool#handleMouseClicked(java.awt.event.MouseEvent)
-	 */
-	@Override
-	public void handleMouseClicked(MouseEvent m) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see ui.tools.DrawingTool#handleMouseDragged(java.awt.event.MouseEvent)
-	 */
-	@Override
-	public void handleMouseDragged(MouseEvent m) {
-		// if dragging 
-		if(dragging){  // ??? Why was I using a dragging flag if I'm inside this method ?			
-			// set the selected control point to the current location
-			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
-			// repaint the context
-			context.repaint();			
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMousePressed(java.awt.event.MouseEvent)
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m) {
+		
+		// FIXME what about case where EdgePopup sets this to the current tool
+		// and sets the handler to visible, but the edge is still null here ...
+		
 		if(edge != null){
 			if(edge.intersects(m.getPoint())){ // have clicked on selected edge
 				// get control point to be moved
@@ -81,12 +62,12 @@ public class ModifyEdgeTool extends DrawingTool {
 				if(context.hasCurrentSelection()){
 					try{
 						edge = (Edge)context.getCurrentSelection().child(0);
-						edge.getHandler().setVisible(true);
-						oldEdge.getHandler().setVisible(false);
+						edge.getHandler().setVisible(true);						
 					}catch(ClassCastException cce){
 						// clicked on some other kind of graph element
 						edge = null;
 					}
+					oldEdge.getHandler().setVisible(false);
 				}
 			}
 		}else{
@@ -105,6 +86,21 @@ public class ModifyEdgeTool extends DrawingTool {
 			}
 		}		
 	}
+	
+
+	/* (non-Javadoc)
+	 * @see ui.tools.DrawingTool#handleMouseDragged(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void handleMouseDragged(MouseEvent m) { 
+		if(dragging){			
+			// set the selected control point to the current location
+			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
+			// repaint the context
+			context.repaint();			
+		}
+	}
+
 
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMouseReleased(java.awt.event.MouseEvent)
@@ -119,6 +115,11 @@ public class ModifyEdgeTool extends DrawingTool {
 		dragging = false;		
 	}
 
+	/* (non-Javadoc)
+	 * @see ui.tools.DrawingTool#handleMouseClicked(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void handleMouseClicked(MouseEvent m) {}
 	public void handleKeyTyped(KeyEvent ke) {}
 	public void handleKeyPressed(KeyEvent ke) {}
 	public void handleKeyReleased(KeyEvent ke) {}

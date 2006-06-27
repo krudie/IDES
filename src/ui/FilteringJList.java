@@ -84,19 +84,22 @@ import java.util.*;
 		   ((FilteringModel)getModel()).removeElement(element);
 	   }
 	   
+	   public void removeAll(){
+		   ((FilteringModel)getModel()).clear();
+	   }
+	   
 	   /**
 	    * Manages filtering of list model
 	    */
 	   
-	   private class FilteringModel extends AbstractListModel
-	       implements DocumentListener {
+	   private class FilteringModel extends AbstractListModel implements DocumentListener {
 	     /**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		List<Object> list;
-	     List<Object> filteredList;
-	     String lastFilter = "";
+		private List<Object> list;
+	    private List<Object> filteredList;
+	    private String lastFilter = "";
 	   
 	     public FilteringModel() {
 	       list = new ArrayList<Object>();
@@ -111,6 +114,12 @@ import java.util.*;
 	     public void removeElement(Object element){
 	    	 list.remove(element);
 	    	 filter(lastFilter);
+	     }
+	     
+	     public void clear(){
+	    	 list.clear();
+	    	 filteredList.clear();
+	    	 lastFilter = "";
 	     }
 	     
 	     public int getSize() {
