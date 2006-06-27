@@ -71,7 +71,7 @@ public class FileOperations {
         	saveAutomatonAs(a);
         else
         {
-        	XMLexporter.automatonToXML(a, ps);
+        	XMLexporter20.automatonToXML(a, ps);
         	a.setName(ParsingToolbox.removeFileType(file.getName()));
         	a.setFile(file);
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());

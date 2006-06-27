@@ -1,9 +1,13 @@
 package io;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+
+import org.apache.commons.codec.binary.Base64;
 
 import main.Hub;
 
@@ -68,5 +72,15 @@ public class IOUtilities {
         	Hub.displayAlert(errorMsg);
         }
         return ps;
+    }
+    
+    public static byte[] decodeBase64(byte[] data)
+    {
+    	return Base64.decodeBase64(data);
+    }
+    
+    public static byte[] encodeBase64(byte[] data)
+    {	
+    	return Base64.encodeBase64(data);
     }
 }

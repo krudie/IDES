@@ -24,9 +24,9 @@ import model.fsa.ver1.Transition;
  * @author Kristian Edlund
  * @author Helen Bretzke 2006
  */
-public class XMLexporter{
+public class XMLexporter20{
     
-    private static final String INDENT =  "\t";
+    private static final String INDENT =  "  ";
     
     /**
      * prints a object to XML.
@@ -54,8 +54,7 @@ public class XMLexporter{
      */
     public static void automatonToXML(Automaton a, PrintStream ps){
         ps.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        ps.println("<model version=\"2.1\" type=\"FSA\" id=\"\">");
-        ps.println("<data>");
+        ps.println("<automaton>");
         ListIterator<FSAState> si = a.getStateIterator();
         while(si.hasNext()){
             stateToXML((State)si.next(), ps, INDENT);            
@@ -70,19 +69,7 @@ public class XMLexporter{
         while(ti.hasNext()){
             transitionToXML((Transition)ti.next(),ps, INDENT);
         }
-        ps.println("</data>");
-        ps.println("<meta tag=\"layout\" version=\"2.1\">");
-        si = a.getStateIterator();
-        while(si.hasNext()){
-            stateLayoutToXML((State)si.next(), ps, INDENT);            
-        }
-
-        ti = a.getTransitionIterator();
-        while(ti.hasNext()){
-            transitionLayoutToXML((Transition)ti.next(),ps, INDENT);
-        }
-        ps.println("</meta>");
-        ps.println("</model>");
+        ps.println("</automaton>");
     }
     
     /**
@@ -96,11 +83,7 @@ public class XMLexporter{
         Enumeration<SubElement> see = sec.getSubElements();        
         if(see == null) return;
         while(see.hasMoreElements())
-        {
-        	SubElement se=see.nextElement();
-        	if(!"graphic".equals(se.getName()))
-        		subElementToXML(se,ps, indent);
-        }
+            subElementToXML(see.nextElement(),ps, indent);
     }
     
     /**
@@ -190,49 +173,5 @@ public class XMLexporter{
             ps.println(indent + "</transition>");
         }
     }
-
-    /**
-     * prints a state in xml
-     * @param s the state to convert 
-     * @param ps the printstream to print to 
-     * @param indent the indentation to be used in the file
-     */ 
-    private static void stateLayoutToXML(State s, PrintStream ps,String indent){
-    	SubElement ge=s.getSubElement("graphic");
-    	if(ge==null)
-    		return;
-        ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-        layoutContainerToXML(ge, ps, indent + INDENT);            
-        ps.println(indent + "</state>");
-    }
-    /**
-     * prints a transition in xml
-     * @param t the transition to convert 
-     * @param ps the printstream to print to 
-     * @param indent the indentation to be used in the file
-     */ 
-    private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
-    	SubElement ge=t.getSubElement("graphic");
-    	if(ge==null)
-    		return;
-        ps.println(indent + "<transition" + " id=\"" + t.getId() + "\">");
-        layoutContainerToXML(ge, ps, indent + INDENT);
-        ps.println(indent + "</transition>");
-    }
-    /**
-     * Prints this the subelementcontainer and all subelements of this objects to the
-     * printsstream as XML.
-     * @param sec the subelementcontainer ro export to xml
-     * @param ps the printstream this object should be printet to.
-     * @param indent the indentation this object should have.
-     */
-    private static void layoutContainerToXML(SubElementContainer sec, PrintStream ps, String indent){
-        Enumeration<SubElement> see = sec.getSubElements();        
-        if(see == null) return;
-        while(see.hasMoreElements())
-        {
-        	SubElement se=see.nextElement();
-       		subElementToXML(se,ps, indent);
-        }
-    }    
+                
 }

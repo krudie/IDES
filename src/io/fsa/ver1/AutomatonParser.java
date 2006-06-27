@@ -98,6 +98,7 @@ public class AutomatonParser extends AbstractFileParser{
     public void startElement(String uri, String localName, String qName, Attributes atts){
         switch(state){
         case (STATE_IGNORE):
+        case (STATE_META):
         	break;
         case (STATE_IDLE):
             parsingErrors += file.getName() + ": in state idle at start of element.\n";
@@ -125,16 +126,34 @@ public class AutomatonParser extends AbstractFileParser{
                 a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
                 state = STATE_DATA;
             }
-            else if(qName.equals(ELEMENT_META)&&a!=null)
+            else if(qName.equals(ELEMENT_META))
             {
-            	state = STATE_META;
+            	if(!"2.1".equals(atts.getValue(ATTRIBUTE_VERSION)))
+            	{
+            		parsingErrors+=file.getName()+": wrong file format version.";
+            	}
+            	if(!"layout".equals(atts.getValue(ATTRIBUTE_TAG)))
+            	{
+            		state = STATE_META;
+            	}
+            	if(a==null)
+            	{
+            		parsingErrors+=file.getName()+": metadata requires model which" +
+					"may have not been parsed yet.";
+            		state = STATE_META;
+            	}
+            	if(state!=STATE_META)
+            	{
+           			LayoutDataParser ldp=new LayoutDataParser(a);
+           			ldp.parse(this.xmlReader,parsingErrors);
+            	}
             }
             else
             {
             	parsingErrors += file.getName()
             	+ ": encountered wrong start of element in state model.\n";
             }
-            break;        	
+            break;
         case (STATE_DATA):
             if(qName.equals(ELEMENT_STATE)){
                 if(atts.getValue(ATTRIBUTE_ID) == null){
@@ -210,6 +229,11 @@ public class AutomatonParser extends AbstractFileParser{
         switch(state){
         case (STATE_IGNORE):
         	break;
+        case (STATE_META):
+            if(qName.equals(ELEMENT_META)){
+                state = STATE_MODEL;
+            }
+        	break;        	
         case (STATE_MODEL):
             if(qName.equals(ELEMENT_MODEL)){
                 state = STATE_DOCUMENT;
@@ -217,15 +241,6 @@ public class AutomatonParser extends AbstractFileParser{
             else{
                 parsingErrors += file.getName()
                         + ": Wrong element endend while in state model.\n";
-            }
-        	break;
-        case (STATE_META):
-            if(qName.equals(ELEMENT_META)){
-                state = STATE_MODEL;
-            }
-            else{
-                parsingErrors += file.getName()
-                        + ": Wrong element endend while in state meta.\n";
             }
         	break;
         case (STATE_DATA):
