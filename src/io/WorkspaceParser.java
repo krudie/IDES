@@ -102,7 +102,7 @@ public class WorkspaceParser extends AbstractFileParser {
         case STATE_WORKSPACE:
             if (!qName.equals(ELEMENT_MODEL)) {
                 parsingErrors += file.getName()
-                        + ": encountered wrong element in state project.";
+                        + ": encountered wrong element in state workspace.";
 
             }
             if (atts.getValue(ATTRIBUTE_FILE) != null) {
@@ -135,7 +135,7 @@ public class WorkspaceParser extends AbstractFileParser {
             break;
         case STATE_MODEL:
             parsingErrors += file.getName()
-                    + ": encountered wrong element while in state automaton.\n";
+                    + ": encountered wrong element while in state model.\n";
             break;
         default:
             parsingErrors += file.getName()
@@ -158,7 +158,7 @@ public class WorkspaceParser extends AbstractFileParser {
                 state = STATE_DOCUMENT;
             else
                 parsingErrors += file.getName()
-                        + ": encountered wrong end of element while in state project\n";
+                        + ": encountered wrong end of element while in state workspace\n";
             break;
         case STATE_DOCUMENT:
             parsingErrors += file.getName()
@@ -169,7 +169,7 @@ public class WorkspaceParser extends AbstractFileParser {
                 state = STATE_WORKSPACE;
             else
                 parsingErrors += file.getName()
-                        + ": encountered wrong end of element while in state automaton\n";
+                        + ": encountered wrong end of element while in state model\n";
             break;
         default:
             parsingErrors += file.getName()

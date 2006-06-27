@@ -47,7 +47,7 @@ public class FileOperations {
         	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
         	return a;
         }
-    	AutomatonParser ap = new AutomatonParser();
+    	AutomatonParser20 ap = new AutomatonParser20();
         a = ap.parse(f);
         if(!"".equals(ap.getParsingErrors()))
         {

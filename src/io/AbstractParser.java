@@ -16,14 +16,6 @@ import org.xml.sax.XMLReader;
 
 public class AbstractParser implements ContentHandler {
 
-    protected static final String ELEMENT_AUTOMATON = "automaton",
-            ELEMENT_STATE = "state",
-            ELEMENT_TRANSITION = "transition", ELEMENT_EVENT = "event";
-
-    protected static final String ATTRIBUTE_ID = "id",
-            ATTRIBUTE_SOURCE_ID = "source", ATTRIBUTE_TARGET_ID = "target",
-            ATTRIBUTE_EVENT = "event", ATTRIBUTE_FILE = "file";
-
     protected String parsingErrors = "";
 
     protected XMLReader xmlReader;

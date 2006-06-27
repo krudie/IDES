@@ -20,22 +20,19 @@ import org.xml.sax.SAXException;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class AutomatonParser extends AbstractFileParser{
+public class AutomatonParser20 extends AbstractFileParser{
     private int state = STATE_IDLE;
 
-    protected static final String ELEMENT_MODEL = "model",
+    protected static final String ELEMENT_AUTOMATON = "automaton",
     ELEMENT_STATE = "state",
-    ELEMENT_TRANSITION = "transition", ELEMENT_EVENT = "event",
-    ELEMENT_DATA = "data", ELEMENT_META = "meta";
+    ELEMENT_TRANSITION = "transition", ELEMENT_EVENT = "event";
 
     protected static final String ATTRIBUTE_ID = "id",
     ATTRIBUTE_SOURCE_ID = "source", ATTRIBUTE_TARGET_ID = "target",
-    ATTRIBUTE_EVENT = "event", ATTRIBUTE_VERSION = "version",
-    ATTRIBUTE_TYPE = "type", ATTRIBUTE_TAG = "tag";
+    ATTRIBUTE_EVENT = "event", ATTRIBUTE_FILE = "file";
 
-    private static final int STATE_IGNORE = -1, STATE_IDLE = 0, STATE_DOCUMENT = 1, STATE_MODEL = 2,
-    		STATE_DATA = 3, STATE_STATE = 4, STATE_TRANSITION = 5, STATE_EVENT = 6,
-    		STATE_META = 7;
+    private static final int STATE_IDLE = 0, STATE_DOCUMENT = 1, STATE_AUTOMATON = 2,
+            STATE_STATE = 3, STATE_TRANSITION = 4, STATE_EVENT = 5;
 
     private File file;
 
@@ -46,7 +43,7 @@ public class AutomatonParser extends AbstractFileParser{
     /**
      * creates an automatonParser.
      */
-    public AutomatonParser(){
+    public AutomatonParser20(){
         super();
     }
 
@@ -97,45 +94,19 @@ public class AutomatonParser extends AbstractFileParser{
      */
     public void startElement(String uri, String localName, String qName, Attributes atts){
         switch(state){
-        case (STATE_IGNORE):
-        	break;
         case (STATE_IDLE):
             parsingErrors += file.getName() + ": in state idle at start of element.\n";
             break;
         case (STATE_DOCUMENT):
-            if(!qName.equals(ELEMENT_MODEL)){
+            if(!qName.equals(ELEMENT_AUTOMATON)){
                 parsingErrors += file.getName()
                         + ": encountered wrong start of element in state document.\n";
                 break;
             }
-    		if(!"2.1".equals(atts.getValue(ATTRIBUTE_VERSION)))
-    		{
-    			parsingErrors+=file.getName()+": wrong file format version.";
-    		}
-    		if(!"FSA".equals(atts.getValue(ATTRIBUTE_TYPE)))
-    		{
-    			parsingErrors+=file.getName()+": this type of model is not supported.";
-    			state = STATE_IGNORE;
-    		}
-    		else
-    			state = STATE_MODEL;
+            a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
+            state = STATE_AUTOMATON;
             break;
-        case (STATE_MODEL):
-            if(qName.equals(ELEMENT_DATA)){
-                a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
-                state = STATE_DATA;
-            }
-            else if(qName.equals(ELEMENT_META)&&a!=null)
-            {
-            	state = STATE_META;
-            }
-            else
-            {
-            	parsingErrors += file.getName()
-            	+ ": encountered wrong start of element in state model.\n";
-            }
-            break;        	
-        case (STATE_DATA):
+        case (STATE_AUTOMATON):
             if(qName.equals(ELEMENT_STATE)){
                 if(atts.getValue(ATTRIBUTE_ID) == null){
                     parsingErrors += file.getName() + " Unable to parse state with no id.\n";
@@ -208,46 +179,26 @@ public class AutomatonParser extends AbstractFileParser{
      */
     public void endElement(String uri, String localName, String qName){
         switch(state){
-        case (STATE_IGNORE):
-        	break;
-        case (STATE_MODEL):
-            if(qName.equals(ELEMENT_MODEL)){
+        case (STATE_AUTOMATON):
+            if(qName.equals(ELEMENT_AUTOMATON)){
                 state = STATE_DOCUMENT;
             }
             else{
                 parsingErrors += file.getName()
-                        + ": Wrong element endend while in state model.\n";
-            }
-        	break;
-        case (STATE_META):
-            if(qName.equals(ELEMENT_META)){
-                state = STATE_MODEL;
-            }
-            else{
-                parsingErrors += file.getName()
-                        + ": Wrong element endend while in state meta.\n";
-            }
-        	break;
-        case (STATE_DATA):
-            if(qName.equals(ELEMENT_DATA)){
-                state = STATE_MODEL;
-            }
-            else{
-                parsingErrors += file.getName()
-                        + ": Wrong element endend while in state data.\n";
+                        + ": Wrong element endend while in state automaton.\n";
             }
             break;
         case (STATE_STATE):
-            if(qName.equals(ELEMENT_STATE)) state = STATE_DATA;
+            if(qName.equals(ELEMENT_STATE)) state = STATE_AUTOMATON;
             else parsingErrors += file.getName() + ": Wrong element endend while in state state.\n";
             break;
         case (STATE_TRANSITION):
-            if(qName.equals(ELEMENT_TRANSITION)) state = STATE_DATA;
+            if(qName.equals(ELEMENT_TRANSITION)) state = STATE_AUTOMATON;
             else parsingErrors += file.getName()
                     + ": Wrong element endend while in state transition.\n";
             break;
         case (STATE_EVENT):
-            if(qName.equals(ELEMENT_EVENT)) state = STATE_DATA;
+            if(qName.equals(ELEMENT_EVENT)) state = STATE_AUTOMATON;
             else parsingErrors += file.getName() + ": Wrong element endend while in state event.\n";
             break;
         default:
