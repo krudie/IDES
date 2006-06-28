@@ -66,19 +66,19 @@ public class Node extends GraphElement {
 	public void update() {
 		
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
-		// TODO relocate based on bounds of label and expand the node size if necessary.
+		
+		// Resize based on bounds of label and expand the node size if necessary.
 		// make sure that node is big enough to fit text inside inner circle if isMarked.
 	
 		label = new GraphLabel(layout.getText(), centre);
 		Rectangle labelBounds = label.bounds();
-		if( ! bounds().contains(labelBounds ) ){
-			// DEBUG Hub.displayAlert("Label too big for node :( ");
+		if( ! bounds().contains(labelBounds ) ){			
 			// compute new radius
 			double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();
-			((NodeLayout)layout).setRadius((float)max/2 + NodeLayout.RDIF);
+			((NodeLayout)layout).setRadius((float)max/2 + 2*NodeLayout.RDIF);
 			
 			// TODO recompute all edges (endpoints will have changed)
-			
+			recomputeEdges();
 		}
 		
 		float radius = ((NodeLayout)layout).getRadius();
@@ -107,6 +107,21 @@ public class Node extends GraphElement {
 					
 	}
 	
+	/**
+	 * Compute edge layout for each edge adjacent to this Node.
+	 */
+	private void recomputeEdges() {
+		Iterator children = children();
+		while(children.hasNext()){
+			try{
+				Edge e = (Edge)children.next();				
+				((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
+			}catch(ClassCastException cce){
+				// Child is not an edge
+			}
+		}		
+	}
+
 	/**
 	 * Draws this node and all of its out edges in the given graphics context.
 	 */
@@ -221,4 +236,21 @@ public class Node extends GraphElement {
 		return super.isDirty() || layout.isDirty();
 	}
 
+	/**
+	 * @return
+	 */
+	public boolean hasSelfLoop() {
+		Iterator children = children();
+		while(children.hasNext()){
+			try{
+				Edge e = (Edge)children.next();				
+				if(e.getSource().equals(this) && e.getTarget().equals(this)){
+					return true;
+				}
+			}catch(ClassCastException cce){
+				// Child is not an edge
+			}
+		}		
+		return false;
+	}
 }

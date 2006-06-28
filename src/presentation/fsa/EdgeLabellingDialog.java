@@ -79,12 +79,51 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		this.eventsModel = eventsModel;
 //		 NOT YET	eventsModel.attach(this);
 		
-		textField = new JTextField();
-		textField.setPreferredSize(new Dimension(150, 20));
+		textField = new JTextField(20);
+		textField.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				String symbol = textField.getText();
+				//if(symbol doesn't exist in the current FSA){
+					///	enable the create button
+			}
+			
+		});
+		
+		buttonClear = new JButton("Clear");
+		buttonClear.setToolTipText("Clear text and show all available events");
+		buttonClear.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				textField.setText("");
+			}
+			
+		});
 		buttonCreate = new JButton("Create");
+		buttonCreate.setToolTipText("Create a new event");
+		buttonCreate.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				// get the symbol from the text field
+				String symbol = textField.getText();
+				if( ! symbol.equals("") ){
+					// ask the graph model to make a new event
+					// IDESWorkspace.instance().getActiveGraphModel().createEvent(symbol);
+				}
+			}
+			
+		});
 		buttonCreate.setEnabled(false);
 		buttonDelete = new JButton("Delete");
+		buttonDelete.setToolTipText("Delete the selected event");
 		buttonDelete.setEnabled(false);
+		buttonDelete.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				Hub.displayAlert("EdgeLabellingDialog: Please implement delete event");
+			}
+			
+		});
 		
 		checkObservable = new JCheckBox("Observable");
 		checkObservable.addActionListener(new ActionListener(){
@@ -115,6 +154,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		p.setBorder(BorderFactory.createTitledBorder("Enter event symbol"));
 		p.add(textField, BorderLayout.WEST);
 		JPanel p2 = new JPanel(new FlowLayout());
+		p2.add(buttonClear);
 		p2.add(buttonCreate);
 		p2.add(buttonDelete);
 		p.add(p2, BorderLayout.CENTER);
@@ -247,11 +287,6 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 			}
 		}
 		
-		if(!listAssignedEvents.getContents().isEmpty()){
-			// TODO Set the current event to the first one in the selected list
-			listAssignedEvents.setSelectedIndex(0);
-		}
-
 		// Available events are those in the active FSA minus those already selected		
 		listAvailableEvents.removeAll();
 		Iterator<FSAEvent> events = IDESWorkspace.instance().getActiveModel().getEventIterator();
@@ -292,7 +327,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	private JCheckBox checkObservable, checkControllable;	
 	private MutableList listAssignedEvents;
 	private FilteringJList listAvailableEvents;
-	private JButton buttonCreate, buttonDelete, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
+	private JButton buttonClear, buttonCreate, buttonDelete, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
 		
 		
 	@SuppressWarnings("serial") 

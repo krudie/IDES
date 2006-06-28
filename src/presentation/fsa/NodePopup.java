@@ -89,6 +89,7 @@ public class NodePopup extends JPopupMenu {
 		
 		miSetMarked.setSelected(node.getState().isMarked());
 		miSetInitial.setSelected(node.getState().isInitial());
+		miSelfLoop.setSelected(node.hasSelfLoop());
 	}
 
 	private class Listener implements ActionListener {

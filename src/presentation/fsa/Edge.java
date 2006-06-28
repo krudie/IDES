@@ -162,13 +162,12 @@ public class Edge extends GraphElement {
 	    if(s.length()>0) s = s.substring(0, s.length() - 1);
 	    label.setText(s);
 	    
-	    // Compute location of label: midpoint of curve 
-	    // TODO ignore label offset vector from V2, let the EdgeLayout store that info... 
+	    // Compute location of label: midpoint of curve	     
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
-	    Point2D midpoint = left.getP2();
+	    Point2D midpoint = left.getP2();	    
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());
-	    label.getLayout().setLocation((float)midpoint.getX(), (float)midpoint.getX());	    	
+	    label.getLayout().setLocation((float)location.getX(), (float)location.getX());	    	
 	}
 	
 	
@@ -177,9 +176,9 @@ public class Edge extends GraphElement {
 	 */
 	public boolean intersects(Point p){
 		if(isSelected() && handler.isVisible()){
-			return curve.contains(p) || arrow.contains(p) || handler.intersects(p);
+			return curve.contains(p) || arrow.contains(p) || handler.intersects(p) || label.intersects(p);
 		}else{
-			return curve.contains(p) || arrow.contains(p);
+			return curve.contains(p) || arrow.contains(p) || label.intersects(p);
 		}		
 	}
 	

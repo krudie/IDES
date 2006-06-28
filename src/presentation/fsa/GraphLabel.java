@@ -80,9 +80,6 @@ public class GraphLabel extends GraphElement {
 	}
 	
 	public void draw(Graphics g) {
-//		if(layout.isDirty()){
-//			update();
-//		}
 		
 		if(LatexManager.isLatexEnabled())
 		{
@@ -104,14 +101,15 @@ public class GraphLabel extends GraphElement {
 			FontMetrics metrics = g.getFontMetrics();
 			int width = metrics.stringWidth( layout.getText() );
 			int height = metrics.getHeight();
-			bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
-					(int)(layout.getLocation().y/2)));
+			bounds.setSize(width, height);
+			bounds.setLocation(new Point((int)(layout.getLocation().x - width/2), 
+					(int)(layout.getLocation().y - height/2)));
 			
 			int x = (int)layout.getLocation().x - width/2;
 			int y = (int)layout.getLocation().y + metrics.getAscent()/2;
-			bounds.setSize(width, height);
+			
 			if(visible){
-				g.setColor(layout.getColor());		
+				// g.setColor(layout.getColor());		
 				g.drawString(layout.getText(), x, y);
 			}
 		}
