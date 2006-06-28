@@ -56,6 +56,8 @@ public class MainWindow extends JFrame implements Subscriber {
 
 	String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/";
 	
+	
+	
 	public MainWindow() {
 		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));
 		addWindowListener(new WindowAdapter() {
@@ -100,7 +102,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
 		tabbedViews.add(sp);
-		tabbedViews.addTab("Events", null);
+		tabbedViews.addTab("Events", new EventView());
 		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");
 	}

@@ -669,4 +669,12 @@ public class GraphModel extends Publisher implements Subscriber {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * @return event id which is not in use
+	 */
+	public long getFreeEventId()
+	{
+		return maxEventId++;
+	}
 }

@@ -29,7 +29,7 @@ public class IOUtilities {
 	public static final String MODEL_FILE_EXT="xmd";
 	
 	/**
-     * Method for getting a printstream wrapped around a file
+     * Method for getting a UTF-8 printstream wrapped around a file
      * @param file the file that needs a printstream wrapped around it
      * @return the printstream pointing to a the file, <code>null</code> if it could not be created
      */
@@ -91,6 +91,11 @@ public class IOUtilities {
     	return Base64.encodeBase64(data);
     }
     
+    /**
+     * Encodes a string so that XML-illegal symbols are properly escaped.
+     * @param s string to encode
+     * @return encoded version of the input string
+     */
     public static String encodeForXML(String s)
     {
     	   StringBuffer buffer = new StringBuffer();

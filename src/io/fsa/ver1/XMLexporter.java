@@ -56,7 +56,7 @@ public class XMLexporter{
      */
     public static void automatonToXML(Automaton a, PrintStream ps){
         ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        ps.println("<model version=\"2.1\" type=\"FSA\" id=\""+a.getID()+"\">");
+        ps.println("<model version=\"2.1\" type=\"FSA\" id=\""+a.getId()+"\">");
         ps.println("<data>");
         ListIterator<FSAState> si = a.getStateIterator();
         while(si.hasNext()){

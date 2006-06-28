@@ -126,7 +126,7 @@ public class AutomatonParser extends AbstractFileParser{
     		else
     		{
                 a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
-                a.setID(atts.getValue(ATTRIBUTE_ID));
+                a.setId(atts.getValue(ATTRIBUTE_ID));
     			state = STATE_MODEL;
     		}
             break;

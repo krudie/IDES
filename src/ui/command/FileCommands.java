@@ -36,6 +36,7 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
+			fsa.setId(Hub.getWorkspace().getRandomId());
 			IDESWorkspace.instance().addFSAModel(fsa);
 		}	
 	}
