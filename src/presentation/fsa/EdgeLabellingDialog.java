@@ -8,8 +8,14 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -80,27 +86,42 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 //		 NOT YET	eventsModel.attach(this);
 		
 		textField = new JTextField(20);
-		textField.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent ke) {
 				String symbol = textField.getText();
-				//if(symbol doesn't exist in the current FSA){
-					///	enable the create button
-			}
-			
+				
+				// Select the first event in the lists for which symbol
+				// is a prefix
+				int i = listAvailableEvents.indexOfFirstElementWithPrefix(symbol);
+				if(i > -1){
+					listAvailableEvents.setSelectedIndex(i);
+				}else{
+					listAvailableEvents.clearSelection();
+				}
+				
+				i = listAssignedEvents.indexOfFirstElementWithPrefix(symbol);
+				if(i > -1){
+					listAssignedEvents.setSelectedIndex(i);
+				}else{
+					listAssignedEvents.clearSelection();
+				}
+				if(listAvailableEvents.getSelectedIndex() == -1 && listAssignedEvents.getSelectedIndex() == -1){
+					buttonCreate.setEnabled(true);
+					checkControllable.setEnabled(true);
+					checkControllable.setSelected(false); // not working
+					checkObservable.setEnabled(true);
+					checkControllable.setSelected(false); // not working
+				}else{
+					buttonCreate.setEnabled(false);
+					checkControllable.setEnabled(false);
+					checkObservable.setEnabled(false);
+				}
+			}			
 		});
 		
-		buttonClear = new JButton("Clear");
-		buttonClear.setToolTipText("Clear text and show all available events");
-		buttonClear.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {
-				textField.setText("");
-			}
-			
-		});
-		buttonCreate = new JButton("Create");
-		buttonCreate.setToolTipText("Create a new event");
+		
+		buttonCreate = new JButton(Hub.string("create"));
+		buttonCreate.setToolTipText(Hub.string("createEventTooltip"));
 		buttonCreate.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -108,24 +129,17 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 				String symbol = textField.getText();
 				if( ! symbol.equals("") ){
 					// ask the graph model to make a new event
-					// IDESWorkspace.instance().getActiveGraphModel().createEvent(symbol);
+					newEvent = IDESWorkspace.instance().getActiveGraphModel().createEvent(symbol, checkControllable.isSelected(), checkObservable.isSelected());
+					update();
+					listAvailableEvents.setSelectedValue(newEvent, true);
+					buttonCreate.setEnabled(false);
 				}
 			}
 			
 		});
-		buttonCreate.setEnabled(false);
-		buttonDelete = new JButton("Delete");
-		buttonDelete.setToolTipText("Delete the selected event");
-		buttonDelete.setEnabled(false);
-		buttonDelete.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {
-				Hub.displayAlert("EdgeLabellingDialog: Please implement delete event");
-			}
-			
-		});
+		buttonCreate.setEnabled(false);		
 		
-		checkObservable = new JCheckBox("Observable");
+		checkObservable = new JCheckBox(Hub.string("observable"));
 		checkObservable.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {			
@@ -135,7 +149,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		});		
 		checkObservable.setEnabled(false);
 		
-		checkControllable = new JCheckBox("Controllable");
+		checkControllable = new JCheckBox(Hub.string("controllable"));
 		checkControllable.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -153,10 +167,8 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		JPanel p = new JPanel(); //new BorderLayout());
 		p.setBorder(BorderFactory.createTitledBorder("Enter event symbol"));
 		p.add(textField, BorderLayout.WEST);
-		JPanel p2 = new JPanel(new FlowLayout());
-		p2.add(buttonClear);
-		p2.add(buttonCreate);
-		p2.add(buttonDelete);
+		JPanel p2 = new JPanel(new FlowLayout());		
+		p2.add(buttonCreate);		
 		p.add(p2, BorderLayout.CENTER);
 		p.add(checkObservable, BorderLayout.EAST);
 		p.add(checkControllable, BorderLayout.EAST);
@@ -164,9 +176,9 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		panel.add(p, BorderLayout.NORTH);						
 		
 		p = new JPanel();
-		listAvailableEvents = new FilteringJList();
+		listAvailableEvents = new MutableList(); //new FilteringJList();
 		listAvailableEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
-		listAvailableEvents.installJTextField(textField);
+		//listAvailableEvents.installJTextField(textField);
 		listAvailableEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {			 
 				ListSelectionModel lsm = (ListSelectionModel)e.getSource();				
@@ -177,7 +189,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 					checkObservable.setEnabled(false);
 					checkControllable.setEnabled(false);
 					buttonCreate.setEnabled(true);
-					buttonDelete.setEnabled(false);
+					
 				}else{				
 					Object o = listAvailableEvents.getSelectedValue();
 					if(o != null){
@@ -189,7 +201,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 						checkControllable.setEnabled(true);
 						checkControllable.setSelected(selectedEvent.isControllable());
 						buttonCreate.setEnabled(false);
-						buttonDelete.setEnabled(true);
+						
 					}
 				}
 			}
@@ -225,7 +237,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 					checkObservable.setEnabled(false);
 					checkControllable.setEnabled(false);
 					buttonCreate.setEnabled(true);
-					buttonDelete.setEnabled(false);
+					
 				}else{				
 					Object o = listAssignedEvents.getSelectedValue();
 					if(o != null){
@@ -237,7 +249,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 						checkControllable.setEnabled(true);
 						checkControllable.setSelected(selectedEvent.isControllable());
 						buttonCreate.setEnabled(false);
-						buttonDelete.setEnabled(true);
+						
 					}
 				}
 			}
@@ -251,9 +263,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 		panel.add(p, BorderLayout.CENTER);
 		
-		ActionListener commitListener = new CommitListener();
-		buttonApply = new JButton("Apply");
-		buttonApply.addActionListener(commitListener);
+		ActionListener commitListener = new CommitListener();		
 		buttonOK = new JButton("OK");
 		buttonOK.addActionListener(commitListener);
 		buttonCancel = new JButton("Cancel");
@@ -265,8 +275,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		);
 		
 		p = new JPanel(new FlowLayout());
-		p.add(buttonOK);
-		p.add(buttonApply);
+		p.add(buttonOK);		
 		p.add(buttonCancel);
 		panel.add(p, BorderLayout.SOUTH);
 		c.add(panel);
@@ -290,13 +299,13 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		// Available events are those in the active FSA minus those already selected		
 		listAvailableEvents.removeAll();
 		Iterator<FSAEvent> events = IDESWorkspace.instance().getActiveModel().getEventIterator();
+
 		while(events.hasNext()){
 			FSAEvent e = events.next();
 			if(!listAssignedEvents.getContents().contains(e)){				
-				listAvailableEvents.addElement(e);
+				listAvailableEvents.insertElement((Comparable)e);
 			}
-		}
-		
+		}		
 		textField.setText("");
 	}
 
@@ -313,8 +322,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	
 	// Data
 	private Edge edge;
-	private Event newEvent;
-		
+	private Event newEvent;		
 	private Event selectedEvent;
 	
 	
@@ -326,8 +334,8 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	private JTextField textField;
 	private JCheckBox checkObservable, checkControllable;	
 	private MutableList listAssignedEvents;
-	private FilteringJList listAvailableEvents;
-	private JButton buttonClear, buttonCreate, buttonDelete, buttonAdd, buttonRemove, buttonOK, buttonApply, buttonCancel;
+	private MutableList listAvailableEvents;
+	private JButton buttonCreate, buttonAdd, buttonRemove, buttonOK, buttonCancel;
 		
 		
 	@SuppressWarnings("serial") 
@@ -336,7 +344,21 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	    	super(new DefaultListModel());
 	    }
 	    
-	    MutableList(Object[] elements){
+	    /**
+		 * @param symbol
+		 * @return index of the first element found with prefix of string representation matching symbol, -1 if no such element
+		 */
+		public int indexOfFirstElementWithPrefix(String prefix) {
+			DefaultListModel model = getContents();
+			for(int i = 0; i < model.getSize(); i++){
+				if(model.getElementAt(i).toString().startsWith(prefix)){
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		MutableList(Object[] elements){
 	    	this();
 	    	DefaultListModel model = getContents();
 	    	for(Object element: elements){
@@ -347,6 +369,11 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	    DefaultListModel getContents() {
 	    	@SuppressWarnings("unused") ListModel m = getModel();
 	    	return (DefaultListModel)getModel();
+	    }
+	    
+	    void insertElement(Comparable o){
+	    	int i = findInsertionPoint(o);
+	    	getContents().insertElementAt(o, i);
 	    }
 	    
 	    void addElement(Object o){
@@ -360,6 +387,21 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 	    public void removeAll(){
 	    	getContents().removeAllElements();
 	    }
+	    /**
+	     * Internal helper method to find the insertion point for a new 
+	     * entry in a sorted (ascending) model.
+	     */
+	    private int findInsertionPoint(Comparable entry) {
+	        int insertionPoint = getContents().getSize();
+	        for(int i=0; i<insertionPoint; i++){
+	        	int c = ((Comparable)getContents().elementAt(i)).compareTo(entry);
+	        	if(c >= 0){
+	        		return i;
+	        	}
+	        }	        
+	        return insertionPoint;
+	    }
+	    
 	}   
 	
 	/**
@@ -377,7 +419,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 			// get elements selected from available events list
 			Object selected = listAvailableEvents.getSelectedValue();
 			if(selected != null){
-				listAssignedEvents.addElement(selected);
+				listAssignedEvents.addElement((Comparable)selected);
 				listAvailableEvents.removeElement(selected);
 			}	
 		}		
@@ -398,7 +440,7 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 			Object selected = listAssignedEvents.getSelectedValue();
 			if(selected != null){
 				listAssignedEvents.removeElement(selected);
-				listAvailableEvents.addElement(selected);
+				listAvailableEvents.insertElement((Comparable)selected);
 			}	
 		}
 	}
@@ -440,76 +482,4 @@ public class EdgeLabellingDialog extends JDialog implements Subscriber {
 		
 	}
 	
-	
-	private void setDummyData(){
-//		 DEBUG ////////////////////////////////////////////
-		String[] data = {"Alpha", "Beta", "Gamma", "Delta"};
-		String elements[] = {
-	             "Partridge in a pear tree",
-	             "Turtle Doves",
-	             "French Hens",
-	             "Calling Birds",
-	             "Golden Rings",
-	             "Geese-a-laying",
-	             "Swans-a-swimming",
-	             "Maids-a-milking",
-	             "Ladies dancing",
-	             "Lords-a-leaping",
-	             "Pipers piping",
-	             "Drummers drumming",
-	             "Dasher",
-	             "Dancer",
-	             "Prancer",
-	             "Vixen",
-	             "Comet",
-	             "Cupid",
-	             "Donner",
-	             "Blitzen",
-	             "Rudolf",
-	             "Bakerloo",
-	             "Center",
-	             "Circle",
-	             "District",
-	             "East London",
-	             "Hammersmith and City",
-	             "Jubilee",
-	             "Metropolitan",
-	             "Northern",
-	             "Piccadilly Royal",
-	             "Victoria",
-	             "Waterloo and City",
-	             "Alpha",
-	             "Beta",
-	             "Gamma",
-	             "Delta",
-	             "Epsilon",
-	             "Zeta",
-	             "Eta",
-	             "Theta",
-	             "Iota",
-	             "Kapa",
-	             "Lamda",
-	             "Mu",
-	             "Nu",
-	             "Xi",
-	             "Omikron",
-	             "Pi",
-	             "Rho",
-	             "Sigma",
-	             "Tau",
-	             "Upsilon",
-	             "Phi",
-	             "Chi",
-	             "Psi",
-	             "Omega"
-	           };   
-	   
-	           for (String element: elements) {
-	             listAvailableEvents.addElement(element);
-	           }	           
-	        
-	   		listAssignedEvents = new MutableList(data);
-	   		
-		/////////////////////////////////////////////////////
-	}
 }

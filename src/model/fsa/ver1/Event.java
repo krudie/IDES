@@ -9,7 +9,7 @@ import io.fsa.ver1.SubElementContainer;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event extends SubElementContainer implements model.fsa.FSAEvent {
+public class Event extends SubElementContainer implements model.fsa.FSAEvent, Comparable {
     private long id;
 
     /**
@@ -138,4 +138,12 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent {
 		return null;
 	}
 	///////////////////////////////////////////////////////////////////
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(T)
+	 */
+	public int compareTo(Object arg0) {		
+		return getSymbol().compareTo(((Event)arg0).getSymbol());
+	}
 }

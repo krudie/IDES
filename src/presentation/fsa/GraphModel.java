@@ -687,6 +687,22 @@ public class GraphModel extends Publisher implements Subscriber {
 	{
 		return maxEventId++;
 	}
+
+	/**
+	 * @param symbol
+	 * @param b
+	 * @param c
+	 * @return
+	 */
+	public Event createEvent(String symbol, boolean controllable, boolean observable) {
+		Event event=new Event(getFreeEventId());
+		event.setSymbol(symbol);
+		event.setControllable(controllable);
+		event.setObservable(observable);
+		fsa.add(event);
+		fsa.notifyAllBut(this);		
+		return event;
+	}
 }
 
 

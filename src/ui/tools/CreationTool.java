@@ -32,7 +32,7 @@ public class CreationTool extends DrawingTool {
 		// JAVA BUG: for any preferred dimension, always 32 X 32 on Windows (works on MAC, what about Linux?)!!
 		//System.out.println(toolkit.getBestCursorSize(10, 10));
 		
-//		 FIXME dynamic cursor names in UISettings class
+		// FIXME dynamic cursor names in UISettings class
 		cursor = toolkit.createCustomCursor(toolkit.createImage("src/images/cursors/create.gif"), new Point(10,0), "CREATE_NODES_OR_EDGES");
 		
 	}
@@ -99,8 +99,7 @@ public class CreationTool extends DrawingTool {
 			if (n != null) {
 				if(edge != null){
 					// Hub.displayAlert("Creating self loop while drawing an unfinished edge.");
-					cmd = new CreateCommand(context, CreateCommand.EDGE, me
-							.getPoint());					
+					cmd = new CreateCommand(context, CreateCommand.EDGE, me.getPoint());					
 					cmd.setTargetNode(n);
 					cmd.setEdge(edge);
 				}else{				

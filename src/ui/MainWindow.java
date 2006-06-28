@@ -109,7 +109,7 @@ public class MainWindow extends JFrame implements Subscriber {
 
 	 private void createAndAddToolBar() {
 		 // Create a vertical toolbar
-		 toolbar =  CommandManager.defaultInstance().getGroup("graph.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
+		 toolbar =  CommandManager.defaultInstance().getGroup("ides.toolbar.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
 		 toolbar.setRollover(true);
 		 toolbar.setOrientation(JToolBar.VERTICAL);
 		 this.getContentPane().add(toolbar, BorderLayout.WEST);		 	    
