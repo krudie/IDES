@@ -6,6 +6,8 @@ import java.awt.geom.Point2D.Float;
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
+import main.Hub;
+
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
@@ -16,6 +18,7 @@ import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 import presentation.fsa.SelectionGroup;
+import ui.NodeLabellingDialog;
 
 public class GraphCommands {
 
@@ -218,7 +221,13 @@ public class GraphCommands {
 				}else if (element instanceof Node){				
 					Node node = (Node)element;
 					// if selection is a node				
-					String text = JOptionPane.showInputDialog("Enter state name: ");
+					String text = 
+					//JOptionPane.showInputDialog("Enter state name: ");
+					NodeLabellingDialog.showAndGetLabel(node.getLabel().getLayout().getText(),
+							new Point((int)node.getLayout().getLocation().x+
+									Hub.getWorkspace().getDrawingBoardDisplacement().x,
+									(int)node.getLayout().getLocation().y+
+									Hub.getWorkspace().getDrawingBoardDisplacement().y));
 					if(text != null){
 						context.getGraphModel().labelNode(node, text);						
 					}

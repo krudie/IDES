@@ -338,4 +338,11 @@ public class MainWindow extends JFrame implements Subscriber {
 		pack();
 	}
 
+	/**
+	 * @return the top-left corner fo the drawing area
+	 */
+	public Point getDrawingBoardDisplacement()
+	{
+		return drawingBoard.getLocationOnScreen();
+	}
 }

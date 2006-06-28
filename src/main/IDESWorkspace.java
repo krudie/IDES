@@ -5,6 +5,7 @@ import io.PrintUtilities;
 import io.fsa.ver1.FileOperations;
 
 import java.awt.Cursor;
+import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import presentation.fsa.GraphModel;
 import presentation.fsa.GraphView;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
+import ui.MainWindow;
 import util.InterruptableProgressDialog;
 
 
@@ -260,5 +262,13 @@ public class IDESWorkspace extends Publisher implements Workspace {
 			data+=a.getTransitionCount();
 		}
 		return DigestUtils.md5Hex(data);
+	}
+	
+	/**
+	 * @return the top-left corner fo the drawing area
+	 */
+	public Point getDrawingBoardDisplacement()
+	{
+		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardDisplacement();
 	}
 }
