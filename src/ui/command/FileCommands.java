@@ -22,8 +22,12 @@ import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
+//<<<<<<< FileCommands.java
+import presentation.fsa.GraphExporter;
+//=======
 import services.latex.LatexPrerenderer;
 
+//>>>>>>> 1.10
 
 public class FileCommands {	
 	
@@ -198,10 +202,16 @@ public class FileCommands {
 
 		@Override
 		protected void performSave(File arg0) {
-			// TODO Auto-generated method stub
+			// Modified: June 16, 2006
+			// Modifier: Sarah-Jane Whittaker
+			String fileContents = GraphExporter.createPSTricksFileContents();
+			if (fileContents == null)
+			{
+				System.out.println("ERROR: File contents are null in FileCommands.performSave!!!");							
+			}
+			
 			System.out.println("TODO: Save as LaTeX");
 		}
-		
 	}
 	
 	public static class ExportToPNGCommand extends AbstractSaveAsCommand {

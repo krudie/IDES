@@ -30,6 +30,7 @@ import services.cache.Cache;
 import services.cache.NotInCacheException;
 import services.latex.LatexManager;
 import services.latex.LatexRenderException;
+import util.BentoBox;
 
 /**
  * TODO Change so that doesn't extend label; waste of space and rounds the location to int coords.
@@ -234,5 +235,57 @@ public class GraphLabel extends GraphElement {
 	{
 		if(rendered==null)
 			render();
+	}
+	
+	/**
+	 * This method is responsible for creating a string that contains
+	 * an appropriate (depending on the type) representation of this
+	 * edge.
+	 *  
+	 * @param selectionBox The area being selected or considered
+	 * @param exportType The export format
+	 * @return String The string representation
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	public String createExportString(Rectangle selectionBox, int exportType)
+	{
+		String exportString = "";
+		GraphicalLayout labelLayout = getLayout();
+		Point2D labelLocation = labelLayout.getLocation();
+		Rectangle labelBounds = bounds();
+		
+		// This is taken from Mike Wood - thanks, Mike!!!
+		String safeLabel = labelLayout.getText();
+		safeLabel = BentoBox.replaceAll(safeLabel, "\\\\" 
+			+ BentoBox.STR_ASCII_STANDARD_RETURN, "\\\\ ");
+		safeLabel =  BentoBox.replaceAll(safeLabel, "\\\\ " 
+			+ BentoBox.STR_ASCII_STANDARD_RETURN, "\\\\ ");
+		safeLabel =  BentoBox.replaceAll(safeLabel,
+				BentoBox.STR_ASCII_STANDARD_RETURN + BentoBox.STR_ASCII_STANDARD_RETURN, "\\\\ ");
+		safeLabel = BentoBox.replaceAll(safeLabel, BentoBox.STR_ASCII_STANDARD_RETURN, " ");
+
+		// Make sure this node is contained within the selection box
+		if (! (selectionBox.contains(labelBounds)))
+		{
+			System.out.println("Label  " + labelBounds 
+				+ " outside bounds " + selectionBox);
+			return exportString;
+		}
+		
+		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
+		{
+			exportString = "  \\rput(" 
+				+ (labelLocation.getX() - selectionBox.x) + "," 
+				+ (selectionBox.y + selectionBox.height - labelLocation.getY()) + "){\\parbox{" 
+				+ labelBounds.width + "pt}{\\begin{center}" 
+				+ safeLabel + "\\end{center}}}\n";		
+		}
+		else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS)
+		{	
+			// LENKO!!!
+		}
+
+		return exportString;
 	}
 }

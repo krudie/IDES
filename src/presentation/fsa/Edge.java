@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
@@ -16,6 +17,7 @@ import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
+import util.BentoBox;
 
 /**
  * The graphical representation of a transition in a finite state automaton.
@@ -288,6 +290,111 @@ public class Edge extends GraphElement {
 		return super.isDirty() || layout.isDirty();
 	}
 	
+	/**
+	 * This method is responsible for creating a string that contains
+	 * an appropriate (depending on the type) representation of this
+	 * edge.
+	 *  
+	 * @param selectionBox The area being selected or considered
+	 * @param exportType The export format
+	 * @return String The string representation
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	public String createExportString(Rectangle selectionBox, int exportType)
+	{
+		String exportString = "";
+		
+		Point2D.Float edgeP1 = getP1();
+		Point2D.Float edgeP2 = getP2();
+		Point2D.Float edgeCTRL1 = getCTRL1();
+		Point2D.Float edgeCTRL2 = getCTRL2();
+		EdgeLayout edgeLayout = (EdgeLayout) getLayout();
+
+		// Make sure this node is contained within the selection box
+		if (! (selectionBox.contains(edgeP1) && selectionBox.contains(edgeP2)
+			&& selectionBox.contains(edgeCTRL1) && selectionBox.contains(edgeCTRL2)))
+		{
+			System.out.println("Edge " + edgeP1 + " "
+				+ edgeP2 + " "
+				+ edgeCTRL1 + " "
+				+ edgeCTRL2 + " "
+				+ " outside bounds " + selectionBox);
+			return exportString;
+		}
+		
+		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
+		{
+			// Check whether this should be a line or a curve
+			if ((edgeLayout.getAngle1() < EdgeLayout.EPSILON) &&
+				(edgeLayout.getAngle2() < EdgeLayout.EPSILON))
+			{
+				// Draw a straight line
+				exportString += "  \\psline[arrowsize=5pt]{->}(" 
+					+ (edgeP1.x - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height - edgeP1.y) + ")(" 
+					+ (edgeP2.x - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height - edgeP2.y) + ")\n";
+			}
+			else
+			{	
+				// Draw a curve				
+				exportString += "  \\psbezier[arrowsize=5pt]{->}" //+ dash 
+					+ "(" + (edgeP1.x - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height - edgeP1.y) + ")(" 
+					+ (edgeCTRL1.x - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height -edgeCTRL1.y) + ")(" 
+					+ (edgeCTRL2.x - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height -edgeCTRL2.y) + ")(" 
+					+ (edgeP2.x - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height - edgeP2.y) + ")\n";
+			}
+			
+			// Now for the label
+			if ((layout.getText() != null) && (layout.getText().length() > 0))
+			{
+				exportString += "  " 
+					+ label.createExportString(selectionBox, exportType);
+			}
+		}
+		else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS)
+		{	
+			// LENKO!!!
+		}
+
+		return exportString;
+	}
+	
+	/**
+	 * This method returns the bounding box for the edge based 
+	 * on its four points.
+	 * 
+	 * @return Rectangle The bounds of the Bezier Curve
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	public Rectangle getCurveBounds()
+	{
+		Point2D.Float edgeP1 = getP1();
+		Point2D.Float edgeP2 = getP2();
+		Point2D.Float edgeCTRL1 = getCTRL1();
+		Point2D.Float edgeCTRL2 = getCTRL2();
+		
+		float minX = BentoBox.getMinValue(edgeP1.x, edgeP2.x, 
+			edgeCTRL1.x, edgeCTRL2.x);
+		float minY = BentoBox.getMinValue(edgeP1.y, edgeP2.y, 
+			edgeCTRL1.y, edgeCTRL2.y);
+		float maxX = BentoBox.getMaxValue(edgeP1.x, edgeP2.x, 
+			edgeCTRL1.x, edgeCTRL2.x);		
+		float maxY = BentoBox.getMaxValue(edgeP1.y, edgeP2.y, 
+			edgeCTRL1.y, edgeCTRL2.y);
+		
+		return new Rectangle(BentoBox.convertFloatToInt(minX), 
+			BentoBox.convertFloatToInt(minY), 
+			BentoBox.convertFloatToInt(maxX - minX), 
+			BentoBox.convertFloatToInt(maxY - minY));
+	}
+
 	public Long getId(){
 		if(!transitions.isEmpty()){
 			return new Long(transitions.get(0).getId());

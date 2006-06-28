@@ -282,6 +282,24 @@ public class EdgeLayout extends GraphicalLayout {
 		this.rigidTranslation = rigid;
 	}
 	
+	/**
+	 * These helper methods are needed for PSTricks export to
+	 * determine whether the edge is a straight line or a 
+	 * Bezier curve.
+	 * 
+	 * @return double The desired angle
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	protected double getAngle1()
+	{
+		return angle1;
+	}
+	protected double getAngle2()
+	{
+		return angle2;
+	}
+	
 	protected void arcMore(){
 		if(angle1 == 0 && angle2 == 0){
 			angle1 = Math.PI/8;
@@ -295,4 +313,5 @@ public class EdgeLayout extends GraphicalLayout {
 		
 	}
 	
+//>>>>>>> 1.18
 }

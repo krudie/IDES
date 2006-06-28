@@ -8,6 +8,8 @@ import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -18,6 +20,7 @@ import main.Hub;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
+import util.BentoBox;
 
 /**
  * The graphical representation of a state in a finite state automaton.
@@ -231,6 +234,111 @@ public class Node extends GraphElement {
 	public GraphLabel getLabel()
 	{
 		return label;
+	}
+
+	
+	/**
+	 * This method is needed by the GraphExporter to draw the initial
+	 * arrow.  
+	 *  
+	 * @return Rectangle The bounding box for the initial arrow
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	protected Rectangle getInitialArrowExportBounds()
+	{
+		Rectangle2D arrowBounds = arrow.getBounds2D();
+		NodeLayout nodeLayout = getLayout();
+		float radius = nodeLayout.getRadius();
+		
+		return (state.isInitial() ?
+			new Rectangle(
+				BentoBox.convertFloatToInt(arrow1.x + ArrowHead.SHORT_HEAD_LENGTH), 
+				BentoBox.convertFloatToInt(arrow1.y), 
+				BentoBox.convertFloatToInt(arrow2.x - arrow1.x),
+				BentoBox.convertFloatToInt(arrow2.y - arrow1.y)) 
+			:
+			new Rectangle(0, 0, 0, 0));
+	}
+	
+	/**
+	 * This method is responsible for creating a string that contains
+	 * an appropriate (depending on the type) representation of this
+	 * node.
+	 *  
+	 * @param selectionBox The area being selected or considered
+	 * @param exportType The export format
+	 * @return String The string representation
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	public String createExportString(Rectangle selectionBox, int exportType)
+	{
+		String exportString = "";
+		
+		NodeLayout nodeLayout = getLayout();
+		Point2D.Float nodeLocation = nodeLayout.getLocation();
+		float radius = nodeLayout.getRadius();
+		Rectangle initialArrowBounds = null;
+
+		// Make sure this node is contained within the selection box
+		if (! selectionBox.contains(nodeLocation.x - radius, 
+			nodeLocation.y - radius, radius * 2, radius * 2))
+		{
+			System.out.println("Node " + nodeLocation 
+				+ " (Radius " + radius * 2
+				+ ") outside bounds " + selectionBox);
+			return exportString;
+		}
+		
+		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
+		{
+			// A QUOTE FROM MIKE WOOD - thanks, Mike!
+			// "java coords are origin @ top left, x increasing right, 
+			// y increasing down
+			// latex coords are origin @ bottom left, x increasing right, 
+			// y increasing up"
+			exportString += "  \\pscircle(" 
+				+ (nodeLocation.x - selectionBox.x) + ","
+				+ (selectionBox.height + selectionBox.y - nodeLocation.y) + "){" 
+				+ nodeLayout.getRadius() + "}\n";
+			
+			// If this is a marked state, make a smaller circle within
+			// this one to simulate double lines
+			if (state.isMarked())
+			{ 
+				exportString += "    \\pscircle(" + 
+					+ (nodeLocation.x - selectionBox.x) + ","
+					+ (selectionBox.height + selectionBox.y - nodeLocation.y) + "){" 
+					+ (nodeLayout.getRadius() 
+							- GraphExporter.INT_PSTRICKS_MARKED_STATE_RADIUS_DIFF) 
+					+ "}\n";
+			}				
+			
+			// If this is the initial state, draw an initial arrow
+			if (state.isInitial())
+			{
+				initialArrowBounds = getInitialArrowExportBounds();
+				exportString += "    \\psline[arrowsize=5pt]{->}(" 
+					+ (initialArrowBounds.getMinX() - selectionBox.x) + "," 
+					+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMinY()) + ")(" 
+					+ (initialArrowBounds.getMaxX() - selectionBox.x) + "," 
+					+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMaxY()) + ")\n";
+			}
+			
+			// Now for the label
+			if (layout.getText() != null)
+			{
+				exportString += "  " 
+					+ label.createExportString(selectionBox, exportType);
+			}
+		}
+		else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS)
+		{	
+			// LENKO!!!
+		}
+
+		return exportString;
 	}
 	
 	public boolean isDirty(){
