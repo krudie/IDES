@@ -307,11 +307,13 @@ public class GraphExporter
 		for (i = 0; i < edgeArray.length; i++)
 		{
 			exportBounds.checkRectangle(edgeArray[i].getCurveBounds());
+			// TODO: Get better edge label bounds!!!
 			exportBounds.checkRectangle(edgeArray[i].getLabel().bounds());
 		}
 
 		for (i = 0; i < labelArray.length; i++)
 		{
+			// TODO: Get better edge label bounds!!!
 			labelBounds = labelArray[i].bounds();
 			
 			exportBounds.checkRectangle(labelBounds);
