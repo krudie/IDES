@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import presentation.GraphicalLayout;
@@ -240,17 +241,30 @@ public class Node extends GraphElement {
 	 * @return
 	 */
 	public boolean hasSelfLoop() {
+		Iterator<Edge> edges = adjacentEdges();
+		while(edges.hasNext()){
+			Edge e = edges.next();
+			if(e.getSource().equals(this) && e.getTarget().equals(this)){
+					return true;
+			}			
+		}		
+		return false;
+	}
+
+	/**
+	 * @return an iterator of all adjacent edges
+	 */
+	public Iterator<Edge> adjacentEdges() {
 		Iterator children = children();
+		ArrayList<Edge> edges = new ArrayList<Edge>();
 		while(children.hasNext()){
 			try{
 				Edge e = (Edge)children.next();				
-				if(e.getSource().equals(this) && e.getTarget().equals(this)){
-					return true;
-				}
+				edges.add(e);
 			}catch(ClassCastException cce){
 				// Child is not an edge
 			}
 		}		
-		return false;
+		return edges.iterator();
 	}
 }

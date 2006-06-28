@@ -35,13 +35,12 @@ public class ModifyEdgeTool extends DrawingTool {
 	
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMousePressed(java.awt.event.MouseEvent)
+	 * 
+	 * TODO refactor logic
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m) {
-		
-		// FIXME what about case where EdgePopup sets this to the current tool
-		// and sets the handler to visible, but the edge is still null here ...
-		
+				
 		if(edge != null){
 			if(edge.intersects(m.getPoint())){ // have clicked on selected edge
 				// get control point to be moved
@@ -50,8 +49,7 @@ public class ModifyEdgeTool extends DrawingTool {
 					if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
 						dragging = true;
 					}else{
-						pointType = EdgeHandler.NO_INTERSECTION;
-						// context.clearCurrentSelection();
+						pointType = EdgeHandler.NO_INTERSECTION;			
 						dragging = false;					
 					}
 				}
@@ -65,6 +63,7 @@ public class ModifyEdgeTool extends DrawingTool {
 						edge.getHandler().setVisible(true);						
 					}catch(ClassCastException cce){
 						// clicked on some other kind of graph element
+						context.clearCurrentSelection();
 						edge = null;
 					}
 					oldEdge.getHandler().setVisible(false);
@@ -77,14 +76,29 @@ public class ModifyEdgeTool extends DrawingTool {
 			
 			if( context.hasCurrentSelection() ){
 				try{
-					edge = (Edge)context.getCurrentSelection().child(0);				
-					edge.getHandler().setVisible(true);
+					edge = (Edge)context.getCurrentSelection().child(0);
+					if(edge.getHandler().isVisible() && edge.getHandler().intersects(m.getPoint())){				
+						pointType = edge.getHandler().getLastIntersected();
+						if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
+							dragging = true;
+						}else{
+							pointType = EdgeHandler.NO_INTERSECTION;
+							// context.clearCurrentSelection();
+							dragging = false;					
+						}						
+					}else{
+						edge.getHandler().setVisible(true);
+					}
 				}catch(ClassCastException cce){
-					// clicked on some other kind of graph element
-					edge = null;
+					// >>> clicked on some other kind of graph element
+					if(edge != null){
+						context.clearCurrentSelection();			
+						edge = null;
+					}
 				}
 			}
 		}		
+		context.repaint();
 	}
 	
 

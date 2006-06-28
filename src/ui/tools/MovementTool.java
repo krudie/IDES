@@ -28,10 +28,9 @@ public class MovementTool extends DrawingTool {
 		prev = start;
 		
 		// a group has been selected, move the whole thing
-		if(!context.hasCurrentSelection() && context.getCurrentSelection().hasMultipleElements()){
-		// otherwise update the currently selected element
+		if(context.hasCurrentSelection() && context.getCurrentSelection().hasMultipleElements()){		
 			dragging = true;
-		}else{
+		}else{ // otherwise update the currently selected element
 			context.clearCurrentSelection();
 			context.updateCurrentSelection(start);			
 					
@@ -72,6 +71,7 @@ public class MovementTool extends DrawingTool {
 		start = null;
 		prev = null;
 		context.clearCurrentSelection();
+		context.repaint();
 		//context.setTool(GraphDrawingView.SELECT);
 	}
 

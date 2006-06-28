@@ -219,6 +219,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void updateEdge(Edge e, Point2D.Float p){
 		EdgeLayout layout = (EdgeLayout)e.getLayout();
 		NodeLayout s = e.getSource().getLayout();
+		// FIXME only draw the edge if the point is outside the bounds of the source node
 		layout.computeCurve(s, p);		
 	}
 	
@@ -505,11 +506,19 @@ public class GraphModel extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}
 	
-	private void delete(Node n1){
+	private void delete(Node n){
 		// delete all adjacent edges
+		Iterator edges = n.adjacentEdges();
+		while(edges.hasNext()){
+			delete((Edge)edges.next());
+		}
 		// remove n
+		graph.remove(n);
+		nodes.remove(new Long(n.getId()));
+		fsa.notifyAllBut(this);
+		notifyAllSubscribers();
 		// DEBUG
-		Hub.displayAlert("GraphModel: Implement delete(Node) ASAP");
+		//Hub.displayAlert("GraphModel: Implement delete(Node) ASAP");
 	}
 	
 	private void delete(Edge e){
@@ -519,9 +528,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 		e.getSource().remove(e);
 		e.getTarget().remove(e);
-		edges.remove(e);
+		edges.remove(e.getId());
 		fsa.notifyAllBut(this);
-		this.notifyAllSubscribers();
+		notifyAllSubscribers();
 	}
 
 	public GraphElement getGraph() {

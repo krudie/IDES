@@ -4,18 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D.Float;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import model.fsa.ver1.State;
-
 import ui.command.GraphCommands.DeleteCommand;
 import ui.command.GraphCommands.TextCommand;
-import ui.command.NodeCommands.*;
+import ui.command.NodeCommands.SelfLoopCommand;
+import ui.command.NodeCommands.SetInitialCommand;
+import ui.command.NodeCommands.SetMarkedCommand;
 
 public class NodePopup extends JPopupMenu {
 

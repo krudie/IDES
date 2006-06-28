@@ -14,9 +14,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
-import main.IDESWorkspace;
-
-import presentation.fsa.NodePopup.PopupListener;
+import ui.command.GraphCommands.DeleteCommand;
 
 /**
  * @author Squirrel
@@ -25,6 +23,7 @@ import presentation.fsa.NodePopup.PopupListener;
 public class EdgePopup extends JPopupMenu {
 
 	private Edge edge;
+	private DeleteCommand deleteCmd;
 	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge;
 	private static GraphDrawingView view;
 	
@@ -44,12 +43,18 @@ public class EdgePopup extends JPopupMenu {
 		miEditEvents = new JMenuItem("Label with Events");
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
+		deleteCmd = new DeleteCommand(view);
+		miDeleteEdge = deleteCmd.createMenuItem();
+		add(miDeleteEdge);		
+		
+		add(new JPopupMenu.Separator());
 		miStraighten = new JMenuItem("Straighten");
 		miStraighten.setEnabled(false);
 		add(miStraighten);
-		miDeleteEdge = new JMenuItem("Delete");
-		add(miDeleteEdge);
-		miDeleteEdge.setEnabled(false);
+		// TODO arc more
+		// TODO arc less
+		// TODO reverse
+		
 		addPopupMenuListener(new PopupListener());
 		setEdge(e);
 	}
@@ -67,6 +72,7 @@ public class EdgePopup extends JPopupMenu {
 			
 	public void setEdge(Edge edge){
 		this.edge = edge;
+		deleteCmd.setElement(edge);
 	}
 
 	class MenuListener implements ActionListener {

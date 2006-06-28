@@ -25,7 +25,7 @@ public class SelectionTool extends DrawingTool {
 
 	private Point startPoint, endPoint; 
 	Dimension d;
-	Point p;
+	Point topLeftPt;
 	Rectangle box;
 	// TODO more cursors for resizing the bounding box
 	
@@ -36,7 +36,7 @@ public class SelectionTool extends DrawingTool {
 		context = board;
 		cursor = new Cursor(Cursor.HAND_CURSOR);
 		d = new Dimension();
-		p = new Point();
+		topLeftPt = new Point();
 		box = context.getSelectionArea();
 	}
 	
@@ -65,11 +65,11 @@ public class SelectionTool extends DrawingTool {
 		if(!endPoint.equals(startPoint)){		
 				// recompute the bounding rectangle
 				//	figure out relative position of start and endpoint to compute top left corner, width and height.
-				p.setLocation(Math.min(startPoint.x, endPoint.x),
+				topLeftPt.setLocation(Math.min(startPoint.x, endPoint.x),
 							  Math.min(startPoint.y, endPoint.y));
 				d.setSize(Math.abs(endPoint.x - startPoint.x), 
 						  Math.abs(endPoint.y - startPoint.y));											
-				box.setLocation(p);
+				box.setLocation(topLeftPt);
 				box.setSize(d);
 				context.updateCurrentSelection(box);				
 				context.repaint();	

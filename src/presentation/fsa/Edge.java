@@ -174,7 +174,7 @@ public class Edge extends GraphElement {
 	/**	 
 	 * @return true iff p intersects with this edge. 
 	 */
-	public boolean intersects(Point p){
+	public boolean intersects(Point2D p){
 		if(isSelected() && handler.isVisible()){
 			return curve.contains(p) || arrow.contains(p) || handler.intersects(p) || label.intersects(p);
 		}else{
@@ -286,5 +286,12 @@ public class Edge extends GraphElement {
 	
 	public boolean isDirty(){
 		return super.isDirty() || layout.isDirty();
+	}
+	
+	public Long getId(){
+		if(!transitions.isEmpty()){
+			return new Long(transitions.get(0).getId());
+		}
+		return null;
 	}
 }

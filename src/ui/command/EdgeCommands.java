@@ -27,26 +27,6 @@ public class EdgeCommands {
 		
 	}
 	
-	public static class DeleteEdgeCommand extends UndoableActionCommand {
-
-		private Edge edge;
-		
-		public DeleteEdgeCommand(Edge edge){
-			super("delete.edge.command");
-			this.edge = edge;
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.pietschy.command.undo.UndoableActionCommand#performEdit()
-		 */
-		@Override
-		protected UndoableEdit performEdit() {
-			IDESWorkspace.instance().getActiveGraphModel().delete(edge);
-			// TODO Store and return edge
-			return null;
-		}		
-	}
-	
 	public static class RemoveEventCommand extends ActionCommand {
 
 		public RemoveEventCommand(){

@@ -27,23 +27,25 @@ public class SelectionGroup extends GraphElement {
 	 * otherwise e will need to be recomputed to preserve its shape when
 	 * only one of its edges is moved.
 	 * 
-	 * Then translates all nodes (nodes will see to moving their edges...
-	 * ??? If nodes are responsible for moving their edges, then why not have them check
-	 * the edges for ... 
-	 * A: because nodes don't know about the group to which they belong!
+	 * Then translates all nodes (nodes will see to moving their edges)
 	 * 
 	 */
 	public void translate(float x, float y){
 		Iterator children = children();
 		while(children.hasNext()){
 			Object o = children.next();
+//			??? If nodes are responsible for moving their edges, then why not have them check
+//			the edges for ... 
+//			A: because nodes don't know about the group to which they belong!
+					 
 			if(o instanceof Edge){  // YUCK evil kluge indicative of poor design and looming deadline.
 				Edge e = (Edge)o;
-				if( contains(e.getSource()) && contains(e.getTarget()) ){
-					((EdgeLayout)e.getLayout()).setRigidTranslation(true);  
-				}else{
+				// BUG: rigid translation not recomputing scalars in edgelayout?
+//				if( contains(e.getSource()) && contains(e.getTarget()) ){
+//					((EdgeLayout)e.getLayout()).setRigidTranslation(true);  
+//				}else{
 					((EdgeLayout)e.getLayout()).setRigidTranslation(false);
-				}
+//				}
 				// ??? What about Edges adjacent to translated Nodes that are 
 				// NOT in the selection group?  Default to FALSE (assume recomputation required).
 			}	
@@ -56,7 +58,11 @@ public class SelectionGroup extends GraphElement {
 	 */
 	public boolean hasMultipleElements() {
 		if(hasChildren()){
-			return this.child(1) != null;
+			try{
+				return this.child(1) != null;
+			}catch(IndexOutOfBoundsException ioobe){
+				return false;
+			}
 		}
 		return false;
 	}

@@ -367,7 +367,7 @@
       <face name="toolbar" extends="[default]">
          <text/>
       </face>
-	</command>	
+	</command>		
 	
 	
 	<group id="options.group">
