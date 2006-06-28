@@ -217,6 +217,40 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 		}
 	};
 
+	/**
+	 * The listener for the user pressing the <code>Delete</code> key.
+	 */
+	protected Action createListener = new AbstractAction()
+	{
+		public void actionPerformed(ActionEvent actionEvent)
+		{
+			if(!(actionEvent.getSource() instanceof JButton))
+			{
+				createButton.doClick();
+			}
+			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
+			if(a==null||"".equals(eventNameField.getText()))
+				return;
+			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
+			event.setSymbol(eventNameField.getText());
+			event.setControllable(controllableCBox.isSelected());
+			event.setObservable(observableCBox.isSelected());
+			a.add(event);
+			a.notifyAllSubscribers();
+			update();
+			int rows=table.getModel().getRowCount();
+			for(int i=0;i<rows;++i)
+			{
+				if(((String)table.getModel().getValueAt(i,0)).equals(event.getSymbol()))
+				{
+					table.setRowSelectionInterval(i,i);
+					table.scrollRectToVisible(table.getCellRect(i,0,false));
+					break;
+				}
+			}
+			eventNameField.requestFocus();
+		}
+	};
 	
 	protected JTable table;
 	protected JTextField eventNameField;
@@ -255,9 +289,9 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 				{
 					createButton.setEnabled(false);
 					controllableCBox.setEnabled(false);
-					controllableCBox.setSelected(event.isControllable());
+					//controllableCBox.setSelected(event.isControllable());
 					observableCBox.setEnabled(false);
-					observableCBox.setSelected(event.isObservable());
+					//observableCBox.setSelected(event.isObservable());
 				}
 				else
 				{
@@ -278,24 +312,27 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			}
 		};
 		eventNameField.getDocument().addDocumentListener(al);
+		eventNameField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),this);
+		eventNameField.getActionMap().put(this,createListener);
 		createBox.add(eventNameField);
 		
 		controllableCBox=new JCheckBox(Hub.string("controllable"));
+		controllableCBox.setSelected(true);
 		createBox.add(controllableCBox);
 		observableCBox=new JCheckBox(Hub.string("observable"));
 		observableCBox.setSelected(true);
 		createBox.add(observableCBox);
 		
-		createButton=new JButton(Hub.string("create"));
+		createButton=new JButton(Hub.string("add"));
 		createButton.setPreferredSize(new Dimension(createButton.getPreferredSize().width,
 				eventNameField.getPreferredSize().height));
-		createButton.addActionListener(this);
+		createButton.addActionListener(createListener);
 		createBox.add(createButton);
-		createBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-		Box borderPane=Box.createHorizontalBox();
-		borderPane.setBorder(BorderFactory.createLineBorder(this.getForeground()));
-		borderPane.add(createBox);
-		mainBox.add(borderPane);
+		createBox.setBorder(BorderFactory.createTitledBorder(Hub.string("addNewEvent")));//.createEmptyBorder(5,5,5,5));
+		//Box borderPane=Box.createHorizontalBox();
+		//borderPane.setBorder(BorderFactory.createLineBorder(this.getForeground()));
+		//borderPane.add(createBox);
+		mainBox.add(createBox);
 		
 		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
 
@@ -308,10 +345,11 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 
 		Box deleteBox=Box.createHorizontalBox();
 		deleteBox.add(Box.createHorizontalGlue());
-		deleteBox.add(new JLabel(Hub.string("deleteSelectedEvents")));
+		//deleteBox.add(new JLabel(Hub.string("deleteSelectedEvents")));
 		deleteButton=new JButton(Hub.string("delete"));
 		deleteButton.addActionListener(deleteListener);
 		deleteBox.add(deleteButton);
+		deleteBox.setBorder(BorderFactory.createTitledBorder(Hub.string("deleteSelectedEvents")));//.createEmptyBorder(5,5,5,5));
 		mainBox.add(deleteBox);
 
 		add(mainBox);
@@ -330,6 +368,8 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			controllableCBox.setEnabled(false);
 			observableCBox.setEnabled(false);
 			deleteButton.setEnabled(false);
+			eventNameField.setEnabled(false);
+			table.setEnabled(false);
 		}
 		else
 		{
@@ -338,35 +378,12 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			controllableCBox.setEnabled(true);
 			observableCBox.setEnabled(true);
 			deleteButton.setEnabled(true);
+			eventNameField.setEnabled(true);
+			table.setEnabled(true);
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e)
 	{
-		if(e.getSource().getClass().equals(JButton.class)
-				&&((JButton)e.getSource()).getText().equals(Hub.string("create")))
-		{
-			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
-			if(a==null||"".equals(eventNameField.getText()))
-				return;
-			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
-			event.setSymbol(eventNameField.getText());
-			event.setControllable(controllableCBox.isSelected());
-			event.setObservable(observableCBox.isSelected());
-			a.add(event);
-			a.notifyAllSubscribers();
-			update();
-			int rows=table.getModel().getRowCount();
-			for(int i=0;i<rows;++i)
-			{
-				if(((String)table.getModel().getValueAt(i,0)).equals(event.getSymbol()))
-				{
-					table.setRowSelectionInterval(i,i);
-					table.scrollRectToVisible(table.getCellRect(i,0,false));
-					break;
-				}
-			}
-			eventNameField.requestFocus();
-		}
 	}
 }
