@@ -197,7 +197,7 @@ public class Node extends GraphElement {
 	// instead of with circle.
 
 	 */
-	public boolean intersects(Point p) {
+	public boolean intersects(Point2D p) {
 		if(state.isInitial()){
 			return circle.contains(p) || arrow.contains(p); 
 		}

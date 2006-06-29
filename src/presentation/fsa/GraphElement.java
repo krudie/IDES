@@ -16,10 +16,10 @@ import presentation.PresentationElement;
 
 public class GraphElement implements PresentationElement {
 	
-	protected boolean visible;
-	protected boolean highlighted;
-	protected boolean selected;
-	protected boolean dirty;
+	protected boolean visible = true;
+	protected boolean highlighted = false;
+	protected boolean selected = false;
+	protected boolean dirty = false;
 	protected GraphicalLayout layout;
 	
 	// my states and free labels
