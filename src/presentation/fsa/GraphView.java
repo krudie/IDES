@@ -34,12 +34,15 @@ public class GraphView extends JComponent implements Subscriber {
 		setGraphModel(graphModel);
 	}
 
-	public void paint(Graphics g) {			
+	public void paint(Graphics g) {
 		Graphics2D g2D = (Graphics2D) g;			
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
 	    g2D.setStroke(GUISettings.instance().getWideStroke());
 
+	    Rectangle r=this.getBounds();
+	    g2D.setColor(Color.WHITE);
+	    g2D.fillRect(r.x,r.y,r.width,r.height);
 	    g2D.scale(scaleFactor, scaleFactor);		
 	    //	TODO other transformation?
 

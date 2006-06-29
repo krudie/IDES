@@ -215,6 +215,7 @@ public class GraphLabel extends GraphElement {
 		WritableRaster raster=rendered.getAlphaRaster();
 		Color bg=Hub.getMainWindow().getBackground();
 		int bgShade=(bg.getRed()+bg.getGreen()+bg.getBlue())/3;
+		//System.out.println(bgShade);
 		for(int i=0;i<raster.getWidth();++i)
 			for(int j=0;j<raster.getHeight();++j)
 			{

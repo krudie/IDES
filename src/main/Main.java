@@ -47,6 +47,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
+		//set up global exception handler
+		//GlobalExceptionHandler geh=new GlobalExceptionHandler();
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		
 		//load resource with strings used in the program
 		try
 		{
@@ -77,6 +81,9 @@ public class Main {
 	        UIManager.setLookAndFeel(
 	            UIManager.getSystemLookAndFeelClassName());
 	    } catch (Exception e) { }
+//DEBUG: remove eventually
+//	    for(Object o:UIManager.getLookAndFeelDefaults().keySet())
+//	    	System.out.println(o.toString());
 	    
 		// TODO load UISettings and workspace in a thread
 		// show splash screen
