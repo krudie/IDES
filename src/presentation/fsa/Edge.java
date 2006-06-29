@@ -146,7 +146,8 @@ public class Edge extends GraphElement {
 		}
 		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
-	    g2d.draw(path);
+		g2d.draw(curve);
+	    // g2d.draw(path);
 	    
 	    // draw an arrowhead
 	    g2d.drawPolygon(arrow);
@@ -228,9 +229,17 @@ public class Edge extends GraphElement {
 	 */
 	public boolean intersects(Point2D p){
 		if(isSelected() && handler.isVisible()){
-			return curve.contains(p) || arrow.contains(p) || handler.intersects(p) || label.intersects(p);
+			// expand the intersection point to an 8 by 8 rectangle
+			return curve.intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
+				arrow.intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
+				label.intersects(p) || 
+				handler.intersects(p) ;
 		}else{
-			return curve.contains(p) || arrow.contains(p) || label.intersects(p);
+			// expand the intersection point to an 8 by 8 rectangle
+			boolean r = curve.intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
+			boolean a = arrow.contains(p);
+			boolean l = label.intersects(p);			
+			return r || a || l ;
 		}		
 	}
 	

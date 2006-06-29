@@ -55,5 +55,6 @@ public class ArrowHead extends Polygon {
 	    addPoint((int)base.x, (int)base.y);
 	    v = Geometry.scale(Geometry.rotate(dir, -ANGLE), 0.75f);	
 	    addPoint((int)(base.x + v.x), (int)(base.y + v.y));
-    }    
+    }   
+    
 }

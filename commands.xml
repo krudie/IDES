@@ -115,7 +115,7 @@
          <text>Save auto_maton</text>
          <icon type="file">src/images/icons/file_save_automaton.gif</icon>
          <description>Save automaton</description>
-         <accelerator key="M">
+         <accelerator key="S">
 	         <modifier value="control"/>
          </accelerator>
       </face>
@@ -127,10 +127,7 @@
       <face>
          <text>Save automaton _as...</text>
          <icon type="file">src/images/icons/file_saveas.gif</icon>
-         <description>Save automaton as...</description>
-         <accelerator key="A">
-	         <modifier value="control"/>  	         
-         </accelerator>
+         <description>Save automaton as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -360,9 +357,7 @@
 	  <face>
          <text>Delete</text>
          <icon type="file">src/images/icons/edit_delete.gif</icon>
-         <description>Delete</description>
-         <accelerator key="delete">
-         </accelerator>
+         <description>Delete</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
