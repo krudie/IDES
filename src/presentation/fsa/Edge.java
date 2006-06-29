@@ -6,9 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -45,26 +47,38 @@ public class Edge extends GraphElement {
 
 	private GraphLabel label;		
 	
+	/**
+	 * Precondition: layout != null
+	 * @param layout
+	 * @param source
+	 */
 	public Edge(EdgeLayout layout, Node source){
 		this.layout = layout;
+		layout.setEdge(this);
 		this.source = source;
 		target = null;
 		transitions = new ArrayList<FSATransition>();		 
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
-		label = new GraphLabel("");
+		label = new GraphLabel("");		
 		insert(label);
-	    handler = new EdgeHandler(this);
+	    handler = new EdgeHandler(this);	    
 	    insert(handler);
-
+	    
 		update();
 	}
 	
+	/**
+	 * Precondition: layout != null
+	 * @param t
+	 * @param layout
+	 */
 	public Edge(FSATransition t, EdgeLayout layout){
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
-		this.layout = layout; 
+		this.layout = layout;
+		layout.setEdge(this);
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
@@ -76,12 +90,20 @@ public class Edge extends GraphElement {
 		update();
 	}
 	
+	/**
+	 * Precondition: layout != null
+	 * @param t
+	 * @param source
+	 * @param target
+	 * @param layout
+	 */
 	public Edge(FSATransition t, Node source, Node target, EdgeLayout layout){		
 		this.source = source;
 		this.target = target;
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
-		this.layout = layout; 
+		this.layout = layout;
+		layout.setEdge(this);
 		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
@@ -93,13 +115,17 @@ public class Edge extends GraphElement {
 		update();
 	}
 
-	public void draw(Graphics g) {	
-		if(layout.isDirty()){
-			update();
-			handler.update();
-			layout.setDirty(false);
+	public void draw(Graphics g) {
+		if( ! isVisible() ){
+			return;
 		}
 		
+		if(isDirty()){
+			update();
+			handler.update();			
+			layout.setDirty(false);
+		}
+	
 		Graphics2D g2d = (Graphics2D)g;		
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.
@@ -128,31 +154,20 @@ public class Edge extends GraphElement {
 	    
 	    // draw label and handler
 	    super.draw(g);
+		
 	}
 	
 	/**
 	 * Updates my visualization of curve, arrow and label.
 	 */
 	public void update() {		
+		super.update();
 		curve.setCurve((Point2D.Float[])((EdgeLayout)layout).getCurve(), 0);
 		
 		if(!isSelected()){
 			handler.setVisible(false);
-		}
-		
-		// prepare to draw myself as a cubic (bezier) curve
-		path.reset();
-		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
-	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
-	    			(float)curve.getCtrlX2(), (float)curve.getCtrlY2(),
-	    			(float)curve.getX2(), (float)curve.getY2());
-	    
-		// Compute and store the arrow layout (the direction vector from base to tip of the arrow) 
-	    Point2D.Float unitDir = Geometry.unit(new Point2D.Float((float)(curve.getX2() - curve.getCtrlX2()), (float)(curve.getY2() - curve.getCtrlY2())));
-	    
-	    // FIXME arrow direction vector is incorrect
-	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));
-	    
+		}	
+				
 		// Concat label from associated event[s]
 	    String s = "";	    
 	    Iterator iter = ((EdgeLayout)layout).getEventNames().iterator();
@@ -169,10 +184,45 @@ public class Edge extends GraphElement {
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	    
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());
-	    label.getLayout().setLocation((float)location.getX(), (float)location.getX());	    	
+	    label.getLayout().setLocation((float)location.getX(), (float)location.getX());
+	    
+	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
+	    Point2D.Float dir = computeArrowDirection();
+	    
+	    Point2D.Float unitDir = Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
+	    
+	    // TESTME arrow direction vector
+	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));	    
+	    
+		
+		// prepare to draw myself as a cubic (bezier) curve
+	    // FIXME stop drawing at base of arrowhead
+		// subtract Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH) from P2
+		path.reset();
+		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
+	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
+	    			(float)curve.getCtrlX2(), (float)curve.getCtrlY2(),
+	    			(float)curve.getX2(), (float)curve.getY2());	    
+	    
+	    setDirty(false);
 	}
 	
 	
+	/**
+	 * @return
+	 */
+	private Float computeArrowDirection() {
+		// Starting at p2, find point on curve where base of arrow head
+		// intersects with ...
+		
+		
+//		float d = 2 * target.getRadius() + 2 * ArrowHead.SHORT_HEAD_LENGTH;
+//		Ellipse2D circle = new Ellipse2D.Float(target.getLayout().getLocation().x, target.getLayout().getLocation().y, d, d);
+//	
+		
+		return null;
+	}
+
 	/**	 
 	 * @return true iff p intersects with this edge. 
 	 */
@@ -235,8 +285,13 @@ public class Edge extends GraphElement {
 		transitions.remove(t);
 	}
 
+	/**
+	 * Precondition: layout != null
+	 * @param layout
+	 */
 	public void setLayout(EdgeLayout layout) {
 		super.setLayout(layout);
+		layout.setEdge(this);
 		update();
 	}
 	
@@ -286,9 +341,9 @@ public class Edge extends GraphElement {
 		EdgePopup.showPopup((GraphDrawingView)c, this);
 	}
 	
-	public boolean isDirty(){
-		return super.isDirty() || layout.isDirty();
-	}
+//	public boolean isDirty(){
+//		return super.isDirty() || layout.isDirty();
+//	}
 	
 	/**
 	 * This method is responsible for creating a string that contains

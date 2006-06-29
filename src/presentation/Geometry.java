@@ -72,6 +72,15 @@ public class Geometry {
 		return new Point2D.Float(a.x - b.x, a.y - b.y);	
 	}
 
+	/**
+	 * @param p2
+	 * @param midpoint
+	 * @return
+	 */
+	public static Float subtract(Point2D a, Point2D b) {
+		return new Point2D.Float((float)(a.getX() - b.getX()), (float)(a.getY() - b.getY()));	
+	}
+
 	/** 
 	 * @param a point
 	 * @param v direction vector

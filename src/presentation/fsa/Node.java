@@ -45,7 +45,9 @@ public class Node extends GraphElement {
 	public Node(FSAState s, NodeLayout layout){
 		this.state = s;
 		this.layout = layout;
+		layout.setNode(this);
 		label = new GraphLabel("");
+		this.insert(label);
 		circle = new Ellipse2D.Double();
 		arrow1 = new Point2D.Float();
 		arrow2 = new Point2D.Float();
@@ -69,11 +71,13 @@ public class Node extends GraphElement {
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void update() {
 		
+		super.update();
+		
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
 		
 		// Resize based on bounds of label and expand the node size if necessary.
 		// make sure that node is big enough to fit text inside inner circle if isMarked.
-	
+		// FIXME make sure small enough to snap around tiny label
 		label = new GraphLabel(layout.getText(), centre);
 		Rectangle labelBounds = label.bounds();
 		if( ! bounds().contains(labelBounds ) ){			
@@ -140,12 +144,13 @@ public class Node extends GraphElement {
 		Iterator c = children();
 		while(c.hasNext()){
 			try{
-			Edge child = (Edge)c.next();
+				Edge child = (Edge)c.next();
 				if(child.getSource().equals(this)){
 					child.draw(g);
 				}
-			}catch(ClassCastException cce){ // skip the label and keep going
-				// continue;
+			}catch(ClassCastException cce){ 
+				// skip the label and keep going
+				// Why am I skipping the label?				
 			}
 		}
 		
@@ -341,6 +346,9 @@ public class Node extends GraphElement {
 		return exportString;
 	}
 	
+	/**
+	 * NOTE super isDirty no longer checks children, assumes children set this.
+	 */
 	public boolean isDirty(){
 		return super.isDirty() || layout.isDirty();
 	}
@@ -374,5 +382,12 @@ public class Node extends GraphElement {
 			}
 		}		
 		return edges.iterator();
+	}
+
+	/**
+	 * @return
+	 */
+	public float getRadius() {	
+		return ((NodeLayout)layout).getRadius();
 	}
 }

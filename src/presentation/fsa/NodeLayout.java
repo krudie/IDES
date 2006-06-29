@@ -8,6 +8,7 @@ public class NodeLayout extends GraphicalLayout {
 	
 	private float radius;		
 	private Point2D.Float arrow; // the direction vector for arrow if the state is initial
+	private Node node;
 	
 	/**
      * The default radius of the circle which represents this Node, and the
@@ -50,5 +51,20 @@ public class NodeLayout extends GraphicalLayout {
 	public void setRadius(float radius) {
 		this.radius = radius;
 		setDirty(true);
+	}
+
+	/**
+	 * @param node
+	 */
+	public void setNode(Node node) {
+		this.node = node;		
 	}	
+	
+	/**
+	 * KLUGE: all accesss to NodeLayout should go through the Node interface.
+	 */
+	public void setDirty(boolean d){
+		super.setDirty(d);
+		node.setDirty(d);
+	}
 }

@@ -205,10 +205,14 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	public Edge beginEdge(Node n1){
 		EdgeLayout layout = new EdgeLayout();
-		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());
 		Edge e = new Edge(layout, n1);
+		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());		
 		n1.insert(e);
 		return e;
+	}
+	
+	public void abortEdge(Edge e){
+		e.getSource().remove(e);		
 	}
 	
 	/**
@@ -221,7 +225,12 @@ public class GraphModel extends Publisher implements Subscriber {
 		EdgeLayout layout = (EdgeLayout)e.getLayout();
 		NodeLayout s = e.getSource().getLayout();
 		// FIXME only draw the edge if the point is outside the bounds of the source node
-		layout.computeCurve(s, p);		
+		if( ! e.getSource().intersects(p) ){
+			layout.computeCurve(s, p);
+			e.setVisible(true);
+		}else{
+			e.setVisible(false);
+		}
 	}
 	
 	/**
@@ -231,8 +240,12 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param e the edge to be finished
 	 * @param p the location of the new node
 	 */
-	public void finishEdgeAndAddNode(Edge e, Point2D.Float p){		
-		finishEdge(e, addNode(p));
+	public void finishEdgeAndAddNode(Edge e, Point2D.Float p){	
+		if( ! e.getSource().intersects(p) ){
+			finishEdge(e, addNode(p));
+		}else{
+			abortEdge(e);			
+		}		
 	}
 	
 	 /**

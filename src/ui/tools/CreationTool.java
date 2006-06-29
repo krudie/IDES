@@ -24,6 +24,7 @@ public class CreationTool extends DrawingTool {
 	private boolean drawingEdge = false;
 	private Node sourceNode;
 	private Edge edge;
+	private boolean aborted;
 	
 	public CreationTool(GraphDrawingView board){
 		context = board;		
@@ -40,6 +41,11 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
 		context.clearCurrentSelection();
+		
+		if(aborted){
+			aborted = false;
+			return;
+		}
 		
 		Node n = null;
 		if(context.updateCurrentSelection(me.getPoint())){
@@ -123,6 +129,15 @@ public class CreationTool extends DrawingTool {
 		context.repaint();
 	}
 
+	public void handleRightClick(MouseEvent me){
+		if(drawingEdge){
+			context.getGraphModel().abortEdge(edge);
+			drawingEdge = false;			
+			aborted = true;
+			context.repaint();
+		}
+	}
+	
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
 		// if drawing an edge, recompute the curve

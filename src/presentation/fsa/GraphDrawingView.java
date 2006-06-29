@@ -147,32 +147,28 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}	
 
 	// Mouse events
-	public void mouseClicked(MouseEvent arg0) {
-		// If double click, always assumed to be a text event.
-//		if(arg0.getClickCount() == 2){
-//			drawingTools[TEXT].handleMouseClicked(arg0);
-//		}
+	public void mouseClicked(MouseEvent arg0) {			
 		drawingTools[currentTool].handleMouseClicked(arg0);		
 	}
 
 
 	public void mousePressed(MouseEvent arg0) {
-		if(arg0.isPopupTrigger()){
-			setTool(SELECT);  // just to change the cursor ...
+		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
+		}else{
+			drawingTools[currentTool].handleMousePressed(arg0);
 		}
-		drawingTools[currentTool].handleMousePressed(arg0);		
 	}
 
 
 	public void mouseReleased(MouseEvent arg0) {
-		if(arg0.isPopupTrigger()){
-			setTool(SELECT);  // just to change the cursor ...
+		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
+		}else{
+			drawingTools[currentTool].handleMouseReleased(arg0);
 		}
-		drawingTools[currentTool].handleMouseReleased(arg0);		
 	}
 
 	public void mouseDragged(MouseEvent arg0) {

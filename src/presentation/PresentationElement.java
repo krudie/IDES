@@ -74,6 +74,8 @@ public interface PresentationElement {
 	 */
 	public PresentationElement parent();
 	
+	public void setParent(PresentationElement parent);
+	
 	/**
 	 * @return an iterator of my children
 	 */
@@ -102,5 +104,6 @@ public interface PresentationElement {
 	public void setDirty(boolean b);
 	
 	public boolean isDirty();
-	
+
+	public void update();
 }

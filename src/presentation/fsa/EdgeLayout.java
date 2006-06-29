@@ -10,6 +10,8 @@ import presentation.GraphicalLayout;
 
 public class EdgeLayout extends GraphicalLayout {
 
+	private Edge edge;
+	
 	/**
 	 * Indices of bezier curve control points. 
 	 */
@@ -35,8 +37,11 @@ public class EdgeLayout extends GraphicalLayout {
 	private double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
 	private double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)
 	
-	public EdgeLayout(){
+	public EdgeLayout(){		
 		ctrls = new Point2D.Float[4];
+		for(int i = 0; i<4; i++){
+			ctrls[i] = new Point2D.Float();			
+		}
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
 	}
@@ -55,6 +60,10 @@ public class EdgeLayout extends GraphicalLayout {
 		updateAnglesAndScalars();
 	}
 
+	public void setEdge(Edge edge){
+		this.edge = edge;
+	}
+	
 	/**
 	 * Constructs an edge layout object for a straight, directed edge from
 	 * <code>n1</code> to <code>n2</code>.
@@ -309,9 +318,25 @@ public class EdgeLayout extends GraphicalLayout {
 		}else{
 			angle1 *= 1.2;
 			angle2 *= 1.2;
-		}
-		
+		}		
 	}
 	
-//>>>>>>> 1.18
+	protected void arcLess(){
+		if(angle1 == 0 && angle2 == 0){
+			return;
+		}else{
+			angle1 *= 0.8;
+			angle2 *= 0.8;
+		}		
+	}
+	
+	/**
+	 * KLUGE: all accesss to EdgeLayout should go through the Edge interface.
+	 */
+	public void setDirty(boolean b){
+		super.setDirty(b);
+		if(edge != null){
+			edge.setDirty(b);
+		}
+	}	
 }

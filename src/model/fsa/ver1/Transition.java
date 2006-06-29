@@ -22,8 +22,6 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
     private FSAEvent e = null;
 
     private long id;
-
-    private EdgeLayout layout = new EdgeLayout();
     
     /**
      * Constructs a new transition originating in state source and ending in
@@ -142,25 +140,7 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
     public FSAEvent getEvent(){
         return e;
     }    
-    
-    public EdgeLayout getLayout() {
-    	updateLayout();
-    	return layout;
-    }
-    
-    public void updateLayout() {    	
-    	SubElement arc = getSubElement("graphic").getSubElement("bezier"); 
-    	layout.setCurve(new Point2D.Float(Float.parseFloat(arc.getAttribute("x1")), 
-								Float.parseFloat(arc.getAttribute("y1"))),
-				new Point2D.Float(Float.parseFloat(arc.getAttribute("ctrlx1")), 
-								Float.parseFloat(arc.getAttribute("ctrly1"))),
-				new Point2D.Float(Float.parseFloat(arc.getAttribute("ctrlx2")), 
-								Float.parseFloat(arc.getAttribute("ctrly2"))),
-				new Point2D.Float(Float.parseFloat(arc.getAttribute("x2")), 
-								Float.parseFloat(arc.getAttribute("y2"))));  	
-		
-    }
-
+ 
     public long getId(){
         return id;
     }

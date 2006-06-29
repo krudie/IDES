@@ -64,12 +64,13 @@ public class GraphElement implements PresentationElement {
 	}
 
 	public void insert(PresentationElement child, long index) {
-		// KLUGE - change to the index to a String or Long and hash the children
+		// TODO - change the index to a String or Long and hash the children
 		children.add((int)index, child);
 	}
 
 	public void insert(PresentationElement e) {
-		children.add(e);		
+		children.add(e);	
+		e.setParent(this);
 	}
 	
 	public boolean contains(PresentationElement e){
@@ -188,10 +189,8 @@ public class GraphElement implements PresentationElement {
 
 	public void setDirty(boolean d){
 		dirty = d;
-		Iterator c = children.iterator();
-		while(c.hasNext()){
-			PresentationElement child = (PresentationElement)c.next();
-			child.setDirty(d);
+		if(parent != null){
+			parent.setDirty(d);
 		}
 	}
 	
@@ -205,5 +204,11 @@ public class GraphElement implements PresentationElement {
 		return !children.isEmpty();
 	}
 
-	
+	public void update(){
+		Iterator c = children.iterator();
+		while(c.hasNext()){
+			PresentationElement child = (PresentationElement)c.next();
+			child.update();
+		}
+	}
 }
