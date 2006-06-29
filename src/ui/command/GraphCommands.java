@@ -331,6 +331,7 @@ public class GraphCommands {
 			// TODO return Undoable edit containing removed element and where it should be restored to
 			// the view is not enough since view changes models; need to know the model...
 			context.getGraphModel().delete(element);
+			context.repaint();
 			return null;
 		}
 		

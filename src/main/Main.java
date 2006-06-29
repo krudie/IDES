@@ -44,7 +44,8 @@ public class Main {
 		
 		//set up global exception handler
 		//GlobalExceptionHandler geh=new GlobalExceptionHandler();
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		
+		//Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 		
 		//load resource with strings used in the program
 		try

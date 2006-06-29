@@ -28,23 +28,12 @@ import util.BentoBox;
  *
  */
 public class Edge extends GraphElement {
-
-	// the transitions that this edge represents
-	private ArrayList<FSATransition> transitions;	
 	
-	private Node source, target;
-	
-	// Handles for modifying control points/tangents to the curve.
-	private EdgeHandler handler;
-	
-	// The bezier curve.
-	// TODO this should be stored in EdgeLayout class.
-	private CubicCurve2D curve;
-	
-	// Visualization of the curve
-	private GeneralPath path;	
+	private ArrayList<FSATransition> transitions; // the transitions that this edge represents	
+	private Node source, target;	
+	private CubicCurve2D curve;	// The bezier curve.
+	private EdgeHandler handler; // Handles for modifying control points/tangents to the curve.	
 	private ArrowHead arrow;
-
 	private GraphLabel label;		
 	
 	/**
@@ -57,8 +46,7 @@ public class Edge extends GraphElement {
 		layout.setEdge(this);
 		this.source = source;
 		target = null;
-		transitions = new ArrayList<FSATransition>();		 
-		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
+		transitions = new ArrayList<FSATransition>();				
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		label = new GraphLabel("");		
@@ -79,7 +67,6 @@ public class Edge extends GraphElement {
 		transitions.add(t);
 		this.layout = layout;
 		layout.setEdge(this);
-		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		label = new GraphLabel("");
@@ -103,8 +90,7 @@ public class Edge extends GraphElement {
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
 		this.layout = layout;
-		layout.setEdge(this);
-		path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);		
+		layout.setEdge(this);				
 		curve = new CubicCurve2D.Float();
 		arrow = new ArrowHead();
 		label = new GraphLabel("");		
@@ -136,8 +122,7 @@ public class Edge extends GraphElement {
 		}else{
 			setHighlighted(false);
 			g2d.setColor(layout.getColor());
-		}
-			
+		}		
 		
 		if(isSelected()){
 			g2d.setColor(layout.getSelectionColor());
@@ -146,10 +131,7 @@ public class Edge extends GraphElement {
 		}
 		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
-		g2d.draw(curve);
-	    // g2d.draw(path);
-	    
-	    // draw an arrowhead
+		g2d.draw(curve);   
 	    g2d.drawPolygon(arrow);
 	    g2d.fillPolygon(arrow);
 	    
@@ -184,27 +166,20 @@ public class Edge extends GraphElement {
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	    
-	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());
-	    label.getLayout().setLocation((float)location.getX(), (float)location.getX());
+	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());	    
+	    label.setLocation(location);
 	    
 	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
 	    Point2D.Float dir = computeArrowDirection();
 	    
 	    Point2D.Float unitDir = Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
 	    
-	    // TESTME arrow direction vector
+	    // FIXME arrow direction vector
 	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));	    
-	    
-		
-		// prepare to draw myself as a cubic (bezier) curve
+	    				
 	    // FIXME stop drawing at base of arrowhead
 		// subtract Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH) from P2
-		path.reset();
-		path.moveTo((float)curve.getX1(), (float)curve.getY1());	    
-	    path.curveTo((float)curve.getCtrlX1(), (float)curve.getCtrlY1(),
-	    			(float)curve.getCtrlX2(), (float)curve.getCtrlY2(),
-	    			(float)curve.getX2(), (float)curve.getY2());	    
-	    
+		
 	    setDirty(false);
 	}
 	

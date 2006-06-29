@@ -526,13 +526,12 @@ public class GraphModel extends Publisher implements Subscriber {
 		while(edges.hasNext()){
 			delete((Edge)edges.next());
 		}
-		// remove n
-		graph.remove(n);
-		nodes.remove(new Long(n.getId()));
+		// remove n		
+		fsa.remove(n.getState());
 		fsa.notifyAllBut(this);
-		notifyAllSubscribers();
-		// DEBUG
-		//Hub.displayAlert("GraphModel: Implement delete(Node) ASAP");
+		graph.remove(n);		
+		nodes.remove(new Long(n.getId()));
+		notifyAllSubscribers();		
 	}
 	
 	private void delete(Edge e){

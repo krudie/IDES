@@ -40,9 +40,8 @@ import util.BentoBox;
  */
 @SuppressWarnings("serial")
 public class GraphLabel extends GraphElement {
-	protected Rectangle bounds;
-	protected boolean visible = true;
-	protected PresentationElement parent = null;  // either the DrawingBoard, a node or an edge	
+	protected Rectangle bounds;	
+	protected PresentationElement parent = null;  // either the graph, a node or an edge	
 	protected Font font;
 	protected BufferedImage rendered=null;
 	
@@ -131,16 +130,16 @@ public class GraphLabel extends GraphElement {
 			}					
 		}
 		else{
-		//Lenko writes: TODO update bounds on label change
-		// NOTE Unless we use deprecated getFontMetrics method, we have to compute 
-		// the bounds until via a graphics context object in the draw method.
-		if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
-			Toolkit tk = Toolkit.getDefaultToolkit();
-			FontMetrics metrics = tk.getFontMetrics(font);
-			bounds.setSize(metrics.stringWidth(layout.getText()), metrics.getHeight() );
-			bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
-										(int)(layout.getLocation().y - bounds.height/2)));			
-		}
+			//Lenko writes: TODO update bounds on label change
+			// NOTE Unless we use deprecated getFontMetrics method, we have to compute 
+			// the bounds until via a graphics context object in the draw method.
+			if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
+				Toolkit tk = Toolkit.getDefaultToolkit();
+				FontMetrics metrics = tk.getFontMetrics(font);
+				bounds.setSize(metrics.stringWidth(layout.getText()), metrics.getHeight() );
+				bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
+											(int)(layout.getLocation().y - bounds.height/2)));			
+			}
 		}
 		return bounds;				
 	}
@@ -161,14 +160,6 @@ public class GraphLabel extends GraphElement {
 
 	public void setText(String s){
 		layout.setText(s);		
-	}
-
-	public boolean isVisible() {		
-		return visible;
-	}
-
-	public void setVisible(boolean b) {
-		visible = b;
 	}
 
 	/**

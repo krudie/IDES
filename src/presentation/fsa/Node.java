@@ -75,21 +75,23 @@ public class Node extends GraphElement {
 		
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
 		
-		// Resize based on bounds of label and expand the node size if necessary.
-		// make sure that node is big enough to fit text inside inner circle if isMarked.
-		// FIXME make sure small enough to snap around tiny label
+		// Resize based on bounds of label.				
 		label = new GraphLabel(layout.getText(), centre);
-		Rectangle labelBounds = label.bounds();
-		if( ! bounds().contains(labelBounds ) ){			
-			// compute new radius
-			double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();
-			((NodeLayout)layout).setRadius((float)max/2 + 2*NodeLayout.RDIF);
-			
-			// TODO recompute all edges (endpoints will have changed)
+		Rectangle labelBounds = label.bounds();		
+		labelBounds.width += 2 * NodeLayout.RDIF;  // accommodate whitespace on either side of label text		
+				
+		// compute new radius
+		float radius;
+		double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();		
+		radius = (float)Math.max(max/2, NodeLayout.DEFAULT_RADIUS);
+		
+		// see if node is too small or too big for the label
+		if( ! bounds().contains(labelBounds) ||  (((NodeLayout)layout).getRadius() - radius) > NodeLayout.DEFAULT_RADIUS/2){			
+			((NodeLayout)layout).setRadius(radius + 2*NodeLayout.RDIF);  // make room for inner circle			
 			recomputeEdges();
 		}
 		
-		float radius = ((NodeLayout)layout).getRadius();
+		radius = ((NodeLayout)layout).getRadius();
 		
 		// upper left corner, width and height
 		float d = 2*radius;
@@ -122,8 +124,10 @@ public class Node extends GraphElement {
 		Iterator children = children();
 		while(children.hasNext()){
 			try{
-				Edge e = (Edge)children.next();				
-				((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
+				Edge e = (Edge)children.next();
+				if(e.getTarget() != null){
+					((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
+				}
 			}catch(ClassCastException cce){
 				// Child is not an edge
 			}
@@ -135,7 +139,7 @@ public class Node extends GraphElement {
 	 */
 	public void draw(Graphics g) {
 		
-		if(layout.isDirty()){
+		if(isDirty()){
 			update();
 			layout.setDirty(false);
 		}

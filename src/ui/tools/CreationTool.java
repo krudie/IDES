@@ -41,21 +41,21 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
 		context.clearCurrentSelection();
+		CreateCommand cmd = null;
+		Node n = null;
 		
 		if(aborted){
 			aborted = false;
 			return;
-		}
-		
-		Node n = null;
+		}		
+
 		if(context.updateCurrentSelection(me.getPoint())){
 			try{		
 				n = (Node)context.getCurrentSelection().child(0);
 			}catch(ClassCastException e){
 				n = null;
 			}
-		}
-		CreateCommand cmd = null;
+		}		
 		
 		if(me.getClickCount() == 1){		  
 			  if (drawingEdge) {
@@ -93,8 +93,7 @@ public class CreationTool extends DrawingTool {
 					drawingEdge = true;					
 				} else {
 					// otherwise, just create a node
-					cmd = new CreateCommand(context, CreateCommand.NODE, me
-							.getPoint());
+					cmd = new CreateCommand(context, CreateCommand.NODE, me.getPoint());
 					edge = null;
 					drawingEdge = false;
 					context.clearCurrentSelection();
@@ -133,9 +132,9 @@ public class CreationTool extends DrawingTool {
 		if(drawingEdge){
 			context.getGraphModel().abortEdge(edge);
 			drawingEdge = false;			
-			aborted = true;
-			context.repaint();
 		}
+		aborted = true;
+		context.repaint();
 	}
 	
 	@Override
