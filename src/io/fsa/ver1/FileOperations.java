@@ -190,13 +190,11 @@ public class FileOperations {
 	 */
 	public static void loadCommandManager(String commandFileName){
 //		load the xml command definition and initialize the manager.
-		File myCommandFile = new File(commandFileName);
+		//File myCommandFile = new File(commandFileName);
 		try {
-		   CommandManager.defaultInstance().load(myCommandFile);
+		   CommandManager.defaultInstance().load(Hub.getResource(commandFileName));//.load(myCommandFile);
 		} catch (LoadException e){
-		   // oops
-		   e.printStackTrace();
-		   System.exit(1);	
+			throw new RuntimeException(e);
 		}		
 	}
 	

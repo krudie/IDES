@@ -31,15 +31,10 @@ public class Main {
 	 */
 	public static void onExit()
 	{
-		try
-		{
-			//store settings
-			Hub.storePersistentData();
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		//store settings
+		Hub.storePersistentData();
 		Cache.close();
+		Hub.getMainWindow().dispose();
 	}
 	
 	/**
@@ -59,7 +54,7 @@ public class Main {
 		{
 			javax.swing.JOptionPane.showMessageDialog(null, "Cannot load the file with the text messages used in the program.\n" +
 					"The file \"strings.properties\" has to be available at startup.");
-			System.exit(1);
+			System.exit(2);
 		}
 		
 		//load settings
@@ -69,7 +64,7 @@ public class Main {
 		} catch(IOException e)
 		{
 			Hub.displayAlert(Hub.string("cantLoadSettings"));
-			System.exit(2);
+			System.exit(3);
 		}
 		
 		//setup other stuff

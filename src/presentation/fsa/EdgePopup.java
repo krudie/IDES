@@ -36,7 +36,7 @@ public class EdgePopup extends JPopupMenu {
 	 */
 	protected EdgePopup(Edge e) {
 		// TODO Auto-generated constructor stub
-		miModify = new JMenuItem("Modify curve", new ImageIcon("images/icons/graphic_alledges.gif"));
+		miModify = new JMenuItem("Modify curve", new ImageIcon(Hub.getResource("images/icons/graphic_alledges.gif")));
 		MenuListener listener = new MenuListener();
 		miModify.addActionListener(listener);
 		add(miModify);

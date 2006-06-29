@@ -7,6 +7,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -245,4 +246,14 @@ public class Hub {
 		return IDESWorkspace.instance();
 	}
 
+	/**
+	 * Gets a resource that may be in the JAR file (icons and such).
+	 * @param name the name of the resource
+	 * @return URL that points to the resource
+	 */
+	public static URL getResource(String name)
+	{
+		return ClassLoader.getSystemResource(name);
+	}
+	
 }

@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import main.Hub;
 import main.IDESWorkspace;
 import main.IncompleteWorkspaceDescriptorException;
+import main.Main;
 import main.WorkspaceDescriptor;
 import model.fsa.ver1.Automaton;
 
@@ -241,7 +242,7 @@ public static class ExitCommand extends ActionCommand {
 			int retVal = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit IDES 2.1?");
 			if(retVal == JOptionPane.OK_OPTION){
 				//SystemVariables.instance().saveSettings();
-				System.exit(0);
+				Main.onExit();
 			}else{
 				// TODO
 			}

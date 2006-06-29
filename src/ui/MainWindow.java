@@ -53,7 +53,7 @@ import ui.command.GraphCommands.*;
  */
 public class MainWindow extends JFrame implements Subscriber {
 
-	String imagePath = "/images/icons/";
+	String imagePath = "images/icons/";
 	
 	public MainWindow() {
 		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));
@@ -62,7 +62,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		    	Main.onExit();
 		    }
 		});
-		setIconImage(new ImageIcon(imagePath + "logo.gif").getImage());
+		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
 		drawingBoard = new GraphDrawingView();		
@@ -190,17 +190,17 @@ public class MainWindow extends JFrame implements Subscriber {
 		JMenu menuGraph = new JMenu("Graph");
 		 menuGraph.setMnemonic(KeyEvent.VK_G);
 		 
-		 JMenuItem miZoomIn = new JMenuItem("Zoom In", new ImageIcon(imagePath + "graphic_zoomin.gif"));
+		 JMenuItem miZoomIn = new JMenuItem("Zoom In", new ImageIcon(Hub.getResource(imagePath + "graphic_zoomin.gif")));
 		 miZoomIn.setMnemonic(KeyEvent.VK_I);
 		 miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miZoomIn);
 
-		 JMenuItem miZoomOut = new JMenuItem("Zoom Out", new ImageIcon(imagePath + "graphic_zoomout.gif"));
+		 JMenuItem miZoomOut = new JMenuItem("Zoom Out", new ImageIcon(Hub.getResource(imagePath + "graphic_zoomout.gif")));
 		 miZoomOut.setMnemonic(KeyEvent.VK_O);
 		 miZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miZoomOut);
 		 
-		 JMenuItem miScaleBy = new JMenuItem("Scale By...", new ImageIcon(imagePath + "graphic_zoom.gif"));
+		 JMenuItem miScaleBy = new JMenuItem("Scale By...", new ImageIcon(Hub.getResource(imagePath + "graphic_zoom.gif")));
 		 miScaleBy.setMnemonic(KeyEvent.VK_S);
 		 
 		 // TODO Think up a memorable accelerator: ctrl+shift+S ?
@@ -220,27 +220,27 @@ public class MainWindow extends JFrame implements Subscriber {
 		 // miCreate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miCreate);
 
-		 JMenuItem miModify = new JMenuItem("Modify Nodes, Edges or Labels", new ImageIcon(imagePath + "graphic_modify.gif"));
+		 JMenuItem miModify = new JMenuItem("Modify Nodes, Edges or Labels", new ImageIcon(Hub.getResource(imagePath + "graphic_modify.gif")));
 		 miModify.setMnemonic(KeyEvent.VK_M);
 		 // miModify.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miModify);
 
-		 JMenuItem miPrintArea = new JMenuItem("Select Print Area", new ImageIcon(imagePath + "graphic_printarea.gif"));
+		 JMenuItem miPrintArea = new JMenuItem("Select Print Area", new ImageIcon(Hub.getResource(imagePath + "graphic_printarea.gif")));
 		 miPrintArea.setMnemonic(KeyEvent.VK_A);
 		 // miPrintArea.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miPrintArea);
 
-		 JMenuItem miMove = new JMenuItem("Move Graph", new ImageIcon(imagePath + "graphic_grab.gif")); // ??? is this the right image?
+		 JMenuItem miMove = new JMenuItem("Move Graph", new ImageIcon(Hub.getResource(imagePath + "graphic_grab.gif"))); // ??? is this the right image?
 		 miMove.setMnemonic(KeyEvent.VK_V);
 		 //miMove.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miMove);
 
-		 JMenuItem miAllEdges = new JMenuItem("Select All Edges", new ImageIcon(imagePath + "graphic_alledges.gif"));
+		 JMenuItem miAllEdges = new JMenuItem("Select All Edges", new ImageIcon(Hub.getResource(imagePath + "graphic_alledges.gif")));
 		 miAllEdges.setMnemonic(KeyEvent.VK_E);
 		 //miAllEdges.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miAllEdges);
 
-		 JMenuItem miAllLabels = new JMenuItem("Select All Labels", new ImageIcon(imagePath + "graphic_alllabels.gif"));
+		 JMenuItem miAllLabels = new JMenuItem("Select All Labels", new ImageIcon(Hub.getResource(imagePath + "graphic_alllabels.gif")));
 		 miAllLabels.setMnemonic(KeyEvent.VK_N);
 		 //miAllNodes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
 		 menuGraph.add(miAllLabels);

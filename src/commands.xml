@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE commands SYSTEM "commands.dtd">
 <commands version="1.1.0">
 
 	<group id="ides.toolbar.group">
@@ -60,7 +59,7 @@
    <command id="new.automaton.command">
       <face>
          <text>_New automaton</text>
-         <icon type="file">src/images/icons/file_new_automaton.gif</icon>
+         <icon type="classpath">images/icons/file_new_automaton.gif</icon>
          <description>Create a new automaton</description>
          <accelerator key="N">
 	         <modifier value="control"/>
@@ -73,7 +72,7 @@
     <command id="new.workspace.command">
       <face>
          <text>_New workspace</text>
-         <icon type="file">src/images/icons/file_new_workspace.gif</icon>
+         <icon type="classpath">images/icons/file_new_workspace.gif</icon>
          <description>Create a new workspace</description>
          <accelerator key="N">
 	         <modifier value="control"/>
@@ -87,7 +86,7 @@
    <command id="open.automaton.command">
       <face>
          <text>_Open automaton</text>
-         <icon type="file">src/images/icons/file_open_automaton.gif</icon>
+         <icon type="classpath">images/icons/file_open_automaton.gif</icon>
          <description>Open an existing automaton</description>
          <accelerator key="O">
 	         <modifier value="control"/>
@@ -100,7 +99,7 @@
     <command id="open.workspace.command">
       <face>
          <text>Open _workspace</text>
-         <icon type="file">src/images/icons/file_open_workspace.gif</icon>
+         <icon type="classpath">images/icons/file_open_workspace.gif</icon>
          <description>Open a workspace of automata</description>
          <accelerator key="W">
          	<modifier value="control"/>
@@ -113,7 +112,7 @@
    <command id="save.automaton.command">
       <face>
          <text>Save auto_maton</text>
-         <icon type="file">src/images/icons/file_save_automaton.gif</icon>
+         <icon type="classpath">images/icons/file_save_automaton.gif</icon>
          <description>Save automaton</description>
          <accelerator key="S">
 	         <modifier value="control"/>
@@ -126,7 +125,7 @@
         <command id="saveas.automaton.command">
       <face>
          <text>Save automaton _as...</text>
-         <icon type="file">src/images/icons/file_saveas.gif</icon>
+         <icon type="classpath">images/icons/file_saveas.gif</icon>
          <description>Save automaton as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
@@ -137,7 +136,7 @@
     <command id="save.workspace.command">
       <face>
          <text>_Save workspace</text>
-         <icon type="file">src/images/icons/file_save_workspace.gif</icon>                  
+         <icon type="classpath">images/icons/file_save_workspace.gif</icon>                  
          <description>Save workspace settings  (@accelerator)</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -147,7 +146,7 @@
     <command id="saveas.workspace.command">
       <face>
          <text>Sa_ve workspace as...</text>
-         <icon type="file">src/images/icons/file_saveas.gif</icon>
+         <icon type="classpath">images/icons/file_saveas.gif</icon>
          <description>Save workspace as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
@@ -179,7 +178,7 @@
     <command id="export.gif.command">    
       <face>
          <text>Export to GIF</text>
-         <icon type="file">src/images/icons/file_export_gif.gif</icon>
+         <icon type="classpath">images/icons/file_export_gif.gif</icon>
          <description>Export to GIF</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -189,7 +188,7 @@
     <command id="export.latex.command">    
       <face>
          <text>Export to LaTeX</text>
-         <icon type="file">src/images/icons/file_export_gif.gif</icon>
+         <icon type="classpath">images/icons/file_export_gif.gif</icon>
          <description>Export to LaTeX</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -199,7 +198,7 @@
     <command id="export.png.command">    
       <face>
          <text>Export to PNG</text>
-         <icon type="file">src/images/icons/file_export_png.gif</icon>
+         <icon type="classpath">images/icons/file_export_png.gif</icon>
          <description>Export to PNG</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -234,7 +233,7 @@
    <command id="select.command">
       <face>
          <text>Select</text>
-         <icon type="file">src/images/icons/graphic_modify.gif</icon>
+         <icon type="classpath">images/icons/graphic_modify.gif</icon>
          <description>Select graph elements</description>
          <accelerator key="e">
             <modifier value="control"/>
@@ -247,7 +246,7 @@
     <command id="create.command">
       <face>
          <text>_Create</text>
-         <icon type="file">src/images/icons/graphic_create.gif</icon>
+         <icon type="classpath">images/icons/graphic_create.gif</icon>
          <description>Create nodes or edges</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -257,7 +256,7 @@
     <command id="move.command">
       <face>
          <text>Move</text>
-         <icon type="file">src/images/icons/graphic_grab.gif</icon>
+         <icon type="classpath">images/icons/graphic_grab.gif</icon>
          <description>Move nodes and adjacent edges</description>
       </face>
       <face name="toolbar" extends="[default]">
@@ -267,7 +266,7 @@
    <command id="text.command">
       <face>
          <text>Text</text>
-         <icon type="file">src/images/icons/machine_alpha.gif</icon>
+         <icon type="classpath">images/icons/machine_alpha.gif</icon>
          <description>Label graph element</description>         
       </face>
       <face name="toolbar" extends="[default]">
@@ -291,7 +290,7 @@
     <command id="copy.command">
       <face>
          <text>Copy</text>
-         <icon type="file">src/images/icons/edit_copy.gif</icon>
+         <icon type="classpath">images/icons/edit_copy.gif</icon>
          <description>Copy selected elements or text</description>
          <accelerator key="C">
 	         <modifier value="control"/>
@@ -304,7 +303,7 @@
 	<command id="cut.command">
 	  <face>
          <text>Cut</text>
-         <icon type="file">src/images/icons/edit_cut24.gif</icon>
+         <icon type="classpath">images/icons/edit_cut24.gif</icon>
          <description>Cut selected elements or text</description>
          <accelerator key="X">
 	         <modifier value="control"/>
@@ -317,7 +316,7 @@
 	<command id="paste.command">
 	  <face>
          <text>Paste</text>
-         <icon type="file">src/images/icons/edit_paste.gif</icon>
+         <icon type="classpath">images/icons/edit_paste.gif</icon>
          <description>Paste cut or copied elements</description>
          <accelerator key="V">
 	         <modifier value="control"/>
@@ -330,7 +329,7 @@
 	<command id="undo.command">
 	  <face>
          <text>Undo</text>
-         <icon type="file">src/images/icons/edit_undo.gif</icon>
+         <icon type="classpath">images/icons/edit_undo.gif</icon>
          <description>Undo last change</description>
          <accelerator key="Z">
 	         <modifier value="control"/>
@@ -343,7 +342,7 @@
 	<command id="redo.command">
 	  <face>
          <text>Redo</text>
-         <icon type="file">src/images/icons/edit_redo.gif</icon>
+         <icon type="classpath">images/icons/edit_redo.gif</icon>
          <description>Redo most recent change</description>
          <accelerator key="Y">
 	         <modifier value="control"/>
@@ -356,7 +355,7 @@
 	<command id="delete.command">
 	  <face>
          <text>Delete</text>
-         <icon type="file">src/images/icons/edit_delete.gif</icon>
+         <icon type="classpath">images/icons/edit_delete.gif</icon>
          <description>Delete</description>         
       </face>
       <face name="toolbar" extends="[default]">

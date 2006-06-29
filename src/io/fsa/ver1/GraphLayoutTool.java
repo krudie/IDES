@@ -1,4 +1,4 @@
-//package io.fsa.ver1;
+package io.fsa.ver1;
 //
 //import java.io.InputStream;
 //import java.io.OutputStream;
@@ -31,7 +31,7 @@
 // * @author Kristian edlund
 // * @author Axel Gottlieb Michelsen
 // */
-//public class GraphLayoutTool{
+public class GraphLayoutTool{
 //
 //    /**
 //     * The constructor of the layouter Takes an automaton and lays it out
@@ -322,4 +322,4 @@
 //        }
 //
 //    }
-//}
+}
