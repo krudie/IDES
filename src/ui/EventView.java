@@ -31,6 +31,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
 import main.Hub;
+import main.IDESWorkspace;
 import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
@@ -232,12 +233,13 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
 			if(a==null||"".equals(eventNameField.getText()))
 				return;
-			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
-			event.setSymbol(eventNameField.getText());
-			event.setControllable(controllableCBox.isSelected());
-			event.setObservable(observableCBox.isSelected());
-			a.add(event);
-			a.notifyAllSubscribers();
+			Event event=Hub.getWorkspace().getActiveGraphModel().createEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
+//			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
+//			event.setSymbol(eventNameField.getText());
+//			event.setControllable(controllableCBox.isSelected());
+//			event.setObservable(observableCBox.isSelected());
+//			a.add(event);
+//			a.notifyAllSubscribers();
 			update();
 			int rows=table.getModel().getRowCount();
 			for(int i=0;i<rows;++i)

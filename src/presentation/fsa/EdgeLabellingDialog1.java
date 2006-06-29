@@ -17,10 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
@@ -33,7 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 
@@ -43,17 +39,13 @@ import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSATransition;
-import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 import model.fsa.ver1.EventsModel;
 import javax.swing.JOptionPane;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import ui.FilteringJList;
-import util.EscapeDialog;
 /**
  * Dialog window for assigning multiple events from the global events model
  * to transitions represented by an edge in the graph model. 
@@ -61,13 +53,13 @@ import util.EscapeDialog;
  * @author helen bretzke
  *
  */
-public class Temp extends EscapeDialog implements Subscriber {
+public class EdgeLabellingDialog1 extends JDialog implements Subscriber {
 	
-	private static Temp dialog;
+	private static EdgeLabellingDialog1 dialog;
 	
 	public static void initialize(JComponent parent, EventsModel eventsModel){
 		Frame f = JOptionPane.getFrameForComponent(parent);
-		dialog = new Temp(f, eventsModel);
+		dialog = new EdgeLabellingDialog1(f, eventsModel);
 	}
 	
 	/**
@@ -78,66 +70,28 @@ public class Temp extends EscapeDialog implements Subscriber {
 	public static void showDialog(JComponent view, Edge e){
 		if (dialog == null) {
           initialize(view, null);
-        }
-		dialog.checkControllable.setSelected(true);
-		dialog.checkObservable.setSelected(true);
+        } 
         dialog.setEdge(e);
         dialog.setLocationRelativeTo(view);  
         dialog.setVisible(true);        	
 	}
 	
-	private Temp(){
+	private EdgeLabellingDialog1(){
 		this(null, new EventsModel());		
 	}		
 	
-	/**
-	 * The listener for the user decides to add a new event.
-	 */
-	protected Action createListener = new AbstractAction()
-	{
-		public void actionPerformed(ActionEvent actionEvent)
-		{
-			if(!(actionEvent.getSource() instanceof JButton))
-			{
-				buttonCreate.doClick();
-				return;
-			}
-			if("".equals(textField.getText()))
-				return;
-			newEvent = IDESWorkspace.instance().getActiveGraphModel().createEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
-			update();
-			listAvailableEvents.setSelectedValue(newEvent, true);
-			textField.requestFocus();
-		}
-	};
-	
-	private Temp(Frame owner, EventsModel eventsModel){
-		super(owner, "Assign events to transition", true);		
+	private EdgeLabellingDialog1(Frame owner, EventsModel eventsModel){
+		super(owner, "Assign and Edit Events", true);		
 		this.eventsModel = eventsModel;
 //		 NOT YET	eventsModel.attach(this);
 		
-		Box mainBox=Box.createVerticalBox();
-		Box createBox=Box.createHorizontalBox();
-		
-		textField=new JTextField();
-		textField.setMaximumSize(new Dimension(textField.getMaximumSize().width,
-				textField.getPreferredSize().height));
-		DocumentListener al=new DocumentListener()
-		{
-			public void changedUpdate(DocumentEvent e)
-			{
-				configStuff(textField.getText());
-			}
-			public void insertUpdate(DocumentEvent e)
-			{
-				configStuff(textField.getText());
-			}
-			public void removeUpdate(DocumentEvent e)
-			{
-				configStuff(textField.getText());
-			}
-			private void configStuff(String symbol)
-			{
+		textField = new JTextField(20);
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent ke) {
+				String symbol = textField.getText();
+				
+				// Select the first event in the lists for which symbol
+				// is a prefix
 				int i = listAvailableEvents.indexOfFirstElementWithPrefix(symbol);
 				if(i > -1){
 					listAvailableEvents.setSelectedIndex(i);
@@ -154,96 +108,87 @@ public class Temp extends EscapeDialog implements Subscriber {
 				if(listAvailableEvents.getSelectedIndex() == -1 && listAssignedEvents.getSelectedIndex() == -1){
 					buttonCreate.setEnabled(true);
 					checkControllable.setEnabled(true);
+					checkControllable.setSelected(false); // not working
 					checkObservable.setEnabled(true);
+					checkControllable.setSelected(false); // not working
 				}else{
 					buttonCreate.setEnabled(false);
 					checkControllable.setEnabled(false);
 					checkObservable.setEnabled(false);
 				}
-			}
-		};
-		textField.getDocument().addDocumentListener(al);
-		textField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),this);
-		textField.getActionMap().put(this,createListener);
-		createBox.add(textField);
+			}			
+		});
 		
-		checkControllable=new JCheckBox(Hub.string("controllable"));
-		checkControllable.setSelected(true);
-		createBox.add(checkControllable);
-		checkObservable=new JCheckBox(Hub.string("observable"));
-		checkObservable.setSelected(true);
-		createBox.add(checkObservable);
 		
-		buttonCreate=new JButton(Hub.string("add"));
+		buttonCreate = new JButton(Hub.string("create"));
 		buttonCreate.setToolTipText(Hub.string("createEventTooltip"));
-		buttonCreate.setPreferredSize(new Dimension(buttonCreate.getPreferredSize().width,
-				textField.getPreferredSize().height));
-		buttonCreate.addActionListener(createListener);
-		createBox.add(buttonCreate);
-		createBox.setBorder(BorderFactory.createTitledBorder(Hub.string("addNewEvent")));
-		mainBox.add(createBox);
-		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
-		
+		buttonCreate.addActionListener(new ActionListener(){
 
+			public void actionPerformed(ActionEvent arg0) {
+				// get the symbol from the text field
+				String symbol = textField.getText();
+				if( ! symbol.equals("") ){
+					// ask the graph model to make a new event
+					newEvent = IDESWorkspace.instance().getActiveGraphModel().createEvent(symbol, checkControllable.isSelected(), checkObservable.isSelected());
+					update();
+					listAvailableEvents.setSelectedValue(newEvent, true);
+					buttonCreate.setEnabled(false);
+				}
+			}
+			
+		});
+		buttonCreate.setEnabled(false);		
 		
-		
-//		checkObservable.addActionListener(new ActionListener(){
-//
-//			public void actionPerformed(ActionEvent arg0) {			
-//				IDESWorkspace.instance().getActiveGraphModel().setObservable(selectedEvent, checkObservable.isSelected());
-//			}
-//			
-//		});		
-		
-//		checkControllable.addActionListener(new ActionListener(){
-//
-//			public void actionPerformed(ActionEvent arg0) {
-//				IDESWorkspace.instance().getActiveGraphModel().setControllable(selectedEvent, checkControllable.isSelected());				
-//			}
-//			
-//		});
-		
-		Box listBox=Box.createHorizontalBox();
+		checkObservable = new JCheckBox(Hub.string("observable"));
+		checkObservable.addActionListener(new ActionListener(){
 
-//		Container c = getContentPane();
-//		
-//		JPanel panel = new JPanel();
-//		panel.setLayout(new BorderLayout());
-//		
-//		JPanel p = new JPanel(); //new BorderLayout());
-//		p.setBorder(BorderFactory.createTitledBorder("Enter event symbol"));
-//		p.add(textField, BorderLayout.WEST);
-//		JPanel p2 = new JPanel(new FlowLayout());		
-//		p2.add(buttonCreate);		
-//		p.add(p2, BorderLayout.CENTER);
-//		p.add(checkObservable, BorderLayout.EAST);
-//		p.add(checkControllable, BorderLayout.EAST);
-//	
-//		panel.add(p, BorderLayout.NORTH);						
-//		
-//		p = new JPanel();
+			public void actionPerformed(ActionEvent arg0) {			
+				IDESWorkspace.instance().getActiveGraphModel().setObservable(selectedEvent, checkObservable.isSelected());
+			}
+			
+		});		
+		checkObservable.setEnabled(false);
+		
+		checkControllable = new JCheckBox(Hub.string("controllable"));
+		checkControllable.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				IDESWorkspace.instance().getActiveGraphModel().setControllable(selectedEvent, checkControllable.isSelected());				
+			}
+			
+		});
+		checkControllable.setEnabled(false);
+		
+		Container c = getContentPane();
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		
+		JPanel p = new JPanel(); //new BorderLayout());
+		p.setBorder(BorderFactory.createTitledBorder("Enter event symbol"));
+		p.add(textField, BorderLayout.WEST);
+		JPanel p2 = new JPanel(new FlowLayout());		
+		p2.add(buttonCreate);		
+		p.add(p2, BorderLayout.CENTER);
+		p.add(checkObservable, BorderLayout.EAST);
+		p.add(checkControllable, BorderLayout.EAST);
+	
+		panel.add(p, BorderLayout.NORTH);						
+		
+		p = new JPanel();
 		listAvailableEvents = new MutableList(); //new FilteringJList();
 		listAvailableEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 		//listAvailableEvents.installJTextField(textField);
 		listAvailableEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			private boolean adjusting=false;
-			public void valueChanged(ListSelectionEvent e) {
-				if(e.getValueIsAdjusting())
-					return;
-				synchronized(this)
-				{
-					if(adjusting)
-						return;
-					adjusting=true;
-				}				
+			public void valueChanged(ListSelectionEvent e) {			 
 				ListSelectionModel lsm = (ListSelectionModel)e.getSource();				
 				if (lsm.isSelectionEmpty()) {
 					
 					// TODO see if contents of textField matches any of the events in the assigned list
 					// NOTE wouldn't need to do this if we used a sorted list instead of a filtered one...
-//					checkObservable.setEnabled(false);
-//					checkControllable.setEnabled(false);
-//					buttonCreate.setEnabled(true);
+					checkObservable.setEnabled(false);
+					checkControllable.setEnabled(false);
+					buttonCreate.setEnabled(true);
 					
 				}else{				
 					Object o = listAvailableEvents.getSelectedValue();
@@ -251,17 +196,13 @@ public class Temp extends EscapeDialog implements Subscriber {
 						selectedEvent = (Event)o;
 						textField.setText(selectedEvent.getSymbol());						
 						listAvailableEvents.setSelectedValue(o, true);		
-						//checkObservable.setEnabled(true);
+						checkObservable.setEnabled(true);
 						checkObservable.setSelected(selectedEvent.isObservable());
-						//checkControllable.setEnabled(true);
+						checkControllable.setEnabled(true);
 						checkControllable.setSelected(selectedEvent.isControllable());
-						//buttonCreate.setEnabled(false);
+						buttonCreate.setEnabled(false);
 						
 					}
-				}
-				synchronized(this)
-				{
-					adjusting=false;
 				}
 			}
 			}
@@ -270,7 +211,7 @@ public class Temp extends EscapeDialog implements Subscriber {
 		JScrollPane pane = new JScrollPane(listAvailableEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Available"));
 		add(pane, BorderLayout.CENTER);		
-		listBox.add(pane);	
+		p.add(pane);		
 		
 	    buttonAdd = new JButton(">>");
 	    buttonAdd.setToolTipText("Assign events to edge");
@@ -284,7 +225,7 @@ public class Temp extends EscapeDialog implements Subscriber {
 		pCentre.add(buttonAdd);
 		pCentre.add(buttonRemove);		
 
-		listBox.add(pCentre);
+		p.add(pCentre);
 		listAssignedEvents = new MutableList();
 		// TODO Only one item can be selected: change to MULTIPLE_INTERVAL_SELECTION later
 		listAssignedEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
@@ -318,10 +259,9 @@ public class Temp extends EscapeDialog implements Subscriber {
 		pane = new JScrollPane(listAssignedEvents);
 		pane.setBorder(BorderFactory.createTitledBorder("Assigned to Edge"));
 		
-		listBox.add(pane);				
+		p.add(pane);				
 		
-		mainBox.add(listBox);
-		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
+		panel.add(p, BorderLayout.CENTER);
 		
 		ActionListener commitListener = new CommitListener();		
 		buttonOK = new JButton("OK");
@@ -334,20 +274,12 @@ public class Temp extends EscapeDialog implements Subscriber {
 			}
 		);
 		
-		JPanel p = new JPanel(new FlowLayout());
+		p = new JPanel(new FlowLayout());
 		p.add(buttonOK);		
 		p.add(buttonCancel);
-		
-		mainBox.add(p);
-		getContentPane().add(mainBox);
+		panel.add(p, BorderLayout.SOUTH);
+		c.add(panel);
 		pack();
-		
-		buttonOK.setPreferredSize(new Dimension(
-				Math.max(buttonOK.getWidth(),buttonCancel.getWidth()),buttonOK.getHeight()));
-		buttonOK.invalidate();
-		buttonCancel.setPreferredSize(new Dimension(
-				Math.max(buttonOK.getWidth(),buttonCancel.getWidth()),buttonCancel.getHeight()));
-		buttonCancel.invalidate();
 	}
 	
 	public void update() {
@@ -374,7 +306,7 @@ public class Temp extends EscapeDialog implements Subscriber {
 				listAvailableEvents.insertElement((Comparable)e);
 			}
 		}		
-		//textField.setText("");
+		textField.setText("");
 	}
 
 	public void setEdge(Edge edge){
@@ -408,10 +340,7 @@ public class Temp extends EscapeDialog implements Subscriber {
 		
 	@SuppressWarnings("serial") 
 	private class MutableList extends JList {
-
-		private boolean adjusting=false;
-
-		MutableList() {
+	    MutableList() {
 	    	super(new DefaultListModel());
 	    }
 	    
