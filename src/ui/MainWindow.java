@@ -32,7 +32,6 @@ import javax.swing.KeyStroke;
 import main.Hub;
 import main.IDESWorkspace;
 import main.Main;
-import main.SystemVariables;
 import model.Subscriber;
 
 import org.pietschy.command.CommandManager;
@@ -54,9 +53,7 @@ import ui.command.GraphCommands.*;
  */
 public class MainWindow extends JFrame implements Subscriber {
 
-	String imagePath = SystemVariables.instance().getApplication_path() + "/src/images/icons/";
-	
-	
+	String imagePath = "/images/icons/";
 	
 	public MainWindow() {
 		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));

@@ -23,7 +23,6 @@ import org.pietschy.command.file.ExtensionFileFilter;
 
 import main.Hub;
 import main.IDESWorkspace;
-import main.SystemVariables;
 import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
@@ -209,37 +208,37 @@ public class FileOperations {
 	 * 
 	 * @param packageName
 	 */
-	public static void loadAndExportCommands(String commandsFileName){	
-		//ClassLoader loader = ClassLoader.getSystemClassLoader();
-		BufferedReader in;
-		String s;
-	    
-		try {	
-			in = new BufferedReader(new FileReader(SystemVariables.instance().getSystem_path() + commandsFileName));
-			s = in.readLine();
-		    while (s != null) {
-					ActionCommand cmd = (ActionCommand)Class.forName(s).newInstance();
-					cmd.export();
-					s = in.readLine();
-		    }
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
+//	public static void loadAndExportCommands(String commandsFileName){	
+//		//ClassLoader loader = ClassLoader.getSystemClassLoader();
+//		BufferedReader in;
+//		String s;
+//	    
+//		try {	
+//			in = new BufferedReader(new FileReader(SystemVariables.instance().getSystem_path() + commandsFileName));
+//			s = in.readLine();
+//		    while (s != null) {
+//					ActionCommand cmd = (ActionCommand)Class.forName(s).newInstance();
+//					cmd.export();
+//					s = in.readLine();
+//		    }
+//		} catch (InstantiationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	
+//	}
 	
 
 
