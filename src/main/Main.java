@@ -8,6 +8,8 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import javax.swing.UIManager;
+
 import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
@@ -71,6 +73,11 @@ public class Main {
 		
 		Cache.init();
 
+		try {
+	        UIManager.setLookAndFeel(
+	            UIManager.getSystemLookAndFeelClassName());
+	    } catch (Exception e) { }
+	    
 		// TODO load UISettings and workspace in a thread
 		// show splash screen
 		Hub.setMainWindow(new MainWindow());

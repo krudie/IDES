@@ -1,10 +1,12 @@
 package presentation.fsa;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 
 import main.Hub;
 import main.IDESWorkspace;
@@ -47,6 +50,9 @@ import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 import model.fsa.ver1.EventsModel;
 import javax.swing.JOptionPane;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -82,7 +88,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		dialog.checkControllable.setSelected(dialog.cbCState);
 		dialog.checkObservable.setSelected(dialog.cbOState);
         dialog.setEdge(e);
-        dialog.setLocationRelativeTo(view);  
+        dialog.setLocationRelativeTo(view);
         dialog.setVisible(true);        	
 	}
 	
@@ -99,11 +105,17 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		{
 			if(!(actionEvent.getSource() instanceof JButton))
 			{
-				buttonCreate.doClick();
+				if("".equals(textField.getText()))
+					buttonOK.doClick();
+				else
+					buttonCreate.doClick();
 				return;
 			}
 			if("".equals(textField.getText()))
+			{
+				textField.requestFocus();
 				return;
+			}
 			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
 				newEvent = IDESWorkspace.instance().getActiveGraphModel().createEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
@@ -128,7 +140,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 //		 NOT YET	eventsModel.attach(this);
 		
 		Box mainBox=Box.createVerticalBox();
-		Box createBox=Box.createHorizontalBox();
+		createBox=Box.createHorizontalBox();
 		
 		textField=new JTextField();
 		textField.setMaximumSize(new Dimension(textField.getMaximumSize().width,
@@ -153,12 +165,20 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			private void configStuff(String symbol)
 			{
 				if(!listAvailableEvents.existsElement(symbol) && !listAssignedEvents.existsElement(symbol)){
+					createBox.setBorder(BorderFactory.createTitledBorder(
+							BorderFactory.createLineBorder(
+							(textField.getText().equals("")?UIManager.getColor("TextField.shadow"):
+								UIManager.getColor("TextField.darkShadow")),1),
+							Hub.string("enterAssignEvent")));
 					buttonCreate.setText(Hub.string("assignNew"));
 					checkControllable.setEnabled(true);
 					checkControllable.setSelected(cbCState);
 					checkObservable.setEnabled(true);
 					checkObservable.setSelected(cbOState);
 				}else{
+					createBox.setBorder(BorderFactory.createTitledBorder(
+							BorderFactory.createLineBorder(UIManager.getColor("TextField.shadow"),1),
+							Hub.string("enterAssignEvent")));
 					buttonCreate.setText(Hub.string("assign"));
 					checkControllable.setEnabled(false);
 					checkControllable.setSelected(cbCState);
@@ -214,9 +234,25 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		
 		checkControllable=new JCheckBox(Hub.string("controllable"));
 		checkControllable.setSelected(true);
+		checkControllable.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				cbCState=((JCheckBox)arg0.getSource()).isSelected();
+				textField.requestFocus();
+			}
+			
+		});
 		createBox.add(checkControllable);
 		checkObservable=new JCheckBox(Hub.string("observable"));
 		checkObservable.setSelected(true);
+		checkObservable.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {			
+				cbOState=((JCheckBox)arg0.getSource()).isSelected();
+				textField.requestFocus();
+			}
+			
+		});		
 		createBox.add(checkObservable);
 		
 		buttonCreate=new JButton(Hub.string("assignNew"));
@@ -225,28 +261,12 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 				textField.getPreferredSize().height));
 		buttonCreate.addActionListener(createListener);
 		createBox.add(buttonCreate);
-		createBox.setBorder(BorderFactory.createTitledBorder(Hub.string("enterAssignEvent")));
+
+		createBox.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createLineBorder(UIManager.getColor("TextField.shadow"),1),
+				Hub.string("enterAssignEvent")));
 		mainBox.add(createBox);
 		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
-		
-
-		
-		
-		checkObservable.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {			
-				cbOState=((JCheckBox)arg0.getSource()).isSelected();
-			}
-			
-		});		
-		
-		checkControllable.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {
-				cbCState=((JCheckBox)arg0.getSource()).isSelected();
-			}
-			
-		});
 		
 		Box listBox=Box.createHorizontalBox();
 
@@ -287,7 +307,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		JScrollPane pane = new JScrollPane(listAvailableEvents);
 		pane.setPreferredSize(new Dimension(200, 300));
 		pane.setBorder(BorderFactory.createTitledBorder("Available"));
-		//add(pane, BorderLayout.CENTER);		
+
 		listBox.add(pane);
 		listBox.add(Box.createHorizontalGlue());
 		
@@ -301,6 +321,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		BoxLayout boxLayout = new BoxLayout(pCentre, BoxLayout.Y_AXIS);
 		pCentre.setLayout(boxLayout);
 		pCentre.add(buttonAdd);
+		pCentre.add(Box.createRigidArea(new Dimension(0,5)));
 		pCentre.add(buttonRemove);		
 
 		listBox.add(pCentre);
@@ -353,6 +374,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		JPanel p = new JPanel(new FlowLayout());
 		p.add(buttonOK);		
 		p.add(buttonCancel);
+		rootPane.setDefaultButton(buttonOK);
 		
 		mainBox.add(p);
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
@@ -410,6 +432,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	
 	public void onEscapeEvent()
 	{
+        textField.requestFocus();
 		dialog.setVisible(false);
 	}
 	
@@ -420,8 +443,17 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	private Event newEvent;		
 	private Event selectedEvent;
 	private boolean inserted=false;
+	/**
+	 * state of the controllable checkbox when creating new event
+	 */
 	private boolean cbCState=true;
+	/**
+	 * state of the observable checkbox when creating new event
+	 */
 	private boolean cbOState=true;
+	
+	//for bordercolor change
+	private Box createBox;
 	
 	// LATER /////////////////////////////////////////////////////////////
 	private FSAEventsModel eventsModel; // the publisher to which i attach
@@ -569,6 +601,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			IDESWorkspace.instance().getActiveGraphModel().replaceEventsOnEdge(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
+		        textField.requestFocus();
 				dialog.setVisible(false);
 				if(dialog.getParent() != null){
 					dialog.getParent().repaint();
