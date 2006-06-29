@@ -218,7 +218,7 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 	};
 
 	/**
-	 * The listener for the user pressing the <code>Delete</code> key.
+	 * The listener for the user decides to add a new event.
 	 */
 	protected Action createListener = new AbstractAction()
 	{
@@ -227,6 +227,7 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			if(!(actionEvent.getSource() instanceof JButton))
 			{
 				createButton.doClick();
+				return;
 			}
 			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
 			if(a==null||"".equals(eventNameField.getText()))
@@ -258,6 +259,7 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 	protected JCheckBox observableCBox;
 	protected JButton createButton;
 	protected JButton deleteButton;
+	private Automaton lastModel=null;
 	
 	public EventView()
 	{
@@ -370,6 +372,11 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			deleteButton.setEnabled(false);
 			eventNameField.setEnabled(false);
 			table.setEnabled(false);
+			if(lastModel!=null)
+			{
+				lastModel.detach(this);
+				lastModel=null;
+			}
 		}
 		else
 		{
@@ -380,6 +387,13 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 			deleteButton.setEnabled(true);
 			eventNameField.setEnabled(true);
 			table.setEnabled(true);
+			if(!model.equals(lastModel))
+			{
+				if(lastModel!=null)
+					lastModel.detach(this);
+				lastModel=(Automaton)model;
+				lastModel.attach(this);
+			}
 		}
 	}
 	
