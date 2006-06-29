@@ -1,6 +1,6 @@
 package test.ui;
 
-import presentation.fsa.EdgeLabellingDialog;
+import ui.EdgeLabellingDialog;
 
 public class TestEdgeLabellingDialog {
 

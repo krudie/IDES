@@ -1,4 +1,4 @@
-package presentation.fsa;
+package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -52,7 +52,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import ui.FilteringJList;
+import presentation.fsa.Edge;
+
 import util.EscapeDialog;
 /**
  * Dialog window for assigning multiple events from the global events model
@@ -104,7 +105,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			}
 			if("".equals(textField.getText()))
 				return;
-			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("addNew")))
+			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
 				newEvent = IDESWorkspace.instance().getActiveGraphModel().createEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
 				updateOnlyAvailable();			
@@ -153,7 +154,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			private void configStuff(String symbol)
 			{
 				if(!listAvailableEvents.existsElement(symbol) && !listAssignedEvents.existsElement(symbol)){
-					buttonCreate.setText(Hub.string("addNew"));
+					buttonCreate.setText(Hub.string("assignNew"));
 					checkControllable.setEnabled(true);
 					checkControllable.setSelected(cbCState);
 					checkObservable.setEnabled(true);
@@ -219,7 +220,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		checkObservable.setSelected(true);
 		createBox.add(checkObservable);
 		
-		buttonCreate=new JButton(Hub.string("addNew"));
+		buttonCreate=new JButton(Hub.string("assignNew"));
 		buttonCreate.setToolTipText(Hub.string("createEventTooltip"));
 		buttonCreate.setPreferredSize(new Dimension(buttonCreate.getPreferredSize().width,
 				textField.getPreferredSize().height));
@@ -566,7 +567,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			for(int i = 0; i < contents.length; i++){
 				events[i] = (Event)contents[i];
 			}				
-			IDESWorkspace.instance().getActiveGraphModel().assignEvents(events, edge);
+			IDESWorkspace.instance().getActiveGraphModel().replaceEventsOnEdge(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
 				dialog.setVisible(false);

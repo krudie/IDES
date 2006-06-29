@@ -457,7 +457,7 @@ public class EdgeLabellingDialog1 extends JDialog implements Subscriber {
 			for(int i = 0; i < contents.length; i++){
 				events[i] = (Event)contents[i];
 			}				
-			IDESWorkspace.instance().getActiveGraphModel().assignEvents(events, edge);
+			IDESWorkspace.instance().getActiveGraphModel().replaceEventsOnEdge(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
 				dialog.setVisible(false);
