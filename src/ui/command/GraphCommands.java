@@ -12,13 +12,13 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 import presentation.fsa.Edge;
+import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
+import presentation.fsa.NodeLabellingDialog;
 import presentation.fsa.SelectionGroup;
-import ui.EdgeLabellingDialog;
-import ui.NodeLabellingDialog;
 
 public class GraphCommands {
 

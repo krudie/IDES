@@ -1,4 +1,4 @@
-package ui;
+package presentation.fsa;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -52,7 +52,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import presentation.fsa.Edge;
 
 import util.EscapeDialog;
 /**

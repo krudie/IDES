@@ -14,7 +14,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
-import ui.EdgeLabellingDialog;
 import ui.command.GraphCommands.DeleteCommand;
 
 /**

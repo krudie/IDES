@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui;
+package presentation.fsa;
 
 import java.awt.Dimension;
 import java.awt.Point;

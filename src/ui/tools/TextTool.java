@@ -6,9 +6,9 @@ import java.awt.event.MouseEvent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
-import ui.EdgeLabellingDialog;
 import ui.tools.DrawingTool;
 import ui.command.GraphCommands;
 

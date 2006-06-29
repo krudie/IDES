@@ -407,7 +407,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param events a non-null, non-empty list of FSA events
 	 * @param edge the edge to which the edges will be assigned
 	 */
-	public void replaceEventsOnEdge(Event[] events, Edge edge){
+	protected void replaceEventsOnEdge(Event[] events, Edge edge){
 
 		// get the transitions for edge
 		Iterator<FSATransition> trans = edge.getTransitions();
