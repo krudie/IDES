@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	private HashSet<GraphView> graphViews=new HashSet<GraphView>();
 	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 2);
 	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 2);
+	public static final int THUMBNAIL_SIZE = 100;
 	
 	protected Box thumbnailBox;
 	
@@ -86,6 +88,7 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		for(GraphModel graphModel:currentModels)
 		{
 			GraphView gv = new GraphView(graphModel);
+			graphModel.attach(gv);
 			gv.addMouseListener(this);
 			graphViews.add(gv);
 		}
@@ -94,7 +97,7 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		for(GraphView gv:graphViews)
 		{
 			JPanel p=new JPanel(new BorderLayout());
-			p.setPreferredSize(new Dimension(100,100));
+			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
 			if(gv.getGraphModel().equals(activeModel))
 				p.setBorder(SELECTED_BORDER);

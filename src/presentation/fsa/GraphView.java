@@ -16,6 +16,11 @@ public class GraphView extends JComponent implements Subscriber {
 
 	protected float scaleFactor = 0.25f;
 	
+	/**
+	 * if true, update() will set the scale factor so that the whole model fits in the view
+	 */
+	protected boolean scaleToFit = true;
+	
 	protected int width=100,height=100;
 	
 	/**
@@ -56,7 +61,14 @@ public class GraphView extends JComponent implements Subscriber {
 	/**
 	 * Refresh my visual model from GraphModel.
 	 */
-	public void update() {	
+	public void update() {
+		if(scaleToFit&&getGraphModel()!=null&&getParent()!=null)
+		{
+			Rectangle r=getGraphModel().getBounds();
+			float xScale=(float)getParent().getBounds().getWidth()/(float)(r.width+r.x);
+			float yScale=(float)getParent().getBounds().getHeight()/(float)(r.height+r.y);
+			setScaleFactor(Math.min(xScale,yScale));
+		}
 		if(graphModel != null){
 			graph = graphModel.getGraph();
 		}else{
@@ -81,4 +93,13 @@ public class GraphView extends JComponent implements Subscriber {
 		return graphModel;
 	}
 
+	public float getScaleFactor()
+	{
+		return scaleFactor;
+	}
+	
+	public void setScaleFactor(float sf)
+	{
+		scaleFactor=sf;
+	}
 }

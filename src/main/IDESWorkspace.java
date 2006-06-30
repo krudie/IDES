@@ -115,8 +115,13 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	}
 	
 	public void setActiveModel(String name) {
+		if(getActiveModel()!=null)
+		{
+			((Automaton)getActiveModel()).detach(getDrawingBoard());
+		}
 		this.activeModelName = name;
-		unsaved = true;			
+		((Automaton)getActiveModel()).attach(getDrawingBoard());
+		unsaved = true;
 	}
 	
 	/**
@@ -266,6 +271,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	}
 	
 	/**
+	 * TODO: fix this
 	 * @return the top-left corner of the drawing area
 	 */
 	public Point getDrawingBoardDisplacement()
@@ -274,10 +280,17 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	}
 
 	/**
+	 * TODO: fix this
 	 * @return the background color of the drawing area
 	 */
 	public Color getDrawingBoardBGColor()
 	{
 		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardBGColor();
+	}
+	
+	//TODO this should return an interface, not GDV
+	protected presentation.fsa.GraphDrawingView getDrawingBoard()
+	{
+		return ((MainWindow)Hub.getMainWindow()).getDrawingBoard();
 	}
 }

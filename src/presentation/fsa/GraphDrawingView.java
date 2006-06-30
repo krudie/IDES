@@ -84,6 +84,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		
 		graph = new GraphElement();
 		scaleFactor = 1f;
+		scaleToFit=false;
 			
 		currentSelection = new SelectionGroup();
 		selectionArea = new Rectangle();

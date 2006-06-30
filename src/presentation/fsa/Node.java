@@ -254,12 +254,8 @@ public class Node extends GraphElement {
 	 * 
 	 * @author Sarah-Jane Whittaker
 	 */
-	protected Rectangle getInitialArrowExportBounds()
+	protected Rectangle getInitialArrowBounds()
 	{
-		Rectangle2D arrowBounds = arrow.getBounds2D();
-		NodeLayout nodeLayout = getLayout();
-		float radius = nodeLayout.getRadius();
-		
 		return (state.isInitial() ?
 			new Rectangle(
 				BentoBox.convertFloatToInt(arrow1.x + ArrowHead.SHORT_HEAD_LENGTH), 
@@ -327,7 +323,7 @@ public class Node extends GraphElement {
 			// If this is the initial state, draw an initial arrow
 			if (state.isInitial())
 			{
-				initialArrowBounds = getInitialArrowExportBounds();
+				initialArrowBounds = getInitialArrowBounds();
 				exportString += "    \\psline[arrowsize=5pt]{->}(" 
 					+ (initialArrowBounds.getMinX() - selectionBox.x) + "," 
 					+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMinY()) + ")(" 

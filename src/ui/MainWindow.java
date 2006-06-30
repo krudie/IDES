@@ -337,6 +337,7 @@ public class MainWindow extends JFrame implements Subscriber {
 	}
 
 	/**
+	 * TODO: fix this
 	 * @return the top-left corner fo the drawing area
 	 */
 	public Point getDrawingBoardDisplacement()
@@ -345,10 +346,17 @@ public class MainWindow extends JFrame implements Subscriber {
 	}
 	
 	/**
+	 * TODO: fix this
 	 * @return background color of drawing board
 	 */
 	public Color getDrawingBoardBGColor()
 	{
 		return drawingBoard.getBackground();
+	}
+	
+	//TODO: fix this
+	public GraphDrawingView getDrawingBoard()
+	{
+		return drawingBoard;
 	}
 }

@@ -287,7 +287,7 @@ public class GraphExporter
 			// arrow
 			if (nodeState.isInitial())
 			{
-				initialArrowBounds = nodeArray[i].getInitialArrowExportBounds();			
+				initialArrowBounds = nodeArray[i].getInitialArrowBounds();			
 				tempX = (initialArrowBounds.getMinX() < tempX) ?
 					initialArrowBounds.getMinX() : tempX;
 				tempY = (initialArrowBounds.getMinY() < tempY) ? 

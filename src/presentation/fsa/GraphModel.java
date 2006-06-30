@@ -13,6 +13,7 @@ import main.Hub;
 import main.IDESWorkspace;
 import model.Publisher;
 import model.Subscriber;
+import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
@@ -20,6 +21,7 @@ import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.PresentationElement;
+import presentation.fsa.GraphExporter.ExportBounds;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 
@@ -714,6 +716,36 @@ public class GraphModel extends Publisher implements Subscriber {
 		fsa.add(event);
 		fsa.notifyAllBut(this);		
 		return event;
+	}
+	
+	/**
+	 * @return the smallest rectangle that containing all elements of the graph
+	 */
+	public Rectangle getBounds()
+	{
+		Rectangle r=new Rectangle();
+
+		for (Node n: nodes.values())
+		{
+			if (n.getState().isInitial())
+				r=r.union(n.getInitialArrowBounds());
+			int radius = (int)n.getLayout().getRadius();
+			r=r.union(new Rectangle((int)n.getLayout().getLocation().x - radius,
+					(int)n.getLayout().getLocation().y - radius,
+					2*radius,
+					2*radius));
+		}
+
+		for (Edge e:edges.values())
+		{
+			r=r.union(e.getCurveBounds());
+			r=r.union(e.getLabel().bounds());
+		}
+
+		for (GraphLabel l:labels.values())
+			r=r.union(l.bounds());
+		
+		return r;
 	}
 }
 
