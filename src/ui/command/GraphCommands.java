@@ -69,6 +69,7 @@ public class GraphCommands {
 		public static final int NODE = 0;
 		public static final int EDGE = 1;	
 		public static final int NODE_AND_EDGE = 2;
+		public static final int SELF_LOOP = 3;
 		
 		/**
 		 * Default constructor.
@@ -92,6 +93,16 @@ public class GraphCommands {
 			setContext(context, elementType, location);
 		}	
 		
+		/**
+		 * @param context2
+		 * @param self_loop2
+		 * @param n
+		 */
+		public CreateCommand(GraphDrawingView context, int elementType, Node n) {
+			this.context = context;			
+			source = n;
+		}
+
 		public void setContext(GraphDrawingView context,  int elementType, Point location){
 			this.context = context;
 			this.elementType = elementType;
@@ -126,6 +137,9 @@ public class GraphCommands {
 			case EDGE:
 				context.getGraphModel().finishEdge(edge, target);				
 				break;
+			case SELF_LOOP:
+				context.getGraphModel().setSelfLoop(source, true);
+				break;				
 			default:
 				// TODO set the tool in the *currently active* drawing view
 				// set the current drawing tool to the CreationTool

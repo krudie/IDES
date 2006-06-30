@@ -184,7 +184,7 @@ public class GraphExporter
 		nodeArray = (Node[]) nodeCollection.toArray(new Node[0]);
 		edgeCollection = graphModel.getEdges();
 		edgeArray = (Edge[]) edgeCollection.toArray(new Edge[0]);
-		labelCollection = graphModel.getLabels();
+		labelCollection = graphModel.getFreeLabels();
 		labelArray = (GraphLabel[]) labelCollection.toArray(new GraphLabel[0]);
 
 		// Step #3 - Figure out the dimensions

@@ -100,7 +100,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 			{
 				labels.add(e.getLabel());
 			}
-			labels.addAll(model.getLabels());
+			labels.addAll(model.getFreeLabels());
 			progressBar.setMinimum(0);
 			progressBar.setMaximum(labels.size());
 			int current=0;

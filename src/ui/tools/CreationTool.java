@@ -62,19 +62,13 @@ public class CreationTool extends DrawingTool {
 				// if intersects with a node
 				if (n != null) {
 					// get target node and create an edge
-					n = (Node) context.getCurrentSelection().child(0);
-					
-					// DEBUG
-					//System.out.println("create edge from source to target");								
+					n = (Node) context.getCurrentSelection().child(0);					
 					cmd = new CreateCommand(context, CreateCommand.EDGE, me
 							.getPoint());					
 					cmd.setTargetNode(n);
 					cmd.setEdge(edge);					
 				} else {
-					// else create edge and target node					
-					// DEBUG
-					//System.out.println("create target node and edge");
-										
+					// create edge and target node															
 					cmd = new CreateCommand(context,
 							CreateCommand.NODE_AND_EDGE, me.getPoint());
 					cmd.setEdge(edge);
@@ -84,10 +78,7 @@ public class CreationTool extends DrawingTool {
 				context.clearCurrentSelection();				
 			} else {
 				if (n != null) {// if intersects with node, start drawing an
-								// edge
-					
-					// DEBUG
-					//System.out.println("intersected target node; starting edge drawing");
+								// edge									
 					sourceNode = n;
 					edge = context.getGraphModel().beginEdge(sourceNode);
 					drawingEdge = true;					
@@ -102,14 +93,14 @@ public class CreationTool extends DrawingTool {
 		} else if (me.getClickCount() == 2) {
 			// if intersect a node, draw self-loop
 			if (n != null) {
-				if(edge != null){
-					// Hub.displayAlert("Creating self loop while drawing an unfinished edge.");
+				if(edge != null){					
 					cmd = new CreateCommand(context, CreateCommand.EDGE, me.getPoint());					
 					cmd.setTargetNode(n);
 					cmd.setEdge(edge);
 				}else{				
 					// FIXME change this to a CreateCommand so is added to history
-					context.getGraphModel().addEdge(n, n);
+					cmd = new CreateCommand(context, CreateCommand.SELF_LOOP, n);
+					// context.getGraphModel().addEdge(n, n);
 				}
 				edge = null;
 				drawingEdge = false;
@@ -135,6 +126,8 @@ public class CreationTool extends DrawingTool {
 		}
 		aborted = true;
 		context.repaint();
+		super.handleRightClick(me);
+		
 	}
 	
 	@Override

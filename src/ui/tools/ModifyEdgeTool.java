@@ -42,7 +42,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	public void handleMousePressed(MouseEvent m) {
 				
 		if(edge != null){
-			if(edge.intersects(m.getPoint())){ // have clicked on selected edge
+			if(edge.intersects(m.getPoint())){ // have clicked on previously selected edge
 				// get control point to be moved
 				if(edge.getHandler().intersects(m.getPoint())){				
 					pointType = edge.getHandler().getLastIntersected();
@@ -64,7 +64,9 @@ public class ModifyEdgeTool extends DrawingTool {
 					}catch(ClassCastException cce){
 						// clicked on some other kind of graph element
 						context.clearCurrentSelection();
+						context.setTool(GraphDrawingView.DEFAULT);
 						edge = null;
+						dragging = false;
 					}
 					oldEdge.getHandler().setVisible(false);
 				}

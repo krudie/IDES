@@ -162,10 +162,11 @@ public class Edge extends GraphElement {
 	    if(s.length()>0) s = s.substring(0, s.length() - 1);
 	    label.setText(s);
 	    
-	    // Compute location of label: midpoint of curve	     
+	    // Compute location of label: midpoint of curve	plus offset vector     
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	    
+	    this.setLocation(midpoint);
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());	    
 	    label.setLocation(location);
 	    

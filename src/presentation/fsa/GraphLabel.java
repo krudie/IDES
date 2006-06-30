@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -97,23 +98,79 @@ public class GraphLabel extends GraphElement {
 			((Graphics2D)g).drawImage(rendered,null,(int)layout.getLocation().x,(int)layout.getLocation().y);
 		}
 		else
-		{
-			g.setFont(font);
-			FontMetrics metrics = g.getFontMetrics();
-			int width = metrics.stringWidth( layout.getText() );
-			int height = metrics.getHeight();
-			bounds.setSize(width, height);
-			bounds.setLocation(new Point((int)(layout.getLocation().x - width/2), 
-					(int)(layout.getLocation().y - height/2)));
-			
-			int x = (int)layout.getLocation().x - width/2;
-			int y = (int)layout.getLocation().y + metrics.getAscent()/2;
-			
+		{			
 			if(visible){
-				// g.setColor(layout.getColor());		
-				g.drawString(layout.getText(), x, y);
+				if(selected){
+					drawBorderAndTether(g);
+					
+				}else if(highlighted){
+					g.setColor(layout.getHighlightColor());
+				}else{
+					g.setColor(layout.getColor());
+				}				
+		
+				drawText(g);
+				
 			}
 		}
+	}
+
+	/**
+	 * Draws the text for this label in the given graphics context.
+	 * 
+	 * Updates bounds based on font metrics of graphics
+	 * and the text to be drawn. 
+	 * 
+	 * @param g
+	 */
+	private void drawText(Graphics g) {
+		// TODO compute bounds and drawing string with multiple lines
+		String[] lines = getText().split("\n");
+		if(lines.length > 1){
+			// multiple line text
+			
+		}
+		
+		// Compute bounds
+		g.setFont(font);
+		FontMetrics metrics = g.getFontMetrics();
+		int width = metrics.stringWidth( layout.getText() );
+		int height = metrics.getHeight();
+		bounds.setSize(width, height);
+		bounds.setLocation(new Point((int)(layout.getLocation().x - width/2), 
+				(int)(layout.getLocation().y - height/2)));
+	
+		// Location to draw string
+		int x = (int)layout.getLocation().x - width/2;
+		int y = (int)layout.getLocation().y + metrics.getAscent()/2;			
+		g.drawString(layout.getText(), x, y);
+	}
+
+	/**
+	 * @return
+	 */
+	private String getText() {
+		return layout.getText();
+	}
+
+	/**
+	 * @param g
+	 */
+	private void drawBorderAndTether(Graphics g) {
+		g.setColor(layout.getSelectionColor());
+		Rectangle r = bounds();
+		r.width *= 1.1;
+		r.height *= 1.1;
+		Stroke s = ((Graphics2D)g).getStroke();
+		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
+		((Graphics2D)g).draw(bounds());
+		if(parent != null){  // draw the tether
+			g.drawLine((int)layout.getLocation().x, 
+						(int)layout.getLocation().y, 
+						(int)parent.getLayout().getLocation().x, 
+						(int)parent.getLayout().getLocation().y);
+		}
+		((Graphics2D)g).setStroke(s);		
 	}
 
 	public Rectangle bounds() {
@@ -124,7 +181,7 @@ public class GraphLabel extends GraphElement {
 				bounds.height=rendered.getHeight();
 				bounds.width=rendered.getWidth();
 			}
-			else //arbitrary dimensions: has to be recomputed after rendering
+			else //FIXME arbitrary dimensions: has to be recomputed after rendering
 			{
 				bounds.height=10;
 				bounds.width=10;
@@ -146,7 +203,7 @@ public class GraphLabel extends GraphElement {
 	}
 	
 	public boolean intersects(Point2D p) {		
-		return bounds().intersects(p.getX(), p.getY(), 1, 1);
+		return bounds().contains(p);
 	}
 
 	public void insert(PresentationElement child, long index) {}

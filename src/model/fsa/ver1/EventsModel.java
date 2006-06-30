@@ -13,7 +13,6 @@ import model.fsa.FSAModel;
  *
  */
 public class EventsModel extends model.Publisher implements FSAEventsModel {
-
 	
 	
 	public List getGlobalEvents() {

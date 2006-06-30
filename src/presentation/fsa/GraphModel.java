@@ -20,6 +20,7 @@ import model.fsa.ver1.Event;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
+import presentation.Geometry;
 import presentation.PresentationElement;
 import presentation.fsa.GraphExporter.ExportBounds;
 import services.latex.LatexManager;
@@ -41,7 +42,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	private HashMap<Long, Node> nodes;
 	private HashMap<Long, Edge> edges;
-	private HashMap<Long, GraphLabel> labels;
+	private HashMap<Long, GraphLabel> freeLabels;
+	private HashMap<Long, GraphLabel> edgeLabels;
 	
 	/**
 	 * The recursive structure used to draw the graph.
@@ -65,8 +67,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		
 		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
-		labels = new HashMap<Long, GraphLabel>();
-	
+		edgeLabels = new HashMap<Long, GraphLabel>();
+		freeLabels = new HashMap<Long, GraphLabel>();
+			
 		maxStateId = fsa.getStateCount();
 		maxTransitionId = fsa.getTransitionCount();
 		maxEventId = fsa.getEventCount();
@@ -90,7 +93,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		// TODO OPTIMIZE How expensive is this?
 		nodes.clear();
 		edges.clear();
-		labels.clear();
+		edgeLabels.clear();
+		freeLabels.clear();		
 				
 		// for all states in fsa, 
 		// get the graphic data, 
@@ -130,20 +134,20 @@ public class GraphModel extends Publisher implements Subscriber {
 			if(e != null){
 				metaData.addToLayout(t, (EdgeLayout)e.getLayout());
 				e.addTransition(t);
-				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+				//e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge			
 				e = new Edge(t, n1, n2, metaData.getLayoutData(t));
-				e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+				//e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 				
 				// add this edge to source node's out edges
 				n1.insert(e);
-				n1.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+				//n1.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 				
 				// DON'T add this edge to target node's in edges, since it doesn't store them :)
 				n2.insert(e);
-				n2.update();
+				//n2.update();
 				
 				// add to set of edges
 				// id may be misleading since it is the id of only the first transition on this edge
@@ -151,10 +155,19 @@ public class GraphModel extends Publisher implements Subscriber {
 			}
 		}
 	
+		// collect all labels on edges				
+		Entry entry;
+		iter = edges.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			e = (Edge)entry.getValue();
+			edgeLabels.put(e.getId(), e.getLabel());
+		}
+		
 		// TODO for all free labels in metadata
 		
 		// tell observers that the model has been updated
-		// graph.update();
+		graph.update();
 		notifyAllSubscribers();
 	}
 	
@@ -293,17 +306,39 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void saveMovement(SelectionGroup selection){
 		Iterator children = selection.children();
 		while(children.hasNext()){
+			PresentationElement el = (PresentationElement)children.next();
 			try{
-				saveMovement((Node)children.next());			
+				saveMovement((Node)el);			
 			}catch(ClassCastException cce){
 				// Not a node; keep going
 				// TODO what if it is a label??
+				//saveMovement((GraphLabel)el);
 			}
 		}
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}
 		
+	/**
+	 * @param label
+	 */
+	private void saveMovement(GraphLabel label) {
+		// update offset vector in EdgeLayout		
+		if(label.getParent() != null){
+			try{
+				Edge edge = (Edge)label.getParent();
+				EdgeLayout layout = (EdgeLayout)edge.getLayout();
+				layout.setLabelOffset(Geometry.subtract(label.getLayout().getLocation(), layout.getLocation()));
+				Iterator<FSATransition> t = edge.getTransitions();
+				while(t.hasNext()){
+					metaData.setLayoutData(t.next(), layout);
+				}		
+			}catch(ClassCastException cce){}			
+		}else{ // TODO Move free label, tell MetaData
+			
+		}
+	}
+
 	protected void saveMovement(Node node){
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
@@ -517,7 +552,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		}else if(edges.containsValue(el)){
 			delete((Edge)el);
 		}else{
-			labels.remove(el);
+			freeLabels.remove(el);
 		}
 		notifyAllSubscribers();
 	}
@@ -591,7 +626,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 		
 		// check for intersection with free labels 
-		iter = labels.entrySet().iterator();
+		iter = freeLabels.entrySet().iterator();
 		GraphLabel l;
 		while(iter.hasNext()){
 			entry = (Entry)iter.next();
@@ -625,6 +660,22 @@ public class GraphModel extends Publisher implements Subscriber {
 			}
 		}
 		
+		////////////////////////////////////////////
+		
+		// Should this only be done when in ShowAllEdgeLabels mode or something?
+		// It is handy to be able to select an edge by its label... hmmmm.
+		GraphLabel gLabel;
+		iter = edgeLabels.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			gLabel = (GraphLabel)entry.getValue();
+			if(gLabel.intersects(p)){		
+				return gLabel;				
+			}
+		}
+		
+		////////////////////////////////////////////
+		
 		Edge e;
 		// check for intersection with edges
 		iter = edges.entrySet().iterator();
@@ -638,7 +689,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		
 		GraphLabel l;
 		// check for intersection with free labels
-		iter = labels.entrySet().iterator();
+		iter = freeLabels.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
 			l = (GraphLabel)entry.getValue();
@@ -672,9 +723,9 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * Returns the set of all free labels in the graph.
 	 * @return the set of all free labels in the graph
 	 */
-	public Collection<GraphLabel> getLabels()
+	public Collection<GraphLabel> getFreeLabels()
 	{
-		return labels.values();
+		return freeLabels.values();
 	}
 	
 	/**
@@ -742,7 +793,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			r=r.union(e.getLabel().bounds());
 		}
 
-		for (GraphLabel l:labels.values())
+		for (GraphLabel l:freeLabels.values())
 			r=r.union(l.bounds());
 		
 		return r;
