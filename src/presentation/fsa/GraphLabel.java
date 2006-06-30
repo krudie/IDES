@@ -1,29 +1,18 @@
 package presentation.fsa;
 
-import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Label;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Stroke;
-import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.swing.SwingUtilities;
-
-import main.Hub;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
@@ -45,7 +34,16 @@ public class GraphLabel extends GraphElement {
 	protected Rectangle bounds;	
 	protected PresentationElement parent = null;  // either the graph, a node or an edge	
 	protected Font font;
-	protected BufferedImage rendered=null;
+	protected BufferedImage rendered = null;
+	
+	// Added by SJW
+	private int textMetricsWidth = 0;
+	private int textMetricsHeight = 0;
+	private static final double DBL_RENDERED_SCALE_WIDTH = 2.3;
+	private static final double DBL_RENDERED_SCALE_HEIGHT = 2.25;
+	private static final double DBL_NOT_RENDERED_SCALE_WIDTH = 2;
+	private static final double DBL_NOT_RENDERED_SCALE_HEIGHT = 2.75;
+	
 	
 	public GraphLabel(String text){
 		layout = new GraphicalLayout(text);
@@ -86,7 +84,7 @@ public class GraphLabel extends GraphElement {
 		if(LatexManager.isLatexEnabled())
 		{
 			if(!visible||"".equals(layout.getText()))
-				return;
+			{	return; }
 			try
 			{
 				renderIfNeeded();
@@ -95,7 +93,16 @@ public class GraphLabel extends GraphElement {
 				LatexManager.handleRenderingProblem();
 				return;
 			}
-			((Graphics2D)g).drawImage(rendered,null,(int)layout.getLocation().x,(int)layout.getLocation().y);
+			// SJW - Mod to fiddle with positioning
+			/*
+			((Graphics2D)g).drawImage(rendered, null, 
+					(int)layout.getLocation().x,(int)layout.getLocation().y);
+			*/
+			((Graphics2D)g).drawImage(rendered, null, 
+				(int) (layout.getLocation().x - 
+					(bounds.width / DBL_RENDERED_SCALE_WIDTH)),
+				(int) (layout.getLocation().y - 
+					(bounds.height / DBL_RENDERED_SCALE_HEIGHT)));
 		}
 		else
 		{			
@@ -134,15 +141,33 @@ public class GraphLabel extends GraphElement {
 		// Compute bounds
 		g.setFont(font);
 		FontMetrics metrics = g.getFontMetrics();
+		/*
+		 * SJW - Adjusted so these values are held in member variables
 		int width = metrics.stringWidth( layout.getText() );
 		int height = metrics.getHeight();
+		*/
+		textMetricsWidth = metrics.stringWidth( layout.getText() );
+		textMetricsHeight = metrics.getHeight();
+
+		/*
+		 * SJW - Call bounds() instrad to compute all this
 		bounds.setSize(width, height);
 		bounds.setLocation(new Point((int)(layout.getLocation().x - width/2), 
 				(int)(layout.getLocation().y - height/2)));
-	
+		*/
+		bounds();
+		
 		// Location to draw string
-		int x = (int)layout.getLocation().x - width/2;
+		/*
+		int x = (int)layout.getLocation().x - (width / 2);
 		int y = (int)layout.getLocation().y + metrics.getAscent()/2;			
+		 */
+		int x = BentoBox.convertDoubleToInt(
+			layout.getLocation().x - 
+				(textMetricsWidth / DBL_NOT_RENDERED_SCALE_WIDTH));
+		int y = BentoBox.convertDoubleToInt(
+			layout.getLocation().y +
+				(textMetricsHeight / DBL_NOT_RENDERED_SCALE_HEIGHT));			
 		g.drawString(layout.getText(), x, y);
 	}
 
@@ -181,22 +206,31 @@ public class GraphLabel extends GraphElement {
 				bounds.height=rendered.getHeight();
 				bounds.width=rendered.getWidth();
 			}
-			else //FIXME arbitrary dimensions: has to be recomputed after rendering
+			else
 			{
+				// FIXME arbitrary dimensions: has to be recomputed after rendering
 				bounds.height=10;
 				bounds.width=10;
 			}
 			
-			// x and y bounds info added by SJW
-			bounds.x = BentoBox.convertFloatToInt(
-					layout.getLocation().x - (bounds.width / 2));
-			bounds.y = BentoBox.convertFloatToInt(
-					layout.getLocation().y - (bounds.height / 2));
+			// SJW - Now, update the x and y based on the width and height
+			bounds.x = BentoBox.convertDoubleToInt(
+				layout.getLocation().x - 
+					(bounds.width / DBL_RENDERED_SCALE_WIDTH));
+			bounds.y = BentoBox.convertDoubleToInt(
+				layout.getLocation().y - 
+					(bounds.height / DBL_RENDERED_SCALE_HEIGHT));	
 		}
-		else{
-			//Lenko writes: TODO update bounds on label change
-			// NOTE Unless we use deprecated getFontMetrics method, we have to compute 
-			// the bounds until via a graphics context object in the draw method.
+		else
+		{
+			// Lenko writes: TODO update bounds on label change
+			// NOTE Unless we use deprecated getFontMetrics method, we
+			// have to compute the bounds until via a graphics context
+			// object in the draw method.
+			
+			// Sarah writes: OR we can compute the height and width in the
+			// draw phase, store them and use them here!
+			/*
 			if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
 				Toolkit tk = Toolkit.getDefaultToolkit();
 				FontMetrics metrics = tk.getFontMetrics(font);
@@ -204,7 +238,19 @@ public class GraphLabel extends GraphElement {
 				bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
 											(int)(layout.getLocation().y - bounds.height/2)));			
 			}
-		}
+			*/
+			bounds.width = textMetricsWidth;
+			bounds.height = textMetricsHeight;
+			
+			// SJW - Now, update the x and y based on the width and height
+			bounds.x = BentoBox.convertDoubleToInt(
+				layout.getLocation().x - 
+					(bounds.width / DBL_NOT_RENDERED_SCALE_WIDTH));
+			bounds.y = BentoBox.convertDoubleToInt(
+				layout.getLocation().y + 
+					(bounds.height / DBL_NOT_RENDERED_SCALE_HEIGHT));	
+		}		
+
 		return bounds;				
 	}
 	
@@ -341,5 +387,7 @@ public class GraphLabel extends GraphElement {
 		setText(text);
 		if(!location.equals(layout.getLocation()))
 			layout.setLocation(location.x,location.y);
+		// SJW
+		bounds();
 	}
 }
