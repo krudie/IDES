@@ -18,6 +18,9 @@ public class GraphicalLayout {
 	public static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT,
 																BasicStroke.JOIN_MITER,         
 																50, new float[] {5, 2}, 0);	
+	public static final Stroke WIDE_DASHED_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT,
+																BasicStroke.JOIN_MITER,         
+																50, new float[] {5, 2}, 0);	
 	private Point2D.Float location;
 	private String text;
 	private Color color = DEFAULT_COLOR;

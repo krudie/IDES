@@ -70,13 +70,16 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		}
 		GraphModel activeModel=Hub.getWorkspace().getActiveGraphModel();
 
-		
+		HashSet<GraphView> toRemove=new HashSet<GraphView>();
 		for(GraphView gv:graphViews)
 		{
 			if(!currentModels.contains(gv.getGraphModel()))
-				remove(gv);
+				toRemove.add(gv);
 			currentModels.remove(gv.getGraphModel());
 		}
+		for(GraphView gv:toRemove)
+			remove(gv);
+		
 		for(GraphModel graphModel:currentModels)
 		{
 			GraphView gv = new GraphView(graphModel);

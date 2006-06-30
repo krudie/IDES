@@ -101,7 +101,6 @@ public class MainWindow extends JFrame implements Subscriber {
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
 		tabbedViews.add(sp);
 		tabbedViews.addTab("Events", new EventView());
-		tabbedViews.addTab("LaTeX Output", null);		
 		getContentPane().add(tabbedViews, "Center");
 	}
 
@@ -162,9 +161,11 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.CloseAutomatonCommand().export();
 		new FileCommands.SaveAutomatonCommand().export();		
 		new FileCommands.SaveAutomatonAsCommand().export();
+		new FileCommands.SaveAllAutomataCommand().export();
 		
 		new FileCommands.OpenWorkspaceCommand().export();		
 		new FileCommands.SaveWorkspaceCommand().export();
+		new FileCommands.SaveWorkspaceAsCommand().export();
 		
 		new FileCommands.ExportToGIFCommand().export();
 		new FileCommands.ExportToLatexCommand().export();
@@ -176,120 +177,12 @@ public class MainWindow extends JFrame implements Subscriber {
 		new OptionsCommands.MoreOptionsCommand().export();
 			
 	}
-
-	
-	/**
-	 * Assembles and returns the graph menu.
-	 * 
-	 * TODO This can all be done by CommandGroup in a few lines.
-	 * @return the graph menu
-	 */
-	private JMenu createGraphMenu(){
-		
-		 
-//		 TODO add listeners; NOT if commands are defined with a handleExecute method.
-		JMenu menuGraph = new JMenu("Graph");
-		 menuGraph.setMnemonic(KeyEvent.VK_G);
-		 
-		 JMenuItem miZoomIn = new JMenuItem("Zoom In", new ImageIcon(Hub.getResource(imagePath + "graphic_zoomin.gif")));
-		 miZoomIn.setMnemonic(KeyEvent.VK_I);
-		 miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miZoomIn);
-
-		 JMenuItem miZoomOut = new JMenuItem("Zoom Out", new ImageIcon(Hub.getResource(imagePath + "graphic_zoomout.gif")));
-		 miZoomOut.setMnemonic(KeyEvent.VK_O);
-		 miZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miZoomOut);
-		 
-		 JMenuItem miScaleBy = new JMenuItem("Scale By...", new ImageIcon(Hub.getResource(imagePath + "graphic_zoom.gif")));
-		 miScaleBy.setMnemonic(KeyEvent.VK_S);
-		 
-		 // TODO Think up a memorable accelerator: ctrl+shift+S ?
-		 // miScaleBy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miScaleBy);
-		 CreateCommand cmd = new CreateCommand(drawingBoard);
-		 cmd.export();
-		 JMenuItem miCreate = cmd.createMenuItem();  // new JMenuItem("Create Nodes or Edges", new ImageIcon(imagePath + "graphic_create.gif"));		 
-//		 miCreate.addActionListener(new ActionListener() {
-//			 public void actionPerformed(ActionEvent arg0) {			  			
-//				 // set the current drawing tool to the CreationTool
-//				 drawingBoard.setTool(GraphDrawingView.CREATE);
-//				 // TODO Use groups and command manager to toggle this tool selection				 
-//			 }
-//		 });
-//		 
-		 // miCreate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miCreate);
-
-		 JMenuItem miModify = new JMenuItem("Modify Nodes, Edges or Labels", new ImageIcon(Hub.getResource(imagePath + "graphic_modify.gif")));
-		 miModify.setMnemonic(KeyEvent.VK_M);
-		 // miModify.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miModify);
-
-		 JMenuItem miPrintArea = new JMenuItem("Select Print Area", new ImageIcon(Hub.getResource(imagePath + "graphic_printarea.gif")));
-		 miPrintArea.setMnemonic(KeyEvent.VK_A);
-		 // miPrintArea.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miPrintArea);
-
-		 JMenuItem miMove = new JMenuItem("Move Graph", new ImageIcon(Hub.getResource(imagePath + "graphic_grab.gif"))); // ??? is this the right image?
-		 miMove.setMnemonic(KeyEvent.VK_V);
-		 //miMove.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miMove);
-
-		 JMenuItem miAllEdges = new JMenuItem("Select All Edges", new ImageIcon(Hub.getResource(imagePath + "graphic_alledges.gif")));
-		 miAllEdges.setMnemonic(KeyEvent.VK_E);
-		 //miAllEdges.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miAllEdges);
-
-		 JMenuItem miAllLabels = new JMenuItem("Select All Labels", new ImageIcon(Hub.getResource(imagePath + "graphic_alllabels.gif")));
-		 miAllLabels.setMnemonic(KeyEvent.VK_N);
-		 //miAllNodes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
-		 menuGraph.add(miAllLabels);
-		 return menuGraph;
-	}
-	
-	/**
-	 * TODO Move these into commands.xml and load into menu.
-	 * 
-	 * @return
-	 */
-	private JMenu createOptionsMenu(){
-//		 assemble the options menu
-		JMenu menuOptions = new JMenu("Options");
-		 menuOptions.setMnemonic(KeyEvent.VK_O);		 
-		 
-		 // NOTE these items are toggles, some are dependent.
-		 // TODO export eps or tex should be mutually exclusive and disabled(?) if not using LaTeX for labels.
-		 // TODO change the order of these items; move frequently used to top of list.
-		 
-//		 TODO add listeners; NOT if commands are defined with a handleExecute method.
-		 JMenuItem miDrawBorder = new JCheckBoxMenuItem("Draw a border when exporting");
-		 JMenuItem miStdNodeSize =  new JCheckBoxMenuItem("Use standard node size");
-		 JMenuItem miUsePstricks =  new JCheckBoxMenuItem("Use pstricks in LaTeX output");
-		 JMenuItem miUseLatex = new JCheckBoxMenuItem("Use LaTeX for Labels");
-		 JMenuItem miExportEps = new JCheckBoxMenuItem("Export to EPS");
-		 JMenuItem miExportTex = new JCheckBoxMenuItem("Export to TEX");		 
-		 JMenuItem miErrReports = new JCheckBoxMenuItem("Send Error Reports");
-		
-		 // TODO add listeners; NOT if commands are defined with a handleExecute method.
-		 menuOptions.add(miDrawBorder);
-		 menuOptions.add(miStdNodeSize);
-		 menuOptions.add(miUsePstricks);
-		 menuOptions.add(miUseLatex);		 
-		 menuOptions.add(miExportEps);
-		 menuOptions.add(miExportTex);
-		 menuOptions.add(miErrReports);
-		 return menuOptions;
-	}
 	
 	/**
 	 * The views.
 	 */
 	private JTabbedPane tabbedViews;
 	private GraphDrawingView drawingBoard;
-	// TODO private JPanel filmStrip;
-	private JPanel eventsView;
-	private JPanel latexView;
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
 	private JToolBar toolbar;
 	

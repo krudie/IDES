@@ -80,6 +80,11 @@ public class GraphModel extends Publisher implements Subscriber {
 		return fsa.getName();
 	}
 	
+	public Automaton getAutomaton()
+	{
+		return fsa;
+	}
+	
 	/**
 	 * TODO Keep a set of dirty bits on the the Automaton
 	 * so that the whole model needn't be rebuilt every time there is a change.
@@ -815,6 +820,11 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 		
 		return graphBounds;
+	}
+	
+	public boolean isDirty()
+	{
+		return graph.isDirty();
 	}
 	
 	/**

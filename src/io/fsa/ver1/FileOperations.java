@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
@@ -96,7 +97,11 @@ public class FileOperations {
         else
         {
         	XMLexporter.automatonToXML(a, ps);
-        	a.setName(ParsingToolbox.removeFileType(file.getName()));
+        	String newName=ParsingToolbox.removeFileType(file.getName());
+        	if(!newName.equals(a.getName())
+        			&&Hub.getWorkspace().getFSAModel(newName)!=null)
+        		Hub.getWorkspace().removeFSAModel(newName);
+        	a.setName(newName);
         	a.setFile(file);
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
             a.notifyAllSubscribers();
@@ -104,15 +109,41 @@ public class FileOperations {
     }  
     
 	
-	public static void saveAutomatonAs(Automaton a) {		
-		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
+	public static void saveAutomatonAs(Automaton a) {
+		JFileChooser fc;
+		if(a.getFile()!=null)
+			fc=new JFileChooser(a.getFile().getParent());
+		else
+			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("saveModelTitle"));
 		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
-    	int retVal = fc.showSaveDialog(Hub.getMainWindow());
-    	if(retVal == JFileChooser.APPROVE_OPTION){
-    		File file=fc.getSelectedFile();
+		if(a.getFile()!=null)
+			fc.setSelectedFile(a.getFile());
+		else
+			fc.setSelectedFile(new File(a.getName()));
+		int retVal;
+		boolean fcDone=true;
+		File file=null;
+		do
+		{
+			retVal = fc.showSaveDialog(Hub.getMainWindow());
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				break;
+			file=fc.getSelectedFile();
     		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
     			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+			if(file.exists())
+			{
+				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+					Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+					Hub.string("saveModelTitle"),
+					JOptionPane.YES_NO_CANCEL_OPTION);
+				fcDone=choice!=JOptionPane.NO_OPTION;
+				if(choice!=JOptionPane.YES_OPTION)
+					retVal=JFileChooser.CANCEL_OPTION;
+			}
+		} while(!fcDone);
+    	if(retVal == JFileChooser.APPROVE_OPTION){
     		saveAutomaton(a,file);
     	}
 	}
@@ -168,14 +199,40 @@ public class FileOperations {
      * @param wd the description of the workspace
      */
     public static void saveWorkspaceAs(WorkspaceDescriptor wd){
-		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
+    	JFileChooser fc;
+    	if(wd.getFile()!=null)
+			fc=new JFileChooser(wd.getFile().getParent());
+		else
+			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
 		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
-    	int retVal = fc.showSaveDialog(Hub.getMainWindow());
-    	if(retVal == JFileChooser.APPROVE_OPTION){
-    		File file=fc.getSelectedFile();
+		if(wd.getFile()!=null)
+			fc.setSelectedFile(wd.getFile());
+		else
+			fc.setSelectedFile(new File(Hub.string("newAutomatonName")));
+		int retVal;
+		boolean fcDone=true;
+		File file=null;
+		do
+		{
+			retVal = fc.showSaveDialog(Hub.getMainWindow());
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				break;
+    		file=fc.getSelectedFile();
     		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.WORKSPACE_FILE_EXT))
     			file=new File(file.getPath()+"."+IOUtilities.WORKSPACE_FILE_EXT);
+			if(file.exists())
+			{
+				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+					Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+					Hub.string("saveWorkspaceTitle"),
+					JOptionPane.YES_NO_CANCEL_OPTION);
+				fcDone=choice!=JOptionPane.NO_OPTION;
+				if(choice!=JOptionPane.YES_OPTION)
+					retVal=JFileChooser.CANCEL_OPTION;
+			}
+		} while(!fcDone);
+    	if(retVal == JFileChooser.APPROVE_OPTION){
     		saveWorkspace(wd,file);
     	}
     }

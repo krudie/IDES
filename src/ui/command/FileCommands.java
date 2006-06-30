@@ -5,6 +5,7 @@ import io.fsa.ver1.FileOperations;
 
 import java.awt.Cursor;
 import java.io.File;
+import java.util.Iterator;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -24,6 +25,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 
 //<<<<<<< FileCommands.java
 import presentation.fsa.GraphExporter;
+import presentation.fsa.GraphModel;
 //=======
 import services.latex.LatexPrerenderer;
 
@@ -78,6 +80,26 @@ public class FileCommands {
 		}
 	}	
 	
+	public static class SaveAllAutomataCommand extends ActionCommand {
+		
+		public SaveAllAutomataCommand(){
+			super("saveall.automaton.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+			{
+				Automaton fsa=i.next().getAutomaton();
+				if(fsa!=null)
+					FileOperations.saveAutomaton(fsa,fsa.getFile());		
+			}
+			Hub.getMainWindow().setCursor(cursor);
+		}	
+	}
+	
 	public static class SaveAutomatonCommand extends ActionCommand {
 		
 		public SaveAutomatonCommand(){
@@ -121,8 +143,7 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			// TODO
-			JOptionPane.showMessageDialog(null, "Close automaton");
+			Hub.getWorkspace().removeFSAModel(Hub.getWorkspace().getActiveModelName());
 		}	
 	}
 		
@@ -178,6 +199,24 @@ public class FileCommands {
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
 				FileOperations.saveWorkspace(wd,wd.getFile());
+			}catch(IncompleteWorkspaceDescriptorException e){}
+			Hub.getMainWindow().setCursor(cursor);
+		}
+	}
+	
+	public static class SaveWorkspaceAsCommand extends ActionCommand {
+
+		public SaveWorkspaceAsCommand(){
+			super("saveas.workspace.command");
+		}
+		@Override
+		protected void handleExecute() {
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			try
+			{
+				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
+				FileOperations.saveWorkspaceAs(wd);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			Hub.getMainWindow().setCursor(cursor);
 		}

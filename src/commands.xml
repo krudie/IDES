@@ -30,16 +30,17 @@
          <text>_File</text>         
       </face>
       <members>  
-         <member command-id="new.workspace.command"/>
-         <member command-id="open.workspace.command"/>         
-         <member command-id="save.workspace.command"/>
-         <member command-id="saveas.workspace.command"/>
-         <separator/>
          <member command-id="new.automaton.command"/>
          <member command-id="open.automaton.command"/>
          <member command-id="save.automaton.command"/>
          <member command-id="saveas.automaton.command"/>
+         <member command-id="saveall.automaton.command"/>
          <member command-id="close.automaton.command"/>
+         <separator/>
+         <member command-id="new.workspace.command"/>
+         <member command-id="open.workspace.command"/>         
+         <member command-id="save.workspace.command"/>
+         <member command-id="saveas.workspace.command"/>
          <separator/>
          <member command-id="export.group" inline="true"/>
          <expansion-point separator="before"/>
@@ -101,8 +102,9 @@
          <text>Open _workspace</text>
          <icon type="classpath">images/icons/file_open_workspace.gif</icon>
          <description>Open a workspace of automata</description>
-         <accelerator key="W">
-         	<modifier value="control"/>
+         <accelerator key="O">
+	         <modifier value="control"/>
+  	         <modifier value="alt"/>
          </accelerator>
       </face>      
       <face name="toolbar" extends="[default]">
@@ -132,12 +134,30 @@
          <text/>
       </face>
     </command>    
-    
+    <command id="saveall.automaton.command">
+      <face>
+         <text>Save a_ll automata...</text>
+         <icon type="classpath">images/icons/file_saveall_automata.gif</icon>
+         <description>Save all automata...</description>         
+         <accelerator key="S">
+	         <modifier value="control"/>
+  	         <modifier value="shift"/>
+         </accelerator>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>
+            
     <command id="save.workspace.command">
       <face>
          <text>_Save workspace</text>
          <icon type="classpath">images/icons/file_save_workspace.gif</icon>                  
          <description>Save workspace settings  (@accelerator)</description>
+         <accelerator key="S">
+	         <modifier value="control"/>
+  	         <modifier value="alt"/>
+         </accelerator>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -146,7 +166,7 @@
     <command id="saveas.workspace.command">
       <face>
          <text>Sa_ve workspace as...</text>
-         <icon type="classpath">images/icons/file_saveas.gif</icon>
+         <icon type="classpath">images/icons/file_saveas_workspace.gif</icon>
          <description>Save workspace as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
@@ -156,7 +176,11 @@
     <command id="close.automaton.command">
       <face>
          <text>_Close automaton</text>
+         <icon type="classpath">images/icons/file_close_automaton.gif</icon>
          <description>Close automaton.</description>
+         <accelerator key="W">
+	         <modifier value="control"/>
+         </accelerator>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -235,9 +259,6 @@
          <text>Select</text>
          <icon type="classpath">images/icons/graphic_modify.gif</icon>
          <description>Select graph elements</description>
-         <accelerator key="e">
-            <modifier value="control"/>
-         </accelerator>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>

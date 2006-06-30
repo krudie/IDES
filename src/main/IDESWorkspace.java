@@ -7,8 +7,11 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -81,11 +84,29 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return systems.get(name);
 	}
 
+	public GraphModel getGraphModel(String name) {	
+		return graphs.get(name);
+	}
+
 	public boolean hasFSAModel(String name) {
 		return getFSAModel(name) != null;
 	}
 	
-	public void removeFSAModel(String name) {		
+	public void removeFSAModel(String name) {
+		GraphModel gm=getGraphModel(name);
+		if(gm==null)
+			return;
+		if(gm.isDirty())
+		{
+			int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+					Hub.string("savechangesAsk")+gm.getName(),
+					Hub.string("saveChangesTitle"),
+					JOptionPane.YES_NO_CANCEL_OPTION);
+			if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
+				return;
+			if(choice==JOptionPane.YES_OPTION)
+				FileOperations.saveAutomaton(gm.getAutomaton(),gm.getAutomaton().getFile());
+		}
 		if(getActiveModel()!=null)
 		{
 			((Automaton)getActiveModel()).detach(getDrawingBoard());
@@ -94,7 +115,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		metadata.remove(name);
 		graphs.remove(name);
 		if(!systems.isEmpty()){
-			activeModelName = systems.get(systems.values().iterator().next()).getName();
+			activeModelName = systems.get(systems.keySet().iterator().next()).getName();
 		}
 		else
 			activeModelName=null;
@@ -230,16 +251,27 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	public WorkspaceDescriptor getDescriptor() throws IncompleteWorkspaceDescriptorException
 	{
 		WorkspaceDescriptor wd=new WorkspaceDescriptor(myFile);
-		int counter=0;
-		for(Iterator i=getAutomata();i.hasNext();++counter)
+		HashSet<Automaton> unsavedModels=new HashSet<Automaton>();
+		for(Iterator i=getAutomata();i.hasNext();)
 		{
 			Automaton a=(Automaton)i.next();
 			if(a.getFile()==null)
+				unsavedModels.add(a);
+		}
+		if(!unsavedModels.isEmpty())
+		{
+			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
+			for(Automaton a:unsavedModels)
 			{
 				FileOperations.saveAutomatonAs(a);
 				if(a.getFile()==null)
 					throw new IncompleteWorkspaceDescriptorException();
 			}
+		}
+		int counter=0;
+		for(Iterator i=getAutomata();i.hasNext();++counter)
+		{
+			Automaton a=(Automaton)i.next();
 			wd.insertModel(a.getFile().getName(),counter);
 			if(a.getName().equals(getActiveModelName()))
 				wd.setSelectedModel(counter);
