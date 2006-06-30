@@ -33,13 +33,18 @@ public class FileCommands {
 	
 	public static class NewAutomatonCommand extends ActionCommand {
 		
+		/**
+		 * used to create unique automaton names in a session
+		 */
+		private static int automatonCount=0;
+		
 		public NewAutomatonCommand(){
 			super("new.automaton.command");
 		}
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
+			Automaton fsa = new Automaton(Hub.string("newAutomatonName")+"-"+automatonCount++);
 			fsa.setId(Hub.getWorkspace().getRandomId());
 			IDESWorkspace.instance().addFSAModel(fsa);
 		}	

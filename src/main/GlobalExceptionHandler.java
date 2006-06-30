@@ -5,6 +5,7 @@ package main;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -105,6 +106,8 @@ public class GlobalExceptionHandler extends JDialog implements UncaughtException
 		labelArea.setBackground(getBackground());
 		labelArea.setFont(new JLabel().getFont());
 		pack();
+		setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-getWidth())/2,
+				(Toolkit.getDefaultToolkit().getScreenSize().height-getHeight())/2);
 		setVisible(true);
 	}
 

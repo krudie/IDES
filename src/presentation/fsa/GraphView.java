@@ -16,6 +16,8 @@ public class GraphView extends JComponent implements Subscriber {
 
 	protected float scaleFactor = 0.25f;
 	
+	protected int width=100,height=100;
+	
 	/**
 	 * An object to handle synchronizing FSA model with the displayed graph.
 	 */
@@ -27,12 +29,13 @@ public class GraphView extends JComponent implements Subscriber {
 	protected GraphElement graph;
 	
 	public GraphView(){
-		setGraphModel(null);		
+		setGraphModel(null);
 	}
 	
 	public GraphView(GraphModel graphModel){
 		setGraphModel(graphModel);
 	}
+
 
 	public void paint(Graphics g) {
 		Graphics2D g2D = (Graphics2D) g;			
@@ -40,13 +43,14 @@ public class GraphView extends JComponent implements Subscriber {
 	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
 	    g2D.setStroke(GUISettings.instance().getWideStroke());
 
-	    Rectangle r=this.getBounds();
+	    Rectangle r=getBounds();
 	    g2D.setColor(Color.WHITE);
-	    g2D.fillRect(r.x,r.y,r.width,r.height);
+	    g2D.fillRect(0,0,r.width,r.height);
 	    g2D.scale(scaleFactor, scaleFactor);		
 	    //	TODO other transformation?
 
 	    graph.draw(g2D);	    
+
 	}
 
 	/**

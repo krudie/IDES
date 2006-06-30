@@ -10,6 +10,8 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
+import model.fsa.ver1.Automaton;
+
 import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
@@ -39,8 +41,6 @@ public class Main {
 	public static void main(String[] args) {
 		
 		//set up global exception handler
-		//GlobalExceptionHandler geh=new GlobalExceptionHandler();
-		
 		//Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 		
 		//load resource with strings used in the program
@@ -77,13 +77,16 @@ public class Main {
 //	    for(Object o:UIManager.getLookAndFeelDefaults().keySet())
 //	    	System.out.println(o.toString());
 	    
-		// TODO load UISettings and workspace in a thread
 		// show splash screen
 		Hub.setMainWindow(new MainWindow());
 
 		//setup stuff that needs the main window
-		LatexManager.init(); //TODO revamp the whole commands stuff 
+		LatexManager.init(); 
 		
+		Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
+		fsa.setId(Hub.getWorkspace().getRandomId());
+		Hub.getWorkspace().addFSAModel(fsa);
+
 		//go live!
 		Hub.getMainWindow().setVisible(true);
 	}

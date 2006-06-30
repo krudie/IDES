@@ -1,19 +1,25 @@
 package ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import main.Hub;
 import main.IDESWorkspace;
 import model.Subscriber;
 import presentation.fsa.GraphModel;
@@ -29,94 +35,75 @@ import presentation.fsa.GraphView;
 @SuppressWarnings("serial")
 public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
-	private GraphView activeView;	
-	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(Color.BLUE, 2);
-	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(Color.BLACK, 2);
+//	private GraphView activeView;
+	private HashSet<GraphView> graphViews=new HashSet<GraphView>();
+	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 2);
+	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 2);
+	
+	protected Box thumbnailBox;
+	
 	
 	public FilmStrip(){
-		IDESWorkspace.instance().attach(this);
-		setLayout(new GridLayout(1,6));
-		setAlignmentY(Component.LEFT_ALIGNMENT);
+		Hub.getWorkspace().attach(this);
+		thumbnailBox=Box.createHorizontalBox();
+		add(thumbnailBox);
+		//setLayout(new GridLayout(1,6));
+		//setAlignmentY(Component.LEFT_ALIGNMENT);
 		addMouseListener(this);
 	}
 	
 	public void remove(GraphView gv){
-		super.remove(gv);
-		if(activeView == gv){
-			activeView = null;
-		}
+		thumbnailBox.remove(gv);
+		graphViews.remove(gv);
+//		if(activeView.equals(gv)){
+//			activeView = null;
+//		}
 	}
 	
-	public GraphView getActiveView() {
-		return activeView;
-	}
+//	public GraphView getActiveView() {
+//		return activeView;
+//	}
 
 	public void update() {
+
 		// Get all graph models from the workspace and render them here,
-		// each in its own GraphView object.	
-		int panelWidth = getWidth()/6;
+		// each in its own GraphView object.
 		
-		// IDEA pad the empty spaces so frames don't expand to fill the filmstrip
+		HashSet<GraphModel> currentModels=new HashSet<GraphModel>();
+		for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		{
+			currentModels.add(i.next());
+		}
+		GraphModel activeModel=Hub.getWorkspace().getActiveGraphModel();
+
 		
-		// Detach each GraphView from its model before attaching to the new model.		
-		Component[] panels = this.getComponents();
-		int n= this.getComponentCount();
-		for(int i = 0; i < n; i++){		
-				JPanel p = (JPanel)panels[i];
-				GraphView gv = (GraphView)p.getComponent(0);
-				gv.setGraphModel(null);		
-		}		
-		
-		/*
-		 * Update the graphmodel for each view
-		 */
-		Iterator graphs = IDESWorkspace.instance().getGraphModels();
-		panels = this.getComponents();		
-		int i=0;
-		while(graphs.hasNext() && i < n) {
-			JPanel p = (JPanel)panels[i];
-			GraphView gv = (GraphView)p.getComponent(0);
-			GraphModel gm = (GraphModel)graphs.next();			
-			gv.setGraphModel(gm);			
-			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
-				activeView = gv;
-				p.setBorder(SELECTED_BORDER);
-			}else{
-				p.setBorder(PLAIN_BORDER);
-			}			
-			i++;
-			p.validate();
+		for(GraphView gv:graphViews)
+		{
+			if(!currentModels.contains(gv.getGraphModel()))
+				remove(gv);
+			currentModels.remove(gv.getGraphModel());
+		}
+		for(GraphModel graphModel:currentModels)
+		{
+			GraphView gv = new GraphView(graphModel);
+			gv.addMouseListener(this);
+			graphViews.add(gv);
 		}
 		
-		/*
-		 * More graphs than views
-		 */
-		while(graphs.hasNext()){
-			GraphModel gm = (GraphModel)graphs.next();
-			GraphView gv = new GraphView(gm);
-			JPanel p = new JPanel();
+		thumbnailBox.removeAll();
+		for(GraphView gv:graphViews)
+		{
+			JPanel p=new JPanel(new BorderLayout());
+			p.setPreferredSize(new Dimension(100,100));
 			p.add(gv);
-			p.setPreferredSize(new Dimension(panelWidth, panelWidth));
-			gv.setPreferredSize(new Dimension(panelWidth, panelWidth));
-			gv.setVisible(true);
-			p.setPreferredSize(gv.getPreferredSize());
-			if(gm == IDESWorkspace.instance().getActiveGraphModel()){
-				activeView = gv;
+			if(gv.getGraphModel().equals(activeModel))
 				p.setBorder(SELECTED_BORDER);
-			}else{
+			else
 				p.setBorder(PLAIN_BORDER);
-			}
-			add(p);
-			p.validate();
+			thumbnailBox.add(p);
+			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));
 		}
-		
-		/*
-		 * More views than graphs so remove them.
-		 */		
-		while(i < n){
-			remove(panels[i]);			
-			i++;
-		}
+		thumbnailBox.add(Box.createHorizontalGlue());
 		validate();
 	}
 
@@ -127,22 +114,11 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	 * @param arg0
 	 */
 	public void mouseClicked(MouseEvent arg0) {
-		try{
-			Component[] components = getComponents();			
-			if(components != null){
-				int n = components.length;
-				for(int i=0; i<n; i++){
-					((JComponent)components[i]).setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-				}				
-			}
-			JPanel p = (JPanel)arg0.getComponent().getComponentAt(arg0.getPoint());// (GraphView)arg0.getSource();
-			activeView = (GraphView)p.getComponent(0);
-			IDESWorkspace.instance().setActiveModel(activeView.getName());
-			IDESWorkspace.instance().notifyAllBut(this);
-			p.setBorder(SELECTED_BORDER);
-		}catch(Exception e){
-			JOptionPane.showMessageDialog(activeView, "Unable to select and highlight graph: " + e.getStackTrace(), "FilmStrip Error", JOptionPane.ERROR_MESSAGE);
-		}	
+		if(!(arg0.getSource() instanceof GraphView))
+			return;
+		GraphView gv=(GraphView)arg0.getSource();
+		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());
+		Hub.getWorkspace().notifyAllSubscribers();
 	}
 
 	public void mousePressed(MouseEvent arg0) {}
