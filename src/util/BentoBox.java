@@ -51,6 +51,12 @@ public class BentoBox
 		return floatNum.intValue();
 	}
 	
+	public static int convertDoubleToInt(double num)
+	{
+		Double doubleNum = new Double(num);
+		return doubleNum.intValue();
+	}
+	
 	/**
 	 * Replaces all occurences of "find" in "source" with "replace".
 	 * Moves left to right, so if "replace" contains "find" it will not 
