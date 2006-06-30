@@ -3,18 +3,14 @@ package presentation.fsa;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.CubicCurve2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import main.Main;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
 import presentation.Geometry;
@@ -131,7 +127,7 @@ public class Edge extends GraphElement {
 		}
 		
 		if(hasUncontrollableEvent())
-			g2d.setStroke(GraphicalLayout.WIDE_DASHED_STROKE);
+			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
 		else
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		g2d.draw(curve);   
@@ -395,7 +391,7 @@ public class Edge extends GraphElement {
 			}
 			
 			// Now for the label
-			if ((layout.getText() != null) && (layout.getText().length() > 0))
+			if ((layout.getText() != null) && (label.getLayout().getText().length() > 0))
 			{
 				exportString += "  " 
 					+ label.createExportString(selectionBox, exportType);

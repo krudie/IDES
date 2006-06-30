@@ -3,23 +3,15 @@ package presentation.fsa;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.BasicStroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import presentation.GraphicalLayout;
-import presentation.PresentationElement;
 import presentation.Geometry;
-import main.Hub;
 import model.fsa.FSAState;
-import model.fsa.ver1.State;
-import model.fsa.ver1.Transition;
 import util.BentoBox;
 
 /**
@@ -335,7 +327,7 @@ public class Node extends GraphElement {
 			}
 			
 			// Now for the label
-			if (layout.getText() != null)
+			if ((layout.getText() != null) && (label.getLayout().getText().length() > 0))
 			{
 				exportString += "  " 
 					+ label.createExportString(selectionBox, exportType);
