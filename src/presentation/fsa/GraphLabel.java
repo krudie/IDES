@@ -286,7 +286,8 @@ public class GraphLabel extends GraphElement {
 				}
 			else
 				rendered=null;
-		}	
+		}
+		setDirty(true);
 	}
 
 	/**
@@ -390,5 +391,6 @@ public class GraphLabel extends GraphElement {
 			layout.setLocation(location.x,location.y);
 		// SJW
 		bounds();
+		setDirty(true);
 	}
 }

@@ -127,10 +127,8 @@ public class EdgeLayout extends GraphicalLayout {
 			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
 		
 			norm = (float)Geometry.norm(base);
-			ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(norm * s1)));
-			ctrls[CTRL2] = Geometry.add(centre1, Geometry.scale(unitBase, (float)(2 * norm * s2)));
-			
-			setLocation(ctrls[P2].x, ctrls[P2].y);
+			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(norm * s1)));
+			ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(2 * norm * s2)));				
 			
 		}else{ // recompute the edge preserving the shape of the curve
 			// compute CTRL1
@@ -153,8 +151,7 @@ public class EdgeLayout extends GraphicalLayout {
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
 	 * 
 	 * @param s layout for source node
-	 * @param centre2 endpoint for the edge
-	 * @return array of 4 Bezier control points for a straight, directed edge from s to c2. 
+	 * @param centre2 endpoint for the edge	  
 	 */
 	public void computeCurve(NodeLayout s, Point2D.Float centre2){		
 		Point2D.Float centre1 = s.getLocation();
@@ -166,8 +163,12 @@ public class EdgeLayout extends GraphicalLayout {
 		float norm = (float)Geometry.norm(dir);
 		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
 		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
-		ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unit, (float)(norm * s1)));
-		ctrls[CTRL2] = Geometry.add(centre2, Geometry.scale(unit, (float)(-1 * norm * s2)));
+		
+		dir = Geometry.subtract(centre2, ctrls[P1]);
+		norm = (float)Geometry.norm(dir);
+		unit = Geometry.unit(dir);
+		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
+		ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(2 * norm * s2)));
 		ctrls[P2] = centre2;
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = midpoint(curve);
@@ -180,23 +181,25 @@ public class EdgeLayout extends GraphicalLayout {
 	 * Returns a cubic bezier curve representing a self-loop for the
 	 * given node layout.
 	 * 
-	 * @param s the node layout
-	 * @return a self-loop
+	 * @param s the node layout	 
 	 */
 	public void computeSelfLoop(NodeLayout s){
 		// Draw default loop above node and let node rotate it if necessary.
 		// direction vectors rotate (0, r) by pi/4 and -pi/4
-		angle1 = Math.PI/6;
-		angle2 = Math.PI/-6;
+		double angleScalar = 5 * s.getRadius() / NodeLayout.DEFAULT_RADIUS;  
+		angle1 = Math.PI/angleScalar;
+		angle2 = Math.PI/-angleScalar;
 		s1 = s2 = 0.0;
 		
-		Point2D.Float vert = new Point2D.Float(0, -1*s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
+		// FIXME make this work for arbitrary rotation (not just vertical).
+		Point2D.Float vert = new Point2D.Float(0, -s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
+		
 		Point2D.Float v1 = Geometry.rotate(vert, angle1);
 		Point2D.Float v2 = Geometry.rotate(vert, angle2);
 		ctrls[P1] = Geometry.add(s.getLocation(), v1);
 		ctrls[P2] = Geometry.add(s.getLocation(), v2);
-		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(v1, 3));
-		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(v2, 3));
+		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(Geometry.unit(v1), 3f*NodeLayout.DEFAULT_RADIUS));
+		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(Geometry.unit(v2), 3f*NodeLayout.DEFAULT_RADIUS));
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());		

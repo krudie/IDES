@@ -66,6 +66,7 @@ public class GraphElement implements PresentationElement {
 	public void insert(PresentationElement child, long index) {
 		// TODO - change the index to a String or Long and hash the children
 		children.add((int)index, child);
+		child.setParent(this);
 	}
 
 	public void insert(PresentationElement e) {
@@ -190,7 +191,7 @@ public class GraphElement implements PresentationElement {
 
 	public void setDirty(boolean d){
 		dirty = d;
-		if(parent != null){
+		if(parent != null && d){
 			parent.setDirty(d);
 		}
 	}
@@ -211,5 +212,6 @@ public class GraphElement implements PresentationElement {
 			PresentationElement child = (PresentationElement)c.next();
 			child.update();
 		}
+		setDirty(false);
 	}
 }
