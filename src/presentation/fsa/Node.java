@@ -75,8 +75,11 @@ public class Node extends GraphElement {
 		
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
 		
-		// Resize based on bounds of label.				
-		label = new GraphLabel(layout.getText(), centre);
+		// Resize based on bounds of label.
+		if(label==null)
+			label = new GraphLabel(layout.getText(), centre);
+		else
+			label.updateLayout(layout.getText(), centre);
 		Rectangle labelBounds = label.bounds();		
 		labelBounds.width += 2 * NodeLayout.RDIF;  // accommodate whitespace on either side of label text		
 				

@@ -217,7 +217,23 @@ public class GraphLabel extends GraphElement {
 	}
 
 	public void setText(String s){
-		layout.setText(s);		
+		if(s==null)
+			s="";
+		if(!s.equals(layout.getText()))
+		{
+			layout.setText(s);
+			if(LatexManager.isLatexEnabled())
+				try
+				{
+					render();
+				}catch(LatexRenderException e)
+				{
+					LatexManager.handleRenderingProblem();
+					rendered=null;
+				}
+			else
+				rendered=null;
+		}	
 	}
 
 	/**
@@ -313,5 +329,12 @@ public class GraphLabel extends GraphElement {
 		}
 
 		return exportString;
+	}
+	
+	public void updateLayout(String text, Point2D.Float location)
+	{
+		setText(text);
+		if(!location.equals(layout.getLocation()))
+			layout.setLocation(location.x,location.y);
 	}
 }
