@@ -130,8 +130,12 @@ public class Edge extends GraphElement {
 			handler.setVisible(false); // KLUGE to clean up after modify edge tool
 		}
 		
-		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+		if(hasUncontrollableEvent())
+			g2d.setStroke(GraphicalLayout.WIDE_DASHED_STROKE);
+		else
+			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		g2d.draw(curve);   
+		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 	    g2d.drawPolygon(arrow);
 	    g2d.fillPolygon(arrow);
 	    
@@ -440,5 +444,20 @@ public class Edge extends GraphElement {
 			return new Long(transitions.get(0).getId());
 		}
 		return null;
+	}
+	
+	public boolean hasUncontrollableEvent()
+	{
+		boolean hasUE=false;
+		for(Iterator<FSATransition> i=getTransitions();i.hasNext();)
+		{
+			FSATransition t=i.next();
+			if(t.getEvent()!=null&&!t.getEvent().isControllable())
+			{
+				hasUE=true;
+				break;
+			}
+		}
+		return hasUE;
 	}
 }
