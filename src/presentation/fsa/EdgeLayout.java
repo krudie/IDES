@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -26,6 +27,7 @@ public class EdgeLayout extends GraphicalLayout {
 	private boolean rigidTranslation = false; 
 	private ArrayList eventNames;
 	private Point2D.Float[] ctrls; // TODO Replace with CubicCurve2D
+	private CubicCurve2D curve;
 	private Point2D.Float labelOffset;
 		
 	// Compact representation of data required to maintain shape of edge while moving
@@ -41,12 +43,15 @@ public class EdgeLayout extends GraphicalLayout {
 		for(int i = 0; i<4; i++){
 			ctrls[i] = new Point2D.Float();			
 		}
+		curve = new CubicCurve2D.Float();
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
 	}
 	
 	public EdgeLayout(Point2D.Float[] bezierControls){
 		this.ctrls = bezierControls;
+		curve = new CubicCurve2D.Float();
+		curve.setCurve(bezierControls, 0);
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
 		updateAnglesAndScalars();
@@ -54,6 +59,8 @@ public class EdgeLayout extends GraphicalLayout {
 	
 	public EdgeLayout(Point2D.Float[] bezierControls, ArrayList eventNames){
 		this.ctrls = bezierControls;
+		curve = new CubicCurve2D.Float();
+		curve.setCurve(bezierControls, 0);
 		this.eventNames = eventNames;
 		labelOffset = new Point2D.Float(5,5);
 		updateAnglesAndScalars();
@@ -72,7 +79,8 @@ public class EdgeLayout extends GraphicalLayout {
 	 */
 	public EdgeLayout(NodeLayout n1, NodeLayout n2){
 		ctrls = new Point2D.Float[4];
-		computeCurve(n1, n2);
+		curve = new CubicCurve2D.Float();
+		computeCurve(n1, n2);		
 		eventNames = new ArrayList();
 		labelOffset = new Point2D.Float(5,5);
 		updateAnglesAndScalars();
@@ -134,7 +142,9 @@ public class EdgeLayout extends GraphicalLayout {
 			ctrls[CTRL2] = Geometry.add(ctrls[P1], v);			
 		}	
 		
-	
+		curve.setCurve(ctrls, 0);
+		Point2D midpoint = midpoint(curve);
+	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
 		setDirty(true);
 	}
 	
@@ -158,8 +168,10 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
 		ctrls[CTRL1] = Geometry.add(centre1, Geometry.scale(unit, (float)(norm * s1)));
 		ctrls[CTRL2] = Geometry.add(centre2, Geometry.scale(unit, (float)(-1 * norm * s2)));
-		ctrls[P2] = centre2;		
-		setLocation(ctrls[P2].x, ctrls[P2].y);
+		ctrls[P2] = centre2;
+		curve.setCurve(ctrls, 0);
+		Point2D midpoint = midpoint(curve);
+	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
 		setDirty(true);		
 	}
 	
@@ -185,8 +197,22 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[P2] = Geometry.add(s.getLocation(), v2);
 		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(v1, 3));
 		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(v2, 3));
-		setLocation(ctrls[P2].x, ctrls[P2].y);
+		curve.setCurve(ctrls, 0);
+		Point2D midpoint = midpoint(curve);
+	    setLocation((float)midpoint.getX(), (float)midpoint.getY());		
 		setDirty(true);
+	}
+	
+	
+
+	/**
+	 * @param curve2
+	 * @return the midpoint of curve2
+	 */
+	private Point2D midpoint(CubicCurve2D curve2) {
+		CubicCurve2D.Float left = new CubicCurve2D.Float(); 
+	    curve.subdivide(left, new CubicCurve2D.Float());	        
+	    return left.getP2();
 	}
 	
 	/**
@@ -204,10 +230,8 @@ public class EdgeLayout extends GraphicalLayout {
 		Point2D.Float p1c2 = Geometry.subtract(ctrls[CTRL2], ctrls[P1]);
 		s1 = Geometry.norm(p1c1)/n;
 		s2 = Geometry.norm(p1c2)/n;		
-		
 		angle1 = Geometry.angleFrom(p1p2, p1c1);
-		angle2 = Geometry.angleFrom(p1p2, p1c2);
-		setLocation(ctrls[P2].x, ctrls[P2].y);
+		angle2 = Geometry.angleFrom(p1p2, p1c2);		
 	}
 
 	/**
@@ -222,11 +246,7 @@ public class EdgeLayout extends GraphicalLayout {
 		updateAnglesAndScalars();
 		setDirty(true);
 	}
-	
-	public Point2D.Float[] getCurve() {
-		return ctrls;
-	}
-	
+		
 	public void setCurve(Point2D.Float[] bezierControls) {
 		this.ctrls = bezierControls;		
 		updateAnglesAndScalars();
@@ -251,6 +271,14 @@ public class EdgeLayout extends GraphicalLayout {
 		setDirty(true);
 	}
 
+	public Point2D.Float[] getCurve() {
+		return ctrls;
+	}
+	
+	public CubicCurve2D getCubicCurve() {
+		return curve;
+	}	
+	
 	public ArrayList getEventNames() {
 		return eventNames;
 	}

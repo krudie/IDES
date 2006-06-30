@@ -27,7 +27,6 @@ public class Edge extends GraphElement {
 	
 	private ArrayList<FSATransition> transitions; // the transitions that this edge represents	
 	private Node source, target;	
-	private CubicCurve2D curve;	// The bezier curve.
 	private EdgeHandler handler; // Handles for modifying control points/tangents to the curve.	
 	private ArrowHead arrow;
 	private GraphLabel label;		
@@ -42,8 +41,7 @@ public class Edge extends GraphElement {
 		layout.setEdge(this);
 		this.source = source;
 		target = null;
-		transitions = new ArrayList<FSATransition>();				
-		curve = new CubicCurve2D.Float();
+		transitions = new ArrayList<FSATransition>();		
 		arrow = new ArrowHead();
 		label = new GraphLabel("");		
 		insert(label);
@@ -62,8 +60,7 @@ public class Edge extends GraphElement {
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
 		this.layout = layout;
-		layout.setEdge(this);
-		curve = new CubicCurve2D.Float();
+		layout.setEdge(this);		
 		arrow = new ArrowHead();
 		label = new GraphLabel("");
 		insert(label);
@@ -86,8 +83,7 @@ public class Edge extends GraphElement {
 		transitions = new ArrayList<FSATransition>();
 		transitions.add(t);
 		this.layout = layout;
-		layout.setEdge(this);				
-		curve = new CubicCurve2D.Float();
+		layout.setEdge(this);		
 		arrow = new ArrowHead();
 		label = new GraphLabel("");		
 		insert(label);
@@ -125,13 +121,15 @@ public class Edge extends GraphElement {
 		}else{
 			handler.setVisible(false); // KLUGE to clean up after modify edge tool
 		}
-		
-		if(hasUncontrollableEvent())
+
+		if(hasUncontrollableEvent()){
 			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
-		else
+		}else{
+
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
-		g2d.draw(curve);   
-		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+		}		   
+
+		g2d.draw(((EdgeLayout)layout).getCubicCurve());   
 	    g2d.drawPolygon(arrow);
 	    g2d.fillPolygon(arrow);
 	    
@@ -141,11 +139,11 @@ public class Edge extends GraphElement {
 	}
 	
 	/**
-	 * Updates my visualization of curve, arrow and label.
+	 * Updates my visualization of ((EdgeLayout)layout).getCurve(), arrow and label.
 	 */
 	public void update() {		
 		super.update();
-		curve.setCurve((Point2D.Float[])((EdgeLayout)layout).getCurve(), 0);
+		CubicCurve2D curve = ((EdgeLayout)layout).getCubicCurve();
 		
 		if(!isSelected()){
 			handler.setVisible(false);
@@ -206,13 +204,13 @@ public class Edge extends GraphElement {
 	public boolean intersects(Point2D p){
 		if(isSelected() && handler.isVisible()){
 			// expand the intersection point to an 8 by 8 rectangle
-			return curve.intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
+			return ((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
 				arrow.intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
 				label.intersects(p) || 
 				handler.intersects(p) ;
 		}else{
 			// expand the intersection point to an 8 by 8 rectangle
-			boolean r = curve.intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
+			boolean r = ((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
 			boolean a = arrow.contains(p);
 			boolean l = label.intersects(p);			
 			return r || a || l ;
@@ -220,19 +218,19 @@ public class Edge extends GraphElement {
 	}
 	
 	public Point2D.Float getP1() {
-		return new Point2D.Float((float)curve.getX1(), (float)curve.getY1());
+		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getX1(), (float)((EdgeLayout)layout).getCubicCurve().getY1());
 	}
 
 	public Point2D.Float getP2() {
-		return new Point2D.Float((float)curve.getX2(), (float)curve.getY2());
+		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getX2(), (float)((EdgeLayout)layout).getCubicCurve().getY2());
 	}
 	
 	public Point2D.Float getCTRL1() {
-		return new Point2D.Float((float)curve.getCtrlX1(), (float)curve.getCtrlY1());		
+		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getCtrlX1(), (float)((EdgeLayout)layout).getCubicCurve().getCtrlY1());		
 	}
 
 	public Point2D.Float getCTRL2() {
-		return new Point2D.Float((float)curve.getCtrlX2(), (float)curve.getCtrlY2());		
+		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getCtrlX2(), (float)((EdgeLayout)layout).getCubicCurve().getCtrlY2());		
 	}
 
 	public Node getSource() {
@@ -256,6 +254,7 @@ public class Edge extends GraphElement {
 	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
 	 */
 	public Rectangle2D bounds(){				
+		CubicCurve2D curve = ((EdgeLayout)layout).getCubicCurve();
 		return new Rectangle2D.Float((float)Math.min(curve.getX1(), curve.getX2()),
 					  				(float)Math.min(curve.getY1(), curve.getY2()),					  				
 					  				(float)Math.abs(curve.getX2() - curve.getX1()), 
@@ -280,21 +279,22 @@ public class Edge extends GraphElement {
 		update();
 	}
 	
-	public void translate(float x, float y){
+	public void translate(float x, float y){		
 		EdgeLayout l = (EdgeLayout)layout;
-		if(l.isRigidTranslation()){
+		if(l.isRigidTranslation()){			
 		// Translate the whole curve assuming that its
 		// source and target nodes have been translated by the same displacement.
-		curve.setCurve(curve.getX1()+x, curve.getY1()+y,
-						curve.getCtrlX1()+x, curve.getCtrlY1()+y,
-						curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
-						curve.getX2(), curve.getY2()+y);
-		l.setCurve(curve.getP1(), curve.getCtrlP1(), curve.getCtrlP2(), curve.getP2());		
-		l.setRigidTranslation(false);
-		
+			CubicCurve2D curve = l.getCubicCurve();
+			curve.setCurve(curve.getX1()+x, curve.getY1()+y,
+					curve.getCtrlX1()+x, curve.getCtrlY1()+y,
+					curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
+					curve.getX2(), curve.getY2()+y);				
+			l.setRigidTranslation(false);
+			super.translate(x, y);
 		// reset the control points in the layout object
 		}else{
 			l.computeCurve(source.getLayout(), target.getLayout());
+			// FIXME update location of label 
 		}		
 	}
 

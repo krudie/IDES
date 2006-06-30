@@ -253,11 +253,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		// that sets highlight(boolean) on all of its elements.
 		if(graphModel != null){
 			currentSelection = graphModel.getElementsContainedBy(rectangle);
-			currentSelection.setSelected(true);	
-			// DEBUG
-			//System.err.println(selectionArea.getSize());
-			// snap to size of smallest bounding box
-			//rectangle.setSize((int)currentSelection.bounds().getWidth(), (int)currentSelection.bounds().getHeight());
+			currentSelection.setSelected(true);			
 		}
 	}
 

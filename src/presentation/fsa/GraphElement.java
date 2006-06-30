@@ -177,8 +177,7 @@ public class GraphElement implements PresentationElement {
 			PresentationElement child = (PresentationElement)c.next();
 			child.translate(x,y);
 		}
-		setDirty(true);	
-		
+		setDirty(true);		
 	}
 
 	public void setLocation(Point2D p) {

@@ -277,7 +277,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
 		fsa.add(t);
 		fsa.notifyAllBut(this);
-		edges.put(new Long(t.getId()), e);
+		edges.put(e.getId(), e);
+		edgeLabels.put(e.getId(), e.getLabel());
 		notifyAllSubscribers();
 	}	
 	
@@ -298,7 +299,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		Edge e = new Edge(t, n1, n2, layout);		
 		n1.insert(e);
 		n2.insert(e);
-		edges.put(new Long(t.getId()), e);		
+		edges.put(e.getId(), e);		
+		edgeLabels.put(e.getId(), e.getLabel());
 		notifyAllSubscribers();
 	}
 
@@ -306,13 +308,14 @@ public class GraphModel extends Publisher implements Subscriber {
 		Iterator children = selection.children();
 		while(children.hasNext()){
 			PresentationElement el = (PresentationElement)children.next();
-			try{
-				saveMovement((Node)el);			
-			}catch(ClassCastException cce){
-				// Not a node; keep going
-				// TODO what if it is a label??
-				//saveMovement((GraphLabel)el);
-			}
+			if(edgeLabels.containsValue(el)){
+				saveMovement((GraphLabel)el);
+			}else if(nodes.containsValue(el)){
+				saveMovement((Node)el);
+			}else{
+				// DEBUG
+				System.out.println("DEBUG Don't know how to move a " + el.getClass());
+			}		
 		}
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
@@ -331,7 +334,7 @@ public class GraphModel extends Publisher implements Subscriber {
 				Iterator<FSATransition> t = edge.getTransitions();
 				while(t.hasNext()){
 					metaData.setLayoutData(t.next(), layout);
-				}		
+				}
 			}catch(ClassCastException cce){}			
 		}else{ // TODO Move free label, tell MetaData
 			
@@ -343,11 +346,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		State s = (State)fsa.getState(node.getId());
 		metaData.setLayoutData(s, node.getLayout());
 		// for all edges adjacent to node, save layout
-		Iterator children = node.children();
-		while(children.hasNext()){
-			// FIXME not all children are Edges (GraphLabels)
-			Edge e = (Edge)children.next();
-			saveMovement(e);
+		Iterator<Edge> adjEdges = node.adjacentEdges();
+		while(adjEdges.hasNext()){			
+			saveMovement((Edge)adjEdges.next());
 		}
 	}
 	
@@ -435,7 +436,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	/**
-	 * The following steps should be done by the text tool in the context 
+	 * TODO The following steps should be done by the text tool in the context 
 	 * of labelling an edge.
 	 * 
 	 * If <code>text</code> corresponds to an event in the local alphabet find the event.
@@ -445,9 +446,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * 
 	 * @param text an event symbol
 	 */
-	public void assignEvent(Event event, Edge edge){	
+	public void assignEvent(Event event, Edge edge){}	
 		
-	}
 	
 	/**
 	 * Assigns the set of events to <code>edge</code>, removes any events from edge
@@ -465,7 +465,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		// collection while iterating over it
 		ArrayList<Transition> toAdd = new ArrayList<Transition>();
 		ArrayList<Transition> toRemove = new ArrayList<Transition>();
-
+		
 		// reset the EdgeLayout's event labels
 		while(trans.hasNext()){
 			metaData.removeFromLayout(trans.next(), (EdgeLayout)edge.getLayout());
@@ -577,6 +577,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 		e.getSource().remove(e);
 		e.getTarget().remove(e);
+		edgeLabels.remove(e.getId());
 		edges.remove(e.getId());
 		fsa.notifyAllBut(this);
 		notifyAllSubscribers();
@@ -659,10 +660,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			}
 		}
 		
-		////////////////////////////////////////////
 		
-		// Should this only be done when in ShowAllEdgeLabels mode or something?
-		// It is handy to be able to select an edge by its label... hmmmm.
 		GraphLabel gLabel;
 		iter = edgeLabels.entrySet().iterator();
 		while(iter.hasNext()){			
@@ -672,8 +670,6 @@ public class GraphModel extends Publisher implements Subscriber {
 				return gLabel;				
 			}
 		}
-		
-		////////////////////////////////////////////
 		
 		Edge e;
 		// check for intersection with edges

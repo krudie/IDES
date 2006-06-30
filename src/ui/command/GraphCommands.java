@@ -183,8 +183,8 @@ public class GraphCommands {
 			}else{
 				// finalize movement of current selection in graph model
 				context.getGraphModel().saveMovement(context.getCurrentSelection());
-				// TODO create an UndoableEdit object using
-				// copy of currentSelection and return it.
+				// TODO create an UndoableEdit object using displacement and 
+				// copy of currentSelection.
 
 				// TODO return undoableEdit object
 				return null;

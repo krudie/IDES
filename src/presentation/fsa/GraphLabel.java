@@ -107,17 +107,14 @@ public class GraphLabel extends GraphElement {
 		else
 		{			
 			if(visible){
-				if(selected){
-					drawBorderAndTether(g);
-					
+				if(selected && !getText().equals("") ){ //&& parent != null && !parent.isSelected()){
+					drawBorderAndTether(g);					
 				}else if(highlighted){
 					g.setColor(layout.getHighlightColor());
 				}else{
 					g.setColor(layout.getColor());
-				}				
-		
-				drawText(g);
-				
+				}		
+				drawText(g);				
 			}
 		}
 	}
@@ -131,12 +128,14 @@ public class GraphLabel extends GraphElement {
 	 * @param g
 	 */
 	private void drawText(Graphics g) {
+		//////////////////////////////////////////////////////////////
 		// TODO compute bounds and drawing string with multiple lines
 		String[] lines = getText().split("\n");
 		if(lines.length > 1){
 			// multiple line text
 			
 		}
+		//////////////////////////////////////////////////////////////
 		
 		// Compute bounds
 		g.setFont(font);
@@ -181,7 +180,7 @@ public class GraphLabel extends GraphElement {
 	/**
 	 * @param g
 	 */
-	private void drawBorderAndTether(Graphics g) {
+	private void drawBorderAndTether(Graphics g) {		
 		g.setColor(layout.getSelectionColor());
 		Rectangle r = bounds();
 		r.width *= 1.1;
@@ -189,12 +188,14 @@ public class GraphLabel extends GraphElement {
 		Stroke s = ((Graphics2D)g).getStroke();
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
 		((Graphics2D)g).draw(bounds());
-		if(parent != null){  // draw the tether
-			g.drawLine((int)layout.getLocation().x, 
-						(int)layout.getLocation().y, 
-						(int)parent.getLayout().getLocation().x, 
-						(int)parent.getLayout().getLocation().y);
-		}
+		
+		// FIXME not showing
+//		if(parent != null ){  // draw the tether
+//			g.drawLine((int)layout.getLocation().x, 
+//						(int)layout.getLocation().y, 
+//						(int)parent.getLayout().getLocation().x, 
+//						(int)parent.getLayout().getLocation().y);
+//		}
 		((Graphics2D)g).setStroke(s);		
 	}
 

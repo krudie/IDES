@@ -16,8 +16,6 @@ public class MovementTool extends DrawingTool {
 
 	public MovementTool(GraphDrawingView context){
 		this.context = context;
-//		Toolkit toolkit = Toolkit.getDefaultToolkit();
-//		this.cursor = toolkit.createCustomCursor(toolkit.createImage("src/images/cursors/hand.gif"), new Point(5,5), "MOVE_NODES_OR_EDGES"); //new Cursor(Cursor.MOVE_CURSOR);
 		this.cursor = new Cursor(Cursor.MOVE_CURSOR);
 	}
 	
@@ -71,8 +69,7 @@ public class MovementTool extends DrawingTool {
 		start = null;
 		prev = null;
 		context.clearCurrentSelection();
-		context.repaint();
-		//context.setTool(GraphDrawingView.SELECT);
+		context.repaint();		
 	}
 
 	@Override
@@ -91,15 +88,9 @@ public class MovementTool extends DrawingTool {
 	public void handleMouseClicked(MouseEvent me) {}
 
 	@Override
-	public void handleKeyPressed(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void handleKeyPressed(KeyEvent ke) {}
 
 	@Override
-	public void handleKeyReleased(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}	
-
+	public void handleKeyReleased(KeyEvent ke) {}
+	
 }

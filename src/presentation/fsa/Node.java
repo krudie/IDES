@@ -68,13 +68,14 @@ public class Node extends GraphElement {
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
 		
 		// Resize based on bounds of label.
-		if(label==null)
+		if(label==null){
 			label = new GraphLabel(layout.getText(), centre);
-		else
+		}else{
 			label.updateLayout(layout.getText(), centre);
+		}
 		Rectangle labelBounds = label.bounds();		
 		labelBounds.width += 2 * NodeLayout.RDIF;  // accommodate whitespace on either side of label text		
-				
+		
 		// compute new radius
 		float radius;
 		double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();		

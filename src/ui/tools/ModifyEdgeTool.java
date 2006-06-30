@@ -111,8 +111,8 @@ public class ModifyEdgeTool extends DrawingTool {
 	public void handleMouseDragged(MouseEvent m) { 
 		if(dragging){			
 			// set the selected control point to the current location
-			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
-			// repaint the context
+			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);
+			//((EdgeLayout)edge.getLayout()).computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());			
 			context.repaint();			
 		}
 	}

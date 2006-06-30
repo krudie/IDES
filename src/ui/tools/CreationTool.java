@@ -39,16 +39,16 @@ public class CreationTool extends DrawingTool {
 	}
 	
 	@Override
-	public void handleMouseClicked(MouseEvent me) {
-		context.clearCurrentSelection();
-		CreateCommand cmd = null;
-		Node n = null;
+	public void handleMouseClicked(MouseEvent me) {	
 		
 		if(aborted){
 			aborted = false;
 			return;
 		}		
 
+		context.clearCurrentSelection();
+		CreateCommand cmd = null;
+		Node n = null;
 		if(context.updateCurrentSelection(me.getPoint())){
 			try{		
 				n = (Node)context.getCurrentSelection().child(0);
@@ -124,10 +124,9 @@ public class CreationTool extends DrawingTool {
 			context.getGraphModel().abortEdge(edge);
 			drawingEdge = false;			
 		}
-		aborted = true;
+		aborted = true;		
 		context.repaint();
-		super.handleRightClick(me);
-		
+		super.handleRightClick(me);		
 	}
 	
 	@Override

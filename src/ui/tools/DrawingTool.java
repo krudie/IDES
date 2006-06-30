@@ -34,13 +34,9 @@ public abstract class DrawingTool {
 		// get intersected element and display appropriate popup menu
 		context.clearCurrentSelection();
 		if(context.updateCurrentSelection(m.getPoint())){
-			SelectionGroup g = context.getCurrentSelection();
-			
-			// FIXME this is not triggering the Edge popup
+			SelectionGroup g = context.getCurrentSelection();			
 			((GraphElement)g.child(0)).showPopup(context);			
 		}
-		// DEBUG
-		// JOptionPane.showMessageDialog(context, "Right clicked!");		 
 	}
 	
 	public abstract void handleMouseClicked(MouseEvent m);
