@@ -1,7 +1,6 @@
 package presentation.fsa;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 
 import presentation.Geometry;

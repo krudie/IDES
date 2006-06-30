@@ -1,15 +1,9 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
-import java.io.File;
-import java.util.Collection;
+//import java.io.File;
 
 import main.IDESWorkspace;
-import model.fsa.FSAState;
-import presentation.GraphicalLayout;
 
 
 /**

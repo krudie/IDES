@@ -3,24 +3,16 @@
  */
 package io.fsa.ver1;
 
-import java.io.File;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import model.fsa.FSAEvent;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
-import model.fsa.ver1.Event;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 
-import io.AbstractFileParser;
 import io.AbstractParser;
-import io.ParsingToolbox;
 
 /**
  * 

@@ -1,11 +1,8 @@
 package services.latex;
 
-import java.awt.Cursor;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import javax.swing.SwingUtilities;
 
 import presentation.fsa.Edge;
 import presentation.fsa.GraphLabel;

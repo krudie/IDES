@@ -1,12 +1,10 @@
 package ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -19,7 +17,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,7 +28,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
 import main.Hub;
-import main.IDESWorkspace;
 import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
