@@ -1,10 +1,19 @@
 package services.cache;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
+
 import presentation.fsa.GraphLabel;
 
+import services.latex.LatexManager;
+import services.latex.LatexRenderException;
+import services.latex.LatexUtils;
 import services.latex.Renderer;
 
 import com.opensymphony.oscache.base.CacheEntry;
@@ -60,7 +69,14 @@ public class Cache {
 		cacheConfig.put("cache.persistence.class","com.opensymphony.oscache.plugins.diskpersistence.HashDiskPersistenceListener");
 		cacheConfig.put("cache.path",CACHE_DIR);
 		cache=new com.opensymphony.oscache.general.GeneralCacheAdministrator(cacheConfig);
-		cache.putInCache(GraphLabel.class.getName(),new byte[0]);
+		//insert empty LaTeX label
+		try
+		{
+			cache.putInCache(GraphLabel.class.getName(),LatexUtils.labelStringToImageBytes(""));
+		}catch(LatexRenderException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

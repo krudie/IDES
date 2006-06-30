@@ -30,6 +30,7 @@ import services.cache.Cache;
 import services.cache.NotInCacheException;
 import services.latex.LatexManager;
 import services.latex.LatexRenderException;
+import services.latex.LatexUtils;
 import util.BentoBox;
 
 /**
@@ -171,50 +172,26 @@ public class GraphLabel extends GraphElement {
 	public void render() throws LatexRenderException
 	{
 		dirty=true;
-		if(layout.getText()==null||"".equals(layout.getText()))
+		String label=layout.getText();
+		if(label==null)
+			label="";
+		byte[] data=null;
+		try
 		{
-			rendered=LatexManager.getRenderer().getEmptyImage();
-			return;
+			data=(byte[])Cache.get(getClass().getName()+label);
+		}catch (NotInCacheException e)
+		{
+			data=LatexUtils.labelStringToImageBytes(label);
+			Cache.put(getClass().getName()+label,data);
 		}
 		try
 		{
-			byte[] data=(byte[])Cache.get(getClass().getName()+layout.getText());
-			rendered=ImageIO.read(new ByteArrayInputStream(data));
-		}catch (NotInCacheException e)
-		{
-			try
-			{
-				BufferedImage image=LatexManager.getRenderer().renderString(layout.getText());
-				ColorConvertOp conv=new ColorConvertOp(image.getColorModel().getColorSpace(),ColorModel.getRGBdefault().getColorSpace(),null);
-				rendered=conv.createCompatibleDestImage(image,ColorModel.getRGBdefault());
-				conv.filter(image,rendered);
-				ByteArrayOutputStream pngStream=new ByteArrayOutputStream();
-				ImageIO.write(rendered,"png",pngStream);
-				pngStream.close();
-				Cache.put(getClass().getName()+layout.getText(),pngStream.toByteArray());
-			}
-			catch(IOException ex)
-			{
-				throw new RuntimeException(ex);
-			}
+			rendered=ImageIO.read(new ByteArrayInputStream(data));			
 		}
 		catch(IOException e)
 		{
 			throw new RuntimeException(e);
 		}
-		//adjust the transparency of the label
-		WritableRaster raster=rendered.getAlphaRaster();
-		Color bg=Hub.getMainWindow().getBackground();
-		int bgShade=(bg.getRed()+bg.getGreen()+bg.getBlue())/3;
-		//System.out.println(bgShade);
-		for(int i=0;i<raster.getWidth();++i)
-			for(int j=0;j<raster.getHeight();++j)
-			{
-				if(rendered.getRaster().getSample(i,j,0)>bgShade)
-					raster.setSample(i,j,0,0);
-				else
-					raster.setSample(i,j,0,255);
-			}
 	}
 	
 	/**

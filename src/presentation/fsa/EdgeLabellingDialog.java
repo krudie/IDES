@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -311,7 +313,6 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			}
 			}
 		);
-		//listAvailableEvents.setPreferredSize(new Dimension(150, 300));	
 		JScrollPane pane = new JScrollPane(listAvailableEvents);
 		pane.setPreferredSize(new Dimension(200, 300));
 		pane.setBorder(BorderFactory.createTitledBorder("Available"));
@@ -321,10 +322,13 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		
 	    buttonAdd = new JButton(">>");
 	    buttonAdd.setToolTipText("Assign events to edge");
-	    buttonAdd.addActionListener(new AddButtonListener());
+	    AddButtonListener abl=new AddButtonListener();
+	    buttonAdd.addActionListener(abl);
+	    listAvailableEvents.addMouseListener(abl);
 		buttonRemove = new JButton("<<");		
 		buttonRemove.setToolTipText("Remove events from edge");
-		buttonRemove.addActionListener(new RemoveButtonListener());
+		RemoveButtonListener rbl=new RemoveButtonListener();
+		buttonRemove.addActionListener(rbl);
 		JPanel pCentre = new JPanel();
 		BoxLayout boxLayout = new BoxLayout(pCentre, BoxLayout.Y_AXIS);
 		pCentre.setLayout(boxLayout);
@@ -358,7 +362,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			}
 			
 		});
-		//listAssignedEvents.setPreferredSize(new Dimension(150, 300));		
+		listAssignedEvents.addMouseListener(rbl);
 		pane = new JScrollPane(listAssignedEvents);
 		pane.setPreferredSize(new Dimension(200, 300));
 		pane.setBorder(BorderFactory.createTitledBorder("Assigned to Edge"));
@@ -559,7 +563,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	 * @author Squirrel
 	 *
 	 */
-	private class AddButtonListener implements ActionListener{
+	private class AddButtonListener extends MouseAdapter implements ActionListener{
 
 		/* (non-Javadoc)
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -571,7 +575,13 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 				listAssignedEvents.addElement((Comparable)selected);
 				listAvailableEvents.removeElement(selected);
 			}	
-		}		
+		}
+		
+		public void mouseClicked(MouseEvent e)
+		{
+			if(e.getClickCount()>1&&!listAvailableEvents.isSelectionEmpty())
+				actionPerformed(new ActionEvent(listAvailableEvents,0,""));
+		}
 	}
 
 	/**
@@ -580,7 +590,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	 * @author Squirrel
 	 *
 	 */
-	private class RemoveButtonListener implements ActionListener{
+	private class RemoveButtonListener extends MouseAdapter implements ActionListener{
 
 		/* (non-Javadoc)
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -591,6 +601,11 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 				listAssignedEvents.removeElement(selected);
 				listAvailableEvents.insertElement((Comparable)selected);
 			}	
+		}
+		public void mouseClicked(MouseEvent e)
+		{
+			if(e.getClickCount()>1&&!listAssignedEvents.isSelectionEmpty())
+				actionPerformed(new ActionEvent(listAssignedEvents,0,""));
 		}
 	}
 

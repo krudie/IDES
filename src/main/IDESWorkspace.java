@@ -4,6 +4,7 @@ import io.ParsingToolbox;
 import io.PrintUtilities;
 import io.fsa.ver1.FileOperations;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.io.File;
@@ -265,10 +266,18 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	}
 	
 	/**
-	 * @return the top-left corner fo the drawing area
+	 * @return the top-left corner of the drawing area
 	 */
 	public Point getDrawingBoardDisplacement()
 	{
 		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardDisplacement();
+	}
+
+	/**
+	 * @return the background color of the drawing area
+	 */
+	public Color getDrawingBoardBGColor()
+	{
+		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardBGColor();
 	}
 }

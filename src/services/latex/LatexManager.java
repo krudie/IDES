@@ -26,11 +26,6 @@ public class LatexManager {
 	{
 	}
 	
-	public Object clone()
-	{
-	    throw new RuntimeException("Cloning of "+this.getClass().toString()+" not supported."); 
-	}
-
 	/**
 	 * The LaTeX renderer to be used for rendering throughout the program.
 	 */

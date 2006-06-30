@@ -19,11 +19,7 @@ public class Main {
 	private Main()
 	{
 	}
-	
-	public Object clone()
-	{
-	    throw new RuntimeException("Cloning of "+this.getClass().toString()+" not supported."); 
-	}
+
 	
 	/**
 	 * Handles stuff that has to be done before the application terminates.

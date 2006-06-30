@@ -33,11 +33,6 @@ public class Hub {
 	private Hub()
 	{
 	}
-	
-	public Object clone()
-	{
-	    throw new RuntimeException("Cloning of "+this.getClass().toString()+" not supported."); 
-	}
 
 	/**
 	 * Contains (key,value) pairs which are stored in the settings file

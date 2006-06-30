@@ -6,6 +6,7 @@ package ui;
 import io.fsa.ver1.FileOperations;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Point;
@@ -341,5 +342,13 @@ public class MainWindow extends JFrame implements Subscriber {
 	public Point getDrawingBoardDisplacement()
 	{
 		return drawingBoard.getLocationOnScreen();
+	}
+	
+	/**
+	 * @return background color of drawing board
+	 */
+	public Color getDrawingBoardBGColor()
+	{
+		return drawingBoard.getBackground();
 	}
 }
