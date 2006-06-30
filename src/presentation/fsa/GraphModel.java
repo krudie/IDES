@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Collection;
 
 import main.Hub;
 import main.IDESWorkspace;
@@ -22,9 +21,9 @@ import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.Geometry;
 import presentation.PresentationElement;
-import presentation.fsa.GraphExporter.ExportBounds;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
+import util.BentoBox;
 
 /**
  * Mediates between the Automaton model and the visual representation.
@@ -770,8 +769,91 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	/**
-	 * @return the smallest rectangle that containing all elements of the graph
+	 * This method is reponsible for calculcating the size of the 
+	 * bounding box necessary for the entire graph.  It goes
+	 * through every node, edge and label and uses the union of
+	 * their bounds to create the box.
+	 * 
+	 * @param boolean Whether you want the box to begin at (0, 0) 
+	 *                (true) or tightly bound around the graph (false) 
+	 * @return Rectangle The bounding box for the graph
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 * @author Lenko Grigorov
 	 */
+	public Rectangle getBounds(boolean initAtZeroZero)
+	{
+		Rectangle graphBounds = initAtZeroZero ? 
+			new Rectangle() : getElementBounds();
+
+		FSAState nodeState = null;
+		
+		// Start with the nodes
+		for (Node graphNode : nodes.values())
+		{
+			// If the node is initial, take into account the initial
+			// arrow
+			nodeState = graphNode.getState();
+			if (nodeState.isInitial())
+			{		
+				graphBounds = graphBounds.union(
+					graphNode.getInitialArrowBounds());
+			}
+
+			graphBounds = graphBounds.union(graphNode.getSquareBounds());
+		}
+
+		for (Edge graphEdge : edges.values())
+		{
+			graphBounds = graphBounds.union(graphEdge.getCurveBounds());
+		}
+		
+		for (GraphLabel edgeLabel : edgeLabels.values())
+		{
+			graphBounds = graphBounds.union(edgeLabel.bounds());
+		}
+
+		for (GraphLabel freeLabel : freeLabels.values())
+		{
+			graphBounds = graphBounds.union(freeLabel.bounds());
+		}
+		
+		return graphBounds;
+	}
+	
+	/**
+	 * TODO: Comment!
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	private Rectangle getElementBounds()
+	{
+		for (Node graphNode : nodes.values())
+		{
+			return graphNode.getSquareBounds();
+		}
+
+		for (Edge graphEdge : edges.values())
+		{
+			return graphEdge.getCurveBounds();
+		}
+
+		for (GraphLabel freeLabel : freeLabels.values())
+		{
+			return freeLabel.bounds();
+		}
+		
+		return new Rectangle();
+	}
+	
+	/**
+	 * A mid-version of getBounds()
+	 * 
+	 * @return the smallest rectangle that containing all elements of the graph
+	 * 
+	 * @author Lenko Grigorov
+	 */
+	/*
 	public Rectangle getBounds()
 	{
 		Rectangle r=new Rectangle();
@@ -798,6 +880,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		
 		return r;
 	}
+	*/
 }
 
 

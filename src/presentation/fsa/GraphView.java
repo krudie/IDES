@@ -64,7 +64,7 @@ public class GraphView extends JComponent implements Subscriber {
 	public void update() {
 		if(scaleToFit&&getGraphModel()!=null&&getParent()!=null)
 		{
-			Rectangle r=getGraphModel().getBounds();
+			Rectangle r=getGraphModel().getBounds(true);
 			float xScale=(float)getParent().getBounds().getWidth()/(float)(r.width+r.x);
 			float yScale=(float)getParent().getBounds().getHeight()/(float)(r.height+r.y);
 			setScaleFactor(Math.min(xScale,yScale));

@@ -285,15 +285,15 @@ public class Node extends GraphElement {
 		String exportString = "";
 		
 		NodeLayout nodeLayout = getLayout();
+		Rectangle squareBounds = getSquareBounds();
 		Point2D.Float nodeLocation = nodeLayout.getLocation();
-		float radius = nodeLayout.getRadius();
+		int radius = BentoBox.convertFloatToInt(nodeLayout.getRadius());
 		Rectangle initialArrowBounds = null;
 
 		// Make sure this node is contained within the selection box
-		if (! selectionBox.contains(nodeLocation.x - radius, 
-			nodeLocation.y - radius, radius * 2, radius * 2))
+		if (! selectionBox.contains(squareBounds))
 		{
-			System.out.println("Node " + nodeLocation 
+			System.out.println("Node " + squareBounds 
 				+ " (Radius " + radius * 2
 				+ ") outside bounds " + selectionBox);
 			return exportString;
@@ -392,5 +392,23 @@ public class Node extends GraphElement {
 	 */
 	public float getRadius() {	
 		return ((NodeLayout)layout).getRadius();
+	}
+	
+	/**
+	 * TODO: Comment!
+	 * 
+	 * @author Sarah-Jane Whittaker
+	 */
+	public Rectangle getSquareBounds()
+	{
+		Point2D.Float nodeLocation = layout.getLocation();
+		float radius = getRadius();
+		
+		// Node location is at the centre of the circle
+		return new Rectangle(
+			BentoBox.convertFloatToInt(nodeLocation.x - radius),
+			BentoBox.convertFloatToInt(nodeLocation.y - radius), 
+			BentoBox.convertFloatToInt(radius * 2), 
+			BentoBox.convertFloatToInt(radius * 2));
 	}
 }

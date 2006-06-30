@@ -185,7 +185,13 @@ public class GraphLabel extends GraphElement {
 			{
 				bounds.height=10;
 				bounds.width=10;
-			}					
+			}
+			
+			// x and y bounds info added by SJW
+			bounds.x = BentoBox.convertFloatToInt(
+					layout.getLocation().x - (bounds.width / 2));
+			bounds.y = BentoBox.convertFloatToInt(
+					layout.getLocation().y - (bounds.height / 2));
 		}
 		else{
 			//Lenko writes: TODO update bounds on label change
@@ -294,7 +300,6 @@ public class GraphLabel extends GraphElement {
 	{
 		String exportString = "";
 		GraphicalLayout labelLayout = getLayout();
-		Point2D labelLocation = labelLayout.getLocation();
 		Rectangle labelBounds = bounds();
 		
 		// This is taken from Mike Wood - thanks, Mike!!!
@@ -318,8 +323,8 @@ public class GraphLabel extends GraphElement {
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
 			exportString = "  \\rput(" 
-				+ (labelLocation.getX() - selectionBox.x) + "," 
-				+ (selectionBox.y + selectionBox.height - labelLocation.getY()) + "){\\parbox{" 
+				+ (labelBounds.x - selectionBox.x) + "," 
+				+ (selectionBox.y + selectionBox.height - labelBounds.y) + "){\\parbox{" 
 				+ labelBounds.width + "pt}{\\begin{center}" 
 				+ safeLabel + "\\end{center}}}\n";		
 		}

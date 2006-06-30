@@ -23,62 +23,6 @@ import presentation.GraphicalLayout;
 public class GraphExporter 
 {
 	///////////////////////////////////////////////////////////////////
-	// Internal Classes
-	///////////////////////////////////////////////////////////////////
-	/**
-	 * This class is used to store boundary and offset information 
-	 * about a graph.  It can also "test" its own values against any
-	 * given and adjust itself to include new points.
-	 */
-	public static class ExportBounds extends Rectangle
-	{
-		public ExportBounds()
-		{
-			x = Integer.MAX_VALUE;
-			y = Integer.MAX_VALUE;
-			width = 0;
-			height = 0;
-		}
-		
-		public void checkWidth(int testWidth)
-		{	width = (width > testWidth) ? width : testWidth;	}
-
-		public void checkHeight(int testHeight)
-		{	height = (height > testHeight) ? height : testHeight;	}
-
-		public void checkXOffset(int testX)
-		{	x = (x < testX) ? x : testX;	}
-		
-		public void checkYOffset(int testY)
-		{	y = (y < testY) ? y : testY;	}
-		
-		public void checkRectangle(RectangularShape rectangle)
-		{
-			checkXOffset((int) rectangle.getMinX());
-			checkYOffset((int) rectangle.getMinY());
-			checkWidth((int) rectangle.getWidth());
-			checkHeight((int) rectangle.getHeight());	
-		}
-		
-		public void addBorder(int border)
-		{
-			width += (border * 2);
-			height += (border * 2);
-			x -= border;
-			y -= border;
-		}
-		
-		public String toString()
-		{
-			return "ExportBounds\nWidth: " + width
-				+ "\n\tHeight: " + height
-				+ "\n\tX Offset: " + x
-				+ "\n\tY Offset: " + y;
-		}
-	}
-	
-	
-	///////////////////////////////////////////////////////////////////
 	// Static Variables
 	///////////////////////////////////////////////////////////////////
 	/** Export Types **/
@@ -88,7 +32,8 @@ public class GraphExporter
 	
 	/** PSTricks Stuff **/
 	public static final int INT_PSTRICKS_MARKED_STATE_RADIUS_DIFF = 4;
-	private static final int INT_PSTRICKS_BORDER_SIZE = 25;
+	public static final double DBL_PSTRICKS_SCALE_VALUE = 0.90;	
+	private static final int INT_PSTRICKS_BORDER_SIZE = 10;
 	
 	// NOTE: Mike has this string in his LatexPrinter in IDES, but I 
 	// don't think it does anything, so it's ignored here.
@@ -161,15 +106,13 @@ public class GraphExporter
 		IDESWorkspace workspace = null;
 		GraphModel graphModel = null;
 		
-		Collection<Node> nodeCollection = null;
 		Node[] nodeArray = null;
-		Collection<Edge> edgeCollection = null;
 		Edge[] edgeArray = null;
-		Collection<GraphLabel> labelCollection = null;
-		GraphLabel[] labelArray = null;
+		GraphLabel[] freelabelArray = null;
 
-		ExportBounds exportBounds = null;
-
+		Rectangle exportBounds = null;
+		int border = 0;
+		
 		// Step #1 - Get the GraphModel
 		workspace = IDESWorkspace.instance();
 		graphModel = workspace.getActiveGraphModel();
@@ -180,12 +123,9 @@ public class GraphExporter
 		}
 
 		// Step #2 - Get the Nodes, Edges and Labels
-		nodeCollection = graphModel.getNodes();
-		nodeArray = (Node[]) nodeCollection.toArray(new Node[0]);
-		edgeCollection = graphModel.getEdges();
-		edgeArray = (Edge[]) edgeCollection.toArray(new Edge[0]);
-		labelCollection = graphModel.getFreeLabels();
-		labelArray = (GraphLabel[]) labelCollection.toArray(new GraphLabel[0]);
+		nodeArray = (Node[]) graphModel.getNodes().toArray(new Node[0]);
+		edgeArray = (Edge[]) graphModel.getEdges().toArray(new Edge[0]);
+		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 
@@ -196,8 +136,23 @@ public class GraphExporter
 		// }		
 		// else
 		// {
-		exportBounds = determineExportBounds(nodeArray, edgeArray, labelArray);
+		exportBounds = graphModel.getBounds(false);
 		// }
+		
+		// Step #3.5 - Add a border to the export bounds
+		/*
+		exportBounds.width -= exportBounds.x;
+		exportBounds.height -= exportBounds.y;
+		*/
+		border = (exportBounds.x > INT_PSTRICKS_BORDER_SIZE) ?
+			INT_PSTRICKS_BORDER_SIZE : exportBounds.x;
+		exportBounds.x -= border;
+		exportBounds.width += (border * 2);
+
+		border = (exportBounds.y > INT_PSTRICKS_BORDER_SIZE) ?
+				INT_PSTRICKS_BORDER_SIZE : exportBounds.y;
+		exportBounds.y -= border;
+		exportBounds.height += (border * 2);
 		
 		// Step #4 - Begin with the basic picture boundary and frame
 		// information
@@ -226,9 +181,9 @@ public class GraphExporter
 		contentsString += "\n";
 		
 		// Step #7 - Add the label data 
-		for (int i = 0; i < labelArray.length; i++)
+		for (int i = 0; i < freelabelArray.length; i++)
 		{
-			contentsString += labelArray[i].createExportString(exportBounds,
+			contentsString += freelabelArray[i].createExportString(exportBounds,
 				INT_EXPORT_TYPE_PSTRICKS);
 		}		
 		contentsString += "\n";
@@ -253,6 +208,7 @@ public class GraphExporter
 	 * 
 	 * @author Sarah-Jane Whittaker
 	 */
+	/*
 	private static ExportBounds determineExportBounds(Node[] nodeArray, 
 			Edge[] edgeArray, GraphLabel labelArray[])
 	{
@@ -325,5 +281,6 @@ public class GraphExporter
 		
 		return exportBounds;
 	}
+	*/
 
 }
