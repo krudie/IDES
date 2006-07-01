@@ -118,6 +118,6 @@ public class GraphView extends JComponent implements Subscriber {
 
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(graphBounds.width+GRAPH_BORDER_TICKNESS,graphBounds.height+GRAPH_BORDER_TICKNESS);
+		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_TICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_TICKNESS)*scaleFactor));
 	}
 }

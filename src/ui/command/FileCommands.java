@@ -97,7 +97,10 @@ public class FileCommands {
 				Automaton fsa=gm.getAutomaton();
 				if(fsa!=null)
 					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
-						gm.setDirty(false);	
+					{
+						gm.setDirty(false);
+						gm.notifyAllSubscribers();
+					}
 			}
 			Hub.getMainWindow().setCursor(cursor);
 		}	
@@ -116,7 +119,10 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if(fsa!=null)
 				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
-					Hub.getWorkspace().getActiveGraphModel().setDirty(false);				
+				{
+					Hub.getWorkspace().getActiveGraphModel().setDirty(false);
+					Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+				}
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}
@@ -134,7 +140,10 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if(fsa!=null)
 				if(FileOperations.saveAutomatonAs(fsa))
-					Hub.getWorkspace().getActiveGraphModel().setDirty(false);				
+				{
+					Hub.getWorkspace().getActiveGraphModel().setDirty(false);
+					Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+				}
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}

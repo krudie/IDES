@@ -114,7 +114,24 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	    setVisible(true);
 	}	
 	
+	public void setEnabled(boolean b)
+	{
+		if(b)
+		{
+			addMouseMotionListener(this);
+			addMouseListener(this);
+			addKeyListener(this);
+		}
+		else
+		{
+			removeMouseMotionListener(this);
+			removeMouseListener(this);
+			removeKeyListener(this);
+		}
+	}
+	
 	public void update(){
+		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
 		// get the active graph model
 		graphModel = IDESWorkspace.instance().getActiveGraphModel();
 		// update the graph view part of me

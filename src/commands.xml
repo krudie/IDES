@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <commands version="1.1.0">
 
+	<group id="ides.toolbar">
+		<face>
+			<text>IDES 2.1</text>
+		</face>
+		<members>
+         <member command-id="new.automaton.command"/>
+         <member command-id="open.automaton.command"/>
+         <member command-id="save.automaton.command"/>
+         <member command-id="saveall.automaton.command"/>
+         <separator/>
+         <member command-id="open.workspace.command"/>         
+         <member command-id="save.workspace.command"/>
+			<separator/>
+			<member command-id="select.command"/>
+			<member command-id="create.command"/>
+			<member command-id="move.command"/>			
+		</members>	
+	</group>
+	
 	<group id="ides.toolbar.group">
 		<face>
 			<text>IDES 2.1</text>
@@ -37,7 +56,6 @@
          <member command-id="saveall.automaton.command"/>
          <member command-id="close.automaton.command"/>
          <separator/>
-         <member command-id="new.workspace.command"/>
          <member command-id="open.workspace.command"/>         
          <member command-id="save.workspace.command"/>
          <member command-id="saveas.workspace.command"/>
@@ -48,6 +66,21 @@
       </members>  
    </group>   
    
+	<group id="file.toolbar.group">
+      <face>
+         <text>File operations</text>         
+      </face>
+      <members>  
+         <member command-id="new.automaton.command"/>
+         <member command-id="open.automaton.command"/>
+         <member command-id="save.automaton.command"/>
+         <member command-id="saveall.automaton.command"/>
+         <separator/>
+         <member command-id="open.workspace.command"/>         
+         <member command-id="save.workspace.command"/>
+      </members>  
+   </group>   
+
    <group id="file.save.group">
       <members>  
          <member command-id="save.workspace.command"/>
@@ -59,9 +92,9 @@
 
    <command id="new.automaton.command">
       <face>
-         <text>_New automaton</text>
+         <text>_New model</text>
          <icon type="classpath">images/icons/file_new_automaton.gif</icon>
-         <description>Create a new automaton</description>
+         <description>Create a new model</description>
          <accelerator key="N">
 	         <modifier value="control"/>
          </accelerator>
@@ -86,9 +119,9 @@
     </command>       
    <command id="open.automaton.command">
       <face>
-         <text>_Open automaton</text>
+         <text>_Open model</text>
          <icon type="classpath">images/icons/file_open_automaton.gif</icon>
-         <description>Open an existing automaton</description>
+         <description>Open an existing model</description>
          <accelerator key="O">
 	         <modifier value="control"/>
          </accelerator>
@@ -101,7 +134,7 @@
       <face>
          <text>Open _workspace</text>
          <icon type="classpath">images/icons/file_open_workspace.gif</icon>
-         <description>Open a workspace of automata</description>
+         <description>Open a workspace of models</description>
          <accelerator key="O">
 	         <modifier value="control"/>
   	         <modifier value="alt"/>
@@ -113,9 +146,9 @@
     </command>
    <command id="save.automaton.command">
       <face>
-         <text>Save auto_maton</text>
+         <text>_Save model</text>
          <icon type="classpath">images/icons/file_save_automaton.gif</icon>
-         <description>Save automaton</description>
+         <description>Save model</description>
          <accelerator key="S">
 	         <modifier value="control"/>
          </accelerator>
@@ -126,9 +159,9 @@
     </command>
         <command id="saveas.automaton.command">
       <face>
-         <text>Save automaton _as...</text>
+         <text>Save _model as...</text>
          <icon type="classpath">images/icons/file_saveas.gif</icon>
-         <description>Save automaton as...</description>         
+         <description>Save model as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -136,9 +169,9 @@
     </command>    
     <command id="saveall.automaton.command">
       <face>
-         <text>Save a_ll automata...</text>
+         <text>Save _all models...</text>
          <icon type="classpath">images/icons/file_saveall_automata.gif</icon>
-         <description>Save all automata...</description>         
+         <description>Save all models...</description>         
          <accelerator key="S">
 	         <modifier value="control"/>
   	         <modifier value="shift"/>
@@ -151,9 +184,9 @@
             
     <command id="save.workspace.command">
       <face>
-         <text>_Save workspace</text>
+         <text>Sa_ve workspace</text>
          <icon type="classpath">images/icons/file_save_workspace.gif</icon>                  
-         <description>Save workspace settings  (@accelerator)</description>
+         <description>Save workspace settings</description>
          <accelerator key="S">
 	         <modifier value="control"/>
   	         <modifier value="alt"/>
@@ -165,7 +198,7 @@
     </command>    
     <command id="saveas.workspace.command">
       <face>
-         <text>Sa_ve workspace as...</text>
+         <text>Save wor_kspace as...</text>
          <icon type="classpath">images/icons/file_saveas_workspace.gif</icon>
          <description>Save workspace as...</description>         
       </face>
@@ -175,9 +208,9 @@
     </command>    
     <command id="close.automaton.command">
       <face>
-         <text>_Close automaton</text>
+         <text>_Close model</text>
          <icon type="classpath">images/icons/file_close_automaton.gif</icon>
-         <description>Close automaton.</description>
+         <description>Close model.</description>
          <accelerator key="W">
 	         <modifier value="control"/>
          </accelerator>
@@ -191,7 +224,7 @@
     <group id="export.group">
       <face>
          <text>_Export</text>
-         <description>Export automaton</description>
+         <description>Export model</description>
       </face>
       <members>  
          <member command-id="export.gif.command"/>

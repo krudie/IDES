@@ -17,9 +17,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -56,6 +58,8 @@ public class MainWindow extends JFrame implements Subscriber {
 
 	String imagePath = "images/icons/";
 	
+	private ZoomControl zoom=new ZoomControl();
+	
 	public MainWindow() {
 		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));
 		addWindowListener(new WindowAdapter() {
@@ -68,11 +72,12 @@ public class MainWindow extends JFrame implements Subscriber {
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
 		drawingBoard = new GraphDrawingView();		
-//		 Get the screen dimensions.
-	    Toolkit tk = Toolkit.getDefaultToolkit ();
-	    Dimension screen = tk.getScreenSize();
-	    setSize(screen.width, screen.height);
-		drawingBoard.setPreferredSize(new Dimension((int)(getSize().width * 0.7), (int) (getSize().height*0.7)));
+////		 Get the screen dimensions.
+//	    Toolkit tk = Toolkit.getDefaultToolkit ();
+//	    Dimension screen = tk.getScreenSize();
+//	    setExtendedState(MAXIMIZED_BOTH);
+////	    setSize(screen.width, screen.height);
+////		drawingBoard.setPreferredSize(new Dimension(screen.width, screen.height));//(int)(getSize().width * 0.7), (int) (getSize().height*0.7)));
 		createAndAddTabbedPane();				
 		
 		// TODO add graph spec, latex and eps views to the state model		
@@ -87,7 +92,8 @@ public class MainWindow extends JFrame implements Subscriber {
 		update();
 		
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		pack();		
+		pack();
+	    setExtendedState(MAXIMIZED_BOTH);
 	}
 	
 	 private void createAndAddTabbedPane() {
@@ -105,11 +111,20 @@ public class MainWindow extends JFrame implements Subscriber {
 	}
 
 	 private void createAndAddToolBar() {
+		 toolbar =CommandManager.defaultInstance().getGroup("ides.toolbar").createToolBar();
+		 toolbar.addSeparator();
+		 Box p=Box.createHorizontalBox();//new JPanel();
+		 p.add(new JLabel(Hub.string("zoom")+": "));
+		 p.add(zoom);
+		 p.add(Box.createHorizontalGlue());
+		 toolbar.add(p);
+		 getContentPane().add(toolbar, BorderLayout.PAGE_START);
+
 		 // Create a vertical toolbar
-		 toolbar =  CommandManager.defaultInstance().getGroup("ides.toolbar.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
-		 toolbar.setRollover(true);
-		 toolbar.setOrientation(JToolBar.VERTICAL);
-		 this.getContentPane().add(toolbar, BorderLayout.WEST);		 	    
+//		 toolbar =  CommandManager.defaultInstance().getGroup("ides.toolbar.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
+//		 toolbar.setRollover(true);
+//		 toolbar.setOrientation(JToolBar.VERTICAL);
+//		 this.getContentPane().add(toolbar, BorderLayout.WEST);		 	    
 	 } 
 	 
 	private void createAndAddMenuBar() {
@@ -122,9 +137,9 @@ public class MainWindow extends JFrame implements Subscriber {
 		  * package ui.command.
 		  * ??? This is tricky for file commands since need name and reference to command manager and filter.
 		  */
-				 
+		
 		 JMenuBar menuBar = CommandManager.defaultInstance().getGroup("ides.menu.group").createMenuBar(); // new JMenuBar();
-	 	 
+
 		 // TODO assemble the help menu
 		 JMenu menuHelp = new JMenu("Help");
 		 menuHelp.setMnemonic(KeyEvent.VK_H);
@@ -132,7 +147,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		 menuBar.add(menuHelp);
 		 
 		 // add menubar to this window
-		 getContentPane().add(menuBar, "North");
+		 this.setJMenuBar(menuBar);
 	}
 	
 	/**
@@ -197,7 +212,9 @@ public class MainWindow extends JFrame implements Subscriber {
 	public void update() {		
 		CommandManager commandManager = CommandManager.defaultInstance();
 		
-		if(IDESWorkspace.instance().getActiveModel() == null){			
+		if(IDESWorkspace.instance().getActiveModel() == null){
+			drawingBoard.setEnabled(false);
+			zoom.setEnabled(false);
 			toolbar.setEnabled(false);
 			commandManager.getGroup("graph.group").setEnabled(false);
 			//commandManager.getGroup("ides.toolbar.group").setEnabled(false);
@@ -210,6 +227,8 @@ public class MainWindow extends JFrame implements Subscriber {
 			// FIXME this doesn't work
 			commandManager.getGroup("file.save.group").setEnabled(false);
 		}else{
+			drawingBoard.setEnabled(true);
+			zoom.setEnabled(true);
 			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
 			//commandManager.getGroup("ides.toolbar.group").setEnabled(true);
 			toolbar.setEnabled(true);
@@ -226,7 +245,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		}
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 		
-		pack();
+		//pack();
 	}
 
 	/**
@@ -251,5 +270,10 @@ public class MainWindow extends JFrame implements Subscriber {
 	public GraphDrawingView getDrawingBoard()
 	{
 		return drawingBoard;
+	}
+	
+	public ZoomControl getZoomControl()
+	{
+		return zoom;
 	}
 }

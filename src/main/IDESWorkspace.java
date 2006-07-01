@@ -277,6 +277,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 				if(!FileOperations.saveAutomatonAs(a))
 					throw new IncompleteWorkspaceDescriptorException();
 				getGraphModel(a.getName()).setDirty(false);
+				getGraphModel(a.getName()).notifyAllSubscribers();
 			}
 		}
 		for(int counter=0; counter<systems.size(); ++counter)

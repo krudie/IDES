@@ -139,8 +139,9 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 	    		observable.insertElementAt((Boolean)value, row);	    		
 	    	}
 	    	//TODO we most probably shouldn't be accessing the FSA above directly
-			Hub.getWorkspace().getActiveGraphModel().setDirty(true);
 	    	((Automaton)a).notifyAllSubscribers();
+			Hub.getWorkspace().getActiveGraphModel().setDirty(true);
+	    	Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
 	    	if(col==0)
 	    	{
 				Collections.sort(events,new Comparator<FSAEvent>(){

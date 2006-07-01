@@ -62,7 +62,10 @@ public class CommonTasks {
 		if(choice==JOptionPane.YES_OPTION)
 		{
 			if(FileOperations.saveAutomaton(gm.getAutomaton(),gm.getAutomaton().getFile()))
+			{
 				gm.setDirty(false);
+				gm.notifyAllSubscribers();
+			}
 			else
 				return false;
 		}

@@ -112,7 +112,8 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));
 		}
 		thumbnailBox.add(Box.createHorizontalGlue());
-		validate();
+		invalidate();
+		Hub.getMainWindow().validate();
 	}
 
 	/**

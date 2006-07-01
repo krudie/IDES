@@ -412,6 +412,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		}else{			
 			layout.setArrow(null);
 		}
+		metaData.setLayoutData((State)n.getState(), layout);
 		setDirty(true);
 		// notify subscribers
 		fsa.notifyAllBut(this);
@@ -446,19 +447,21 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 
 	public void setControllable(Event event, boolean b){
-		setDirty(true);
 		// update the event
 		event.setControllable(b);
 		// notify subscribers
 		fsa.notifyAllBut(this);
+		setDirty(true);
+		notifyAllSubscribers();
 	}
 	
 	public void setObservable(Event event, boolean b){
-		setDirty(true);
 		// update the event
 		event.setObservable(b);
 		// notify subscribers
 		fsa.notifyAllBut(this);
+		setDirty(true);
+		notifyAllSubscribers();
 	}
 	
 	/**
@@ -620,8 +623,9 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 
 	public void setGraph(GraphElement graph) {
-		setDirty(true);
 		this.graph = graph;
+		setDirty(true);
+		notifyAllSubscribers();
 	}
 
 	/**
@@ -793,8 +797,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		event.setControllable(controllable);
 		event.setObservable(observable);
 		fsa.add(event);
-		setDirty(true);
 		fsa.notifyAllBut(this);		
+		setDirty(true);
+		notifyAllSubscribers();
 		return event;
 	}
 	
@@ -867,7 +872,6 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void setDirty(boolean b)
 	{
 		dirty=b;
-		notifyAllSubscribers();
 	}
 	
 	/**
@@ -932,9 +936,11 @@ public class GraphModel extends Publisher implements Subscriber {
 	*/
 	public void translate(float x, float y)
 	{
-		setDirty(true);
 		graph.translate(x,y);
+		setDirty(true);
+		notifyAllSubscribers();
 	}
+
 }
 
 
