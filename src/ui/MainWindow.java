@@ -214,13 +214,13 @@ public class MainWindow extends JFrame implements Subscriber {
 			//commandManager.getGroup("ides.toolbar.group").setEnabled(true);
 			toolbar.setEnabled(true);
 			commandManager.getGroup("graph.group").setEnabled(true);
-			commandManager.getGroup("edit.group").setEnabled(true);
-			if(IDESWorkspace.instance().isDirty()){
-				// KLUGE
-				commandManager.getCommand("save.automaton.command").setEnabled(true);
-				// FIXME this doesn't work
-				commandManager.getGroup("file.save.group").setEnabled(true);
-			}
+			commandManager.getGroup("edit.group").setEnabled(false);
+//			if(IDESWorkspace.instance().isDirty()){
+//				// KLUGE
+//				commandManager.getCommand("save.automaton.command").setEnabled(true);
+//				// FIXME this doesn't work
+//				commandManager.getGroup("file.save.group").setEnabled(true);
+//			}
 			// set the name of the current model in the tabbed pane
 			tabbedViews.setTitleAt(0, IDESWorkspace.instance().getActiveModelName());
 		}

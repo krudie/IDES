@@ -894,6 +894,10 @@ public class GraphModel extends Publisher implements Subscriber {
 		return r;
 	}
 	*/
+	public void translate(float x, float y)
+	{
+		graph.translate(x,y);
+	}
 }
 
 

@@ -293,7 +293,10 @@ public class Edge extends GraphElement {
 			super.translate(x, y);
 		// reset the control points in the layout object
 		}else{
-			l.computeCurve(source.getLayout(), target.getLayout());
+			if(target!=null) //translation can occur in the middle of drawing a new edge
+			{
+				l.computeCurve(source.getLayout(), target.getLayout());
+			}
 			// FIXME update location of label 
 		}		
 	}

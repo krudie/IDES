@@ -70,7 +70,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
 			removeFSAModel(getActiveGraphModel().getName());
 		if(getActiveModel()!=null)
-			((Automaton)getActiveModel()).detach(getDrawingBoard());
+			getActiveGraphModel().detach(getDrawingBoard());
 		systems.add((Automaton) fsa);
 		metadata.add(new MetaData((Automaton)fsa));
 		graphs.add(new GraphModel((Automaton)fsa, metadata.lastElement()));
@@ -80,7 +80,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		{
 			new LatexPrerenderer(getActiveGraphModel());
 		}
-		((Automaton)getActiveModel()).attach(getDrawingBoard());
+		getActiveGraphModel().attach(getDrawingBoard());
 		notifyAllSubscribers();
 		if(countAdd!=0)
 			dirty = true;
@@ -155,10 +155,10 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	
 	public void setActiveModel(String name) {
 		if(getActiveModel()!=null)
-			((Automaton)getActiveModel()).detach(getDrawingBoard());
+			getActiveGraphModel().detach(getDrawingBoard());
 		activeModelIdx=getFSAIndex(name);
 		if(getActiveModel()!=null)
-			((Automaton)getActiveModel()).attach(getDrawingBoard());
+			getActiveGraphModel().attach(getDrawingBoard());
 	}
 	
 	/**
