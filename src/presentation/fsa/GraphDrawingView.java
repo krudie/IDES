@@ -43,11 +43,8 @@ import ui.MainWindow;
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
 	
-	private static final int GRAPH_BORDER_TICKNESS=10;
-	
 	private int currentTool = DEFAULT;
 	private DrawingTool[] drawingTools;
-	protected Rectangle graphBounds=new Rectangle();
 	
 	/**
 	 * Retangle to render as the area selected by mouse. 
@@ -117,26 +114,12 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	    setVisible(true);
 	}	
 	
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(graphBounds.width+GRAPH_BORDER_TICKNESS,graphBounds.height+GRAPH_BORDER_TICKNESS);
-	}
-	
 	public void update(){
 		// get the active graph model
 		graphModel = IDESWorkspace.instance().getActiveGraphModel();
 		// update the graph view part of me
-		if(graphModel!=null)
-		{
-			graphBounds=graphModel.getBounds(true);
-			if(graphBounds.x<0||graphBounds.y<0)
-			{
-				graphModel.translate(-graphBounds.x+GRAPH_BORDER_TICKNESS,-graphBounds.y+GRAPH_BORDER_TICKNESS);
-			}
-		}
-		invalidate();
-		Hub.getMainWindow().validate();
 		super.update();
+		Hub.getMainWindow().validate();
 	}
 	
 	public void paint(Graphics g){

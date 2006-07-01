@@ -24,8 +24,8 @@ public class CommonTasks {
 	public static boolean handleUnsavedWorkspace()
 	{
 		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-				Hub.string("saveChangesAskWorkspace")+Hub.getWorkspace().getName(),
-				Hub.string("saveChangesTitle"),
+				Hub.string("saveChangesAskWorkspace")+"\""+Hub.getWorkspace().getName()+"\"?",
+				Hub.string("saveChangesWorkspaceTitle"),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
 			return false;
@@ -54,8 +54,8 @@ public class CommonTasks {
 	public static boolean handleUnsavedModel(presentation.fsa.GraphModel gm)
 	{
 		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-				Hub.string("saveChangesAskModel")+Hub.getWorkspace().getName(),
-				Hub.string("saveChangesTitle"),
+				Hub.string("saveChangesAskModel")+"\""+gm.getName()+"\"?",
+				Hub.string("saveChangesModelTitle"),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
 			return false;

@@ -99,7 +99,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		sp.setName(drawingBoard.getName());
 		
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
-		tabbedViews.add(sp);
+		tabbedViews.addTab("Graph",sp);
 		tabbedViews.addTab("Events", new EventView());
 		getContentPane().add(tabbedViews, "Center");
 	}
@@ -222,7 +222,7 @@ public class MainWindow extends JFrame implements Subscriber {
 //				commandManager.getGroup("file.save.group").setEnabled(true);
 //			}
 			// set the name of the current model in the tabbed pane
-			tabbedViews.setTitleAt(0, IDESWorkspace.instance().getActiveModelName());
+			//tabbedViews.setTitleAt(0, IDESWorkspace.instance().getActiveModelName());
 		}
 		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
 		

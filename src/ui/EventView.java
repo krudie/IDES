@@ -138,6 +138,8 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 	    		observable.removeElementAt(row);
 	    		observable.insertElementAt((Boolean)value, row);	    		
 	    	}
+	    	//TODO we most probably shouldn't be accessing the FSA above directly
+			Hub.getWorkspace().getActiveGraphModel().setDirty(true);
 	    	((Automaton)a).notifyAllSubscribers();
 	    	if(col==0)
 	    	{
@@ -208,8 +210,7 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
 			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
 			for(int i=0;i<delEvents.length;++i)
-				a.remove(delEvents[i]);
-			a.notifyAllSubscribers();
+				Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
 			update();
 		}
 	};

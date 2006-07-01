@@ -13,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import main.Hub;
 import model.Subscriber;
@@ -79,7 +80,10 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 				toRemove.add(gv);
 		}
 		for(GraphView gv:toRemove)
+		{
+			gv.getGraphModel().detach(this);
 			graphViews.remove(gv);
+		}
 		
 		for(int i=0;i<currentModels.size();++i)
 		{
@@ -88,6 +92,7 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 			{
 				GraphView gv = new GraphView(gm);
 				gm.attach(gv);
+				gm.attach(this);
 				gv.addMouseListener(this);
 				graphViews.insertElementAt(gv,i);
 			}
@@ -100,9 +105,9 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
 			if(gv.getGraphModel().equals(activeModel))
-				p.setBorder(SELECTED_BORDER);
+				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));
 			else
-				p.setBorder(PLAIN_BORDER);
+				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
 			thumbnailBox.add(p);
 			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));
 		}

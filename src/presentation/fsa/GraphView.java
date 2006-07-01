@@ -1,6 +1,7 @@
 package presentation.fsa;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -10,11 +11,15 @@ import javax.swing.JComponent;
 
 import ui.GUISettings;
 
+import main.Hub;
 import model.Subscriber;
 
 public class GraphView extends JComponent implements Subscriber {
 
+	protected static final int GRAPH_BORDER_TICKNESS=10;
+	
 	protected float scaleFactor = 0.25f;
+	protected Rectangle graphBounds=new Rectangle();
 	
 	/**
 	 * if true, update() will set the scale factor so that the whole model fits in the view
@@ -62,17 +67,25 @@ public class GraphView extends JComponent implements Subscriber {
 	 * Refresh my visual model from GraphModel.
 	 */
 	public void update() {
-		if(scaleToFit&&getGraphModel()!=null&&getParent()!=null)
-		{
-			Rectangle r=getGraphModel().getBounds(true);
-			float xScale=(float)getParent().getBounds().getWidth()/(float)(r.width+r.x);
-			float yScale=(float)getParent().getBounds().getHeight()/(float)(r.height+r.y);
-			setScaleFactor(Math.min(xScale,yScale));
-		}
 		if(graphModel != null){
 			graph = graphModel.getGraph();
 		}else{
 			graph = new GraphElement();
+		}
+		if(getGraphModel()!=null)
+		{
+			graphBounds=getGraphModel().getBounds(true);
+			if(scaleToFit&&getParent()!=null)
+			{
+				float xScale=(float)getParent().getBounds().getWidth()/(float)(graphBounds.width+graphBounds.x);
+				float yScale=(float)getParent().getBounds().getHeight()/(float)(graphBounds.height+graphBounds.y);
+				setScaleFactor(Math.min(xScale,yScale));
+			}
+			if(graphBounds.x<0||graphBounds.y<0)
+			{
+				graphModel.translate(-graphBounds.x+GRAPH_BORDER_TICKNESS,-graphBounds.y+GRAPH_BORDER_TICKNESS);
+			}
+			invalidate();
 		}
 		repaint();
 	}
@@ -101,5 +114,10 @@ public class GraphView extends JComponent implements Subscriber {
 	public void setScaleFactor(float sf)
 	{
 		scaleFactor=sf;
+	}
+
+	public Dimension getPreferredSize()
+	{
+		return new Dimension(graphBounds.width+GRAPH_BORDER_TICKNESS,graphBounds.height+GRAPH_BORDER_TICKNESS);
 	}
 }

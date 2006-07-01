@@ -76,10 +76,17 @@ public class GraphModel extends Publisher implements Subscriber {
 		maxEventId = fsa.getEventCount();
 		
 		update();
+		
+		setDirty(false);
 	}
 	
 	public String getName(){
 		return fsa.getName();
+	}
+	
+	public String getDecoratedName()
+	{
+		return (isDirty()?"* ":"")+getName();
 	}
 	
 	public Automaton getAutomaton()
@@ -211,6 +218,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		Node n = new Node(s, layout);	
 		nodes.put(new Long(s.getId()), n);
 		graph.insert(n);
+		setDirty(true);
 		this.notifyAllSubscribers();
 		return n;
 	}	
@@ -287,6 +295,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		fsa.notifyAllBut(this);
 		edges.put(e.getId(), e);
 		edgeLabels.put(e.getId(), e.getLabel());
+		setDirty(true);
 		notifyAllSubscribers();
 	}	
 	
@@ -309,6 +318,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		n2.insert(e);
 		edges.put(e.getId(), e);		
 		edgeLabels.put(e.getId(), e.getLabel());
+		setDirty(true);
 		notifyAllSubscribers();
 	}
 
@@ -325,6 +335,9 @@ public class GraphModel extends Publisher implements Subscriber {
 				System.out.println("DEBUG Don't know how to move a " + el.getClass());
 			}		
 		}
+
+		setDirty(true);
+
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}
@@ -383,6 +396,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		n.getLayout().setText(text);
 		n.update();
 		metaData.setLayoutData(s, n.getLayout());
+		setDirty(true);
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}
@@ -398,6 +412,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		}else{			
 			layout.setArrow(null);
 		}
+		setDirty(true);
 		// notify subscribers
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
@@ -408,6 +423,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		((State)n.getState()).setMarked(b);		
 		// update the node
 		n.update();
+		setDirty(true);
 		// notify subscribers
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
@@ -430,6 +446,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 
 	public void setControllable(Event event, boolean b){
+		setDirty(true);
 		// update the event
 		event.setControllable(b);
 		// notify subscribers
@@ -437,6 +454,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	public void setObservable(Event event, boolean b){
+		setDirty(true);
 		// update the event
 		event.setObservable(b);
 		// notify subscribers
@@ -454,7 +472,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * 
 	 * @param text an event symbol
 	 */
-	public void assignEvent(Event event, Edge edge){}	
+	public void assignEvent(Event event, Edge edge){setDirty(true);}	
 		
 	
 	/**
@@ -535,6 +553,8 @@ public class GraphModel extends Publisher implements Subscriber {
 			metaData.setLayoutData(t, (EdgeLayout)edge.getLayout());
 		}		
 		
+		setDirty(true);
+
 		// notify observers
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
@@ -549,6 +569,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);
 		fsa.notifyAllBut(this);
+		setDirty(true);
 		this.notifyAllSubscribers();
 	}
 	
@@ -561,6 +582,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		}else{
 			freeLabels.remove(el);
 		}
+		setDirty(true);
 		notifyAllSubscribers();
 	}
 	
@@ -575,6 +597,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		fsa.notifyAllBut(this);
 		graph.remove(n);		
 		nodes.remove(new Long(n.getId()));
+		setDirty(true);
 		notifyAllSubscribers();		
 	}
 	
@@ -587,6 +610,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		e.getTarget().remove(e);
 		edgeLabels.remove(e.getId());
 		edges.remove(e.getId());
+		setDirty(true);
 		fsa.notifyAllBut(this);
 		notifyAllSubscribers();
 	}
@@ -596,6 +620,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 
 	public void setGraph(GraphElement graph) {
+		setDirty(true);
 		this.graph = graph;
 	}
 
@@ -745,7 +770,7 @@ public class GraphModel extends Publisher implements Subscriber {
 
 	public void addGraphLabel(GraphLabel label, String text) {
 		// TODO Auto-generated method stub
-		
+		setDirty(true);
 	}
 	
 	/**
@@ -768,8 +793,17 @@ public class GraphModel extends Publisher implements Subscriber {
 		event.setControllable(controllable);
 		event.setObservable(observable);
 		fsa.add(event);
+		setDirty(true);
 		fsa.notifyAllBut(this);		
 		return event;
+	}
+	
+	public void removeEvent(Event e)
+	{
+		fsa.remove(e);
+		setDirty(true);
+		fsa.notifyAllSubscribers();
+		notifyAllSubscribers();
 	}
 	
 	/**
@@ -833,6 +867,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void setDirty(boolean b)
 	{
 		dirty=b;
+		notifyAllSubscribers();
 	}
 	
 	/**
@@ -897,6 +932,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	*/
 	public void translate(float x, float y)
 	{
+		setDirty(true);
 		graph.translate(x,y);
 	}
 }
