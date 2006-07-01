@@ -1,6 +1,7 @@
 package ui.command;
 
 import io.IOUtilities;
+import io.fsa.ver1.CommonTasks;
 import io.fsa.ver1.FileOperations;
 
 import java.awt.Cursor;
@@ -92,9 +93,11 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 			{
-				Automaton fsa=i.next().getAutomaton();
+				GraphModel gm=i.next();
+				Automaton fsa=gm.getAutomaton();
 				if(fsa!=null)
-					FileOperations.saveAutomaton(fsa,fsa.getFile());		
+					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
+						gm.setDirty(false);	
 			}
 			Hub.getMainWindow().setCursor(cursor);
 		}	
@@ -112,7 +115,8 @@ public class FileCommands {
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if(fsa!=null)
-				FileOperations.saveAutomaton(fsa,fsa.getFile());				
+				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
+					Hub.getWorkspace().getActiveGraphModel().setDirty(false);				
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}
@@ -129,7 +133,8 @@ public class FileCommands {
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if(fsa!=null)
-				FileOperations.saveAutomatonAs(fsa);				
+				if(FileOperations.saveAutomatonAs(fsa))
+					Hub.getWorkspace().getActiveGraphModel().setDirty(false);				
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}
@@ -169,6 +174,9 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
+			if(Hub.getWorkspace().isDirty())
+				if(!CommonTasks.handleUnsavedWorkspace())
+					return;
 			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
@@ -198,7 +206,8 @@ public class FileCommands {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				FileOperations.saveWorkspace(wd,wd.getFile());
+				if(FileOperations.saveWorkspace(wd,wd.getFile()))
+					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			Hub.getMainWindow().setCursor(cursor);
 		}
@@ -216,7 +225,8 @@ public class FileCommands {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				FileOperations.saveWorkspaceAs(wd);
+				if(FileOperations.saveWorkspaceAs(wd))
+					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			Hub.getMainWindow().setCursor(cursor);
 		}
@@ -283,13 +293,13 @@ public static class ExitCommand extends ActionCommand {
 		protected void handleExecute() {
 			// TODO check all dirty bits and display confirm exit/do you wish to save
 			// dialogs and then fire appropriate save commands.
-			int retVal = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit IDES 2.1?");
-			if(retVal == JOptionPane.OK_OPTION){
+			//int retVal = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit IDES 2.1?");
+			//if(retVal == JOptionPane.OK_OPTION){
 				//SystemVariables.instance().saveSettings();
 				Main.onExit();
-			}else{
+			//}else{
 				// TODO
-			}
+			//}
 		}	
 	}
 }

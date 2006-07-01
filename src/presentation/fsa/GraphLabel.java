@@ -388,9 +388,11 @@ public class GraphLabel extends GraphElement {
 	{
 		setText(text);
 		if(!location.equals(layout.getLocation()))
+		{
 			layout.setLocation(location.x,location.y);
+			setDirty(true);
+		}
 		// SJW
 		bounds();
-		setDirty(true);
 	}
 }

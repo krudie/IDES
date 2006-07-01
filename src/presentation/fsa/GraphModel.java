@@ -49,6 +49,8 @@ public class GraphModel extends Publisher implements Subscriber {
 	 */
 	private GraphElement graph;
 	
+	protected boolean dirty=false;
+	
 	/**
 	 * The data models to keep synchronized.
 	 */	
@@ -824,7 +826,12 @@ public class GraphModel extends Publisher implements Subscriber {
 	
 	public boolean isDirty()
 	{
-		return graph.isDirty();
+		return dirty;
+	}
+	
+	public void setDirty(boolean b)
+	{
+		dirty=b;
 	}
 	
 	/**

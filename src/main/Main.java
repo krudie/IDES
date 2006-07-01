@@ -1,14 +1,19 @@
 package main;
 
+import io.fsa.ver1.CommonTasks;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
+
+import presentation.fsa.GraphModel;
 
 import model.fsa.ver1.Automaton;
 
@@ -29,6 +34,16 @@ public class Main {
 	 */
 	public static void onExit()
 	{
+		if(Hub.getWorkspace().isDirty())
+			if(!CommonTasks.handleUnsavedWorkspace())
+				return;
+		for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		{
+			GraphModel gm=i.next();
+			if(gm.isDirty())
+				if(!CommonTasks.handleUnsavedModel(gm))
+					return;
+		}
 		//store settings
 		Hub.storePersistentData();
 		Cache.close();

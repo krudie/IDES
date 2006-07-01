@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,7 +30,7 @@ import presentation.fsa.GraphView;
 public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
 //	private GraphView activeView;
-	private HashSet<GraphView> graphViews=new HashSet<GraphView>();
+	private Vector<GraphView> graphViews=new Vector<GraphView>();
 	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 2);
 	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 2);
 	public static final int THUMBNAIL_SIZE = 100;
@@ -63,10 +64,11 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		// Get all graph models from the workspace and render them here,
 		// each in its own GraphView object.
 		
-		HashSet<GraphModel> currentModels=new HashSet<GraphModel>();
+		Vector<GraphModel> currentModels=new Vector<GraphModel>();
 		for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 		{
-			currentModels.add(i.next());
+			GraphModel gm=i.next();
+			currentModels.add(gm);
 		}
 		GraphModel activeModel=Hub.getWorkspace().getActiveGraphModel();
 
@@ -75,17 +77,20 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		{
 			if(!currentModels.contains(gv.getGraphModel()))
 				toRemove.add(gv);
-			currentModels.remove(gv.getGraphModel());
 		}
 		for(GraphView gv:toRemove)
-			remove(gv);
+			graphViews.remove(gv);
 		
-		for(GraphModel graphModel:currentModels)
+		for(int i=0;i<currentModels.size();++i)
 		{
-			GraphView gv = new GraphView(graphModel);
-			graphModel.attach(gv);
-			gv.addMouseListener(this);
-			graphViews.add(gv);
+			GraphModel gm=currentModels.elementAt(i);
+			if(graphViews.size()<=i||!graphViews.elementAt(i).getGraphModel().equals(gm))
+			{
+				GraphView gv = new GraphView(gm);
+				gm.attach(gv);
+				gv.addMouseListener(this);
+				graphViews.insertElementAt(gv,i);
+			}
 		}
 		
 		thumbnailBox.removeAll();

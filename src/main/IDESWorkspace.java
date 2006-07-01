@@ -1,5 +1,6 @@
 package main;
 
+import io.fsa.ver1.CommonTasks;
 import io.fsa.ver1.FileOperations;
 
 import java.awt.Color;
@@ -29,21 +30,23 @@ import model.fsa.ver1.MetaData;
 
 public class IDESWorkspace extends Publisher implements Workspace {
 
-	private boolean unsaved; // dirty bit
-	private String name = "New Project";
+	//needed for special handling of first (automatic) add and first (user-initated) add
+	private long countAdd=0;
+	private boolean dirty=false; // dirty bit
+	private String name;
 	private File myFile = null;
 	
-	// Unique name of the currently active FSAModel
-	private String activeModelName;
+	// index of the currently active FSAModel
+	private int activeModelIdx;
 		
 	// A model of global events set (alphabet) and all local alphabets
-	private FSAEventsModel eventsModel;
+//	private FSAEventsModel eventsModel;
 	
 	// maps name of each model to the abstract FSA model, 
 	// graph representation and metadata respectively.
-	private HashMap<String, Automaton> systems;
-	private HashMap<String, GraphModel> graphs;
-	private HashMap<String, MetaData> metadata;
+	private Vector<Automaton> systems;
+	private Vector<GraphModel> graphs;
+	private Vector<MetaData> metadata;
 
 	static IDESWorkspace me;
 	
@@ -55,37 +58,55 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	}
 	
 	protected IDESWorkspace(){
-		systems = new HashMap<String, Automaton>();
-		graphs = new HashMap<String, GraphModel>();
-		metadata = new HashMap<String, MetaData>();
-		eventsModel = new EventsModel();
+		activeModelIdx=-1;
+		systems=new Vector<Automaton>();
+		graphs=new Vector<GraphModel>();
+		metadata=new Vector<MetaData>();
+		name=Hub.string("newAutomatonName");
+//		eventsModel = new EventsModel();
 	}
 	
 	public void addFSAModel(FSAModel fsa) {
+		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
+			removeFSAModel(getActiveGraphModel().getName());
 		if(getActiveModel()!=null)
-		{
 			((Automaton)getActiveModel()).detach(getDrawingBoard());
-		}
-		activeModelName = fsa.getName();
-		systems.put(activeModelName, (Automaton) fsa);
-		metadata.put(activeModelName, new MetaData((Automaton)fsa));
-		graphs.put(activeModelName, new GraphModel((Automaton)fsa, metadata.get(activeModelName)));
-		eventsModel.addLocalEvents(fsa);
+		systems.add((Automaton) fsa);
+		metadata.add(new MetaData((Automaton)fsa));
+		graphs.add(new GraphModel((Automaton)fsa, metadata.lastElement()));
+		activeModelIdx=systems.size()-1;
+		//eventsModel.addLocalEvents(fsa);
 		if(LatexManager.isLatexEnabled())
 		{
 			new LatexPrerenderer(getActiveGraphModel());
 		}
 		((Automaton)getActiveModel()).attach(getDrawingBoard());
 		notifyAllSubscribers();
-		unsaved = true;
+		if(countAdd!=0)
+			dirty = true;
+		countAdd++;
 	}
 
-	public FSAModel getFSAModel(String name) {	
-		return systems.get(name);
+	protected int getFSAIndex(String name)
+	{
+		for(int i=0;i<systems.size();++i)
+			if(systems.elementAt(i).getName().equals(name))
+				return i;
+		return -1;
+	}
+	
+	public FSAModel getFSAModel(String name) {
+		int idx=getFSAIndex(name);
+		if(idx<0)
+			return null;
+		return systems.elementAt(idx);
 	}
 
 	public GraphModel getGraphModel(String name) {	
-		return graphs.get(name);
+		int idx=getFSAIndex(name);
+		if(idx<0)
+			return null;
+		return graphs.elementAt(idx);
 	}
 
 	public boolean hasFSAModel(String name) {
@@ -97,32 +118,22 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		if(gm==null)
 			return;
 		if(gm.isDirty())
-		{
-			int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-					Hub.string("savechangesAsk")+gm.getName(),
-					Hub.string("saveChangesTitle"),
-					JOptionPane.YES_NO_CANCEL_OPTION);
-			if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
+			if(!CommonTasks.handleUnsavedModel(gm))
 				return;
-			if(choice==JOptionPane.YES_OPTION)
-				FileOperations.saveAutomaton(gm.getAutomaton(),gm.getAutomaton().getFile());
-		}
 		if(getActiveModel()!=null)
 		{
 			((Automaton)getActiveModel()).detach(getDrawingBoard());
 		}
-		systems.remove(name);	
-		metadata.remove(name);
-		graphs.remove(name);
-		if(!systems.isEmpty()){
-			activeModelName = systems.get(systems.keySet().iterator().next()).getName();
-		}
-		else
-			activeModelName=null;
+		int idx=getFSAIndex(name);
+		systems.removeElementAt(idx);	
+		metadata.removeElementAt(idx);
+		graphs.removeElementAt(idx);
+		if(activeModelIdx>=systems.size())
+				activeModelIdx--;
 		if(getActiveModel()!=null)
 			((Automaton)getActiveModel()).attach(getDrawingBoard());
 		this.notifyAllSubscribers();
-		unsaved = true;
+		dirty = true;
 	}
 
 	public FSAEventsModel getEventsModel() {
@@ -131,21 +142,23 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	}
 
 	public String getActiveModelName() {
-		return activeModelName;
+		if(activeModelIdx<0)
+			return "";
+		return systems.elementAt(activeModelIdx).getName();
 	}
 
 	public FSAModel getActiveModel(){
-		return systems.get(activeModelName);
+		if(activeModelIdx<0)
+			return null;
+		return systems.elementAt(activeModelIdx);
 	}
 	
 	public void setActiveModel(String name) {
 		if(getActiveModel()!=null)
-		{
 			((Automaton)getActiveModel()).detach(getDrawingBoard());
-		}
-		this.activeModelName = name;
-		((Automaton)getActiveModel()).attach(getDrawingBoard());
-		unsaved = true;
+		activeModelIdx=getFSAIndex(name);
+		if(getActiveModel()!=null)
+			((Automaton)getActiveModel()).attach(getDrawingBoard());
 	}
 	
 	/**
@@ -154,7 +167,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	 */
 	public Iterator<GraphModel> getGraphModels(){
 		ArrayList<GraphModel> g = new ArrayList<GraphModel>();
-		Iterator<GraphModel> iter = graphs.values().iterator();
+		Iterator<GraphModel> iter = graphs.iterator();
 		while(iter.hasNext()){
 			g.add(iter.next());
 		}
@@ -167,7 +180,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	 */
     public Iterator<FSAModel> getAutomata() {
     	ArrayList<FSAModel> g = new ArrayList<FSAModel>();
-		Iterator<Automaton> iter = systems.values().iterator();
+		Iterator<Automaton> iter = systems.iterator();
 		while(iter.hasNext()){
 			g.add(iter.next());
 		}
@@ -177,15 +190,15 @@ public class IDESWorkspace extends Publisher implements Workspace {
     /**
      * @see projectPresentation.ProjectPresentation#hasUnsavedData()
      */
-    public boolean hasUnsavedData(){
-        return unsaved;
+    public boolean isDirty(){
+        return dirty;
     }
 
     /**
      * @see projectPresentation.ProjectPresentation#setUnsavedData(boolean)
      */
-    public void setUnsavedData(boolean state){
-        unsaved = state;
+    public void setDirty(boolean state){
+        dirty = state;
     }
 
 	public String getName() {		
@@ -196,8 +209,10 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return systems.isEmpty();
 	}
 
-	public GraphModel getActiveGraphModel() {		
-		return graphs.get(activeModelName);
+	public GraphModel getActiveGraphModel() {	
+		if(activeModelIdx<0)
+			return null;
+		return graphs.elementAt(activeModelIdx);
 	}
 	
 	/**
@@ -206,11 +221,6 @@ public class IDESWorkspace extends Publisher implements Workspace {
 	 */
 	public void replaceWorkspace(WorkspaceDescriptor wd)
 	{
-		if(hasUnsavedData())
-		{
-			//TODO call save
-		}
-		
 		Iterator<FSAModel> iter=getAutomata();
 		while(iter.hasNext())
 		{
@@ -241,6 +251,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 			setActiveModel(selectedModel);
 			notifyAllSubscribers();
 		}
+		setDirty(false);
 	}
 
 	/**
@@ -263,15 +274,14 @@ public class IDESWorkspace extends Publisher implements Workspace {
 			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
 			for(Automaton a:unsavedModels)
 			{
-				FileOperations.saveAutomatonAs(a);
-				if(a.getFile()==null)
+				if(!FileOperations.saveAutomatonAs(a))
 					throw new IncompleteWorkspaceDescriptorException();
+				getGraphModel(a.getName()).setDirty(false);
 			}
 		}
-		int counter=0;
-		for(Iterator i=getAutomata();i.hasNext();++counter)
+		for(int counter=0; counter<systems.size(); ++counter)
 		{
-			Automaton a=(Automaton)i.next();
+			Automaton a=(Automaton)systems.elementAt(counter);
 			wd.insertModel(a.getFile().getName(),counter);
 			if(a.getName().equals(getActiveModelName()))
 				wd.setSelectedModel(counter);

@@ -63,6 +63,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		    	Main.onExit();
 		    }
 		});
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
 	
@@ -85,8 +86,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		createAndAddToolBar();
 		update();
 		
-		// TODO fire exit.command to make sure that system variables are saved
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();		
 	}
 	
@@ -215,7 +215,7 @@ public class MainWindow extends JFrame implements Subscriber {
 			toolbar.setEnabled(true);
 			commandManager.getGroup("graph.group").setEnabled(true);
 			commandManager.getGroup("edit.group").setEnabled(true);
-			if(IDESWorkspace.instance().hasUnsavedData()){
+			if(IDESWorkspace.instance().isDirty()){
 				// KLUGE
 				commandManager.getCommand("save.automaton.command").setEnabled(true);
 				// FIXME this doesn't work

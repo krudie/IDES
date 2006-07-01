@@ -89,11 +89,12 @@ public class FileOperations {
      * Saves an automaton to a file
      * @param a the automaton to save
      * @param path the path to save it to
+     * @return if file was saved
      */      
-    public static void saveAutomaton(Automaton a, File file){    	
+    public static boolean saveAutomaton(Automaton a, File file){    	
         PrintStream ps = IOUtilities.getPrintStream(file);
         if(ps == null)
-        	saveAutomatonAs(a);
+        	return saveAutomatonAs(a);
         else
         {
         	XMLexporter.automatonToXML(a, ps);
@@ -105,11 +106,15 @@ public class FileOperations {
         	a.setFile(file);
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
             a.notifyAllSubscribers();
+            return true;
         }
     }  
     
-	
-	public static void saveAutomatonAs(Automaton a) {
+	/**
+	 * @param a automaton to save
+	 * @return if file was saved
+	 */
+	public static boolean saveAutomatonAs(Automaton a) {
 		JFileChooser fc;
 		if(a.getFile()!=null)
 			fc=new JFileChooser(a.getFile().getParent());
@@ -143,9 +148,9 @@ public class FileOperations {
 					retVal=JFileChooser.CANCEL_OPTION;
 			}
 		} while(!fcDone);
-    	if(retVal == JFileChooser.APPROVE_OPTION){
-    		saveAutomaton(a,file);
-    	}
+    	if(retVal == JFileChooser.APPROVE_OPTION)
+    		return saveAutomaton(a,file);
+    	return false;
 	}
 	
 	public static void exportSystemAsLatex(FSAModel model, File f){
@@ -181,24 +186,27 @@ public class FileOperations {
 	 * {@link #saveWorkspaceAs(WorkspaceDescriptor)} to get a new file name.
 	 * @param wd the description of the workspace
 	 * @param file the file where the workspace will be written
+	 * @return true if file was saved
 	 */
-    public static void saveWorkspace(WorkspaceDescriptor wd, File file){
+    public static boolean saveWorkspace(WorkspaceDescriptor wd, File file){
         PrintStream ps = IOUtilities.getPrintStream(file);
         if(ps == null)
-        	saveWorkspaceAs(wd);
+        	return saveWorkspaceAs(wd);
         else
         {
         	XMLexporter.workspaceToXML(wd, ps);
         	Hub.getWorkspace().setFile(file);
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
+            return true;
         }
     }
 
     /**
      * Ask the user for a file name and then call {@link #saveWorkspace(WorkspaceDescriptor, File)}.
      * @param wd the description of the workspace
+     * @return true if file was saved
      */
-    public static void saveWorkspaceAs(WorkspaceDescriptor wd){
+    public static boolean saveWorkspaceAs(WorkspaceDescriptor wd){
     	JFileChooser fc;
     	if(wd.getFile()!=null)
 			fc=new JFileChooser(wd.getFile().getParent());
@@ -232,9 +240,9 @@ public class FileOperations {
 					retVal=JFileChooser.CANCEL_OPTION;
 			}
 		} while(!fcDone);
-    	if(retVal == JFileChooser.APPROVE_OPTION){
-    		saveWorkspace(wd,file);
-    	}
+    	if(retVal == JFileChooser.APPROVE_OPTION)
+    		return saveWorkspace(wd,file);
+    	return false;
     }
 
 	/**
