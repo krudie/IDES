@@ -282,6 +282,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
 		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 		metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
+		e.addTransition(t);
 		fsa.add(t);
 		fsa.notifyAllBut(this);
 		edges.put(e.getId(), e);
