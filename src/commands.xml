@@ -423,6 +423,7 @@
          <text>_Options</text>         
       </face>
       <members>
+         <member command-id="uniformnodes.command"/>
          <member command-id="uselatex.command"/>
          <separator/>
          <member command-id="moreoptions.command"/>
@@ -432,6 +433,15 @@
 	  <face>
          <text>Use LaTeX rendering</text>
          <description>Turn on or off LaTeX rendering of labels</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+	</command>
+	<command id="uniformnodes.command">
+	  <face>
+         <text>Uniform node size</text>
+         <description>Turn on or off the use of uniform node size</description>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>

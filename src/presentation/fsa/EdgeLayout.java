@@ -360,6 +360,22 @@ public class EdgeLayout extends GraphicalLayout {
 		}		
 	}
 	
+	protected void symmetrize(){
+		float angle=(float)(Math.abs(angle1)+Math.abs(angle2))/2F;
+		float distance=(float)(ctrls[0].distance(ctrls[1])+ctrls[2].distance(ctrls[3]))/2F;
+		angle1=angle*Math.signum(angle1);
+		angle2=angle*Math.signum(angle2);
+		Point2D.Float p=(Point2D.Float)ctrls[0].clone();
+		p.x+=distance;
+		p=Geometry.rotate(p,angle1);
+		ctrls[1]=p;
+		p=(Point2D.Float)ctrls[2].clone();
+		p.x+=distance;
+		p=Geometry.rotate(p,angle2);
+		ctrls[2]=p;
+		setCurve(ctrls);
+	}
+
 	/**
 	 * KLUGE: all accesss to EdgeLayout should go through the Edge interface.
 	 */

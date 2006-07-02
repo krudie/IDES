@@ -70,14 +70,10 @@ public class MainWindow extends JFrame implements Subscriber {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
 		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
-	
+		FileOperations.loadCommandManager("commands.xml");
+
 		drawingBoard = new GraphDrawingView();		
-////		 Get the screen dimensions.
-//	    Toolkit tk = Toolkit.getDefaultToolkit ();
-//	    Dimension screen = tk.getScreenSize();
-//	    setExtendedState(MAXIMIZED_BOTH);
-////	    setSize(screen.width, screen.height);
-////		drawingBoard.setPreferredSize(new Dimension(screen.width, screen.height));//(int)(getSize().width * 0.7), (int) (getSize().height*0.7)));
+
 		createAndAddTabbedPane();				
 		
 		// TODO add graph spec, latex and eps views to the state model		
@@ -85,7 +81,6 @@ public class MainWindow extends JFrame implements Subscriber {
 		filmStrip.setSize(new Dimension((int)(getSize().width * 0.9), (int)(getSize().height * 0.3)));
 		getContentPane().add(filmStrip, BorderLayout.SOUTH);
 	
-		//FileOperations.loadAndExportCommands("commands.txt"); 
 		loadAndExportCommands();
 		createAndAddMenuBar();
 		createAndAddToolBar();
@@ -93,7 +88,8 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();
-	    setExtendedState(MAXIMIZED_BOTH);
+		//TODO uncomment before shipping
+	    //setExtendedState(MAXIMIZED_BOTH);
 	}
 	
 	 private void createAndAddTabbedPane() {
@@ -159,7 +155,8 @@ public class MainWindow extends JFrame implements Subscriber {
 	 */
 	private void loadAndExportCommands() {
 
-		FileOperations.loadCommandManager("commands.xml");
+// Lenko: moved to constructor: needs to load for drawing board
+//		FileOperations.loadCommandManager("commands.xml");
 		
 		new CreateCommand(drawingBoard).export();
 		new SelectCommand(drawingBoard).export();

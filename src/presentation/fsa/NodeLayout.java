@@ -1,6 +1,7 @@
 package presentation.fsa;
 
 import java.awt.geom.Point2D;
+import java.util.HashMap;
 
 import presentation.GraphicalLayout;
 
@@ -15,7 +16,30 @@ public class NodeLayout extends GraphicalLayout {
      * fixed distance between outer and inner circles for marked Nodes.
      */    
 	public static final float DEFAULT_RADIUS = 15, RDIF = 4;
-		
+
+	protected GraphModel.UniformRadius uniformR=null;
+	
+	public NodeLayout(GraphModel.UniformRadius u){
+		this(u,new Point2D.Float(), DEFAULT_RADIUS, "");
+	}
+	
+	public NodeLayout(GraphModel.UniformRadius u,Point2D.Float centre){
+		this(u,centre, DEFAULT_RADIUS, "");
+	}
+	
+	public NodeLayout(GraphModel.UniformRadius u,Point2D.Float centre, float radius, String name, Point2D.Float arrow) {
+		this(u,centre, radius, name);
+		this.arrow = arrow;		
+	}
+	
+	public NodeLayout(GraphModel.UniformRadius u,Point2D.Float centre, float radius, String name) {
+		super(centre, name);
+		this.radius = radius;		
+		arrow = null;
+		uniformR=u;
+		uniformR.updateUniformRadius(this,radius);
+	}
+
 	public NodeLayout(){
 		this(new Point2D.Float(), DEFAULT_RADIUS, "");
 	}
@@ -34,8 +58,10 @@ public class NodeLayout extends GraphicalLayout {
 		this.radius = radius;		
 		arrow = null;
 	}
-	
+
 	public float getRadius() {
+		if(uniformR!=null&&GraphDrawingView.isUniformNodes())
+			return uniformR.getRadius();
 		return radius;
 	}	
 	
@@ -51,6 +77,8 @@ public class NodeLayout extends GraphicalLayout {
 	public void setRadius(float radius) {
 		this.radius = radius;
 		setDirty(true);
+		if(uniformR!=null)
+			uniformR.updateUniformRadius(this,radius);
 	}
 
 	/**
@@ -66,5 +94,22 @@ public class NodeLayout extends GraphicalLayout {
 	public void setDirty(boolean d){
 		super.setDirty(d);
 		node.setDirty(d);
+	}
+	
+	public void dispose()
+	{
+		if(uniformR!=null)
+		{
+			uniformR.remove(this);
+			uniformR.updateUniformRadius();
+		}
+	}
+	
+	public void setUniformRadius(GraphModel.UniformRadius ur)
+	{
+		if(uniformR!=null)
+			uniformR.remove(uniformR.get(this));
+		uniformR=ur;
+		uniformR.updateUniformRadius(this,radius);
 	}
 }

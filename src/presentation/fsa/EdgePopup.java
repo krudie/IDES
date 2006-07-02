@@ -24,7 +24,7 @@ public class EdgePopup extends JPopupMenu {
 
 	private Edge edge;
 	private DeleteCommand deleteCmd;
-	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge;
+	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge, miSymmetrize;
 	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
@@ -43,14 +43,20 @@ public class EdgePopup extends JPopupMenu {
 		miEditEvents = new JMenuItem("Label with Events");
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
-		deleteCmd = new DeleteCommand(view);
-		miDeleteEdge = deleteCmd.createMenuItem();
-		add(miDeleteEdge);		
-		
-		add(new JPopupMenu.Separator());
+
+		miSymmetrize = new JMenuItem(Hub.string("symmetrize"));
+		//TODO symmetrize should be an undoable command
+		miSymmetrize.addActionListener(listener);
+		add(miSymmetrize);
 		miStraighten = new JMenuItem("Straighten");
 		miStraighten.setEnabled(false);
 		add(miStraighten);
+
+		add(new JPopupMenu.Separator());		
+		deleteCmd = new DeleteCommand(view);
+		miDeleteEdge = deleteCmd.createMenuItem();
+		add(miDeleteEdge);
+		
 		// TODO arc more
 		// TODO arc less
 		// TODO reverse
@@ -87,6 +93,9 @@ public class EdgePopup extends JPopupMenu {
 				view.setTool(GraphDrawingView.MODIFY);
 			}else if(source.equals(miEditEvents)){				
 				EdgeLabellingDialog.showDialog(view, edge);
+			}else if(source.equals(miSymmetrize)){
+				EdgeLayout el=(EdgeLayout)edge.getLayout();
+				el.symmetrize();
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
 			}			

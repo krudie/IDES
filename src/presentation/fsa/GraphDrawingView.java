@@ -12,6 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import org.pietschy.command.ToggleCommand;
+
 import main.Hub;
 import main.IDESWorkspace;
 import model.Subscriber;
@@ -42,6 +44,12 @@ import ui.MainWindow;
  */
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
+	
+	protected static ToggleCommand nodesControl;
+	public static boolean isUniformNodes()
+	{
+		return nodesControl.isSelected();
+	}
 	
 	private int currentTool = DEFAULT;
 	private DrawingTool[] drawingTools;
@@ -88,7 +96,10 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		graph = new GraphElement();
 		scaleFactor = 1f;
 		scaleToFit=false;
-			
+	
+		nodesControl=new UniformNodesCommand();
+		nodesControl.export();
+		
 		currentSelection = new SelectionGroup();
 		selectionArea = new Rectangle();
 		hoverElement = null;

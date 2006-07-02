@@ -63,10 +63,11 @@ public class ZoomControl extends JComboBox implements ActionListener {
 	{
 		String value=getEditor().getItem().toString();
 		value=value.split(" ")[0];
-		System.out.println(value);
+		if(value.endsWith("%"))
+			value=value.substring(0,value.length()-1);
 		try
 		{
-			int newZoomValue=Integer.parseInt(value);
+			int newZoomValue=(int)Float.parseFloat(value);
 			if(newZoomValue<=0)
 				newZoomValue=100;
 			commitZoom(newZoomValue);

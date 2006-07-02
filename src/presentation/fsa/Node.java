@@ -59,6 +59,8 @@ public class Node extends GraphElement {
 	}
 	
 	public void setLayout(NodeLayout layout){
+		if(this.layout!=null)
+			((NodeLayout)this.layout).dispose();
 		this.layout = layout;
 		update();
 	}

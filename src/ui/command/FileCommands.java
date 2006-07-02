@@ -1,6 +1,7 @@
 package ui.command;
 
 import io.IOUtilities;
+import io.ParsingToolbox;
 import io.fsa.ver1.CommonTasks;
 import io.fsa.ver1.FileOperations;
 
@@ -72,9 +73,16 @@ public class FileCommands {
 	    	if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
 				Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-	    		Automaton fsa = (Automaton)FileOperations.openAutomaton(fc.getSelectedFile());
-	    		if(fsa != null){
-	    			Hub.getWorkspace().addFSAModel(fsa);
+				if(Hub.getWorkspace().getFSAModel(ParsingToolbox.removeFileType(fc.getSelectedFile().getName()))!=null)
+				{
+					Hub.displayAlert(Hub.string("modelAlreadyOpen"));
+				}
+				else
+				{
+					Automaton fsa = (Automaton)FileOperations.openAutomaton(fc.getSelectedFile());
+					if(fsa != null){
+						Hub.getWorkspace().addFSAModel(fsa);
+					}
 	    		}
 				Hub.getMainWindow().setCursor(cursor);
 			}

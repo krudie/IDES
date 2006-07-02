@@ -237,7 +237,7 @@ public class GraphCommands {
 					// if selection is a node				
 					String text = 
 					//JOptionPane.showInputDialog("Enter state name: ");
-					NodeLabellingDialog.showAndGetLabel(node.getLabel().getLayout().getText(),
+					presentation.fsa.SingleLineNodeLabellingDialog.showAndGetLabel(node.getLabel().getLayout().getText(),
 							new Point((int)node.getLayout().getLocation().x+
 									Hub.getWorkspace().getDrawingBoardDisplacement().x,
 									(int)node.getLayout().getLocation().y+

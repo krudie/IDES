@@ -36,6 +36,35 @@ import util.BentoBox;
  */
 public class GraphModel extends Publisher implements Subscriber {
 
+	
+	protected class UniformRadius extends HashMap<NodeLayout,Float>
+	{
+		protected float r = NodeLayout.DEFAULT_RADIUS;
+		protected void updateUniformRadius(NodeLayout n, float radius)
+		{
+			put(n,new Float(radius));
+			updateUniformRadius();
+		}
+		protected void updateUniformRadius()
+		{
+			if(size()>0)
+				r=Float.MIN_VALUE;
+			else
+				r=NodeLayout.DEFAULT_RADIUS;
+			for(Float ff:values())
+			{
+				float f=ff.floatValue();
+				if(f>r)
+					r=f;
+			}
+		}
+		public float getRadius()
+		{
+			return r;
+		}
+	}
+	protected UniformRadius uniformR=new UniformRadius();
+	
 	/**
 	 * TODO implement as a more usable form of list or map.
 	 */
@@ -104,6 +133,8 @@ public class GraphModel extends Publisher implements Subscriber {
 				
 		// For now, just create everthing new.		
 		// TODO OPTIMIZE How expensive is this?
+		for(Node n:nodes.values())
+			((NodeLayout)n.getLayout()).dispose();
 		nodes.clear();
 		edges.clear();
 		edgeLabels.clear();
@@ -120,7 +151,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		graph = new GraphElement();
 		while(iter.hasNext()){
 			s = (State)iter.next();
-			n1 = new Node(s, metaData.getLayoutData(s));
+			NodeLayout nL=metaData.getLayoutData(s);
+			nL.setUniformRadius(uniformR);
+			n1 = new Node(s, nL);
 			n1.update();  // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
 			graph.insert(n1);
 			nodes.put(new Long(s.getId()), n1);
@@ -211,7 +244,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		State s = new State(maxStateId++);
 		s.setInitial(false);
 		s.setMarked(false);
-		NodeLayout layout = new NodeLayout(p);			
+		NodeLayout layout = new NodeLayout(uniformR,p);			
 		metaData.setLayoutData(s, layout);
 		fsa.add(s);
 		fsa.notifyAllBut(this);
@@ -579,6 +612,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){
+			((NodeLayout)((Node)el).getLayout()).dispose();
 			delete((Node)el);			
 		}else if(edges.containsValue(el)){
 			delete((Edge)el);
@@ -598,7 +632,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		// remove n		
 		fsa.remove(n.getState());
 		fsa.notifyAllBut(this);
-		graph.remove(n);		
+		graph.remove(n);	
+		((NodeLayout)n.getLayout()).dispose();
 		nodes.remove(new Long(n.getId()));
 		setDirty(true);
 		notifyAllSubscribers();		
