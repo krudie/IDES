@@ -12,6 +12,7 @@ import main.Hub;
 import main.IDESWorkspace;
 import model.Publisher;
 import model.Subscriber;
+import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
@@ -83,7 +84,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	/**
 	 * The data models to keep synchronized.
 	 */	
-	private Automaton fsa;		 // system model
+	private Automaton fsa;	   // system model
 	private MetaData metaData; // presentation data for the system model
 	
 	private long maxStateId, maxEventId, maxTransitionId;
@@ -322,7 +323,13 @@ public class GraphModel extends Publisher implements Subscriber {
 		if( directEdgeBetween(e.getSource(), n2) == null){
 			e.setTarget(n2);
 			n2.insert(e);		
+			
+			Edge opposite = directEdgeBetween(n2, e.getSource()); 
+			if(opposite != null && ((EdgeLayout)opposite.getLayout()).isStraight()){
+				((EdgeLayout)e.getLayout()).arcAway((EdgeLayout)opposite.getLayout());
+			}
 			((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
+			
 			Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 			metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
 			e.addTransition(t);
@@ -367,10 +374,13 @@ public class GraphModel extends Publisher implements Subscriber {
 				saveMovement((GraphLabel)el);
 			}else if(nodes.containsValue(el)){
 				saveMovement((Node)el);
-			}else{
-				// DEBUG
-				System.out.println("DEBUG Don't know how to move a " + el.getClass());
-			}		
+			}else if(edges.containsValue(el)){
+				if( ((Edge)el).isSelfLoop() ){					
+					saveMovement((Edge)el);
+				}
+			}else if(freeLabels.containsValue(el)){
+				// TODO move free labels
+			}
 		}
 
 		setDirty(true);
@@ -839,18 +849,41 @@ public class GraphModel extends Publisher implements Subscriber {
 		return event;
 	}
 	
-	public void removeEvent(Event e)
+	public void removeEvent(Event event)
 	{
-		fsa.remove(e);
+		// remove event from all edges that may have transitions holding
+		// references to it.
+		Entry entry;
+		Edge edge;
+		FSATransition toRemove = null;
+		Iterator iter = edges.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			edge = (Edge)entry.getValue();
+			Iterator<FSATransition> trans = edge.getTransitions();
+			while(trans.hasNext()){
+				FSATransition t = trans.next();
+				FSAEvent e = t.getEvent();
+				if(e != null && e.equals(event)){
+					// remove e and possibly t from edge
+					t.setEvent(null);
+					toRemove = t;
+				}
+			}
+			if(edge.transitionCount() > 1 && toRemove != null){
+				edge.removeTransition((Transition)toRemove);
+			}
+		}
+		
+		fsa.remove(event);
 		setDirty(true);
 		fsa.notifyAllSubscribers();
 		notifyAllSubscribers();
 	}
 	
 	/**
-	 * This method is reponsible for calculcating the size of the 
-	 * bounding box necessary for the entire graph.  It goes
-	 * through every node, edge and label and uses the union of
+	 * Calculcates the size of the bounding box necessary for the entire graph.  
+	 * Visits every node, edge and label and uses the union of
 	 * their bounds to create the box.
 	 * 
 	 * @param boolean Whether you want the box to begin at (0, 0) 
