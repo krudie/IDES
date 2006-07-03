@@ -96,10 +96,8 @@ public class EdgeLayout extends GraphicalLayout {
 	public void computeCurve(NodeLayout s, NodeLayout t){
 		
 		// if source and target nodes are the same, compute a self-loop
-		if(s.equals(t)){
-			// TODO
-			// throw new UnsupportedOperationException("Self-loops not net implemented.");
-			computeSelfLoop(s);
+		if(s.equals(t)){			
+			computeSelfLoop(s, new Point2D.Float(0, -1));
 			return;
 		}
 		
@@ -122,7 +120,7 @@ public class EdgeLayout extends GraphicalLayout {
 		norm = (float)Geometry.norm(base);
 		unitBase = Geometry.unit(base);		
 	
-		if(Math.abs(angle1) < EPSILON && Math.abs(angle2) < EPSILON){	
+		if(isStraight()){	
 			angle1 = 0;
 			angle2 = 0;
 			// compute a straight edge		
@@ -154,6 +152,13 @@ public class EdgeLayout extends GraphicalLayout {
 	}
 	
 	/**
+	 * @return
+	 */
+	protected boolean isStraight() {		
+		return Math.abs(angle1) < EPSILON && Math.abs(angle2) < EPSILON;
+	}
+
+	/**
 	 * Returns an array of 4 control points for a straight, directed edge from
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
 	 * 
@@ -163,10 +168,7 @@ public class EdgeLayout extends GraphicalLayout {
 	public void computeCurve(NodeLayout s, Point2D.Float centre2){		
 		Point2D.Float centre1 = s.getLocation();
 		Point2D.Float dir = Geometry.subtract(centre2, centre1);
-		
-		// FIXME recompute all points and scalars from P1 based on vector from p1 to p2
-		// NOT from centres of nodes.
-		
+	
 		float norm = (float)Geometry.norm(dir);
 		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
 		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
@@ -186,23 +188,22 @@ public class EdgeLayout extends GraphicalLayout {
 	
 	/**
 	 * Returns a cubic bezier curve representing a self-loop for the
-	 * given node layout.
+	 * given node layout oriented in the given unit direction.
 	 * 
 	 * @param s the node layout	 
 	 */
-	public void computeSelfLoop(NodeLayout s){
+	public void computeSelfLoop(NodeLayout s, Point2D.Float unitDir){
 		// Draw default loop above node and let node rotate it if necessary.
 		// direction vectors rotate (0, r) by pi/4 and -pi/4
 		double angleScalar = 5 * s.getRadius() / NodeLayout.DEFAULT_RADIUS;  
 		angle1 = Math.PI/angleScalar;
 		angle2 = Math.PI/-angleScalar;
 		s1 = s2 = 0.0;
+					
+		Point2D.Float axis = Geometry.scale(unitDir, s.getRadius()); //new Point2D.Float(0, -s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
 		
-		// FIXME make this work for arbitrary rotation (not just vertical).
-		Point2D.Float vert = new Point2D.Float(0, -s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
-		
-		Point2D.Float v1 = Geometry.rotate(vert, angle1);
-		Point2D.Float v2 = Geometry.rotate(vert, angle2);
+		Point2D.Float v1 = Geometry.rotate(axis, angle1);
+		Point2D.Float v2 = Geometry.rotate(axis, angle2);
 		ctrls[P1] = Geometry.add(s.getLocation(), v1);
 		ctrls[P2] = Geometry.add(s.getLocation(), v2);
 		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(Geometry.unit(v1), 3f*NodeLayout.DEFAULT_RADIUS));
@@ -231,6 +232,9 @@ public class EdgeLayout extends GraphicalLayout {
 	 *  s2   scalar |(CTRL2 - P1)|/|(P2-P1)|
 	 *  angle1  angle between  (CTRL1 - P1) and (P2-P1)
 	 *  angle2  angle between  (CTRL2 - P1) and (P2-P1)
+	 *  
+	 *  Note that the angle1 is for the tangent from p1 to c1
+	 *  but angle 2 is NOT the tangent from p2 to c2.
 	 */
 	private void updateAnglesAndScalars(){		
 		Point2D.Float p1p2 = Geometry.subtract(ctrls[P2], ctrls[P1]); 
@@ -352,6 +356,23 @@ public class EdgeLayout extends GraphicalLayout {
 	protected double getAngle2()
 	{
 		return angle2;
+	}
+	
+	/**
+	 * Computes the angles and scalars such that this and other curve away from each other.
+	 * Precondition: this.source = other.target and other.source = this.target and both are straight edges.
+	 * 
+	 * @param other another edge layout
+	 */
+	protected void arcAway(EdgeLayout other){
+		this.angle1 = Math.PI/6;
+		this.angle2 = this.angle1/2;
+		other.angle1 = this.angle1;
+		other.angle2 = this.angle2;
+		this.s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		this.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;
+		other.s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		other.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;
 	}
 	
 	protected void arcMore(){
