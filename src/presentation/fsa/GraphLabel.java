@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
+import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import services.cache.Cache;
@@ -31,7 +33,10 @@ import util.BentoBox;
  */
 @SuppressWarnings("serial")
 public class GraphLabel extends GraphElement {
-	protected Rectangle bounds;	
+	// SJW - The bounds should be calculated on the fly
+	// to make sure updates are observed
+	//protected Rectangle bounds;
+	
 	protected Font font;
 	protected BufferedImage rendered = null;
 	
@@ -49,12 +54,12 @@ public class GraphLabel extends GraphElement {
 		// TODO change to a dynamic value read from a config file and stored in 
 		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
-		bounds = new Rectangle();
+		//bounds = new Rectangle();
 	}
 	
 	public GraphLabel(GraphicalLayout layout){		
 		this.layout = layout;	
-		bounds = new Rectangle();
+		//bounds = new Rectangle();
 	}
 	
 	/**
@@ -97,11 +102,9 @@ public class GraphLabel extends GraphElement {
 			((Graphics2D)g).drawImage(rendered, null, 
 					(int)layout.getLocation().x,(int)layout.getLocation().y);
 			*/
+			Rectangle renderedBounds = bounds();
 			((Graphics2D)g).drawImage(rendered, null, 
-				(int) (layout.getLocation().x - 
-					(bounds.width / DBL_RENDERED_SCALE_WIDTH)),
-				(int) (layout.getLocation().y - 
-					(bounds.height / DBL_RENDERED_SCALE_HEIGHT)));
+				renderedBounds.x, renderedBounds.y);
 		}
 		else
 		{			
@@ -144,8 +147,7 @@ public class GraphLabel extends GraphElement {
 		int width = metrics.stringWidth( layout.getText() );
 		int height = metrics.getHeight();
 		*/
-		textMetricsWidth = metrics.stringWidth( layout.getText() );
-		textMetricsHeight = metrics.getHeight();
+		updateMetrics(metrics);
 
 		/*
 		 * SJW - Call bounds() instrad to compute all this
@@ -153,8 +155,7 @@ public class GraphLabel extends GraphElement {
 		bounds.setLocation(new Point((int)(layout.getLocation().x - width/2), 
 				(int)(layout.getLocation().y - height/2)));
 		*/
-		bounds();
-		
+		Rectangle textBounds = bounds();
 		
 		int x = BentoBox.convertDoubleToInt(
 			layout.getLocation().x - 
@@ -162,6 +163,7 @@ public class GraphLabel extends GraphElement {
 		int y = BentoBox.convertDoubleToInt(
 			layout.getLocation().y +
 				(textMetricsHeight / DBL_NOT_RENDERED_SCALE_HEIGHT));			
+				
 		g.drawString(layout.getText(), x, y);
 	}
 
@@ -199,51 +201,52 @@ public class GraphLabel extends GraphElement {
 
 	public Rectangle bounds() {
 		
+		Rectangle labelBounds = new Rectangle();
+		
 		if(layout.getText().length() == 0){
-			bounds.height = 0;
-			bounds.width = 0;
-			bounds.x = (int)layout.getLocation().x;
-			bounds.y = (int)layout.getLocation().y;
+			labelBounds.height = 0;
+			labelBounds.width = 0;
+			labelBounds.x = (int)layout.getLocation().x;
+			labelBounds.y = (int)layout.getLocation().y;
 		}
 		
 		if(LatexManager.isLatexEnabled())
 		{
 			if(rendered!=null)
 			{
-				bounds.height=rendered.getHeight();
-				bounds.width=rendered.getWidth();
+				labelBounds.height=rendered.getHeight();
+				labelBounds.width=rendered.getWidth();
 			}
 			else
 			{
 				// FIXME arbitrary dimensions: has to be recomputed after rendering
-				bounds.height=10;
-				bounds.width=10;
+				labelBounds.height=10;
+				labelBounds.width=10;
 			}
 			
 			// SJW - Now, update the x and y based on the width and height
-			bounds.x = BentoBox.convertDoubleToInt(
+			labelBounds.x = BentoBox.convertDoubleToInt(
 				layout.getLocation().x - 
-					(bounds.width / DBL_RENDERED_SCALE_WIDTH));
-			bounds.y = BentoBox.convertDoubleToInt(
+					(labelBounds.width / DBL_RENDERED_SCALE_WIDTH));
+			labelBounds.y = BentoBox.convertDoubleToInt(
 				layout.getLocation().y - 
-					(bounds.height / DBL_RENDERED_SCALE_HEIGHT));	
+					(labelBounds.height / DBL_RENDERED_SCALE_HEIGHT));
 		}
 		else
 		{			
-
-			bounds.width = textMetricsWidth;
-			bounds.height = textMetricsHeight;
+			labelBounds.width = textMetricsWidth;
+			labelBounds.height = textMetricsHeight;
 			
 			// SJW - Now, update the x and y based on the width and height
-			bounds.x = BentoBox.convertDoubleToInt(
+			labelBounds.x = BentoBox.convertDoubleToInt(
 				layout.getLocation().x - 
-					(bounds.width / DBL_NOT_RENDERED_SCALE_WIDTH));
-			bounds.y = BentoBox.convertDoubleToInt(
+					(labelBounds.width / DBL_NOT_RENDERED_SCALE_WIDTH));
+			labelBounds.y = BentoBox.convertDoubleToInt(
 				layout.getLocation().y - 
-					(bounds.height / DBL_NOT_RENDERED_SCALE_HEIGHT));	
+					(labelBounds.height / DBL_NOT_RENDERED_SCALE_HEIGHT));
 		}		
 
-		return bounds;				
+		return labelBounds;				
 	}
 	
 	public boolean intersects(Point2D p) {		
@@ -287,6 +290,7 @@ public class GraphLabel extends GraphElement {
 				rendered=null;
 		}
 		setDirty(true);
+		updateMetrics();
 	}
 
 	/**
@@ -349,6 +353,13 @@ public class GraphLabel extends GraphElement {
 		GraphicalLayout labelLayout = getLayout();
 		Rectangle labelBounds = bounds();
 		
+		// Adjust the bounds for PSTricks export - need to go
+		// down and to the left
+		labelBounds.x += BentoBox.convertDoubleToInt(
+			labelBounds.width / DBL_RENDERED_SCALE_WIDTH);
+		labelBounds.y += BentoBox.convertDoubleToInt(
+			labelBounds.height / DBL_RENDERED_SCALE_HEIGHT);
+			
 		// This is taken from Mike Wood - thanks, Mike!!!
 		String safeLabel = labelLayout.getText();
 		safeLabel = BentoBox.replaceAll(safeLabel, "\\\\" 
@@ -391,8 +402,26 @@ public class GraphLabel extends GraphElement {
 			layout.setLocation(location.x,location.y);
 			setDirty(true);
 		}
-		// SJW
-		bounds();
+	}
+	
+	/**
+	 * 
+	 */
+	public void updateMetrics()
+	{
+		JFrame mainWindow = Hub.getMainWindow();
+		Graphics mainGraphics = mainWindow.getGraphics();
+		FontMetrics mainMetrics = mainGraphics.getFontMetrics(font);
+		updateMetrics(mainMetrics);
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateMetrics(FontMetrics metrics)
+	{		
+		textMetricsWidth = metrics.stringWidth( layout.getText() );
+		textMetricsHeight = metrics.getHeight();
 	}
 	
 }
