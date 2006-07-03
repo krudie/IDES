@@ -47,8 +47,9 @@ public class NodePopup extends JPopupMenu {
 		}
 		// TODO change sign of x or y as required
 		Float p = n.getLayout().getLocation();
-		float r = n.getLayout().getRadius();		
-		popup.show(context, (int)(p.x + r), (int)(p.y + r));
+		//float r = n.getLayout().getRadius();
+		p=((ui.MainWindow)main.Hub.getMainWindow()).getDrawingBoard().localToScreen(p);
+		popup.show(context, (int)p.x, (int)p.y);
 	}
 		
 	protected NodePopup(Node n) {

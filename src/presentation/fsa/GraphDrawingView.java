@@ -1,6 +1,7 @@
 package presentation.fsa;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -11,6 +12,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Point2D;
 
 import org.pietschy.command.ToggleCommand;
 
@@ -180,12 +182,14 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}	
 
 	// Mouse events
-	public void mouseClicked(MouseEvent arg0) {			
+	public void mouseClicked(MouseEvent arg0) {
+		arg0=tranfromMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseClicked(arg0);		
 	}
 
 
 	public void mousePressed(MouseEvent arg0) {
+		arg0=tranfromMouseCoords(arg0);
 		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
@@ -196,6 +200,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 
 	public void mouseReleased(MouseEvent arg0) {
+		arg0=tranfromMouseCoords(arg0);
 		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
@@ -205,10 +210,12 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}
 
 	public void mouseDragged(MouseEvent arg0) {		
+		arg0=tranfromMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseDragged(arg0);		
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
+		arg0=tranfromMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}	
 
@@ -334,5 +341,38 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 */
 	public boolean hasCurrentSelection() {		
 		return currentSelection.hasChildren();
-	}	
+	}
+	
+	protected MouseEvent tranfromMouseCoords(MouseEvent e)
+	{
+		Point2D.Float p=new Point2D.Float(e.getX(),e.getY());
+		p=screenToLocal(p);
+		return new MouseEvent(
+				(Component)e.getSource(),
+				e.getID(),
+				e.getWhen(),
+				e.getModifiersEx(),
+				(int)p.x,
+				(int)p.y,
+				e.getClickCount(),
+				e.isPopupTrigger(),
+				e.getButton()
+				);
+	}
+	
+	public Point2D.Float screenToLocal(Point2D.Float p)
+	{
+		Point2D.Float r=(Point2D.Float)p.clone();
+		r.x=r.x/scaleFactor;
+		r.y=r.y/scaleFactor;
+		return r;
+	}
+	
+	public Point2D.Float localToScreen(Point2D.Float p)
+	{
+		Point2D.Float r=(Point2D.Float)p.clone();
+		r.x=r.x*scaleFactor;
+		r.y=r.y*scaleFactor;
+		return r;
+	}
 }

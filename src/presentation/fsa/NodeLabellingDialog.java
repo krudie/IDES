@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Point2D;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -95,6 +96,10 @@ public class NodeLabellingDialog extends EscapeDialog {
 		me.pack();
 		retString=label;
 		area.setText(label);
+		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
+		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
+		p.x=(int)r.x+Hub.getWorkspace().getDrawingBoardDisplacement().x;
+		p.y=(int)r.y+Hub.getWorkspace().getDrawingBoardDisplacement().y;
 		if(p.x+me.getWidth()>Toolkit.getDefaultToolkit().getScreenSize().getWidth())
 			p.x=p.x-me.getWidth();
 		if(p.y+me.getHeight()>Toolkit.getDefaultToolkit().getScreenSize().getHeight())

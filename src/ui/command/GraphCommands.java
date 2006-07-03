@@ -253,10 +253,8 @@ public class GraphCommands {
 					String text = 
 					//JOptionPane.showInputDialog("Enter state name: ");
 					presentation.fsa.SingleLineNodeLabellingDialog.showAndGetLabel(node.getLabel().getLayout().getText(),
-							new Point((int)node.getLayout().getLocation().x+
-									Hub.getWorkspace().getDrawingBoardDisplacement().x,
-									(int)node.getLayout().getLocation().y+
-									Hub.getWorkspace().getDrawingBoardDisplacement().y));
+							new Point((int)node.getLayout().getLocation().x,
+									(int)node.getLayout().getLocation().y));
 					if(text != null){
 						context.getGraphModel().labelNode(node, text);						
 					}

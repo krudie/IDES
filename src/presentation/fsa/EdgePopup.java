@@ -73,7 +73,9 @@ public class EdgePopup extends JPopupMenu {
 			popup.setEdge(e);
 		}
 		Float p = e.getLayout().getLocation();
-		popup.show(context, (int)p.x, (int)p.y);
+		p=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard().localToScreen(p);
+		popup.show(context, (int)p.x,
+				(int)p.y);
 	}
 			
 	public void setEdge(Edge edge){
