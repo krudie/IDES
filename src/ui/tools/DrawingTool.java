@@ -36,6 +36,8 @@ public abstract class DrawingTool {
 		if(context.updateCurrentSelection(m.getPoint())){
 			SelectionGroup g = context.getCurrentSelection();			
 			((GraphElement)g.child(0)).showPopup(context);			
+		}else{
+			// TODO Popup should allow us to change tools in the context
 		}
 	}
 	

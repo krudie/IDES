@@ -26,9 +26,7 @@ public class GraphicalLayout {
 	private String text;
 	private Color color = DEFAULT_COLOR;
 	private Color highlightColor = DEFAULT_HIGHLIGHT_COLOR;
-	private Color selectionColor = DEFAULT_SELECTION_COLOR;
-
-	
+	private Color selectionColor = DEFAULT_SELECTION_COLOR;	
 	
 	public GraphicalLayout(){
 		this("");		

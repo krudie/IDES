@@ -47,6 +47,7 @@ public class GraphLabel extends GraphElement {
 	private static final double DBL_RENDERED_SCALE_HEIGHT = 2.25;
 	private static final double DBL_NOT_RENDERED_SCALE_WIDTH = 2;
 	private static final double DBL_NOT_RENDERED_SCALE_HEIGHT = 2.75;
+	private static final int TEXT_MARGIN_WIDTH = 4;
 	
 	
 	public GraphLabel(String text){
@@ -85,6 +86,12 @@ public class GraphLabel extends GraphElement {
 	
 	public void draw(Graphics g) {
 		
+		if(visible){
+			if(selected && !getText().equals("") ){ //&& parent != null && !parent.isSelected()){
+				drawBorderAndTether(g);		
+			}
+		}
+		
 		if(LatexManager.isLatexEnabled())
 		{
 			if(!visible||"".equals(layout.getText()))
@@ -107,18 +114,14 @@ public class GraphLabel extends GraphElement {
 				renderedBounds.x, renderedBounds.y);
 		}
 		else
-		{			
-			if(visible){
-				if(selected && !getText().equals("") ){ //&& parent != null && !parent.isSelected()){
-					drawBorderAndTether(g);					
-				}else if(highlighted){
-					g.setColor(layout.getHighlightColor());
-				}else{
-					g.setColor(layout.getColor());
-				}		
-				drawText(g);				
-			}
-		}
+		{					
+			if(highlighted){
+				g.setColor(layout.getHighlightColor());
+			}else{
+				g.setColor(layout.getColor());
+			}		
+			drawText(g);				
+		}		
 	}
 
 	/**
@@ -179,11 +182,14 @@ public class GraphLabel extends GraphElement {
 	 */
 	private void drawBorderAndTether(Graphics g) {		
 		g.setColor(layout.getSelectionColor());
-		Rectangle r = bounds();
-		r.width *= 1.1;
-		r.height *= 1.1;
+		
+		Rectangle border = bounds();
+		border.width += TEXT_MARGIN_WIDTH;
+		border.height += TEXT_MARGIN_WIDTH;
+		
 		Stroke s = ((Graphics2D)g).getStroke();
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
+		
 		((Graphics2D)g).draw(bounds());
 		
 		// only show for edge labels

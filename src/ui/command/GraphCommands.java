@@ -93,6 +93,12 @@ public class GraphCommands {
 			setContext(context, elementType, location);
 		}	
 		
+		public CreateCommand(GraphDrawingView context, int elementType, Edge edge, Point location){
+			setContext(context, elementType, location);
+			this.edge = edge;
+		}	
+
+		
 		/**
 		 * @param context2
 		 * @param self_loop2
@@ -101,6 +107,19 @@ public class GraphCommands {
 		public CreateCommand(GraphDrawingView context, int elementType, Node n) {
 			this.context = context;			
 			source = n;
+		}
+
+		/**
+		 * @param context
+		 * @param elementType
+		 * @param edge
+		 * @param target
+		 */
+		public CreateCommand(GraphDrawingView context, int elementType, Edge edge, Node target) {
+			this.context = context;
+			this.elementType = elementType;
+			this.edge = edge;
+			this.target = target;
 		}
 
 		public void setContext(GraphDrawingView context,  int elementType, Point location){
@@ -126,12 +145,10 @@ public class GraphCommands {
 		@Override
 		protected UndoableEdit performEdit() {
 			switch(elementType){
-			case NODE:
-				// TODO store the new node
+			case NODE:				
 				context.getGraphModel().addNode(new Float(location.x, location.y));
 				break;
-			case NODE_AND_EDGE:
-				// TODO store the new node
+			case NODE_AND_EDGE:				
 				context.getGraphModel().finishEdgeAndAddNode(edge, new Float(location.x, location.y));							
 				break;
 			case EDGE:
@@ -141,8 +158,6 @@ public class GraphCommands {
 				context.getGraphModel().setSelfLoop(source, true);
 				break;				
 			default:
-				// TODO set the tool in the *currently active* drawing view
-				// set the current drawing tool to the CreationTool
 				 context.setTool(GraphDrawingView.CREATE);
 			}		
 			 

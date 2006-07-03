@@ -26,7 +26,8 @@ public class MovementTool extends DrawingTool {
 		prev = start;
 		
 		// a group has been selected, move the whole thing
-		if(context.hasCurrentSelection() && context.getCurrentSelection().hasMultipleElements()){		
+		if(context.hasCurrentSelection() && context.getCurrentSelection().hasMultipleElements()){
+			// FIXME What if user clicks outside the selection group?
 			dragging = true;
 		}else{ // otherwise update the currently selected element
 			context.clearCurrentSelection();
@@ -56,11 +57,13 @@ public class MovementTool extends DrawingTool {
 	@Override
 	public void handleMouseReleased(MouseEvent me) {
 		end = me.getPoint();
+
+		// FIXME Null pointer exception, hard to replicate
 		if ((end == null) || (start == null))
 		{
 			return;
 		}
-		
+
 		Point displacement = new Point(end.x - start.x, end.y - start.y);
 		if( displacement.x != 0 || displacement.y != 0 ){
 			// undo needs to know the selection of moved objects
@@ -72,6 +75,7 @@ public class MovementTool extends DrawingTool {
 												displacement);		
 			moveCmd.execute();
 		}
+		
 		dragging = false;
 		start = null;
 		prev = null;

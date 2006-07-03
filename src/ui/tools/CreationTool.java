@@ -14,6 +14,8 @@ import presentation.fsa.Node;
 import ui.command.GraphCommands.CreateCommand;
 
 /**
+ * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.
+ * 
  * NOTE: Can NOT just make changes to the graph model from here because must
 				save each command in the command history.
  *
@@ -22,8 +24,10 @@ import ui.command.GraphCommands.CreateCommand;
 public class CreationTool extends DrawingTool {
 	
 	private boolean drawingEdge = false;
-	private Node sourceNode;
+	private Node sourceNode, targetNode; // nodes to be source and target of created edge
+	private Node startNode, endNode; // nodes intersected on mouse pressed and released respectively
 	private Edge edge;
+	private CreateCommand cmd;	
 	private boolean aborted;
 	
 	public CreationTool(GraphDrawingView board){
@@ -34,90 +38,116 @@ public class CreationTool extends DrawingTool {
 		//System.out.println(toolkit.getBestCursorSize(10, 10));
 		
 		// FIXME dynamic cursor names in UISettings class
-		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/create.gif")), new Point(10,0), "CREATE_NODES_OR_EDGES");
-		
+		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/create.gif")), new Point(10,0), "CREATE_NODES_OR_EDGES");		
 	}
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {	
-		
 		if(aborted){
 			aborted = false;
 			return;
-		}		
+		}
+	}
 
+	@Override
+	public void handleMousePressed(MouseEvent me) {		
 		context.clearCurrentSelection();
-		CreateCommand cmd = null;
-		Node n = null;
+		startNode = null;
+		cmd = null;
+
 		if(context.updateCurrentSelection(me.getPoint())){
 			try{		
-				n = (Node)context.getCurrentSelection().child(0);
+				startNode = (Node)context.getCurrentSelection().child(0);
+				if(!drawingEdge){
+					startEdge(); // assume we're drawing an edge until mouse released rules otherwise.				 
+					dragging = true; // assume we're dragging until mouse released rules otherwise.
+				}
 			}catch(ClassCastException e){
-				n = null;
+				startNode = null;
 			}
 		}		
-		
-		if(me.getClickCount() == 1){		  
-			  if (drawingEdge) {
-				// if intersects with a node
-				if (n != null) {
-					// get target node and create an edge
-					n = (Node) context.getCurrentSelection().child(0);					
-					cmd = new CreateCommand(context, CreateCommand.EDGE, me
-							.getPoint());					
-					cmd.setTargetNode(n);
-					cmd.setEdge(edge);					
-				} else {
-					// create edge and target node															
-					cmd = new CreateCommand(context,
-							CreateCommand.NODE_AND_EDGE, me.getPoint());
-					cmd.setEdge(edge);
-				}
-				edge = null;
-				drawingEdge = false;
-				context.clearCurrentSelection();				
-			} else {
-				if (n != null) {// if intersects with node, start drawing an
-								// edge									
-					sourceNode = n;
-					edge = context.getGraphModel().beginEdge(sourceNode);
-					drawingEdge = true;					
-				} else {
-					// otherwise, just create a node
-					cmd = new CreateCommand(context, CreateCommand.NODE, me.getPoint());
-					edge = null;
-					drawingEdge = false;
-					context.clearCurrentSelection();
-				}
-			}	    
-		} else if (me.getClickCount() == 2) {
-			// if intersect a node, draw self-loop
-			if (n != null) {
-				if(edge != null){					
-					cmd = new CreateCommand(context, CreateCommand.EDGE, me.getPoint());					
-					cmd.setTargetNode(n);
-					cmd.setEdge(edge);
-				}else{				
-					// FIXME change this to a CreateCommand so is added to history
-					cmd = new CreateCommand(context, CreateCommand.SELF_LOOP, n);
-					// context.getGraphModel().addEdge(n, n);
-				}
-				edge = null;
-				drawingEdge = false;
-				context.clearCurrentSelection();
-			} else { // otherwise, create a node and start drawing an edge
-				cmd = new CreateCommand(context, CreateCommand.NODE, me
-						.getPoint());
-				drawingEdge = true;				
-			}
-		}
-		
-		if (cmd != null) {
-			cmd.execute();			
-		}
-		
-		context.repaint();
 	}
+
+	@Override
+		public void handleMouseReleased(MouseEvent me) {
+		
+			context.clearCurrentSelection();			
+			endNode = null;
+			if(context.updateCurrentSelection(me.getPoint())){
+				try{		
+					endNode = (Node)context.getCurrentSelection().child(0);
+				}catch(ClassCastException e){}
+			}				
+			
+			if(startNode == null && endNode == null && !drawingEdge){
+				// TODO check to see that we're on the same location				
+				// create a new node at current location
+				createNode(me.getPoint());
+			}else if(startNode == endNode && startNode != null){ // select source node, keep drawing edge by mouse move (not dragging)				
+				dragging = false;
+			}else if(startNode == endNode && startNode != null && sourceNode != null && sourceNode != startNode){ // select target node, finish drawing edge by mouse move				
+				finishEdge();				
+			}else if(drawingEdge && endNode == null){  // 
+				// Assumption: startNode and sourceNode are non-null				
+				finishEdgeAndCreateTarget(me.getPoint());							
+			}else if(drawingEdge && dragging && endNode != null){  // Assumption: sourceNode != null						
+				finishEdge();			
+			}
+						
+			endNode = null;
+			context.repaint();
+		}
+
+	/**
+	 * @param point
+	 */
+	private void createNode(Point point) {
+		cmd = new CreateCommand(context, CreateCommand.NODE, point);
+		cmd.execute();
+		dragging = false;
+		drawingEdge = false;
+		edge = null;		
+	}
+
+	/**
+	 * @param point
+	 */
+	private void finishEdgeAndCreateTarget(Point point) {
+		targetNode = null;
+		cmd = new CreateCommand(context,
+				CreateCommand.NODE_AND_EDGE, edge, point);				
+		cmd.execute();
+		edge = null;
+		drawingEdge = false;
+		dragging = false;
+		sourceNode = null;
+		context.clearCurrentSelection();			
+	}
+
+	/**
+	 * 
+	 */
+	private void startEdge() {
+		sourceNode = startNode;
+		targetNode = null;
+		edge = context.getGraphModel().beginEdge(sourceNode);				
+		drawingEdge = true;		
+	}
+	
+	/**
+	 * 
+	 */
+	private void finishEdge() {		
+		targetNode = endNode;				
+		cmd = new CreateCommand(context, CreateCommand.EDGE, edge, targetNode);
+		cmd.execute();
+		edge = null;
+		drawingEdge = false;
+		dragging = false;		
+		sourceNode = null;
+		targetNode = null;
+		context.clearCurrentSelection();
+	}	
 
 	public void handleRightClick(MouseEvent me){
 		if(drawingEdge){
@@ -132,7 +162,7 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
 		// if drawing an edge, recompute the curve
-		if(drawingEdge){
+		if(dragging && drawingEdge){
 			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			context.repaint();
 		}
@@ -141,50 +171,18 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseMoved(MouseEvent me) {
 		// if drawing an edge, recompute the curve
-		// TODO and highlight any node under the mouse
-		if(drawingEdge){			
+		if(!dragging && drawingEdge){			
 			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));			
 			context.repaint();
 		}
 	}
 
 	@Override
-	public void handleMousePressed(MouseEvent me) {
-		// TODO if intersect with node, start drawing an edge
-		
-	}
+	public void handleKeyTyped(KeyEvent ke) {}
 
 	@Override
-	public void handleMouseReleased(MouseEvent me) {
-		// TODO	if drawing an edge
-		// TODO factor out duplicate code from handleMouseClicked
-		// if intersect with node, 
-		// get the target node and create the edge 
-		
-		// else create the target node and the edge
-		
-		// if not drawing an edge, just create a node
-		
-	}
+	public void handleKeyPressed(KeyEvent ke) {}
 
 	@Override
-	public void handleKeyTyped(KeyEvent ke) {
-		// TODO 
-		// If drawing edge and user typed ESCAPE
-		// drawingEdge = false;
-		// Delete the edge from it's source node's children
-		
-	}
-
-	@Override
-	public void handleKeyPressed(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void handleKeyReleased(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}	
+	public void handleKeyReleased(KeyEvent ke) {}	
 }

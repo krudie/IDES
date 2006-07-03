@@ -55,7 +55,7 @@ public class EdgeHandler extends GraphElement {
 			g2d.setColor(Color.BLUE);
 			g2d.setStroke(GraphicalLayout.FINE_STROKE);
 						
-			for(int i=0; i<4; i++){			
+			for(int i=1; i<3; i++){			
 				g2d.draw(anchors[i]);
 			}
 			
