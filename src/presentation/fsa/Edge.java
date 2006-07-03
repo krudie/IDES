@@ -291,6 +291,14 @@ public class Edge extends GraphElement {
 					curve.getX2(), curve.getY2()+y);				
 			l.setRigidTranslation(false);
 			super.translate(x, y);
+			
+		}else if(isSelfLoop()){
+			// TODO make sure (x,y) is outside my source/target node
+			
+			// rotate the orientation of loop in direction of
+			Point2D.Float centre = getSource().getLayout().getLocation();
+			Point2D.Float dir = Geometry.subtract(new Point2D.Float(x, y), centre);
+			l.computeSelfLoop(getSource().getLayout(), Geometry.unit(dir));
 		// reset the control points in the layout object
 		}else{
 
@@ -472,5 +480,12 @@ public class Edge extends GraphElement {
 			}
 		}
 		return hasUE;
+	}
+
+	/**
+	 * @return the number of transitions that this edge represents
+	 */
+	public int transitionCount() {		
+		return transitions.size();
 	}
 }
