@@ -72,32 +72,17 @@ public class Node extends GraphElement {
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void update() {
-		
-		super.update();
-		
+	
 		Point2D.Float centre = ((NodeLayout)layout).getLocation();
-		
-		// Resize based on bounds of label.
-		if(label==null){
-			label = new GraphLabel(layout.getText(), centre);
-		}else{
-			label.updateLayout(layout.getText(), centre);
-		}
-		Rectangle labelBounds = label.bounds();		
-		labelBounds.width += 2 * NodeLayout.RDIF;  // accommodate whitespace on either side of label text		
+				
+		// FIXME make sure this updates the bounds without having to draw the label first.
+		label.updateLayout(layout.getText(), centre);
 		
 		// compute new radius
-		float radius;
-		double max = labelBounds.getWidth() > labelBounds.getHeight() ? labelBounds.getWidth() : labelBounds.getHeight();		
-		radius = (float)Math.max(max/2, NodeLayout.DEFAULT_RADIUS);
-		
-		// see if node is too small or too big for the label
-		if( ! bounds().contains(labelBounds) ||  (((NodeLayout)layout).getRadius() - radius) > NodeLayout.DEFAULT_RADIUS/2){			
-			((NodeLayout)layout).setRadius(radius + 2*NodeLayout.RDIF);  // make room for inner circle			
-			recomputeEdges();
-		}
-		
-		radius = ((NodeLayout)layout).getRadius();
+		Rectangle labelBounds = label.bounds();
+		float radius = Math.max(labelBounds.width/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
+		((NodeLayout)layout).setRadius(radius);
+		recomputeEdges();
 		
 		// upper left corner, width and height
 		float d = 2*radius;
@@ -120,7 +105,7 @@ public class Node extends GraphElement {
 			// ??? How long should the shaft be?
 			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}
-					
+		super.update();					
 	}
 	
 	/**

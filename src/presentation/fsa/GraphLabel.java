@@ -32,7 +32,6 @@ import util.BentoBox;
 @SuppressWarnings("serial")
 public class GraphLabel extends GraphElement {
 	protected Rectangle bounds;	
-	protected PresentationElement parent = null;  // either the graph, a node or an edge	
 	protected Font font;
 	protected BufferedImage rendered = null;
 	
@@ -76,7 +75,7 @@ public class GraphLabel extends GraphElement {
 	 */
 	public GraphLabel(String text, PresentationElement parent, Point2D location) {	
 		this(text, location);		
-		this.parent = parent;
+		setParent(parent);
 	}
 	
 	public void draw(Graphics g) {
@@ -156,11 +155,7 @@ public class GraphLabel extends GraphElement {
 		*/
 		bounds();
 		
-		// Location to draw string
-		/*
-		int x = (int)layout.getLocation().x - (width / 2);
-		int y = (int)layout.getLocation().y + metrics.getAscent()/2;			
-		 */
+		
 		int x = BentoBox.convertDoubleToInt(
 			layout.getLocation().x - 
 				(textMetricsWidth / DBL_NOT_RENDERED_SCALE_WIDTH));
@@ -189,17 +184,28 @@ public class GraphLabel extends GraphElement {
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
 		((Graphics2D)g).draw(bounds());
 		
-		// FIXME not showing
-//		if(parent != null ){  // draw the tether
-//			g.drawLine((int)layout.getLocation().x, 
-//						(int)layout.getLocation().y, 
-//						(int)parent.getLayout().getLocation().x, 
-//						(int)parent.getLayout().getLocation().y);
-//		}
+		// only show for edge labels
+		if(getParent() != null ){  // draw the tether
+			
+			// TODO compute corner of bounding box that is nearest to the parent's centre
+			
+			g.drawLine((int)bounds().x, 
+						(int)bounds().y, 
+						(int)getParent().getLayout().getLocation().x, 
+						(int)getParent().getLayout().getLocation().y);
+		}
 		((Graphics2D)g).setStroke(s);		
 	}
 
 	public Rectangle bounds() {
+		
+		if(layout.getText().length() == 0){
+			bounds.height = 0;
+			bounds.width = 0;
+			bounds.x = (int)layout.getLocation().x;
+			bounds.y = (int)layout.getLocation().y;
+		}
+		
 		if(LatexManager.isLatexEnabled())
 		{
 			if(rendered!=null)
@@ -223,23 +229,8 @@ public class GraphLabel extends GraphElement {
 					(bounds.height / DBL_RENDERED_SCALE_HEIGHT));	
 		}
 		else
-		{
-			// Lenko writes: TODO update bounds on label change
-			// NOTE Unless we use deprecated getFontMetrics method, we
-			// have to compute the bounds until via a graphics context
-			// object in the draw method.
-			
-			// Sarah writes: OR we can compute the height and width in the
-			// draw phase, store them and use them here!
-			/*
-			if(bounds.getWidth() == 0 || bounds.getHeight() == 0){
-				Toolkit tk = Toolkit.getDefaultToolkit();
-				FontMetrics metrics = tk.getFontMetrics(font);
-				bounds.setSize(metrics.stringWidth(layout.getText()), metrics.getHeight() );
-				bounds.setLocation(new Point((int)(layout.getLocation().x - bounds.width/2), 
-											(int)(layout.getLocation().y - bounds.height/2)));			
-			}
-			*/
+		{			
+
 			bounds.width = textMetricsWidth;
 			bounds.height = textMetricsHeight;
 			
@@ -248,7 +239,7 @@ public class GraphLabel extends GraphElement {
 				layout.getLocation().x - 
 					(bounds.width / DBL_NOT_RENDERED_SCALE_WIDTH));
 			bounds.y = BentoBox.convertDoubleToInt(
-				layout.getLocation().y + 
+				layout.getLocation().y - 
 					(bounds.height / DBL_NOT_RENDERED_SCALE_HEIGHT));	
 		}		
 
@@ -259,16 +250,24 @@ public class GraphLabel extends GraphElement {
 		return bounds().contains(p);
 	}
 
+	public void translate(float x, float y){
+		// KLUGE label should store its offset from its parent,
+		// parent should be oblivious.  No time to fix properly.
+		PresentationElement parent = getParent();
+		if(parent != null){			
+			Point2D.Float offset = parent.getLayout().getLabelOffset();
+			offset.setLocation(offset.x + x, offset.y + y);
+			parent.getLayout().setLabelOffset(offset);
+		}
+		super.translate(x, y);
+	}
+	
 	public void insert(PresentationElement child, long index) {}
 	public void insert(PresentationElement g) {}
 	public void remove(PresentationElement child) {}
 	public PresentationElement child(int index) {	return null; }
 	public Iterator children() { return null; }
 	
-	public PresentationElement parent() {		
-		return parent;
-	}
-
 	public void setText(String s){
 		if(s==null)
 			s="";
@@ -395,4 +394,5 @@ public class GraphLabel extends GraphElement {
 		// SJW
 		bounds();
 	}
+	
 }

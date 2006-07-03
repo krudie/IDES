@@ -56,11 +56,6 @@ public class SelectionTool extends DrawingTool {
 		}
 
 		endPoint = me.getPoint();
-		
-//		if(startPoint == null){
-//			startPoint = endPoint;
-//			return;
-//		}
 
 		if(!endPoint.equals(startPoint)){		
 				// recompute the bounding rectangle
@@ -81,6 +76,7 @@ public class SelectionTool extends DrawingTool {
 		// TODO
 		// if selection rectangle exists, figure out if hovering over a boundary
 		// what kind of width is reasonable (surely 1 pixel is a bit mean)
+		// SOLUTION fatten the mouse point
 		// set the cursor to the appropriate resize icon
 		// Easier to just allow resizing on corner handles (see MagicDraw UML)
 		
@@ -105,9 +101,7 @@ public class SelectionTool extends DrawingTool {
 		// store starting point for selection rectangle.
 		startPoint = me.getPoint();
 		context.clearCurrentSelection();
-		context.updateCurrentSelection(startPoint);
-		
-		// FIXME this is not appearing in red
+		context.updateCurrentSelection(startPoint);		
 		context.highlightCurrentSelection(true);
 		context.repaint();
 	}

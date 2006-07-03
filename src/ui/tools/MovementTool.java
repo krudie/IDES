@@ -35,6 +35,7 @@ public class MovementTool extends DrawingTool {
 			if(context.hasCurrentSelection()){
 				dragging = true;
 			}
+			
 		}
 		context.repaint();
 	}
@@ -47,27 +48,31 @@ public class MovementTool extends DrawingTool {
 			return;
 		}		
 		next = me.getPoint();
-		context.getCurrentSelection().translate(next.x - prev.x, next.y - prev.y);
-		context.repaint();
+		context.getCurrentSelection().translate(next.x - prev.x, next.y - prev.y);		
 		prev = next;
+		context.repaint();
 	}	
 
 	@Override
 	public void handleMouseReleased(MouseEvent me) {
 		end = me.getPoint();
 		Point displacement = new Point(end.x - start.x, end.y - start.y);
-		// undo needs to know the selection of moved objects
-		// and the total translation
-		// save the set of selected objects for undo purposes
-		// NOTE: must make COPIES of all references in the selection group		
-		MoveCommand moveCmd = new MoveCommand(context, 
-											context.getCurrentSelection(), 
-											displacement);
-		// finalize movement changes in graph model
-		moveCmd.execute();
+		if( displacement.x != 0 || displacement.y != 0 ){
+			// undo needs to know the selection of moved objects
+			// and the total translation
+			// save the set of selected objects for undo purposes
+			// NOTE: must make COPIES of all references in the selection group		
+			MoveCommand moveCmd = new MoveCommand(context, 
+												context.getCurrentSelection(), 
+												displacement);		
+			moveCmd.execute();
+		}
 		dragging = false;
 		start = null;
 		prev = null;
+		next = null;
+		end = null;
+		
 		context.clearCurrentSelection();
 		context.repaint();		
 	}

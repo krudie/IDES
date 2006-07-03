@@ -176,7 +176,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			
 			// if the edge corresponding to t already exists,
 			// add t to the edge's set of transitions
-			e = edgeBetween(n1, n2); 
+			e = directEdgeBetween(n1, n2); 
 			if(e != null){
 				metaData.addToLayout(t, (EdgeLayout)e.getLayout());
 				e.addTransition(t);
@@ -218,10 +218,10 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	/**
-	 * Returns the edge from <code>source</code> to <code>target</code> if exists.
+	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
-	private Edge edgeBetween(Node source, Node target){
+	private Edge directEdgeBetween(Node source, Node target){
 		Edge e;
 		Iterator i = edges.entrySet().iterator();
 		while(i.hasNext()){
@@ -318,18 +318,22 @@ public class GraphModel extends Publisher implements Subscriber {
 	  * @param n2	
 	  */
 	public void finishEdge(Edge e, Node n2){
-		e.setTarget(n2);
-		n2.insert(e);		
-		((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
-		Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
-		metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
-		e.addTransition(t);
-		fsa.add(t);
-		fsa.notifyAllBut(this);
-		edges.put(e.getId(), e);
-		edgeLabels.put(e.getId(), e.getLabel());
-		setDirty(true);
-		notifyAllSubscribers();
+		// only add this edge if it isn't a duplicate
+		if( directEdgeBetween(e.getSource(), n2) == null){
+			e.setTarget(n2);
+			n2.insert(e);		
+			((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
+			Transition t = new Transition(maxTransitionId++, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
+			metaData.setLayoutData(t, (EdgeLayout)e.getLayout());
+			e.addTransition(t);
+			fsa.add(t);
+			fsa.notifyAllBut(this);
+			edges.put(e.getId(), e);
+			edgeLabels.put(e.getId(), e.getLabel());
+			notifyAllSubscribers();
+		}else{ // duplicate edge
+			abortEdge(e);
+		}
 	}	
 	
 	/** 
@@ -384,7 +388,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			try{
 				Edge edge = (Edge)label.getParent();
 				EdgeLayout layout = (EdgeLayout)edge.getLayout();
-				layout.setLabelOffset(Geometry.subtract(label.getLayout().getLocation(), layout.getLocation()));
+				//layout.setLabelOffset(Geometry.subtract(label.getLayout().getLocation(), layout.getLocation()));
 				Iterator<FSATransition> t = edge.getTransitions();
 				while(t.hasNext()){
 					metaData.setLayoutData(t.next(), layout);
@@ -468,7 +472,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param arg0
 	 */
 	public void setSelfLoop(Node node, boolean b) {
-		Edge selfLoop = edgeBetween(node, node);
+		Edge selfLoop = directEdgeBetween(node, node);
 		if(!b && selfLoop != null){			
 			delete(selfLoop);		
 		}
@@ -680,8 +684,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			n = (Node)entry.getValue();
 			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
-				g.insert(n);
-				//n.setSelected(true);
+				g.insert(n);				
 			}
 		}
 		
@@ -691,9 +694,8 @@ public class GraphModel extends Publisher implements Subscriber {
 		while(iter.hasNext()){
 			entry = (Entry)iter.next();
 			e = (Edge)entry.getValue();
-			if(rectangle.contains(e.bounds())){ // TODO && do a more thorough intersection test
+			if(rectangle.intersects(e.getCurveBounds())){ // TODO && do a more thorough intersection test
 				g.insert(e);
-				//e.setSelected(true);
 			}
 		}
 		
@@ -704,8 +706,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			entry = (Entry)iter.next();
 			l = (GraphLabel)entry.getValue();
 			if(rectangle.contains(l.bounds())){
-				g.insert(l);
-				//l.setSelected(true);
+				g.insert(l);				
 			}
 		}
 		

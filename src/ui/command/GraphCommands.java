@@ -248,9 +248,8 @@ public class GraphCommands {
 
 				}else if(element instanceof Edge){
 					Edge edge = (Edge)element;			
-					EdgeLabellingDialog.showDialog(context, edge);
-					// NOTE don't need an undoable edit since dialog has ok, apply and cancel buttons
-					
+					EdgeLabellingDialog.showDialog(context, edge);					
+					// TODO accumulate set of edits that were performed in the edge labelling dialog
 				}else{
 					// TODO on a free label
 					GraphLabel label = (GraphLabel)element;

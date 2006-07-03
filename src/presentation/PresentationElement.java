@@ -72,7 +72,7 @@ public interface PresentationElement {
 	/** 
 	 * @return the parent of this element, null if does not exist
 	 */
-	public PresentationElement parent();
+	public PresentationElement getParent();
 	
 	public void setParent(PresentationElement parent);
 	

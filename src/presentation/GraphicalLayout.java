@@ -22,10 +22,13 @@ public class GraphicalLayout {
 																BasicStroke.JOIN_MITER,         
 																50, new float[] {5, 2}, 0);	
 	private Point2D.Float location;
+	private Point2D.Float labelOffset;
 	private String text;
 	private Color color = DEFAULT_COLOR;
 	private Color highlightColor = DEFAULT_HIGHLIGHT_COLOR;
-	private Color selectionColor = DEFAULT_SELECTION_COLOR;	
+	private Color selectionColor = DEFAULT_SELECTION_COLOR;
+
+	
 	
 	public GraphicalLayout(){
 		this("");		
@@ -34,6 +37,7 @@ public class GraphicalLayout {
 	public GraphicalLayout(String text)	{
 		this.text = text;
 		location = new Point2D.Float();	
+		labelOffset = new Point2D.Float();
 	}
 	
 	public GraphicalLayout(Point2D.Float location) {
@@ -43,13 +47,15 @@ public class GraphicalLayout {
 	public GraphicalLayout(Point2D.Float location, String text) {
 		this.location = location;
 		this.text = text;
+		labelOffset = new Point2D.Float();
 	}
 
 	public GraphicalLayout(Point2D.Float location, String text, Color color, Color highlightColor) {
-		this.location = location;
+		this.location = location;		
 		this.text = text;
 		this.color = color;
 		this.highlightColor = highlightColor;
+		labelOffset = new Point2D.Float();
 	}
 
 	public Point2D.Float getLocation(){
@@ -105,5 +111,14 @@ public class GraphicalLayout {
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+	public Point2D.Float getLabelOffset() {
+		return labelOffset;
+	}
+
+	public void setLabelOffset(Point2D.Float labelOffset) {
+		this.labelOffset = labelOffset;
+		setDirty(true);
 	}
 }

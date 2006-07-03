@@ -165,7 +165,7 @@ public class Edge extends GraphElement {
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	    
 	    this.setLocation(midpoint);
-	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), ((EdgeLayout)layout).getLabelOffset());	    
+	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), layout.getLabelOffset());	    
 	    label.setLocation(location);
 	    
 	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
@@ -281,10 +281,10 @@ public class Edge extends GraphElement {
 	
 	public void translate(float x, float y){		
 		EdgeLayout l = (EdgeLayout)layout;
+		CubicCurve2D curve = l.getCubicCurve();
 		if(l.isRigidTranslation()){			
 		// Translate the whole curve assuming that its
-		// source and target nodes have been translated by the same displacement.
-			CubicCurve2D curve = l.getCubicCurve();
+		// source and target nodes have been translated by the same displacement.			
 			curve.setCurve(curve.getX1()+x, curve.getY1()+y,
 					curve.getCtrlX1()+x, curve.getCtrlY1()+y,
 					curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
@@ -293,11 +293,25 @@ public class Edge extends GraphElement {
 			super.translate(x, y);
 		// reset the control points in the layout object
 		}else{
+
+//			// translate endpoints and recompute control points
+			// DON'T use set point since it will snap to previous position of parent node
+			// Translate directly.
+			curve.setCurve(curve.getX1()+x, curve.getY1()+y,
+					curve.getCtrlX1(), curve.getCtrlY1(),
+					curve.getCtrlX2(), curve.getCtrlY2(),						
+					curve.getX2()+x, curve.getY2()+y);			
+			
+//			l.setPoint(Geometry.add(new Point2D.Float((float)curve.getX1(), (float)curve.getY1()), new Point2D.Float(x, y)), EdgeLayout.P1);
+//			l.setPoint(Geometry.add(new Point2D.Float((float)curve.getX2(), (float)curve.getY2()), new Point2D.Float(x, y)), EdgeLayout.P2);
+//			/////////////////////////////////////////////
+			l.computeCurve(source.getLayout(), target.getLayout());			 
+
 			if(target!=null) //translation can occur in the middle of drawing a new edge
 			{
 				l.computeCurve(source.getLayout(), target.getLayout());
-			}
-			// FIXME update location of label 
+			}			
+
 		}		
 	}
 

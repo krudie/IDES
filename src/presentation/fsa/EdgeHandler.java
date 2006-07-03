@@ -42,10 +42,10 @@ public class EdgeHandler extends GraphElement {
 	public void update() {
 		// upper left corner, width and height
 		int d = 2*RADIUS;
-		anchors[EdgeLayout.P1] = new Ellipse2D.Double(edge.getP1().x - RADIUS/2, edge.getP1().y - RADIUS/2, RADIUS, RADIUS); 
+		anchors[EdgeLayout.P1] = new Ellipse2D.Double(edge.getP1().x - RADIUS, edge.getP1().y - RADIUS, d, d); 
 		anchors[EdgeLayout.CTRL1] = new Ellipse2D.Double(edge.getCTRL1().x - RADIUS, edge.getCTRL1().y - RADIUS, d, d);				
 		anchors[EdgeLayout.CTRL2] = new Ellipse2D.Double(edge.getCTRL2().x - RADIUS, edge.getCTRL2().y - RADIUS, d, d);
-		anchors[EdgeLayout.P2] = new Ellipse2D.Double(edge.getP2().x - RADIUS/2, edge.getP2().y - RADIUS/2, RADIUS, RADIUS);
+		anchors[EdgeLayout.P2] = new Ellipse2D.Double(edge.getP2().x - RADIUS, edge.getP2().y - RADIUS, d, d);
 	}
 	
 	public void draw(Graphics g) {
@@ -54,9 +54,8 @@ public class EdgeHandler extends GraphElement {
 					
 			g2d.setColor(Color.BLUE);
 			g2d.setStroke(GraphicalLayout.FINE_STROKE);
-			
-			for(int i=1; i<3; i++){
-			//for(int i=0; i<4; i++){			
+						
+			for(int i=0; i<4; i++){			
 				g2d.draw(anchors[i]);
 			}
 			
@@ -76,7 +75,7 @@ public class EdgeHandler extends GraphElement {
 	 * TODO think about this one: is the edge its parent?
 	 * If so, add this to the edge's list of children and
 	 */
-	public PresentationElement parent() {		
+	public PresentationElement getParent() {		
 		return edge;
 	}
 

@@ -90,10 +90,6 @@ public class GraphElement implements PresentationElement {
 		return children.get(index);		
 	}
 
-	public PresentationElement parent() {
-		return parent;
-	}
-
 	public Iterator children() { 
 		return children.iterator();
 	}

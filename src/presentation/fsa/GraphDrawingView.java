@@ -205,6 +205,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}
 
 	public void mouseDragged(MouseEvent arg0) {
+		if(currentTool == SELECT){ // switch to Movement tool
+			setTool(MOVE);
+		}
 		drawingTools[currentTool].handleMouseDragged(arg0);
 		
 	}

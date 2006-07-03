@@ -54,6 +54,15 @@ public class SelectionGroup extends GraphElement {
 	}
 
 	/**
+	 * Override so don't break link to e's parent in graph structure.
+	 */
+	public void insert(PresentationElement e) {
+		PresentationElement p = e.getParent();
+		super.insert(e);
+		e.setParent(p);
+	}
+	
+	/**
 	 * @return
 	 */
 	public boolean hasMultipleElements() {

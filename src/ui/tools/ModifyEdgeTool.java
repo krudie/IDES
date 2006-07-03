@@ -26,7 +26,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	
 	private Edge edge;
 	private EdgeLayout previousLayout;  // TODO clone for undo
-	private int pointType = EdgeHandler.NO_INTERSECTION;  // CTRL1 or CTRL2
+	private int pointType = EdgeHandler.NO_INTERSECTION;  // CTRL1 or CTRL2	
 	
 	public ModifyEdgeTool(GraphDrawingView context){
 		this.context = context;
@@ -48,8 +48,7 @@ public class ModifyEdgeTool extends DrawingTool {
 					pointType = edge.getHandler().getLastIntersected();
 					if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
 						dragging = true;
-					}else{
-						pointType = EdgeHandler.NO_INTERSECTION;			
+					}else{									
 						dragging = false;					
 					}
 				}
@@ -83,18 +82,17 @@ public class ModifyEdgeTool extends DrawingTool {
 						pointType = edge.getHandler().getLastIntersected();
 						if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
 							dragging = true;
-						}else{
-							pointType = EdgeHandler.NO_INTERSECTION;
-							// context.clearCurrentSelection();
+						}else{														
 							dragging = false;					
 						}						
 					}else{
 						edge.getHandler().setVisible(true);
 					}
 				}catch(ClassCastException cce){
-					// >>> clicked on some other kind of graph element
+					// >>> clicked on some other kind of graph element					
 					if(edge != null){
-						context.clearCurrentSelection();			
+						context.clearCurrentSelection();
+						dragging = false;
 						edge = null;
 					}
 				}
@@ -102,21 +100,19 @@ public class ModifyEdgeTool extends DrawingTool {
 		}		
 		context.repaint();
 	}
+		
 	
-
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMouseDragged(java.awt.event.MouseEvent)
 	 */
 	@Override
-	public void handleMouseDragged(MouseEvent m) { 
+	public void handleMouseDragged(MouseEvent m) {
 		if(dragging){			
-			// set the selected control point to the current location
-			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);
-			//((EdgeLayout)edge.getLayout()).computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());			
+			// set the selected control point to the current location			
+			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
 			context.repaint();			
 		}
 	}
-
 
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMouseReleased(java.awt.event.MouseEvent)

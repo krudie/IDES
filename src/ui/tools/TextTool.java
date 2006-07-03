@@ -21,8 +21,7 @@ public class TextTool extends DrawingTool {
 	}
 	
 	@Override
-	public void handleMouseClicked(MouseEvent me) {
-		
+	public void handleMouseClicked(MouseEvent me) {		
 		// get current selection
 		if(context.updateCurrentSelection(me.getPoint())){			
 			new GraphCommands.TextCommand(context, (GraphElement)context.getCurrentSelection().child(0)).execute();			
@@ -41,45 +40,23 @@ public class TextTool extends DrawingTool {
 	}
 
 	@Override
-	public void handleKeyTyped(KeyEvent ke) {
-		// TODO Implement
-		// Forward typed characters to a text entry field
-		
-		// If user typed escape key, dismiss the text entry field and undo any changes 
-		
-		// ??? If the entry field has focus, do i need to do anything?
-	}
-
+	public void handleKeyTyped(KeyEvent ke) {}
 	
 	@Override
-	public void handleMouseDragged(MouseEvent me) {
-		// TODO Auto-generated method stub
-	}
+	public void handleMouseDragged(MouseEvent me) {}
 
 	@Override
-	public void handleMouseMoved(MouseEvent me) {
-		// TODO Auto-generated method stub
-	}
+	public void handleMouseMoved(MouseEvent me) {}
 
 	@Override
-	public void handleMousePressed(MouseEvent me) {
-		// TODO Auto-generated method stub
-	}
+	public void handleMousePressed(MouseEvent me) {}
 
 	@Override
-	public void handleMouseReleased(MouseEvent me) {
-		// TODO Auto-generated method stub
-	}
+	public void handleMouseReleased(MouseEvent me) {}
 
 	@Override
-	public void handleKeyPressed(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void handleKeyPressed(KeyEvent ke) {}
 
 	@Override
-	public void handleKeyReleased(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void handleKeyReleased(KeyEvent ke) {}
 }
