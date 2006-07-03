@@ -7,6 +7,8 @@ import io.fsa.ver1.FileOperations;
 
 import java.awt.Cursor;
 import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
 import java.util.Iterator;
 
 import javax.swing.JFileChooser;
@@ -276,12 +278,24 @@ public class FileCommands {
 			// Modified: June 16, 2006
 			// Modifier: Sarah-Jane Whittaker
 			String fileContents = GraphExporter.createPSTricksFileContents();
+			FileWriter latexWriter = null;
+					
 			if (fileContents == null)
 			{
 				System.out.println("ERROR: File contents are null in FileCommands.performSave!!!");							
 			}
 			
-			System.out.println("TODO: Save as LaTeX");
+			try
+			{
+				latexWriter = new FileWriter(arg0);
+				latexWriter.write(fileContents);
+				latexWriter.close();
+			}
+			catch (IOException fileException)
+			{
+				System.out.println(fileException);
+				System.out.println("\n" + fileContents);
+			}
 		}
 	}
 	
