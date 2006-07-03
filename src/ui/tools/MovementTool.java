@@ -56,6 +56,11 @@ public class MovementTool extends DrawingTool {
 	@Override
 	public void handleMouseReleased(MouseEvent me) {
 		end = me.getPoint();
+		if ((end == null) || (start == null))
+		{
+			return;
+		}
+		
 		Point displacement = new Point(end.x - start.x, end.y - start.y);
 		if( displacement.x != 0 || displacement.y != 0 ){
 			// undo needs to know the selection of moved objects
