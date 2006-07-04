@@ -1,5 +1,7 @@
 package util;
 
+import java.math.BigDecimal;
+
 /**
  * This class is designed to hold simple, generic static methods 
  * that may be needed in a variety of situations.  It's a grab-bag
@@ -55,6 +57,13 @@ public class BentoBox
 	{
 		Double doubleNum = new Double(num);
 		return doubleNum.intValue();
+	}
+	
+	public static double roundDouble(double value, int numDigits)
+	{
+		BigDecimal roundDecimal = new BigDecimal(value);
+		roundDecimal = roundDecimal.setScale(numDigits, BigDecimal.ROUND_UP);
+	    return roundDecimal.doubleValue();
 	}
 	
 	/**
