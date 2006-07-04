@@ -121,4 +121,16 @@ To use this formula with non-unit vectors:
 	public static double dot(Point2D.Float v1, Point2D.Float v2){		
 		return v1.x * v2.x + v1.y * v2.y;
 	}
+	
+	/**
+	 * Given two points, find the slope (Y2-Y1)/(X2-X1) of the line between them
+	 * @param p1 point 1
+	 * @param p2 point 2
+	 * @return the slope of the line
+	 */
+	public static float slope(Point2D.Float p1,Point2D.Float p2)
+	{
+		return (p2.y-p1.y)/(p2.x-p1.x);
+	}
+	
 }

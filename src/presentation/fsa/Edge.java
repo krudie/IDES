@@ -25,6 +25,8 @@ import util.BentoBox;
  */
 public class Edge extends GraphElement {
 	
+	protected static final float INTERSECT_THICKNESS=4;
+	
 	private ArrayList<FSATransition> transitions; // the transitions that this edge represents	
 	private Node source, target;	
 	private EdgeHandler handler; // Handles for modifying control points/tangents to the curve.	
@@ -202,18 +204,52 @@ public class Edge extends GraphElement {
 	 * @return true iff p intersects with this edge. 
 	 */
 	public boolean intersects(Point2D p){
+		
+		//Create two curves parallel to the edge curve, at a distance of INTERSECT_THICKNESS
+//		Point2D.Float p1=(Point2D.Float)((EdgeLayout)layout).getCubicCurve().getP1();
+//		Point2D.Float p2=(Point2D.Float)((EdgeLayout)layout).getCubicCurve().getP2();
+//		float d=(float)p1.distance(p1);
+//		float xt=INTERSECT_THICKNESS*(p2.x-p1.x)/d;
+//		float yt=xt*Geometry.slope(p1,p2);
+//		float deltaxt=-yt;
+//		float deltayt=xt;
+//		float deltaxb=yt;
+//		float deltayb=-xt;
+//		CubicCurve2D.Float curvet=(CubicCurve2D.Float)((EdgeLayout)layout).getCubicCurve().clone();
+//		curvet.x1+=deltaxt;
+//		curvet.x2+=deltaxt;
+//		curvet.ctrlx1+=deltaxt;
+//		curvet.ctrlx2+=deltaxt;
+//		curvet.y1+=deltayt;
+//		curvet.y2+=deltayt;
+//		curvet.ctrly1+=deltayt;
+//		curvet.ctrly2+=deltayt;
+//		CubicCurve2D.Float curveb=(CubicCurve2D.Float)((EdgeLayout)layout).getCubicCurve().clone();
+//		curveb.x1+=deltaxb;
+//		curveb.x2+=deltaxb;
+//		curveb.ctrlx1+=deltaxb;
+//		curveb.ctrlx2+=deltaxb;
+//		curveb.y1+=deltayb;
+//		curveb.y2+=deltayb;
+//		curveb.ctrly1+=deltayb;
+//		curveb.ctrly2+=deltayb;
+		
+		boolean hit=((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);
+//			!curvet.intersects(p.getX() - 4, p.getY() - 4, 8, 8) &&
+//			!curveb.intersects(p.getX() - 4, p.getY() - 4, 8, 8);
+		
 		if(isSelected() && handler.isVisible()){
 			// expand the intersection point to an 8 by 8 rectangle
-			return ((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
+			return hit || 
 				arrow.intersects(p.getX() - 4, p.getY() - 4, 8, 8) || 
 				label.intersects(p) || 
 				handler.intersects(p) ;
 		}else{
 			// expand the intersection point to an 8 by 8 rectangle
-			boolean r = ((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
+			//boolean r = ((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
 			boolean a = arrow.contains(p);
 			boolean l = label.intersects(p);			
-			return r || a || l ;
+			return hit || a || l ;
 		}		
 	}
 	

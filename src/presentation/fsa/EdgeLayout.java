@@ -306,7 +306,7 @@ public class EdgeLayout extends GraphicalLayout {
 		return ctrls;
 	}
 	
-	public CubicCurve2D getCubicCurve() {
+	public CubicCurve2D.Float getCubicCurve() {
 		return curve;
 	}	
 	
