@@ -397,19 +397,42 @@ public class EdgeLayout extends GraphicalLayout {
 	}
 	
 	protected void symmetrize(){
-		float angle=(float)(Math.abs(angle1)+Math.abs(angle2))/2F;
-		float distance=(float)(ctrls[0].distance(ctrls[1])+ctrls[2].distance(ctrls[3]))/2F;
-		angle1=angle*Math.signum(angle1);
-		angle2=angle*Math.signum(angle2);
-		Point2D.Float p=(Point2D.Float)ctrls[0].clone();
-		p.x+=distance;
-		p=Geometry.rotate(p,angle1);
-		ctrls[1]=p;
-		p=(Point2D.Float)ctrls[2].clone();
-		p.x+=distance;
-		p=Geometry.rotate(p,angle2);
-		ctrls[2]=p;
-		setCurve(ctrls);
+		Point2D.Float[] points=new Point2D.Float[4];
+		points[0]=Geometry.translate(ctrls[0],-ctrls[0].x,-ctrls[0].y);
+		points[1]=Geometry.translate(ctrls[1],-ctrls[0].x,-ctrls[0].y);
+		points[2]=Geometry.translate(ctrls[2],-ctrls[0].x,-ctrls[0].y);
+		points[3]=Geometry.translate(ctrls[3],-ctrls[0].x,-ctrls[0].y);
+		float edgeAngle=(float)Math.atan(Geometry.slope(ctrls[0],ctrls[3]));
+		points[0]=Geometry.rotate(points[0],-edgeAngle);
+		points[1]=Geometry.rotate(points[1],-edgeAngle);
+		points[2]=Geometry.rotate(points[2],-edgeAngle);
+		points[3]=Geometry.rotate(points[3],-edgeAngle);
+		
+		double quadrantFix1=(points[0].x-points[1].x>0)?Math.PI:0;
+		double quadrantFix2=(points[2].x-points[3].x>0)?Math.PI:0;
+		
+		float a1=(float)Math.atan(Geometry.slope(points[0],points[1]));
+		float a2=(float)Math.atan(Geometry.slope(points[3],points[2]));
+		float angle=(float)(Math.abs(a1)+Math.abs(a2))/2F;
+		float distance=(float)(points[0].distance(points[1])+points[2].distance(points[3]))/2F;
+		
+		points[1]=Geometry.rotate(new Point2D.Float(distance,0),(angle*Math.signum(a1)+quadrantFix1));
+		points[2]=Geometry.rotate(new Point2D.Float(distance,0),(angle*Math.signum(a2)+quadrantFix2+Math.PI));
+		points[2].x+=points[3].x;
+		points[2].y+=points[3].y;
+		
+		a1=(float)Math.atan(Geometry.slope(points[0],points[1]));
+		a2=(float)Math.atan(Geometry.slope(points[3],points[2]));
+
+		points[1]=Geometry.rotate(points[1],edgeAngle);
+		points[2]=Geometry.rotate(points[2],edgeAngle);
+		points[0]=ctrls[0];
+		points[1]=Geometry.translate(points[1],ctrls[0].x,ctrls[0].y);
+		points[2]=Geometry.translate(points[2],ctrls[0].x,ctrls[0].y);
+		points[3]=ctrls[3];
+
+		setCurve(points);
+		setDirty(true);
 	}
 
 	/**

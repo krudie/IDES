@@ -82,6 +82,7 @@ public class Node extends GraphElement {
 		Rectangle labelBounds = label.bounds();
 		float radius = Math.max(labelBounds.width/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
 		((NodeLayout)layout).setRadius(radius);
+		radius=((NodeLayout)layout).getRadius();
 		recomputeEdges();
 		
 		// upper left corner, width and height

@@ -106,6 +106,7 @@ public class GraphCommands {
 		 */
 		public CreateCommand(GraphDrawingView context, int elementType, Node n) {
 			this.context = context;			
+			this.elementType = elementType;
 			source = n;
 		}
 

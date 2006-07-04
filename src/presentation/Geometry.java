@@ -51,7 +51,7 @@ public class Geometry {
 	public static Point2D.Float rotate(Point2D.Float v, double r) {
 		float c = (float)Math.cos(r);
 		float s = (float)Math.sin(r);
-		return new Point2D.Float(v.x*c + v.y*s, v.y*c - v.x*s);	
+		return new Point2D.Float(v.x*c - v.y*s, v.y*c + v.x*s);	
 	}
 	
 	/** 
@@ -133,4 +133,8 @@ To use this formula with non-unit vectors:
 		return (p2.y-p1.y)/(p2.x-p1.x);
 	}
 	
+	public static Point2D.Float translate(Point2D.Float p, float x, float y)
+	{
+		return new Point2D.Float(p.x+x,p.y+y);
+	}
 }
