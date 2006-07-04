@@ -98,6 +98,7 @@ public class EdgePopup extends JPopupMenu {
 			}else if(source.equals(miSymmetrize)){
 				EdgeLayout el=(EdgeLayout)edge.getLayout();
 				el.symmetrize();
+				Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
 			}			

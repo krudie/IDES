@@ -7,18 +7,29 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 import org.pietschy.command.ToggleCommand;
 
 import main.Hub;
 import main.IDESWorkspace;
 import model.Subscriber;
+import model.fsa.FSAEvent;
+import model.fsa.ver1.Automaton;
+import model.fsa.ver1.Event;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import ui.tools.CreationTool;
@@ -90,6 +101,25 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * The selected print area.
 	 */
 	private PresentationElement printArea;
+
+	/**
+	 * The listener for the user pressing the <code>Delete</code> key.
+	 */
+	protected Action deleteListener = new AbstractAction()
+	{
+		public void actionPerformed(ActionEvent actionEvent)
+		{
+			if(currentSelection!=null)
+			{
+				for(Iterator i=currentSelection.children();i.hasNext();)
+				{
+					GraphElement ge=(GraphElement)i.next();
+					graphModel.delete(ge);
+				}
+				update();
+			}
+		}
+	};
 	
 	public GraphDrawingView() {
 		super();
@@ -123,6 +153,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		addKeyListener(this);
 		this.setFocusable(true);
 		this.requestFocus();
+
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),this);
+		getActionMap().put(this,deleteListener);
 		
 	    setVisible(true);
 	}	
@@ -226,8 +259,6 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	// Key listener events
 	// FIXME move all key listening to the main window since it seems events don't make it this far...
 	public void keyTyped(KeyEvent arg0) {
-		// DEBUG	
-		System.out.println("key typed (dammit)");
 		drawingTools[currentTool].handleKeyTyped(arg0);		
 	}
 
