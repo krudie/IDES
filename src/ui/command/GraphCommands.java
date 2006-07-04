@@ -251,15 +251,7 @@ public class GraphCommands {
 				}else if (element instanceof Node){				
 					Node node = (Node)element;
 					// if selection is a node				
-					String text = 
-					//JOptionPane.showInputDialog("Enter state name: ");
-					presentation.fsa.SingleLineNodeLabellingDialog.showAndGetLabel(node.getLabel().getLayout().getText(),
-							new Point((int)node.getLayout().getLocation().x,
-									(int)node.getLayout().getLocation().y));
-					if(text != null){
-						context.getGraphModel().labelNode(node, text);						
-					}
-
+					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(context.getGraphModel(),node);
 				}else if(element instanceof Edge){
 					Edge edge = (Edge)element;			
 					EdgeLabellingDialog.showDialog(context, edge);					

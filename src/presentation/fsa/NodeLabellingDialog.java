@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -38,20 +40,23 @@ public class NodeLabellingDialog extends EscapeDialog {
 	
 	private static NodeLabellingDialog me=null;
 
+	private static GraphModel gm=null;
+	private static Node n;
+
 	protected Action commitListener = new AbstractAction()
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			retString=area.getText();
+			if(gm!= null){
+				gm.labelNode(n,area.getText());						
+			}
 			setVisible(false);
 		}
 	};
 
-	private static String retString="";
-	
 	private NodeLabellingDialog()
 	{
-		super(Hub.getMainWindow(),Hub.string("nodeLabellingTitle"),true);
+		super(Hub.getMainWindow(),Hub.string("nodeLabellingTitle"));
 		addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent e) {
 		    	onEscapeEvent();
@@ -61,6 +66,16 @@ public class NodeLabellingDialog extends EscapeDialog {
 		Box mainBox=Box.createVerticalBox();
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		area=new JTextArea(HEIGHT,WIDTH);
+		area.addFocusListener(new FocusListener()
+		{
+			public void focusLost(FocusEvent e)
+			{
+				commitListener.actionPerformed(new ActionEvent(this,0,""));	
+			}
+			public void focusGained(FocusEvent e)
+			{
+			}
+		});
 		Object actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),this);
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
@@ -90,11 +105,15 @@ public class NodeLabellingDialog extends EscapeDialog {
 
 	protected static JTextArea area;
 	
-	public static String showAndGetLabel(String label, Point p)
+	public static void showAndLabel(GraphModel gm, Node node)
 	{
+		NodeLabellingDialog.gm=gm;
+		n=node;
+		Point p=new Point((int)node.getLayout().getLocation().x,
+				(int)node.getLayout().getLocation().y);
 		instance();
 		me.pack();
-		retString=label;
+		String label=node.getLabel().getLayout().getText();
 		area.setText(label);
 		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
 		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
@@ -106,7 +125,6 @@ public class NodeLabellingDialog extends EscapeDialog {
 			p.y=p.y-me.getHeight();
 		me.setLocation(p);
 		me.setVisible(true);
-		return retString;
 	}
 	
 	public void onEscapeEvent()

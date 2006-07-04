@@ -558,7 +558,8 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			if(selected != null){
 				listAssignedEvents.addElement((Comparable)selected);
 				listAvailableEvents.removeElement(selected);
-			}	
+				textField.setText("");
+			}
 		}
 		
 		public void mouseClicked(MouseEvent e)
@@ -584,6 +585,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			if(selected != null){
 				listAssignedEvents.removeElement(selected);
 				listAvailableEvents.insertElement((Comparable)selected);
+				textField.setText("");
 			}	
 		}
 		public void mouseClicked(MouseEvent e)
@@ -599,6 +601,9 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		public void actionPerformed(ActionEvent arg0) {
+			
+			if(!"".equals(textField.getText()))
+				buttonCreate.doClick();
 			// Apply any changes to edge's events
 			Event[] events = new Event[listAssignedEvents.getContents().size()];
 			Object[] contents = listAssignedEvents.getContents().toArray();

@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -40,20 +41,16 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
 	
 	public FilmStrip(){
+		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 		Hub.getWorkspace().attach(this);
 		thumbnailBox=Box.createHorizontalBox();
 		add(thumbnailBox);
-		//setLayout(new GridLayout(1,6));
-		//setAlignmentY(Component.LEFT_ALIGNMENT);
 		addMouseListener(this);
 	}
 	
 	public void remove(GraphView gv){
 		thumbnailBox.remove(gv);
 		graphViews.remove(gv);
-//		if(activeView.equals(gv)){
-//			activeView = null;
-//		}
 	}
 	
 //	public GraphView getActiveView() {
@@ -103,6 +100,8 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		{
 			JPanel p=new JPanel(new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
+			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
+			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
 			if(gv.getGraphModel().equals(activeModel))
 				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));
@@ -111,7 +110,6 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 			thumbnailBox.add(p);
 			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));
 		}
-		thumbnailBox.add(Box.createHorizontalGlue());
 		invalidate();
 		Hub.getMainWindow().validate();
 	}

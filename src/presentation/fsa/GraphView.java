@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 
@@ -25,8 +26,6 @@ public class GraphView extends JComponent implements Subscriber {
 	 * if true, update() will set the scale factor so that the whole model fits in the view
 	 */
 	protected boolean scaleToFit = true;
-	
-	protected int width=100,height=100;
 	
 	/**
 	 * An object to handle synchronizing FSA model with the displayed graph.
@@ -75,15 +74,16 @@ public class GraphView extends JComponent implements Subscriber {
 		if(getGraphModel()!=null)
 		{
 			graphBounds=getGraphModel().getBounds(true);
-			if(scaleToFit&&getParent()!=null)
-			{
-				float xScale=(float)(getParent().getBounds().getWidth()-getParent().insets().left-getParent().insets().right-30)/(float)(graphBounds.width+graphBounds.x);
-				float yScale=(float)(getParent().getBounds().getHeight()-getParent().insets().top-getParent().insets().bottom-30)/(float)(graphBounds.height+graphBounds.y);
-				setScaleFactor(Math.min(xScale,yScale));
-			}
 			if(graphBounds.x<0||graphBounds.y<0)
 			{
 				graphModel.translate(-graphBounds.x+GRAPH_BORDER_TICKNESS,-graphBounds.y+GRAPH_BORDER_TICKNESS);
+			}
+			if(scaleToFit&&getParent()!=null)
+			{
+				Insets ins=getParent().getInsets();
+				float xScale=(float)(getParent().getWidth()-ins.left-ins.right)/(float)(graphBounds.width+graphBounds.x+GRAPH_BORDER_TICKNESS);
+				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_TICKNESS);
+				setScaleFactor(Math.min(xScale,yScale));
 			}
 			invalidate();
 		}

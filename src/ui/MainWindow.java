@@ -74,12 +74,10 @@ public class MainWindow extends JFrame implements Subscriber {
 
 		drawingBoard = new GraphDrawingView();		
 
-		createAndAddTabbedPane();				
+		createAndAddMainPane();				
 		
 		// TODO add graph spec, latex and eps views to the state model		
-		filmStrip = new FilmStrip();	
-		filmStrip.setSize(new Dimension((int)(getSize().width * 0.9), (int)(getSize().height * 0.3)));
-		getContentPane().add(filmStrip, BorderLayout.SOUTH);
+		getContentPane().add(new StatusBar(), BorderLayout.SOUTH);
 	
 		loadAndExportCommands();
 		createAndAddMenuBar();
@@ -92,7 +90,8 @@ public class MainWindow extends JFrame implements Subscriber {
 	    //setExtendedState(MAXIMIZED_BOTH);
 	}
 	
-	 private void createAndAddTabbedPane() {
+	 private void createAndAddMainPane() {
+		JPanel mainPane=new JPanel(new BorderLayout());
 		tabbedViews = new JTabbedPane();
 		drawingBoard.setName("No graph");
 		JScrollPane sp = new JScrollPane(drawingBoard, 
@@ -103,7 +102,15 @@ public class MainWindow extends JFrame implements Subscriber {
 		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
 		tabbedViews.addTab("Graph",sp);
 		tabbedViews.addTab("Events", new EventView());
-		getContentPane().add(tabbedViews, "Center");
+		mainPane.add(tabbedViews,BorderLayout.CENTER);
+
+		Box fsBox=Box.createHorizontalBox();
+		filmStrip = new FilmStrip();
+		fsBox.add(filmStrip);
+		fsBox.add(Box.createHorizontalGlue());
+		mainPane.add(new JScrollPane(fsBox,JScrollPane.VERTICAL_SCROLLBAR_NEVER,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.SOUTH);
+		
+		getContentPane().add(mainPane, "Center");
 	}
 
 	 private void createAndAddToolBar() {

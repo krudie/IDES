@@ -319,9 +319,9 @@
     </command>
    <command id="text.command">
       <face>
-         <text>Text</text>
+         <text>Label</text>
          <icon type="classpath">images/icons/machine_alpha.gif</icon>
-         <description>Label graph element</description>         
+         <description>Label element</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>

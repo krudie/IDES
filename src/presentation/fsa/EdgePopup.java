@@ -40,7 +40,7 @@ public class EdgePopup extends JPopupMenu {
 		MenuListener listener = new MenuListener();
 		miModify.addActionListener(listener);
 		add(miModify);
-		miEditEvents = new JMenuItem("Label with Events");
+		miEditEvents = new JMenuItem("Label with events", new ImageIcon(Hub.getResource("images/icons/machine_alpha.gif")));
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
 
