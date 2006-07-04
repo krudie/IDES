@@ -77,8 +77,8 @@ public class GraphView extends JComponent implements Subscriber {
 			graphBounds=getGraphModel().getBounds(true);
 			if(scaleToFit&&getParent()!=null)
 			{
-				float xScale=(float)getParent().getBounds().getWidth()/(float)(graphBounds.width+graphBounds.x);
-				float yScale=(float)getParent().getBounds().getHeight()/(float)(graphBounds.height+graphBounds.y);
+				float xScale=(float)(getParent().getBounds().getWidth()-getParent().insets().left-getParent().insets().right-30)/(float)(graphBounds.width+graphBounds.x);
+				float yScale=(float)(getParent().getBounds().getHeight()-getParent().insets().top-getParent().insets().bottom-30)/(float)(graphBounds.height+graphBounds.y);
 				setScaleFactor(Math.min(xScale,yScale));
 			}
 			if(graphBounds.x<0||graphBounds.y<0)

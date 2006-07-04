@@ -165,7 +165,16 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		if(b)
 		{
 			addMouseMotionListener(this);
-			addMouseListener(this);
+			MouseListener[] ml=getMouseListeners();
+			boolean isInML=false;
+			for(int i=0;i<ml.length;++i)
+				if(ml[i]==this)
+				{
+					isInML=true;
+					break;
+				}
+			if(!isInML)
+				addMouseListener(this);
 			addKeyListener(this);
 		}
 		else
