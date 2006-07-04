@@ -421,11 +421,13 @@ public class Edge extends GraphElement {
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
 			// Check whether this should be a line or a curve
-			if ((edgeLayout.getAngle1() < EdgeLayout.EPSILON) &&
-				(edgeLayout.getAngle2() < EdgeLayout.EPSILON))
+			if (edgeLayout.isStraight())
 			{
 				// Draw a straight line
-				exportString += "  \\psline[arrowsize=5pt]{->}(" 
+				exportString += "  \\psline[arrowsize=5pt";
+				exportString += (hasUncontrollableEvent() ?
+					", linestyle=dashed" : "");
+				exportString += "]{->}(" 
 					+ (edgeP1.x - selectionBox.x) + "," 
 					+ (selectionBox.y + selectionBox.height - edgeP1.y) + ")(" 
 					+ (edgeP2.x - selectionBox.x) + "," 
@@ -434,7 +436,10 @@ public class Edge extends GraphElement {
 			else
 			{	
 				// Draw a curve				
-				exportString += "  \\psbezier[arrowsize=5pt]{->}" //+ dash 
+				exportString += "  \\psbezier[arrowsize=5pt";
+				exportString += (hasUncontrollableEvent() ?
+						", linestyle=dashed" : "");
+				exportString += "]{->}"
 					+ "(" + (edgeP1.x - selectionBox.x) + "," 
 					+ (selectionBox.y + selectionBox.height - edgeP1.y) + ")(" 
 					+ (edgeCTRL1.x - selectionBox.x) + "," 

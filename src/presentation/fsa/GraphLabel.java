@@ -43,7 +43,7 @@ public class GraphLabel extends GraphElement {
 	// Added by SJW
 	private int textMetricsWidth = 0;
 	private int textMetricsHeight = 0;
-	private static final double DBL_RENDERED_SCALE_WIDTH = 2.3;
+	private static final double DBL_RENDERED_SCALE_WIDTH = 2.0;
 	private static final double DBL_RENDERED_SCALE_HEIGHT = 2.25;
 	private static final double DBL_NOT_RENDERED_SCALE_WIDTH = 2;
 	private static final double DBL_NOT_RENDERED_SCALE_HEIGHT = 2.75;
@@ -367,13 +367,6 @@ public class GraphLabel extends GraphElement {
 		GraphicalLayout labelLayout = getLayout();
 		Rectangle labelBounds = bounds();
 		
-		// Adjust the bounds for PSTricks export - need to go
-		// down and to the left
-		labelBounds.x += BentoBox.convertDoubleToInt(
-			labelBounds.width / DBL_RENDERED_SCALE_WIDTH);
-		labelBounds.y += BentoBox.convertDoubleToInt(
-			labelBounds.height / DBL_RENDERED_SCALE_HEIGHT);
-			
 		// This is taken from Mike Wood - thanks, Mike!!!
 		String safeLabel = labelLayout.getText();
 		safeLabel = BentoBox.replaceAll(safeLabel, "\\\\" 
@@ -391,6 +384,12 @@ public class GraphLabel extends GraphElement {
 				+ " outside bounds " + selectionBox);
 			return exportString;
 		}
+		
+		// Adjust the bounds for PSTricks export
+		labelBounds.x = BentoBox.convertFloatToInt(
+			layout.getLocation().x);
+		labelBounds.y = BentoBox.convertFloatToInt(
+			layout.getLocation().y);
 		
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{

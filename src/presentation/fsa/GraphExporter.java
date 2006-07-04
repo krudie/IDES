@@ -1,7 +1,7 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
-//import java.io.File;
+import util.BentoBox;
 
 import main.IDESWorkspace;
 
@@ -28,6 +28,8 @@ public class GraphExporter
 	public static final int INT_PSTRICKS_MARKED_STATE_RADIUS_DIFF = 4;
 	public static final double DBL_PSTRICKS_SCALE_VALUE = 0.90;	
 	private static final int INT_PSTRICKS_BORDER_SIZE = 10;
+	private static final double DBL_PSTRICKS_MAX_WIDTH = 398.0;
+	private static final double DBL_PSTRICKS_MAX_HEIGHT = 648.0;
 	
 	// NOTE: Mike has this string in his LatexPrinter in IDES, but I 
 	// don't think it does anything, so it's ignored here.
@@ -40,6 +42,7 @@ public class GraphExporter
 	
 	private static final String STR_PSTRICKS_END_FIGURE = 
 		"\\end{pspicture}\n" +
+		"}\n" +
 		"\\caption[Your caption goes here.]\n" +
 		"{\n" +
 		" Your caption and description go here.\n" +
@@ -106,6 +109,7 @@ public class GraphExporter
 
 		Rectangle exportBounds = null;
 		int border = 0;
+		double scale = 1;
 		
 		// Step #1 - Get the GraphModel
 		workspace = IDESWorkspace.instance();
@@ -147,10 +151,30 @@ public class GraphExporter
 				INT_PSTRICKS_BORDER_SIZE : exportBounds.y;
 		exportBounds.y -= border;
 		exportBounds.height += (border * 2);
+
+		// Step #3.75 - Figure out the scale factor
+		if (exportBounds.width > DBL_PSTRICKS_MAX_WIDTH)
+		{
+			scale = DBL_PSTRICKS_MAX_WIDTH / exportBounds.width;
+			System.out.println(exportBounds.width + " " 
+					+ DBL_PSTRICKS_MAX_WIDTH + " " + scale);
+		}
+		if (exportBounds.height > DBL_PSTRICKS_MAX_HEIGHT)
+		{
+			scale = (scale > (DBL_PSTRICKS_MAX_HEIGHT / exportBounds.height)) ?
+					DBL_PSTRICKS_MAX_HEIGHT / exportBounds.height :
+				    scale;
+			System.out.println(exportBounds.height + " " 
+					+ DBL_PSTRICKS_MAX_HEIGHT + " " + scale);
+		}
+		scale = BentoBox.roundDouble(scale, 2);
 		
-		// Step #4 - Begin with the basic picture boundary and frame
-		// information
-		contentsString += "\\begin{pspicture}(0,0)(" 
+		// Step #4 - Begin with the basic sclaing, picture boundary
+		// and frame information
+		contentsString += "\\scalebox{" 
+			+ scale + "}\n"
+			+ "{\n"
+			+ "\\begin{pspicture}(0,0)(" 
 			+ exportBounds.width + "," 
 			+ exportBounds.height + ")\n" 
 			+	"  \\psset{linewidth=1pt}\n"
@@ -186,8 +210,7 @@ public class GraphExporter
 		// document declaration
 		contentsString += STR_PSTRICKS_END_FIGURE
 			+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION;
-
-		System.out.println(contentsString);		
+	
 		return contentsString;
 	}
 
