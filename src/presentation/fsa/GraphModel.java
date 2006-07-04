@@ -287,7 +287,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void updateEdge(Edge e, Point2D.Float p){
 		EdgeLayout layout = (EdgeLayout)e.getLayout();
 		NodeLayout s = e.getSource().getLayout();
-		// FIXME only draw the edge if the point is outside the bounds of the source node
+		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSource().intersects(p) ){
 			layout.computeCurve(s, p);
 			e.setVisible(true);
@@ -366,7 +366,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}
 
-	public void saveMovement(SelectionGroup selection){
+	public void saveMovement(PresentationElement selection){
 		Iterator children = selection.children();
 		while(children.hasNext()){
 			PresentationElement el = (PresentationElement)children.next();
@@ -1006,6 +1006,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	public void translate(float x, float y)
 	{
 		graph.translate(x,y);
+		saveMovement(graph);
 		setDirty(true);
 		notifyAllSubscribers();
 	}
