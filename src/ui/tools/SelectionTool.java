@@ -50,13 +50,15 @@ public class SelectionTool extends DrawingTool {
 	 * Stretch the selection rectangle.
 	 */
 	public void handleMouseDragged(MouseEvent me) {		
+		if(moving){ return; }
+		
 		if(!dragging) {
 			context.clearCurrentSelection();
 			dragging = true;
 		}
 
 		endPoint = me.getPoint();
-
+		
 		if(!endPoint.equals(startPoint)){		
 				// recompute the bounding rectangle
 				//	figure out relative position of start and endpoint to compute top left corner, width and height.
@@ -66,7 +68,8 @@ public class SelectionTool extends DrawingTool {
 						  Math.abs(endPoint.y - startPoint.y));											
 				box.setLocation(topLeftPt);
 				box.setSize(d);
-				context.updateCurrentSelection(box);				
+				context.updateCurrentSelection(box);
+				context.highlightCurrentSelection(true);
 				context.repaint();	
 			}
 	}
@@ -86,24 +89,36 @@ public class SelectionTool extends DrawingTool {
 	/**
 	 * Handle mouse down events by preparing for a drag.
 	 */
-	public void handleMousePressed(MouseEvent me) {
-		// if i have pressed the mouse on the current selection		
-		//SelectionGroup selection = context.getCurrentSelection();
-//		if(selection != null && selection.intersects(me.getPoint())){
-//			//prepare to move the selection on drag event
-//			moving = true;
-//			context.setTool(GraphDrawingView.MOVE);
-//		}
-		
+	public void handleMousePressed(MouseEvent me) {		
 		// TODO if an edge is selected and i have hit a control point handle
 		// start modifying the edge
 		
-		// store starting point for selection rectangle.
-		startPoint = me.getPoint();
+		// Prepare to move a group of selected elements on drag event
+		// only if I have intersected the group.
+		if(context.getCurrentSelection().hasMultipleElements() ) // && context.getCurrentSelection().bounds().contains(me.getPoint())){
+		{ 			
+			context.highlightCurrentSelection(true);
+			context.setTool(GraphDrawingView.MOVE);	
+			moving = true;
+			return;
+		}		
+		
 		context.clearCurrentSelection();
-		context.updateCurrentSelection(startPoint);		
-		context.highlightCurrentSelection(true);
+		context.updateCurrentSelection(me.getPoint());				
 		context.repaint();
+		
+		// if i have pressed the mouse on the current selection		
+		if(context.hasCurrentSelection()){
+			//prepare to move the selection on drag event
+			context.highlightCurrentSelection(true);			
+			context.setTool(GraphDrawingView.MOVE);	
+			moving = true;
+		}else{
+			// store starting point for selection rectangle.
+			startPoint = me.getPoint();
+			moving = false;
+			dragging = true;
+		}
 	}
 
 	@Override
@@ -115,14 +130,14 @@ public class SelectionTool extends DrawingTool {
 		if(dragging){
 			// compute the set of graph elements hit by rectangle
 			context.updateCurrentSelection(box);
-								
+			context.highlightCurrentSelection(true);						
 			// reset
 			box.setSize(0,0);
 			startPoint = null;
 			endPoint = null;			
 			dragging = false;
 		}
-		context.highlightCurrentSelection(false);
+//		context.highlightCurrentSelection(false);
 		context.repaint();
 	}
 

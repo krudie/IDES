@@ -59,21 +59,19 @@ public class MovementTool extends DrawingTool {
 		end = me.getPoint();
 
 		// FIXME Null pointer exception, hard to replicate
-		if ((end == null) || (start == null))
-		{
-			return;
-		}
-
-		Point displacement = new Point(end.x - start.x, end.y - start.y);
-		if( displacement.x != 0 || displacement.y != 0 ){
-			// undo needs to know the selection of moved objects
-			// and the total translation
-			// save the set of selected objects for undo purposes
-			// NOTE: must make COPIES of all references in the selection group		
-			MoveCommand moveCmd = new MoveCommand(context, 
-												context.getCurrentSelection(), 
-												displacement);		
-			moveCmd.execute();
+		if ((end != null) && (start != null))
+		{	
+			Point displacement = new Point(end.x - start.x, end.y - start.y);
+			if( displacement.x != 0 || displacement.y != 0 ){
+				// undo needs to know the selection of moved objects
+				// and the total translation
+				// save the set of selected objects for undo purposes
+				// NOTE: must make COPIES of all references in the selection group		
+				MoveCommand moveCmd = new MoveCommand(context, 
+													context.getCurrentSelection(), 
+													displacement);		
+				moveCmd.execute();
+			}			
 		}
 		
 		dragging = false;
@@ -81,8 +79,9 @@ public class MovementTool extends DrawingTool {
 		prev = null;
 		next = null;
 		end = null;
-		
 		context.clearCurrentSelection();
+		context.updateCurrentSelection(me.getPoint());
+		context.setTool(GraphDrawingView.SELECT);
 		context.repaint();		
 	}
 

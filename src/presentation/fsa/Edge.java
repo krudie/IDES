@@ -109,19 +109,22 @@ public class Edge extends GraphElement {
 		Graphics2D g2d = (Graphics2D)g;		
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.
-		if(source.isHighlighted() || 
+		if(highlighted ||
+				source.isHighlighted() || 
 				target != null && target.isHighlighted()){
 			setHighlighted(true);
 			g2d.setColor(layout.getHighlightColor());
 		}else{
-			setHighlighted(false);
+//			setHighlighted(false);
 			g2d.setColor(layout.getColor());
 		}		
 		
 		if(isSelected()){
 			g2d.setColor(layout.getSelectionColor());
+			handler.setVisible(true);
 		}else{
-			handler.setVisible(false); // KLUGE to clean up after modify edge tool
+			//handler.setVisible(false); // KLUGE to clean up after modify edge tool
+			handler.setVisible(false);
 		}
 
 		if(hasUncontrollableEvent()){

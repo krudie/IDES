@@ -87,7 +87,7 @@ public class GraphLabel extends GraphElement {
 	public void draw(Graphics g) {
 		
 		if(visible){
-			if(selected && !getText().equals("") ){ //&& parent != null && !parent.isSelected()){
+			if( (selected || highlighted) && !getText().equals("") ){ //&& parent != null && !parent.isSelected()){
 				drawBorderAndTether(g);		
 			}
 		}
@@ -117,9 +117,11 @@ public class GraphLabel extends GraphElement {
 		{					
 			if(highlighted){
 				g.setColor(layout.getHighlightColor());
+			}else if(selected){
+				g.setColor(layout.getSelectionColor());
 			}else{
 				g.setColor(layout.getColor());
-			}		
+			}
 			drawText(g);				
 		}		
 	}
@@ -180,8 +182,14 @@ public class GraphLabel extends GraphElement {
 	/**
 	 * @param g
 	 */
-	private void drawBorderAndTether(Graphics g) {		
-		g.setColor(layout.getSelectionColor());
+	private void drawBorderAndTether(Graphics g) {	
+		if(selected){
+			g.setColor(layout.getSelectionColor());
+		}else if(highlighted){
+			g.setColor(layout.getHighlightColor());
+		}else{
+			g.setColor(layout.getColor());
+		}
 		
 		Rectangle border = bounds();
 		border.width += TEXT_MARGIN_WIDTH;
@@ -189,14 +197,14 @@ public class GraphLabel extends GraphElement {
 		
 		Stroke s = ((Graphics2D)g).getStroke();
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
-		
-		((Graphics2D)g).draw(bounds());
-		
-		// only show for edge labels
-		if(getParent() != null ){  // draw the tether
+				
+		// FIXME only show for edge labels
+		// KLUGE instanceof, should have subclasses EdgeLabel and NodeLabel
+		if(getParent() != null && getParent() instanceof Edge ){  // draw the tether
 			
-			// TODO compute corner of bounding box that is nearest to the parent's centre
+			((Graphics2D)g).draw(bounds());	// TODO draw border for free labels too 
 			
+			// TODO compute corner of bounding box that is nearest to the parent's centre			
 			g.drawLine((int)bounds().x, 
 						(int)bounds().y, 
 						(int)getParent().getLayout().getLocation().x, 
