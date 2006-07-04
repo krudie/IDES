@@ -59,8 +59,8 @@ public class CreationTool extends DrawingTool {
 			try{		
 				startNode = (Node)context.getCurrentSelection().child(0);
 				if(!drawingEdge){
-					startEdge(); // assume we're drawing an edge until mouse released rules otherwise.				 
-					dragging = true; // assume we're dragging until mouse released rules otherwise.
+					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
+					dragging = true; // assume we're dragging until mouse released decides otherwise.
 				}
 			}catch(ClassCastException e){
 				startNode = null;
@@ -79,13 +79,16 @@ public class CreationTool extends DrawingTool {
 				}catch(ClassCastException e){}
 			}				
 			
-			if(startNode == null && endNode == null && !drawingEdge){
-				// TODO check to see that we're on the same location				
+			if(startNode == null && endNode == null && !drawingEdge){								
 				// create a new node at current location
 				createNode(me.getPoint());
-			}else if(startNode == endNode && startNode != null){ // select source node, keep drawing edge by mouse move (not dragging)				
-				dragging = false;
-			}else if(startNode == endNode && startNode != null && sourceNode != null && sourceNode != startNode){ // select target node, finish drawing edge by mouse move				
+			}else if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging){ // drawing edge by not dragging
+				// previous case happened on last click
+				// second click on same node so make a self-loop
+				finishSelfLoop();
+			}else if(startNode == endNode && startNode == sourceNode){ // select source node, keep drawing edge by mouse move (not dragging)				
+				dragging = false;			
+			}else if(startNode == endNode && startNode != sourceNode && endNode != null){ // select target node, finish drawing edge by mouse move				
 				finishEdge();				
 			}else if(drawingEdge && endNode == null){  // 
 				// Assumption: startNode and sourceNode are non-null				
@@ -99,21 +102,38 @@ public class CreationTool extends DrawingTool {
 		}
 
 	/**
-	 * @param point
+	 * 
 	 */
-	private void createNode(Point point) {
-		cmd = new CreateCommand(context, CreateCommand.NODE, point);
-		cmd.execute();
-		dragging = false;
+	private void finishSelfLoop() {
+		targetNode = endNode;
+		context.getGraphModel().abortEdge(edge);		
 		drawingEdge = false;
-		edge = null;		
+		edge = null;
+		cmd = new CreateCommand(context, CreateCommand.SELF_LOOP, targetNode);
+		cmd.execute();
+		sourceNode = null;
+		targetNode = null;
+		context.clearCurrentSelection();
 	}
 
 	/**
 	 * @param point
 	 */
-	private void finishEdgeAndCreateTarget(Point point) {
+	private void createNode(Point point) {
+		cmd = new CreateCommand(context, CreateCommand.NODE, point);
+		cmd.execute();
+		edge = null;
+		drawingEdge = false;
+		dragging = false;		
+		sourceNode = null;
 		targetNode = null;
+		context.clearCurrentSelection();
+	}
+
+	/**
+	 * @param point
+	 */
+	private void finishEdgeAndCreateTarget(Point point) {		
 		cmd = new CreateCommand(context,
 				CreateCommand.NODE_AND_EDGE, edge, point);				
 		cmd.execute();
@@ -121,6 +141,7 @@ public class CreationTool extends DrawingTool {
 		drawingEdge = false;
 		dragging = false;
 		sourceNode = null;
+		targetNode = null;	
 		context.clearCurrentSelection();			
 	}
 
@@ -154,7 +175,7 @@ public class CreationTool extends DrawingTool {
 			context.getGraphModel().abortEdge(edge);
 			drawingEdge = false;			
 		}
-		aborted = true;		
+		aborted = true;
 		context.repaint();
 		super.handleRightClick(me);		
 	}
