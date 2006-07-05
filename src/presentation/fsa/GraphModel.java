@@ -336,6 +336,7 @@ public class GraphModel extends Publisher implements Subscriber {
 			fsa.notifyAllBut(this);
 			edges.put(e.getId(), e);
 			edgeLabels.put(e.getId(), e.getLabel());
+			setDirty(true);
 			notifyAllSubscribers();
 		}else{ // duplicate edge
 			abortEdge(e);
