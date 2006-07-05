@@ -4,6 +4,8 @@ import java.awt.Rectangle;
 import util.BentoBox;
 
 import main.IDESWorkspace;
+import main.Hub;
+import main.PersistentProperties;
 
 
 /**
@@ -31,6 +33,9 @@ public class GraphExporter
 	private static final double DBL_PSTRICKS_MAX_WIDTH = 398.0;
 	private static final double DBL_PSTRICKS_MAX_HEIGHT = 648.0;
 	
+	/** Export properties **/
+	private static final String STR_EXPORT_PROP_USE_FRAME = "addFrameToExport";
+
 	// NOTE: Mike has this string in his LatexPrinter in IDES, but I 
 	// don't think it does anything, so it's ignored here.
 	// private static String STR_TEXT_ADDON = "\n  \\rput(0,0){\\parbox{21pt}{\\begin{center}\\end{center}}}",
@@ -110,6 +115,8 @@ public class GraphExporter
 		Rectangle exportBounds = null;
 		int border = 0;
 		double scale = 1;
+		boolean useFrame = Hub.persistentData.getBoolean(
+			STR_EXPORT_PROP_USE_FRAME);
 		
 		// Step #1 - Get the GraphModel
 		workspace = IDESWorkspace.instance();
@@ -177,10 +184,13 @@ public class GraphExporter
 			+ "\\begin{pspicture}(0,0)(" 
 			+ exportBounds.width + "," 
 			+ exportBounds.height + ")\n" 
-			+	"  \\psset{linewidth=1pt}\n"
-			+ "  \\psframe(0,0)(" 
-			+ exportBounds.width + "," 
-			+ exportBounds.height + ")\n\n";
+			+	"  \\psset{linewidth=1pt}\n";
+		if (useFrame)
+		{
+			contentsString += "  \\psframe(0,0)(" 
+				+ exportBounds.width + "," 
+				+ exportBounds.height + ")\n\n";
+		}
 		
 		// Step #5 - Add the node information 
 		for (int i = 0; i < nodeArray.length; i++)
