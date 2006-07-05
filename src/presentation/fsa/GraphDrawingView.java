@@ -32,6 +32,7 @@ import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
+import ui.command.UniformNodesCommand;
 import ui.tools.CreationTool;
 import ui.tools.DrawingTool;
 import ui.tools.ModifyEdgeTool;
@@ -205,9 +206,8 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	
 	public void update(){
 		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
-		// get the active graph model
-		graphModel = IDESWorkspace.instance().getActiveGraphModel();
-		// update the graph view part of me
+		// get the active graph model and update the graph view part of me		
+		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
 		super.update();
 		Hub.getMainWindow().validate();
 	}

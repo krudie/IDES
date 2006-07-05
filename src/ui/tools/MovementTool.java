@@ -62,7 +62,7 @@ public class MovementTool extends DrawingTool {
 	public void handleMouseReleased(MouseEvent me) {
 		end = me.getPoint();
 
-		// FIXME Null pointer exception, hard to replicate
+		// Null pointer exception, hard to replicate
 		if ((end != null) && (start != null))
 		{	
 			Point displacement = new Point(end.x - start.x, end.y - start.y);
@@ -83,8 +83,13 @@ public class MovementTool extends DrawingTool {
 		prev = null;
 		next = null;
 		end = null;
-		context.clearCurrentSelection();
-		context.updateCurrentSelection(me.getPoint());
+		
+		// don't deselect groups of multiple elements since user may wish to revise movement
+		if( ! context.getCurrentSelection().hasMultipleElements() ){
+			context.clearCurrentSelection();
+			context.updateCurrentSelection(me.getPoint());
+		}
+		
 		context.setTool(GraphDrawingView.SELECT);
 		context.repaint();		
 	}

@@ -3,6 +3,7 @@ package presentation.fsa;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,15 +48,24 @@ public class GraphElement implements PresentationElement {
 		}
 	}
 
+	/**
+	 * @return the smallest rectangle containing all of my children 
+	 */
 	public Rectangle2D bounds() {
-		// compute the max bounding rectangle to hold all 
-		// of my children
+		
 		Iterator c = children.iterator();
-		Rectangle2D.Float bounds = new Rectangle2D.Float();
+		Rectangle2D bounds = null;		
 		while(c.hasNext()){
 			PresentationElement child = (PresentationElement)c.next();
-			bounds.createUnion(child.bounds()); 
+			if(bounds == null){
+				bounds = child.bounds();
+			}else{
+				bounds = bounds.createUnion(child.bounds());
+			}
 		}		
+		if(bounds == null){
+			bounds = new Rectangle2D.Float();			
+		}
 		return bounds;
 	}
 

@@ -12,6 +12,7 @@ import main.Hub;
 
 import presentation.PresentationElement;
 import presentation.fsa.BoundingBox;
+import presentation.fsa.Edge;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.SelectionGroup;
 
@@ -43,12 +44,7 @@ public class SelectionTool extends DrawingTool {
 		d = new Dimension();
 		topLeftPt = new Point();
 		box = context.getSelectionArea();
-	}
-	
-	@Override
-	public void handleMouseClicked(MouseEvent me) {		
-		// TODO if keyboard shift or control, add currently selected item to buffer		
-	}
+	}	
 
 	@Override
 	/**
@@ -95,18 +91,22 @@ public class SelectionTool extends DrawingTool {
 	 * Handle mouse down events by preparing for a drag.
 	 */
 	public void handleMousePressed(MouseEvent me) {		
-		// TODO if an edge is selected and i have hit a control point handle
-		// start modifying the edge
 		
 		// Prepare to move a group of selected elements on drag event
-		// only if I have intersected the group.
-		if(context.getCurrentSelection().hasMultipleElements() ) // && context.getCurrentSelection().bounds().contains(me.getPoint())){
-		{ 			
+		// only if I have intersected the group.		
+		if(context.getCurrentSelection().hasMultipleElements() && context.getCurrentSelection().intersects(me.getPoint())) { 			
 			context.highlightCurrentSelection(true);
 			context.setTool(GraphDrawingView.MOVE);	
 			moving = true;
 			return;
-		}		
+		}
+		
+		// If an edge is selected and i have hit a control point handle
+		// start modifying the edge		
+		if(context.hasCurrentSelection() && context.getCurrentSelection().child(0) instanceof Edge) { // KLUGE instanceof is YUCK
+			context.setTool(GraphDrawingView.MODIFY);
+			return;
+		}
 		
 		context.clearCurrentSelection();
 		context.updateCurrentSelection(me.getPoint());				
@@ -142,10 +142,13 @@ public class SelectionTool extends DrawingTool {
 			endPoint = null;			
 			dragging = false;
 		}
-//		context.highlightCurrentSelection(false);
 		context.repaint();
 	}
 
+	@Override
+	public void handleMouseClicked(MouseEvent me) {		
+		// TODO if keyboard shift or control, add currently selected item to buffer		
+	}	
 	
 	@Override
 	public void handleKeyTyped(KeyEvent ke) {

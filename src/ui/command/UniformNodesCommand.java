@@ -1,4 +1,4 @@
-package presentation.fsa;
+package ui.command;
 
 import main.Hub;
 

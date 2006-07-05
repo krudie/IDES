@@ -329,22 +329,8 @@ public class Edge extends GraphElement {
 			Point2D.Float centre = getSource().getLayout().getLocation();
 			Point2D.Float dir = Geometry.subtract(new Point2D.Float(x, y), centre);
 			l.computeSelfLoop(getSource().getLayout(), Geometry.unit(dir));
-		// reset the control points in the layout object
-		}else{
 
-//			// translate endpoints and recompute control points
-			// DON'T use set point since it will snap to previous position of parent node
-			// Translate directly.
-			curve.setCurve(curve.getX1()+x, curve.getY1()+y,
-					curve.getCtrlX1(), curve.getCtrlY1(),
-					curve.getCtrlX2(), curve.getCtrlY2(),						
-					curve.getX2()+x, curve.getY2()+y);			
-			
-//			l.setPoint(Geometry.add(new Point2D.Float((float)curve.getX1(), (float)curve.getY1()), new Point2D.Float(x, y)), EdgeLayout.P1);
-//			l.setPoint(Geometry.add(new Point2D.Float((float)curve.getX2(), (float)curve.getY2()), new Point2D.Float(x, y)), EdgeLayout.P2);
-//			/////////////////////////////////////////////
-			l.computeCurve(source.getLayout(), target.getLayout());			 
-
+		}else{ 	// reset the control points in the layout object
 			if(target!=null) //translation can occur in the middle of drawing a new edge
 			{
 				l.computeCurve(source.getLayout(), target.getLayout());
@@ -364,8 +350,11 @@ public class Edge extends GraphElement {
 	/**
 	 * @return true iff source node is same as target node
 	 */
-	public boolean isSelfLoop() {		
-		return source.equals(target);
+	public boolean isSelfLoop() {
+		if(source != null && target != null){
+			return source.equals(target);
+		}
+		return false;
 	}
 
 	/**
