@@ -196,8 +196,8 @@ public class EdgeLayout extends GraphicalLayout {
 		// Draw default loop above node and let node rotate it if necessary.
 		// direction vectors rotate (0, r) by pi/4 and -pi/4
 		double angleScalar = 5 * s.getRadius() / NodeLayout.DEFAULT_RADIUS;  
-		angle1 = Math.PI/angleScalar;
-		angle2 = Math.PI/-angleScalar;
+		angle1 = -Math.PI/angleScalar;
+		angle2 = -angle1;
 		s1 = s2 = 0.0;
 					
 		Point2D.Float axis = Geometry.scale(unitDir, s.getRadius()); //new Point2D.Float(0, -s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
