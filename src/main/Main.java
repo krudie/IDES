@@ -103,6 +103,7 @@ public class Main {
 		Hub.getWorkspace().addFSAModel(fsa);
 
 		//go live!
+		Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
 	}
 }
