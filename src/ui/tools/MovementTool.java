@@ -6,6 +6,8 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import main.Hub;
+
 import presentation.fsa.GraphDrawingView;
 
 import ui.command.GraphCommands.MoveCommand;
@@ -16,7 +18,9 @@ public class MovementTool extends DrawingTool {
 
 	public MovementTool(GraphDrawingView context){
 		this.context = context;
-		this.cursor = new Cursor(Cursor.MOVE_CURSOR);
+		//this.cursor = new Cursor(Cursor.MOVE_CURSOR);
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/move.gif")), new Point(12,12), "MOVE_NODES_OR_LABELS");		
 	}
 	
 	@Override

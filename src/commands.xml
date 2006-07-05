@@ -319,7 +319,7 @@
     <command id="move.command">
       <face>
          <text>Move</text>
-         <icon type="classpath">images/icons/graphic_grab.gif</icon>
+         <icon type="classpath">images/icons/graphic_move.gif</icon>
          <description>Move nodes and adjacent edges</description>
       </face>
       <face name="toolbar" extends="[default]">

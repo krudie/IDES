@@ -1,10 +1,14 @@
 package ui.tools;
 
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+
+import main.Hub;
 
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
@@ -18,6 +22,8 @@ public class TextTool extends DrawingTool {
 	
 	public TextTool(GraphDrawingView context){
 		this.context = context;		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/text.gif")), new Point(0,0), "MAKE_LABELS");		
 	}
 	
 	@Override
