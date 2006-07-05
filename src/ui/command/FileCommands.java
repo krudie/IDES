@@ -266,6 +266,21 @@ public class FileCommands {
 		
 	}
 	
+	public static class ExportToEPSCommand extends AbstractSaveAsCommand {
+
+		public ExportToEPSCommand() {
+			super(CommandManager.defaultInstance(), "export.eps.command", 
+					new ExtensionFileFilter("eps", "Encapsulated PostScript"));
+		}
+
+		@Override
+		protected void performSave(File arg0) {
+			// TODO Auto-generated method stub
+			System.out.println("TODO: Save as EPS");
+		}
+		
+	}
+	
 	public static class ExportToLatexCommand extends AbstractSaveAsCommand {
 
 		public ExportToLatexCommand() {

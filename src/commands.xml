@@ -160,7 +160,7 @@
         <command id="saveas.automaton.command">
       <face>
          <text>Save _model as...</text>
-         <icon type="classpath">images/icons/file_saveas.gif</icon>
+         <icon type="classpath">images/icons/file_saveas_automaton.gif</icon>
          <description>Save model as...</description>         
       </face>
       <face name="toolbar" extends="[default]">
@@ -227,9 +227,8 @@
          <description>Export model</description>
       </face>
       <members>  
-         <member command-id="export.gif.command"/>
          <member command-id="export.latex.command"/>         
-         <member command-id="export.png.command"/>         
+         <member command-id="export.eps.command"/>
       </members>  
     </group>
     <command id="export.gif.command">    
@@ -242,11 +241,21 @@
          <text/>
       </face>
     </command>
-    <command id="export.latex.command">    
+    <command id="export.latex.command">
       <face>
          <text>Export to LaTeX</text>
-         <icon type="classpath">images/icons/file_export_gif.gif</icon>
+         <icon type="classpath">images/icons/file_export_tex.gif</icon>
          <description>Export to LaTeX</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>
+    <command id="export.eps.command">
+      <face>
+         <text>Export to EPS</text>
+         <icon type="classpath">images/icons/file_export_eps.gif</icon>
+         <description>Export to Encapsulated PostScript</description>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>

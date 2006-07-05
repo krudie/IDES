@@ -186,9 +186,10 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.SaveWorkspaceCommand().export();
 		new FileCommands.SaveWorkspaceAsCommand().export();
 		
-		new FileCommands.ExportToGIFCommand().export();
+		//new FileCommands.ExportToGIFCommand().export();
+		new FileCommands.ExportToEPSCommand().export();
 		new FileCommands.ExportToLatexCommand().export();
-		new FileCommands.ExportToPNGCommand().export();
+		//new FileCommands.ExportToPNGCommand().export();
 		new FileCommands.ExitCommand().export();
 		
 		//moved to LatexManager

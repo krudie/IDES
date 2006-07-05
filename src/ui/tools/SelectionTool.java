@@ -4,8 +4,11 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+
+import main.Hub;
 
 import presentation.PresentationElement;
 import presentation.fsa.BoundingBox;
@@ -34,7 +37,9 @@ public class SelectionTool extends DrawingTool {
 	
 	public SelectionTool(GraphDrawingView board){
 		context = board;
-		cursor = new Cursor(Cursor.HAND_CURSOR);
+//		cursor = new Cursor(Cursor.HAND_CURSOR);
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/modify_.gif")), new Point(0,0), "SELECT_NODES_OR_EDGES");		
 		d = new Dimension();
 		topLeftPt = new Point();
 		box = context.getSelectionArea();
