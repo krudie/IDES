@@ -101,9 +101,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
 			
-		maxStateId = fsa.getStateCount();
-		maxTransitionId = fsa.getTransitionCount();
-		maxEventId = fsa.getEventCount();
+		maxStateId = 0;
+		maxTransitionId = 0;
+		maxEventId = 0;
 		
 		update();
 		
@@ -154,10 +154,10 @@ public class GraphModel extends Publisher implements Subscriber {
 			s = (State)iter.next();
 			NodeLayout nL=metaData.getLayoutData(s);
 			nL.setUniformRadius(uniformR);
-			n1 = new Node(s, nL);
-			n1.update();  // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+			n1 = new Node(s, nL);			
 			graph.insert(n1);
 			nodes.put(new Long(s.getId()), n1);
+			maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
 		}
 
 		// for all transitions in fsa
@@ -180,25 +180,24 @@ public class GraphModel extends Publisher implements Subscriber {
 			e = directEdgeBetween(n1, n2); 
 			if(e != null){
 				metaData.addToLayout(t, (EdgeLayout)e.getLayout());
-				e.addTransition(t);
-				//e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+				e.addTransition(t);			
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge			
-				e = new Edge(t, n1, n2, metaData.getLayoutData(t));
-				//e.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
+				e = new Edge(t, n1, n2, metaData.getLayoutData(t));				
 				
-				// add this edge to source node's out edges
-				n1.insert(e);
-				//n1.update(); // TODO: CHANGE THIS SO JUST CALL graph.update() at end of this method.
-				
-				// DON'T add this edge to target node's in edges, since it doesn't store them :)
+				// add this edge to source and target nodes' children
+				n1.insert(e);				
 				n2.insert(e);
-				//n2.update();
 				
 				// add to set of edges
 				// id may be misleading since it is the id of only the first transition on this edge
 				edges.put(new Long(t.getId()), e);
+			}
+			maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
+			FSAEvent event = t.getEvent();
+			if(event != null){
+				maxEventId = maxEventId < event.getId() ? event.getId() : maxEventId;
 			}
 		}
 	
