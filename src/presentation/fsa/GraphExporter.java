@@ -164,16 +164,12 @@ public class GraphExporter
 		if (exportBounds.width > DBL_PSTRICKS_MAX_WIDTH)
 		{
 			scale = DBL_PSTRICKS_MAX_WIDTH / exportBounds.width;
-			System.out.println(exportBounds.width + " " 
-					+ DBL_PSTRICKS_MAX_WIDTH + " " + scale);
 		}
 		if (exportBounds.height > DBL_PSTRICKS_MAX_HEIGHT)
 		{
 			scale = (scale > (DBL_PSTRICKS_MAX_HEIGHT / exportBounds.height)) ?
 					DBL_PSTRICKS_MAX_HEIGHT / exportBounds.height :
 				    scale;
-			System.out.println(exportBounds.height + " " 
-					+ DBL_PSTRICKS_MAX_HEIGHT + " " + scale);
 		}
 		scale = BentoBox.roundDouble(scale, 2);
 		
