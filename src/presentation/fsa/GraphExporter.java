@@ -32,6 +32,7 @@ public class GraphExporter
 	private static final int INT_PSTRICKS_BORDER_SIZE = 10;
 	private static final double DBL_PSTRICKS_MAX_WIDTH = 398.0;
 	private static final double DBL_PSTRICKS_MAX_HEIGHT = 648.0;
+	public static final double DBL_PSTRICKS_FONT_BASELINE_FACTOR = 1.2;
 	
 	/** Export properties **/
 	private static final String STR_EXPORT_PROP_USE_FRAME = "addFrameToExport";

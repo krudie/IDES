@@ -393,10 +393,15 @@ public class GraphLabel extends GraphElement {
 		
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
+			// Don't forget the font size!!!
 			exportString = "  \\rput(" 
 				+ (labelBounds.x - selectionBox.x) + "," 
 				+ (selectionBox.y + selectionBox.height - labelBounds.y) + "){\\parbox{" 
-				+ labelBounds.width + "pt}{\\begin{center}" 
+				+ labelBounds.width + "pt}{\\fontsize{"
+				+ getLatexFontSize() + "}{"
+				+ BentoBox.roundDouble(getLatexFontSize() * 
+					GraphExporter.DBL_PSTRICKS_FONT_BASELINE_FACTOR, 2)
+				+ "} \\selectfont \\begin{center}" 
 				+ safeLabel + "\\end{center}}}\n";		
 		}
 		else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS)
