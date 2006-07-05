@@ -366,6 +366,8 @@ public class GraphLabel extends GraphElement {
 		String exportString = "";
 		GraphicalLayout labelLayout = getLayout();
 		Rectangle labelBounds = bounds();
+		Node parentNode = null;
+		GraphicalLayout nodeLayout = null;
 		
 		// This is taken from Mike Wood - thanks, Mike!!!
 		String safeLabel = labelLayout.getText();
@@ -386,10 +388,11 @@ public class GraphLabel extends GraphElement {
 		}
 		
 		// Adjust the bounds for PSTricks export
-		labelBounds.x = BentoBox.convertFloatToInt(
-			layout.getLocation().x);
-		labelBounds.y = BentoBox.convertFloatToInt(
-			layout.getLocation().y);
+		labelBounds.x = BentoBox.convertDoubleToInt(
+			layout.getLocation().x - (layout.getLocation().x * 0.00001));
+		labelBounds.y = BentoBox.convertDoubleToInt(
+			layout.getLocation().y 
+				+ (layout.getLocation().y * layout.getLocation().y * 0.00002));
 		
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
