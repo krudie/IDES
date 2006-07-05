@@ -214,4 +214,9 @@ public class LatexManager {
 				}
 			});
 	}
+	
+	public static float getFontSize()
+	{
+		return 12;
+	}
 }

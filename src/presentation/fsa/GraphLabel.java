@@ -437,4 +437,8 @@ public class GraphLabel extends GraphElement {
 		textMetricsHeight = metrics.getHeight();
 	}
 	
+	public static float getLatexFontSize()
+	{
+		return LatexManager.getFontSize();
+	}
 }
