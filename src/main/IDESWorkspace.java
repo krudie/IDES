@@ -82,6 +82,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		}
 		getActiveGraphModel().attach(getDrawingBoard());
 		notifyAllSubscribers();
+		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
 		if(countAdd!=0)
 			dirty = true;
 		countAdd++;
