@@ -339,9 +339,12 @@ public class EventView extends JPanel implements Subscriber,ActionListener {
 		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
 
 		table=new JTable(new EventTableModel());
+		table.setPreferredScrollableViewportSize(new Dimension(
+				table.getPreferredScrollableViewportSize().width,
+				200));
 		table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),this);
 		table.getActionMap().put(this,deleteListener);
-		mainBox.add(new JScrollPane(table));
+		mainBox.add(new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 		
 		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
 

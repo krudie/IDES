@@ -1,6 +1,11 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+import pluggable.ui.OptionsPane;
 import util.BentoBox;
 
 import main.IDESWorkspace;
@@ -14,10 +19,48 @@ import main.PersistentProperties;
  * EPS, GIF and PNG.  All of the methods are static; there is no
  * need to instantiate to perform these functions.
  * 
- * @author Sarah-Jane Whittaker
+ * @author Sarah-Jane Whittaker, Lenko Grigorov
  **/
 public class GraphExporter 
 {
+	
+	public static class ExportOptionsPane implements OptionsPane
+	{
+		private JCheckBox cbFrame=new JCheckBox(Hub.string("addFrameToExport"));
+		private JPanel pane=null;
+		
+		public void commitOptions()
+		{
+			Hub.persistentData.setBoolean(STR_EXPORT_PROP_USE_FRAME, cbFrame.isSelected());
+		}
+		
+		public void disposePane()
+		{
+			pane=null;
+		}
+		
+		public JPanel getPane()
+		{
+			if(pane==null)
+			{
+				pane=new JPanel();
+				pane.add(cbFrame);
+				cbFrame.setSelected(Hub.persistentData.getBoolean(STR_EXPORT_PROP_USE_FRAME));
+			}
+			return pane;
+		}
+		
+		public String getTitle()
+		{
+			return Hub.string("optionsExportTitle");
+		}
+		
+		public void resetOptions()
+		{
+			cbFrame.setSelected(Hub.persistentData.getBoolean(STR_EXPORT_PROP_USE_FRAME));
+		}
+	}
+	
 	///////////////////////////////////////////////////////////////////
 	// Static Variables
 	///////////////////////////////////////////////////////////////////
@@ -47,7 +90,6 @@ public class GraphExporter
 		"\\centering\n";	
 	
 	private static final String STR_PSTRICKS_END_FIGURE = 
-		"\\end{pspicture}\n" +
 		"}\n" +
 		"\\caption[Your caption goes here.]\n" +
 		"{\n" +
@@ -61,16 +103,12 @@ public class GraphExporter
 		"% this code can be compiled into and EPS file\n\n" +
 		"\\documentclass[12pt]{article}\n" +	
 		"\\usepackage{pstricks}\n" +	
+		"\\usepackage{setspace}\n" +
 		"\\pagestyle{empty}\n";
 	
 	private static final String STR_EPS_END_DOC = 
-		// TODO: Put this in!!!
-		// "\\special{papersize=" + (w + 10) + "pt," + (h + 10) + "pt}\n" +
-		"\\usepackage[left=5pt,top=5pt,right=5pt,nohead,nofoot]{geometry}\n" +
-		"\\setlength{\\parindent}{0pt}\n" +
-		"\\begin{document}\n" +	
-		"\\psset{unit=1pt}\n" +
-		"\\end{document}";
+		"\\end{document}" +
+		"\n\n";
 	
 	// Commented document declaration for EPS export - taken from
 	// IDES LatexPrinter
@@ -90,7 +128,6 @@ public class GraphExporter
 		"% \\usepackage{setspace}\n" +
 		"% \\usepackage{pstricks}\n" +
 		"% \\begin{document}\n" +
-		"% \\psset{unit=1pt}\n" +
 		"% \\include{your_tex_file_name_WITHOUT_TEX_EXTENSION}\n" +
 		"% \\end{document}";
 	
@@ -109,10 +146,6 @@ public class GraphExporter
 		IDESWorkspace workspace = null;
 		GraphModel graphModel = null;
 		
-		Node[] nodeArray = null;
-		Edge[] edgeArray = null;
-		GraphLabel[] freelabelArray = null;
-
 		Rectangle exportBounds = null;
 		int border = 0;
 		double scale = 1;
@@ -124,14 +157,8 @@ public class GraphExporter
 		graphModel = workspace.getActiveGraphModel();
 		if (graphModel == null)
 		{
-			System.out.println("ERROR: No graph model for ExportToLatexCommand.performSave!!!");
 			return null;
 		}
-
-		// Step #2 - Get the Nodes, Edges and Labels
-		nodeArray = (Node[]) graphModel.getNodes().toArray(new Node[0]);
-		edgeArray = (Edge[]) graphModel.getEdges().toArray(new Edge[0]);
-		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 
@@ -175,10 +202,52 @@ public class GraphExporter
 		
 		// Step #4 - Begin with the basic sclaing, picture boundary
 		// and frame information
-		contentsString += "\\scalebox{" 
+		contentsString += 
+			"\\scalebox{" 
 			+ scale + "}\n"
 			+ "{\n"
-			+ "\\begin{pspicture}(0,0)(" 
+			+ "\\psset{unit=1pt}\n";
+		
+		contentsString += createPSPicture(exportBounds,useFrame);
+
+		// Step #8 - End the pciture and add the commented LaTeX
+		// document declaration
+		contentsString += STR_PSTRICKS_END_FIGURE
+			+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION;
+	
+		return contentsString;
+	}
+
+	/**
+	 * Generate PSTricks description of the current model 
+	 * @param exportBounds the boundaries of the figure
+	 * @param useFrame whether a frame should be added around the figure
+	 * @return PSTricks code describing the current model
+	 */
+	public static String createPSPicture(Rectangle exportBounds, boolean useFrame)
+	{
+		IDESWorkspace workspace = null;
+		GraphModel graphModel = null;
+		
+		Node[] nodeArray = null;
+		Edge[] edgeArray = null;
+		GraphLabel[] freelabelArray = null;
+
+		// Step #1 - Get the GraphModel
+		workspace = IDESWorkspace.instance();
+		graphModel = workspace.getActiveGraphModel();
+		if (graphModel == null)
+		{
+			return null;
+		}
+
+		// Step #2 - Get the Nodes, Edges and Labels
+		nodeArray = (Node[]) graphModel.getNodes().toArray(new Node[0]);
+		edgeArray = (Edge[]) graphModel.getEdges().toArray(new Edge[0]);
+		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
+
+		String contentsString =
+			"\\begin{pspicture}(0,0)(" 
 			+ exportBounds.width + "," 
 			+ exportBounds.height + ")\n" 
 			+	"  \\psset{linewidth=1pt}\n";
@@ -211,17 +280,78 @@ public class GraphExporter
 			contentsString += freelabelArray[i].createExportString(exportBounds,
 				INT_EXPORT_TYPE_PSTRICKS);
 		}		
-		contentsString += "\n";
+		contentsString += "\n" +
+		"\\end{pspicture}\n";
+
+		return contentsString;
+	}
+	
+	/**
+	 * Creates the LaTeX document which will be rendered into an EPS
+	 * @return LaTeX document containing a PSTricks description of the current model
+	 */
+	public static String createEPSFileContents()
+	{
+		String contentsString = STR_EPS_BEGIN_DOC;
+		IDESWorkspace workspace = null;
+		GraphModel graphModel = null;
+		
+		Rectangle exportBounds = null;
+		int border = 0;
+		boolean useFrame = Hub.persistentData.getBoolean(
+			STR_EXPORT_PROP_USE_FRAME);
+		
+		// Step #1 - Get the GraphModel
+		workspace = IDESWorkspace.instance();
+		graphModel = workspace.getActiveGraphModel();
+		if (graphModel == null)
+		{
+			return null;
+		}
+
+		// Step #3 - Figure out the dimensions
+		// If there's a selection box, then use that, otherwise make 
+		// a box that holds eveything
+		// if (there is a selection)
+		// {
+		//		exportBounds = selection;
+		// }		
+		// else
+		// {
+		exportBounds = graphModel.getBounds(false);
+		// }
+		
+		// Step #3.5 - Add a border to the export bounds
+		/*
+		exportBounds.width -= exportBounds.x;
+		exportBounds.height -= exportBounds.y;
+		*/
+		border = (exportBounds.x > INT_PSTRICKS_BORDER_SIZE) ?
+			INT_PSTRICKS_BORDER_SIZE : exportBounds.x;
+		exportBounds.x -= border;
+		exportBounds.width += (border * 2);
+
+		border = (exportBounds.y > INT_PSTRICKS_BORDER_SIZE) ?
+				INT_PSTRICKS_BORDER_SIZE : exportBounds.y;
+		exportBounds.y -= border;
+		exportBounds.height += (border * 2);
+
+		// Step #4 - Begin with the basic sclaing, picture boundary
+		// and frame information
+		contentsString += "\\special{papersize=" + (exportBounds.width + 10) + "pt," + (exportBounds.height + 10) + "pt}\n"
+			+ "\\begin{document}\n"	
+			+ "\\psset{unit=1pt}\n";
+		
+		contentsString+=createPSPicture(exportBounds,useFrame);
 
 		// Step #8 - End the pciture and add the commented LaTeX
 		// document declaration
-		contentsString += STR_PSTRICKS_END_FIGURE
-			+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION;
+		contentsString += STR_EPS_END_DOC +
+			STR_EPS_COMMENTED_DOC_DECLARATION;
 	
 		return contentsString;
 	}
-
-
+	
 	/**
 	 * This method is reponsible for calculcating the size of the 
 	 * bounding box necessary for the entire graph.  It goes

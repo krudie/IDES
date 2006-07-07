@@ -9,6 +9,7 @@ public class GraphicalLayout {
 
 	private boolean dirty = false;
 	
+	public static final int GRID_SIZE=20;
 	public static final Color DEFAULT_COLOR = Color.BLACK;
 	public static final Color DEFAULT_HIGHLIGHT_COLOR = Color.RED;
 	public static final Color DEFAULT_SELECTION_COLOR = Color.BLUE;
@@ -117,6 +118,27 @@ public class GraphicalLayout {
 
 	public void setLabelOffset(Point2D.Float labelOffset) {
 		this.labelOffset = labelOffset;
+		setDirty(true);
+	}
+	
+	public void snapToGrid()
+	{
+		int x=(int)Math.floor(location.x);
+		int lGrid=(x/GRID_SIZE)*GRID_SIZE;
+		int rGrid=(x/GRID_SIZE+1)*GRID_SIZE;
+		if(x-lGrid<rGrid-x)
+			x=lGrid;
+		else
+			x=rGrid;
+		int y=(int)Math.floor(location.y);
+		int bGrid=(y/GRID_SIZE)*GRID_SIZE;
+		int tGrid=(y/GRID_SIZE+1)*GRID_SIZE;
+		if(y-bGrid<tGrid-y)
+			y=bGrid;
+		else
+			y=tGrid;
+		location.x=x;
+		location.y=y;
 		setDirty(true);
 	}
 }

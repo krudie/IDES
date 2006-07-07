@@ -27,6 +27,14 @@ public class IOUtilities {
 	 * Extension for model files.
 	 */
 	public static final String MODEL_FILE_EXT="xmd";
+	/**
+	 * Extension for LaTeX files.
+	 */
+	public static final String LATEX_FILE_EXT="tex";
+	/**
+	 * Extension for EPS files.
+	 */
+	public static final String EPS_FILE_EXT="eps";
 	
 	/**
      * Method for getting a UTF-8 printstream wrapped around a file

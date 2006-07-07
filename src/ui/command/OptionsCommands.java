@@ -1,8 +1,12 @@
 package ui.command;
 
+import main.Hub;
+
 import org.pietschy.command.ActionCommand;
+import org.pietschy.command.ToggleCommand;
 
 import services.latex.LatexManager;
+import ui.MainWindow;
 import ui.OptionsWindow;
 
 /**
@@ -58,5 +62,33 @@ public class OptionsCommands {
 		public void handleExecute() {
 			new OptionsWindow();		
 		}
+	}
+	
+	/**
+	 * The class for that toggles grid display.
+	 * 
+	 * @author Lenko Grigorov
+	 */
+	public static class ShowGridCommand extends ToggleCommand {
+
+		/**
+		 * Default constructor; handy for exporting this command for group setup.
+		 */
+		public ShowGridCommand(){
+			super("showgrid.command");
+		}
+		
+		/**
+		 * Changes the property state.
+		 */
+		public void handleSelection(boolean state) {
+			MainWindow mw=(MainWindow)Hub.getMainWindow();
+			if(!isSelected())
+			{
+				mw.getZoomControl().setZoom(1);
+			}
+			mw.getDrawingBoard().setShowGrid(!isSelected());
+		}
+
 	}
 }

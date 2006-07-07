@@ -2,6 +2,7 @@ package ui.command;
 
 import java.awt.Point;
 import java.awt.geom.Point2D.Float;
+import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
@@ -356,4 +357,38 @@ public class GraphCommands {
 		
 	}
 
+	/**
+	 * Emulates "snap to grid".
+	 * 
+	 * @author Lenko Grigorov
+	 *
+	 */
+	public static class AlignCommand extends ActionCommand {
+
+		//TODO: redo all of this so there's an independent grid going
+		
+		private GraphDrawingView context;
+		
+		public AlignCommand(GraphDrawingView context){
+			super("align.command");
+			this.context = context;
+		}
+		@Override
+		protected void handleExecute() {
+			if(Hub.getWorkspace().getActiveModel()==null)
+				return;
+			Iterator i;
+			if(context.getCurrentSelection().size()>0)
+				i=context.getCurrentSelection().children();
+			else
+				i=context.getGraphModel().getGraph().children();
+			for(;i.hasNext();)
+			{
+				GraphElement ge=(GraphElement)i.next();
+				ge.getLayout().snapToGrid();
+				ge.update();
+			}
+			context.getGraphModel().notifyAllSubscribers();
+		}
+	}
 }

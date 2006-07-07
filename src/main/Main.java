@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
+import presentation.fsa.GraphExporter;
 import presentation.fsa.GraphModel;
 
 import model.fsa.ver1.Automaton;
@@ -101,6 +102,7 @@ public class Main {
 		Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
 		fsa.setId(Hub.getWorkspace().getRandomId());
 		Hub.getWorkspace().addFSAModel(fsa);
+		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
 		//go live!
 		Hub.getMainWindow().pack();

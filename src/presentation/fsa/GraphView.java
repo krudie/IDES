@@ -47,14 +47,21 @@ public class GraphView extends JComponent implements Subscriber {
 
 
 	public void paint(Graphics g) {
+		paint(g,true);
+	}
+
+	public void paint(Graphics g, boolean doFill) {
 		Graphics2D g2D = (Graphics2D) g;			
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
 	    g2D.setStroke(GUISettings.instance().getWideStroke());
 
 	    Rectangle r=getBounds();
-	    g2D.setColor(Color.WHITE);
-	    g2D.fillRect(0,0,r.width,r.height);
+	    if(doFill)
+	    {
+	    	g2D.setColor(Color.WHITE);
+	    	g2D.fillRect(0,0,r.width,r.height);
+	    }
 	    g2D.scale(scaleFactor, scaleFactor);		
 	    //	TODO other transformation?
 

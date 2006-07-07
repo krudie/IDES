@@ -31,7 +31,9 @@ import org.pietschy.command.file.ExtensionFileFilter;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.GraphModel;
 //=======
+import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
+import services.latex.LatexRenderException;
 
 //>>>>>>> 1.10
 
@@ -266,30 +268,118 @@ public class FileCommands {
 		
 	}
 	
-	public static class ExportToEPSCommand extends AbstractSaveAsCommand {
+	public static class ExportToEPSCommand extends ActionCommand {
 
 		public ExportToEPSCommand() {
-			super(CommandManager.defaultInstance(), "export.eps.command", 
-					new ExtensionFileFilter("eps", "Encapsulated PostScript"));
+			super(CommandManager.defaultInstance(), "export.eps.command");
 		}
 
 		@Override
-		protected void performSave(File arg0) {
-			// TODO Auto-generated method stub
-			System.out.println("TODO: Save as EPS");
+		protected void handleExecute() {
+			if(Hub.getWorkspace().getActiveModel()==null)
+				return;
+			if(!LatexManager.isLatexEnabled())
+			{
+				Hub.displayAlert(Hub.string("enableLatex4Export"));
+				return;
+			}
+			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
+			fc.setDialogTitle(Hub.string("exportEPSTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.EPS_FILE_EXT, Hub.string("epsFileDescription")));
+			fc.setSelectedFile(new File(Hub.getWorkspace().getActiveModelName()));
+			int retVal;
+			boolean fcDone=true;
+			File file=null;
+			do
+			{
+				retVal = fc.showSaveDialog(Hub.getMainWindow());
+				if(retVal != JFileChooser.APPROVE_OPTION)
+					break;
+				file=fc.getSelectedFile();
+	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.EPS_FILE_EXT))
+	    			file=new File(file.getPath()+"."+IOUtilities.EPS_FILE_EXT);
+				if(file.exists())
+				{
+					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+						Hub.string("exportEPSTitle"),
+						JOptionPane.YES_NO_CANCEL_OPTION);
+					fcDone=choice!=JOptionPane.NO_OPTION;
+					if(choice!=JOptionPane.YES_OPTION)
+						retVal=JFileChooser.CANCEL_OPTION;
+				}
+			} while(!fcDone);
+	    	if(retVal != JFileChooser.APPROVE_OPTION)
+	    		return;
+			// Modified: June 16, 2006
+			// Modifier: Sarah-Jane Whittaker
+			String fileContents = GraphExporter.createEPSFileContents();
+			FileWriter latexWriter = null;
+					
+			if (fileContents == null)
+			{
+				return;
+			}
+			
+			try
+			{
+				LatexManager.getRenderer().latex2EPS(fileContents,file);
+			}
+			catch (IOException fileException)
+			{
+				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+			}
+			catch (LatexRenderException e)
+			{
+				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+			}
 		}
 		
 	}
 	
-	public static class ExportToLatexCommand extends AbstractSaveAsCommand {
+	public static class ExportToLatexCommand extends ActionCommand {
 
 		public ExportToLatexCommand() {
-			super(CommandManager.defaultInstance(), "export.latex.command", 
-					new ExtensionFileFilter("tex", "LaTeX"));
+			super(CommandManager.defaultInstance(), "export.latex.command");
 		}
 
 		@Override
-		protected void performSave(File arg0) {
+		protected void handleExecute() {
+			if(Hub.getWorkspace().getActiveModel()==null)
+				return;
+			if(!LatexManager.isLatexEnabled())
+			{
+				Hub.displayAlert(Hub.string("enableLatex4Export"));
+				return;
+			}
+			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
+			fc.setDialogTitle(Hub.string("exportLatexTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.LATEX_FILE_EXT, Hub.string("latexFileDescription")));
+			fc.setSelectedFile(new File(Hub.getWorkspace().getActiveModelName()));
+			int retVal;
+			boolean fcDone=true;
+			File file=null;
+			do
+			{
+				retVal = fc.showSaveDialog(Hub.getMainWindow());
+				if(retVal != JFileChooser.APPROVE_OPTION)
+					break;
+				file=fc.getSelectedFile();
+	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.LATEX_FILE_EXT))
+	    			file=new File(file.getPath()+"."+IOUtilities.LATEX_FILE_EXT);
+				if(file.exists())
+				{
+					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+						Hub.string("exportLatexTitle"),
+						JOptionPane.YES_NO_CANCEL_OPTION);
+					fcDone=choice!=JOptionPane.NO_OPTION;
+					if(choice!=JOptionPane.YES_OPTION)
+						retVal=JFileChooser.CANCEL_OPTION;
+				}
+			} while(!fcDone);
+	    	if(retVal != JFileChooser.APPROVE_OPTION)
+	    		return;
 			// Modified: June 16, 2006
 			// Modifier: Sarah-Jane Whittaker
 			String fileContents = GraphExporter.createPSTricksFileContents();
@@ -297,19 +387,18 @@ public class FileCommands {
 					
 			if (fileContents == null)
 			{
-				System.out.println("ERROR: File contents are null in FileCommands.performSave!!!");							
+				return;
 			}
 			
 			try
 			{
-				latexWriter = new FileWriter(arg0);
+				latexWriter = new FileWriter(file);
 				latexWriter.write(fileContents);
 				latexWriter.close();
 			}
 			catch (IOException fileException)
 			{
-				System.out.println(fileException);
-				System.out.println("\n" + fileContents);
+				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
 			}
 		}
 	}

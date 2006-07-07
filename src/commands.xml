@@ -17,6 +17,9 @@
 			<member command-id="select.command"/>
 			<member command-id="create.command"/>
 			<member command-id="move.command"/>			
+			<member command-id="align.command"/>
+			<separator/>
+			<member command-id="showgrid.command"/>
 		</members>	
 	</group>
 	
@@ -27,7 +30,8 @@
 		<members>
 			<member command-id="select.command"/>
 			<member command-id="create.command"/>
-			<member command-id="move.command"/>			
+			<member command-id="move.command"/>
+			<member command-id="align.command"/>
 		</members>	
 	</group>
 
@@ -169,9 +173,9 @@
     </command>    
     <command id="saveall.automaton.command">
       <face>
-         <text>Save _all models...</text>
+         <text>Save _all models</text>
          <icon type="classpath">images/icons/file_saveall_automata.gif</icon>
-         <description>Save all models...</description>         
+         <description>Save all models</description>         
          <accelerator key="S">
 	         <modifier value="control"/>
   	         <modifier value="shift"/>
@@ -288,6 +292,7 @@
          <member command-id="create.command"/>
          <member command-id="move.command"/>
          <member command-id="text.command"/>
+		 <member command-id="align.command"/>
          <member command-id="zoomin.command"/>
          <member command-id="zoomout.command"/>
          <member command-id="modify.command"/>
@@ -331,6 +336,16 @@
          <text>Label</text>
          <icon type="classpath">images/icons/machine_alpha.gif</icon>
          <description>Label element</description>         
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>    
+   <command id="align.command">
+      <face>
+         <text>Align elements</text>
+         <icon type="classpath">images/icons/machine_trace.gif</icon>
+         <description>Align selected elements</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -440,8 +455,8 @@
    </group>   
 	<command id="uselatex.command">
 	  <face>
-         <text>Use LaTeX rendering</text>
-         <description>Turn on or off LaTeX rendering of labels</description>
+         <text>Use LaTeX</text>
+         <description>Turn on or off LaTeX rendering</description>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -456,6 +471,16 @@
          <text/>
       </face>
 	</command>	
+	<command id="showgrid.command">
+	  <face>
+         <text>Show grid</text>
+         <description>Show or hide the grid</description>
+         <icon type="classpath">images/icons/graphic_alledges.gif</icon>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+	</command>
     <command id="moreoptions.command">
       <face>
          <text>More options...</text>

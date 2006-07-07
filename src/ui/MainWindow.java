@@ -115,9 +115,9 @@ public class MainWindow extends JFrame implements Subscriber {
 
 	 private void createAndAddToolBar() {
 		 toolbar =CommandManager.defaultInstance().getGroup("ides.toolbar").createToolBar();
-		 toolbar.addSeparator();
+		 //toolbar.addSeparator();
 		 Box p=Box.createHorizontalBox();//new JPanel();
-		 p.add(new JLabel(Hub.string("zoom")+": "));
+		 p.add(new JLabel(" "+Hub.string("zoom")+": "));
 		 p.add(zoom);
 		 p.add(Box.createHorizontalGlue());
 		 toolbar.add(p);
@@ -170,6 +170,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		new MoveCommand(drawingBoard).export();
 		new TextCommand(drawingBoard).export();
 		new DeleteCommand(drawingBoard).export();
+		new AlignCommand(drawingBoard).export();
 		
 		new EditCommands.CutCommand().export();
 		new EditCommands.CopyCommand().export();
@@ -193,7 +194,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		new FileCommands.ExitCommand().export();
 		
 		//moved to LatexManager
-		//new OptionsCommands.UseLatexCommand().export();
+		new OptionsCommands.ShowGridCommand().export();
 		new OptionsCommands.MoreOptionsCommand().export();
 			
 	}

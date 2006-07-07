@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -14,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.Iterator;
 
 import javax.swing.AbstractAction;
@@ -22,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
 
 import main.Hub;
@@ -58,11 +61,26 @@ import ui.MainWindow;
  */
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
-	
+
 	protected static ToggleCommand nodesControl;
 	public static boolean isUniformNodes()
 	{
 		return nodesControl.isSelected();
+	}
+	
+	private TexturePaint gridBG=null;
+	private boolean showGrid=false;
+	public void setShowGrid(boolean b)
+	{
+		if(b!=showGrid)
+		{
+			showGrid=b;
+			repaint();
+			if(!showGrid)
+			{
+				((ToggleCommand)CommandManager.defaultInstance().getCommand("showgrid.command")).setSelected(false);
+			}
+		}
 	}
 	
 	private int currentTool = DEFAULT;
@@ -206,6 +224,8 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	
 	public void update(){
 		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
+		if(scaleFactor!=1)
+			setShowGrid(false);
 		// get the active graph model and update the graph view part of me		
 		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
 		super.update();
@@ -213,8 +233,31 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}
 	
 	public void paint(Graphics g){
-		Graphics2D g2D = (Graphics2D)g;	
-		super.paint(g);	
+		Graphics2D g2D = (Graphics2D)g;
+		if(gridBG == null)
+		{
+				BufferedImage image= (BufferedImage) createImage(GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE);
+				Graphics2D im_g2d = (Graphics2D) image.getGraphics();
+		    	im_g2d.setColor(Color.WHITE);
+		    	im_g2d.fillRect(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE);
+				im_g2d.setColor(Color.BLACK);
+				im_g2d.drawLine(0,0,0,0);
+				gridBG = new TexturePaint(image,new Rectangle(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE));
+		}
+		if(gridBG != null&&scaleFactor==1&&showGrid)
+		{
+			Rectangle r=new Rectangle();
+			r.width=Math.max(getBounds().width,graphBounds.width);
+			r.height=Math.max(getBounds().height,graphBounds.height);			
+			g2D.setPaint(gridBG);
+			g2D.fill(r);
+		}
+		else
+		{
+	    	g2D.setColor(Color.WHITE);
+	    	g2D.fillRect(0,0,getBounds().width,getBounds().height);
+		}
+		super.paint(g,false);
 		g2D.setStroke(GraphicalLayout.DASHED_STROKE);
 		g2D.setColor(Color.DARK_GRAY);
 		// DEBUG

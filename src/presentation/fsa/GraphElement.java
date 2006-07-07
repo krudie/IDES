@@ -220,4 +220,9 @@ public class GraphElement implements PresentationElement {
 		}
 		setDirty(false);
 	}
+	
+	public int size()
+	{
+		return children.size();
+	}
 }
