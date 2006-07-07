@@ -1,5 +1,7 @@
 package model.fsa;
 
+import io.fsa.ver1.SubElement;
+
 import java.util.ListIterator;
 
 
@@ -115,5 +117,11 @@ public interface FSAModel {
 	 * @return the event, null if it doesn't exist
 	 */
 	public abstract FSAEvent getEvent(long id);
+
+	//TODO: change to use FSAMetaData
+    public SubElement getMeta();
+
+	//TODO: change to use FSAMetaData
+    public void setMeta(SubElement m);
 
 }

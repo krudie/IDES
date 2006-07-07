@@ -74,6 +74,8 @@ public class XMLexporter{
         }
         ps.println("</data>");
         ps.println("<meta tag=\"layout\" version=\"2.1\">");
+        //TODO: the following has to be refactored
+        ps.println("\t<font size=\""+(a.getMeta()==null?12:a.getMeta().getAttribute("size"))+"\"/>");
         si = a.getStateIterator();
         while(si.hasNext()){
             stateLayoutToXML((State)si.next(), ps, INDENT);            

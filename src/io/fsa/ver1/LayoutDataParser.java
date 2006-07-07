@@ -23,12 +23,13 @@ public class LayoutDataParser extends AbstractParser {
     private int state = STATE_IDLE;
 
     protected static final String ELEMENT_STATE = "state",
-    ELEMENT_TRANSITION = "transition", ELEMENT_GRAPHIC = "graphic", ELEMENT_META = "meta";
+    ELEMENT_TRANSITION = "transition", ELEMENT_GRAPHIC = "graphic", ELEMENT_META = "meta",
+    ELEMENT_FONT = "font";
 
-    protected static final String ATTRIBUTE_ID = "id";
+    protected static final String ATTRIBUTE_ID = "id", ATTRIBUTE_SIZE = "size";
 
     private static final int STATE_IDLE = 0, STATE_META = 1,
-    STATE_STATE = 2, STATE_TRANSITION = 3;
+    STATE_STATE = 2, STATE_TRANSITION = 3, STATE_FONT = 4;
     
 	Automaton a=null;
 	ContentHandler ch=null;
@@ -94,7 +95,19 @@ public class LayoutDataParser extends AbstractParser {
                 t.addSubElement(graphic);
                 state = STATE_IDLE;
             }
-            break;
+            else if(qName.equals(ELEMENT_FONT)){
+                if(atts.getValue(ATTRIBUTE_SIZE) == null){
+                    parsingErrors += "Font with undefined size.\n";
+                    break;
+                }
+                SubElement font=new SubElement(ELEMENT_FONT);
+                font.setAttribute(ATTRIBUTE_SIZE,atts.getValue(ATTRIBUTE_SIZE));
+                SubElementParser sep = new SubElementParser();
+                sep.fill(font, xmlReader, parsingErrors);
+                a.setMeta(font);
+                state = STATE_IDLE;
+            }
+            break;            
         default:
             parsingErrors += "Encountered wrong beginning of element.\n";
             break;
@@ -107,6 +120,13 @@ public class LayoutDataParser extends AbstractParser {
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         switch(state){
+//        case (STATE_FONT):
+//            if(!qName.equals(ELEMENT_FONT))
+//            {
+//            	parsingErrors += "Wrong element endend while parsing metadata.\n";
+//            }
+//        	state=STATE_IDLE;
+//        	break;
         case (STATE_IDLE):
             if(!qName.equals(ELEMENT_META))
             {

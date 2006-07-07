@@ -1,4 +1,6 @@
 package model.fsa.ver1;
+import io.fsa.ver1.SubElement;
+
 import java.io.File;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -31,6 +33,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     private File myFile = null;
     
     protected String id = "";
+    
+    private SubElement meta=null;
     
     /**
      * constructs a nem automaton with the name name
@@ -541,4 +545,13 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     	return myFile;
     }
 
+    public SubElement getMeta()
+    {
+    	return meta;
+    }
+    
+    public void setMeta(SubElement m)
+    {
+    	meta=m;
+    }
 }
