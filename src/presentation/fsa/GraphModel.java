@@ -451,9 +451,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		// TODO set a dirty bit in layout object and only call update before drawing
 		// if bit is set
 		n.getLayout().setText(text);
-		n.update();
 		metaData.setLayoutData(s, n.getLayout());
 		setDirty(true);
+		update();
 		fsa.notifyAllBut(this);
 		this.notifyAllSubscribers();
 	}

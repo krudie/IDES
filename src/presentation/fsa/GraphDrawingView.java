@@ -130,6 +130,8 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		{
 			if(currentSelection!=null)
 			{
+				if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
+					((CreationTool)drawingTools[CREATE]).abortEdge();
 				for(Iterator i=currentSelection.children();i.hasNext();)
 				{
 					GraphElement ge=(GraphElement)i.next();
@@ -325,8 +327,15 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}	
 
-	public void mouseEntered(MouseEvent arg0) {}		
-	public void mouseExited(MouseEvent arg0) {}
+	public void mouseEntered(MouseEvent arg0) {}
+	
+	public void mouseExited(MouseEvent arg0) {
+		if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
+		{
+			((CreationTool)drawingTools[CREATE]).abortEdge();
+			repaint();
+		}
+	}
 	
 
 	// Key listener events

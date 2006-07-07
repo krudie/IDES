@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
  * </pre>
  *
  * @author Lenko Grigorov, Michael Wood
- * @version 2.0
+ * @version 2.1
  */
 public class Renderer {
 
@@ -672,10 +672,12 @@ public class Renderer {
         	return getEmptyImage();
 		
 		//DVIPS
-		command=new String[3];
+		command=new String[5];
 		command[0]=latexPath.getCanonicalPath()+File.separator+"dvips";
 		command[1]="-E";
-		command[2]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".dvi";
+		command[2]="-o";
+		command[3]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
+		command[4]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".dvi";
 		Executor dvips=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));
 		execute(dvips);
 

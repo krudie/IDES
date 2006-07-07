@@ -202,6 +202,28 @@ public class MetaData implements FSAMetaData {
 			layout.removeEventName(e.getSymbol());
 		}
 	}
+
+	public float getFontSize(model.fsa.FSAModel a) {
+		SubElement se=a.getMeta();
+		if(se==null)
+			return 12;
+		String fontSize=se.getAttribute("size");
+		try
+		{
+			return Float.parseFloat(fontSize);
+		}catch(NumberFormatException e)
+		{
+			return 12;
+		}
+	}
+
+	public void setFontSize(model.fsa.FSAModel a, float fontSize) {
+		SubElement se=a.getMeta();
+		if(se==null)
+			se=new SubElement("font");
+		se.setAttribute("size",Float.toString(fontSize));
+		a.setMeta(se);
+	}
 	
 	////////////////////////////////////////////////////////////////////////
 	/* (non-Javadoc)

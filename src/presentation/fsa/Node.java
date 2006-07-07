@@ -130,7 +130,6 @@ public class Node extends GraphElement {
 	 * Draws this node and all of its out edges in the given graphics context.
 	 */
 	public void draw(Graphics g) {
-		
 		if(isDirty()){
 			update();
 			layout.setDirty(false);

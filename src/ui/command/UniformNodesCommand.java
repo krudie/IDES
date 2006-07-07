@@ -19,8 +19,8 @@ public class UniformNodesCommand extends ToggleCommand {
 
 	protected void handleSelection(boolean arg0) throws ToggleVetoException {
 		Hub.persistentData.setBoolean(PROPERTY_NAME,!isSelected());
-		if(Hub.getMainWindow()!=null)
-			((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard().update();
+		if(Hub.getWorkspace().getActiveGraphModel()!=null)
+			Hub.getWorkspace().getActiveGraphModel().update();
 	}
 
 }

@@ -190,10 +190,15 @@ public class CreationTool extends DrawingTool {
 		super.handleRightClick(me);		
 	}
 	
+	public boolean isDrawingEdge()
+	{
+		return drawingEdge;
+	}
+	
 	/**
 	 * 
 	 */
-	private void abortEdge() {
+	public void abortEdge() {
 		if(drawingEdge){
 			context.getGraphModel().abortEdge(edge);
 			drawingEdge = false;			

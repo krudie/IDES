@@ -50,7 +50,7 @@ public class LatexUtils {
 			return pngStream.toByteArray();
 		}catch(IOException ex)
 		{
-			throw new RuntimeException(ex);
+			throw new LatexRenderException(ex);
 		}
 	}
 	
