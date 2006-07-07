@@ -41,6 +41,7 @@ public class SelectionGroup extends GraphElement {
 			if(o instanceof Edge){  // YUCK evil kluge indicative of poor design and looming deadline.
 				Edge e = (Edge)o;
 				// BUG: rigid translation not recomputing scalars in edgelayout?
+				// Why would you need to?
 //				if( contains(e.getSource()) && contains(e.getTarget()) ){
 //					((EdgeLayout)e.getLayout()).setRigidTranslation(true);  
 //				}else{

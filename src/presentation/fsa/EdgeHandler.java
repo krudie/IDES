@@ -32,6 +32,7 @@ public class EdgeHandler extends GraphElement {
 		
 	public EdgeHandler(Edge edge) {		
 		this.edge = edge;
+		setParent(edge);
 		anchors = new Ellipse2D.Double[4];		                               
 		update();
 	}
@@ -55,7 +56,7 @@ public class EdgeHandler extends GraphElement {
 			g2d.setColor(Color.BLUE);
 			g2d.setStroke(GraphicalLayout.FINE_STROKE);
 						
-			for(int i=1; i<3; i++){			
+			for(int i=1; i<3; i++){  // don't display end point circles since not moveable.
 				g2d.draw(anchors[i]);
 			}
 			

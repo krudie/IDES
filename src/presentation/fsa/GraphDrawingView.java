@@ -287,6 +287,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
 		arg0=tranfromMouseCoords(arg0);
+//		if(arg0.getClickCount() == 2){
+//			currentTool = TEXT;
+//		}
 		drawingTools[currentTool].handleMouseClicked(arg0);		
 	}
 
@@ -308,7 +311,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
 		}else{
-			drawingTools[currentTool].handleMouseReleased(arg0);
+			drawingTools[currentTool].handleMouseReleased(arg0);			
 		}
 	}
 
@@ -475,5 +478,12 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		r.x=r.x*scaleFactor;
 		r.y=r.y*scaleFactor;
 		return r;
+	}
+
+	/**
+	 * @return the current drawing tool
+	 */
+	public DrawingTool getCurrentTool() {		
+		return drawingTools[currentTool];
 	}
 }

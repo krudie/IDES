@@ -29,6 +29,7 @@ public class CreationTool extends DrawingTool {
 	private Edge edge;
 	private CreateCommand cmd;	
 	private boolean aborted;
+	private boolean firstClick;
 	
 	public CreationTool(GraphDrawingView board){
 		context = board;		
@@ -39,6 +40,18 @@ public class CreationTool extends DrawingTool {
 		
 		// FIXME dynamic cursor names in UISettings class
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/create__.gif")), new Point(0,0), "CREATE_NODES_OR_EDGES");		
+	}
+	
+	public void init(){
+		cmd = null;
+		startNode = null;
+		endNode = null;
+		sourceNode = null;
+		endNode = null;
+		drawingEdge = false;
+		if(edge != null){
+			aborted = true;
+		}
 	}
 	
 	@Override
@@ -70,7 +83,7 @@ public class CreationTool extends DrawingTool {
 
 	@Override
 		public void handleMouseReleased(MouseEvent me) {
-		
+			    
 			context.clearCurrentSelection();			
 			endNode = null;
 			if(context.updateCurrentSelection(me.getPoint())){
@@ -79,20 +92,24 @@ public class CreationTool extends DrawingTool {
 				}catch(ClassCastException e){}
 			}				
 			
-			if(startNode == null && endNode == null && !drawingEdge){								
+			if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging				
+				// second click on same node so make a self-loop
+				finishSelfLoop();				
+				firstClick = false;
+			}else if(startNode != null && startNode == endNode && startNode == sourceNode && dragging){ // select source node, keep drawing edge by mouse move (not dragging)				
+				dragging = false;
+				firstClick = true;
+			}else if(startNode == null && endNode == null && !drawingEdge){								
 				// create a new node at current location
 				createNode(me.getPoint());
-			}else if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging){ // drawing edge by not dragging
-				// previous case happened on last click
-				// second click on same node so make a self-loop
-				finishSelfLoop();
-			}else if(startNode == endNode && startNode == sourceNode){ // select source node, keep drawing edge by mouse move (not dragging)				
-				dragging = false;			
+				firstClick = false;
 			}else if(startNode == endNode && startNode != sourceNode && endNode != null){ // select target node, finish drawing edge by mouse move				
-				finishEdge();				
+				finishEdge();		
+				firstClick = false;
 			}else if(drawingEdge && endNode == null){  // 
 				// Assumption: startNode and sourceNode are non-null				
-				finishEdgeAndCreateTarget(me.getPoint());							
+				finishEdgeAndCreateTarget(me.getPoint());
+				firstClick = false;
 			}else if(drawingEdge && dragging && endNode != null){  // Assumption: sourceNode != null						
 				finishEdge();			
 			}
@@ -106,9 +123,7 @@ public class CreationTool extends DrawingTool {
 	 */
 	private void finishSelfLoop() {
 		targetNode = endNode;
-		context.getGraphModel().abortEdge(edge);		
-		drawingEdge = false;
-		edge = null;
+		abortEdge();
 		cmd = new CreateCommand(context, CreateCommand.SELF_LOOP, targetNode);
 		cmd.execute();
 		sourceNode = null;
@@ -122,12 +137,11 @@ public class CreationTool extends DrawingTool {
 	private void createNode(Point point) {
 		cmd = new CreateCommand(context, CreateCommand.NODE, point);
 		cmd.execute();
-		edge = null;
-		drawingEdge = false;
-		dragging = false;		
+		abortEdge();
+		//dragging = false;		
 		sourceNode = null;
 		targetNode = null;
-		context.clearCurrentSelection();
+		//context.clearCurrentSelection();
 	}
 
 	/**
@@ -171,15 +185,22 @@ public class CreationTool extends DrawingTool {
 	}	
 
 	public void handleRightClick(MouseEvent me){
-		if(drawingEdge){
-			context.getGraphModel().abortEdge(edge);
-			drawingEdge = false;			
-		}
-		aborted = true;
+		abortEdge();
 		context.repaint();
 		super.handleRightClick(me);		
 	}
 	
+	/**
+	 * 
+	 */
+	private void abortEdge() {
+		if(drawingEdge){
+			context.getGraphModel().abortEdge(edge);
+			drawingEdge = false;			
+		}
+		aborted = true;		
+	}
+
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
 		// if drawing an edge, recompute the curve

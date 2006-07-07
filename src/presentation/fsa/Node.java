@@ -118,7 +118,7 @@ public class Node extends GraphElement {
 			try{
 				Edge e = (Edge)children.next();
 				if(e.getTarget() != null){
-					((EdgeLayout)e.getLayout()).computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
+					e.getLayout().computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
 				}
 			}catch(ClassCastException cce){
 				// Child is not an edge

@@ -58,6 +58,11 @@ public class SelectionTool extends DrawingTool {
 			dragging = true;
 		}
 
+		if(startPoint == null){
+			startPoint = me.getPoint();
+			return;
+		}
+		
 		endPoint = me.getPoint();
 		
 		if(!endPoint.equals(startPoint)){		

@@ -210,14 +210,14 @@ public class Edge extends GraphElement {
 		
 		boolean hit=false;
 		boolean limitReached=false;
-		CubicCurve2D.Float curve=((EdgeLayout)layout).getCubicCurve();
+		CubicCurve2D.Float curve= getLayout().getCubicCurve();
 		
 		do
 		{
 			CubicCurve2D.Float c1=new CubicCurve2D.Float(),c2=new CubicCurve2D.Float();
 			curve.subdivide(c1,c2);
 			if(c1.intersects(p.getX() - 4, p.getY() - 4, 8, 8))
-			{
+			{ 
 				curve=c1;
 				hit=true;
 			}
@@ -309,6 +309,10 @@ public class Edge extends GraphElement {
 		update();
 	}
 	
+	public EdgeLayout getLayout(){
+		return (EdgeLayout)layout;
+	}
+	
 	public void translate(float x, float y){		
 		EdgeLayout l = (EdgeLayout)layout;
 		CubicCurve2D curve = l.getCubicCurve();
@@ -325,12 +329,14 @@ public class Edge extends GraphElement {
 		}else if(isSelfLoop()){
 			// TODO make sure (x,y) is outside my source/target node
 			
-			// rotate the orientation of loop in direction of
+			// TODO rotate the orientation of loop in direction of vector from centre to (x,y)
 			Point2D.Float centre = getSource().getLayout().getLocation();
 			Point2D.Float dir = Geometry.subtract(new Point2D.Float(x, y), centre);
-			l.computeSelfLoop(getSource().getLayout(), Geometry.unit(dir));
+			
+			l.computeCurve();
 
 		}else{ 	// reset the control points in the layout object
+
 			if(target!=null) //translation can occur in the middle of drawing a new edge
 			{
 				l.computeCurve(source.getLayout(), target.getLayout());
@@ -350,6 +356,7 @@ public class Edge extends GraphElement {
 	/**
 	 * @return true iff source node is same as target node
 	 */
+
 	public boolean isSelfLoop() {
 		if(source != null && target != null){
 			return source.equals(target);

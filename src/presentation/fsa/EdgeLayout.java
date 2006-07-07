@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 
 import presentation.Geometry;
@@ -11,6 +12,8 @@ import presentation.GraphicalLayout;
 public class EdgeLayout extends GraphicalLayout {
 
 	private Edge edge;
+	private boolean selfLoop = false;
+	
 	
 	/**
 	 * Indices of bezier curve control points. 
@@ -31,11 +34,13 @@ public class EdgeLayout extends GraphicalLayout {
 	// Compact representation of data required to maintain shape of edge while moving
 	// one or both of its nodes.
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
+
+	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 	private double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
 	private double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
 	private double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
 	private double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)
-	
+		
 	public EdgeLayout(){		
 		ctrls = new Point2D.Float[4];
 		for(int i = 0; i<4; i++){
@@ -46,21 +51,24 @@ public class EdgeLayout extends GraphicalLayout {
 		setLabelOffset(new Point2D.Float(5,5));
 	}
 	
-	public EdgeLayout(Point2D.Float[] bezierControls){
+	public EdgeLayout(Point2D.Float[] bezierControls, boolean selfLoop){
 		this.ctrls = bezierControls;
 		curve = new CubicCurve2D.Float();
 		curve.setCurve(bezierControls, 0);
+		this.selfLoop = selfLoop;
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
 		updateAnglesAndScalars();
+		setDirty(true);
 	}
 	
 	public EdgeLayout(Point2D.Float[] bezierControls, ArrayList eventNames){
 		this.ctrls = bezierControls;
 		curve = new CubicCurve2D.Float();
-		curve.setCurve(bezierControls, 0);
+		curve.setCurve(bezierControls, 0);		
 		this.eventNames = eventNames;
 		setLabelOffset(new Point2D.Float(5,5));
+		setDirty(true);
 		updateAnglesAndScalars();
 	}
 
@@ -75,13 +83,23 @@ public class EdgeLayout extends GraphicalLayout {
 	 * @param n1 layout for source node
 	 * @param n2 layout for target node
 	 */
-	public EdgeLayout(NodeLayout n1, NodeLayout n2){
+	public EdgeLayout(NodeLayout sourceLayout, NodeLayout targetLayout){
 		ctrls = new Point2D.Float[4];
-		curve = new CubicCurve2D.Float();
-		computeCurve(n1, n2);		
+		curve = new CubicCurve2D.Float();		
+		computeCurve(sourceLayout, sourceLayout);		
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
-		updateAnglesAndScalars();
+		//updateAnglesAndScalars();
+	}
+	
+	/**
+	 * Calls computeCurve(NodeLayout s, NodeLayout t) with source and target
+	 * layouts for this layout's edge. 
+	 */
+	public void computeCurve(){
+		if(edge != null){
+			computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());
+		}
 	}
 	
 	/**
@@ -89,68 +107,81 @@ public class EdgeLayout extends GraphicalLayout {
 	 * <code>s</code>, the layout for the source node to <code>t</code>, the 
 	 * layout for the target node.
 	 * 
-	 * @param s layout for source node
-	 * @param t layout for target node
+	 * Precondition: must call updateAnglesAndScalars() before calling this method.
+	 * 
+	 * @param s layout for source node, s != null
+	 * @param t layout for target node, t != null
 	 * @return array of 4 Bezier control points for a straight, directed edge
 	 */
 	public void computeCurve(NodeLayout s, NodeLayout t){
 		
 		// if source and target nodes are the same, compute a self-loop
-		if(s.equals(t)){			
-			computeSelfLoop(s, new Point2D.Float(0, -1));
-			return;
+		if(s.equals(t) && angle1 == 0 && angle2 == 0){
+				computeDefaultSelfLoop(s);
+				selfLoop = true;
+				return;
 		}
 		
 		Point2D.Float centre1 = s.getLocation();
-		Point2D.Float centre2 = t.getLocation();
-		
-		Point2D.Float base = Geometry.subtract(centre2, centre1);
-		float norm = (float)Geometry.norm(base);
-		Point2D.Float unitBase = Geometry.unit(base);  // computing norm twice :(
+		Point2D.Float centre2 = t.getLocation();		
 		
 		// FIXME endpoints must be spaced around node arc; need to know about fellow edges.
 		// IDEA have the NodeLayout wiggle (rotate edges about centre) the desired/ideal adjacent edge 
 		// endpoints as calculated by EdgeLayout.
 		
-		// compute intersection of straight line from centre1 to centre2 with arcs of nodes
-		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));//		
-		ctrls[P2] = Geometry.add(centre2, Geometry.scale(unitBase, -t.getRadius())); // -ArrowHead.SHORT_HEAD_LENGTH));		
-		
-		base = Geometry.subtract(ctrls[P2], ctrls[P1]);
-		norm = (float)Geometry.norm(base);
-		unitBase = Geometry.unit(base);		
-	
-		if(isStraight()){	
-			angle1 = 0;
-			angle2 = 0;
-			// compute a straight edge		
-			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
-			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
-
-			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(norm * s1)));
-			ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(2 * norm * s2)));				
+		// FIXME No curves happen on/after save.
+		if(s.equals(t)){  
+			// endpoints are at intersections of circle with rotations from vertical vector	
+			ctrls[P1] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle1));
+			ctrls[P2] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle2));
+			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s1), angle1));
+			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s2), angle2));			
+		}else{
 			
-		}else{ // recompute the edge preserving the shape of the curve
+			Point2D.Float base = Geometry.subtract(centre2, centre1);
+			float norm = (float)Geometry.norm(base);
+			Point2D.Float unitBase = Geometry.unit(base);  // computing norm twice :(
 		
-			// compute CTRL1			
-			Point2D.Float v = Geometry.rotate(Geometry.scale(base, (float)s1), angle1);
-			Point2D.Float temp = Geometry.add(ctrls[P1], v); 
-			ctrls[CTRL1].x = Math.round(temp.x);
-			ctrls[CTRL1].y = Math.round(temp.y);
+			// endpoints are at intersection of straight line from centre1 to centre2 with arcs of nodes
+			ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));//		
+			ctrls[P2] = Geometry.add(centre2, Geometry.scale(unitBase, -t.getRadius())); // -ArrowHead.SHORT_HEAD_LENGTH));
+			base = Geometry.subtract(ctrls[P2], ctrls[P1]);
+			norm = (float)Geometry.norm(base);
+			unitBase = Geometry.unit(base);		
+		
+			if(isStraight()){  // compute a default straight edge	
+				angle1 = 0;
+				angle2 = 0;					
+				s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+				s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;
 
-			// compute CTRL2			
-			v = Geometry.rotate(Geometry.scale(base, (float)s2), angle2);
-			temp = Geometry.add(ctrls[P1], v);
-			ctrls[CTRL2].x = Math.round(temp.x);		
-			ctrls[CTRL2].y = Math.round(temp.y);
-		}
+				ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(norm * s1)));			
+				ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(norm * s2)));			
+				
+			}else{ // recompute the edge preserving the shape of the curve
+
+				ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(base, (float)s1), angle1)); 
+				ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(base, (float)s2), angle2));
+
+			}
+		}		
+		
+		// round to prevent cumulative numerical drift
+		ctrls[P1].x = Math.round(ctrls[P1].x);
+		ctrls[P1].y = Math.round(ctrls[P1].y);
+		ctrls[CTRL1].x = Math.round(ctrls[CTRL1].x);
+		ctrls[CTRL1].y = Math.round(ctrls[CTRL1].y);
+		ctrls[CTRL2].x = Math.round(ctrls[CTRL2].x);
+		ctrls[CTRL2].y = Math.round(ctrls[CTRL2].y);
+		ctrls[P2].x = Math.round(ctrls[P2].x);
+		ctrls[P2].y = Math.round(ctrls[P2].y);
 		
 		curve.setCurve(ctrls, 0);		
 		Point2D midpoint = midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
 		setDirty(true);
-	}
-	
+	}	
+
 	/**
 	 * @return
 	 */
@@ -192,25 +223,26 @@ public class EdgeLayout extends GraphicalLayout {
 	 * 
 	 * @param s the node layout	 
 	 */
-	public void computeSelfLoop(NodeLayout s, Point2D.Float unitDir){
-		// Draw default loop above node and let node rotate it if necessary.
-		// direction vectors rotate (0, r) by pi/4 and -pi/4
+	public void computeDefaultSelfLoop(NodeLayout s){		
+		// rotate direction vector by alpha and -alpha
 		double angleScalar = 5 * s.getRadius() / NodeLayout.DEFAULT_RADIUS;  
 		angle1 = -Math.PI/angleScalar;
 		angle2 = -angle1;
-		s1 = s2 = 0.0;
-					
-		Point2D.Float axis = Geometry.scale(unitDir, s.getRadius()); //new Point2D.Float(0, -s.getRadius());  // Effing screen coordinates with inverted y axis (grrrrr).
+		s1 = 3f*NodeLayout.DEFAULT_RADIUS;
+		s2 = 3f*NodeLayout.DEFAULT_RADIUS;						
+		Point2D.Float axis = Geometry.scale(UNIT_VERTICAL, s.getRadius());
 		
 		Point2D.Float v1 = Geometry.rotate(axis, angle1);
 		Point2D.Float v2 = Geometry.rotate(axis, angle2);
 		ctrls[P1] = Geometry.add(s.getLocation(), v1);
 		ctrls[P2] = Geometry.add(s.getLocation(), v2);
-		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(Geometry.unit(v1), 3f*NodeLayout.DEFAULT_RADIUS));
-		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(Geometry.unit(v2), 3f*NodeLayout.DEFAULT_RADIUS));
+		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(Geometry.unit(v1), (float)s1));
+		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(Geometry.unit(v2), (float)s2));
+		
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = midpoint(curve);
-	    setLocation((float)midpoint.getX(), (float)midpoint.getY());		
+	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
+	    selfLoop = true;
 		setDirty(true);
 	}
 	
@@ -233,18 +265,33 @@ public class EdgeLayout extends GraphicalLayout {
 	 *  angle1  angle between  (CTRL1 - P1) and (P2-P1)
 	 *  angle2  angle between  (CTRL2 - P1) and (P2-P1)
 	 *  
-	 *  Note that the angle1 is for the tangent from p1 to c1
-	 *  but angle 2 is NOT the tangent from p2 to c2.
+	 *  NOTE that the angle1 is for the tangent from p1 to c1
+	 *  but angle 2 is NOT the tangent from p2 to c2. 
+	 *  (HB wrote: Apologies to those who inherit this counterintuitive code.)
+	 *  
+	 *  In case of self-loop stores angles from UNIT_VERTICAL to (CTRL2 - P2) and (CTRL1 - P1)
+	 *  and scalars are simply the lengths of (CTRL2 - P2) and (CTRL1 - P1).
 	 */
-	private void updateAnglesAndScalars(){		
-		Point2D.Float p1p2 = Geometry.subtract(ctrls[P2], ctrls[P1]); 
-		double n = Geometry.norm(p1p2);
+	private void updateAnglesAndScalars(){
+		
 		Point2D.Float p1c1 = Geometry.subtract(ctrls[CTRL1], ctrls[P1]);
 		Point2D.Float p1c2 = Geometry.subtract(ctrls[CTRL2], ctrls[P1]);
-		s1 = Geometry.norm(p1c1)/n;
-		s2 = Geometry.norm(p1c2)/n;		
-		angle1 = Geometry.angleFrom(p1p2, p1c1);
-		angle2 = Geometry.angleFrom(p1p2, p1c2);		
+		Point2D.Float p1p2 = Geometry.subtract(ctrls[P2], ctrls[P1]);
+				
+		if(selfLoop){  // this is not called
+			Point2D.Float p2c2 = Geometry.subtract(ctrls[CTRL2], ctrls[P2]);
+			s1 = Geometry.norm(p1c1);
+			s2 = Geometry.norm(p2c2);		
+			angle1 = Geometry.angleFrom(UNIT_VERTICAL, p1c1);
+			angle2 = Geometry.angleFrom(UNIT_VERTICAL, p2c2);
+		}else{
+			double n = Geometry.norm(p1p2);
+			s1 = Geometry.norm(p1c1)/n;
+			s2 = Geometry.norm(p1c2)/n;		
+			angle1 = Geometry.angleFrom(p1p2, p1c1);
+			angle2 = Geometry.angleFrom(p1p2, p1c2);
+		}
+		
 	}
 
 	/**
@@ -257,9 +304,9 @@ public class EdgeLayout extends GraphicalLayout {
 	public void setPoint(Point2D.Float point, int index){		
 		// IDEA should there be constraints on the angle to control point 
 		// e.g. abs(angle between base line and tangent) <= PI/2?
-		ctrls[index] = point;		
-		curve.setCurve(ctrls, 0);
+		ctrls[index] = point;
 		updateAnglesAndScalars();
+		curve.setCurve(ctrls, 0);		
 		setDirty(true);
 	}
 	
@@ -372,7 +419,7 @@ public class EdgeLayout extends GraphicalLayout {
 		this.s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
 		this.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;
 		other.s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
-		other.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;
+		other.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;		
 	}
 	
 	protected void arcMore(){
@@ -443,5 +490,12 @@ public class EdgeLayout extends GraphicalLayout {
 		if(edge != null){
 			edge.setDirty(b);
 		}
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setSelfLoop(boolean b) {
+		selfLoop = b;		
 	}	
 }

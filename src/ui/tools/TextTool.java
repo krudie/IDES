@@ -27,7 +27,12 @@ public class TextTool extends DrawingTool {
 	}
 	
 	@Override
-	public void handleMouseClicked(MouseEvent me) {		
+	public void handleMouseClicked(MouseEvent me) {
+		if(me.getClickCount() != 2){
+			context.setTool(GraphDrawingView.SELECT);
+			context.getCurrentTool().handleMouseClicked(me);
+			return;
+		}
 		// get current selection
 		if(context.updateCurrentSelection(me.getPoint())){			
 			new GraphCommands.TextCommand(context, (GraphElement)context.getCurrentSelection().child(0)).execute();			

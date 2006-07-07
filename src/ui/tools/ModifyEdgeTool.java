@@ -51,22 +51,13 @@ public class ModifyEdgeTool extends DrawingTool {
 		}
 		
 		context.clearCurrentSelection();
-		context.updateCurrentSelection(m.getPoint());		
+		context.updateCurrentSelection(m.getPoint());
 		if(context.hasCurrentSelection()){
 			Edge temp = getEdge(context.getCurrentSelection());
 			if( temp != null )
 			{
 				edge = temp;
 				prepareToDrag(m.getPoint());
-				
-//				if( edge != null && !edge.equals(temp) ) // switch edges
-//				{
-//					edge = temp;
-//					prepareToDrag(m.getPoint());
-//				}else if( edge != null && edge.equals(temp) ){  // same edge
-//					// get the current control point
-//					
-//				}
 			}else{				
 				switchTool();
 			}
@@ -124,7 +115,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		
 		if(dragging){
 			// set the selected control point to the current location			
-			((EdgeLayout)edge.getLayout()).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
+			edge.getLayout().setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
 			context.repaint();			
 		}
 	}

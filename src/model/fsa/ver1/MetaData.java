@@ -159,7 +159,9 @@ public class MetaData implements FSAMetaData {
 		controls[EdgeLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
-		EdgeLayout edgeLayout = new EdgeLayout(controls);
+		// FIXME Need to know if this is a self-loop before calling this constructor 
+		// (since constructor calls updateAnglesEtc...)
+		EdgeLayout edgeLayout = new EdgeLayout(controls, t.getSource().equals(t.getTarget()));		
 		
 		// extract label offset
 		Point2D.Float offset = new Point2D.Float();
