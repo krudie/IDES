@@ -17,6 +17,7 @@
 			<member command-id="select.command"/>
 			<member command-id="create.command"/>
 			<member command-id="move.command"/>			
+			<separator/>
 			<member command-id="align.command"/>
 			<separator/>
 			<member command-id="showgrid.command"/>
@@ -343,9 +344,9 @@
     </command>    
    <command id="align.command">
       <face>
-         <text>Align elements</text>
-         <icon type="classpath">images/icons/machine_trace.gif</icon>
-         <description>Align selected elements</description>         
+         <text>Align nodes</text>
+         <icon type="classpath">images/icons/graphic_align.gif</icon>
+         <description>Align nodes</description>         
       </face>
       <face name="toolbar" extends="[default]">
          <text/>
@@ -474,8 +475,8 @@
 	<command id="showgrid.command">
 	  <face>
          <text>Show grid</text>
-         <description>Show or hide the grid</description>
-         <icon type="classpath">images/icons/graphic_alledges.gif</icon>
+         <description>Toggle grid display</description>
+         <icon type="classpath">images/icons/view_grid.gif</icon>
       </face>
       <face name="toolbar" extends="[default]">
          <text/>

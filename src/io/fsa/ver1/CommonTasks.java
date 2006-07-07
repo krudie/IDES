@@ -3,6 +3,9 @@
  */
 package io.fsa.ver1;
 
+import java.awt.Toolkit;
+
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import main.Hub;
@@ -26,7 +29,9 @@ public class CommonTasks {
 		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
 				Hub.string("saveChangesAskWorkspace")+"\""+Hub.getWorkspace().getName()+"\"?",
 				Hub.string("saveChangesWorkspaceTitle"),
-				JOptionPane.YES_NO_CANCEL_OPTION);
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/save_workspace.gif"))));
 		if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
 			return false;
 		if(choice==JOptionPane.YES_OPTION)
