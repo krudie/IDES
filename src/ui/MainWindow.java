@@ -43,6 +43,7 @@ import presentation.fsa.GraphDrawingView;
 
 import ui.command.EditCommands;
 import ui.command.FileCommands;
+import ui.command.HelpCommands;
 import ui.command.OptionsCommands;
 import ui.command.GraphCommands.*;
 
@@ -61,7 +62,7 @@ public class MainWindow extends JFrame implements Subscriber {
 	private ZoomControl zoom=new ZoomControl();
 	
 	public MainWindow() {
-		super(Hub.string("IDES_LONG_NAME")+" "+Hub.string("IDES_VER"));
+		super(Hub.string("IDES_SHORT_NAME")+" "+Hub.string("IDES_VER"));
 		addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent e) {
 		    	Main.onExit();
@@ -86,7 +87,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();
-		//TODO uncomment before shipping
+		//TODO uncomment line below before shipping
 	    //setExtendedState(MAXIMIZED_BOTH);
 	}
 	
@@ -142,12 +143,6 @@ public class MainWindow extends JFrame implements Subscriber {
 		  */
 		
 		 JMenuBar menuBar = CommandManager.defaultInstance().getGroup("ides.menu.group").createMenuBar(); // new JMenuBar();
-
-		 // TODO assemble the help menu
-		 JMenu menuHelp = new JMenu("Help");
-		 menuHelp.setMnemonic(KeyEvent.VK_H);
-		 
-		 menuBar.add(menuHelp);
 		 
 		 // add menubar to this window
 		 this.setJMenuBar(menuBar);
@@ -193,10 +188,10 @@ public class MainWindow extends JFrame implements Subscriber {
 		//new FileCommands.ExportToPNGCommand().export();
 		new FileCommands.ExitCommand().export();
 		
-		//moved to LatexManager
 		new OptionsCommands.ShowGridCommand().export();
 		new OptionsCommands.MoreOptionsCommand().export();
-			
+		
+		new HelpCommands.AboutCommand().export();
 	}
 	
 	/**

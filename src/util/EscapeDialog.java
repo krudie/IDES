@@ -215,6 +215,7 @@ public class EscapeDialog extends JDialog {
 	protected void bindEscapeListener()
 	{
 		rootPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),this);
+		rootPane.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),this);
 		rootPane.getActionMap().put(this,escapeListener);
 	}
 	

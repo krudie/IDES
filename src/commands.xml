@@ -45,6 +45,7 @@
 			<member command-id="graph.group"/>
 			<member command-id="operations.menu.group"/>
 			<member command-id="options.group"/>
+			<member command-id="help.group"/>
 		</members>	
 	</group>
 
@@ -84,6 +85,15 @@
          <member command-id="save.workspace.command"/>
       </members>  
    </group>   
+
+	<group id="help.group">
+		<face>
+			<text>Help</text>
+		</face>
+		<members>
+			<member command-id="about.command"/>
+		</members>	
+	</group>
 
    <group id="file.save.group">
       <members>  
@@ -291,13 +301,7 @@
          <member command-id="select.command"/>
          <member command-id="create.command"/>
          <member command-id="move.command"/>
-         <member command-id="text.command"/>
 		 <member command-id="align.command"/>
-         <member command-id="zoomin.command"/>
-         <member command-id="zoomout.command"/>
-         <member command-id="modify.command"/>
-         <member command-id="selectalllabels.command"/>
-         <member command-id="selectalledges.command"/>
       </members>
     </group> 
        
@@ -606,4 +610,11 @@
 		<text>Controllability</text>
 	</face>
 	</command>
+
+   <command id="about.command">
+      <face>
+         <text>About IDES...</text>
+      </face>
+    </command>    
+
 </commands>

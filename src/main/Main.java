@@ -105,6 +105,7 @@ public class Main {
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
 		//go live!
+		//TODO uncomment line below for debug version
 		Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
 	}
