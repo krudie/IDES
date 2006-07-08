@@ -43,7 +43,6 @@
 		<members>
 			<member command-id="file.group"/>
 			<member command-id="graph.group"/>
-			<member command-id="edit.group"/>
 			<member command-id="operations.menu.group"/>
 			<member command-id="options.group"/>
 		</members>	
@@ -506,7 +505,7 @@
     
     <command id="set.selfloop.command">
 		<face>
-    		<text>Self Loop</text>
+    		<text>Add self-loop</text>
     	</face>
     </command>
     

@@ -36,10 +36,10 @@ public class EdgePopup extends JPopupMenu {
 	 */
 	protected EdgePopup(Edge e) {
 		// TODO Auto-generated constructor stub
-		miModify = new JMenuItem("Modify curve", new ImageIcon(Hub.getResource("images/icons/graphic_alledges.gif")));
+//		miModify = new JMenuItem("Modify curve", new ImageIcon(Hub.getResource("images/icons/graphic_alledges.gif")));
 		MenuListener listener = new MenuListener();
-		miModify.addActionListener(listener);
-		add(miModify);
+//		miModify.addActionListener(listener);
+//		add(miModify);
 		miEditEvents = new JMenuItem("Label with events", new ImageIcon(Hub.getResource("images/icons/machine_alpha.gif")));
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
@@ -48,9 +48,9 @@ public class EdgePopup extends JPopupMenu {
 		//TODO symmetrize should be an undoable command
 		miSymmetrize.addActionListener(listener);
 		add(miSymmetrize);
-		miStraighten = new JMenuItem("Straighten");
-		miStraighten.setEnabled(false);
-		add(miStraighten);
+//		miStraighten = new JMenuItem("Straighten");
+//		miStraighten.setEnabled(false);
+//		add(miStraighten);
 
 		add(new JPopupMenu.Separator());		
 		deleteCmd = new DeleteCommand(view);

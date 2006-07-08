@@ -40,9 +40,12 @@ public class NodePopup extends JPopupMenu {
 
 	protected static void showPopup(GraphDrawingView context, Node n){
 		view = context;
-		if(popup == null) {
+		if(popup == null)
+		{
 			popup = new NodePopup(n);
-		}else{		
+		}
+//		else
+		{		
 			popup.setNode(n);
 		}
 		// TODO change sign of x or y as required
@@ -68,10 +71,10 @@ public class NodePopup extends JPopupMenu {
 		miLabelNode = textCmd.createMenuItem();
 		miDeleteNode = deleteCmd.createMenuItem();
 						
-		add(miSetInitial);
-		add(miSetMarked);				
-		add(miSelfLoop);		
 		add(miLabelNode);
+		add(miSetMarked);				
+		add(miSetInitial);
+		add(miSelfLoop);		
 		add(new JPopupMenu.Separator());
 		add(miDeleteNode);
 		addPopupMenuListener(new PopupListener());
@@ -87,9 +90,12 @@ public class NodePopup extends JPopupMenu {
 		deleteCmd.setElement(n);
 		textCmd.setElement(n);
 		
-		miSetMarked.setSelected(node.getState().isMarked());
-		miSetInitial.setSelected(node.getState().isInitial());
-		miSelfLoop.setSelected(node.hasSelfLoop());
+		//TODO this is bad since setSelected actually calls the selection handling
+		//miSetMarked.setSelected(node.getState().isMarked());
+		markedCmd.setSelected(node.getState().isMarked());
+		//miSetInitial.setSelected(node.getState().isInitial());
+		initialCmd.setSelected(node.getState().isInitial());
+		//miSelfLoop.setSelected(node.hasSelfLoop());
 	}
 
 	private class Listener implements ActionListener {

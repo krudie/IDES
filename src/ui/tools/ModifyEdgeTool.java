@@ -5,6 +5,7 @@ package ui.tools;
 
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.geom.Point2D.Float;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -32,7 +33,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	
 	public ModifyEdgeTool(GraphDrawingView context){
 		this.context = context;
-		this.cursor = new Cursor(Cursor.HAND_CURSOR);
+		this.cursor =Toolkit.getDefaultToolkit().createCustomCursor(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/cursors/move.gif")), new Point(12,12), "MOVE_EDGE_CONTROLS");
 	}
 	
 	/* (non-Javadoc)
@@ -130,8 +131,9 @@ public class ModifyEdgeTool extends DrawingTool {
 			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
 			cmd.execute();		
 			context.repaint();
+			switchTool();
 		}
-		dragging = false;		
+		dragging = false;
 	}
 
 	/* (non-Javadoc)

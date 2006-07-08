@@ -132,6 +132,8 @@ public class LatexManager {
 			Hub.persistentData.setBoolean("useLatexLabels",setting);
 			if(setting)
 				new LatexPrerenderer(Hub.getWorkspace().getGraphModels());
+			if(Hub.getWorkspace().getActiveGraphModel()!=null)
+				Hub.getWorkspace().getActiveGraphModel().update();
 			Hub.getWorkspace().notifyAllSubscribers();			
 		}
 	}

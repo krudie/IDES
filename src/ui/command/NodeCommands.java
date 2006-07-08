@@ -39,7 +39,7 @@ public class NodeCommands {
 		@Override
 		protected void handleSelection(boolean arg0) throws ToggleVetoException {
 			// FIXME do this in GraphModel and split this command into 
-			// mark.node.command and initial.node.command			
+			// mark.node.command and initial.node.command
 			previousValue = !arg0;
 			IDESWorkspace.instance().getActiveGraphModel().setMarked(node, arg0); 			
 		}		
@@ -72,7 +72,7 @@ public class NodeCommands {
 		}
 	}
 	
-	public static class SelfLoopCommand extends org.pietschy.command.ToggleCommand {
+	public static class SelfLoopCommand extends org.pietschy.command.undo.UndoableActionCommand {
 
 		private Node node;
 		
@@ -84,8 +84,10 @@ public class NodeCommands {
 		 * @see org.pietschy.command.ToggleCommand#handleSelection(boolean)
 		 */
 		@Override
-		protected void handleSelection(boolean arg0) throws ToggleVetoException {
-			IDESWorkspace.instance().getActiveGraphModel().setSelfLoop(node, arg0);			
+		protected UndoableEdit performEdit() {
+			
+			IDESWorkspace.instance().getActiveGraphModel().setSelfLoop(node, true);
+			return null;
 		}
 	
 		public void setNode(Node node){
