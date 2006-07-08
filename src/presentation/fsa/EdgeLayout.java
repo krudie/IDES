@@ -114,7 +114,7 @@ public class EdgeLayout extends GraphicalLayout {
 	 * @return array of 4 Bezier control points for a straight, directed edge
 	 */
 	public void computeCurve(NodeLayout s, NodeLayout t){
-		
+
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t) && angle1 == 0 && angle2 == 0){
 				computeDefaultSelfLoop(s);
@@ -167,14 +167,15 @@ public class EdgeLayout extends GraphicalLayout {
 		}		
 		
 		// round to prevent cumulative numerical drift
-		ctrls[P1].x = Math.round(ctrls[P1].x);
-		ctrls[P1].y = Math.round(ctrls[P1].y);
-		ctrls[CTRL1].x = Math.round(ctrls[CTRL1].x);
-		ctrls[CTRL1].y = Math.round(ctrls[CTRL1].y);
-		ctrls[CTRL2].x = Math.round(ctrls[CTRL2].x);
-		ctrls[CTRL2].y = Math.round(ctrls[CTRL2].y);
-		ctrls[P2].x = Math.round(ctrls[P2].x);
-		ctrls[P2].y = Math.round(ctrls[P2].y);
+		//TODO: verify with Helen that this can go
+//		ctrls[P1].x = Math.round(ctrls[P1].x);
+//		ctrls[P1].y = Math.round(ctrls[P1].y);
+//		ctrls[CTRL1].x = Math.round(ctrls[CTRL1].x);
+//		ctrls[CTRL1].y = Math.round(ctrls[CTRL1].y);
+//		ctrls[CTRL2].x = Math.round(ctrls[CTRL2].x);
+//		ctrls[CTRL2].y = Math.round(ctrls[CTRL2].y);
+//		ctrls[P2].x = Math.round(ctrls[P2].x);
+//		ctrls[P2].y = Math.round(ctrls[P2].y);
 		
 		curve.setCurve(ctrls, 0);		
 		Point2D midpoint = midpoint(curve);

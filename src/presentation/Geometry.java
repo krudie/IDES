@@ -60,7 +60,7 @@ public class Geometry {
 	 * @return the result of scaling v by s
 	 */
 	public static Point2D.Float scale(Point2D.Float v, float s) {		
-		return new Point2D.Float(Math.round(v.x * s), Math.round(v.y * s));		
+		return new Point2D.Float(v.x * s, v.y * s);		
 	}	
 		
 	
