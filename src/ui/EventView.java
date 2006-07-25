@@ -34,7 +34,7 @@ import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 
-public class EventView extends JPanel implements Subscriber,ActionListener {
+public class EventView extends JPanel implements Subscriber, ActionListener {
 
 	protected class EventTableModel extends AbstractTableModel
 	{

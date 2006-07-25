@@ -288,16 +288,21 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
-		arg0=tranfromMouseCoords(arg0);
-//		if(arg0.getClickCount() == 2){
-//			currentTool = TEXT;
-//		}
-		drawingTools[currentTool].handleMouseClicked(arg0);		
+		arg0=tranformMouseCoords(arg0);
+		// Switch to labelling tool if we are not in creation mode
+		// NOTE conflict with double click paradigm in creation mode
+		// since don't know we've got a double click until after self-loop has been created.
+		// IDEA delay creation of self loops until we know if double clicked.
+		// Don't finish edge on mouse released if target == source.
+		if(arg0.getClickCount() == 2 && currentTool != CREATE){
+			currentTool = TEXT;
+		}
+		drawingTools[currentTool].handleMouseClicked(arg0);	
 	}
 
 
 	public void mousePressed(MouseEvent arg0) {
-		arg0=tranfromMouseCoords(arg0);
+		arg0=tranformMouseCoords(arg0);
 		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
@@ -308,7 +313,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 
 	public void mouseReleased(MouseEvent arg0) {
-		arg0=tranfromMouseCoords(arg0);
+		arg0=tranformMouseCoords(arg0);
 		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
@@ -318,12 +323,12 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}
 
 	public void mouseDragged(MouseEvent arg0) {		
-		arg0=tranfromMouseCoords(arg0);
+		arg0=tranformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseDragged(arg0);		
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
-		arg0=tranfromMouseCoords(arg0);
+		arg0=tranformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}	
 
@@ -332,6 +337,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	public void mouseExited(MouseEvent arg0) {
 		if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
 		{
+			// USABILITY Cancels edge when leave panel bounds.
+			// Seems rude to cancel the edge while it is being drawn.
+			// Why not resize the canvas when the user chooses the target point?
 			((CreationTool)drawingTools[CREATE]).abortEdge();
 			repaint();
 		}
@@ -456,7 +464,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		return currentSelection.hasChildren();
 	}
 	
-	protected MouseEvent tranfromMouseCoords(MouseEvent e)
+	protected MouseEvent tranformMouseCoords(MouseEvent e)
 	{
 		Point2D.Float p=new Point2D.Float(e.getX(),e.getY());
 		p=screenToLocal(p);

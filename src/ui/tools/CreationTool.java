@@ -60,6 +60,17 @@ public class CreationTool extends DrawingTool {
 			aborted = false;
 			return;
 		}
+		
+		if(drawingSelfLoop()){
+			if( !firstClick && me.getClickCount() != 2 ){
+				// second click on same node so make a self-loop			
+				finishSelfLoop();				
+			}else{ // double click should activate text (labelling) tool
+				abortEdge();
+				context.setTool(GraphDrawingView.TEXT);
+				context.getCurrentTool().handleMouseClicked(me);
+			}	
+		}
 	}
 
 	@Override
@@ -92,10 +103,14 @@ public class CreationTool extends DrawingTool {
 				}catch(ClassCastException e){}
 			}				
 			
-			if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging				
-				// second click on same node so make a self-loop
-				finishSelfLoop();				
+			if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging
+				// IDEA To fix conflict with TextTool, delay creation of self loops until we know if user has double clicked.
+				// Don't finish edge on mouse released if target == source.
+				//// second click on same node so make a self-loop
+				//finishSelfLoop();				
 				firstClick = false;
+				return;
+				
 			}else if(startNode != null && startNode == endNode && startNode == sourceNode && dragging){ // select source node, keep drawing edge by mouse move (not dragging)				
 				dragging = false;
 				firstClick = true;
@@ -118,6 +133,10 @@ public class CreationTool extends DrawingTool {
 			context.repaint();
 		}
 
+	private boolean drawingSelfLoop(){
+		return startNode == endNode && endNode == sourceNode && drawingEdge && !dragging;
+	}
+	
 	/**
 	 * 
 	 */

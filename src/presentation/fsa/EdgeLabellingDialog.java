@@ -264,9 +264,9 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		
 		Box listBox=Box.createHorizontalBox();
 
-		listAvailableEvents = new MutableList(); //new FilteringJList();
+		listAvailableEvents = new MutableList();
 		listAvailableEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
-		//listAvailableEvents.installJTextField(textField);
+		
 		listAvailableEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				if(e.getValueIsAdjusting())
@@ -323,8 +323,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		listBox.add(pCentre);
 		listBox.add(Box.createHorizontalGlue());
 
-		listAssignedEvents = new MutableList();
-		// TODO Only one item can be selected: change to MULTIPLE_INTERVAL_SELECTION later
+		listAssignedEvents = new MutableList();	
 		listAssignedEvents.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 		listAssignedEvents.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 
@@ -385,6 +384,8 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		buttonCancel.invalidate();
 	}
 
+	// TODO refresh available events list with data from global eventsModel
+	// For now just refresh list model with local event set from the active FSA	
 	public void updateOnlyAvailable() {
 		listAvailableEvents.removeAll();
 		Iterator<FSAEvent> events = IDESWorkspace.instance().getActiveModel().getEventIterator();
@@ -398,10 +399,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		textField.setText("");
 	}
 
-	public void update() {
-		// TODO refresh mutable list models with data from eventsModel
-		// For now just refresh list models with local event sets from the active FSA
-		
+	public void update() {		
 		// Selected events are those assigned to transitions on the edge
 		listAssignedEvents.removeAll();
 		Iterator<FSATransition> trans = edge.getTransitions();
@@ -431,8 +429,6 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
         textField.requestFocus();
 		dialog.setVisible(false);
 	}
-	
-	//public void 
 	
 	// Data
 	private Edge edge;
@@ -622,18 +618,5 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		}
 		
 	}
-	
-//	private class DeleteListener implements ActionListener {
-//
-//		/* (non-Javadoc)
-//		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-//		 */
-//		public void actionPerformed(ActionEvent arg0) {
-//			// TODO remove the currently selected event from the FSA 
-//			// (must remove it from all transitions in the FSA). 
-//			Hub.displayAlert("TODO Implement delete event.");			
-//		}
-//		
-//	}
-	
+
 }

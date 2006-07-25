@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D.Float;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
@@ -173,9 +174,9 @@ public class GraphElement implements PresentationElement {
 		this.layout = layout;		
 	}
 
-	public GraphicalLayout getLayout() {		
-		return layout;
-	};
+//	public GraphicalLayout getLayout() {		
+//		return layout;
+//	};
 	
 	public void translate(float x, float y){
 		layout.translate(x, y);
@@ -224,5 +225,20 @@ public class GraphElement implements PresentationElement {
 	public int size()
 	{
 		return children.size();
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.PresentationElement#getLayout()
+	 */
+	public GraphicalLayout getLayout() {
+		// TODO Auto-generated method stub
+		return layout;
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.PresentationElement#getLocation()
+	 */
+	public Float getLocation() {		
+		return layout.getLocation();
 	}
 }

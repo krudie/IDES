@@ -15,7 +15,7 @@ import main.Hub;
 import presentation.PresentationElement;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeHandler;
-import presentation.fsa.EdgeLayout;
+import presentation.GraphicalLayout;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.SelectionGroup;
 
@@ -28,7 +28,7 @@ import ui.command.EdgeCommands.ModifyEdgeCommand;
 public class ModifyEdgeTool extends DrawingTool {
 	
 	private Edge edge;
-	private EdgeLayout previousLayout;  // TODO clone for undo
+	private GraphicalLayout previousLayout;  // TODO clone for undo
 	private int pointType = EdgeHandler.NO_INTERSECTION;  // types CTRL1 or CTRL2 are moveable	
 	
 	public ModifyEdgeTool(GraphDrawingView context){
@@ -43,9 +43,19 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m) {
+			
+		// FIXME If an edge was just selected by SelectionTool,
+		// use it, don't lose it.
+		if(context.hasCurrentSelection()){
+			Edge temp = getEdge(context.getCurrentSelection());
+			if( temp != null )
+			{
+				edge = temp;		
+			}
+		}
 		
-		// don't clear current selection if we've intersected
-		// control point for the current edge
+		// don't clear current selection since we may have 
+		// intersected a control point for the current edge
 		if(edge != null && edge.isSelected()){
 			prepareToDrag(m.getPoint());
 			if(dragging) return;
@@ -58,12 +68,14 @@ public class ModifyEdgeTool extends DrawingTool {
 			if( temp != null )
 			{
 				edge = temp;
-				prepareToDrag(m.getPoint());
+				//prepareToDrag(m.getPoint());
 			}else{				
 				switchTool();
+				context.getCurrentTool().handleMousePressed(m);
 			}
 		}else{
 			switchTool();
+			context.getCurrentTool().handleMousePressed(m);
 		}
 		context.repaint();
 	}
@@ -86,7 +98,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	private void prepareToDrag(Point point){
 		if(edge.getHandler().isVisible() && edge.getHandler().intersects(point)){				
 			pointType = edge.getHandler().getLastIntersected();
-			if(pointType == EdgeLayout.CTRL1 || pointType == EdgeLayout.CTRL2){								
+			if(pointType == Edge.CTRL1 || pointType == Edge.CTRL2){								
 				dragging = true;
 			}else{														
 				dragging = false;					
@@ -116,7 +128,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		
 		if(dragging){
 			// set the selected control point to the current location			
-			edge.getLayout().setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
+			edge.setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
 			context.repaint();			
 		}
 	}
@@ -130,11 +142,12 @@ public class ModifyEdgeTool extends DrawingTool {
 		if(dragging){ // TODO check to see if edge has been changed
 			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
 			cmd.execute();		
-			context.repaint();
-			switchTool();
+			context.repaint();						
+			dragging = false;			
 		}
-		dragging = false;
 	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMouseClicked(java.awt.event.MouseEvent)

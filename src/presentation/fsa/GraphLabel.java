@@ -55,12 +55,11 @@ public class GraphLabel extends GraphElement {
 		// TODO change to a dynamic value read from a config file and stored in 
 		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
-		//bounds = new Rectangle();
+		
 	}
 	
 	public GraphLabel(GraphicalLayout layout){		
-		this.layout = layout;	
-		//bounds = new Rectangle();
+		this.layout = layout;		
 	}
 	
 	/**
@@ -175,7 +174,7 @@ public class GraphLabel extends GraphElement {
 	/**
 	 * @return
 	 */
-	private String getText() {
+	String getText() {
 		return layout.getText();
 	}
 
@@ -207,8 +206,8 @@ public class GraphLabel extends GraphElement {
 			// TODO compute corner of bounding box that is nearest to the parent's centre			
 			g.drawLine((int)bounds().x, 
 						(int)bounds().y, 
-						(int)getParent().getLayout().getLocation().x, 
-						(int)getParent().getLayout().getLocation().y);
+						(int)getParent().getLocation().x, 
+						(int)getParent().getLocation().y);
 		}
 		((Graphics2D)g).setStroke(s);		
 	}
@@ -364,7 +363,7 @@ public class GraphLabel extends GraphElement {
 	public String createExportString(Rectangle selectionBox, int exportType)
 	{
 		String exportString = "";
-		GraphicalLayout labelLayout = getLayout();
+		GraphicalLayout labelLayout = layout;
 		Rectangle labelBounds = bounds();
 		Node parentNode = null;
 		GraphicalLayout nodeLayout = null;

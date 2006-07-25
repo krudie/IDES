@@ -62,9 +62,7 @@ public class NodePopup extends JPopupMenu {
 		selfLoopCmd = new SelfLoopCommand();
 		textCmd = new TextCommand(view);
 		deleteCmd = new DeleteCommand(view);
-		
-		ActionListener menuListener = new Listener();		
-		
+				
 		miSetMarked = markedCmd.createMenuItem();
 		miSetInitial = initialCmd.createMenuItem();
 		miSelfLoop = selfLoopCmd.createMenuItem();
@@ -97,21 +95,7 @@ public class NodePopup extends JPopupMenu {
 		initialCmd.setSelected(node.getState().isInitial());
 		//miSelfLoop.setSelected(node.hasSelfLoop());
 	}
-
-	private class Listener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {			
-			Object o = e.getSource();			
-			if(o.equals(miLabelNode)){
-				// create and execute a Text command
-				// open labeling input box as in text tool
-	//			 DEBUG
-				JOptionPane.showMessageDialog(null, "TODO open labeling dialog");
-			
-			}else{
-				//OptionPane.showMessageDialog(null, "Can't figure out which item selected...", "Node Properties Dialog", JOptionPane.ERROR_MESSAGE);
-			}		
-		}		    			
-	}
+	
 	
 	  class PopupListener implements PopupMenuListener {
 

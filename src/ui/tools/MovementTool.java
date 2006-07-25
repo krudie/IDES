@@ -86,7 +86,7 @@ public class MovementTool extends DrawingTool {
 		
 		// don't deselect groups of multiple elements since user may wish to revise movement
 		if( ! context.getCurrentSelection().hasMultipleElements() ){
-			context.clearCurrentSelection();
+			context.clearCurrentSelection();			
 			context.updateCurrentSelection(me.getPoint());
 		}
 		

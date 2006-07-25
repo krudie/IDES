@@ -95,7 +95,8 @@ public interface PresentationElement {
 	
 	public void setLayout(GraphicalLayout layout);
 	
-	public GraphicalLayout getLayout();
+	// FIXME Don't want layout to be tampered with directly,  may be out of sync.
+	public GraphicalLayout getLayout(); 
 	
 	public void translate(float x, float y);
 	
@@ -106,4 +107,7 @@ public interface PresentationElement {
 	public boolean isDirty();
 
 	public void update();
+
+	public Point2D.Float getLocation();
+	
 }

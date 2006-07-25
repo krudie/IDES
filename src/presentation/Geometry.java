@@ -91,20 +91,21 @@ public class Geometry {
 	}
 	
 	/**
-	 * 
-	 * a · b  =  cos ? 
-
-To use this formula with non-unit vectors: 
-(1) normalize each vector, 
-(2) compute the dot product, 
-(3) take the arc cos to get the angle. 
-
-	 * 
-	 * @param v1
-	 * @param v2
+	 * @param v1 source vector
+	 * @param v2 target vector (within a scalar)
 	 * @return the angle to rotate v1 to make it a scalar of v2
 	 */
 	public static double angleFrom(Point2D.Float v1, Point2D.Float v2){
+		
+		 /* a · b  =  cos ? 
+
+		 For non-unit vectors: 
+		 (1) normalize each vector, 
+		 (2) compute the dot product, 
+		 (3) take the arc cos to get the angle.
+
+		 */ 
+
 		Point2D.Float u1, u2;
 		u1 = unit(v1);
 		u2 = unit(v2);
@@ -133,8 +134,27 @@ To use this formula with non-unit vectors:
 		return (p2.y-p1.y)/(p2.x-p1.x);
 	}
 	
+	/**
+	 * @param p1
+	 * @param p2
+	 * @return
+	 */
+	public static double slope(Point2D p1, Point2D p2) {
+		return (p2.getY()-p1.getY())/(p2.getX()-p1.getX());
+	}
+	
 	public static Point2D.Float translate(Point2D.Float p, float x, float y)
 	{
 		return new Point2D.Float(p.x+x,p.y+y);
 	}
+
+	/**
+	 * @param p
+	 * @param x
+	 * @param y
+	 * @return new point resulting from translating p by x and y
+	 */
+	public static Float translate(Point2D p, double x, double y) {		
+		return new Point2D.Float( (float)(p.getX() + x), (float)(p.getY() + y) );
+	}	
 }

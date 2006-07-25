@@ -26,6 +26,13 @@ import util.BentoBox;
 public class Edge extends GraphElement {
 	
 	protected static final float INTERSECT_EPSILON=9;
+	/**
+	 * Indices of bezier curve control points. 
+	 */
+	public static final int P1 = 0;	
+	public static final int CTRL1 = 1;
+	public static final int CTRL2 = 2;
+	public static final int P2 = 3;
 	
 	private ArrayList<FSATransition> transitions; // the transitions that this edge represents	
 	private Node source, target;	
@@ -134,7 +141,9 @@ public class Edge extends GraphElement {
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		}		   
 
-		g2d.draw(((EdgeLayout)layout).getCubicCurve());   
+		// FIXME stop drawing at base of arrowhead
+		// subtract Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH) from P2		
+		g2d.draw(getLayout().getCubicCurve());   
 	    g2d.drawPolygon(arrow);
 	    g2d.fillPolygon(arrow);
 	    
@@ -144,11 +153,11 @@ public class Edge extends GraphElement {
 	}
 	
 	/**
-	 * Updates my visualization of ((EdgeLayout)layout).getCurve(), arrow and label.
+	 * Updates my visualization of curve, arrow and label.
 	 */
 	public void update() {		
 		super.update();
-		CubicCurve2D curve = ((EdgeLayout)layout).getCubicCurve();
+		CubicCurve2D.Float curve = getLayout().getCubicCurve();
 		
 		if(!isSelected()){
 			handler.setVisible(false);
@@ -156,7 +165,7 @@ public class Edge extends GraphElement {
 				
 		// Concat label from associated event[s]
 	    String s = "";	    
-	    Iterator iter = ((EdgeLayout)layout).getEventNames().iterator();
+	    Iterator iter = getLayout().getEventNames().iterator();
 	    while(iter.hasNext()){
 	    	s += (String)iter.next();
 	    	s += ", ";
@@ -180,11 +189,12 @@ public class Edge extends GraphElement {
 	    
 	    // FIXME arrow direction vector
 	    arrow = new ArrowHead(unitDir, Geometry.subtract(new Point2D.Float((float)(curve.getP2().getX()), (float)(curve.getP2().getY())), Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH)));	    
-	    				
-	    // FIXME stop drawing at base of arrowhead
-		// subtract Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH) from P2
-		
+	        
 	    setDirty(false);
+	    
+		// DEBUG
+		assertAllPointsNumbers(curve);
+
 	}
 	
 	
@@ -195,14 +205,28 @@ public class Edge extends GraphElement {
 		// Starting at p2, find point on curve where base of arrow head
 		// intersects with ...
 		
-		
-//		float d = 2 * target.getRadius() + 2 * ArrowHead.SHORT_HEAD_LENGTH;
-//		Ellipse2D circle = new Ellipse2D.Float(target.getLayout().getLocation().x, target.getLayout().getLocation().y, d, d);
-//	
-		
+		// float d = 2 * target.getRadius() + 2 * ArrowHead.SHORT_HEAD_LENGTH;
+		// Ellipse2D circle = new Ellipse2D.Float(target.getLayout().getLocation().x, target.getLayout().getLocation().y, d, d);		
 		return null;
 	}
 
+	/************************************************************
+	 *  Debugging 
+	 */
+	protected void assertAllPointsNumbers(CubicCurve2D.Float curve){
+		
+		assert !Double.isNaN(curve.getCtrlX1()) : "cx1 is NaN"; 
+		assert !Double.isNaN(curve.getCtrlX2()) : "cx2 is NaN";
+		assert !Double.isNaN(curve.getCtrlY1()) : "cy1 is NaN";
+		assert !Double.isNaN(curve.getCtrlY2()) : "cy2 is NaN";
+		assert !Double.isNaN(curve.getX1()) : "x1 is NaN";
+		assert !Double.isNaN(curve.getX2()) : "x2 is NaN";
+		assert !Double.isNaN(curve.getY1()) : "y1 is NaN";
+		assert !Double.isNaN(curve.getY2()) : "y2 is NaN";
+		
+	}
+	/*************************************************************/
+	
 	/**	 
 	 * @return true iff p intersects with this edge. 
 	 */
@@ -212,8 +236,14 @@ public class Edge extends GraphElement {
 		boolean limitReached=false;
 		CubicCurve2D.Float curve= getLayout().getCubicCurve();
 		
+		// DEBUG
+		assertAllPointsNumbers(curve);
+		
 		do
 		{
+			// DEBUG
+			assertAllPointsNumbers(curve);
+			
 			CubicCurve2D.Float c1=new CubicCurve2D.Float(),c2=new CubicCurve2D.Float();
 			curve.subdivide(c1,c2);
 			if(c1.intersects(p.getX() - 4, p.getY() - 4, 8, 8))
@@ -240,7 +270,7 @@ public class Edge extends GraphElement {
 				handler.intersects(p) ;
 		}else{
 			// expand the intersection point to an 8 by 8 rectangle
-			//boolean r = ((EdgeLayout)layout).getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
+			//boolean r = getLayout().getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
 			boolean a = arrow.contains(p);
 			boolean l = label.intersects(p);			
 			return hit || a || l ;
@@ -248,19 +278,19 @@ public class Edge extends GraphElement {
 	}
 	
 	public Point2D.Float getP1() {
-		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getX1(), (float)((EdgeLayout)layout).getCubicCurve().getY1());
+		return new Point2D.Float((float)getLayout().getCubicCurve().getX1(), (float)getLayout().getCubicCurve().getY1());
 	}
 
 	public Point2D.Float getP2() {
-		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getX2(), (float)((EdgeLayout)layout).getCubicCurve().getY2());
+		return new Point2D.Float((float)getLayout().getCubicCurve().getX2(), (float)getLayout().getCubicCurve().getY2());
 	}
 	
 	public Point2D.Float getCTRL1() {
-		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getCtrlX1(), (float)((EdgeLayout)layout).getCubicCurve().getCtrlY1());		
+		return new Point2D.Float((float)getLayout().getCubicCurve().getCtrlX1(), (float)getLayout().getCubicCurve().getCtrlY1());		
 	}
 
 	public Point2D.Float getCTRL2() {
-		return new Point2D.Float((float)((EdgeLayout)layout).getCubicCurve().getCtrlX2(), (float)((EdgeLayout)layout).getCubicCurve().getCtrlY2());		
+		return new Point2D.Float((float)getLayout().getCubicCurve().getCtrlX2(), (float)getLayout().getCubicCurve().getCtrlY2());		
 	}
 
 	public Node getSource() {
@@ -284,7 +314,7 @@ public class Edge extends GraphElement {
 	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
 	 */
 	public Rectangle2D bounds(){				
-		CubicCurve2D curve = ((EdgeLayout)layout).getCubicCurve();
+		CubicCurve2D curve = getLayout().getCubicCurve();
 		return new Rectangle2D.Float((float)Math.min(curve.getX1(), curve.getX2()),
 					  				(float)Math.min(curve.getY1(), curve.getY2()),					  				
 					  				(float)Math.abs(curve.getX2() - curve.getX1()), 
@@ -315,14 +345,18 @@ public class Edge extends GraphElement {
 	
 	public void translate(float x, float y){		
 		EdgeLayout l = (EdgeLayout)layout;
-		CubicCurve2D curve = l.getCubicCurve();
+		CubicCurve2D.Float curve = l.getCubicCurve();
 		if(l.isRigidTranslation()){			
 		// Translate the whole curve assuming that its
 		// source and target nodes have been translated by the same displacement.			
 			curve.setCurve(curve.getX1()+x, curve.getY1()+y,
 					curve.getCtrlX1()+x, curve.getCtrlY1()+y,
 					curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
-					curve.getX2(), curve.getY2()+y);				
+					curve.getX2(), curve.getY2()+y);	
+			
+//			 DEBUG
+			assertAllPointsNumbers(curve);
+			
 			l.setRigidTranslation(false);
 			super.translate(x, y);
 			
@@ -377,10 +411,7 @@ public class Edge extends GraphElement {
 		EdgePopup.showPopup((GraphDrawingView)c, this);
 	}
 	
-//	public boolean isDirty(){
-//		return super.isDirty() || layout.isDirty();
-//	}
-	
+
 	/**
 	 * This method is responsible for creating a string that contains
 	 * an appropriate (depending on the type) representation of this
@@ -447,7 +478,7 @@ public class Edge extends GraphElement {
 			}
 			
 			// Now for the label
-			if ((layout.getText() != null) && (label.getLayout().getText().length() > 0))
+			if ((layout.getText() != null) && (label.getText().length() > 0))
 			{
 				exportString += "  " 
 					+ label.createExportString(selectionBox, exportType);
@@ -519,4 +550,45 @@ public class Edge extends GraphElement {
 	public int transitionCount() {		
 		return transitions.size();
 	}
+	
+	/**
+	 * @param point
+	 * @param pointType
+	 */
+	public void setPoint(Float point, int pointType) {
+		getLayout().setPoint(point, pointType);		
+	}
+
+	/**
+	 * @param symbol
+	 */
+	public void addEventName(String symbol) {
+		getLayout().addEventName(symbol);		
+	}
+
+	/**
+	 * @param s
+	 * @param p
+	 */
+	public void computeCurve(NodeLayout s, Float p) {
+		getLayout().computeCurve(s,p);		
+	}
+
+	public void computeCurve(NodeLayout nL1, NodeLayout nL2) {
+		getLayout().computeCurve(nL1, nL2);		
+	}
+
+	/**
+	 * @param opposite
+	 */
+	public void arcAway(Edge opposite) {
+		getLayout().arcAway(opposite.getLayout());		
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isStraight() {		
+		return getLayout().isStraight();
+	}	
 }

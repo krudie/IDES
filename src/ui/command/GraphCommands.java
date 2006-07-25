@@ -1,6 +1,7 @@
 package ui.command;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.Iterator;
 
@@ -213,9 +214,10 @@ public class GraphCommands {
 	
 	public static class TextCommand extends UndoableActionCommand {
 		
-		GraphDrawingView context;
+		GraphDrawingView context;		
 		String text;
 		GraphElement element = null;
+		Point2D.Float location = null;
 		
 		public TextCommand(GraphDrawingView context){
 			super("text.command");
@@ -235,21 +237,31 @@ public class GraphCommands {
 			this.context = context;
 		}
 
+		/**
+		 * @param context
+		 * @param location
+		 */
+		public TextCommand(GraphDrawingView context, Point location) {
+			this.context = context;
+			this.location = new Point2D.Float(location.x, location.y);
+		}
+
 		public void setElement(GraphElement element){
 			this.element = element;
 		}
 		
 		@Override
 		protected UndoableEdit performEdit() {
-			if(element == null){
-				context.setTool(GraphDrawingView.TEXT);
-			}else{				
-				if(element == null){
-					// TODO create a new free label
-					
-				// KLUGE: instanceof is rotten style, fix this
-				// FIXME Move to NodeCommands.LabelCommand
-				}else if (element instanceof Node){				
+			if(element == null){ 
+				// create a new free label
+				// TODO use an extension of EscapeDialog and set its location
+				text = JOptionPane.showInputDialog("Enter label text: ");
+				if(text != null){
+					context.getGraphModel().addFreeLabel(text, location);
+				}
+			}else{
+				// KLUGE: instanceof is rotten style, fix this				
+				if (element instanceof Node){				
 					Node node = (Node)element;
 					// if selection is a node				
 					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(context.getGraphModel(),node);
@@ -258,11 +270,13 @@ public class GraphCommands {
 					EdgeLabellingDialog.showDialog(context, edge);					
 					// TODO accumulate set of edits that were performed in the edge labelling dialog
 				}else{
-					// TODO on a free label
+					// on a free label
 					GraphLabel label = (GraphLabel)element;
 					String inputValue = JOptionPane.showInputDialog("Enter label text: ");
 					if(inputValue != null){
-						context.getGraphModel().addGraphLabel(label, text);
+						label.setText(inputValue);
+						// KLUGE
+						context.getGraphModel().notifyAllSubscribers();
 					}
 				}
 				context.repaint();
@@ -382,7 +396,7 @@ public class GraphCommands {
 				i=context.getCurrentSelection().children();
 			else
 				i=context.getGraphModel().getGraph().children();
-			for(;i.hasNext();)
+			while(i.hasNext())
 			{
 				GraphElement ge=(GraphElement)i.next();
 				ge.getLayout().snapToGrid();

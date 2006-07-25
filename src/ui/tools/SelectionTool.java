@@ -111,6 +111,7 @@ public class SelectionTool extends DrawingTool {
 		// start modifying the edge		
 		if(context.hasCurrentSelection() && context.getCurrentSelection().child(0) instanceof Edge) { // KLUGE instanceof is YUCK
 			context.setTool(GraphDrawingView.MODIFY);
+			context.getCurrentTool().handleMousePressed(me);
 			return;
 		}
 		
@@ -170,14 +171,8 @@ public class SelectionTool extends DrawingTool {
 	}
 
 	@Override
-	public void handleKeyPressed(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void handleKeyPressed(KeyEvent ke) {}
 
 	@Override
-	public void handleKeyReleased(KeyEvent ke) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void handleKeyReleased(KeyEvent ke) {}
 }

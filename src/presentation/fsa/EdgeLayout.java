@@ -12,8 +12,7 @@ import presentation.GraphicalLayout;
 public class EdgeLayout extends GraphicalLayout {
 
 	private Edge edge;
-	private boolean selfLoop = false;
-	
+	private boolean selfLoop = false;	
 	
 	/**
 	 * Indices of bezier curve control points. 
@@ -23,36 +22,28 @@ public class EdgeLayout extends GraphicalLayout {
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
 	public static final double EPSILON = 0.0001; // lower bound for abs(angles), below which is treated as zero 
-		
-	// Indicates whether an edge can be rigidly translated 
-	// with both of its nodes or must be recomputed.
-	// Default value is false;
-	private boolean rigidTranslation = false; 
+	
 	private ArrayList eventNames;
-	private Point2D.Float[] ctrls; // TODO Replace with CubicCurve2D
+	//private Point2D.Float[] ctrls; // TODO Replace with CubicCurve2D
 	private CubicCurve2D.Float curve;
+
 	// Compact representation of data required to maintain shape of edge while moving
 	// one or both of its nodes.
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
-
-	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 	private double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
 	private double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
 	private double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
-	private double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)
+	private double angle2 = 0.0; // angle between  (CTRL2 - P1) and (P2-P1) NOTE that this is wrong and should be changed: see comment for updateAnglesAndScalars 
+	
+	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 		
-	public EdgeLayout(){		
-		ctrls = new Point2D.Float[4];
-		for(int i = 0; i<4; i++){
-			ctrls[i] = new Point2D.Float();			
-		}
+	public EdgeLayout(){	
 		curve = new CubicCurve2D.Float();
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
 	}
 	
-	public EdgeLayout(Point2D.Float[] bezierControls, boolean selfLoop){
-		this.ctrls = bezierControls;
+	public EdgeLayout(Point2D.Float[] bezierControls, boolean selfLoop){		
 		curve = new CubicCurve2D.Float();
 		curve.setCurve(bezierControls, 0);
 		this.selfLoop = selfLoop;
@@ -62,8 +53,7 @@ public class EdgeLayout extends GraphicalLayout {
 		setDirty(true);
 	}
 	
-	public EdgeLayout(Point2D.Float[] bezierControls, ArrayList eventNames){
-		this.ctrls = bezierControls;
+	public EdgeLayout(Point2D.Float[] bezierControls, ArrayList eventNames){		
 		curve = new CubicCurve2D.Float();
 		curve.setCurve(bezierControls, 0);		
 		this.eventNames = eventNames;
@@ -83,10 +73,9 @@ public class EdgeLayout extends GraphicalLayout {
 	 * @param n1 layout for source node
 	 * @param n2 layout for target node
 	 */
-	public EdgeLayout(NodeLayout sourceLayout, NodeLayout targetLayout){
-		ctrls = new Point2D.Float[4];
+	public EdgeLayout(NodeLayout sourceLayout, NodeLayout targetLayout){		
 		curve = new CubicCurve2D.Float();		
-		computeCurve(sourceLayout, sourceLayout);		
+		computeCurve(sourceLayout, targetLayout);		
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
 		//updateAnglesAndScalars();
@@ -98,7 +87,7 @@ public class EdgeLayout extends GraphicalLayout {
 	 */
 	public void computeCurve(){
 		if(edge != null){
-			computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());
+			computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());			
 		}
 	}
 	
@@ -129,9 +118,11 @@ public class EdgeLayout extends GraphicalLayout {
 		// IDEA have the NodeLayout wiggle (rotate edges about centre) the desired/ideal adjacent edge 
 		// endpoints as calculated by EdgeLayout.
 		
+		Point2D.Float[] ctrls = new Point2D.Float[4]; 
+		
 		// FIXME No curves happen on/after save.
 		if(s.equals(t)){  
-			// endpoints are at intersections of circle with rotations from vertical vector	
+			// endpoints are at intersections of circle with rotations from vertical vector			
 			ctrls[P1] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle1));
 			ctrls[P2] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle2));
 			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s1), angle1));
@@ -203,6 +194,9 @@ public class EdgeLayout extends GraphicalLayout {
 	
 		float norm = (float)Geometry.norm(dir);
 		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
+		
+		Point2D.Float[] ctrls = new Point2D.Float[4];
+		
 		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
 		
 		dir = Geometry.subtract(centre2, ctrls[P1]);
@@ -211,6 +205,7 @@ public class EdgeLayout extends GraphicalLayout {
 		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
 		ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(2 * norm * s2)));
 		ctrls[P2] = centre2;
+		
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
@@ -235,6 +230,9 @@ public class EdgeLayout extends GraphicalLayout {
 		
 		Point2D.Float v1 = Geometry.rotate(axis, angle1);
 		Point2D.Float v2 = Geometry.rotate(axis, angle2);
+		
+		Point2D.Float[] ctrls = new Point2D.Float[4];
+		
 		ctrls[P1] = Geometry.add(s.getLocation(), v1);
 		ctrls[P2] = Geometry.add(s.getLocation(), v2);
 		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(Geometry.unit(v1), (float)s1));
@@ -275,24 +273,32 @@ public class EdgeLayout extends GraphicalLayout {
 	 */
 	private void updateAnglesAndScalars(){
 		
-		Point2D.Float p1c1 = Geometry.subtract(ctrls[CTRL1], ctrls[P1]);
-		Point2D.Float p1c2 = Geometry.subtract(ctrls[CTRL2], ctrls[P1]);
-		Point2D.Float p1p2 = Geometry.subtract(ctrls[P2], ctrls[P1]);
+		Point2D.Float p1p2 = Geometry.subtract(curve.getP2(), curve.getP1());	
+		
+		Point2D.Float p1c1 = Geometry.subtract(curve.getCtrlP1(), curve.getP1());
+		Point2D.Float p1c2 = Geometry.subtract(curve.getCtrlP2(), curve.getP1());		
 				
-		if(selfLoop){  // this is not called
-			Point2D.Float p2c2 = Geometry.subtract(ctrls[CTRL2], ctrls[P2]);
+		if(selfLoop){
+			Point2D.Float p2c2 = Geometry.subtract(curve.getCtrlP2(), curve.getP2());
 			s1 = Geometry.norm(p1c1);
 			s2 = Geometry.norm(p2c2);		
 			angle1 = Geometry.angleFrom(UNIT_VERTICAL, p1c1);
 			angle2 = Geometry.angleFrom(UNIT_VERTICAL, p2c2);
 		}else{
 			double n = Geometry.norm(p1p2);
+			
+			// DEBUG
+			assert(n > EPSILON);
+			
 			s1 = Geometry.norm(p1c1)/n;
 			s2 = Geometry.norm(p1c2)/n;		
 			angle1 = Geometry.angleFrom(p1p2, p1c1);
 			angle2 = Geometry.angleFrom(p1p2, p1c2);
 		}
 		
+		// DEBUG
+		assert(!Double.isNaN(angle1));
+		assert(!Double.isNaN(angle2));
 	}
 
 	/**
@@ -305,9 +311,31 @@ public class EdgeLayout extends GraphicalLayout {
 	public void setPoint(Point2D.Float point, int index){		
 		// IDEA should there be constraints on the angle to control point 
 		// e.g. abs(angle between base line and tangent) <= PI/2?
-		ctrls[index] = point;
-		updateAnglesAndScalars();
-		curve.setCurve(ctrls, 0);		
+		switch (index){
+			case P1:
+				curve.x1 = point.x;
+				curve.y1 = point.y;
+				break;
+			case P2:
+				curve.x2 = point.x;
+				curve.y2 = point.y;
+				break;				
+			case CTRL1:
+				curve.ctrlx1 = point.x;
+				curve.ctrly1 = point.y;
+				break;
+			case CTRL2:
+				curve.ctrlx2 = point.x;
+				curve.ctrly2 = point.y;
+				break;
+			default:
+					
+		}
+		
+// DEBUG  OKAY before call updateAnglesEtc...
+		edge.assertAllPointsNumbers(curve);
+		
+		updateAnglesAndScalars();				
 		setDirty(true);
 	}
 	
@@ -317,43 +345,19 @@ public class EdgeLayout extends GraphicalLayout {
 			// constrained movement of endpoint P1 to lie on circumference of source node
 			Point2D.Float dir = Geometry.subtract(point, edge.getSource().getLayout().getLocation());
 			dir = Geometry.scale(Geometry.unit(dir), edge.getSource().getRadius());
-			ctrls[P1] = Geometry.add(edge.getSource().getLayout().getLocation(), dir);
+			Point2D.Float c1 = Geometry.add(edge.getSource().getLayout().getLocation(), dir);
+			curve.ctrlx1 = c1.x;
+			curve.ctrly1 = c1.y;
 		}else if(index == P2){
 			// constrained movement of endpoint P2 to lie on circumference of target node
 			Point2D.Float dir = Geometry.subtract(point, edge.getTarget().getLayout().getLocation());
 			dir = Geometry.scale(Geometry.unit(dir), edge.getTarget().getRadius());
-			ctrls[P2] = Geometry.add(edge.getTarget().getLayout().getLocation(), dir);
+			Point2D.Float c2 = Geometry.add(edge.getTarget().getLayout().getLocation(), dir);
+			curve.ctrlx2 = c2.x;
+			curve.ctrly2 = c2.y;			
 		}
 	}
-	
-	public void setCurve(Point2D.Float[] bezierControls) {
-		this.ctrls = bezierControls;		
-		updateAnglesAndScalars();
-		setDirty(true);
-	}
-	
-	public void setCurve(Point2D p1, Point2D c1, Point2D c2, Point2D p2) {		
-		ctrls[P1] = new Point2D.Float((float)p1.getX(), (float)p1.getY());
-		ctrls[CTRL1] = new Point2D.Float((float)c1.getX(), (float)c1.getY());
-		ctrls[CTRL2] = new Point2D.Float((float)c2.getX(), (float)c2.getY());;
-		ctrls[P2] = new Point2D.Float((float)p2.getX(), (float)p2.getY());
-		updateAnglesAndScalars();
-		setDirty(true);
-	}
-
-	public void setCurve(Point2D.Float p1, Point2D.Float c1, Point2D.Float c2, Point2D.Float p2){
-		ctrls[0] = p1;
-		ctrls[1] = c1;
-		ctrls[2] = c2;
-		ctrls[3] = p2;		
-		updateAnglesAndScalars();
-		setDirty(true);
-	}
-
-	public Point2D.Float[] getCurve() {
-		return ctrls;
-	}
-	
+		
 	public CubicCurve2D.Float getCubicCurve() {
 		return curve;
 	}	
@@ -443,14 +447,14 @@ public class EdgeLayout extends GraphicalLayout {
 			angle2 *= 0.8;
 		}		
 	}
-	
+		
 	protected void symmetrize(){
 		Point2D.Float[] points=new Point2D.Float[4];
-		points[0]=Geometry.translate(ctrls[0],-ctrls[0].x,-ctrls[0].y);
-		points[1]=Geometry.translate(ctrls[1],-ctrls[0].x,-ctrls[0].y);
-		points[2]=Geometry.translate(ctrls[2],-ctrls[0].x,-ctrls[0].y);
-		points[3]=Geometry.translate(ctrls[3],-ctrls[0].x,-ctrls[0].y);
-		float edgeAngle=(float)Math.atan(Geometry.slope(ctrls[0],ctrls[3]));
+		points[0]=Geometry.translate(curve.getP1(),-curve.getX1(),-curve.getY1());
+		points[1]=Geometry.translate(curve.getCtrlP1(),-curve.getX1(),-curve.getY1());
+		points[2]=Geometry.translate(curve.getCtrlP2(),-curve.getX1(),-curve.getY1());
+		points[3]=Geometry.translate(curve.getP2(),-curve.getX1(),-curve.getY1());
+		float edgeAngle=(float)Math.atan(Geometry.slope(curve.getP1(),curve.getP2()));
 		points[0]=Geometry.rotate(points[0],-edgeAngle);
 		points[1]=Geometry.rotate(points[1],-edgeAngle);
 		points[2]=Geometry.rotate(points[2],-edgeAngle);
@@ -474,12 +478,12 @@ public class EdgeLayout extends GraphicalLayout {
 
 		points[1]=Geometry.rotate(points[1],edgeAngle);
 		points[2]=Geometry.rotate(points[2],edgeAngle);
-		points[0]=ctrls[0];
-		points[1]=Geometry.translate(points[1],ctrls[0].x,ctrls[0].y);
-		points[2]=Geometry.translate(points[2],ctrls[0].x,ctrls[0].y);
-		points[3]=ctrls[3];
+		points[0]=new Point2D.Float((float)curve.getX1(), (float)curve.getY1());
+		points[1]=Geometry.translate(points[1],curve.getX1(),curve.getY1());
+		points[2]=Geometry.translate(points[2],curve.getX1(),curve.getY1());
+		points[3]=new Point2D.Float((float)curve.getX2(), (float)curve.getY2());
 
-		setCurve(points);
+		curve.setCurve(points, 0);
 		setDirty(true);
 	}
 
@@ -498,5 +502,14 @@ public class EdgeLayout extends GraphicalLayout {
 	 */
 	public void setSelfLoop(boolean b) {
 		selfLoop = b;		
-	}	
+	}
+	
+	// Deprecated ///////////////////////////////////////
+	// Indicates whether an edge can be rigidly translated 
+	// with both of its nodes or must be recomputed.
+	// Default value is false;
+	private boolean rigidTranslation = false; 
+	/////////////////////////////////////////////////////
+
+	
 }

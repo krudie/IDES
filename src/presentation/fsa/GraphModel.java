@@ -65,14 +65,11 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 	}
 	protected UniformRadius uniformR=new UniformRadius();
-	
-	/**
-	 * TODO implement as a more usable form of list or map.
-	 */
+		
 	private HashMap<Long, Node> nodes;
 	private HashMap<Long, Edge> edges;
-	private HashMap<Long, GraphLabel> freeLabels;
-	private HashMap<Long, GraphLabel> edgeLabels;
+	private HashMap<Point2D.Float, GraphLabel> freeLabels; // use location as key
+	private HashMap<Long, GraphLabel> edgeLabels; // use parent edge's id as key
 	
 	/**
 	 * The recursive structure used to draw the graph.
@@ -99,13 +96,14 @@ public class GraphModel extends Publisher implements Subscriber {
 		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
-		freeLabels = new HashMap<Long, GraphLabel>();
+		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
 			
 		maxStateId = -1;
 		maxTransitionId = -1;
 		maxEventId = -1;
 		
-		update();
+		initializeGraph();
+		//update();
 		
 		setDirty(false);
 	}
@@ -130,14 +128,15 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * 
 	 * Although modifying the recursive graph structure will be trickier than simply rebuilding... 
 	 */
-	public void update(){	
-				
+	public void update(){			
+		// notifyAllSubscribers();
+	}
+	
+	private void initializeGraph(){
 		maxStateId = -1;
 		maxTransitionId = -1;
 		maxEventId = -1;
-		
-		// For now, just create everthing new.		
-		// TODO OPTIMIZE How expensive is this?
+				
 		for(Node n:nodes.values())
 			((NodeLayout)n.getLayout()).dispose();
 		nodes.clear();
@@ -182,8 +181,11 @@ public class GraphModel extends Publisher implements Subscriber {
 			// if the edge corresponding to t already exists,
 			// add t to the edge's set of transitions
 			e = directEdgeBetween(n1, n2); 
-			if(e != null){
-				metaData.addToLayout(t, e.getLayout());
+			if(e != null){								
+				Event event = (Event) t.getEvent();
+				if(event != null){			
+					e.addEventName(event.getSymbol());
+				}				
 				e.addTransition(t);			
 			}else{
 				// get the graphic data for the transition and all associated events
@@ -220,7 +222,6 @@ public class GraphModel extends Publisher implements Subscriber {
 		
 		// tell observers that the model has been updated
 		graph.update();
-		notifyAllSubscribers();
 	}
 	
 	/**
@@ -289,12 +290,11 @@ public class GraphModel extends Publisher implements Subscriber {
 	 * @param e the Edge to be updated
 	 * @param p the target point
 	 */
-	public void updateEdge(Edge e, Point2D.Float p){
-		EdgeLayout layout = e.getLayout();
+	public void updateEdge(Edge e, Point2D.Float p){		
 		NodeLayout s = e.getSource().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSource().intersects(p) ){
-			layout.computeCurve(s, p);
+			e.computeCurve(s, p);
 			e.setVisible(true);
 		}else{
 			e.setVisible(false);
@@ -324,20 +324,20 @@ public class GraphModel extends Publisher implements Subscriber {
 	  * @param n2	
 	  */
 	public void finishEdge(Edge e, Node n2){
-		// FIXME only add this edge if it isn't a duplicate
-		// Okay to add duplicate edges since they may have different properties (e.g. observability)
+		// FIXME Currently only adding this edge if it isn't a duplicate
+		// Change s.t. adds duplicate edges since they may have different properties (e.g. observability)
 		if( directEdgeBetween(e.getSource(), n2) == null){
 			e.setTarget(n2);
 			n2.insert(e);		
 			
 			Edge opposite = directEdgeBetween(n2, e.getSource()); 
-			if(opposite != null && opposite.getLayout().isStraight()){
-				e.getLayout().arcAway(opposite.getLayout());
+			if(opposite != null && opposite.isStraight()){
+				e.arcAway(opposite);
 				opposite.getLayout().computeCurve();
 				saveMovement(opposite);		
 			}
 			
-			e.getLayout().computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
+			e.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
 			
 			Transition t = new Transition(++maxTransitionId, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 			metaData.setLayoutData(t, e.getLayout());
@@ -453,9 +453,9 @@ public class GraphModel extends Publisher implements Subscriber {
 		n.getLayout().setText(text);
 		metaData.setLayoutData(s, n.getLayout());
 		setDirty(true);
-		update();
-		fsa.notifyAllBut(this);
-		this.notifyAllSubscribers();
+		//update();
+		//fsa.notifyAllBut(this);  // mathematical model has not changed
+		notifyAllSubscribers();
 	}
 		
 	public void setInitial(Node n, boolean b){
@@ -608,7 +608,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		while(trans.hasNext()){
 			t = trans.next();
 			// add the transition data to the layout
-			metaData.addToLayout(t, edge.getLayout());	
+			addToLayout(t, edge);	
 			// set the layout data for the transition in metadata model
 			metaData.setLayoutData(t, edge.getLayout());
 		}		
@@ -620,6 +620,17 @@ public class GraphModel extends Publisher implements Subscriber {
 		this.notifyAllSubscribers();
 	}
 	
+	/**
+	 * @param t
+	 * @param layout
+	 */
+	private void addToLayout(FSATransition t, Edge e) {
+		Event event = (Event) t.getEvent();
+		if(event != null){			
+			e.addEventName(event.getSymbol());
+		}						
+	}
+
 	/**
 	 * Stores the layout for the given edge for every transition represented
 	 * by this edge.
@@ -829,8 +840,11 @@ public class GraphModel extends Publisher implements Subscriber {
 		addEdge(source, addNode(p));
 	}
 
-	public void addGraphLabel(GraphLabel label, String text) {
-		// TODO Auto-generated method stub
+	public void addFreeLabel(String text, Point2D.Float p) {		
+		GraphLabel label = new GraphLabel(text, p);
+		freeLabels.put(p, label);
+		graph.insert(label);
+		this.notifyAllSubscribers();
 		setDirty(true);
 	}
 	

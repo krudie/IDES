@@ -17,7 +17,7 @@ import model.Subscriber;
 
 public class GraphView extends JComponent implements Subscriber {
 
-	protected static final int GRAPH_BORDER_TICKNESS=10;
+	protected static final int GRAPH_BORDER_THICKNESS=10;
 	
 	protected float scaleFactor = 0.25f;
 	protected Rectangle graphBounds=new Rectangle();
@@ -83,13 +83,13 @@ public class GraphView extends JComponent implements Subscriber {
 			graphBounds=getGraphModel().getBounds(true);
 			if(graphBounds.x<0||graphBounds.y<0)
 			{
-				graphModel.translate(-graphBounds.x+GRAPH_BORDER_TICKNESS,-graphBounds.y+GRAPH_BORDER_TICKNESS);
+				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
 			}
 			if(scaleToFit&&getParent()!=null)
 			{
 				Insets ins=getParent().getInsets();
-				float xScale=(float)(getParent().getWidth()-ins.left-ins.right)/(float)(graphBounds.width+graphBounds.x+GRAPH_BORDER_TICKNESS);
-				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_TICKNESS);
+				float xScale=(float)(getParent().getWidth()-ins.left-ins.right)/(float)(graphBounds.width+graphBounds.x+GRAPH_BORDER_THICKNESS);
+				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_THICKNESS);
 				setScaleFactor(Math.min(xScale,yScale));
 			}
 			invalidate();
@@ -125,6 +125,6 @@ public class GraphView extends JComponent implements Subscriber {
 
 	public Dimension getPreferredSize()
 	{
-		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_TICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_TICKNESS)*scaleFactor));
+		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
 	}
 }

@@ -38,16 +38,11 @@ public class TextTool extends DrawingTool {
 			new GraphCommands.TextCommand(context, (GraphElement)context.getCurrentSelection().child(0)).execute();			
 		}else{
 			// if nothing selected
-			// TODO create a free label ...			
-	
-			// For now, open an input dialog and set location at mouse click
-			// TODO set location of dialog close to the selected element or click location
-			// Set any existing text in the dialog before showing
-			// Extract text from dismissed dialog
-			String inputValue = JOptionPane.showInputDialog("Enter label text: ");		
-			System.out.println(inputValue);
+			// create a free label
+			new GraphCommands.TextCommand(context, me.getPoint()).execute();			
 		}
 		context.clearCurrentSelection();
+		context.setTool(GraphDrawingView.DEFAULT);
 	}
 
 	@Override

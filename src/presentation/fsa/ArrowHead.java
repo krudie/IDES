@@ -47,7 +47,7 @@ public class ArrowHead extends Polygon {
      */
     public void update(Point2D.Float dir, Point2D.Float base){
     	reset();
-//    	 TODO replace magic number with the stroke width for the border of node's circle
+//    	 TODO replace magic number with the stroke width for the border of node's circle + 1
     	dir = Geometry.scale(dir, SHORT_HEAD_LENGTH - 2);  
 	    addPoint((int)(base.x + dir.x), (int)(base.y + dir.y));
 	    Point2D.Float v = Geometry.scale(Geometry.rotate(dir, ANGLE),0.75f);

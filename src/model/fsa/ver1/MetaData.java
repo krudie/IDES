@@ -159,7 +159,9 @@ public class MetaData implements FSAMetaData {
 		controls[EdgeLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
-		// FIXME Need to know if this is a self-loop before calling this constructor 
+		// FIXME edgeLayout constructor needs to know about source and target
+		// 		Node layouts.
+		// Need to know if this is a self-loop before calling this constructor 
 		// (since constructor calls updateAnglesEtc...)
 		EdgeLayout edgeLayout = new EdgeLayout(controls, t.getSource().equals(t.getTarget()));		
 		
@@ -175,25 +177,7 @@ public class MetaData implements FSAMetaData {
 			edgeLayout.addEventName(e.getSymbol());
 		}		
 		return edgeLayout;
-	}
-
-	/**
-	 * Adds edge layout data (event name if exists) from the given transition 
-	 * to the given layout.
-	 * 
-	 * Precondition: layout != null 
-	 * and transition has same source and target nodes as those in layout.
-	 * 
-	 * @param transition
-	 * @param layout
-	 */
-	public void addToLayout(FSATransition transition, EdgeLayout layout){
-		Transition t = (Transition)transition;
-		Event e = (Event) t.getEvent();
-		if(e != null){			
-			layout.addEventName(e.getSymbol());
-		}
-	}
+	}	
 	
 	public void removeFromLayout(FSATransition transition, EdgeLayout layout){
 		Transition t = (Transition)transition;
@@ -243,8 +227,7 @@ public class MetaData implements FSAMetaData {
 				// TODO Auto-generated catch block
 				e.printStackTrace();			
 			}
-		}
-		// TODO Auto-generated method stub
+		}		
 		return null;
 	}
 	////////////////////////////////////////////////////////////////////////

@@ -70,7 +70,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		});
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
-		IDESWorkspace.instance().attach(this);  // subscribe to updates from the workspace
+		IDESWorkspace.instance().attach(this);  // subscribe to notifications from the workspace
 		FileOperations.loadCommandManager("commands.xml");
 
 		drawingBoard = new GraphDrawingView();		
