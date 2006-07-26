@@ -34,7 +34,6 @@ import javax.swing.UIManager;
 
 import main.Hub;
 import main.IDESWorkspace;
-import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSATransition;
@@ -45,6 +44,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import observer.Subscriber;
 
 
 import util.EscapeDialog;

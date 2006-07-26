@@ -11,10 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import presentation.fsa.GraphModel;
+import observer.Subscriber;
+
+import presentation.fsa.FSMGraph;
 
 import main.Hub;
-import model.Subscriber;
 
 /**
  *
@@ -29,7 +30,7 @@ public class StatusBar extends JPanel implements Subscriber {
 	{
 		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 		setBorder(new BevelBorder(BevelBorder.LOWERED));
-		Hub.getWorkspace().attach(this);
+		Hub.getWorkspace().addSubscriber(this);
 		add(Box.createRigidArea(new Dimension(5,0)));
 		add(numbersLabel);
 		add(Box.createHorizontalGlue());
@@ -38,11 +39,11 @@ public class StatusBar extends JPanel implements Subscriber {
 
 	public void update() {
 		if(a!=null)
-			a.detach(this);
+			a.removeSubscriber(this);
 		if(Hub.getWorkspace().getActiveModel()!=null)
 		{
 			a=(model.fsa.ver1.Automaton)Hub.getWorkspace().getActiveModel();
-			a.attach(this);
+			a.addSubscriber(this);
 			numbersLabel.setText(
 					Hub.string("nOfStates")+a.getStateCount()+", "+
 					Hub.string("nOfTransitions")+a.getTransitionCount());

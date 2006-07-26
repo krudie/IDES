@@ -17,22 +17,22 @@ public class NodeLayout extends GraphicalLayout {
      */    
 	public static final float DEFAULT_RADIUS = 15, RDIF = 4;
 
-	protected GraphModel.UniformRadius uniformR=null;
+	protected FSMGraph.UniformRadius uniformR=null;
 	
-	public NodeLayout(GraphModel.UniformRadius u){
+	public NodeLayout(FSMGraph.UniformRadius u){
 		this(u,new Point2D.Float(), DEFAULT_RADIUS, "");
 	}
 	
-	public NodeLayout(GraphModel.UniformRadius u,Point2D.Float centre){
+	public NodeLayout(FSMGraph.UniformRadius u,Point2D.Float centre){
 		this(u,centre, DEFAULT_RADIUS, "");
 	}
 	
-	public NodeLayout(GraphModel.UniformRadius u,Point2D.Float centre, float radius, String name, Point2D.Float arrow) {
+	public NodeLayout(FSMGraph.UniformRadius u,Point2D.Float centre, float radius, String name, Point2D.Float arrow) {
 		this(u,centre, radius, name);
 		this.arrow = arrow;		
 	}
 	
-	public NodeLayout(GraphModel.UniformRadius u,Point2D.Float centre, float radius, String name) {
+	public NodeLayout(FSMGraph.UniformRadius u,Point2D.Float centre, float radius, String name) {
 		super(centre, name);
 		this.radius = radius;		
 		arrow = null;
@@ -105,7 +105,7 @@ public class NodeLayout extends GraphicalLayout {
 		}
 	}
 	
-	public void setUniformRadius(GraphModel.UniformRadius ur)
+	public void setUniformRadius(FSMGraph.UniformRadius ur)
 	{
 		if(uniformR!=null)
 			uniformR.remove(uniformR.get(this));

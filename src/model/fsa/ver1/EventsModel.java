@@ -12,7 +12,7 @@ import model.fsa.FSAModel;
  * @author helen bretzke
  *
  */
-public class EventsModel extends model.Publisher implements FSAEventsModel {
+public class EventsModel extends observer.Publisher implements FSAEventsModel {
 	
 	
 	public List getGlobalEvents() {

@@ -269,15 +269,17 @@ public class GraphCommands {
 					Edge edge = (Edge)element;			
 					EdgeLabellingDialog.showDialog(context, edge);					
 					// TODO accumulate set of edits that were performed in the edge labelling dialog
+				}else if(element instanceof GraphLabel && element.getParent() instanceof Edge){
+					Edge edge = (Edge)element.getParent();
+					EdgeLabellingDialog.showDialog(context, edge);
 				}else{
-					// on a free label
 					GraphLabel label = (GraphLabel)element;
-					String inputValue = JOptionPane.showInputDialog("Enter label text: ");
-					if(inputValue != null){
-						label.setText(inputValue);
-						// KLUGE
+					//	TODO use an extension of EscapeDialog and set its location AND REFACTOR
+					String text = JOptionPane.showInputDialog("Enter label text: ");
+					if(text != null){
+						label.setText(text);
 						context.getGraphModel().notifyAllSubscribers();
-					}
+					}				
 				}
 				context.repaint();
 			}

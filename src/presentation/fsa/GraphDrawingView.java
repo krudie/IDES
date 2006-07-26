@@ -24,12 +24,13 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import observer.Subscriber;
+
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
 
 import main.Hub;
 import main.IDESWorkspace;
-import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
@@ -144,7 +145,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	
 	public GraphDrawingView() {
 		super();
-		IDESWorkspace.instance().attach(this);
+		IDESWorkspace.instance().addSubscriber(this);
 		
 		graph = new GraphElement();
 		scaleFactor = 1f;

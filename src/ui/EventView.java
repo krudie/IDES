@@ -27,8 +27,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
+import observer.Subscriber;
+
 import main.Hub;
-import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
@@ -359,7 +360,7 @@ public class EventView extends JPanel implements Subscriber, ActionListener {
 
 		add(mainBox);
 		update();
-		Hub.getWorkspace().attach(this);
+		Hub.getWorkspace().addSubscriber(this);
 	}
 	
 	public void update()
@@ -377,7 +378,7 @@ public class EventView extends JPanel implements Subscriber, ActionListener {
 			table.setEnabled(false);
 			if(lastModel!=null)
 			{
-				lastModel.detach(this);
+				lastModel.removeSubscriber(this);
 				lastModel=null;
 			}
 		}
@@ -393,9 +394,9 @@ public class EventView extends JPanel implements Subscriber, ActionListener {
 			if(!model.equals(lastModel))
 			{
 				if(lastModel!=null)
-					lastModel.detach(this);
+					lastModel.removeSubscriber(this);
 				lastModel=(Automaton)model;
-				lastModel.attach(this);
+				lastModel.addSubscriber(this);
 			}
 		}
 	}

@@ -35,7 +35,8 @@ import javax.swing.KeyStroke;
 import main.Hub;
 import main.IDESWorkspace;
 import main.Main;
-import model.Subscriber;
+
+import observer.Subscriber;
 
 import org.pietschy.command.CommandManager;
 
@@ -70,7 +71,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		});
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
-		IDESWorkspace.instance().attach(this);  // subscribe to notifications from the workspace
+		IDESWorkspace.instance().addSubscriber(this);  // subscribe to notifications from the workspace
 		FileOperations.loadCommandManager("commands.xml");
 
 		drawingBoard = new GraphDrawingView();		

@@ -1,7 +1,8 @@
-package model;
+package observer;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+
 
 
 
@@ -11,7 +12,7 @@ import java.util.LinkedList;
  * FSA data models requiring multiple concurrent views should extend this class.
  * 
  * @author helen bretzke
- *
+ * @deprecated 26 July 2006
  */
 public class Publisher {
 
@@ -22,6 +23,7 @@ public class Publisher {
 	}
 	
 	/**
+	 * @deprecated
 	 * Notifies (calls update on) all of my observers.
 	 */	
 	public void notifyAllSubscribers() {
@@ -32,6 +34,7 @@ public class Publisher {
 	}
 	
 	/**
+	 * @deprecated
 	 * Notifies (calls update on) all of my observers except the given one (assuming that it 
 	 * was the one that sent the notification.)
 	 */ 
@@ -52,7 +55,7 @@ public class Publisher {
 	 * 
 	 * @param observer
 	 */
-	public void attach(Subscriber observer) {
+	public void addSubscriber(Subscriber observer) {
 		subscribers.add(observer);		
 	}
 	
@@ -62,7 +65,11 @@ public class Publisher {
 	 * 
 	 * @param observer
 	 */	
-	public void detach(Subscriber observer) {
+	public void removeSubscriber(Subscriber observer) {
 		subscribers.remove(observer);
+	}
+	
+	protected Iterator subscriberIterator(){
+		return subscribers.iterator();
 	}
 }

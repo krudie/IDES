@@ -97,7 +97,9 @@ public class FileOperations {
         	return saveAutomatonAs(a);
         else
         {
+        	// write the automaton to file
         	XMLexporter.automatonToXML(a, ps);
+        	
         	String newName=ParsingToolbox.removeFileType(file.getName());
         	if(!newName.equals(a.getName())
         			&&Hub.getWorkspace().getFSAModel(newName)!=null)

@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 import javax.swing.UIManager;
 
 import presentation.fsa.GraphExporter;
-import presentation.fsa.GraphModel;
+import presentation.fsa.FSMGraph;
 
 import model.fsa.ver1.Automaton;
 
@@ -38,9 +38,9 @@ public class Main {
 		if(Hub.getWorkspace().isDirty())
 			if(!CommonTasks.handleUnsavedWorkspace())
 				return;
-		for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		for(Iterator<FSMGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 		{
-			GraphModel gm=i.next();
+			FSMGraph gm=i.next();
 			if(gm.isDirty())
 				if(!CommonTasks.handleUnsavedModel(gm))
 					return;

@@ -1,5 +1,10 @@
-package model;
+package observer;
 
+/**
+ * 
+ * @author helen
+ * @deprecated 26 July 2006
+ */
 public interface Subscriber {
 
 	/**

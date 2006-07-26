@@ -22,6 +22,8 @@ public class GraphElement implements PresentationElement {
 	protected boolean highlighted = false;
 	protected boolean selected = false;
 	protected boolean dirty = false;
+	
+	// TODO replace with all data and ops from GL class
 	protected GraphicalLayout layout;
 	
 	// my states and free labels

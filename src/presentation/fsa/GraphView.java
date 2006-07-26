@@ -10,10 +10,11 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
+import observer.Subscriber;
+
 import ui.GUISettings;
 
 import main.Hub;
-import model.Subscriber;
 
 public class GraphView extends JComponent implements Subscriber {
 
@@ -30,7 +31,7 @@ public class GraphView extends JComponent implements Subscriber {
 	/**
 	 * An object to handle synchronizing FSA model with the displayed graph.
 	 */
-	protected GraphModel graphModel;
+	protected FSMGraph graphModel;
 	
 	/**
 	 * Presentation model (the composite structure that represents the DES model.)
@@ -41,7 +42,7 @@ public class GraphView extends JComponent implements Subscriber {
 		setGraphModel(null);
 	}
 	
-	public GraphView(GraphModel graphModel){
+	public GraphView(FSMGraph graphModel){
 		setGraphModel(graphModel);
 	}
 
@@ -97,11 +98,11 @@ public class GraphView extends JComponent implements Subscriber {
 		repaint();
 	}
 
-	public void setGraphModel(GraphModel graphModel) {						
+	public void setGraphModel(FSMGraph graphModel) {						
 		this.graphModel = graphModel;
 		if(graphModel != null){
-			this.graphModel.detach(this);
-			graphModel.attach(this);
+			this.graphModel.removeSubscriber(this);
+			graphModel.addSubscriber(this);
 			this.setName(graphModel.getName());		
 			update();
 		}else{
@@ -109,7 +110,7 @@ public class GraphView extends JComponent implements Subscriber {
 		}
 	}
 
-	public GraphModel getGraphModel() {
+	public FSMGraph getGraphModel() {
 		return graphModel;
 	}
 

@@ -16,9 +16,10 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import observer.Subscriber;
+
 import main.Hub;
-import model.Subscriber;
-import presentation.fsa.GraphModel;
+import presentation.fsa.FSMGraph;
 import presentation.fsa.GraphView;
 
 /**
@@ -42,7 +43,7 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	
 	public FilmStrip(){
 		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-		Hub.getWorkspace().attach(this);
+		Hub.getWorkspace().addSubscriber(this);
 		thumbnailBox=Box.createHorizontalBox();
 		add(thumbnailBox);
 		addMouseListener(this);
@@ -62,13 +63,13 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		// Get all graph models from the workspace and render them here,
 		// each in its own GraphView object.
 		
-		Vector<GraphModel> currentModels=new Vector<GraphModel>();
-		for(Iterator<GraphModel> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		Vector<FSMGraph> currentModels=new Vector<FSMGraph>();
+		for(Iterator<FSMGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 		{
-			GraphModel gm=i.next();
+			FSMGraph gm=i.next();
 			currentModels.add(gm);
 		}
-		GraphModel activeModel=Hub.getWorkspace().getActiveGraphModel();
+		FSMGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
 
 		HashSet<GraphView> toRemove=new HashSet<GraphView>();
 		for(GraphView gv:graphViews)
@@ -78,18 +79,18 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 		}
 		for(GraphView gv:toRemove)
 		{
-			gv.getGraphModel().detach(this);
+			gv.getGraphModel().removeSubscriber(this);
 			graphViews.remove(gv);
 		}
 		
 		for(int i=0;i<currentModels.size();++i)
 		{
-			GraphModel gm=currentModels.elementAt(i);
+			FSMGraph gm=currentModels.elementAt(i);
 			if(graphViews.size()<=i||!graphViews.elementAt(i).getGraphModel().equals(gm))
 			{
 				GraphView gv = new GraphView(gm);
-				gm.attach(gv);
-				gm.attach(this);
+				gm.addSubscriber(gv);
+				gm.addSubscriber(this);
 				gv.addMouseListener(this);
 				graphViews.insertElementAt(gv,i);
 			}

@@ -156,18 +156,6 @@ public class EdgeLayout extends GraphicalLayout {
 
 			}
 		}		
-		
-		// round to prevent cumulative numerical drift
-		//TODO: verify with Helen that this can go
-//		ctrls[P1].x = Math.round(ctrls[P1].x);
-//		ctrls[P1].y = Math.round(ctrls[P1].y);
-//		ctrls[CTRL1].x = Math.round(ctrls[CTRL1].x);
-//		ctrls[CTRL1].y = Math.round(ctrls[CTRL1].y);
-//		ctrls[CTRL2].x = Math.round(ctrls[CTRL2].x);
-//		ctrls[CTRL2].y = Math.round(ctrls[CTRL2].y);
-//		ctrls[P2].x = Math.round(ctrls[P2].x);
-//		ctrls[P2].y = Math.round(ctrls[P2].y);
-		
 		curve.setCurve(ctrls, 0);		
 		Point2D midpoint = midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
@@ -175,7 +163,7 @@ public class EdgeLayout extends GraphicalLayout {
 	}	
 
 	/**
-	 * @return
+	 * @return true iff the edge is has tangents within angle EPSILON of being parallel to straight edge.
 	 */
 	protected boolean isStraight() {		
 		return Math.abs(angle1) < EPSILON && Math.abs(angle2) < EPSILON;

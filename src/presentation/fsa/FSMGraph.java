@@ -8,10 +8,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import observer.Publisher;
+import observer.Subscriber;
+
 import main.Hub;
 import main.IDESWorkspace;
-import model.Publisher;
-import model.Subscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -35,7 +36,7 @@ import util.BentoBox;
  * @author helen bretzke
  *
  */
-public class GraphModel extends Publisher implements Subscriber {
+public class FSMGraph extends Publisher implements Subscriber {
 
 	
 	protected class UniformRadius extends HashMap<NodeLayout,Float>
@@ -66,6 +67,10 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	protected UniformRadius uniformR=new UniformRadius();
 		
+	/**
+	 * Maps used in intersection searches
+	 * TODO replace with Quadtree data structure
+	 */
 	private HashMap<Long, Node> nodes;
 	private HashMap<Long, Edge> edges;
 	private HashMap<Point2D.Float, GraphLabel> freeLabels; // use location as key
@@ -84,12 +89,24 @@ public class GraphModel extends Publisher implements Subscriber {
 	private Automaton fsa;	   // system model
 	private MetaData metaData; // presentation data for the system model
 	
+	
+	// TODO Move these into the Automaton class
 	private long maxStateId, maxEventId, maxTransitionId;
 	
-	public GraphModel(Automaton fsa, MetaData data){
+	/**
+	 * TODO replace MetaData with either a reference to the graph
+	 * built by LayoutDataParser or a SubElementContainer of the parsed XML
+	 * and build the graph here.
+	 * 
+	 * NOTE: Need max element ids, choice of data structure for rapid intersection search...
+	 *  
+	 * @param fsa
+	 * @param data
+	 */
+	public FSMGraph(Automaton fsa, MetaData data){
 		
 		this.fsa = fsa;
-		fsa.attach(this);
+		fsa.addSubscriber(this);
 		
 		this.metaData = data;
 		
@@ -103,12 +120,12 @@ public class GraphModel extends Publisher implements Subscriber {
 		maxEventId = -1;
 		
 		initializeGraph();
-		//update();
-		
+			
 		setDirty(false);
 	}
 	
-	public String getName(){
+	public String getName()
+	{
 		return fsa.getName();
 	}
 	
@@ -122,6 +139,37 @@ public class GraphModel extends Publisher implements Subscriber {
 		return fsa;
 	}
 	
+	public GraphElement getGraph() {
+		return graph;
+	}
+
+	/**
+	 * Returns the set of all nodes in the graph.
+	 * @return the set of all nodes in the graph
+	 */
+	public Collection<Node> getNodes()
+	{
+		return nodes.values();
+	}
+
+	/**
+	 * Returns the set of all edges in the graph.
+	 * @return the set of all edges in the graph
+	 */
+	public Collection<Edge> getEdges()
+	{
+		return edges.values();
+	}
+
+	/**
+	 * Returns the set of all free labels in the graph.
+	 * @return the set of all free labels in the graph
+	 */
+	public Collection<GraphLabel> getFreeLabels()
+	{
+		return freeLabels.values();
+	}
+
 	/**
 	 * TODO Keep a set of dirty bits on the the Automaton
 	 * so that the whole model needn't be rebuilt every time there is a change.
@@ -132,6 +180,16 @@ public class GraphModel extends Publisher implements Subscriber {
 		// notifyAllSubscribers();
 	}
 	
+	public void setGraph(GraphElement graph) {
+		this.graph = graph;
+		setDirty(true);
+		notifyAllSubscribers();
+	}
+
+	
+	/**
+	 * Replace the lists with a quadtree.
+	 */
 	private void initializeGraph(){
 		maxStateId = -1;
 		maxTransitionId = -1;
@@ -139,6 +197,7 @@ public class GraphModel extends Publisher implements Subscriber {
 				
 		for(Node n:nodes.values())
 			((NodeLayout)n.getLayout()).dispose();
+		
 		nodes.clear();
 		edges.clear();
 		edgeLabels.clear();
@@ -189,8 +248,7 @@ public class GraphModel extends Publisher implements Subscriber {
 				e.addTransition(t);			
 			}else{
 				// get the graphic data for the transition and all associated events
-				// construct the edge			
-				// FIXME getLayoutData(t) creates a new layout object and wipes all data about self-loops
+				// construct the edge				
 				e = new Edge(t, n1, n2, metaData.getLayoutData(t));			
 				
 				// add this edge to source and target nodes' children
@@ -209,30 +267,24 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 	
 		// collect all labels on edges				
-		Entry entry;
-		iter = edges.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			e = (Edge)entry.getValue();
-			edgeLabels.put(e.getId(), e.getLabel());
+		for(Edge edge : edges.values())
+		{
+			edgeLabels.put(edge.getId(), edge.getLabel());
 		}
 		
-		// TODO for all free labels in metadata
+		// TODO for all free labels in layout data structure
 		
-		
-		// tell observers that the model has been updated
+		// clear all dirty bits in the graph structure		
 		graph.update();
 	}
-	
+
 	/**
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
-	private Edge directEdgeBetween(Node source, Node target){
-		Edge e;
-		Iterator i = edges.entrySet().iterator();
-		while(i.hasNext()){
-			e = (Edge)((Entry)i.next()).getValue();
+	private Edge directEdgeBetween(Node source, Node target){		
+		for(Edge e : edges.values())
+		{			
 			if(e.getSource().equals(source) && e.getTarget().equals(target)){
 				return e;
 			}
@@ -240,28 +292,23 @@ public class GraphModel extends Publisher implements Subscriber {
 		return null;
 	}
 	
+	
 	/**
-	 * Creates a new node with centre at the given point
-	 * and a adds a new state to the automaton.
+	 * @deprecated 
+	 * TODO wait until automaton is saved before committing
+	 * layout changes. 
 	 * 
-	 * @param p the centre point for the new node
-	 * @return the node added
+	 * @param t
+	 * @param layout
 	 */
-	public Node addNode(Point2D.Float p){
-		State s = new State(++maxStateId);
-		s.setInitial(false);
-		s.setMarked(false);
-		NodeLayout layout = new NodeLayout(uniformR,p);			
-		metaData.setLayoutData(s, layout);
-		fsa.add(s);
-		fsa.notifyAllBut(this);
-		Node n = new Node(s, layout);	
-		nodes.put(new Long(s.getId()), n);
-		graph.insert(n);
-		setDirty(true);
-		this.notifyAllSubscribers();
-		return n;
-	}	
+	private void addToLayout(FSATransition t, Edge e) {
+		Event event = (Event) t.getEvent();
+		if(event != null){			
+			e.addEventName(event.getSymbol());
+		}						
+	}
+
+	
 	
 	/**
 	 * Creates and returns an Edge with source node <code>n1</code>, 
@@ -353,6 +400,29 @@ public class GraphModel extends Publisher implements Subscriber {
 		}
 	}	
 	
+	/**
+	 * Creates a new node with centre at the given point
+	 * and a adds a new state to the automaton.
+	 * 
+	 * @param p the centre point for the new node
+	 * @return the node added
+	 */
+	public Node addNode(Point2D.Float p){
+		State s = new State(++maxStateId);
+		s.setInitial(false);
+		s.setMarked(false);
+		NodeLayout layout = new NodeLayout(uniformR,p);			
+		metaData.setLayoutData(s, layout);
+		fsa.add(s);
+		fsa.notifyAllBut(this);
+		Node n = new Node(s, layout);	
+		nodes.put(new Long(s.getId()), n);
+		graph.insert(n);
+		setDirty(true);
+		this.notifyAllSubscribers();
+		return n;
+	}
+
 	/** 
 	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
 	 * and a adds a new transition to the automaton.
@@ -374,6 +444,18 @@ public class GraphModel extends Publisher implements Subscriber {
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
 		notifyAllSubscribers();
+	}
+
+	/**
+	 * @deprecated
+	 * Creates a node at point <code>p</code> and an edge from the given source node
+	 * to the new node.
+	 * 
+	 * @param source
+	 * @param p
+	 */
+	public void addEdgeAndNode(Node source, Point2D.Float p){		
+		addEdge(source, addNode(p));
 	}
 
 	public void saveMovement(PresentationElement selection){
@@ -439,25 +521,6 @@ public class GraphModel extends Publisher implements Subscriber {
 		}		
 	}
 	
-	/**
-	 * Precondition: <code>n</code> and <code>text</code> are not null
-	 * 
-	 * @param n the node to be labelled
-	 * @param text the name for the node
-	 */
-	public void labelNode(Node n, String text){		
-		State s = (State)fsa.getState(n.getId());
-		
-		// TODO set a dirty bit in layout object and only call update before drawing
-		// if bit is set
-		n.getLayout().setText(text);
-		metaData.setLayoutData(s, n.getLayout());
-		setDirty(true);
-		//update();
-		//fsa.notifyAllBut(this);  // mathematical model has not changed
-		notifyAllSubscribers();
-	}
-		
 	public void setInitial(Node n, boolean b){
 		// update the state
 		((State)n.getState()).setInitial(b);
@@ -503,38 +566,6 @@ public class GraphModel extends Publisher implements Subscriber {
 		}		
 	}
 
-	public void setControllable(Event event, boolean b){
-		// update the event
-		event.setControllable(b);
-		// notify subscribers
-		fsa.notifyAllBut(this);
-		setDirty(true);
-		notifyAllSubscribers();
-	}
-	
-	public void setObservable(Event event, boolean b){
-		// update the event
-		event.setObservable(b);
-		// notify subscribers
-		fsa.notifyAllBut(this);
-		setDirty(true);
-		notifyAllSubscribers();
-	}
-	
-	/**
-	 * TODO The following steps should be done by the text tool in the context 
-	 * of labelling an edge.
-	 * 
-	 * If <code>text</code> corresponds to an event in the local alphabet find the event.
-	 * If <code>text</code> corresponds to an event in the global alphabet find the event, 
-	 * add it to the local alphabet.
-	 * Otherwise, create a new event and add it to both alphabets.
-	 * 
-	 * @param text an event symbol
-	 */
-	public void assignEvent(Event event, Edge edge){setDirty(true);}	
-		
-	
 	/**
 	 * Assigns the set of events to <code>edge</code>, removes any events from edge
 	 * that are not in the given list and commits any changes to the FSAModel.
@@ -621,17 +652,6 @@ public class GraphModel extends Publisher implements Subscriber {
 	}
 	
 	/**
-	 * @param t
-	 * @param layout
-	 */
-	private void addToLayout(FSATransition t, Edge e) {
-		Event event = (Event) t.getEvent();
-		if(event != null){			
-			e.addEventName(event.getSymbol());
-		}						
-	}
-
-	/**
 	 * Stores the layout for the given edge for every transition represented
 	 * by this edge.
 	 * 
@@ -689,155 +709,23 @@ public class GraphModel extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}
 
-	public GraphElement getGraph() {
-		return graph;
-	}
-
-	public void setGraph(GraphElement graph) {
-		this.graph = graph;
+	/**
+	 * Precondition: <code>n</code> and <code>text</code> are not null
+	 * 
+	 * @param n the node to be labelled
+	 * @param text the name for the node
+	 */
+	public void labelNode(Node n, String text){		
+		State s = (State)fsa.getState(n.getId());
+		
+		// TODO set a dirty bit in layout object and only call update before drawing
+		// if bit is set
+		n.getLayout().setText(text);
+		metaData.setLayoutData(s, n.getLayout());
 		setDirty(true);
+		//update();
+		//fsa.notifyAllBut(this);  // mathematical model has not changed
 		notifyAllSubscribers();
-	}
-
-	/**
-	 * Computes and returns the set of graph elements contained by the given rectangle.
-	 * 
-	 * @param rectangle
-	 * @return the set of graph elements contained by the given rectangle
-	 */
-	protected SelectionGroup getElementsContainedBy(Rectangle rectangle) {
-		SelectionGroup g = new SelectionGroup();
-		
-		// check intersection with all nodes		
-		Iterator iter = nodes.entrySet().iterator();
-		Entry entry;
-		Node n;
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			n = (Node)entry.getValue();
-			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
-				g.insert(n);				
-			}
-		}
-		
-		// check for intersection with edges
-		iter = edges.entrySet().iterator();
-		Edge e;
-		while(iter.hasNext()){
-			entry = (Entry)iter.next();
-			e = (Edge)entry.getValue();
-			if(rectangle.intersects(e.getCurveBounds())){ // TODO && do a more thorough intersection test
-				g.insert(e);
-			}
-		}
-		
-		// check for intersection with free labels 
-		iter = freeLabels.entrySet().iterator();
-		GraphLabel l;
-		while(iter.hasNext()){
-			entry = (Entry)iter.next();
-			l = (GraphLabel)entry.getValue();
-			if(rectangle.contains(l.bounds())){
-				g.insert(l);				
-			}
-		}
-		
-		return g;
-	}
-	
-	/**
-	 * Computes and returns the graph element intersected by the given point.
-	 * If nothing hit, returns null. 
-	 * 
-	 * @param p the point of intersection
-	 * @return the graph element intersected by the given point or null if nothing hit.
-	 */
-	protected GraphElement getElementIntersectedBy(Point2D p){
-		// check intersection with all nodes		
-		Iterator iter = nodes.entrySet().iterator();
-		Entry entry;
-		Node n;
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			n = (Node)entry.getValue();
-			if(n.intersects(p)){				
-				return n;				
-			}
-		}
-		
-		
-		GraphLabel gLabel;
-		iter = edgeLabels.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			gLabel = (GraphLabel)entry.getValue();
-			if(gLabel.intersects(p)){		
-				return gLabel;				
-			}
-		}
-		
-		Edge e;
-		// check for intersection with edges
-		iter = edges.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			e = (Edge)entry.getValue();
-			if(e.intersects(p)){		
-				return e;				
-			}
-		}
-		
-		GraphLabel l;
-		// check for intersection with free labels
-		iter = freeLabels.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			l = (GraphLabel)entry.getValue();
-			if(l.intersects(p)){				
-				return l;				
-			}
-		}		
-		// no intersection
-		return null;
-	}
-	
-	/**
-	 * Returns the set of all nodes in the graph.
-	 * @return the set of all nodes in the graph
-	 */
-	public Collection<Node> getNodes()
-	{
-		return nodes.values();
-	}
-	
-	/**
-	 * Returns the set of all edges in the graph.
-	 * @return the set of all edges in the graph
-	 */
-	public Collection<Edge> getEdges()
-	{
-		return edges.values();
-	}
-	
-	/**
-	 * Returns the set of all free labels in the graph.
-	 * @return the set of all free labels in the graph
-	 */
-	public Collection<GraphLabel> getFreeLabels()
-	{
-		return freeLabels.values();
-	}
-	
-	/**
-	 * @deprecated
-	 * Creates a node at point <code>p</code> and an edge from the given source node
-	 * to the new node.
-	 * 
-	 * @param source
-	 * @param p
-	 */
-	public void addEdgeAndNode(Node source, Point2D.Float p){		
-		addEdge(source, addNode(p));
 	}
 
 	public void addFreeLabel(String text, Point2D.Float p) {		
@@ -906,6 +794,34 @@ public class GraphModel extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}
 	
+	public void setControllable(Event event, boolean b){
+		// update the event
+		event.setControllable(b);
+		// notify subscribers
+		fsa.notifyAllBut(this);
+		setDirty(true);
+		notifyAllSubscribers();
+	}
+
+	public void setObservable(Event event, boolean b){
+		// update the event
+		event.setObservable(b);
+		// notify subscribers
+		fsa.notifyAllBut(this);
+		setDirty(true);
+		notifyAllSubscribers();
+	}
+
+	public boolean isDirty()
+	{
+		return dirty;
+	}
+	
+	public void setDirty(boolean b)
+	{
+		dirty=b;
+	}
+	
 	/**
 	 * Calculcates the size of the bounding box necessary for the entire graph.  
 	 * Visits every node, edge and label and uses the union of
@@ -922,7 +838,7 @@ public class GraphModel extends Publisher implements Subscriber {
 	{
 		Rectangle graphBounds = initAtZeroZero ? 
 			new Rectangle() : getElementBounds();
-
+	
 		FSAState nodeState = null;
 		
 		// Start with the nodes
@@ -936,10 +852,10 @@ public class GraphModel extends Publisher implements Subscriber {
 				graphBounds = graphBounds.union(
 					graphNode.getInitialArrowBounds());
 			}
-
+	
 			graphBounds = graphBounds.union(graphNode.getSquareBounds());
 		}
-
+	
 		for (Edge graphEdge : edges.values())
 		{
 			graphBounds = graphBounds.union(graphEdge.getCurveBounds());
@@ -949,7 +865,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		{
 			graphBounds = graphBounds.union(edgeLabel.bounds());
 		}
-
+	
 		for (GraphLabel freeLabel : freeLabels.values())
 		{
 			graphBounds = graphBounds.union(freeLabel.bounds());
@@ -957,17 +873,7 @@ public class GraphModel extends Publisher implements Subscriber {
 		
 		return graphBounds;
 	}
-	
-	public boolean isDirty()
-	{
-		return dirty;
-	}
-	
-	public void setDirty(boolean b)
-	{
-		dirty=b;
-	}
-	
+
 	/**
 	 * TODO: Comment!
 	 * 
@@ -1033,6 +939,108 @@ public class GraphModel extends Publisher implements Subscriber {
 		graph.translate(x,y);
 		setDirty(true);
 		saveMovement(graph);  // calls notifyAllSubscribers				
+	}
+
+	/**
+	 * Computes and returns the set of graph elements contained by the given rectangle.
+	 * 
+	 * @param rectangle
+	 * @return the set of graph elements contained by the given rectangle
+	 */
+	protected SelectionGroup getElementsContainedBy(Rectangle rectangle) {
+		SelectionGroup g = new SelectionGroup();
+		
+		// check intersection with all nodes		
+		Iterator iter = nodes.entrySet().iterator();
+		Entry entry;
+		Node n;
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			n = (Node)entry.getValue();
+			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
+				g.insert(n);				
+			}
+		}
+		
+		// check for intersection with edges
+		iter = edges.entrySet().iterator();
+		Edge e;
+		while(iter.hasNext()){
+			entry = (Entry)iter.next();
+			e = (Edge)entry.getValue();
+			if(rectangle.intersects(e.getCurveBounds())){ // TODO && do a more thorough intersection test
+				g.insert(e);
+			}
+		}
+		
+		// check for intersection with free labels 
+		iter = freeLabels.entrySet().iterator();
+		GraphLabel l;
+		while(iter.hasNext()){
+			entry = (Entry)iter.next();
+			l = (GraphLabel)entry.getValue();
+			if(rectangle.contains(l.bounds())){
+				g.insert(l);				
+			}
+		}
+		
+		return g;
+	}
+
+	/**
+	 * Computes and returns the graph element intersected by the given point.
+	 * If nothing hit, returns null. 
+	 * 
+	 * @param p the point of intersection
+	 * @return the graph element intersected by the given point or null if nothing hit.
+	 */
+	protected GraphElement getElementIntersectedBy(Point2D p){
+		// check intersection with all nodes		
+		Iterator iter = nodes.entrySet().iterator();
+		Entry entry;
+		Node n;
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			n = (Node)entry.getValue();
+			if(n.intersects(p)){				
+				return n;				
+			}
+		}
+		
+		
+		GraphLabel gLabel;
+		iter = edgeLabels.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			gLabel = (GraphLabel)entry.getValue();
+			if(gLabel.intersects(p)){		
+				return gLabel;				
+			}
+		}
+		
+		Edge e;
+		// check for intersection with edges
+		iter = edges.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			e = (Edge)entry.getValue();
+			if(e.intersects(p)){		
+				return e;				
+			}
+		}
+		
+		GraphLabel l;
+		// check for intersection with free labels
+		iter = freeLabels.entrySet().iterator();
+		while(iter.hasNext()){			
+			entry = (Entry)iter.next();
+			l = (GraphLabel)entry.getValue();
+			if(l.intersects(p)){				
+				return l;				
+			}
+		}		
+		// no intersection
+		return null;
 	}
 
 }

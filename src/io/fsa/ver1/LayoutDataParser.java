@@ -8,6 +8,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import presentation.fsa.FSMGraph;
+import presentation.fsa.GraphElement;
+
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
@@ -34,9 +37,16 @@ public class LayoutDataParser extends AbstractParser {
 	Automaton a=null;
 	ContentHandler ch=null;
 	
+	/**
+	 * Top element in recursive graph structure used to store
+	 * Nodes, Edges and Labels for display of the automaton.
+	 */
+	GraphElement graph=null;
+	
 	public LayoutDataParser(Automaton a) {
 		super();
 		this.a=a;
+		this.graph = new GraphElement();
 	}
 
 	/**
@@ -69,11 +79,19 @@ public class LayoutDataParser extends AbstractParser {
                 	parsingErrors += "Couldn't find state with given id.\n";
                     break;
                 }
+                
+                ////////////////////////////////////////////////////
                 SubElement graphic=new SubElement(ELEMENT_STATE);
                 SubElementParser sep = new SubElementParser();
                 sep.fill(graphic, xmlReader, parsingErrors);
                 graphic.setName(ELEMENT_GRAPHIC);
-                s.addSubElement(graphic);
+                
+                // TODO don't store layout data in the Automaton
+                s.addSubElement(graphic);                
+                ////////////////////////////////////////////////////
+                
+                
+                
                 state = STATE_IDLE;
             }
             else if(qName.equals(ELEMENT_TRANSITION)){
@@ -88,11 +106,16 @@ public class LayoutDataParser extends AbstractParser {
                 	parsingErrors += "Couldn't find transition with given id.\n";
                     break;
                 }
+                
+                /////////////////////////////////////////////////////
                 SubElement graphic=new SubElement(ELEMENT_TRANSITION);
                 SubElementParser sep = new SubElementParser();
                 sep.fill(graphic, xmlReader, parsingErrors);
                 graphic.setName(ELEMENT_GRAPHIC);
+                
+                // TODO don't store layout data in the Automaton
                 t.addSubElement(graphic);
+                ////////////////////////////////////////////////////
                 state = STATE_IDLE;
             }
             else if(qName.equals(ELEMENT_FONT)){
@@ -130,7 +153,7 @@ public class LayoutDataParser extends AbstractParser {
         case (STATE_IDLE):
             if(!qName.equals(ELEMENT_META))
             {
-            	parsingErrors += "Wrong element endend while parsing metadata.\n";
+            	parsingErrors += "Wrong element ended while parsing metadata.\n";
             }
             break;
         default:
@@ -140,4 +163,10 @@ public class LayoutDataParser extends AbstractParser {
     	xmlReader.setContentHandler(ch);
     }
 
+    public void getFSMGraph(){    
+    	if(a != null){
+    		
+    	}
+    }
+    
 }

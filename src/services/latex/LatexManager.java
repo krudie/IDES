@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities;
 
 import org.pietschy.command.ToggleCommand;
 
-import presentation.fsa.GraphModel;
+import presentation.fsa.FSMGraph;
 
 import ui.OptionsWindow;
 import ui.command.OptionsCommands;

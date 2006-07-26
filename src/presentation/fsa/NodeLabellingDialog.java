@@ -40,7 +40,7 @@ public class NodeLabellingDialog extends EscapeDialog {
 	
 	private static NodeLabellingDialog me=null;
 
-	private static GraphModel gm=null;
+	private static FSMGraph gm=null;
 	private static Node n;
 
 	protected Action commitListener = new AbstractAction()
@@ -105,7 +105,7 @@ public class NodeLabellingDialog extends EscapeDialog {
 
 	protected static JTextArea area;
 	
-	public static void showAndLabel(GraphModel gm, Node node)
+	public static void showAndLabel(FSMGraph gm, Node node)
 	{
 		NodeLabellingDialog.gm=gm;
 		n=node;

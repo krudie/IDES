@@ -56,7 +56,7 @@ public class CommonTasks {
 	 * @param gm the GraphModel that needs to be saved
 	 * @return false if the process was cancelled
 	 */
-	public static boolean handleUnsavedModel(presentation.fsa.GraphModel gm)
+	public static boolean handleUnsavedModel(presentation.fsa.FSMGraph gm)
 	{
 		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
 				Hub.string("saveChangesAskModel")+"\""+gm.getName()+"\"?",
