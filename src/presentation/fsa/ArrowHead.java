@@ -50,6 +50,8 @@ public class ArrowHead extends Polygon {
 //    	 TODO replace magic number with the stroke width for the border of node's circle + 1
     	dir = Geometry.scale(dir, SHORT_HEAD_LENGTH - 2);  
 	    addPoint((int)(base.x + dir.x), (int)(base.y + dir.y));
+	    
+	    // FIXME fix the length of the v vectors
 	    Point2D.Float v = Geometry.scale(Geometry.rotate(dir, ANGLE),0.75f);
 		addPoint((int)(base.x + v.x), (int)(base.y + v.y));	    
 	    addPoint((int)base.x, (int)base.y);

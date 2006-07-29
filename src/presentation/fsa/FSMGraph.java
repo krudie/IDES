@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import observer.FSMGraphMessage;
+import observer.FSMGraphSubscriber;
+import observer.FSMMessage;
+import observer.FSMSubscriber;
 import observer.Publisher;
 import observer.Subscriber;
 
@@ -36,7 +40,7 @@ import util.BentoBox;
  * @author helen bretzke
  *
  */
-public class FSMGraph extends Publisher implements Subscriber {
+public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 
 	
 	protected class UniformRadius extends HashMap<NodeLayout,Float>
@@ -87,18 +91,17 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * The data models to keep synchronized.
 	 */	
 	private Automaton fsa;	   // system model
-	private MetaData metaData; // presentation data for the system model
 	
-	
-	// TODO Move these into the Automaton class
-	private long maxStateId, maxEventId, maxTransitionId;
+	// TODO remove after testing graph extraction by LayoutDataParser
+	private MetaData metaData; // presentation data for the system model	
 	
 	/**
 	 * TODO replace MetaData with either a reference to the graph
 	 * built by LayoutDataParser or a SubElementContainer of the parsed XML
 	 * and build the graph here.
 	 * 
-	 * NOTE: Need max element ids, choice of data structure for rapid intersection search...
+	 * NOTE: Need max element ids and a
+	 * better data structure for rapid intersection search...
 	 *  
 	 * @param fsa
 	 * @param data
@@ -108,20 +111,74 @@ public class FSMGraph extends Publisher implements Subscriber {
 		this.fsa = fsa;
 		fsa.addSubscriber(this);
 		
-		this.metaData = data;
+		this.metaData = data;	
+			
+		initializeGraph();
 		
+		setDirty(false);
+	}
+	
+	/**
+	 * 
+	 * @param fsa the mathematical model
+	 * @param graph the graphical layout structure
+	 */
+	public FSMGraph(Automaton fsa, GraphElement graph)
+	{
+//		 TODO set this.children = graph.children
+		this.graph = graph; 
+		this.fsa = fsa;
+		fsa.addSubscriber(this);		
+		buildIntersectionDS();
+	}
+	
+	/**
+	 * TODO Implement this as a quad tree.
+	 * KLUGE just uses a bunch of maps to store each element type.
+	 *
+	 */
+	private void buildIntersectionDS()
+	{
 		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
-			
-		maxStateId = -1;
-		maxTransitionId = -1;
-		maxEventId = -1;
+	
+		// TODO change this to this.children()
+		Iterator children = graph.children();
 		
-		initializeGraph();
+		// children can be Nodes or FreeLabels
+		// edges are children of Nodes (as are labels but we don't compute explicit intersection with them)
+		// edge labels are children of edges
+		GraphElement el;
+		while(children.hasNext())
+		{
+			el = (GraphElement)children.next();
+			Node n;
 			
-		setDirty(false);
+			if(el instanceof Node)
+			{	
+				n = (Node)el;
+				nodes.put(new Long(n.getId()), n);
+						
+				Iterator nodeChildren = n.children();
+				while(nodeChildren.hasNext())
+				{
+					el = (GraphElement)nodeChildren.next();
+					if(el instanceof Edge)
+					{
+						Edge edge = (Edge)el;
+						edges.put(new Long(edge.getId()), edge);
+						edgeLabels.put(edge.getId(), edge.getLabel());
+					}					
+				}
+				
+			}else if(el instanceof GraphLabel)
+			{
+				GraphLabel label = (GraphLabel)el;
+				freeLabels.put(label.getLocation(), label);
+			}
+		}
 	}
 	
 	public String getName()
@@ -169,40 +226,38 @@ public class FSMGraph extends Publisher implements Subscriber {
 	{
 		return freeLabels.values();
 	}
-
-	/**
-	 * TODO Keep a set of dirty bits on the the Automaton
-	 * so that the whole model needn't be rebuilt every time there is a change.
-	 * 
-	 * Although modifying the recursive graph structure will be trickier than simply rebuilding... 
-	 */
+	
 	public void update(){			
 		// notifyAllSubscribers();
 	}
 	
-	public void setGraph(GraphElement graph) {
-		this.graph = graph;
-		setDirty(true);
-		notifyAllSubscribers();
-	}
+//	public void setGraph(GraphElement graph) {
+//		this.graph = graph;
+//		setDirty(true);
+//		notifyAllSubscribers();
+//	}
 
 	
 	/**
-	 * Replace the lists with a quadtree.
+	 * TODO 
+	 * Graph to be built in LayoutDataParser.
+	 * Replace the intersection lists with a quadtree.
 	 */
 	private void initializeGraph(){
-		maxStateId = -1;
-		maxTransitionId = -1;
-		maxEventId = -1;
 				
-		for(Node n:nodes.values())
-			((NodeLayout)n.getLayout()).dispose();
+		nodes = new HashMap<Long, Node>();
+		edges = new HashMap<Long, Edge>();
+		edgeLabels = new HashMap<Long, GraphLabel>();
+		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
 		
-		nodes.clear();
-		edges.clear();
-		edgeLabels.clear();
-		freeLabels.clear();		
-				
+//		for(Node n:nodes.values())
+//			((NodeLayout)n.getLayout()).dispose();
+//		
+//		nodes.clear();
+//		edges.clear();
+//		edgeLabels.clear();
+//		freeLabels.clear();		
+		
 		// for all states in fsa, 
 		// get the graphic data, 
 		// construct a node and 
@@ -219,7 +274,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 			n1 = new Node(s, nL);			
 			graph.insert(n1);
 			nodes.put(new Long(s.getId()), n1);
-			maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
+//			maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
 		}
 
 		// for all transitions in fsa
@@ -241,15 +296,15 @@ public class FSMGraph extends Publisher implements Subscriber {
 			// add t to the edge's set of transitions
 			e = directEdgeBetween(n1, n2); 
 			if(e != null){								
-				Event event = (Event) t.getEvent();
-				if(event != null){			
-					e.addEventName(event.getSymbol());
-				}				
+//				Event event = (Event) t.getEvent();
+//				if(event != null){			
+//					e.addEventName(event.getSymbol());
+//				}				
 				e.addTransition(t);			
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge				
-				e = new Edge(t, n1, n2, metaData.getLayoutData(t));			
+				e = new BezierEdge(metaData.getLayoutData(t), n1, n2, t);			
 				
 				// add this edge to source and target nodes' children
 				n1.insert(e);				
@@ -259,11 +314,11 @@ public class FSMGraph extends Publisher implements Subscriber {
 				// id may be misleading since it is the id of only the first transition on this edge
 				edges.put(new Long(t.getId()), e);
 			}
-			maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
-			FSAEvent event = t.getEvent();
-			if(event != null){
-				maxEventId = maxEventId < event.getId() ? event.getId() : maxEventId;
-			}
+//			maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
+//			FSAEvent event = t.getEvent();
+//			if(event != null){
+//				maxEventId = maxEventId < event.getId() ? event.getId() : maxEventId;
+//			}
 		}
 	
 		// collect all labels on edges				
@@ -279,6 +334,9 @@ public class FSMGraph extends Publisher implements Subscriber {
 	}
 
 	/**
+	 * @deprecated
+	 * Graph is now built in LayoutDataParser
+	 * 
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
@@ -301,15 +359,16 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @param t
 	 * @param layout
 	 */
-	private void addToLayout(FSATransition t, Edge e) {
+	private void addToLayout(FSATransition t, BezierEdge e) {
 		Event event = (Event) t.getEvent();
 		if(event != null){			
 			e.addEventName(event.getSymbol());
 		}						
 	}
 
-	
-	
+	////////////////////////////////////////////////////////////////////////////
+	// TODO Move this block of code into GraphDrawingView
+	//
 	/**
 	 * Creates and returns an Edge with source node <code>n1</code>, 
 	 * undefined target node, and terminating at the centre of node <code>n1</code>.
@@ -319,15 +378,15 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @param n1
 	 * @return a new Edge with source node n1
 	 */
-	public Edge beginEdge(Node n1){
-		EdgeLayout layout = new EdgeLayout();
-		Edge e = new Edge(layout, n1);
+	public BezierEdge beginEdge(Node n1){
+		BezierLayout layout = new BezierLayout();
+		BezierEdge e = new BezierEdge(layout, n1);
 		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());		
 		n1.insert(e);
 		return e;
 	}
 	
-	public void abortEdge(Edge e){
+	public void abortEdge(BezierEdge e){
 		e.getSource().remove(e);		
 	}
 	
@@ -337,7 +396,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @param e the Edge to be updated
 	 * @param p the target point
 	 */
-	public void updateEdge(Edge e, Point2D.Float p){		
+	public void updateEdge(BezierEdge e, Point2D.Float p){		
 		NodeLayout s = e.getSource().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSource().intersects(p) ){
@@ -355,7 +414,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @param e the edge to be finished
 	 * @param p the location of the new node
 	 */
-	public void finishEdgeAndAddNode(Edge e, Point2D.Float p){	
+	public void finishEdgeAndAddNode(BezierEdge e, Point2D.Float p){	
 		if( ! e.getSource().intersects(p) ){
 			finishEdge(e, addNode(p));
 		}else{
@@ -370,14 +429,14 @@ public class FSMGraph extends Publisher implements Subscriber {
 	  * @param n1 
 	  * @param n2	
 	  */
-	public void finishEdge(Edge e, Node n2){
+	public void finishEdge(BezierEdge e, Node n2){
 		// FIXME Currently only adding this edge if it isn't a duplicate
 		// Change s.t. adds duplicate edges since they may have different properties (e.g. observability)
 		if( directEdgeBetween(e.getSource(), n2) == null){
 			e.setTarget(n2);
 			n2.insert(e);		
 			
-			Edge opposite = directEdgeBetween(n2, e.getSource()); 
+			BezierEdge opposite = (BezierEdge)directEdgeBetween(n2, e.getSource()); 
 			if(opposite != null && opposite.isStraight()){
 				e.arcAway(opposite);
 				opposite.getLayout().computeCurve();
@@ -386,7 +445,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 			
 			e.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
 			
-			Transition t = new Transition(++maxTransitionId, fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
+			Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
 			metaData.setLayoutData(t, e.getLayout());
 			e.addTransition(t);
 			fsa.add(t);
@@ -400,6 +459,8 @@ public class FSMGraph extends Publisher implements Subscriber {
 		}
 	}	
 	
+	/////////////////////////////////////////////////////////////////////////////
+	
 	/**
 	 * Creates a new node with centre at the given point
 	 * and a adds a new state to the automaton.
@@ -408,7 +469,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @return the node added
 	 */
 	public Node addNode(Point2D.Float p){
-		State s = new State(++maxStateId);
+		State s = new State(fsa.getFreeStateId());
 		s.setInitial(false);
 		s.setMarked(false);
 		NodeLayout layout = new NodeLayout(uniformR,p);			
@@ -431,13 +492,13 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @param n2 target node
 	 */
 	public void addEdge(Node n1, Node n2){
-		Transition t = new Transition(++maxTransitionId, fsa.getState(n1.getId()), fsa.getState(n2.getId()));
+		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(n1.getId()), fsa.getState(n2.getId()));
 		// computes layout of new edges (default to straight edge between pair of nodes)
-		EdgeLayout layout = new EdgeLayout(n1.getLayout(), n2.getLayout());				
+		BezierLayout layout = new BezierLayout(n1.getLayout(), n2.getLayout());				
 		metaData.setLayoutData(t, layout);
 		fsa.add(t);
 		fsa.notifyAllBut(this);
-		Edge e = new Edge(t, n1, n2, layout);		
+		BezierEdge e = new BezierEdge(layout, n1, n2, t);		
 		n1.insert(e);
 		n2.insert(e);
 		edges.put(e.getId(), e);		
@@ -467,8 +528,8 @@ public class FSMGraph extends Publisher implements Subscriber {
 			}else if(nodes.containsValue(el)){
 				saveMovement((Node)el);
 			}else if(edges.containsValue(el)){
-				if( ((Edge)el).isSelfLoop() ){					
-					saveMovement((Edge)el);
+				if( ((BezierEdge)el).isSelfLoop() ){					
+					saveMovement((BezierEdge)el);
 				}
 			}else if(freeLabels.containsValue(el)){
 				// TODO move free labels
@@ -488,8 +549,8 @@ public class FSMGraph extends Publisher implements Subscriber {
 		// update offset vector in EdgeLayout		
 		if(label.getParent() != null){
 			try{
-				Edge edge = (Edge)label.getParent();
-				EdgeLayout layout = edge.getLayout();
+				BezierEdge edge = (BezierEdge)label.getParent();
+				BezierLayout layout = edge.getLayout();
 				//layout.setLabelOffset(Geometry.subtract(label.getLayout().getLocation(), layout.getLocation()));
 				Iterator<FSATransition> t = edge.getTransitions();
 				while(t.hasNext()){
@@ -506,15 +567,15 @@ public class FSMGraph extends Publisher implements Subscriber {
 		State s = (State)fsa.getState(node.getId());
 		metaData.setLayoutData(s, node.getLayout());
 		// for all edges adjacent to node, save layout
-		Iterator<Edge> adjEdges = node.adjacentEdges();
+		Iterator<BezierEdge> adjEdges = node.adjacentEdges();
 		while(adjEdges.hasNext()){			
-			saveMovement((Edge)adjEdges.next());
+			saveMovement((BezierEdge)adjEdges.next());
 		}
 	}
 	
-	private void saveMovement(Edge e){
+	private void saveMovement(BezierEdge e){
 		// for all transitions in e		
-		EdgeLayout layout = e.getLayout();		
+		BezierLayout layout = e.getLayout();		
 		Iterator<FSATransition> t = e.getTransitions();
 		while(t.hasNext()){
 			metaData.setLayoutData(t.next(), layout);
@@ -551,6 +612,8 @@ public class FSMGraph extends Publisher implements Subscriber {
 	}
 	
 	/**
+	 * FIXME Change to add self-loop, so can have multiples. 
+	 * 
 	 * @param node
 	 * @param arg0
 	 */
@@ -573,7 +636,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @param events a non-null, non-empty list of FSA events
 	 * @param edge the edge to which the edges will be assigned
 	 */
-	protected void replaceEventsOnEdge(Event[] events, Edge edge){
+	protected void replaceEventsOnEdge(Event[] events, BezierEdge edge){
 
 		// get the transitions for edge
 		Iterator<FSATransition> trans = edge.getTransitions();
@@ -607,7 +670,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 				 t.setEvent(e);
 			}else{ // more events than transitions
 				// create a new transition
-				toAdd.add(new Transition(++maxTransitionId, edge.getSource().getState(), edge.getTarget().getState(), e));
+				toAdd.add(new Transition(fsa.getFreeTransitionId(), edge.getSource().getState(), edge.getTarget().getState(), e));
 			}
 		}
 		
@@ -657,7 +720,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * 
 	 * @parasm edge
 	 */
-	public void commitEdgeLayout(Edge edge){
+	public void commitEdgeLayout(BezierEdge edge){
 		saveMovement(edge);
 		//fsa.notifyAllSubscribers();
 		this.notifyAllSubscribers();
@@ -665,13 +728,28 @@ public class FSMGraph extends Publisher implements Subscriber {
 		setDirty(true);
 	}
 	
-	public void delete(GraphElement el){
+	/**
+	 * TODO After extend GraphElement, go through this interface to build
+	 * graph in LayoutDataParser.
+	 * 
+	 * ??? What about adding edges to nodes ???
+	 * 
+	 * @param n
+	 */
+//	public void insert(Node n)
+//	{
+//		// TODO super.insert(n, new Long(n.getId()));
+//		nodes.put(new Long(n.getId()), n);
+//		fireFSMGraphChanged(new FSMGraphMessage(this, FSMGraphMessage.ADD, FSMGraphMessage.NODE, n.getId(), n.bounds()));
+//	}
+	
+	public void remove(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){
 			((NodeLayout)((Node)el).getLayout()).dispose();
 			delete((Node)el);			
 		}else if(edges.containsValue(el)){
-			delete((Edge)el);
+			delete((BezierEdge)el);
 		}else{
 			freeLabels.remove(el);
 		}
@@ -683,7 +761,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 		// delete all adjacent edges
 		Iterator edges = n.adjacentEdges();
 		while(edges.hasNext()){
-			delete((Edge)edges.next());
+			delete((BezierEdge)edges.next());
 		}
 		// remove n		
 		fsa.remove(n.getState());
@@ -736,13 +814,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 		setDirty(true);
 	}
 	
-	/**
-	 * @return event id which is not in use
-	 */
-	public long getFreeEventId()
-	{
-		return ++maxEventId;
-	}
+	
 
 	/**
 	 * @param symbol
@@ -751,7 +823,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	 * @return
 	 */
 	public Event createEvent(String symbol, boolean controllable, boolean observable) {
-		Event event=new Event(getFreeEventId());
+		Event event=new Event(fsa.getFreeEventId());
 		event.setSymbol(symbol);
 		event.setControllable(controllable);
 		event.setObservable(observable);
@@ -767,12 +839,12 @@ public class FSMGraph extends Publisher implements Subscriber {
 		// remove event from all edges that may have transitions holding
 		// references to it.
 		Entry entry;
-		Edge edge;
+		BezierEdge edge;
 		FSATransition toRemove = null;
 		Iterator iter = edges.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			edge = (Edge)entry.getValue();
+			edge = (BezierEdge)entry.getValue();
 			Iterator<FSATransition> trans = edge.getTransitions();
 			while(trans.hasNext()){
 				FSATransition t = trans.next();
@@ -794,6 +866,16 @@ public class FSMGraph extends Publisher implements Subscriber {
 		notifyAllSubscribers();
 	}
 	
+	/**
+	 * FIXME since can set even properties directly, coders are not
+	 * obligated to go through this method.  Make sure changes to DES element
+	 * properties trigger a notification from FSA.
+	 *  
+	 * IDEA go through FSA interface?
+	 * 
+	 * @param event
+	 * @param b
+	 */
 	public void setControllable(Event event, boolean b){
 		// update the event
 		event.setControllable(b);
@@ -811,7 +893,9 @@ public class FSMGraph extends Publisher implements Subscriber {
 		setDirty(true);
 		notifyAllSubscribers();
 	}
-
+	///////////////////////////////////////////////////////////////////////////
+	// These can go once extend GraphElement
+	
 	public boolean isDirty()
 	{
 		return dirty;
@@ -821,6 +905,8 @@ public class FSMGraph extends Publisher implements Subscriber {
 	{
 		dirty=b;
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
 	
 	/**
 	 * Calculcates the size of the bounding box necessary for the entire graph.  
@@ -858,7 +944,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 	
 		for (Edge graphEdge : edges.values())
 		{
-			graphBounds = graphBounds.union(graphEdge.getCurveBounds());
+			graphBounds = graphBounds.union(((BezierEdge)graphEdge).getCurveBounds());
 		}
 		
 		for (GraphLabel edgeLabel : edgeLabels.values())
@@ -888,7 +974,7 @@ public class FSMGraph extends Publisher implements Subscriber {
 
 		for (Edge graphEdge : edges.values())
 		{
-			return graphEdge.getCurveBounds();
+			return ((BezierEdge)graphEdge).getCurveBounds();
 		}
 
 		for (GraphLabel freeLabel : freeLabels.values())
@@ -899,41 +985,6 @@ public class FSMGraph extends Publisher implements Subscriber {
 		return new Rectangle();
 	}
 	
-	/**
-	 * A mid-version of getBounds()
-	 * 
-	 * @return the smallest rectangle that containing all elements of the graph
-	 * 
-	 * @author Lenko Grigorov
-	 */
-	/*
-	public Rectangle getBounds()
-	{
-		Rectangle r=new Rectangle();
-
-		for (Node n: nodes.values())
-		{
-			if (n.getState().isInitial())
-				r=r.union(n.getInitialArrowBounds());
-			int radius = (int)n.getLayout().getRadius();
-			r=r.union(new Rectangle((int)n.getLayout().getLocation().x - radius,
-					(int)n.getLayout().getLocation().y - radius,
-					2*radius,
-					2*radius));
-		}
-
-		for (Edge e:edges.values())
-		{
-			r=r.union(e.getCurveBounds());
-			r=r.union(e.getLabel().bounds());
-		}
-
-		for (GraphLabel l:freeLabels.values())
-			r=r.union(l.bounds());
-		
-		return r;
-	}
-	*/
 	public void translate(float x, float y)
 	{
 		graph.translate(x,y);
@@ -964,10 +1015,10 @@ public class FSMGraph extends Publisher implements Subscriber {
 		
 		// check for intersection with edges
 		iter = edges.entrySet().iterator();
-		Edge e;
+		BezierEdge e;
 		while(iter.hasNext()){
 			entry = (Entry)iter.next();
-			e = (Edge)entry.getValue();
+			e = (BezierEdge)entry.getValue();
 			if(rectangle.intersects(e.getCurveBounds())){ // TODO && do a more thorough intersection test
 				g.insert(e);
 			}
@@ -1018,12 +1069,12 @@ public class FSMGraph extends Publisher implements Subscriber {
 			}
 		}
 		
-		Edge e;
+		BezierEdge e;
 		// check for intersection with edges
 		iter = edges.entrySet().iterator();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			e = (Edge)entry.getValue();
+			e = (BezierEdge)entry.getValue();
 			if(e.intersects(p)){		
 				return e;				
 			}
@@ -1043,6 +1094,82 @@ public class FSMGraph extends Publisher implements Subscriber {
 		return null;
 	}
 
+	
+	//////////////////////////////////////////////////////////////////////// 
+	/* FSMGraphPublisher part which maintains a collection of, and 
+	 * sends change notifications to, all interested observers (subscribers). 
+	 **/
+	private ArrayList<FSMGraphSubscriber> subscribers = new ArrayList<FSMGraphSubscriber>();;
+		
+	/**
+	 * Attaches the given subscriber to this publisher.
+	 * The given subscriber will receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void addSubscriber(FSMGraphSubscriber subscriber) {
+		subscribers.add(subscriber);		
+	}
+	
+	/**
+	 * Removes the given subscriber to this publisher.
+	 * The given subscriber will no longer receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void removeSubscriber(FSMGraphSubscriber subscriber) {
+		subscribers.remove(subscriber);
+	}
+	
+	/**
+	 * Notifies all subscribers that there has been a change to an element of 
+	 * the graph publisher.
+	 * 
+	 * @param message
+	 */
+	private void fireFSMGraphChanged(FSMGraphMessage message)
+	{
+		for(FSMGraphSubscriber s : subscribers)
+		{
+			s.fsmGraphChanged(message);
+		}		
+	}
+
+	/**
+	 * Notifies all subscribers that there has been a change to the elements  
+	 * currently selected in the graph publisher.
+	 * 
+	 * @param message
+	 */
+	private void fireFSMGraphSelectionChanged(FSMGraphMessage message)
+	{
+		for(FSMGraphSubscriber s : subscribers)
+		{
+			s.fsmGraphSelectionChanged(message);
+		}		
+	}
+	
+	////////////////////////////////////////////////////////////////////////	
+	/* FSMSubscriber part which responds to change notifications from the FSM
+	 * model this graph represents.  
+	 */
+	
+	/* (non-Javadoc)
+	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
+	 */
+	public void fsmStructureChanged(FSMMessage message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
+	 */
+	public void fsmEventSetChanged(FSMMessage message) {
+		// TODO Auto-generated method stub
+		
+	}
+	///////////////////////////////////////////////////////////////////////
 }
 
 

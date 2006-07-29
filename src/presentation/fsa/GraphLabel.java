@@ -199,7 +199,7 @@ public class GraphLabel extends GraphElement {
 				
 		// FIXME only show for edge labels
 		// KLUGE instanceof, should have subclasses EdgeLabel and NodeLabel
-		if(getParent() != null && getParent() instanceof Edge ){  // draw the tether
+		if(getParent() != null && getParent() instanceof BezierEdge ){  // draw the tether
 			
 			((Graphics2D)g).draw(bounds());	// TODO draw border for free labels too 
 			
@@ -281,7 +281,7 @@ public class GraphLabel extends GraphElement {
 	public void insert(PresentationElement child, long index) {}
 	public void insert(PresentationElement g) {}
 	public void remove(PresentationElement child) {}
-	public PresentationElement child(int index) {	return null; }
+	public PresentationElement child(long index) {	return null; }
 	public Iterator children() { return null; }
 	
 	public void setText(String s){

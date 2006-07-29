@@ -1,11 +1,22 @@
 package presentation;
 
 import java.awt.Point;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 
 public class Geometry {
 
+	/**
+	 * @param curve2
+	 * @return the midpoint of curve2
+	 */
+	public static Point2D midpoint(CubicCurve2D.Float curve) {
+		CubicCurve2D.Float left = new CubicCurve2D.Float(); 
+	    curve.subdivide(left, new CubicCurve2D.Float());	        
+	    return left.getP2();
+	}
+	
 	/**
 	 * Returns the norm of the given vector.
 	 * 
@@ -90,6 +101,15 @@ public class Geometry {
 		return new Point2D.Float(a.x + v.x, a.y + v.y);		
 	}
 	
+	/**
+	 * @param p2
+	 * @param float1
+	 * @return
+	 */
+	public static Float add(Point2D p1, Float p2) {		
+		return add(new Point2D.Float((float)p1.getX(), (float)p1.getY()), p2);
+	}
+
 	/**
 	 * @param v1 source vector
 	 * @param v2 target vector (within a scalar)

@@ -8,7 +8,7 @@ import java.awt.geom.Point2D.Float;
 
 import main.Hub;
 
-import presentation.fsa.Edge;
+import presentation.fsa.BezierEdge;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.Node;
 import ui.command.GraphCommands.CreateCommand;
@@ -26,7 +26,7 @@ public class CreationTool extends DrawingTool {
 	private boolean drawingEdge = false;
 	private Node sourceNode, targetNode; // nodes to be source and target of created edge
 	private Node startNode, endNode; // nodes intersected on mouse pressed and released respectively
-	private Edge edge;
+	private BezierEdge edge;
 	private CreateCommand cmd;	
 	private boolean aborted;
 	private boolean firstClick;

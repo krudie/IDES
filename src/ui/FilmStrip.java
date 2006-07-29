@@ -17,6 +17,8 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import observer.Subscriber;
+import observer.WorkspaceMessage;
+import observer.WorkspaceSubscriber;
 
 import main.Hub;
 import presentation.fsa.FSMGraph;
@@ -30,7 +32,7 @@ import presentation.fsa.GraphView;
  *
  */
 @SuppressWarnings("serial")
-public class FilmStrip extends JPanel implements Subscriber, MouseListener {
+public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber, MouseListener {
 	
 //	private GraphView activeView;
 	private Vector<GraphView> graphViews=new Vector<GraphView>();
@@ -136,4 +138,27 @@ public class FilmStrip extends JPanel implements Subscriber, MouseListener {
 	public void mouseEntered(MouseEvent arg0) {}
 
 	public void mouseExited(MouseEvent arg0) {}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 */
+	public void modelCollectionChanged(WorkspaceMessage message) {
+		update();
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 */
+	public void repaintRequired(WorkspaceMessage message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 */
+	public void modelSwitched(WorkspaceMessage message) {
+		update();		
+	}
 }

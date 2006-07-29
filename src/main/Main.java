@@ -104,8 +104,7 @@ public class Main {
 		Hub.getWorkspace().addFSAModel(fsa);
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
-		//go live!
-		//TODO uncomment line below for debug version
+		//go live!		
 		Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
 	}

@@ -13,7 +13,7 @@ import main.Hub;
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
-import presentation.fsa.Edge;
+import presentation.fsa.BezierEdge;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
@@ -61,7 +61,7 @@ public class GraphCommands {
 		private GraphDrawingView context;
 		private int elementType;
 		private Node source, target;
-		private Edge edge;
+		private BezierEdge edge;
 		private Point location;
 		
 		/**
@@ -95,7 +95,7 @@ public class GraphCommands {
 			setContext(context, elementType, location);
 		}	
 		
-		public CreateCommand(GraphDrawingView context, int elementType, Edge edge, Point location){
+		public CreateCommand(GraphDrawingView context, int elementType, BezierEdge edge, Point location){
 			setContext(context, elementType, location);
 			this.edge = edge;
 		}	
@@ -118,7 +118,7 @@ public class GraphCommands {
 		 * @param edge
 		 * @param target
 		 */
-		public CreateCommand(GraphDrawingView context, int elementType, Edge edge, Node target) {
+		public CreateCommand(GraphDrawingView context, int elementType, BezierEdge edge, Node target) {
 			this.context = context;
 			this.elementType = elementType;
 			this.edge = edge;
@@ -141,7 +141,7 @@ public class GraphCommands {
 		}
 		
 
-		public void setEdge(Edge edge) {
+		public void setEdge(BezierEdge edge) {
 			this.edge = edge;
 		}
 
@@ -265,12 +265,12 @@ public class GraphCommands {
 					Node node = (Node)element;
 					// if selection is a node				
 					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(context.getGraphModel(),node);
-				}else if(element instanceof Edge){
-					Edge edge = (Edge)element;			
+				}else if(element instanceof BezierEdge){
+					BezierEdge edge = (BezierEdge)element;			
 					EdgeLabellingDialog.showDialog(context, edge);					
 					// TODO accumulate set of edits that were performed in the edge labelling dialog
-				}else if(element instanceof GraphLabel && element.getParent() instanceof Edge){
-					Edge edge = (Edge)element.getParent();
+				}else if(element instanceof GraphLabel && element.getParent() instanceof BezierEdge){
+					BezierEdge edge = (BezierEdge)element.getParent();
 					EdgeLabellingDialog.showDialog(context, edge);
 				}else{
 					GraphLabel label = (GraphLabel)element;
@@ -366,7 +366,7 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			// TODO return Undoable edit containing removed element and where it should be restored to
 			// the view is not enough since view changes models; need to know the model...
-			context.getGraphModel().delete(element);
+			context.getGraphModel().remove(element);
 			context.repaint();
 			return null;
 		}

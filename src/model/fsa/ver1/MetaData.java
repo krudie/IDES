@@ -9,8 +9,8 @@ import model.fsa.FSAMetaData;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import presentation.GraphicalLayout;
-import presentation.fsa.Edge;
-import presentation.fsa.EdgeLayout;
+import presentation.fsa.BezierEdge;
+import presentation.fsa.BezierLayout;
 import presentation.fsa.NodeLayout;
 
 /**
@@ -118,7 +118,7 @@ public class MetaData implements FSAMetaData {
 	 * @param transition the transition to be stored
 	 * @param layout the graphical layout data for an edge
 	 */
-	public void setLayoutData(FSATransition transition, EdgeLayout layout){
+	public void setLayoutData(FSATransition transition, BezierLayout layout){
 		Transition t = (Transition)transition;
 		SubElement g = new SubElement("graphic");
 		SubElement b = new SubElement("bezier");
@@ -144,26 +144,26 @@ public class MetaData implements FSAMetaData {
 	 * 
 	 * @return graphical layout for the Edge representing the given transition.
 	 */
-	public EdgeLayout getLayoutData(FSATransition transition){
+	public BezierLayout getLayoutData(FSATransition transition){
 		Transition t = (Transition)transition;
 		SubElement layout = t.getSubElement("graphic");
 		
 		SubElement bezier = layout.getSubElement("bezier");
 		Point2D.Float[] controls = new Point2D.Float[4];
-		controls[EdgeLayout.P1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x1")),
+		controls[BezierLayout.P1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x1")),
 				Float.parseFloat(bezier.getAttribute("y1")));
-		controls[EdgeLayout.P2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x2")),
+		controls[BezierLayout.P2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("x2")),
 				Float.parseFloat(bezier.getAttribute("y2")));
-		controls[EdgeLayout.CTRL1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx1")),
+		controls[BezierLayout.CTRL1] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx1")),
 				Float.parseFloat(bezier.getAttribute("ctrly1")));
-		controls[EdgeLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
+		controls[BezierLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
 		// FIXME edgeLayout constructor needs to know about source and target
 		// 		Node layouts.
 		// Need to know if this is a self-loop before calling this constructor 
 		// (since constructor calls updateAnglesEtc...)
-		EdgeLayout edgeLayout = new EdgeLayout(controls, t.getSource().equals(t.getTarget()));		
+		BezierLayout edgeLayout = new BezierLayout(controls, t.getSource().equals(t.getTarget()));		
 		
 		// extract label offset
 		Point2D.Float offset = new Point2D.Float();
@@ -179,7 +179,7 @@ public class MetaData implements FSAMetaData {
 		return edgeLayout;
 	}	
 	
-	public void removeFromLayout(FSATransition transition, EdgeLayout layout){
+	public void removeFromLayout(FSATransition transition, BezierLayout layout){
 		Transition t = (Transition)transition;
 		Event e = (Event) t.getEvent();
 		if(e != null){			

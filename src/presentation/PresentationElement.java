@@ -67,7 +67,7 @@ public interface PresentationElement {
 	 * @param index
 	 * @return the child at the given index, null if does not exist
 	 */
-	public PresentationElement child(int index);
+	public PresentationElement child(long index);
 	
 	/** 
 	 * @return the parent of this element, null if does not exist
@@ -95,7 +95,8 @@ public interface PresentationElement {
 	
 	public void setLayout(GraphicalLayout layout);
 	
-	// FIXME Don't want layout to be tampered with directly,  may be out of sync.
+	// FIXME Don't want layout to be tampered with directly, 
+	// should be guarded by its GraphElement to control nature and timing of updates.
 	public GraphicalLayout getLayout(); 
 	
 	public void translate(float x, float y);

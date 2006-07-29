@@ -36,7 +36,9 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     protected String id = "";
     
     private SubElement meta=null;
-    
+
+	private long maxStateId, maxEventId, maxTransitionId;
+	
     /**
      * constructs a nem automaton with the name name
      * @param name the name of the automaton
@@ -46,6 +48,9 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         transitions = new LinkedList<FSATransition>();
         events = new LinkedList<FSAEvent>();
         this.name = name;
+        maxStateId = -1;
+		maxTransitionId = -1;
+		maxEventId = -1;
     }
     
     /**
@@ -103,7 +108,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 	 * @see model.fsa.ver1.FSAModel#add(model.fsa.FSAState)
 	 */
     public void add(FSAState s){
-        states.add(s);        
+        states.add(s); 
+        maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
     }
     
     /* (non-Javadoc)
@@ -124,6 +130,30 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     	return events.size();
     }
     
+    /**
+	 * @return event id which is not in use
+	 */
+	public long getFreeEventId()
+	{
+		return ++maxEventId;
+	}
+	
+	/**
+	 * @return transition id which is not in use
+	 */
+	public long getFreeTransitionId()
+	{
+		return ++maxTransitionId;
+	}
+	
+	/**
+	 * @return state id which is not in use
+	 */
+	public long getFreeStateId()
+	{
+		return ++maxStateId;
+	}
+	
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSAState)
 	 */
@@ -171,6 +201,7 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         t.getSource().addSourceTransition(t);
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
+        maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
     }
 
     /* (non-Javadoc)
@@ -206,6 +237,7 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 	 */
     public void add(FSAEvent e){
         events.add(e);
+    	maxEventId = maxEventId < e.getId() ? e.getId() : maxEventId;
     }
 
     /* (non-Javadoc)

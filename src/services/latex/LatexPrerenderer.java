@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import presentation.fsa.BezierEdge;
 import presentation.fsa.Edge;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.FSMGraph;

@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -27,7 +28,7 @@ public class GraphElement implements PresentationElement {
 	protected GraphicalLayout layout;
 	
 	// my states and free labels
-	private ArrayList<PresentationElement> children;
+	private HashMap<Long, PresentationElement> children;
 	private PresentationElement parent;
 	
 	public GraphElement() {		
@@ -36,7 +37,7 @@ public class GraphElement implements PresentationElement {
 		
 	public GraphElement(PresentationElement parent) {		
 		this.parent = parent;
-		children = new ArrayList<PresentationElement>();
+		children = new HashMap<Long, PresentationElement>();
 		layout = new GraphicalLayout();
 	}
 	
@@ -44,9 +45,7 @@ public class GraphElement implements PresentationElement {
 	 * Draws all of my children.
 	 */
 	public void draw(Graphics g) {		
-		Iterator c = children.iterator();
-		while(c.hasNext()){
-			PresentationElement child = (PresentationElement)c.next();
+		for(PresentationElement child : children.values()){			 
 			child.draw(g);
 		}
 	}
@@ -56,10 +55,9 @@ public class GraphElement implements PresentationElement {
 	 */
 	public Rectangle2D bounds() {
 		
-		Iterator c = children.iterator();
+		
 		Rectangle2D bounds = null;		
-		while(c.hasNext()){
-			PresentationElement child = (PresentationElement)c.next();
+		for(PresentationElement child : children.values()){			
 			if(bounds == null){
 				bounds = child.bounds();
 			}else{
@@ -76,19 +74,22 @@ public class GraphElement implements PresentationElement {
 		return bounds().contains(p);
 	}
 
-	public void insert(PresentationElement child, long index) {
-		// TODO - change the index to a String or Long and hash the children
-		children.add((int)index, child);
+	/**
+	 * TEST Make certain that elements that have an id don't hash to
+	 * the same location as those that use a hashcode.
+	 */
+	public void insert(PresentationElement child, long index) {				
+		children.put(new Long(index), child);
 		child.setParent(this);
 	}
 
-	public void insert(PresentationElement e) {
-		children.add(e);	
-		e.setParent(this);
+	public void insert(PresentationElement child) {
+		children.put(new Long(child.hashCode()), child);	
+		child.setParent(this);
 	}
 	
-	public boolean contains(PresentationElement e){
-		return children.contains(e);		
+	public boolean contains(PresentationElement child){
+		return children.containsValue(child);		
 	}
 	
 	public void remove(PresentationElement child) {
@@ -99,19 +100,19 @@ public class GraphElement implements PresentationElement {
 		children.clear();
 	}
 	
-	public PresentationElement child(int index) {
-		return children.get(index);		
+	public PresentationElement child(long index) {
+		return children.get(new Long(index));		
 	}
 
 	public Iterator children() { 
-		return children.iterator();
+		return children.values().iterator();
 	}
 
 //	public ArrayList<PresentationElement> getChildren() {
 //		return children;
 //	}
 
-	public void setChildren(ArrayList<PresentationElement> children) {
+	public void setChildren(HashMap<Long, PresentationElement> children) {
 		this.children = children;
 	}
 
@@ -128,11 +129,8 @@ public class GraphElement implements PresentationElement {
 	}
 
 	public void setVisible(boolean visible) {
-		this.visible = visible;
-		Iterator i = children.iterator();
-		PresentationElement g;
-		while(i.hasNext()){
-			g = (PresentationElement)i.next();
+		this.visible = visible;		
+		for(PresentationElement g : children.values()){			
 			g.setVisible(visible);
 		}
 	}
@@ -143,10 +141,7 @@ public class GraphElement implements PresentationElement {
 
 	public void setSelected(boolean selected) {
 		this.selected = selected;
-		Iterator i = children.iterator();
-		PresentationElement g;
-		while(i.hasNext()){
-			g = (PresentationElement)i.next();
+		for(PresentationElement g : children.values()){			
 			g.setSelected(selected);
 		}
 	}	
@@ -157,35 +152,20 @@ public class GraphElement implements PresentationElement {
 
 	public void setHighlighted(boolean highlight) {
 		this.highlighted = highlight;
-		Iterator i = children.iterator();
-		PresentationElement g;
-		while(i.hasNext()){
-			g = (PresentationElement)i.next();
+		for(PresentationElement g : children.values()){			
 			g.setHighlighted(highlight);
 		}
 	}
 	
-	/**
-	 * TODO should this be in class PresentationElement?
-	 * No.  If make this an abstract method, then can't instantiate a generic GraphElement :(
-	 *
-	 */
-	//public void update(){}
-
 	public void setLayout(GraphicalLayout layout) {
 		this.layout = layout;		
 	}
 
-//	public GraphicalLayout getLayout() {		
-//		return layout;
-//	};
-	
+
 	public void translate(float x, float y){
 		layout.translate(x, y);
-		Iterator c = children.iterator();
-		while(c.hasNext()){
-			PresentationElement child = (PresentationElement)c.next();
-			child.translate(x,y);
+		for(PresentationElement g : children.values()){
+			g.translate(x,y);
 		}
 		setDirty(true);		
 	}
@@ -216,10 +196,8 @@ public class GraphElement implements PresentationElement {
 	}
 
 	public void update(){
-		Iterator c = children.iterator();
-		while(c.hasNext()){
-			PresentationElement child = (PresentationElement)c.next();
-			child.update();
+		for(PresentationElement g : children.values()){
+			g.update();
 		}
 		setDirty(false);
 	}
@@ -229,11 +207,11 @@ public class GraphElement implements PresentationElement {
 		return children.size();
 	}
 
-	/* (non-Javadoc)
+	/* TODO remove this : prevent outside access to layout object
+	 *  (non-Javadoc)
 	 * @see presentation.PresentationElement#getLayout()
 	 */
-	public GraphicalLayout getLayout() {
-		// TODO Auto-generated method stub
+	public GraphicalLayout getLayout() {		
 		return layout;
 	}
 

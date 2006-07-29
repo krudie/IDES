@@ -13,7 +13,8 @@ import java.awt.event.MouseEvent;
 import main.Hub;
 
 import presentation.PresentationElement;
-import presentation.fsa.Edge;
+import presentation.fsa.BezierEdge;
+import presentation.fsa.BezierHandler;
 import presentation.fsa.EdgeHandler;
 import presentation.GraphicalLayout;
 import presentation.fsa.GraphDrawingView;
@@ -27,9 +28,9 @@ import ui.command.EdgeCommands.ModifyEdgeCommand;
  */
 public class ModifyEdgeTool extends DrawingTool {
 	
-	private Edge edge;
+	private BezierEdge edge;
 	private GraphicalLayout previousLayout;  // TODO clone for undo
-	private int pointType = EdgeHandler.NO_INTERSECTION;  // types CTRL1 or CTRL2 are moveable	
+	private int pointType = BezierHandler.NO_INTERSECTION;  // types CTRL1 or CTRL2 are moveable	
 	
 	public ModifyEdgeTool(GraphDrawingView context){
 		this.context = context;
@@ -47,7 +48,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		// FIXME If an edge was just selected by SelectionTool,
 		// use it, don't lose it.
 		if(context.hasCurrentSelection()){
-			Edge temp = getEdge(context.getCurrentSelection());
+			BezierEdge temp = getEdge(context.getCurrentSelection());
 			if( temp != null )
 			{
 				edge = temp;		
@@ -64,7 +65,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		context.clearCurrentSelection();
 		context.updateCurrentSelection(m.getPoint());
 		if(context.hasCurrentSelection()){
-			Edge temp = getEdge(context.getCurrentSelection());
+			BezierEdge temp = getEdge(context.getCurrentSelection());
 			if( temp != null )
 			{
 				edge = temp;
@@ -80,9 +81,9 @@ public class ModifyEdgeTool extends DrawingTool {
 		context.repaint();
 	}
 		
-	private Edge getEdge(SelectionGroup selection){
+	private BezierEdge getEdge(SelectionGroup selection){
 		try{
-			Edge temp = (Edge)selection.child(0);
+			BezierEdge temp = (BezierEdge)selection.child(0);
 			return temp;								
 		}catch(ClassCastException cce){
 			return null;
@@ -97,8 +98,8 @@ public class ModifyEdgeTool extends DrawingTool {
 	
 	private void prepareToDrag(Point point){
 		if(edge.getHandler().isVisible() && edge.getHandler().intersects(point)){				
-			pointType = edge.getHandler().getLastIntersected();
-			if(pointType == Edge.CTRL1 || pointType == Edge.CTRL2){								
+			pointType = ((BezierHandler)edge.getHandler()).getLastIntersected();
+			if(pointType == BezierEdge.CTRL1 || pointType == BezierEdge.CTRL2){								
 				dragging = true;
 			}else{														
 				dragging = false;					
@@ -108,7 +109,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		
 	private boolean ready(){
 //		 ??? do we need dragging anymore?	
-		return edge != null && pointType != EdgeHandler.NO_INTERSECTION && dragging;
+		return edge != null && pointType != BezierHandler.NO_INTERSECTION && dragging;
 	}
 	
 	/* (non-Javadoc)

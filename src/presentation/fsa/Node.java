@@ -116,7 +116,7 @@ public class Node extends GraphElement {
 		Iterator children = children();
 		while(children.hasNext()){
 			try{
-				Edge e = (Edge)children.next();
+				BezierEdge e = (BezierEdge)children.next();
 				if(e.getTarget() != null){
 					e.getLayout().computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
 				}
@@ -139,7 +139,7 @@ public class Node extends GraphElement {
 		Iterator c = children();
 		while(c.hasNext()){
 			try{
-				Edge child = (Edge)c.next();
+				BezierEdge child = (BezierEdge)c.next();
 				if(child.getSource().equals(this)){
 					child.draw(g);
 				}
@@ -351,9 +351,9 @@ public class Node extends GraphElement {
 	 * @return
 	 */
 	public boolean hasSelfLoop() {
-		Iterator<Edge> edges = adjacentEdges();
+		Iterator<BezierEdge> edges = adjacentEdges();
 		while(edges.hasNext()){
-			Edge e = edges.next();
+			BezierEdge e = edges.next();
 			if(e.getSource().equals(this) && e.getTarget().equals(this)){
 					return true;
 			}			
@@ -364,12 +364,12 @@ public class Node extends GraphElement {
 	/**
 	 * @return an iterator of all adjacent edges
 	 */
-	public Iterator<Edge> adjacentEdges() {
+	public Iterator<BezierEdge> adjacentEdges() {
 		Iterator children = children();
-		ArrayList<Edge> edges = new ArrayList<Edge>();
+		ArrayList<BezierEdge> edges = new ArrayList<BezierEdge>();
 		while(children.hasNext()){
 			try{
-				Edge e = (Edge)children.next();				
+				BezierEdge e = (BezierEdge)children.next();				
 				edges.add(e);
 			}catch(ClassCastException cce){
 				// Child is not an edge

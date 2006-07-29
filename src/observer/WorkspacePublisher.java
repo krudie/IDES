@@ -38,6 +38,12 @@ public class WorkspacePublisher {
 		subscribers.remove(subscriber);
 	}
 	
+	/**
+	 * Sends notification to subscribers when a DES model is created or opened (added), 
+	 * closed (removed) or renamed.
+	 * 
+	 * @param message
+	 */
 	public void fireModelCollectionChanged(WorkspaceMessage message)
 	{
 		for(WorkspaceSubscriber s : subscribers)
@@ -47,8 +53,8 @@ public class WorkspacePublisher {
 	}
 	
 	/**
-	 * Fired on changes to display such as Zoom, or
-	 * toggling show grid, LaTeX rendering, UniformNode size etc.
+	 * Sends notification to subscribers of changes to the display options such as 
+	 * Zoom, or toggling show grid, LaTeX rendering, UniformNode size etc.
 	 * 
 	 * @param message
 	 */
@@ -60,6 +66,14 @@ public class WorkspacePublisher {
 		}
 	}
 	
+	/**
+	 * Sends notification to subscribers of changes to the type of active model
+	 * e.g. from FSM to petri net.
+	 * Intended to facilitate changes to the current set of interface tools (a.k.a. work bench) 
+	 * needed to view and manipulate different kinds of DES models.
+	 * 
+	 * @param message
+	 */
 	public void fireModelSwitched(WorkspaceMessage message){
 		for(WorkspaceSubscriber s : subscribers)
 		{

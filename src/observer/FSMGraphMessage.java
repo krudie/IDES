@@ -5,6 +5,8 @@ package observer;
 
 import java.awt.Rectangle;
 
+import presentation.fsa.FSMGraph;
+
 /**
  * Message sent to subscribers to event notifications from 
  * FSMGraphPublishers.
@@ -30,7 +32,7 @@ public class FSMGraphMessage {
 	/**
 	 * the publisher that sent this message
 	 */
-	private FSMGraphPublisher source;
+	private FSMGraph source;
 	
 	// type of graph element that was changed by the event
 	private int elementType;	
@@ -43,7 +45,15 @@ public class FSMGraphMessage {
 	// the location on the source canvas where the event occurred
 	private Rectangle location;
 	
-	public FSMGraphMessage(FSMGraphPublisher source, int elementType, long elementId, int eventType, Rectangle location) {
+	/**
+	 * 
+	 * @param source message sender
+	 * @param eventType ADD, REMOVE, or MODIFY
+	 * @param elementType NODE, EDGE, LABEL or SELECTION
+	 * @param elementId the unique id (by type) of the element
+	 * @param location area in the display where the event occurred
+	 */
+	public FSMGraphMessage(FSMGraph source, int eventType, int elementType, long elementId, Rectangle location) {
 		super();		
 		this.source = source;
 		this.elementType = elementType;
@@ -64,8 +74,12 @@ public class FSMGraphMessage {
 		return eventType;
 	}
 
-	public FSMGraphPublisher getSource() {
+	public FSMGraph getSource() {
 		return source;
+	}
+
+	public Rectangle getLocation() {
+		return location;
 	}	
 
 }

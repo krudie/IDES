@@ -20,89 +20,22 @@ import presentation.PresentationElement;
 public class EdgeHandler extends GraphElement {
 
 	private Edge edge;
-	private Ellipse2D.Double[] anchors;	
-	private static final int RADIUS = 5;
-	public static final int NO_INTERSECTION = -1;
-	
-	/**
-	 * Index of last intersected control point anchor
-	 * @see EdgeLayout.P1, EdgeLayout.CTRL1 etc.
-	 */
-	private int lastIntersected = NO_INTERSECTION;  
 		
 	public EdgeHandler(Edge edge) {		
 		this.edge = edge;
 		setParent(edge);
-		anchors = new Ellipse2D.Double[4];		                               
 		update();
 	}
-	
+		
 	/**
-	 * Update my layout information from my edge.
+	 * TODO this doesn't make much sense.
 	 */
-	public void update() {
-		// upper left corner, width and height
-		int d = 2*RADIUS;
-		anchors[EdgeLayout.P1] = new Ellipse2D.Double(edge.getP1().x - RADIUS, edge.getP1().y - RADIUS, d, d); 
-		anchors[EdgeLayout.CTRL1] = new Ellipse2D.Double(edge.getCTRL1().x - RADIUS, edge.getCTRL1().y - RADIUS, d, d);				
-		anchors[EdgeLayout.CTRL2] = new Ellipse2D.Double(edge.getCTRL2().x - RADIUS, edge.getCTRL2().y - RADIUS, d, d);
-		anchors[EdgeLayout.P2] = new Ellipse2D.Double(edge.getP2().x - RADIUS, edge.getP2().y - RADIUS, d, d);
-	}
-	
-	public void draw(Graphics g) {
-		if(visible){
-			Graphics2D g2d = (Graphics2D)g;
-					
-			g2d.setColor(Color.BLUE);
-			g2d.setStroke(GraphicalLayout.FINE_STROKE);
-						
-			for(int i=1; i<3; i++){  // don't display end point circles since not moveable.
-				g2d.draw(anchors[i]);
-			}
-			
-			g2d.drawLine((int)(edge.getP1().x), 
-					(int)(edge.getP1().y), 
-					(int)(edge.getCTRL1().x), 
-					(int)(edge.getCTRL1().y));
-			
-			g2d.drawLine((int)(edge.getP2().x), 
-					(int)(edge.getP2().y), 
-					(int)(edge.getCTRL2().x), 
-					(int)(edge.getCTRL2().y));
-		}
-	}
-
-	/**
-	 * TODO think about this one: is the edge its parent?
-	 * If so, add this to the edge's list of children and
-	 */
-	public PresentationElement getParent() {		
-		return edge;
-	}
-
 	public Rectangle2D bounds() {	
 		return edge.bounds();
 	}
-
-	/**
-	 * @return true iff p intersects one of the control point circles. 
-	 */
-	public boolean intersects(Point2D p) {
-		for(int i=0; i<4; i++){
-			if(anchors[i]!=null && anchors[i].contains(p)){
-				lastIntersected = i;
-				return true;
-			}			
-		}
-		lastIntersected = NO_INTERSECTION;
-		return false;
+	
+	public Edge getEdge()
+	{
+		return (Edge)getParent();
 	}
-
-	/** 
-	 * @return index of the last intersected control point handle, if no intersection
-	 * returns <code>NO_INTERSECTION</code>. 
-	 */
-	public int getLastIntersected() {
-		return lastIntersected;
-	}		
 }

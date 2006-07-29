@@ -230,7 +230,7 @@ public class GraphExporter
 		FSMGraph graphModel = null;
 		
 		Node[] nodeArray = null;
-		Edge[] edgeArray = null;
+		BezierEdge[] edgeArray = null;
 		GraphLabel[] freelabelArray = null;
 
 		// Step #1 - Get the GraphModel
@@ -243,7 +243,7 @@ public class GraphExporter
 
 		// Step #2 - Get the Nodes, Edges and Labels
 		nodeArray = (Node[]) graphModel.getNodes().toArray(new Node[0]);
-		edgeArray = (Edge[]) graphModel.getEdges().toArray(new Edge[0]);
+		edgeArray = (BezierEdge[]) graphModel.getEdges().toArray(new BezierEdge[0]);
 		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 
 		String contentsString =

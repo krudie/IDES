@@ -136,7 +136,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 				for(Iterator i=currentSelection.children();i.hasNext();)
 				{
 					GraphElement ge=(GraphElement)i.next();
-					graphModel.delete(ge);
+					graphModel.remove(ge);
 				}
 				update();
 			}

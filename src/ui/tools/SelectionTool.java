@@ -12,7 +12,7 @@ import main.Hub;
 
 import presentation.PresentationElement;
 import presentation.fsa.BoundingBox;
-import presentation.fsa.Edge;
+import presentation.fsa.BezierEdge;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.SelectionGroup;
 
@@ -109,7 +109,7 @@ public class SelectionTool extends DrawingTool {
 		
 		// If an edge is selected and i have hit a control point handle
 		// start modifying the edge		
-		if(context.hasCurrentSelection() && context.getCurrentSelection().child(0) instanceof Edge) { // KLUGE instanceof is YUCK
+		if(context.hasCurrentSelection() && context.getCurrentSelection().child(0) instanceof BezierEdge) { // KLUGE instanceof is YUCK
 			context.setTool(GraphDrawingView.MODIFY);
 			context.getCurrentTool().handleMousePressed(me);
 			return;
