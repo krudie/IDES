@@ -44,45 +44,45 @@ public class Node extends GraphElement {
 		
 	public Node(FSAState s, NodeLayout layout){
 		this.state = s;
-		this.layout = layout;
-		layout.setNode(this);
+		setLayout(layout);		
 		label = new GraphLabel("");
 		this.insert(label);
 		circle = new Ellipse2D.Double();
 		arrow1 = new Point2D.Float();
 		arrow2 = new Point2D.Float();
-		update();
+		refresh();
 	}
 
-	public long getId(){
+	public Long getId(){
 		return state.getId();
 	}
 	
 	public void setLayout(NodeLayout layout){
-		if(this.layout!=null)
-			((NodeLayout)this.layout).dispose();
-		this.layout = layout;
-		update();
+//		if(getLayout()!=null)
+//			getLayout().dispose();
+//		
+		super.setLayout(layout);
+		getLayout().setNode(this);
+		setDirty(true);
 	}
 	
 	public NodeLayout getLayout(){
-		return (NodeLayout)layout;
+		return (NodeLayout)super.getLayout();
 	}
 	
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
-	public void update() {
+	public void refresh() {
 	
-		Point2D.Float centre = ((NodeLayout)layout).getLocation();
-				
-		// FIXME make sure this updates the bounds without having to draw the label first.
-		label.updateLayout(layout.getText(), centre);
+		Point2D.Float centre = getLayout().getLocation();
+			
+		label.updateLayout(getLayout().getText(), centre);
 		
 		// compute new radius
 		Rectangle labelBounds = label.bounds();
 		float radius = Math.max(labelBounds.width/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
-		((NodeLayout)layout).setRadius(radius);
-		radius=((NodeLayout)layout).getRadius();
+		getLayout().setRadius(radius);
+		radius=getLayout().getRadius();
 		recomputeEdges();
 		
 		// upper left corner, width and height
@@ -99,14 +99,14 @@ public class Node extends GraphElement {
 			// The point on the edge of the circle:
 			// centre point - arrow vector
 			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
-			Point2D.Float dir = new Point2D.Float(((NodeLayout)layout).getArrow().x, ((NodeLayout)layout).getArrow().y);			
-			float offset = ((NodeLayout)layout).getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
+			Point2D.Float dir = new Point2D.Float(getLayout().getArrow().x, getLayout().getArrow().y);			
+			float offset = getLayout().getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
 			arrow2 = Geometry.subtract(c, Geometry.scale(dir, offset));
 			arrow = new ArrowHead(dir, arrow2);					
 			// ??? How long should the shaft be?
 			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}
-		super.update();					
+		super.refresh();					
 	}
 	
 	/**
@@ -131,8 +131,8 @@ public class Node extends GraphElement {
 	 */
 	public void draw(Graphics g) {
 		if(isDirty()){
-			update();
-			layout.setDirty(false);
+			refresh();
+			getLayout().setDirty(false);
 		}
 		
 		// only calls draw on all of the outgoing edges
@@ -151,11 +151,11 @@ public class Node extends GraphElement {
 		
 		
 		if (isSelected()){
-			g.setColor(layout.getSelectionColor());
+			g.setColor(getLayout().getSelectionColor());
 		}else if(isHighlighted()){
-			g.setColor(layout.getHighlightColor());			
+			g.setColor(getLayout().getHighlightColor());			
 		}else{
-			g.setColor(layout.getColor());	
+			g.setColor(getLayout().getColor());	
 		}
 		
 		Graphics2D g2d = (Graphics2D)g;
@@ -219,7 +219,7 @@ public class Node extends GraphElement {
 	
 	public void translate(float x, float y){
 		super.translate(x,y);		
-		update();
+		refresh();
 	}
 	
 	public void showPopup(Component context){
@@ -326,7 +326,7 @@ public class Node extends GraphElement {
 			}
 			
 			// Now for the label
-			if (layout.getText() != null)
+			if (getLayout().getText() != null)
 			{
 				exportString += "  " 
 					+ label.createExportString(selectionBox, exportType);
@@ -334,7 +334,7 @@ public class Node extends GraphElement {
 		}
 		else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS)
 		{	
-			// LENKO!!!
+			// LENKO ?
 		}
 
 		return exportString;
@@ -344,7 +344,7 @@ public class Node extends GraphElement {
 	 * NOTE super isDirty no longer checks children, assumes children set this.
 	 */
 	public boolean isDirty(){
-		return super.isDirty() || layout.isDirty();
+		return super.isDirty() || getLayout().isDirty();
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class Node extends GraphElement {
 	 * @return
 	 */
 	public float getRadius() {	
-		return ((NodeLayout)layout).getRadius();
+		return getLayout().getRadius();
 	}
 	
 	/**
@@ -392,7 +392,7 @@ public class Node extends GraphElement {
 	 */
 	public Rectangle getSquareBounds()
 	{
-		Point2D.Float nodeLocation = layout.getLocation();
+		Point2D.Float nodeLocation = getLayout().getLocation();
 		float radius = getRadius();
 		
 		// Node location is at the centre of the circle

@@ -20,10 +20,10 @@ public class SelfLoopHandler extends EdgeHandler {
 	 */
 	public SelfLoopHandler(SelfLoop edge) {
 		super(edge);
-		update();		
+		refresh();		
 	}
 	
-	public void update()
+	public void refresh()
 	{
 		double d = 2 * RADIUS;
 		anchor = new Ellipse2D.Double(getEdge().getLocation().x - RADIUS, getEdge().getLocation().y - RADIUS, d, d);

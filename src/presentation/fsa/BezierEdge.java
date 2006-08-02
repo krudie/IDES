@@ -45,8 +45,8 @@ public class BezierEdge extends Edge {
 	 */
 	public BezierEdge(BezierLayout layout, Node source){
 		super(source);		
-		this.layout = layout;
-		layout.setEdge(this);		
+		setLayout(layout);		
+		setHandler(new BezierHandler(this));		
 		arrowHead = new ArrowHead();		   
 		setDirty(true);
 	}
@@ -62,9 +62,20 @@ public class BezierEdge extends Edge {
 			
 		super(source, target, t);
 		
-		this.layout = layout;
-		layout.setEdge(this);
-		
+		setHandler(new BezierHandler(this));		
+		setLayout(layout);		
+		arrowHead = new ArrowHead();		
+		setDirty(true);
+	}
+
+	/**
+	 * @param source
+	 * @param source2
+	 */
+	public BezierEdge(Node source, Node target) {
+		super(source, target);
+		setHandler(new BezierHandler(this));
+		setLayout(new BezierLayout());		
 		arrowHead = new ArrowHead();		
 		setDirty(true);
 	}
@@ -75,9 +86,9 @@ public class BezierEdge extends Edge {
 		}
 		
 		if(isDirty()){
-			update();
-			getHandler().update();			
-			layout.setDirty(false);
+			refresh();
+			getHandler().refresh();			
+			getLayout().setDirty(false);
 		}
 	
 		Graphics2D g2d = (Graphics2D)g;		
@@ -87,13 +98,13 @@ public class BezierEdge extends Edge {
 				getSource().isHighlighted() || 
 				getTarget() != null && getTarget().isHighlighted()){
 			setHighlighted(true);
-			g2d.setColor(layout.getHighlightColor());
+			g2d.setColor(getLayout().getHighlightColor());
 		}else{
-			g2d.setColor(layout.getColor());
+			g2d.setColor(getLayout().getColor());
 		}		
 		
 		if(isSelected()){
-			g2d.setColor(layout.getSelectionColor());
+			g2d.setColor(getLayout().getSelectionColor());
 			getHandler().setVisible(true);
 		}else{
 			//handler.setVisible(false); // KLUGE to clean up after modify edge tool
@@ -122,8 +133,8 @@ public class BezierEdge extends Edge {
 	/**
 	 * Updates my visualization of curve, arrow and label.
 	 */
-	public void update() {		
-		super.update();
+	public void refresh() {		
+		super.refresh();
 		CubicCurve2D.Float curve = getLayout().getCubicCurve();
 //		 DEBUG
 		assertAllPointsNumbers(curve);		
@@ -139,7 +150,7 @@ public class BezierEdge extends Edge {
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    Point2D midpoint = left.getP2();	    
 	    this.setLocation(midpoint);
-	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), layout.getLabelOffset());	    
+	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), getLayout().getLabelOffset());	    
 	    getLabel().setLocation(location);
 	    
 	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
@@ -248,17 +259,17 @@ public class BezierEdge extends Edge {
 
 	
 	
-	/**
-	 * Returns the bounding rectangle with P1 and P2 as vertices.
-	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
-	 */
-	public Rectangle2D bounds(){				
-		CubicCurve2D curve = getLayout().getCubicCurve();
-		return new Rectangle2D.Float((float)Math.min(curve.getX1(), curve.getX2()),
-					  				(float)Math.min(curve.getY1(), curve.getY2()),					  				
-					  				(float)Math.abs(curve.getX2() - curve.getX1()), 
-					  				(float)Math.abs(curve.getY2() - curve.getY1()));	
-	}
+//	/**
+//	 * Returns the bounding rectangle with P1 and P2 as vertices.
+//	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
+//	 */
+//	public Rectangle2D bounds(){				
+//		CubicCurve2D curve = getLayout().getCubicCurve();
+//		return new Rectangle2D.Float((float)Math.min(curve.getX1(), curve.getX2()),
+//					  				(float)Math.min(curve.getY1(), curve.getY2()),					  				
+//					  				(float)Math.abs(curve.getX2() - curve.getX1()), 
+//					  				(float)Math.abs(curve.getY2() - curve.getY1()));	
+//	}
 
 	
 
@@ -268,17 +279,17 @@ public class BezierEdge extends Edge {
 	 */
 	private void setLayout(BezierLayout layout) {
 		super.setLayout(layout);
-		layout.setEdge(this);
-		update();
+		getLayout().setEdge(this);
+		setDirty(true);
 	}
 	
 	// TODO get rid of this method
 	public BezierLayout getLayout(){
-		return (BezierLayout)layout;
+		return (BezierLayout)super.getLayout();  // FIXME ClassCastException
 	}
 	
 	public void translate(float x, float y){		
-		BezierLayout l = (BezierLayout)layout;
+		BezierLayout l = (BezierLayout)getLayout();
 		CubicCurve2D.Float curve = l.getCubicCurve();
 		if(l.isRigidTranslation()){			
 		// Translate the whole curve assuming that its
@@ -390,7 +401,7 @@ public class BezierEdge extends Edge {
 			}
 			
 			// Now for the label
-			if ((layout.getText() != null) && (getLabel().getText().length() > 0))
+			if ((getLayout().getText() != null) && (getLabel().getText().length() > 0))
 			{
 				exportString += "  " 
 					+ getLabel().createExportString(selectionBox, exportType);
@@ -412,7 +423,7 @@ public class BezierEdge extends Edge {
 	 * 
 	 * @author Sarah-Jane Whittaker
 	 */
-	public Rectangle getCurveBounds()
+	public Rectangle bounds()
 	{
 		Point2D.Float edgeP1 = getP1();
 		Point2D.Float edgeP2 = getP2();

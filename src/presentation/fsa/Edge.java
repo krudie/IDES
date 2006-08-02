@@ -42,8 +42,6 @@ public abstract class Edge extends GraphElement{
 		this.target = target;
 		this.label = new GraphLabel("");		
 		insert(label);
-	    this.handler = new EdgeHandler(this);
-	    insert(handler);
 	}
 	
 	/**
@@ -54,6 +52,22 @@ public abstract class Edge extends GraphElement{
 	 * @return
 	 */
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
+	
+	
+	/**
+	 * Sets the handler for this edge with <code>handler</code>. 
+	 * Replace the current edge handler (if exist) with the <code>handler</code>. 
+	 * 
+	 * @param handler
+	 */
+	public void setHandler(EdgeHandler handler) {
+		if(this.handler != null)  
+		{
+			remove(this.handler);
+		}
+		this.handler = handler;
+		this.insert(handler);
+	}
 	
 	public EdgeHandler getHandler() {
 		return handler;
@@ -111,9 +125,9 @@ public abstract class Edge extends GraphElement{
 
 	public Long getId(){
 		if(!transitions.isEmpty()){
-			return new Long(transitions.get(0).getId());
+			return transitions.get(0).getId();
 		}
-		return null;
+		return super.getId();
 	}
 	
 	public void showPopup(Component c){
@@ -128,5 +142,14 @@ public abstract class Edge extends GraphElement{
 		this.remove(this.label);
 		this.insert(label);
 		this.label = label;
+	}
+
+	/**
+	 * @param symbol
+	 */
+	public void addEventName(String symbol) {
+		// TODO create an EdgeLayout class that will add the given symbol
+		// to the layout and extend to BezierLayout.
+		
 	}
 }

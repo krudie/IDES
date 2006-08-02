@@ -98,9 +98,9 @@ public class SelectionTool extends DrawingTool {
 	 */
 	public void handleMousePressed(MouseEvent me) {		
 		
-		// Prepare to move a group of selected elements on drag event
+		// Prepare to move a group of multiple selected elements on drag event
 		// only if I have intersected the group.		
-		if(context.getCurrentSelection().hasMultipleElements() && context.getCurrentSelection().intersects(me.getPoint())) { 			
+		if(context.getSelectedGroup().size()>1 && context.getSelectedGroup().intersects(me.getPoint())) { 			
 			context.highlightCurrentSelection(true);
 			context.setTool(GraphDrawingView.MOVE);	
 			moving = true;
@@ -109,7 +109,7 @@ public class SelectionTool extends DrawingTool {
 		
 		// If an edge is selected and i have hit a control point handle
 		// start modifying the edge		
-		if(context.hasCurrentSelection() && context.getCurrentSelection().child(0) instanceof BezierEdge) { // KLUGE instanceof is YUCK
+		if(context.hasCurrentSelection() && context.getSelectedElement() instanceof BezierEdge) { // KLUGE instanceof is YUCK
 			context.setTool(GraphDrawingView.MODIFY);
 			context.getCurrentTool().handleMousePressed(me);
 			return;

@@ -3,23 +3,18 @@
  */
 package ui.tools;
 
-import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.geom.Point2D.Float;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D.Float;
 
 import main.Hub;
-
-import presentation.PresentationElement;
+import presentation.GraphicalLayout;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierHandler;
-import presentation.fsa.EdgeHandler;
-import presentation.GraphicalLayout;
 import presentation.fsa.GraphDrawingView;
-import presentation.fsa.SelectionGroup;
-
+import presentation.fsa.GraphElement;
 import ui.command.EdgeCommands.ModifyEdgeCommand;
 
 /**
@@ -48,7 +43,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		// FIXME If an edge was just selected by SelectionTool,
 		// use it, don't lose it.
 		if(context.hasCurrentSelection()){
-			BezierEdge temp = getEdge(context.getCurrentSelection());
+			BezierEdge temp = getEdge(context.getSelectedElement());
 			if( temp != null )
 			{
 				edge = temp;		
@@ -65,7 +60,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		context.clearCurrentSelection();
 		context.updateCurrentSelection(m.getPoint());
 		if(context.hasCurrentSelection()){
-			BezierEdge temp = getEdge(context.getCurrentSelection());
+			BezierEdge temp = getEdge(context.getSelectedElement());
 			if( temp != null )
 			{
 				edge = temp;
@@ -81,9 +76,9 @@ public class ModifyEdgeTool extends DrawingTool {
 		context.repaint();
 	}
 		
-	private BezierEdge getEdge(SelectionGroup selection){
+	private BezierEdge getEdge(GraphElement selection){
 		try{
-			BezierEdge temp = (BezierEdge)selection.child(0);
+			BezierEdge temp = (BezierEdge)selection;
 			return temp;								
 		}catch(ClassCastException cce){
 			return null;
@@ -119,7 +114,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	public void handleMouseDragged(MouseEvent m) {
 		// came from selection tool
 		if(edge == null && context.hasCurrentSelection()){
-			edge = getEdge(context.getCurrentSelection());
+			edge = getEdge(context.getSelectedElement());
 			if(edge != null){
 				prepareToDrag(m.getPoint());
 			}else{
@@ -128,8 +123,10 @@ public class ModifyEdgeTool extends DrawingTool {
 		}
 		
 		if(dragging){
-			// set the selected control point to the current location			
-			edge.setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
+			// set the selected control point to the current location
+			// KLUGE treat everything (i.e. SelfLoops) as Beziers for now. 
+			// May need to have SelfLoop extend BezierEdge.
+			((BezierEdge)edge).setPoint(new Float(m.getPoint().x, m.getPoint().y), pointType);			
 			context.repaint();			
 		}
 	}

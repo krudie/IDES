@@ -152,7 +152,7 @@ public class GraphCommands {
 				context.getGraphModel().addNode(new Float(location.x, location.y));
 				break;
 			case NODE_AND_EDGE:				
-				context.getGraphModel().finishEdgeAndAddNode(edge, new Float(location.x, location.y));							
+				context.getGraphModel().finishEdgeAndCreateTargetNode(edge, new Float(location.x, location.y));				
 				break;
 			case EDGE:
 				context.getGraphModel().finishEdge(edge, target);				
@@ -200,7 +200,7 @@ public class GraphCommands {
 				return null;
 			}else{
 				// finalize movement of current selection in graph model
-				context.getGraphModel().saveMovement(context.getCurrentSelection());
+				context.getGraphModel().saveMovement(context.getSelectedGroup());
 				// TODO create an UndoableEdit object using displacement and 
 				// copy of currentSelection.
 
@@ -394,15 +394,15 @@ public class GraphCommands {
 			if(Hub.getWorkspace().getActiveModel()==null)
 				return;
 			Iterator i;
-			if(context.getCurrentSelection().size()>0)
-				i=context.getCurrentSelection().children();
+			if(context.getSelectedGroup().size()>0)
+				i=context.getSelectedGroup().children();
 			else
 				i=context.getGraphModel().getGraph().children();
 			while(i.hasNext())
 			{
 				GraphElement ge=(GraphElement)i.next();
 				ge.getLayout().snapToGrid();
-				ge.update();
+				ge.refresh();
 			}
 			context.getGraphModel().notifyAllSubscribers();
 		}

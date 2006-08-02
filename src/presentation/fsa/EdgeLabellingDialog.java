@@ -416,7 +416,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	}
 
 	public void setEdge(Edge e){
-		this.edge = edge;
+		this.edge = e;
 		if(edge != null){
 			update();
 		}else{
@@ -432,7 +432,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	}
 	
 	// Data
-	private BezierEdge edge;
+	private Edge edge;
 	private Event newEvent;		
 	private Event selectedEvent;
 	private boolean inserted=false;

@@ -35,7 +35,7 @@ public class TextTool extends DrawingTool {
 		}
 		// get current selection
 		if(context.updateCurrentSelection(me.getPoint())){			
-			new GraphCommands.TextCommand(context, (GraphElement)context.getCurrentSelection().child(0)).execute();			
+			new GraphCommands.TextCommand(context, context.getSelectedElement()).execute();			
 		}else{
 			// if nothing selected
 			// create a free label

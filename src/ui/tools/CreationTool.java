@@ -4,13 +4,16 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 
 import main.Hub;
 
 import presentation.fsa.BezierEdge;
+import presentation.fsa.BezierLayout;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.Node;
+import presentation.fsa.NodeLayout;
 import ui.command.GraphCommands.CreateCommand;
 
 /**
@@ -80,15 +83,17 @@ public class CreationTool extends DrawingTool {
 		cmd = null;
 
 		if(context.updateCurrentSelection(me.getPoint())){
-			try{		
-				startNode = (Node)context.getCurrentSelection().child(0);
+			//try{		
+				startNode = (Node)context.getSelectedElement();
 				if(!drawingEdge){
 					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
 					dragging = true; // assume we're dragging until mouse released decides otherwise.
+					return;
 				}
-			}catch(ClassCastException e){
+			//}catch(ClassCastException e){
+				//Hub.displayAlert(e.getMessage());
 				startNode = null;
-			}
+			//}
 		}		
 	}
 
@@ -99,7 +104,7 @@ public class CreationTool extends DrawingTool {
 			endNode = null;
 			if(context.updateCurrentSelection(me.getPoint())){
 				try{		
-					endNode = (Node)context.getCurrentSelection().child(0);
+					endNode = (Node)context.getSelectedElement();
 				}catch(ClassCastException e){}
 			}				
 			
@@ -170,7 +175,10 @@ public class CreationTool extends DrawingTool {
 		cmd = new CreateCommand(context,
 				CreateCommand.NODE_AND_EDGE, edge, point);				
 		cmd.execute();
+		// IDEA Don't keep a copy of the temp edge in this class, just use the get and set in context.
+		// TODO not just call abortEdge here and have it do all the work (duplicate code here and in finishEdge).
 		edge = null;
+		context.setTempEdge(null);
 		drawingEdge = false;
 		dragging = false;
 		sourceNode = null;
@@ -184,8 +192,42 @@ public class CreationTool extends DrawingTool {
 	private void startEdge() {
 		sourceNode = startNode;
 		targetNode = null;
-		edge = context.getGraphModel().beginEdge(sourceNode);				
+		edge = beginEdge(sourceNode); //context.getGraphModel().beginEdge(sourceNode);				
 		drawingEdge = true;		
+	}
+	
+	/**
+	 * Creates and returns an Edge with source node <code>n1</code>, 
+	 * undefined target node, and terminating at the centre of node <code>n1</code>.
+	 * 
+	 * @param n1 source node
+	 * @return a new Edge with source node n1
+	 */
+	private BezierEdge beginEdge(Node n1){
+		BezierLayout layout = new BezierLayout();
+		BezierEdge e = new BezierEdge(layout, n1);
+		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());
+		context.setTempEdge(e);
+//		n1.insert(e);
+		return e;
+	}
+	
+	
+	/**
+	 * Updates the layout for the given edge so it extends to the given target point.
+	 * 
+	 * @param e the Edge to be updated
+	 * @param p the target point
+	 */
+	private void updateEdge(BezierEdge e, Point2D.Float p){		
+		NodeLayout s = e.getSource().getLayout();
+		// only draw the edge if the point is outside the bounds of the source node
+		if( ! e.getSource().intersects(p) ){
+			e.computeCurve(s, p);
+			e.setVisible(true);
+		}else{
+			e.setVisible(false);
+		}
 	}
 	
 	/**
@@ -196,6 +238,7 @@ public class CreationTool extends DrawingTool {
 		cmd = new CreateCommand(context, CreateCommand.EDGE, edge, targetNode);
 		cmd.execute();
 		edge = null;
+		context.setTempEdge(null);
 		drawingEdge = false;
 		dragging = false;		
 		sourceNode = null;
@@ -214,12 +257,11 @@ public class CreationTool extends DrawingTool {
 		return drawingEdge;
 	}
 	
-	/**
-	 * 
-	 */
 	public void abortEdge() {
-		if(drawingEdge){
-			context.getGraphModel().abortEdge(edge);
+		if(drawingEdge){			
+			// context.getGraphModel().abortEdge(edge);
+			// TODO garbage collect edge
+			context.setTempEdge(null);
 			drawingEdge = false;			
 		}
 		aborted = true;		
@@ -229,7 +271,8 @@ public class CreationTool extends DrawingTool {
 	public void handleMouseDragged(MouseEvent me) {
 		// if drawing an edge, recompute the curve
 		if(dragging && drawingEdge){
-			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
+			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
+			//context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			context.repaint();
 		}
 	}
@@ -237,8 +280,9 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseMoved(MouseEvent me) {
 		// if drawing an edge, recompute the curve
-		if(!dragging && drawingEdge){			
-			context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));			
+		if(!dragging && drawingEdge){
+			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
+			//context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));			
 			context.repaint();
 		}
 	}

@@ -24,11 +24,12 @@ public class EdgeHandler extends GraphElement {
 	public EdgeHandler(Edge edge) {		
 		this.edge = edge;
 		setParent(edge);
-		update();
+		setDirty(true);
+		//update();
 	}
 		
 	/**
-	 * TODO this doesn't make much sense.
+	 * FIXME this doesn't make much sense.
 	 */
 	public Rectangle2D bounds() {	
 		return edge.bounds();

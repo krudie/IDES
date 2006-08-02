@@ -30,7 +30,7 @@ public class MovementTool extends DrawingTool {
 		prev = start;
 		
 		// a group has been selected, move the whole thing
-		if(context.hasCurrentSelection() && context.getCurrentSelection().hasMultipleElements()){
+		if(context.hasCurrentSelection() && context.getSelectedGroup().size()>1){
 			// FIXME What if user clicks outside the selection group?
 			dragging = true;
 		}else{ // otherwise update the currently selected element
@@ -53,7 +53,7 @@ public class MovementTool extends DrawingTool {
 			return;
 		}		
 		next = me.getPoint();
-		context.getCurrentSelection().translate(next.x - prev.x, next.y - prev.y);		
+		context.getSelectedGroup().translate(next.x - prev.x, next.y - prev.y);		
 		prev = next;
 		context.repaint();
 	}	
@@ -72,7 +72,7 @@ public class MovementTool extends DrawingTool {
 				// save the set of selected objects for undo purposes
 				// NOTE: must make COPIES of all references in the selection group		
 				MoveCommand moveCmd = new MoveCommand(context, 
-													context.getCurrentSelection(), 
+													context.getSelectedGroup(), 
 													displacement);		
 				moveCmd.execute();
 			}			
@@ -85,7 +85,7 @@ public class MovementTool extends DrawingTool {
 		end = null;
 		
 		// don't deselect groups of multiple elements since user may wish to revise movement
-		if( ! context.getCurrentSelection().hasMultipleElements() ){
+		if( ! (context.getSelectedGroup().size()>1) ){
 			context.clearCurrentSelection();			
 			context.updateCurrentSelection(me.getPoint());
 		}

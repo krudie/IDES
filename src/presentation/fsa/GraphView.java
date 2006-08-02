@@ -74,12 +74,12 @@ public class GraphView extends JComponent implements Subscriber {
 	 * Refresh my visual model from GraphModel.
 	 */
 	public void update() {
-		if(graphModel != null){
-			graph = graphModel.getGraph();
+		if(getGraphModel() != null){
+			graph = getGraphModel().getGraph();
 		}else{
 			graph = new GraphElement();
 		}
-		if(getGraphModel()!=null)
+		if(getGraphModel()!=null)  // Why can't this be moved into first case above?
 		{
 			graphBounds=getGraphModel().getBounds(true);
 			if(graphBounds.x<0||graphBounds.y<0)

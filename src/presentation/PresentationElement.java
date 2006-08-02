@@ -38,16 +38,13 @@ public interface PresentationElement {
 	public boolean intersects(Point2D p);
 	
 	/**
-	 * Inserts the given child into my list at the given index, overwrites
+	 * Inserts the given child into my list at the given key, overwrites
 	 * any other element in that position.
 	 * 
-	 * FIXME It is not great to index the children in this way.
-	 * Should I hash them instead?
-	 * 
 	 * @param child the child to be added
-	 * @param index the index at which to insert the child
+	 * @param key the key at which to insert the child
 	 */
-	public void insert(PresentationElement child, long index);
+	//public void insert(PresentationElement child, long key);
 	
 	/**
 	 * Inserts the given child element.
@@ -64,10 +61,10 @@ public interface PresentationElement {
 	public void remove(PresentationElement child);
 	
 	/** 
-	 * @param index
-	 * @return the child at the given index, null if does not exist
+	 * @param key
+	 * @return the child at the given key, null if does not exist
 	 */
-	public PresentationElement child(long index);
+	public PresentationElement child(long key);
 	
 	/** 
 	 * @return the parent of this element, null if does not exist
@@ -103,12 +100,14 @@ public interface PresentationElement {
 	
 	public void setLocation(Point2D p);	
 	
+	public Point2D.Float getLocation();
+	
 	public void setDirty(boolean b);
 	
 	public boolean isDirty();
 
-	public void update();
-
-	public Point2D.Float getLocation();
+	public void refresh();	
+	
+	public Long getId();
 	
 }

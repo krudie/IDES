@@ -69,7 +69,7 @@ public class SelfLoop extends Edge {
 	{
 		if(isDirty()){		
 			computeCurve();
-			super.update();
+			super.refresh();
 		}
 		
 		// TODO implement

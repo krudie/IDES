@@ -104,7 +104,7 @@ public class LayoutDataParser extends AbstractParser {
                 NodeLayout nL=getLayoutData(s);
     			// TODO nL.setUniformRadius(graph.uniformR);    			
                 Node node = new Node(s, nL);
-                graph.insert(node, s.getId());
+                graph.insert(node);
                 ////////////////////////////////////////////////////
                                 
                 state = STATE_IDLE;
@@ -129,14 +129,13 @@ public class LayoutDataParser extends AbstractParser {
                 graphic.setName(ELEMENT_GRAPHIC);
                 
                 // TODO don't store layout data in the Automaton
-                t.addSubElement(graphic);
-            
+                t.addSubElement(graphic);            
 
                 BezierLayout layout = getLayoutData(t);
                 
                 // TEST make sure there are no GraphLabels hashed as the same child.
-    			Node n1 = (Node)graph.child(new Long(t.getSource().getId()));
-    			Node n2 = (Node)graph.child(new Long(t.getTarget().getId()));
+    			Node n1 = (Node)graph.child(t.getSource().getId());
+    			Node n2 = (Node)graph.child(t.getTarget().getId());
     			
     			// if the edge corresponding to t already exists,
     			// add t to the edge's set of transitions
@@ -154,9 +153,9 @@ public class LayoutDataParser extends AbstractParser {
     				}
     				
     				// add this edge to source and target nodes' children
-    				Long ID = new Long(id);
-    				n1.insert(e, ID);				
-    				n2.insert(e, ID);    				
+    				//Long ID = new Long(id);
+    				n1.insert(e);				
+    				n2.insert(e);    				
     			}               
                 
                 ////////////////////////////////////////////////////

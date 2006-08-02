@@ -53,9 +53,6 @@ import ui.MainWindow;
  * * currently selected object in the drawing area,
  * * copy and cut buffers.
  * 
- * TODO override setName to set name of parent component (i.e. scrollpane) so the name
- * will appear in the tabbed pane or title area of frame?
- * OR define a custom (decorated) scrollpane for this component that sets its name to the name of this component.
  * 
  * @author helen bretzke
  *
@@ -92,29 +89,16 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 */
 	private Rectangle selectionArea;
 	
-	// ??? Do I really need these buffers?  
-	// Won't associated elements be stored with most recently executed commands in the history?
+	/**
+	 * Temporary edge for use while creating new edge.
+	 */
+	private Edge tempEdge;	
 	
 	/**
-	 * Copy buffer
+	 * Currently selected group of 0 or more elements
 	 */
-	private PresentationElement copyBuffer;
+	private SelectionGroup selectedGroup;	
 	
-	/**
-	 * Cut buffer 
-	 */
-	private PresentationElement cutBuffer;
-	
-	/**
-	 * Delete and restore buffer
-	 */
-	private PresentationElement deleteBuffer;
-	
-	
-	/**
-	 * Currently selected group or item.
-	 */
-	private SelectionGroup currentSelection;
 	private GraphElement hoverElement;
 	
 	/**
@@ -129,11 +113,11 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			if(currentSelection!=null)
+			if(selectedGroup!=null)
 			{
 				if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
 					((CreationTool)drawingTools[CREATE]).abortEdge();
-				for(Iterator i=currentSelection.children();i.hasNext();)
+				for(Iterator i=selectedGroup.children();i.hasNext();)
 				{
 					GraphElement ge=(GraphElement)i.next();
 					graphModel.remove(ge);
@@ -154,7 +138,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		nodesControl=new UniformNodesCommand();
 		nodesControl.export();
 		
-		currentSelection = new SelectionGroup();
+		selectedGroup = new SelectionGroup();
 		selectionArea = new Rectangle();
 		hoverElement = null;
 		
@@ -266,34 +250,21 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 		// DEBUG
 		//System.err.println(selectionArea.getSize() + " " + selectionArea.getLocation());		
 		//g2D.drawRect(selectionArea.x, selectionArea.y, selectionArea.width, selectionArea.height);
+		
+		if(tempEdge != null)
+		{
+			tempEdge.draw(g2D);
+		}
 		g2D.draw(selectionArea);		
 	}
 	
-	/**
-	 * Returns the set of currently selected elements in this view.
-	 * 
-	 * @return
-	 */
-	public SelectionGroup getCurrentSelection() {
-		return currentSelection;
-	}
-
-	/**
-	 * Precondition: <code>currentSelection</code> != null
-	 * 
-	 * @param currentSelection
-	 */
-	protected void setCurrentSelection(SelectionGroup currentSelection) {
-		this.currentSelection = currentSelection;
-	}	
-
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
 		arg0=tranformMouseCoords(arg0);
 		// Switch to labelling tool if we are not in creation mode
-		// NOTE conflict with double click paradigm in creation mode
+		// NOTE there is a conflict with double click paradigm in creation mode
 		// since don't know we've got a double click until after self-loop has been created.
-		// IDEA delay creation of self loops until we know if double clicked.
+		// SOLUTION delay creation of self loops until we know if double clicked.
 		// Don't finish edge on mouse released if target == source.
 		if(arg0.getClickCount() == 2 && currentTool != CREATE){
 			currentTool = TEXT;
@@ -364,24 +335,13 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	}
 
 	/**
-	 * 
-	 * @return true iff there is a current selection of elements
-	 */
-	public boolean hasSelection(){
-		return currentSelection.children().hasNext();
-	}
-	
-	/**
 	 * Deselects and un-highlights the set of selected elements. 
 	 */
-	public void clearCurrentSelection(){
-		//if(currentSelection != null){
-			currentSelection.setSelected(false);
-			currentSelection.setHighlighted(false);
-			//currentSelection = null;
-			currentSelection.clear();
-			selectionArea.setSize(0,0);			
-		//}
+	public void clearCurrentSelection(){		
+		selectedGroup.setSelected(false);
+		selectedGroup.setHighlighted(false);			
+		selectedGroup.clear();
+		selectionArea.setSize(0,0);			
 	}
 	
 	/**
@@ -392,11 +352,18 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * @return true iff something hit.
 	 */
 	public boolean updateCurrentSelection(Point point) {
-		if(graphModel != null){
+		if(graphModel != null)
+		{
+//			selectedElement = graphModel.getElementIntersectedBy(point); 
+//			if(selectedElement != null)
+//			{
+//				selectedElement.setSelected(true);
+//				return true; // selectedElement != null;
+//			}
 			GraphElement el = graphModel.getElementIntersectedBy(point);
 			if(el != null){				
-				currentSelection.insert(el);
-				currentSelection.setSelected(true);
+				selectedGroup.insert(el);
+				selectedGroup.setSelected(true);
 				return true;
 			}
 		}
@@ -408,12 +375,11 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * 
 	 * @param rectangle
 	 */
-	public void updateCurrentSelection(Rectangle rectangle){
-		// IDEA make a GraphElement called Group (see EdgeGroup in Ver1 & 2)
-		// that sets highlight(boolean) on all of its elements.
-		if(graphModel != null){
-			currentSelection = graphModel.getElementsContainedBy(rectangle);
-			currentSelection.setSelected(true);			
+	public void updateCurrentSelection(Rectangle rectangle){		
+		if(graphModel != null)
+		{
+			selectedGroup = graphModel.getElementsContainedBy(rectangle);
+			selectedGroup.setSelected(true);			
 		}
 	}
 
@@ -422,13 +388,59 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * 
 	 * @param b boolean flag to toggle highlighting
 	 */
-	public void highlightCurrentSelection(boolean b){
-		//if(currentSelection != null){
-			currentSelection.setHighlighted(b);
-			currentSelection.setSelected(!b);
-		//}
+	public void highlightCurrentSelection(boolean b){			
+		selectedGroup.setHighlighted(b);
+		selectedGroup.setSelected(!b);		
 	}	
 	
+	/**
+	 * 
+	 * @return true iff there is a current selection of elements
+	 */
+	public boolean hasSelection(){
+		return selectedGroup.hasChildren();  // selectedElement != null || 
+	}
+
+	protected void setSelectedElement(GraphElement selectedElement) {
+		//this.selectedElement = selectedElement;
+		selectedGroup.clear();
+		selectedGroup.insert(selectedElement);
+	}
+
+	/**
+	 * Precondition: <code>currentSelection</code> != null
+	 * 
+	 * @param currentSelection
+	 */
+	protected void setSelectedGroup(SelectionGroup currentSelection) {
+		this.selectedGroup = currentSelection;
+//		if(selectedGroup.hasChildren() && !selectedGroup.hasMultipleElements())
+//		{
+//			selectedElement = (GraphElement)selectedGroup.children().next();
+//		}
+	}
+
+	/**
+	 * Returns the set of currently selected elements in this view.
+	 * 
+	 * @return
+	 */
+	public SelectionGroup getSelectedGroup() {
+		return selectedGroup;
+	}
+
+	/**	 
+	 * @return If exist, the single element currently selected
+	 * otherwise returns null
+	 */
+	public GraphElement getSelectedElement() {
+		if(selectedGroup.size() == 1)
+		{
+			return (GraphElement)selectedGroup.children().next();  //selectedElement;
+		}
+		return null;
+	}
+
 	public Rectangle getSelectionArea() {
 		return selectionArea;
 	}	
@@ -462,7 +474,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	 * @return true iff there are elements in the currentSelection
 	 */
 	public boolean hasCurrentSelection() {		
-		return currentSelection.hasChildren();
+		return selectedGroup.hasChildren();
 	}
 	
 	protected MouseEvent tranformMouseCoords(MouseEvent e)
@@ -504,4 +516,13 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 	public DrawingTool getCurrentTool() {		
 		return drawingTools[currentTool];
 	}
+
+	public Edge getTempEdge() {
+		return tempEdge;
+	}
+
+	public void setTempEdge(Edge tempEdge) {
+		this.tempEdge = tempEdge;
+	}	
+	
 }

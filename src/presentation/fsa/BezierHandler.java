@@ -44,7 +44,7 @@ public class BezierHandler extends EdgeHandler {
 	/**
 	 * Update my layout information from my getEdge().
 	 */
-	public void update() {
+	public void refresh() {
 		// upper left corner, width and height
 		int d = 2*RADIUS;
 		anchors[BezierLayout.P1] = new Ellipse2D.Double(getEdge().getP1().x - RADIUS, getEdge().getP1().y - RADIUS, d, d); 
@@ -55,7 +55,7 @@ public class BezierHandler extends EdgeHandler {
 	}
 	
 	public void draw(Graphics g) {
-		if(isDirty()) update();
+		if(isDirty()) refresh();
 		
 		if(visible){
 			Graphics2D g2d = (Graphics2D)g;

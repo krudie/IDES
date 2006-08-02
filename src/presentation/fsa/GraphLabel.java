@@ -51,7 +51,7 @@ public class GraphLabel extends GraphElement {
 	
 	
 	public GraphLabel(String text){
-		layout = new GraphicalLayout(text);
+		setLayout(new GraphicalLayout(text));
 		// TODO change to a dynamic value read from a config file and stored in 
 		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
@@ -59,7 +59,7 @@ public class GraphLabel extends GraphElement {
 	}
 	
 	public GraphLabel(GraphicalLayout layout){		
-		this.layout = layout;		
+		setLayout(layout);		
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class GraphLabel extends GraphElement {
 	 */
 	public GraphLabel(String text, Point2D location){
 		this(text);		
-		layout.setLocation((float)location.getX(), (float)location.getY());		
+		getLayout().setLocation((float)location.getX(), (float)location.getY());		
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class GraphLabel extends GraphElement {
 		
 		if(LatexManager.isLatexEnabled())
 		{
-			if(!visible||"".equals(layout.getText()))
+			if(!visible||"".equals(getLayout().getText()))
 			{	return; }
 			try
 			{
@@ -115,11 +115,11 @@ public class GraphLabel extends GraphElement {
 		else
 		{					
 			if(highlighted){
-				g.setColor(layout.getHighlightColor());
+				g.setColor(getLayout().getHighlightColor());
 			}else if(selected){
-				g.setColor(layout.getSelectionColor());
+				g.setColor(getLayout().getSelectionColor());
 			}else{
-				g.setColor(layout.getColor());
+				g.setColor(getLayout().getColor());
 			}
 			drawText(g);				
 		}		
@@ -162,20 +162,20 @@ public class GraphLabel extends GraphElement {
 		Rectangle textBounds = bounds();
 		
 		int x = BentoBox.convertDoubleToInt(
-			layout.getLocation().x - 
+			getLayout().getLocation().x - 
 				(textMetricsWidth / DBL_NOT_RENDERED_SCALE_WIDTH));
 		int y = BentoBox.convertDoubleToInt(
-			layout.getLocation().y +
+			getLayout().getLocation().y +
 				(textMetricsHeight / DBL_NOT_RENDERED_SCALE_HEIGHT));			
 				
-		g.drawString(layout.getText(), x, y);
+		g.drawString(getLayout().getText(), x, y);
 	}
 
 	/**
 	 * @return
 	 */
 	String getText() {
-		return layout.getText();
+		return getLayout().getText();
 	}
 
 	/**
@@ -183,11 +183,11 @@ public class GraphLabel extends GraphElement {
 	 */
 	private void drawBorderAndTether(Graphics g) {	
 		if(selected){
-			g.setColor(layout.getSelectionColor());
+			g.setColor(getLayout().getSelectionColor());
 		}else if(highlighted){
-			g.setColor(layout.getHighlightColor());
+			g.setColor(getLayout().getHighlightColor());
 		}else{
-			g.setColor(layout.getColor());
+			g.setColor(getLayout().getColor());
 		}
 		
 		Rectangle border = bounds();
@@ -216,11 +216,11 @@ public class GraphLabel extends GraphElement {
 		
 		Rectangle labelBounds = new Rectangle();
 		
-		if(layout.getText().length() == 0){
+		if(getLayout().getText().length() == 0){
 			labelBounds.height = 0;
 			labelBounds.width = 0;
-			labelBounds.x = (int)layout.getLocation().x;
-			labelBounds.y = (int)layout.getLocation().y;
+			labelBounds.x = (int)getLayout().getLocation().x;
+			labelBounds.y = (int)getLayout().getLocation().y;
 		}
 		
 		if(LatexManager.isLatexEnabled())
@@ -239,10 +239,10 @@ public class GraphLabel extends GraphElement {
 			
 			// SJW - Now, update the x and y based on the width and height
 			labelBounds.x = BentoBox.convertDoubleToInt(
-				layout.getLocation().x - 
+				getLayout().getLocation().x - 
 					(labelBounds.width / DBL_RENDERED_SCALE_WIDTH));
 			labelBounds.y = BentoBox.convertDoubleToInt(
-				layout.getLocation().y - 
+				getLayout().getLocation().y - 
 					(labelBounds.height / DBL_RENDERED_SCALE_HEIGHT));
 		}
 		else
@@ -252,10 +252,10 @@ public class GraphLabel extends GraphElement {
 			
 			// SJW - Now, update the x and y based on the width and height
 			labelBounds.x = BentoBox.convertDoubleToInt(
-				layout.getLocation().x - 
+				getLayout().getLocation().x - 
 					(labelBounds.width / DBL_NOT_RENDERED_SCALE_WIDTH));
 			labelBounds.y = BentoBox.convertDoubleToInt(
-				layout.getLocation().y - 
+				getLayout().getLocation().y - 
 					(labelBounds.height / DBL_NOT_RENDERED_SCALE_HEIGHT));
 		}		
 
@@ -287,9 +287,9 @@ public class GraphLabel extends GraphElement {
 	public void setText(String s){
 		if(s==null)
 			s="";
-		if(!s.equals(layout.getText()))
+		if(!s.equals(getLayout().getText()))
 		{
-			layout.setText(s);
+			getLayout().setText(s);
 			if(LatexManager.isLatexEnabled())
 				try
 				{
@@ -315,7 +315,7 @@ public class GraphLabel extends GraphElement {
 	public void render() throws LatexRenderException
 	{
 		dirty=true;
-		String label=layout.getText();
+		String label=getLayout().getText();
 		if(label==null)
 			label="";
 		byte[] data=null;
@@ -363,7 +363,7 @@ public class GraphLabel extends GraphElement {
 	public String createExportString(Rectangle selectionBox, int exportType)
 	{
 		String exportString = "";
-		GraphicalLayout labelLayout = layout;
+		GraphicalLayout labelLayout = getLayout();
 		Rectangle labelBounds = bounds();
 		Node parentNode = null;
 		GraphicalLayout nodeLayout = null;
@@ -388,10 +388,10 @@ public class GraphLabel extends GraphElement {
 		
 		// Adjust the bounds for PSTricks export
 		labelBounds.x = BentoBox.convertDoubleToInt(
-			layout.getLocation().x - (layout.getLocation().x * 0.00001));
+			getLayout().getLocation().x - (getLayout().getLocation().x * 0.00001));
 		labelBounds.y = BentoBox.convertDoubleToInt(
-			layout.getLocation().y 
-				+ (layout.getLocation().y * layout.getLocation().y * 0.00002));
+			getLayout().getLocation().y 
+				+ (getLayout().getLocation().y * getLayout().getLocation().y * 0.00002));
 		
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
@@ -417,9 +417,9 @@ public class GraphLabel extends GraphElement {
 	public void updateLayout(String text, Point2D.Float location)
 	{
 		setText(text);
-		if(!location.equals(layout.getLocation()))
+		if(!location.equals(getLayout().getLocation()))
 		{
-			layout.setLocation(location.x,location.y);
+			getLayout().setLocation(location.x,location.y);
 			setDirty(true);
 		}
 	}
@@ -440,7 +440,7 @@ public class GraphLabel extends GraphElement {
 	 */
 	private void updateMetrics(FontMetrics metrics)
 	{		
-		textMetricsWidth = metrics.stringWidth( layout.getText() );
+		textMetricsWidth = metrics.stringWidth( getLayout().getText() );
 		textMetricsHeight = metrics.getHeight();
 	}
 	

@@ -34,8 +34,7 @@ public abstract class DrawingTool {
 		// get intersected element and display appropriate popup menu
 		context.clearCurrentSelection();
 		if(context.updateCurrentSelection(m.getPoint())){
-			SelectionGroup g = context.getCurrentSelection();			
-			((GraphElement)g.child(0)).showPopup(context);			
+			context.getSelectedElement().showPopup(context);			
 		}else{
 			// TODO Popup should allow us to change tools in the context
 		}

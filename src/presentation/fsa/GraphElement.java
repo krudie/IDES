@@ -18,14 +18,13 @@ import presentation.PresentationElement;
 
 
 public class GraphElement implements PresentationElement {
-	
+		
 	protected boolean visible = true;
 	protected boolean highlighted = false;
 	protected boolean selected = false;
 	protected boolean dirty = false;
-	
-	// TODO replace with all data and ops from GL class
-	protected GraphicalLayout layout;
+		
+	private GraphicalLayout layout;
 	
 	// my states and free labels
 	private HashMap<Long, PresentationElement> children;
@@ -78,13 +77,16 @@ public class GraphElement implements PresentationElement {
 	 * TEST Make certain that elements that have an id don't hash to
 	 * the same location as those that use a hashcode.
 	 */
-	public void insert(PresentationElement child, long index) {				
-		children.put(new Long(index), child);
-		child.setParent(this);
-	}
+//	public void insert(PresentationElement child, long key) {				
+//		children.put(new Long(key), child);
+//		child.setParent(this);
+//	}
 
+	/**
+	 * Inserts the given child at key <code>Object.hashCode()</code>.
+	 */
 	public void insert(PresentationElement child) {
-		children.put(new Long(child.hashCode()), child);	
+		children.put(child.getId(), child);	
 		child.setParent(this);
 	}
 	
@@ -92,16 +94,22 @@ public class GraphElement implements PresentationElement {
 		return children.containsValue(child);		
 	}
 	
+	/**
+	 * FIXME does this remove the given child or the child at the given key?
+	 */
 	public void remove(PresentationElement child) {
-		children.remove(child);
+		children.remove(child.getId());		
 	}
 
 	public void clear() {
 		children.clear();
 	}
 	
-	public PresentationElement child(long index) {
-		return children.get(new Long(index));		
+	/**
+	 * @returns the child at the given key
+	 */
+	public PresentationElement child(long key) {
+		return children.get(new Long(key));		
 	}
 
 	public Iterator children() { 
@@ -195,9 +203,9 @@ public class GraphElement implements PresentationElement {
 		return !children.isEmpty();
 	}
 
-	public void update(){
+	public void refresh(){
 		for(PresentationElement g : children.values()){
-			g.update();
+			g.refresh();
 		}
 		setDirty(false);
 	}
@@ -220,5 +228,12 @@ public class GraphElement implements PresentationElement {
 	 */
 	public Float getLocation() {		
 		return layout.getLocation();
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.PresentationElement#getId()
+	 */
+	public Long getId() {		
+		return (long)hashCode();
 	}
 }

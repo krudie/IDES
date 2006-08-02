@@ -61,19 +61,6 @@ public class SelectionGroup extends GraphElement {
 		PresentationElement p = e.getParent();
 		super.insert(e);
 		e.setParent(p);
-	}
+	}	
 	
-	/**
-	 * @return
-	 */
-	public boolean hasMultipleElements() {
-		if(hasChildren()){
-			try{
-				return this.child(1) != null;
-			}catch(IndexOutOfBoundsException ioobe){
-				return false;
-			}
-		}
-		return false;
-	}
 }

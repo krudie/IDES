@@ -73,6 +73,9 @@ public class AutomatonParser extends AbstractFileParser{
         catch(SAXException saxe){
             parsingErrors += file.getName() + ": " + saxe.getMessage() + "\n";
         }
+        catch(NullPointerException npe){
+        	parsingErrors += file.getName() + ": " + npe.getMessage() + "\n";
+        }
         state = STATE_IDLE;
         return a;
     }
@@ -249,7 +252,7 @@ public class AutomatonParser extends AbstractFileParser{
             }
             else{
                 parsingErrors += file.getName()
-                        + ": Wrong element endend while in state model.\n";
+                        + ": Wrong element ended while in state model.\n";
             }
         	break;
         case (STATE_DATA):
@@ -258,21 +261,21 @@ public class AutomatonParser extends AbstractFileParser{
             }
             else{
                 parsingErrors += file.getName()
-                        + ": Wrong element endend while in state data.\n";
+                        + ": Wrong element ended while in state data.\n";
             }
             break;
         case (STATE_STATE):
             if(qName.equals(ELEMENT_STATE)) state = STATE_DATA;
-            else parsingErrors += file.getName() + ": Wrong element endend while in state state.\n";
+            else parsingErrors += file.getName() + ": Wrong element ended while in state state.\n";
             break;
         case (STATE_TRANSITION):
             if(qName.equals(ELEMENT_TRANSITION)) state = STATE_DATA;
             else parsingErrors += file.getName()
-                    + ": Wrong element endend while in state transition.\n";
+                    + ": Wrong element ended while in state transition.\n";
             break;
         case (STATE_EVENT):
             if(qName.equals(ELEMENT_EVENT)) state = STATE_DATA;
-            else parsingErrors += file.getName() + ": Wrong element endend while in state event.\n";
+            else parsingErrors += file.getName() + ": Wrong element ended while in state event.\n";
             break;
         default:
             parsingErrors += file.getName() + ": encountered wrong state at end of element.\n";

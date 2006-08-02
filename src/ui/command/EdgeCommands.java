@@ -9,6 +9,7 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 import presentation.fsa.BezierEdge;
+import presentation.fsa.Edge;
 import presentation.GraphicalLayout;
 
 public class EdgeCommands {
@@ -57,7 +58,7 @@ public class EdgeCommands {
 
 	public static class ModifyEdgeCommand extends UndoableActionCommand {
 
-		private BezierEdge edge;
+		private Edge edge;
 		private GraphicalLayout previousLayout;
 		
 		public ModifyEdgeCommand(){
@@ -68,12 +69,12 @@ public class EdgeCommands {
 		 * @param edge2
 		 * @param previousLayout2
 		 */
-		public ModifyEdgeCommand(BezierEdge edge, GraphicalLayout previousLayout) {
+		public ModifyEdgeCommand(Edge edge, GraphicalLayout previousLayout) {
 			setEdge(edge);
 			setPreviousLayout(previousLayout);
 		}
 
-		public void setEdge(BezierEdge edge){
+		public void setEdge(Edge edge){
 			this.edge = edge;
 		}
 		
