@@ -4,7 +4,7 @@
 package observer;
 
 /**
- * @author helen
+ * @author helen bretzke
  *
  */
 public class WorkspaceMessage {
@@ -30,23 +30,40 @@ public class WorkspaceMessage {
 	 * TODO need a better name for this field 
 	 */
 	private int type;
-	private long id; // of model but not of display
+	private String idString; // of model but not of display
 	
 	private int eventType;
 	private WorkspacePublisher source;
 	
 	private String messageText;
 	
-	public WorkspaceMessage(int type, long id, int eventType, WorkspacePublisher source, String messageText) {
+	/**
+	 * Creates a Workspace change notification message with descriptive string.
+	 * 
+	 * @param type FSM or DISPLAY
+	 * @param id the model's id, ignored if display changed
+	 * @param eventType ADD, REMOVE or MODIFY
+	 * @param source sender of notification
+	 * @param messageText descriptive message as a string
+	 */
+	public WorkspaceMessage(int type, String id, int eventType, WorkspacePublisher source, String messageText) {
 		super();		
 		this.type = type;
-		this.id = id;
+		this.idString = id;
 		this.eventType = eventType;
 		this.source = source;
 		this.messageText = messageText;
 	}
 
-	public WorkspaceMessage(int type, long id, int eventType, WorkspacePublisher source) {				
+	/**
+	 * Creates a Workspace change notification message with empty string.
+	 * 
+	 * @param type FSM or DISPLAY
+	 * @param id the model's id, ignored if display changed
+	 * @param eventType ADD, REMOVE or MODIFY
+	 * @param source sender of notification
+	 */
+	public WorkspaceMessage(int type, String id, int eventType, WorkspacePublisher source) {				
 		this(type, id, eventType, source, "");
 	}
 
@@ -54,8 +71,8 @@ public class WorkspaceMessage {
 		return eventType;
 	}
 
-	public long getId() {
-		return id;
+	public String getIdString() {
+		return idString;
 	}
 
 	public String getMessageText() {

@@ -228,17 +228,6 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		return freeLabels.values();
 	}
 	
-	public void update(){			
-		// notifyAllSubscribers();
-	}
-	
-//	public void setGraph(GraphElement graph) {
-//		this.graph = graph;
-//		setDirty(true);
-//		notifyAllSubscribers();
-//	}
-
-	
 	/**
 	 * TODO 
 	 * Graph to be built in LayoutDataParser.
@@ -913,6 +902,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	public void setDirty(boolean b)
 	{
 		dirty=b;
+		graph.setDirty(b);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -1097,7 +1087,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	/* FSMGraphPublisher part which maintains a collection of, and 
 	 * sends change notifications to, all interested observers (subscribers). 
 	 **/
-	private ArrayList<FSMGraphSubscriber> subscribers = new ArrayList<FSMGraphSubscriber>();;
+	private ArrayList<FSMGraphSubscriber> subscribers = new ArrayList<FSMGraphSubscriber>();
 		
 	/**
 	 * Attaches the given subscriber to this publisher.
@@ -1168,6 +1158,10 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		
 	}
 	///////////////////////////////////////////////////////////////////////
+
+	public void update(){			
+		// notifyAllSubscribers();
+	}
 }
 
 

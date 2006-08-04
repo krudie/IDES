@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import observer.Subscriber;
+import observer.WorkspaceMessage;
+import observer.WorkspaceSubscriber;
 
 import presentation.fsa.FSMGraph;
 
@@ -21,7 +23,7 @@ import main.Hub;
  *
  * @author Lenko Grigorov
  */
-public class StatusBar extends JPanel implements Subscriber {
+public class StatusBar extends JPanel implements Subscriber, WorkspaceSubscriber {
 
 	JLabel numbersLabel=new JLabel();
 	model.fsa.ver1.Automaton a=null;
@@ -37,19 +39,55 @@ public class StatusBar extends JPanel implements Subscriber {
 		//add(labelBox);
 	}
 
+	/**
+	 * TODO remove this method after this class no longer implements generic subscriber. 
+	 */
 	public void update() {
+		refreshActiveModel();
+	}
+
+	private void refreshActiveModel()
+	{
 		if(a!=null)
 			a.removeSubscriber(this);
+
 		if(Hub.getWorkspace().getActiveModel()!=null)
 		{
 			a=(model.fsa.ver1.Automaton)Hub.getWorkspace().getActiveModel();
 			a.addSubscriber(this);
+			refreshStatusLabel();
+		}			
+	}
+		
+	
+	private void refreshStatusLabel()
+	{
+		if(a != null)
+		{
 			numbersLabel.setText(
 					Hub.string("nOfStates")+a.getStateCount()+", "+
 					Hub.string("nOfTransitions")+a.getTransitionCount());
-		}
-		else
+		}else{
 			numbersLabel.setText(Hub.string("noModelOpen"));
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 */
+	public void modelCollectionChanged(WorkspaceMessage message) {
+		refreshActiveModel();
 	}
 
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 */
+	public void repaintRequired(WorkspaceMessage message) {}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 */
+	public void modelSwitched(WorkspaceMessage message) {
+		refreshActiveModel();
+	}
 }

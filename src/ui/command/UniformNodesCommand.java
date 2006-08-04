@@ -6,6 +6,8 @@ import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
 import org.pietschy.command.ToggleVetoException;
 
+import presentation.fsa.FSMGraph;
+
 import services.latex.LatexManager;
 
 public class UniformNodesCommand extends ToggleCommand {
@@ -19,8 +21,19 @@ public class UniformNodesCommand extends ToggleCommand {
 
 	protected void handleSelection(boolean arg0) throws ToggleVetoException {
 		Hub.persistentData.setBoolean(PROPERTY_NAME,!isSelected());
-		if(Hub.getWorkspace().getActiveGraphModel()!=null)
-			Hub.getWorkspace().getActiveGraphModel().update();
+//		if(Hub.getWorkspace().getActiveGraphModel()!=null)
+//			Hub.getWorkspace().getActiveGraphModel().update();
+		
+		// set FSMGraph (the activeGraphModel()) to dirty
+		// so when repaint happens, graph will recompute its layout.
+		// NOTE depends on FSMGraph extending GraphElement
+		// ??? will FSMGraph fire any notifications ?
+		FSMGraph gm = Hub.getWorkspace().getActiveGraphModel();
+		if(gm != null){
+			gm.getGraph().setDirty(true);
+		// gm.setDirty(true);
+			Hub.getWorkspace().fireRepaintRequired();
+		}
 	}
 
 }

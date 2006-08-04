@@ -15,6 +15,8 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import observer.Publisher;
+import observer.WorkspaceMessage;
+import observer.WorkspacePublisher;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -29,7 +31,7 @@ import model.fsa.ver1.Automaton;
 import model.fsa.ver1.EventsModel;
 import model.fsa.ver1.MetaData;
 
-public class IDESWorkspace extends Publisher implements Workspace {
+public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 
 	//needed for special handling of first (automatic) add and first (user-initated) add
 	private long countAdd=0;
@@ -82,7 +84,11 @@ public class IDESWorkspace extends Publisher implements Workspace {
 			new LatexPrerenderer(getActiveGraphModel());
 		}
 		getActiveGraphModel().addSubscriber(getDrawingBoard());
-		notifyAllSubscribers();
+		//notifyAllSubscribers();
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+									fsa.getId(), 
+									WorkspaceMessage.ADD, 
+									this));
 		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
 		if(countAdd!=0)
 			dirty = true;
@@ -127,6 +133,7 @@ public class IDESWorkspace extends Publisher implements Workspace {
 			((Automaton)getActiveModel()).removeSubscriber(getDrawingBoard());
 		}
 		int idx=getFSAIndex(name);
+		Automaton fsa = systems.get(idx);
 		systems.removeElementAt(idx);	
 		metadata.removeElementAt(idx);
 		graphs.removeElementAt(idx);
@@ -134,7 +141,13 @@ public class IDESWorkspace extends Publisher implements Workspace {
 				activeModelIdx--;
 		if(getActiveModel()!=null)
 			((Automaton)getActiveModel()).addSubscriber(getDrawingBoard());
-		this.notifyAllSubscribers();
+		
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+				fsa.getId(), 
+				WorkspaceMessage.REMOVE, 
+				this));		
+		
+		//this.notifyAllSubscribers();
 		dirty = true;
 	}
 
@@ -155,12 +168,22 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		return systems.elementAt(activeModelIdx);
 	}
 	
+	/**
+	 * Sets the active model to the FSAModel with the given name. 	 
+	 * @param name
+	 */
 	public void setActiveModel(String name) {
 		if(getActiveModel()!=null)
 			getActiveGraphModel().removeSubscriber(getDrawingBoard());
 		activeModelIdx=getFSAIndex(name);
 		if(getActiveModel()!=null)
 			getActiveGraphModel().addSubscriber(getDrawingBoard());
+		
+		// TODO change name to fsa.id for consistency with add and remove
+		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.FSM, 
+							name, 
+							WorkspaceMessage.MODIFY,
+							this));		
 	}
 	
 	/**
@@ -251,7 +274,12 @@ public class IDESWorkspace extends Publisher implements Workspace {
 		if(selectedModel!=null)
 		{
 			setActiveModel(selectedModel);
-			notifyAllSubscribers();
+			// Hey LENKO! what is the nature of this change?  Everything appears to have changed...
+			fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+									"everything changed?", 
+									WorkspaceMessage.MODIFY, 
+									this));
+			//notifyAllSubscribers();
 		}
 		setDirty(false);
 	}

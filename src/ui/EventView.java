@@ -27,7 +27,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
+import observer.FSMMessage;
+import observer.FSMSubscriber;
 import observer.Subscriber;
+import observer.WorkspaceMessage;
+import observer.WorkspaceSubscriber;
 
 import main.Hub;
 import model.fsa.FSAEvent;
@@ -35,7 +39,7 @@ import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 
-public class EventView extends JPanel implements Subscriber, ActionListener {
+public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber, FSMSubscriber, ActionListener {
 
 	protected class EventTableModel extends AbstractTableModel
 	{
@@ -363,7 +367,7 @@ public class EventView extends JPanel implements Subscriber, ActionListener {
 		Hub.getWorkspace().addSubscriber(this);
 	}
 	
-	public void update()
+	private void refreshEventTable()
 	{
 		FSAModel model=Hub.getWorkspace().getActiveModel();
 		eventNameField.setText("");
@@ -398,10 +402,48 @@ public class EventView extends JPanel implements Subscriber, ActionListener {
 				lastModel=(Automaton)model;
 				lastModel.addSubscriber(this);
 			}
-		}
+		}	
 	}
 	
-	public void actionPerformed(ActionEvent e)
+	/**
+	 * TODO remove this method when no longer extends Publisher
+	 */
+	public void update()
 	{
+		refreshEventTable();
+	}
+	
+	public void actionPerformed(ActionEvent e){}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 */
+	public void modelCollectionChanged(WorkspaceMessage message) {
+		// ??? Can I ignore the notification if the model was modified (e.g. renamed)?
+		refreshEventTable();		
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 */
+	public void repaintRequired(WorkspaceMessage message) {}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 */
+	public void modelSwitched(WorkspaceMessage message) {
+		refreshEventTable();		
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
+	 */
+	public void fsmStructureChanged(FSMMessage message) {}
+
+	/* (non-Javadoc)
+	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
+	 */
+	public void fsmEventSetChanged(FSMMessage message) {
+		refreshEventTable();		
 	}
 }

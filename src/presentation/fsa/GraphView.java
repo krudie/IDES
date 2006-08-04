@@ -63,11 +63,9 @@ public class GraphView extends JComponent implements Subscriber {
 	    	g2D.setColor(Color.WHITE);
 	    	g2D.fillRect(0,0,r.width,r.height);
 	    }
-	    g2D.scale(scaleFactor, scaleFactor);		
-	    //	TODO other transformation?
-
+	    
+	    g2D.scale(scaleFactor, scaleFactor);	    	    
 	    graph.draw(g2D);	    
-
 	}
 
 	/**

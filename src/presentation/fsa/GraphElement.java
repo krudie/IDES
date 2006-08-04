@@ -43,7 +43,10 @@ public class GraphElement implements PresentationElement {
 	/**
 	 * Draws all of my children.
 	 */
-	public void draw(Graphics g) {		
+	public void draw(Graphics g) {
+		
+		if(isDirty()) refresh();
+		
 		for(PresentationElement child : children.values()){			 
 			child.draw(g);
 		}
@@ -52,8 +55,7 @@ public class GraphElement implements PresentationElement {
 	/**
 	 * @return the smallest rectangle containing all of my children 
 	 */
-	public Rectangle2D bounds() {
-		
+	public Rectangle2D bounds() {		
 		
 		Rectangle2D bounds = null;		
 		for(PresentationElement child : children.values()){			

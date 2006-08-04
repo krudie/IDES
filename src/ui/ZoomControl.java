@@ -12,6 +12,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 import main.Hub;
+import main.IDESWorkspace;
 
 /**
  * @author lenko
@@ -92,8 +93,9 @@ public class ZoomControl extends JComboBox implements ActionListener {
 	{
 		if(z!=zoomValue)
 		{
-			zoomValue=z;
-			((MainWindow)Hub.getMainWindow()).getDrawingBoard().update();
+			zoomValue=z;			
+			//((MainWindow)Hub.getMainWindow()).getDrawingBoard().update();
+			Hub.getWorkspace().fireRepaintRequired();
 		}
 		getEditor().setItem(""+zoomValue+" %");
 	}

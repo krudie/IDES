@@ -72,7 +72,8 @@ public class Node extends GraphElement {
 	
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
-	public void refresh() {
+	public void refresh() 
+	{
 	
 		Point2D.Float centre = getLayout().getLocation();
 			

@@ -24,7 +24,8 @@ public class WorkspacePublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(WorkspaceSubscriber subscriber) {
+	public void addSubscriber(WorkspaceSubscriber subscriber) 
+	{
 		subscribers.add(subscriber);		
 	}
 	
@@ -34,22 +35,17 @@ public class WorkspacePublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(WorkspaceSubscriber subscriber) {
+	public void removeSubscriber(WorkspaceSubscriber subscriber) 
+	{
 		subscribers.remove(subscriber);
 	}
 	
-	/**
-	 * Sends notification to subscribers when a DES model is created or opened (added), 
-	 * closed (removed) or renamed.
-	 * 
-	 * @param message
-	 */
-	public void fireModelCollectionChanged(WorkspaceMessage message)
+	public void fireRepaintRequired()
 	{
-		for(WorkspaceSubscriber s : subscribers)
-		{
-			s.modelCollectionChanged(message);
-		}
+		fireRepaintRequired(new WorkspaceMessage(WorkspaceMessage.DISPLAY,
+												null,
+												WorkspaceMessage.MODIFY,
+												this));
 	}
 	
 	/**
@@ -58,13 +54,27 @@ public class WorkspacePublisher {
 	 * 
 	 * @param message
 	 */
-	public void fireRepaintRequired(WorkspaceMessage message)
+	protected void fireRepaintRequired(WorkspaceMessage message)
 	{
 		for(WorkspaceSubscriber s : subscribers)
 		{
 			s.repaintRequired(message);
 		}
 	}
+	
+	/**
+	 * Sends notification to subscribers when a DES model is created or opened (added), 
+	 * closed (removed) or renamed.
+	 * 
+	 * @param message
+	 */
+	protected void fireModelCollectionChanged(WorkspaceMessage message)
+	{
+		for(WorkspaceSubscriber s : subscribers)
+		{
+			s.modelCollectionChanged(message);
+		}
+	}	
 	
 	/**
 	 * Sends notification to subscribers of changes to the type of active model
@@ -74,12 +84,11 @@ public class WorkspacePublisher {
 	 * 
 	 * @param message
 	 */
-	public void fireModelSwitched(WorkspaceMessage message){
+	protected void fireModelSwitched(WorkspaceMessage message){
 		for(WorkspaceSubscriber s : subscribers)
 		{
 			s.modelSwitched(message);
 		}
 	}
-	
 	
 }

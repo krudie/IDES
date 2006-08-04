@@ -20,7 +20,7 @@ import presentation.fsa.NodeLayout;
  * to Automaton (pushes and pulls)? 
  * to GraphModel (pushes and pulls)?
  * 
- * TODO  If layout information is missing, call GraphViz to layout the graph
+ * TODO  If layout information is missing, call GraphViz(?) to layout the graph
  * representing the Automaton. 
  * 
  * @author helen bretzke

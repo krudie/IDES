@@ -2,7 +2,6 @@ package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -21,21 +20,20 @@ import java.util.Iterator;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import main.Hub;
+import main.IDESWorkspace;
 import observer.Subscriber;
+import observer.WorkspaceMessage;
+import observer.WorkspaceSubscriber;
 
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
 
-import main.Hub;
-import main.IDESWorkspace;
-import model.fsa.FSAEvent;
-import model.fsa.ver1.Automaton;
-import model.fsa.ver1.Event;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
+import ui.MainWindow;
 import ui.command.UniformNodesCommand;
 import ui.tools.CreationTool;
 import ui.tools.DrawingTool;
@@ -43,7 +41,6 @@ import ui.tools.ModifyEdgeTool;
 import ui.tools.MovementTool;
 import ui.tools.SelectionTool;
 import ui.tools.TextTool;
-import ui.MainWindow;
 /**
  * The component in which users view, create and modify a graph representation
  * of an automaton.
@@ -58,7 +55,7 @@ import ui.MainWindow;
  *
  */
 @SuppressWarnings("serial")
-public class GraphDrawingView extends GraphView implements Subscriber, MouseMotionListener, MouseListener, KeyListener {
+public class GraphDrawingView extends GraphView implements Subscriber, WorkspaceSubscriber, MouseMotionListener, MouseListener, KeyListener {
 
 	protected static ToggleCommand nodesControl;
 	public static boolean isUniformNodes()
@@ -207,16 +204,6 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 			removeMouseListener(this);
 			removeKeyListener(this);
 		}
-	}
-	
-	public void update(){
-		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
-		if(scaleFactor!=1)
-			setShowGrid(false);
-		// get the active graph model and update the graph view part of me		
-		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
-		super.update();
-		Hub.getMainWindow().validate();
 	}
 	
 	public void paint(Graphics g){
@@ -523,6 +510,46 @@ public class GraphDrawingView extends GraphView implements Subscriber, MouseMoti
 
 	public void setTempEdge(Edge tempEdge) {
 		this.tempEdge = tempEdge;
+	}
+
+	public void update(){
+		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
+		if(scaleFactor!=1)
+			setShowGrid(false);
+		
+		// get the active graph model and update the graph view part of me		
+		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
+		super.update();
+		Hub.getMainWindow().validate();
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 */
+	public void modelCollectionChanged(WorkspaceMessage message) {
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 */
+	public void repaintRequired(WorkspaceMessage message) {
+		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
+		if(scaleFactor!=1)
+			setShowGrid(false);
+		
+		// Why not let main window validate itself?  Timing?
+		Hub.getMainWindow().validate();
+		repaint();
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 */
+	public void modelSwitched(WorkspaceMessage message) {
+		// get the active graph model and update the graph view  part of me		
+		graphModel = Hub.getWorkspace().getActiveGraphModel();		
+		super.update();
+		Hub.getMainWindow().validate();		
 	}	
 	
 }

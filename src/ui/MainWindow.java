@@ -37,6 +37,8 @@ import main.IDESWorkspace;
 import main.Main;
 
 import observer.Subscriber;
+import observer.WorkspaceMessage;
+import observer.WorkspaceSubscriber;
 
 import org.pietschy.command.CommandManager;
 
@@ -56,7 +58,7 @@ import ui.command.GraphCommands.*;
  * @author helen bretzke
  *
  */
-public class MainWindow extends JFrame implements Subscriber {
+public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscriber {
 
 	String imagePath = "images/icons/";
 	
@@ -72,6 +74,7 @@ public class MainWindow extends JFrame implements Subscriber {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
 		IDESWorkspace.instance().addSubscriber(this);  // subscribe to notifications from the workspace
+				
 		FileOperations.loadCommandManager("commands.xml");
 
 		drawingBoard = new GraphDrawingView();		
@@ -209,45 +212,12 @@ public class MainWindow extends JFrame implements Subscriber {
 	}
 
 	/**
-	 * Enables appropriate menus and tools depending on state of workspace.
+	 * Enables appropriate menus and tools depending on whether there is a
+	 * model open in the workspace. 
 	 */
-	public void update() {		
-		CommandManager commandManager = CommandManager.defaultInstance();
+	public void update() 
+	{
 		
-		if(IDESWorkspace.instance().getActiveModel() == null){
-			drawingBoard.setEnabled(false);
-			zoom.setEnabled(false);
-			toolbar.setEnabled(false);
-			commandManager.getGroup("graph.group").setEnabled(false);
-			//commandManager.getGroup("ides.toolbar.group").setEnabled(false);
-			commandManager.getGroup("edit.group").setEnabled(false);			
-			commandManager.getGroup("file.group").setEnabled(true);
-			// TODO disable save and close commands
-			// TODO enable options groups
-			
-			// disable save commands
-			// FIXME this doesn't work
-			commandManager.getGroup("file.save.group").setEnabled(false);
-		}else{
-			drawingBoard.setEnabled(true);
-			zoom.setEnabled(true);
-			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
-			//commandManager.getGroup("ides.toolbar.group").setEnabled(true);
-			toolbar.setEnabled(true);
-			commandManager.getGroup("graph.group").setEnabled(true);
-			commandManager.getGroup("edit.group").setEnabled(false);
-//			if(IDESWorkspace.instance().isDirty()){
-//				// KLUGE
-//				commandManager.getCommand("save.automaton.command").setEnabled(true);
-//				// FIXME this doesn't work
-//				commandManager.getGroup("file.save.group").setEnabled(true);
-//			}
-			// set the name of the current model in the tabbed pane
-			//tabbedViews.setTitleAt(0, IDESWorkspace.instance().getActiveModelName());
-		}
-		// TODO If active view is not the GraphDrawingView then disable the graph commands group and toolbar
-		
-		//pack();
 	}
 
 	/**
@@ -277,5 +247,55 @@ public class MainWindow extends JFrame implements Subscriber {
 	public ZoomControl getZoomControl()
 	{
 		return zoom;
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 */
+	public void modelCollectionChanged(WorkspaceMessage message) 
+	{ 
+		configureTools();
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 */
+	public void repaintRequired(WorkspaceMessage message) {}
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 */
+	public void modelSwitched(WorkspaceMessage message) {}
+
+	/** 
+	 * Enables appropriate menus and tools depending on whether there is a
+	 * model open in the workspace.
+	 */
+	private void configureTools(){
+		CommandManager commandManager = CommandManager.defaultInstance();
+		
+		if(IDESWorkspace.instance().getActiveModel() == null){
+			drawingBoard.setEnabled(false);
+			zoom.setEnabled(false);
+			toolbar.setEnabled(false);
+			commandManager.getGroup("graph.group").setEnabled(false);
+			//commandManager.getGroup("ides.toolbar.group").setEnabled(false);
+			commandManager.getGroup("edit.group").setEnabled(false);			
+			commandManager.getGroup("file.group").setEnabled(true);
+			// TODO disable save and close commands
+			// TODO enable options groups
+			
+			// disable save commands
+			// FIXME this doesn't work
+			commandManager.getGroup("file.save.group").setEnabled(false);
+		}else{
+			drawingBoard.setEnabled(true);
+			zoom.setEnabled(true);
+			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
+			//commandManager.getGroup("ides.toolbar.group").setEnabled(true);
+			toolbar.setEnabled(true);
+			commandManager.getGroup("graph.group").setEnabled(true);
+			commandManager.getGroup("edit.group").setEnabled(false);
+		}
 	}
 }

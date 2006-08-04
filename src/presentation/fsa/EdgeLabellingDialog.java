@@ -132,7 +132,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		});
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.eventsModel = eventsModel;
-//		 NOT YET	eventsModel.attach(this);
+//		 NOT YET	eventsModel.addSubscriber(this);
 		
 		Box mainBox=Box.createVerticalBox();
 		createBox=Box.createHorizontalBox();

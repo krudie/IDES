@@ -22,8 +22,7 @@ import main.Hub;
  */
 public class LatexManager {
 
-	private LatexManager()
-	{
+	private LatexManager()	{
 	}
 	
 	/**
@@ -134,7 +133,7 @@ public class LatexManager {
 				new LatexPrerenderer(Hub.getWorkspace().getGraphModels());
 			if(Hub.getWorkspace().getActiveGraphModel()!=null)
 				Hub.getWorkspace().getActiveGraphModel().update();
-			Hub.getWorkspace().notifyAllSubscribers();			
+			Hub.getWorkspace().fireRepaintRequired();	
 		}
 	}
 

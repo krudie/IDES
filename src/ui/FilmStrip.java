@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -51,18 +52,36 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 		addMouseListener(this);
 	}
 	
-	public void remove(GraphView gv){
-		thumbnailBox.remove(gv);
-		graphViews.remove(gv);
+	public void update() {
+		refreshGraphViews();
+		buildThumbnailBox();
+		invalidate();
+		Hub.getMainWindow().validate();
+	}
+
+	private void buildThumbnailBox()
+	{
+		FSMGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
+		thumbnailBox.removeAll();
+		for(GraphView gv:graphViews)
+		{
+			JPanel p=new JPanel(new BorderLayout());
+			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
+			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
+			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
+			p.add(gv);
+			if(gv.getGraphModel().equals(activeModel))
+				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));
+			else
+				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
+			thumbnailBox.add(p);
+			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));
+		}
 	}
 	
-//	public GraphView getActiveView() {
-//		return activeView;
-//	}
-
-	public void update() {
-
-		// Get all graph models from the workspace and render them here,
+	private void refreshGraphViews()
+	{
+//		 Get all graph models from the workspace and render them here,
 		// each in its own GraphView object.
 		
 		Vector<FSMGraph> currentModels=new Vector<FSMGraph>();
@@ -71,7 +90,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 			FSMGraph gm=i.next();
 			currentModels.add(gm);
 		}
-		FSMGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
+		
 
 		HashSet<GraphView> toRemove=new HashSet<GraphView>();
 		for(GraphView gv:graphViews)
@@ -97,26 +116,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 				graphViews.insertElementAt(gv,i);
 			}
 		}
-		
-		thumbnailBox.removeAll();
-		for(GraphView gv:graphViews)
-		{
-			JPanel p=new JPanel(new BorderLayout());
-			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
-			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
-			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
-			p.add(gv);
-			if(gv.getGraphModel().equals(activeModel))
-				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));
-			else
-				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
-			thumbnailBox.add(p);
-			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));
-		}
-		invalidate();
-		Hub.getMainWindow().validate();
 	}
-
+	
 	/**
 	 * Figure out which graph was selected, toggle it's border (clear all others)
 	 * and make it known to the UIStateModel as the currently active graph. 
@@ -127,8 +128,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 		if(!(arg0.getSource() instanceof GraphView))
 			return;
 		GraphView gv=(GraphView)arg0.getSource();
-		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());
-		Hub.getWorkspace().notifyAllSubscribers();
+		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());  // TODO Ignore modelSwitched event
+		// Hub.getWorkspace().notifyAllSubscribers();
 	}
 
 	public void mousePressed(MouseEvent arg0) {}
@@ -143,22 +144,29 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message) {
-		update();
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
-	 */
-	public void repaintRequired(WorkspaceMessage message) {
-		// TODO Auto-generated method stub
-		
+		if(message.getEventType() == WorkspaceMessage.ADD || message.getEventType() == WorkspaceMessage.REMOVE)
+		refreshGraphViews();
+		buildThumbnailBox();
+		invalidate();
+		Hub.getMainWindow().validate();
 	}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
-	public void modelSwitched(WorkspaceMessage message) {
-		update();		
+	public void modelSwitched(WorkspaceMessage message) {		
+		buildThumbnailBox();
+		invalidate();
+		Hub.getMainWindow().validate();
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 */
+	public void repaintRequired(WorkspaceMessage message) {	
+		for(GraphView gv:graphViews){
+			gv.repaint();
+		}
 	}
 }
