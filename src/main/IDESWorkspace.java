@@ -70,26 +70,33 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	}
 	
 	public void addFSAModel(FSAModel fsa) {
+		
+		// LENKO What is the meaning of the first case? HB
 		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
 			removeFSAModel(getActiveGraphModel().getName());
-		if(getActiveModel()!=null)
-			getActiveGraphModel().removeSubscriber(getDrawingBoard());
+		
+//		if(getActiveModel()!=null)
+//			getActiveGraphModel().removeSubscriber(getDrawingBoard());
+		
 		systems.add((Automaton) fsa);
 		metadata.add(new MetaData((Automaton)fsa));
 		graphs.add(new FSMGraph((Automaton)fsa, metadata.lastElement()));
 		activeModelIdx=systems.size()-1;
+		
 		//eventsModel.addLocalEvents(fsa);
+		
 		if(LatexManager.isLatexEnabled())
 		{
 			new LatexPrerenderer(getActiveGraphModel());
 		}
-		getActiveGraphModel().addSubscriber(getDrawingBoard());
+		
+//		getActiveGraphModel().addSubscriber(getDrawingBoard());
+//		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
 		//notifyAllSubscribers();
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
 									fsa.getId(), 
 									WorkspaceMessage.ADD, 
-									this));
-		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
+									this));		
 		if(countAdd!=0)
 			dirty = true;
 		countAdd++;
@@ -128,24 +135,33 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		if(gm.isDirty())
 			if(!CommonTasks.handleUnsavedModel(gm))
 				return;
-		if(getActiveModel()!=null)
-		{
-			((Automaton)getActiveModel()).removeSubscriber(getDrawingBoard());
-		}
+		
+		// Assumes that the current model is the same as the one named.
+//		if(getActiveModel()!=null)
+//		{
+//			((Automaton)getActiveModel()).removeSubscriber(getDrawingBoard());
+//		}
 		int idx=getFSAIndex(name);
 		Automaton fsa = systems.get(idx);
 		systems.removeElementAt(idx);	
 		metadata.removeElementAt(idx);
 		graphs.removeElementAt(idx);
-		if(activeModelIdx>=systems.size())
-				activeModelIdx--;
-		if(getActiveModel()!=null)
-			((Automaton)getActiveModel()).addSubscriber(getDrawingBoard());
+		if(activeModelIdx>=systems.size()){
+			activeModelIdx--;
+//			 TODO change name to fsa.id for consistency with add and remove
+			fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.FSM, 
+								name, 
+								WorkspaceMessage.MODIFY,
+								this));		
+		}		
+		
+//		if(getActiveModel()!=null)
+//			((Automaton)getActiveModel()).addSubscriber(getDrawingBoard());
 		
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
 				fsa.getId(), 
 				WorkspaceMessage.REMOVE, 
-				this));		
+				this));
 		
 		//this.notifyAllSubscribers();
 		dirty = true;
@@ -169,7 +185,9 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	}
 	
 	/**
-	 * Sets the active model to the FSAModel with the given name. 	 
+	 * Sets the active model to the FSAModel with the given name. 
+	 * FIXME Should be using unique ID. 
+	 * 	 
 	 * @param name
 	 */
 	public void setActiveModel(String name) {
@@ -306,8 +324,8 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 			{
 				if(!FileOperations.saveAutomatonAs(a))
 					throw new IncompleteWorkspaceDescriptorException();
-				getGraphModel(a.getName()).setDirty(false);
-				getGraphModel(a.getName()).notifyAllSubscribers();
+//				getGraphModel(a.getName()).setDirty(false);
+//				getGraphModel(a.getName()).notifyAllSubscribers();
 			}
 		}
 		for(int counter=0; counter<systems.size(); ++counter)

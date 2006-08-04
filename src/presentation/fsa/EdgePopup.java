@@ -95,11 +95,8 @@ public class EdgePopup extends JPopupMenu {
 				view.setTool(GraphDrawingView.MODIFY);
 			}else if(source.equals(miEditEvents)){				
 				EdgeLabellingDialog.showDialog(view, edge);
-			}else if(source.equals(miSymmetrize)){
-				BezierLayout el=(BezierLayout)edge.getLayout();
-				el.symmetrize();
-				edge.refresh();
-				Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+			}else if(source.equals(miSymmetrize)){				
+				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
 			}			

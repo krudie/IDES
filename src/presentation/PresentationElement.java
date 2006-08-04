@@ -1,6 +1,7 @@
 package presentation;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public interface PresentationElement {
 	 * 
 	 * @return the smallest rectangular area that the element occupies.
 	 */
-	public Rectangle2D bounds();
+	public Rectangle bounds();
 	
 	/**
 	 * Used to determine which element is under the mouse.

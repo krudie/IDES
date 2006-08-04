@@ -10,7 +10,7 @@ import java.awt.geom.Ellipse2D;
  * @author helen
  *
  */
-public class SelfLoopHandler extends EdgeHandler {
+public class ReflexiveEdgeHandler extends EdgeHandler {
 	
 	private Ellipse2D.Double anchor;	
 	private static final int RADIUS = 5;	
@@ -18,7 +18,7 @@ public class SelfLoopHandler extends EdgeHandler {
 	/**
 	 * @param edge
 	 */
-	public SelfLoopHandler(SelfLoop edge) {
+	public ReflexiveEdgeHandler(ReflexiveEdge edge) {
 		super(edge);
 		refresh();		
 	}

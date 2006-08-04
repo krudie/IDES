@@ -272,13 +272,11 @@ public class GraphCommands {
 				}else if(element instanceof GraphLabel && element.getParent() instanceof BezierEdge){
 					BezierEdge edge = (BezierEdge)element.getParent();
 					EdgeLabellingDialog.showDialog(context, edge);
-				}else{
-					GraphLabel label = (GraphLabel)element;
-					//	TODO use an extension of EscapeDialog and set its location AND REFACTOR
+				}else{					
+					// TODO use an extension of EscapeDialog and set its location AND REFACTOR
 					String text = JOptionPane.showInputDialog("Enter label text: ");
 					if(text != null){
-						label.setText(text);
-						context.getGraphModel().notifyAllSubscribers();
+						context.getGraphModel().addFreeLabel(text, location);
 					}				
 				}
 				context.repaint();
@@ -366,7 +364,7 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			// TODO return Undoable edit containing removed element and where it should be restored to
 			// the view is not enough since view changes models; need to know the model...
-			context.getGraphModel().remove(element);
+			context.getGraphModel().delete(element);
 			context.repaint();
 			return null;
 		}
@@ -397,14 +395,16 @@ public class GraphCommands {
 			if(context.getSelectedGroup().size()>0)
 				i=context.getSelectedGroup().children();
 			else
-				i=context.getGraphModel().getGraph().children();
+				i=context.getGraphModel().children();
 			while(i.hasNext())
 			{
 				GraphElement ge=(GraphElement)i.next();
 				ge.getLayout().snapToGrid();
 				ge.refresh();
 			}
-			context.getGraphModel().notifyAllSubscribers();
+		
+			context.getGraphModel().setDirty(true);
+			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}
 }

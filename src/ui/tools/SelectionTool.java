@@ -78,7 +78,7 @@ public class SelectionTool extends DrawingTool {
 				context.highlightCurrentSelection(true);
 				context.repaint();	
 			}
-		context.getGraphModel().notifyAllSubscribers();
+		//context.getGraphModel().notifyAllSubscribers();		
 }
 
 	@Override
@@ -117,7 +117,7 @@ public class SelectionTool extends DrawingTool {
 		
 		context.clearCurrentSelection();
 		context.updateCurrentSelection(me.getPoint());				
-//		context.repaint();
+
 		
 		// if i have pressed the mouse on the current selection		
 		if(context.hasCurrentSelection()){
@@ -132,7 +132,8 @@ public class SelectionTool extends DrawingTool {
 			dragging = true;
 		}
 		
-		context.getGraphModel().notifyAllSubscribers();
+		//context.getGraphModel().notifyAllSubscribers();
+		context.repaint();
 	}
 
 	@Override
@@ -151,8 +152,9 @@ public class SelectionTool extends DrawingTool {
 			endPoint = null;			
 			dragging = false;
 		}
-//		context.repaint();
-		context.getGraphModel().notifyAllSubscribers();
+
+		//context.getGraphModel().notifyAllSubscribers();
+		context.repaint();
 	}
 
 	@Override
@@ -167,7 +169,7 @@ public class SelectionTool extends DrawingTool {
 			context.clearCurrentSelection();
 			context.repaint();
 		}		
-		context.getGraphModel().notifyAllSubscribers();
+	//	context.getGraphModel().notifyAllSubscribers();
 	}
 
 	@Override

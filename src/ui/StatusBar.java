@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import observer.FSMMessage;
+import observer.FSMSubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
@@ -23,7 +25,7 @@ import main.Hub;
  *
  * @author Lenko Grigorov
  */
-public class StatusBar extends JPanel implements Subscriber, WorkspaceSubscriber {
+public class StatusBar extends JPanel implements FSMSubscriber, WorkspaceSubscriber {
 
 	JLabel numbersLabel=new JLabel();
 	model.fsa.ver1.Automaton a=null;
@@ -37,13 +39,6 @@ public class StatusBar extends JPanel implements Subscriber, WorkspaceSubscriber
 		add(numbersLabel);
 		add(Box.createHorizontalGlue());
 		//add(labelBox);
-	}
-
-	/**
-	 * TODO remove this method after this class no longer implements generic subscriber. 
-	 */
-	public void update() {
-		refreshActiveModel();
 	}
 
 	private void refreshActiveModel()
@@ -90,4 +85,30 @@ public class StatusBar extends JPanel implements Subscriber, WorkspaceSubscriber
 	public void modelSwitched(WorkspaceMessage message) {
 		refreshActiveModel();
 	}
+
+//	/**
+//	 * TODO remove this method after this class no longer implements generic subscriber. 
+//	 */
+//	public void update() {
+//		refreshActiveModel();
+//	}
+
+	/* (non-Javadoc)
+	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
+	 */
+	public void fsmStructureChanged(FSMMessage message) {
+		// if states or transitions added or removed
+		if( (message.getElementType() == FSMMessage.STATE || 
+				message.getElementType() == FSMMessage.TRANSITION) &&
+			(message.getEventType() == FSMMessage.ADD || 
+				message.getEventType() == FSMMessage.REMOVE) )
+		{
+			refreshStatusLabel();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
+	 */
+	public void fsmEventSetChanged(FSMMessage message) {}
 }

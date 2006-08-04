@@ -17,6 +17,8 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import observer.FSMGraphMessage;
+import observer.FSMGraphSubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
@@ -100,7 +102,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 		}
 		for(GraphView gv:toRemove)
 		{
-			gv.getGraphModel().removeSubscriber(this);
+			gv.getGraphModel().removeSubscriber(gv);
 			graphViews.remove(gv);
 		}
 		
@@ -109,9 +111,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 			FSMGraph gm=currentModels.elementAt(i);
 			if(graphViews.size()<=i||!graphViews.elementAt(i).getGraphModel().equals(gm))
 			{
-				GraphView gv = new GraphView(gm);
-				gm.addSubscriber(gv);
-				gm.addSubscriber(this);
+				GraphView gv = new GraphView(gm);				
+				//gm.addSubscriber(this);
 				gv.addMouseListener(this);
 				graphViews.insertElementAt(gv,i);
 			}
@@ -169,4 +170,6 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 			gv.repaint();
 		}
 	}
+
+	
 }

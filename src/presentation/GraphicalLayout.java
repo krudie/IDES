@@ -13,6 +13,7 @@ public class GraphicalLayout {
 	public static final Color DEFAULT_COLOR = Color.BLACK;
 	public static final Color DEFAULT_HIGHLIGHT_COLOR = Color.RED;
 	public static final Color DEFAULT_SELECTION_COLOR = Color.BLUE;
+	public static final Color DEFAULT_BG_COLOR = Color.WHITE;
 	
 	public static final Stroke FINE_STROKE = new BasicStroke(1);
 	public static final Stroke WIDE_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
@@ -28,6 +29,7 @@ public class GraphicalLayout {
 	private Color color = DEFAULT_COLOR;
 	private Color highlightColor = DEFAULT_HIGHLIGHT_COLOR;
 	private Color selectionColor = DEFAULT_SELECTION_COLOR;	
+	private Color backgroundColor = DEFAULT_BG_COLOR;	
 	
 	public GraphicalLayout(){
 		this("");		
@@ -85,6 +87,10 @@ public class GraphicalLayout {
 
 	public void setHighlightColor(Color highlightColor) {
 		this.highlightColor = highlightColor;
+	}
+	
+	public Color getBackgroundColor() {
+		return backgroundColor;
 	}
 
 	public String getText() {

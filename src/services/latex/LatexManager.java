@@ -132,7 +132,7 @@ public class LatexManager {
 			if(setting)
 				new LatexPrerenderer(Hub.getWorkspace().getGraphModels());
 			if(Hub.getWorkspace().getActiveGraphModel()!=null)
-				Hub.getWorkspace().getActiveGraphModel().update();
+				Hub.getWorkspace().getActiveGraphModel().setDirty(true);
 			Hub.getWorkspace().fireRepaintRequired();	
 		}
 	}

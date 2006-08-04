@@ -43,13 +43,12 @@ public class FSMPublisher {
 		{
 			s.fsmStructureChanged(message);
 		}
-	}
+	}	
 	
 	public void fireFSMEventSetChanged(FSMMessage message){
 		for(FSMSubscriber s : subscribers)
 		{
 			s.fsmEventSetChanged(message);
 		}			
-	}
-	
+	}	
 }

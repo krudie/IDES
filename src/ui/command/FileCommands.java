@@ -54,7 +54,8 @@ public class FileCommands {
 		protected void handleExecute() {
 			Automaton fsa = new Automaton(Hub.string("newAutomatonName")+"-"+automatonCount++);
 			fsa.setId(Hub.getWorkspace().getRandomId());
-			IDESWorkspace.instance().addFSAModel(fsa);
+			Hub.getWorkspace().addFSAModel(fsa);
+			Hub.getWorkspace().setActiveModel(fsa.getName());			
 		}	
 	}
 	
@@ -86,6 +87,7 @@ public class FileCommands {
 					Automaton fsa = (Automaton)FileOperations.openAutomaton(fc.getSelectedFile());
 					if(fsa != null){
 						Hub.getWorkspace().addFSAModel(fsa);
+						Hub.getWorkspace().setActiveModel(fsa.getName());
 					}
 	    		}
 				Hub.getMainWindow().setCursor(cursor);
@@ -111,7 +113,8 @@ public class FileCommands {
 					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
 					{
 						gm.setDirty(false);
-						gm.notifyAllSubscribers();
+						//gm.notifyAllSubscribers();
+						Hub.getWorkspace().fireRepaintRequired();
 					}
 			}
 			Hub.getMainWindow().setCursor(cursor);
@@ -133,7 +136,8 @@ public class FileCommands {
 				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
 				{
 					Hub.getWorkspace().getActiveGraphModel().setDirty(false);
-					Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+					// FIXME Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+					Hub.getWorkspace().fireRepaintRequired();
 				}
 			Hub.getMainWindow().setCursor(cursor);
 		}	
@@ -154,7 +158,8 @@ public class FileCommands {
 				if(FileOperations.saveAutomatonAs(fsa))
 				{
 					Hub.getWorkspace().getActiveGraphModel().setDirty(false);
-					Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+					// FIXME Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+					Hub.getWorkspace().fireRepaintRequired();
 				}
 			Hub.getMainWindow().setCursor(cursor);
 		}	

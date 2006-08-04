@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.Map.Entry;
 import observer.FSMGraphMessage;
 import observer.FSMGraphSubscriber;
 import observer.FSMMessage;
+import observer.FSMPublisher;
 import observer.FSMSubscriber;
 import observer.Publisher;
 import observer.Subscriber;
@@ -40,7 +42,7 @@ import util.BentoBox;
  * @author helen bretzke
  *
  */
-public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
+public class FSMGraph extends GraphElement implements FSMSubscriber {
 
 	
 	protected class UniformRadius extends HashMap<NodeLayout,Float>
@@ -84,7 +86,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * The recursive structure used to draw the graph.
 	 * TODO remove after this class extends GraphElement
 	 */
-	private GraphElement graph;
+	//private GraphElement graph;
 	
 	protected boolean dirty=false;
 	
@@ -124,10 +126,10 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * @param fsa the mathematical model
 	 * @param graph the graphical layout structure
 	 */
-	public FSMGraph(Automaton fsa, GraphElement graph)
+	public FSMGraph(Automaton fsa)  //, GraphElement graph)
 	{
 //		 TODO set this.children = graph.children
-		this.graph = graph; 
+		//this.graph = graph; 
 		this.fsa = fsa;
 		fsa.addSubscriber(this);		
 		buildIntersectionDS();
@@ -146,7 +148,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
 	
 		// TODO change this to this.children()
-		Iterator children = graph.children();
+		Iterator children = children();
 		
 		// children can be Nodes or FreeLabels
 		// edges are children of Nodes (as are labels but we don't compute explicit intersection with them)
@@ -197,9 +199,9 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		return fsa;
 	}
 	
-	public GraphElement getGraph() {
-		return graph;
-	}
+//	public GraphElement getGraph() {
+//		return graph;
+//	}
 
 	/**
 	 * Returns the set of all nodes in the graph.
@@ -255,14 +257,13 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		Iterator iter = fsa.getStateIterator();
 		State s;
 		Node n1;
-		
-		graph = new GraphElement();
+				
 		while(iter.hasNext()){
 			s = (State)iter.next();
 			NodeLayout nL=metaData.getLayoutData(s);
 			nL.setUniformRadius(uniformR);
 			n1 = new Node(s, nL);			
-			graph.insert(n1);
+			insert(n1);
 			nodes.put(new Long(s.getId()), n1);
 //			maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
 		}
@@ -320,7 +321,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		// TODO for all free labels in layout data structure
 		
 		// clear all dirty bits in the graph structure		
-		graph.refresh();
+		refresh();
 	}
 
 	/**
@@ -423,36 +424,45 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	  * @param n2	
 	  */
 	public void finishEdge(BezierEdge e, Node n2){
-		
-		// FIXME Distribute multiple directed edges between same node pair. 
-		
 		//if( directEdgeBetween(e.getSource(), n2) == null){
 		
 		e.setTarget(n2);			
 			
-			BezierEdge opposite = (BezierEdge)directEdgeBetween(n2, e.getSource()); 
-			if(opposite != null && opposite.isStraight()){
-				e.arcAway(opposite);
-				opposite.getLayout().computeCurve();
-				saveMovement(opposite);		
-			}
-			
-			e.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
-			
-			Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
-			metaData.setLayoutData(t, e.getLayout());
-			e.addTransition(t);
-			
-			// Note must assign transition to edge before inserting as children to end nodes.
-			e.getSource().insert(e);	
-			n2.insert(e);		
-			
-			fsa.add(t);
-			fsa.notifyAllBut(this);
-			edges.put(e.getId(), e);
-			edgeLabels.put(e.getId(), e.getLabel());
-			setDirty(true);
-			notifyAllSubscribers();
+//		 FIXME Distribute multiple directed edges between same node pair.
+		BezierEdge opposite = (BezierEdge)directEdgeBetween(n2, e.getSource()); 
+		if(opposite != null && opposite.isStraight()){
+			e.arcAway(opposite);
+			opposite.getLayout().computeCurve();
+			saveMovement(opposite);		
+		}
+		
+		e.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
+		
+		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
+		metaData.setLayoutData(t, e.getLayout());
+		e.addTransition(t);
+		
+		// NOTE must assign transition to edge before inserting as children of end nodes.
+		e.getSource().insert(e);	
+		n2.insert(e);		
+
+		//fsa.notifyAllBut(this);
+		// avoid spurious update
+		fsa.removeSubscriber(this);
+		fsa.add(t);
+		fsa.addSubscriber(this);
+		
+		edges.put(e.getId(), e);
+		edgeLabels.put(e.getId(), e.getLabel());
+		setDirty(true);
+	
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
+				FSMGraphMessage.EDGE,
+				e.getId(), 
+				e.bounds(),
+				this, ""));
+		
+		//notifyAllSubscribers();
 //		}else{ // duplicate edge
 //			abortEdge(e);
 //		}
@@ -473,16 +483,25 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		s.setMarked(false);
 		NodeLayout layout = new NodeLayout(uniformR,p);			
 		metaData.setLayoutData(s, layout);
+		fsa.removeSubscriber(this);
 		fsa.add(s);
-		fsa.notifyAllBut(this);
+		fsa.addSubscriber(this);
+		
 		Node n = new Node(s, layout);	
 		nodes.put(new Long(s.getId()), n);
-		graph.insert(n);
-		setDirty(true);
-		this.notifyAllSubscribers();
+		insert(n);
+		setDirty(true);		
+		
+		Rectangle2D dirtySpot = n.adjacentBounds(); 
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
+				FSMGraphMessage.NODE,
+				n.getId(), 
+				dirtySpot,
+				this, ""));
 		return n;
 	}
-
+	
+	
 	/** 
 	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
 	 * and a adds a new transition to the automaton.
@@ -495,15 +514,21 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		// computes layout of new edges (default to straight edge between pair of nodes)
 		BezierLayout layout = new BezierLayout(n1.getLayout(), n2.getLayout());				
 		metaData.setLayoutData(t, layout);
+		fsa.removeSubscriber(this);
 		fsa.add(t);
-		fsa.notifyAllBut(this);
+		fsa.addSubscriber(this);
+		
 		BezierEdge e = new BezierEdge(layout, n1, n2, t);		
 		n1.insert(e);
 		n2.insert(e);
 		edges.put(e.getId(), e);		
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
-		notifyAllSubscribers();
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
+				FSMGraphMessage.EDGE,
+				e.getId(), 
+				e.bounds(),
+				this, ""));
 	}
 
 	/**
@@ -518,6 +543,11 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		addEdge(source, addNode(p));
 	}
 
+	/////////////////////////////////////////////////////////////////
+	/**
+	 * TODO remove this and delay committing layout changes until save. 
+	 * @param selection
+	 */
 	public void saveMovement(PresentationElement selection){
 		Iterator children = selection.children();
 		while(children.hasNext()){
@@ -535,10 +565,16 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			}
 		}
 
-		setDirty(true);
-
-		fsa.notifyAllBut(this);
-		this.notifyAllSubscribers();
+		// ??? fire one nodification for the whole selection 
+		// or a message for each element in the group?
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+				FSMGraphMessage.SELECTION,
+				FSMGraphMessage.UNKNOWN_ID, 
+				selection.bounds(),
+				this, ""));
+		
+//		setDirty(true);
+//		this.notifyAllSubscribers();
 	}
 		
 	/**
@@ -549,8 +585,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		if(label.getParent() != null){
 			try{
 				BezierEdge edge = (BezierEdge)label.getParent();
-				BezierLayout layout = edge.getLayout();
-				//layout.setLabelOffset(Geometry.subtract(label.getLayout().getLocation(), layout.getLocation()));
+				BezierLayout layout = edge.getLayout();				
 				Iterator<FSATransition> t = edge.getTransitions();
 				while(t.hasNext()){
 					metaData.setLayoutData(t.next(), layout);
@@ -559,17 +594,29 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		}else{ // TODO Move free label, tell MetaData
 			
 		}
+//		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+//				FSMGraphMessage.LABEL,
+//				label.getId(), 
+//				label.bounds(),
+//				this, ""));
 	}
 
 	private void saveMovement(Node node){
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
 		metaData.setLayoutData(s, node.getLayout());
+//		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+//				FSMGraphMessage.NODE,
+//				node.getId(), 
+//				node.adjacentBounds(),
+//				this, ""));
+
 		// for all edges adjacent to node, save layout
 		Iterator<BezierEdge> adjEdges = node.adjacentEdges();
 		while(adjEdges.hasNext()){			
 			saveMovement((BezierEdge)adjEdges.next());
 		}
+		
 	}
 	
 	private void saveMovement(BezierEdge e){
@@ -580,6 +627,8 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			metaData.setLayoutData(t.next(), layout);
 		}		
 	}
+	///////////////////////////////////////////////////////////////////
+	
 	
 	public void setInitial(Node n, boolean b){
 		// update the state
@@ -593,21 +642,19 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			layout.setArrow(null);
 		}
 		metaData.setLayoutData((State)n.getState(), layout);
-		setDirty(true);
-		// notify subscribers
-		fsa.notifyAllBut(this);
-		this.notifyAllSubscribers();
+		//setDirty(true);		
+		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
+    			FSMMessage.STATE, n.getId(), fsa));
 	}
 	
 	public void setMarked(Node n, boolean b){
 		// update the state
-		((State)n.getState()).setMarked(b);		
-		// update the node
-		n.refresh();
-		setDirty(true);
-		// notify subscribers
-		fsa.notifyAllBut(this);
-		this.notifyAllSubscribers();
+		((State)n.getState()).setMarked(b);
+		n.setDirty(true);
+		// update the node		
+		//setDirty(true);
+		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
+    			FSMMessage.STATE, n.getId(), fsa));
 	}
 	
 	/**
@@ -630,7 +677,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 
 	/**
 	 * Assigns the set of events to <code>edge</code>, removes any events from edge
-	 * that are not in the given list and commits any changes to the FSAModel.
+	 * that are not in the given list and commits any changes to the LayoutData (MetaData).
 	 * 
 	 * @param events a non-null, non-empty list of FSA events
 	 * @param edge the edge to which the edges will be assigned
@@ -678,12 +725,14 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			toRemove.add((Transition)trans.next());			
 		}
 		 
+		fsa.removeSubscriber(this);
+		
 		// remove extra transitions	
 		Iterator iter = toRemove.iterator();
 		while(iter.hasNext()){
 			t = (Transition)iter.next();		
-			edge.removeTransition((Transition)t);						
-			fsa.remove(t);
+			edge.removeTransition((Transition)t);			
+			fsa.remove(t);			
 		}	
 		
 		// add transitions to accommodate added events
@@ -692,9 +741,11 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			t = (Transition)iter.next();
 			// add the transition to the edge
 			edge.addTransition((Transition)t);		
-			// add the transition to the FSA					
-			fsa.add(t);
+			// add the transition to the FSA			
+			fsa.add(t);			
 		}		
+		
+		fsa.addSubscriber(this);
 		
 		// Update the event labels in the layout
 		trans = edge.getTransitions();
@@ -707,10 +758,11 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		}		
 		
 		setDirty(true);
-
-		// notify observers
-		fsa.notifyAllBut(this);
-		this.notifyAllSubscribers();
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+				FSMGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "replaced events on edge label"));
 	}
 	
 	/**
@@ -721,28 +773,16 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 */
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);
-		//fsa.notifyAllSubscribers();
-		this.notifyAllSubscribers();
-		fsa.notifyAllBut(this);		
+//		fsa.notifyAllBut(this);		
 		setDirty(true);
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+				FSMGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "commit edge layout"));		
 	}
-	
-	/**
-	 * TODO After extend GraphElement, go through this interface to build
-	 * graph in LayoutDataParser.
-	 * 
-	 * ??? What about adding edges to nodes ???
-	 * 
-	 * @param n
-	 */
-//	public void insert(Node n)
-//	{
-//		// TODO super.insert(n, new Long(n.getId()));
-//		nodes.put(new Long(n.getId()), n);
-//		fireFSMGraphChanged(new FSMGraphMessage(this, FSMGraphMessage.ADD, FSMGraphMessage.NODE, n.getId(), n.bounds()));
-//	}
-	
-	public void remove(GraphElement el){
+		
+	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
 			delete((Node)el);			
@@ -750,9 +790,8 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			delete((BezierEdge)el);
 		}else{
 			freeLabels.remove(el);
+			// TODO notify
 		}
-		setDirty(true);
-		notifyAllSubscribers();
 	}
 	
 	private void delete(Node n){
@@ -761,28 +800,39 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		while(edges.hasNext()){
 			delete((BezierEdge)edges.next());
 		}
-		// remove n		
+		// remove n
+		fsa.removeSubscriber(this);
 		fsa.remove(n.getState());
-		fsa.notifyAllBut(this);
-		graph.remove(n);	// FIXME fails
+		fsa.addSubscriber(this);
+				
+		super.remove(n);
 		((NodeLayout)n.getLayout()).dispose();
-		nodes.remove(new Long(n.getId()));  // Succeeds
+		nodes.remove(new Long(n.getId()));
 		setDirty(true);
-		notifyAllSubscribers();		
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
+				FSMGraphMessage.NODE,
+				n.getId(), 
+				n.adjacentBounds(),
+				this, ""));
 	}
 	
 	private void delete(Edge e){
 		Iterator<FSATransition> transitions = e.getTransitions();
 		while(transitions.hasNext()){
+			fsa.removeSubscriber(this);
 			fsa.remove(transitions.next());
+			fsa.addSubscriber(this);
 		}
 		e.getSource().remove(e);
 		e.getTarget().remove(e);
 		edgeLabels.remove(e.getId());
 		edges.remove(e.getId());
-		setDirty(true);
-		fsa.notifyAllBut(this);
-		notifyAllSubscribers();
+		setDirty(true);		
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
+				FSMGraphMessage.NODE,
+				e.getId(), 
+				e.bounds(),
+				this, ""));
 	}
 
 	/**
@@ -792,27 +842,29 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * @param text the name for the node
 	 */
 	public void labelNode(Node n, String text){		
-		State s = (State)fsa.getState(n.getId());
-		
-		// TODO set a dirty bit in layout object and only call update before drawing
-		// if bit is set
+		State s = (State)fsa.getState(n.getId());		
 		n.getLayout().setText(text);
 		metaData.setLayoutData(s, n.getLayout());
-		setDirty(true);
-		//update();
-		//fsa.notifyAllBut(this);  // mathematical model has not changed
-		notifyAllSubscribers();
+		setDirty(true);		
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+				FSMGraphMessage.NODE,
+				n.getId(), 
+				n.bounds(),
+				this, ""));
 	}
 
 	public void addFreeLabel(String text, Point2D.Float p) {		
 		GraphLabel label = new GraphLabel(text, p);
 		freeLabels.put(p, label);
-		graph.insert(label);
-		this.notifyAllSubscribers();
+		insert(label);
 		setDirty(true);
+		setDirty(true);
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
+				FSMGraphMessage.LABEL,
+				FSMGraphMessage.UNKNOWN_ID, 
+				label.bounds(),
+				this, ""));
 	}
-	
-	
 
 	/**
 	 * @param symbol
@@ -826,9 +878,6 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		event.setControllable(controllable);
 		event.setObservable(observable);
 		fsa.add(event);
-		fsa.notifyAllBut(this);		
-		setDirty(true);
-		notifyAllSubscribers();
 		return event;
 	}
 	
@@ -856,59 +905,38 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 			if(edge.transitionCount() > 1 && toRemove != null){
 				edge.removeTransition((Transition)toRemove);
 			}
-		}
-		
+		}		
 		fsa.remove(event);
-		setDirty(true);
-		fsa.notifyAllSubscribers();
-		notifyAllSubscribers();
 	}
 	
-	/**
-	 * FIXME since can set even properties directly, coders are not
-	 * obligated to go through this method.  Make sure changes to DES element
-	 * properties trigger a notification from FSA.
-	 *  
-	 * IDEA go through FSA interface?
-	 * 
-	 * @param event
-	 * @param b
-	 */
 	public void setControllable(Event event, boolean b){
 		// update the event
 		event.setControllable(b);
-		// notify subscribers
-		fsa.notifyAllBut(this);
-		setDirty(true);
-		notifyAllSubscribers();
+		fsa.fireFSMEventSetChanged(new FSMMessage(FSMMessage.MODIFY,
+    			FSMMessage.EVENT, event.getId(), fsa));
 	}
 
 	public void setObservable(Event event, boolean b){
 		// update the event
 		event.setObservable(b);
-		// notify subscribers
-		fsa.notifyAllBut(this);
-		setDirty(true);
-		notifyAllSubscribers();
-	}
-	///////////////////////////////////////////////////////////////////////////
-	// These can go once extend GraphElement
-	
-	public boolean isDirty()
-	{
-		return dirty;
+		fsa.fireFSMEventSetChanged(new FSMMessage(FSMMessage.MODIFY,
+    			FSMMessage.EVENT, event.getId(), fsa));
 	}
 	
-	public void setDirty(boolean b)
-	{
-		dirty=b;
-		graph.setDirty(b);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
+	public void symmetrize(Edge edge){
+		BezierLayout el=(BezierLayout)edge.getLayout();
+		el.symmetrize();	
+		
+		// TODO include edge label in bounds (dirty spot)
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+				FSMGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "symmetrized edge"));
+	}	
 	
 	/**
-	 * Calculcates the size of the bounding box necessary for the entire graph.  
+	 * Calculates the size of the bounding box necessary for the entire graph.  
 	 * Visits every node, edge and label and uses the union of
 	 * their bounds to create the box.
 	 * 
@@ -917,7 +945,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * @return Rectangle The bounding box for the graph
 	 * 
 	 * @author Sarah-Jane Whittaker
-	 * @author Lenko Grigorov
+	 * @author Lenko Grigorov Grigorov
 	 */
 	public Rectangle getBounds(boolean initAtZeroZero)
 	{
@@ -986,9 +1014,8 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	
 	public void translate(float x, float y)
 	{
-		graph.translate(x,y);
-		setDirty(true);
-		saveMovement(graph);  // calls notifyAllSubscribers				
+		super.translate(x,y);		
+		saveMovement(this);  // calls notifyAllSubscribers				
 	}
 
 	/**
@@ -1109,6 +1136,7 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 		subscribers.remove(subscriber);
 	}
 	
+	
 	/**
 	 * Notifies all subscribers that there has been a change to an element of 
 	 * the graph publisher.
@@ -1127,9 +1155,11 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * Notifies all subscribers that there has been a change to the elements  
 	 * currently selected in the graph publisher.
 	 * 
+	 * TODO call this from GraphDrawingView (or SelectionTool?)
+	 * 
 	 * @param message
 	 */
-	private void fireFSMGraphSelectionChanged(FSMGraphMessage message)
+	protected void fireFSMGraphSelectionChanged(FSMGraphMessage message)
 	{
 		for(FSMGraphSubscriber s : subscribers)
 		{
@@ -1146,7 +1176,20 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsmStructureChanged(FSMMessage message) {
-		// TODO Auto-generated method stub
+		// TODO if can isolate the change just modify the structure as required
+		// e.g. properties set on states or events.
+		// just refresh the affected part of the graph
+		
+		// otherwise rebuild the graph structure 
+		initializeGraph();		
+		
+		// TODO fireGraphChanged event
+		// Message args depend on FSMMessage contents
+//		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
+//				FSMGraphMessage.???,
+//				?.getId(), 
+//				?.bounds(),
+//				this, ""));		
 		
 	}
 
@@ -1154,14 +1197,13 @@ public class FSMGraph extends Publisher implements Subscriber, FSMSubscriber {
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsmEventSetChanged(FSMMessage message) {
-		// TODO Auto-generated method stub
+		// TODO Redraw all edges with transitions containing the affected events
+		// Might be more efficient to just set all edges to dirty and then repaint
+		// the whole deal.
 		
 	}
 	///////////////////////////////////////////////////////////////////////
-
-	public void update(){			
-		// notifyAllSubscribers();
-	}
+	
 }
 
 

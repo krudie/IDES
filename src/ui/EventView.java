@@ -28,6 +28,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
 import observer.FSMMessage;
+import observer.FSMPublisher;
 import observer.FSMSubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
@@ -112,6 +113,10 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 
 	    public boolean isCellEditable(int row, int col) { return true; }
 	    
+	    /**
+	     * Sets symbol, observable or controllable properties of the event
+	     * at the given row to the given value.
+	     */
 	    public void setValueAt(Object value, int row, int col) {
 	    	long eventId=0;
 	    	if(col==0)
@@ -128,25 +133,28 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 	    			Toolkit.getDefaultToolkit().beep();
 	    			return;
 	    		}
+	    		
 	    		events.elementAt(row).setSymbol((String)value);
 
 	    	}
 	    	else if(col==1)
 	    	{
+	    		
 	    		events.elementAt(row).setControllable(((Boolean)value).booleanValue());
 	    		controllable.removeElementAt(row);
 	    		controllable.insertElementAt((Boolean)value, row);
 	    	}
 	    	else
 	    	{
+	    		
 	    		events.elementAt(row).setObservable(((Boolean)value).booleanValue());
 	    		observable.removeElementAt(row);
 	    		observable.insertElementAt((Boolean)value, row);	    		
 	    	}
-	    	//TODO we most probably shouldn't be accessing the FSA above directly
-	    	((Automaton)a).notifyAllSubscribers();
-			Hub.getWorkspace().getActiveGraphModel().setDirty(true);
-	    	Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+	    		    		
+	    	((FSMPublisher)a).fireFSMEventSetChanged(new FSMMessage(FSMMessage.MODIFY,
+	    			FSMMessage.EVENT, events.elementAt(row).getId(), (FSMPublisher)a));			
+	    	
 	    	if(col==0)
 	    	{
 				Collections.sort(events,new Comparator<FSAEvent>(){

@@ -10,13 +10,15 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
+import observer.FSMGraphMessage;
+import observer.FSMGraphSubscriber;
 import observer.Subscriber;
 
 import ui.GUISettings;
 
 import main.Hub;
 
-public class GraphView extends JComponent implements Subscriber {
+public class GraphView extends JComponent implements FSMGraphSubscriber {
 
 	protected static final int GRAPH_BORDER_THICKNESS=10;
 	
@@ -29,15 +31,11 @@ public class GraphView extends JComponent implements Subscriber {
 	protected boolean scaleToFit = true;
 	
 	/**
-	 * An object to handle synchronizing FSA model with the displayed graph.
+	 * Presentation model (the composite structure that represents the DES model.)
+	 * which handles synchronizing FSA model with the displayed graph.
 	 */
 	protected FSMGraph graphModel;
-	
-	/**
-	 * Presentation model (the composite structure that represents the DES model.)
-	 */
-	protected GraphElement graph;
-	
+		
 	public GraphView(){
 		setGraphModel(null);
 	}
@@ -64,45 +62,20 @@ public class GraphView extends JComponent implements Subscriber {
 	    	g2D.fillRect(0,0,r.width,r.height);
 	    }
 	    
-	    g2D.scale(scaleFactor, scaleFactor);	    	    
-	    graph.draw(g2D);	    
+	    g2D.scale(scaleFactor, scaleFactor);
+	    if(graphModel != null)	graphModel.draw(g2D);	    
 	}
 
-	/**
-	 * Refresh my visual model from GraphModel.
-	 */
-	public void update() {
-		if(getGraphModel() != null){
-			graph = getGraphModel().getGraph();
-		}else{
-			graph = new GraphElement();
-		}
-		if(getGraphModel()!=null)  // Why can't this be moved into first case above?
-		{
-			graphBounds=getGraphModel().getBounds(true);
-			if(graphBounds.x<0||graphBounds.y<0)
-			{
-				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
-			}
-			if(scaleToFit&&getParent()!=null)
-			{
-				Insets ins=getParent().getInsets();
-				float xScale=(float)(getParent().getWidth()-ins.left-ins.right)/(float)(graphBounds.width+graphBounds.x+GRAPH_BORDER_THICKNESS);
-				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_THICKNESS);
-				setScaleFactor(Math.min(xScale,yScale));
-			}
-			invalidate();
-		}
-		repaint();
-	}
-
-	public void setGraphModel(FSMGraph graphModel) {						
-		this.graphModel = graphModel;
-		if(graphModel != null){
+	public void setGraphModel(FSMGraph graphModel) {
+		if(this.graphModel != null){
 			this.graphModel.removeSubscriber(this);
+		}		
+		this.graphModel = graphModel;
+		
+		if(graphModel != null){					
 			graphModel.addSubscriber(this);
 			this.setName(graphModel.getName());		
-			update();
+			refreshView();
 		}else{
 			this.setName("No automaton");
 		}
@@ -126,4 +99,50 @@ public class GraphView extends JComponent implements Subscriber {
 	{
 		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
 	}
+
+	/**
+	 * Refresh my visual model from GraphModel.
+	 *  
+	 * @see observer.FSMGraphSubscriber#fsmGraphChanged(observer.FSMGraphMessage)
+	 */
+	public void fsmGraphChanged(FSMGraphMessage message) {
+		// TODO check contents of message to determine minimal response required
+		refreshView();			
+	}
+
+	/**
+	 * Refresh my visual model from GraphModel.
+	 */
+	protected void refreshView(){
+//		if(getGraphModel() != null){
+//			graph = getGraphModel();
+//		}else{
+//			graph = new GraphElement();
+//		}
+		
+		if(getGraphModel()!=null)  // Why can't this be moved into first case above?
+		{
+			graphBounds=getGraphModel().getBounds(true);
+			if(graphBounds.x<0||graphBounds.y<0)
+			{
+				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
+			}
+			if(scaleToFit&&getParent()!=null)
+			{
+				Insets ins=getParent().getInsets();
+				float xScale=(float)(getParent().getWidth()-ins.left-ins.right)/(float)(graphBounds.width+graphBounds.x+GRAPH_BORDER_THICKNESS);
+				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_THICKNESS);
+				setScaleFactor(Math.min(xScale,yScale));
+			}
+			invalidate();
+		}
+		repaint();
+	}
+	
+	/* Don't need to respond to selection changes.
+	 * 
+	 * (non-Javadoc)
+	 * @see observer.FSMGraphSubscriber#fsmGraphSelectionChanged(observer.FSMGraphMessage)
+	 */
+	public void fsmGraphSelectionChanged(FSMGraphMessage message) {	}
 }

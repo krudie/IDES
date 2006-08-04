@@ -23,8 +23,7 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import main.Hub;
-import main.IDESWorkspace;
-import observer.Subscriber;
+import observer.FSMGraphMessage;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
@@ -45,17 +44,10 @@ import ui.tools.TextTool;
  * The component in which users view, create and modify a graph representation
  * of an automaton.
  * 
- * 
- * * current interaction mode,
- * * currently selected object in the drawing area,
- * * copy and cut buffers.
- * 
- * 
  * @author helen bretzke
- *
  */
 @SuppressWarnings("serial")
-public class GraphDrawingView extends GraphView implements Subscriber, WorkspaceSubscriber, MouseMotionListener, MouseListener, KeyListener {
+public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, MouseMotionListener, MouseListener, KeyListener {
 
 	protected static ToggleCommand nodesControl;
 	public static boolean isUniformNodes()
@@ -117,18 +109,17 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 				for(Iterator i=selectedGroup.children();i.hasNext();)
 				{
 					GraphElement ge=(GraphElement)i.next();
-					graphModel.remove(ge);
+					graphModel.delete(ge);
 				}
-				update();
+				//refreshView();
 			}
 		}
 	};
 	
 	public GraphDrawingView() {
 		super();
-		IDESWorkspace.instance().addSubscriber(this);
+		Hub.getWorkspace().addSubscriber(this);		
 		
-		graph = new GraphElement();
 		scaleFactor = 1f;
 		scaleToFit=false;
 	
@@ -145,12 +136,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 		drawingTools[CREATE] = new CreationTool(this);
 		drawingTools[TEXT] = new TextTool(this);
 		drawingTools[MOVE] = new MovementTool(this);
-		drawingTools[MODIFY] = new ModifyEdgeTool(this);
-		
-		// TODO construct all other drawing tools
+		drawingTools[MODIFY] = new ModifyEdgeTool(this);		
 		currentTool = DEFAULT;		
-	    
-		//addMouseListener(this);
+	    		
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addKeyListener(this);
@@ -218,7 +206,7 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 				im_g2d.drawLine(0,0,0,0);
 				gridBG = new TexturePaint(image,new Rectangle(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE));
 		}
-		if(gridBG != null&&scaleFactor==1&&showGrid)
+		if(gridBG != null && scaleFactor==1 && showGrid)
 		{
 			Rectangle r=new Rectangle();
 			r.width=Math.max(getBounds().width,graphBounds.width);
@@ -234,12 +222,8 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 		super.paint(g,false);
 		g2D.setStroke(GraphicalLayout.DASHED_STROKE);
 		g2D.setColor(Color.DARK_GRAY);
-		// DEBUG
-		//System.err.println(selectionArea.getSize() + " " + selectionArea.getLocation());		
-		//g2D.drawRect(selectionArea.x, selectionArea.y, selectionArea.width, selectionArea.height);
 		
-		if(tempEdge != null)
-		{
+		if(tempEdge != null) {
 			tempEdge.draw(g2D);
 		}
 		g2D.draw(selectionArea);		
@@ -388,12 +372,6 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 		return selectedGroup.hasChildren();  // selectedElement != null || 
 	}
 
-	protected void setSelectedElement(GraphElement selectedElement) {
-		//this.selectedElement = selectedElement;
-		selectedGroup.clear();
-		selectedGroup.insert(selectedElement);
-	}
-
 	/**
 	 * Precondition: <code>currentSelection</code> != null
 	 * 
@@ -401,10 +379,6 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 	 */
 	protected void setSelectedGroup(SelectionGroup currentSelection) {
 		this.selectedGroup = currentSelection;
-//		if(selectedGroup.hasChildren() && !selectedGroup.hasMultipleElements())
-//		{
-//			selectedElement = (GraphElement)selectedGroup.children().next();
-//		}
 	}
 
 	/**
@@ -511,22 +485,36 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 	public void setTempEdge(Edge tempEdge) {
 		this.tempEdge = tempEdge;
 	}
+	
+//	public void update(){
+//		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
+//		if(scaleFactor!=1)
+//			setShowGrid(false);
+//		
+//		// get the active graph model and update the graph view part of me		
+//		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
+//		super.update();
+//		Hub.getMainWindow().validate();
+//	}
 
-	public void update(){
-		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
-		if(scaleFactor!=1)
-			setShowGrid(false);
-		
-		// get the active graph model and update the graph view part of me		
-		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
-		super.update();
-		Hub.getMainWindow().validate();
+	/**
+	 * Override
+	 * 
+	 * @see observer.FSMGraphSubscriber#fsmGraphSelectionChanged(observer.FSMGraphMessage)
+	 */
+	public void fsmGraphSelectionChanged(FSMGraphMessage message) 
+	{
+		// ??? Do I need to do anything here ?  
+		// Or is this event always going to be fired from within this class ?
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message) {
+		// get the active graph model and update the graph view  part of me
+		setGraphModel(Hub.getWorkspace().getActiveGraphModel());		
+		Hub.getMainWindow().validate();
 	}
 
 	/* (non-Javadoc)
@@ -537,7 +525,6 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 		if(scaleFactor!=1)
 			setShowGrid(false);
 		
-		// Why not let main window validate itself?  Timing?
 		Hub.getMainWindow().validate();
 		repaint();
 	}
@@ -546,10 +533,9 @@ public class GraphDrawingView extends GraphView implements Subscriber, Workspace
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message) {
-		// get the active graph model and update the graph view  part of me		
-		graphModel = Hub.getWorkspace().getActiveGraphModel();		
-		super.update();
-		Hub.getMainWindow().validate();		
+		// get the active graph model and update the graph view  part of me
+		setGraphModel(Hub.getWorkspace().getActiveGraphModel());		
+		Hub.getMainWindow().validate();
+		//repaint();
 	}	
-	
 }

@@ -4,6 +4,7 @@
 package observer;
 
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 import presentation.fsa.FSMGraph;
 
@@ -19,7 +20,7 @@ public class FSMGraphMessage {
 	 * */
 	public static final int NODE = 0;
 	public static final int EDGE = 1;
-	public static final int LABEL = 2;
+	public static final int LABEL = 2;	
 	public static final int SELECTION = 3;
 	
 	/** 
@@ -28,6 +29,11 @@ public class FSMGraphMessage {
 	public static final int ADD = 0;
 	public static final int REMOVE = 1;
 	public static final int MODIFY = 2;
+	
+	/**
+	 * Default id for a group of elements or when id is unknown. 
+	 */
+	public static final long UNKNOWN_ID = -1;
 	
 	/**
 	 * the publisher that sent this message
@@ -43,17 +49,34 @@ public class FSMGraphMessage {
 	private int eventType;
 	
 	// the location on the source canvas where the event occurred
-	private Rectangle location;
+	private Rectangle2D location;
 	
 	/**
+	 * Creates a change notification message for FSMGraph to pass
+	 * to FSMGraphSubscribers. 
 	 * 
-	 * @param source message sender
 	 * @param eventType ADD, REMOVE, or MODIFY
 	 * @param elementType NODE, EDGE, LABEL or SELECTION
 	 * @param elementId the unique id (by type) of the element
 	 * @param location area in the display where the event occurred
+	 * @param source message sender
 	 */
-	public FSMGraphMessage(FSMGraph source, int eventType, int elementType, long elementId, Rectangle location) {
+	public FSMGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSMGraph source) {
+		this(eventType, elementType, elementId, location, source, "");		
+	}
+
+	/**
+	 * Creates a change notification message for FSMGraph to pass
+	 * to FSMGraphSubscribers. 
+	 * 
+	 * @param eventType ADD, REMOVE, or MODIFY
+	 * @param elementType NODE, EDGE, LABEL or SELECTION
+	 * @param elementId the unique id (by type) of the element
+	 * @param location area in the display where the event occurred
+	 * @param source message sender
+	 * @param message a description of the event fired
+	 */
+	public FSMGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSMGraph source, String Message) {
 		super();		
 		this.source = source;
 		this.elementType = elementType;
@@ -61,7 +84,8 @@ public class FSMGraphMessage {
 		this.eventType = eventType;
 		this.location = location;
 	}
-
+	
+	
 	public long getElementId() {
 		return elementId;
 	}
@@ -78,7 +102,7 @@ public class FSMGraphMessage {
 		return source;
 	}
 
-	public Rectangle getLocation() {
+	public Rectangle2D getLocation() {
 		return location;
 	}	
 

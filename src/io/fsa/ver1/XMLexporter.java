@@ -4,7 +4,6 @@ import io.IOUtilities;
 
 import java.io.PrintStream;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -14,7 +13,6 @@ import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
-import model.fsa.ver1.Project;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 

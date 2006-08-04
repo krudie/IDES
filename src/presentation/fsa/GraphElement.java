@@ -55,18 +55,17 @@ public class GraphElement implements PresentationElement {
 	/**
 	 * @return the smallest rectangle containing all of my children 
 	 */
-	public Rectangle2D bounds() {		
-		
-		Rectangle2D bounds = null;		
+	public Rectangle bounds() {			
+		Rectangle bounds = null;		
 		for(PresentationElement child : children.values()){			
 			if(bounds == null){
 				bounds = child.bounds();
 			}else{
-				bounds = bounds.createUnion(child.bounds());
+				bounds = (Rectangle)bounds.createUnion(child.bounds());
 			}
 		}		
 		if(bounds == null){
-			bounds = new Rectangle2D.Float();			
+			bounds = new Rectangle();			
 		}
 		return bounds;
 	}

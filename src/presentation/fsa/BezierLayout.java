@@ -67,6 +67,11 @@ public class BezierLayout extends GraphicalLayout {
 		setDirty(true);
 	}
 	
+	protected BezierEdge getEdge()
+	{
+		return edge;
+	}
+	
 	/**
 	 * Constructs an edge layout object for a straight, directed edge from
 	 * <code>n1</code> to <code>n2</code>.
@@ -112,12 +117,15 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	public void computeCurve(NodeLayout s, NodeLayout t){
 
+		////////////////////////////////////////////////////////////////
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t) && angle1 == 0 && angle2 == 0){
 				computeDefaultSelfLoop(s);
 				selfLoop = true;
 				return;
 		}
+		////////////////////////////////////////////////////////////////
+		
 		
 		Point2D.Float centre1 = s.getLocation();
 		Point2D.Float centre2 = t.getLocation();		
@@ -141,9 +149,14 @@ public class BezierLayout extends GraphicalLayout {
 			float norm = (float)Geometry.norm(base);
 			Point2D.Float unitBase = Geometry.unit(base);  // computing norm twice :(
 		
+			// endpoints are at node centres
+			ctrls[P1] = s.getLocation();//		
+			ctrls[P2] = t.getLocation();
+			
+			
 			// endpoints are at intersection of straight line from centre1 to centre2 with arcs of nodes
-			ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));//		
-			ctrls[P2] = Geometry.add(centre2, Geometry.scale(unitBase, -t.getRadius())); // -ArrowHead.SHORT_HEAD_LENGTH));
+//			ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));//		
+//			ctrls[P2] = Geometry.add(centre2, Geometry.scale(unitBase, -t.getRadius())); // -ArrowHead.SHORT_HEAD_LENGTH));
 			base = Geometry.subtract(ctrls[P2], ctrls[P1]);
 			norm = (float)Geometry.norm(base);
 			unitBase = Geometry.unit(base);		
@@ -182,25 +195,26 @@ public class BezierLayout extends GraphicalLayout {
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
 	 * 
 	 * @param s layout for source node
-	 * @param centre2 endpoint for the edge	  
+	 * @param endPoint endpoint for the edge	  
 	 */
-	public void computeCurve(NodeLayout s, Point2D.Float centre2){		
+	public void computeCurve(NodeLayout s, Point2D.Float endPoint){		
 		Point2D.Float centre1 = s.getLocation();
-		Point2D.Float dir = Geometry.subtract(centre2, centre1);
+		Point2D.Float dir = Geometry.subtract(endPoint, centre1);
 	
 		float norm = (float)Geometry.norm(dir);
 		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
 		
 		Point2D.Float[] ctrls = new Point2D.Float[4];
+	
+		ctrls[P1] = s.getLocation();
+//		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
 		
-		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
-		
-		dir = Geometry.subtract(centre2, ctrls[P1]);
+		dir = Geometry.subtract(endPoint, ctrls[P1]);
 		norm = (float)Geometry.norm(dir);
 		unit = Geometry.unit(dir);
 		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
 		ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(2 * norm * s2)));
-		ctrls[P2] = centre2;
+		ctrls[P2] = endPoint;
 		
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
@@ -270,8 +284,7 @@ public class BezierLayout extends GraphicalLayout {
 		}else{
 			double n = Geometry.norm(p1p2);
 			
-			// DEBUG
-			assert(n > EPSILON);
+			// TODO check length of n			
 			
 			s1 = Geometry.norm(p1c1)/n;
 			s2 = Geometry.norm(p2c2)/n;		
@@ -397,6 +410,9 @@ public class BezierLayout extends GraphicalLayout {
 				
 	}
 		
+	/**
+	 * TODO DEBUG
+	 */
 	protected void symmetrize(){
 		Point2D.Float[] points=new Point2D.Float[4];
 		points[0]=Geometry.translate(curve.getP1(),-curve.getX1(),-curve.getY1());
@@ -446,14 +462,6 @@ public class BezierLayout extends GraphicalLayout {
 		}
 	}
 
-	/**
-	 * @param b
-	 */
-	public void setSelfLoop(boolean b) {
-		selfLoop = b;		
-	}
-	
-	
 	// Indicates whether an edge can be rigidly translated 
 	// with both of its nodes or must be recomputed.
 	// Default value is false;
@@ -465,6 +473,13 @@ public class BezierLayout extends GraphicalLayout {
 
 	protected void setRigidTranslation(boolean rigid) {
 		this.rigidTranslation = rigid;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setSelfLoop(boolean b) {
+		selfLoop = b;		
 	}
 	
 }

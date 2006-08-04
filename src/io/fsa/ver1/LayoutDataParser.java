@@ -17,7 +17,7 @@ import presentation.fsa.FSMGraph;
 import presentation.fsa.GraphElement;
 import presentation.fsa.Node;
 import presentation.fsa.NodeLayout;
-import presentation.fsa.SelfLoop;
+import presentation.fsa.ReflexiveEdge;
 
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -101,10 +101,10 @@ public class LayoutDataParser extends AbstractParser {
                 // TODO don't store layout data in the Automaton
                 s.addSubElement(graphic); 
                 
-                NodeLayout nL=getLayoutData(s);
-    			// TODO nL.setUniformRadius(graph.uniformR);    			
-                Node node = new Node(s, nL);
-                graph.insert(node);
+//                NodeLayout nL=getLayoutData(s);
+//    			// TODO nL.setUniformRadius(graph.uniformR);    			
+//                Node node = new Node(s, nL);
+//                graph.insert(node);
                 ////////////////////////////////////////////////////
                                 
                 state = STATE_IDLE;
@@ -131,32 +131,32 @@ public class LayoutDataParser extends AbstractParser {
                 // TODO don't store layout data in the Automaton
                 t.addSubElement(graphic);            
 
-                BezierLayout layout = getLayoutData(t);
-                
-                // TEST make sure there are no GraphLabels hashed as the same child.
-    			Node n1 = (Node)graph.child(t.getSource().getId());
-    			Node n2 = (Node)graph.child(t.getTarget().getId());
-    			
-    			// if the edge corresponding to t already exists,
-    			// add t to the edge's set of transitions
-    			Edge e = directedEdgeBetween(n1, n2); 
-    			if(e != null && e.getLayout().equals(layout)){    				    				
-    				e.addTransition(t);		
-    			}else{  // otherwise, create a new edge
-    				// get the graphic data for the transition and all associated events
-    				// construct the edge				
-    				if(n1.equals(n2))
-    				{
-    					e = new SelfLoop(layout, n1, t);
-    				}else{    				
-    					e = new BezierEdge(layout, n1, n2, t);
-    				}
-    				
-    				// add this edge to source and target nodes' children
-    				//Long ID = new Long(id);
-    				n1.insert(e);				
-    				n2.insert(e);    				
-    			}               
+//                BezierLayout layout = getLayoutData(t);
+//                
+//                // TEST make sure there are no GraphLabels hashed as the same child.
+//    			Node n1 = (Node)graph.child(t.getSource().getId());
+//    			Node n2 = (Node)graph.child(t.getTarget().getId());
+//    			
+//    			// if the edge corresponding to t already exists,
+//    			// add t to the edge's set of transitions
+//    			Edge e = directedEdgeBetween(n1, n2); 
+//    			if(e != null && e.getLayout().equals(layout)){    				    				
+//    				e.addTransition(t);		
+//    			}else{  // otherwise, create a new edge
+//    				// get the graphic data for the transition and all associated events
+//    				// construct the edge				
+//    				if(n1.equals(n2))
+//    				{
+//    					e = new SelfLoop(layout, n1, t);
+//    				}else{    				
+//    					e = new BezierEdge(layout, n1, n2, t);
+//    				}
+//    				
+//    				// add this edge to source and target nodes' children
+//    				//Long ID = new Long(id);
+//    				n1.insert(e);				
+//    				n2.insert(e);    				
+//    			}               
                 
                 ////////////////////////////////////////////////////
                 state = STATE_IDLE;
@@ -263,12 +263,9 @@ public class LayoutDataParser extends AbstractParser {
 		controls[BezierLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
-		// FIXME edgeLayout constructor needs to know about source and target
-		// 		Node layouts.
-		// Need to know if this is a self-loop before calling this constructor 
-		// (since constructor calls updateAnglesEtc...)
+		// TODO find out if self-loop
 		BezierLayout edgeLayout = new BezierLayout(controls, t.getSource().equals(t.getTarget()));		
-		
+				
 		// extract label offset
 		Point2D.Float offset = new Point2D.Float();
 		SubElement label = layout.getSubElement("label");

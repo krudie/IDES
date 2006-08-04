@@ -106,8 +106,9 @@ public class FileOperations {
         		Hub.getWorkspace().removeFSAModel(newName);
         	a.setName(newName);
         	a.setFile(file);
+        	//a.notifyAllSubscribers();
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
-            a.notifyAllSubscribers();
+            
             return true;
         }
     }  

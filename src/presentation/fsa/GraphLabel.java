@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -108,9 +109,9 @@ public class GraphLabel extends GraphElement {
 			((Graphics2D)g).drawImage(rendered, null, 
 					(int)layout.getLocation().x,(int)layout.getLocation().y);
 			*/
-			Rectangle renderedBounds = bounds();
+			Rectangle2D renderedBounds = bounds();
 			((Graphics2D)g).drawImage(rendered, null, 
-				renderedBounds.x, renderedBounds.y);
+				(int)renderedBounds.getX(), (int)renderedBounds.getY());
 		}
 		else
 		{					
@@ -159,7 +160,7 @@ public class GraphLabel extends GraphElement {
 		bounds.setLocation(new Point((int)(layout.getLocation().x - width/2), 
 				(int)(layout.getLocation().y - height/2)));
 		*/
-		Rectangle textBounds = bounds();
+		// Rectangle2D textBounds = bounds();
 		
 		int x = BentoBox.convertDoubleToInt(
 			getLayout().getLocation().x - 
@@ -190,9 +191,9 @@ public class GraphLabel extends GraphElement {
 			g.setColor(getLayout().getColor());
 		}
 		
-		Rectangle border = bounds();
-		border.width += TEXT_MARGIN_WIDTH;
-		border.height += TEXT_MARGIN_WIDTH;
+//		Rectangle border = bounds();
+//		border.width += TEXT_MARGIN_WIDTH;
+//		border.height += TEXT_MARGIN_WIDTH;
 		
 		Stroke s = ((Graphics2D)g).getStroke();
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
@@ -204,8 +205,8 @@ public class GraphLabel extends GraphElement {
 			((Graphics2D)g).draw(bounds());	// TODO draw border for free labels too 
 			
 			// TODO compute corner of bounding box that is nearest to the parent's centre			
-			g.drawLine((int)bounds().x, 
-						(int)bounds().y, 
+			g.drawLine((int)bounds().getX(), 
+						(int)bounds().getY(), 
 						(int)getParent().getLocation().x, 
 						(int)getParent().getLocation().y);
 		}
@@ -364,7 +365,8 @@ public class GraphLabel extends GraphElement {
 	{
 		String exportString = "";
 		GraphicalLayout labelLayout = getLayout();
-		Rectangle labelBounds = bounds();
+		Rectangle2D b = bounds();
+		Rectangle labelBounds = new Rectangle((int)b.getX(), (int)b.getY(), (int)b.getWidth(), (int)b.getHeight());
 		Node parentNode = null;
 		GraphicalLayout nodeLayout = null;
 		
@@ -386,7 +388,7 @@ public class GraphLabel extends GraphElement {
 			return exportString;
 		}
 		
-		// Adjust the bounds for PSTricks export
+		// Adjust the bounds for PSTricks export		
 		labelBounds.x = BentoBox.convertDoubleToInt(
 			getLayout().getLocation().x - (getLayout().getLocation().x * 0.00001));
 		labelBounds.y = BentoBox.convertDoubleToInt(

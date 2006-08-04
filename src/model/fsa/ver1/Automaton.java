@@ -5,6 +5,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import observer.FSMMessage;
+import observer.FSMPublisher;
 import observer.Publisher;
 
 import model.fsa.FSAEvent;
@@ -21,7 +23,7 @@ import model.fsa.FSATransition;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Automaton extends Publisher implements Cloneable, FSAModel {	
+public class Automaton extends FSMPublisher implements Cloneable, FSAModel {	
 	
     private LinkedList<FSAState> states;
 
@@ -105,14 +107,6 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
     }
 
     /* (non-Javadoc)
-	 * @see model.fsa.ver1.FSAModel#add(model.fsa.FSAState)
-	 */
-    public void add(FSAState s){
-        states.add(s); 
-        maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
-    }
-    
-    /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getStateCount()
 	 */
     public int getStateCount(){
@@ -155,6 +149,17 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 	}
 	
     /* (non-Javadoc)
+	 * @see model.fsa.ver1.FSAModel#add(model.fsa.FSAState)
+	 */
+	public void add(FSAState s){
+	    states.add(s); 
+	    maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
+    	fireFSMStructureChanged(new FSMMessage(FSMMessage.ADD,
+    			FSMMessage.STATE, s.getId(), this));
+
+	}
+
+	/* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSAState)
 	 */
     public void remove(FSAState s){
@@ -173,6 +178,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
             t.getTarget().removeTargetTransition(t);            
         }
         states.remove(s);
+        fireFSMStructureChanged(new FSMMessage(FSMMessage.REMOVE,
+    			FSMMessage.STATE, s.getId(), this));
     }
     
     /* (non-Javadoc)
@@ -202,6 +209,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
         maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
+        fireFSMStructureChanged(new FSMMessage(FSMMessage.ADD,
+    			FSMMessage.TRANSITION, t.getId(), this));
     }
 
     /* (non-Javadoc)
@@ -211,6 +220,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
+        fireFSMStructureChanged(new FSMMessage(FSMMessage.REMOVE,
+    			FSMMessage.TRANSITION, t.getId(), this));
     }
 
     /* (non-Javadoc)
@@ -237,7 +248,9 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 	 */
     public void add(FSAEvent e){
         events.add(e);
-    	maxEventId = maxEventId < e.getId() ? e.getId() : maxEventId;
+    	maxEventId = maxEventId < e.getId() ? e.getId() : maxEventId;    	
+    	fireFSMEventSetChanged(new FSMMessage(FSMMessage.ADD,
+    			FSMMessage.EVENT, e.getId(), this));
     }
 
     /* (non-Javadoc)
@@ -245,6 +258,8 @@ public class Automaton extends Publisher implements Cloneable, FSAModel {
 	 */
     public void remove(FSAEvent e){
         events.remove(e);
+    	fireFSMEventSetChanged(new FSMMessage(FSMMessage.REMOVE,
+    			FSMMessage.EVENT, e.getId(), this));
     }
 
     /* (non-Javadoc)

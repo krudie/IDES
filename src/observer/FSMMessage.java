@@ -29,11 +29,11 @@ public class FSMMessage {
 	private FSMPublisher source; // the publisher that sent this message
 	private String messageText;
 	
-	public FSMMessage(int elementType, long elementId, int eventType, FSMPublisher source) {
-		this(elementType, elementId, eventType, source, "");
+	public FSMMessage(int eventType, int elementType, long elementId, FSMPublisher source) {
+		this(eventType, elementType, elementId, source, "");
 	}	
 
-	public FSMMessage(int elementType, long elementId, int eventType, FSMPublisher source, String messageText) {
+	public FSMMessage(int eventType, int elementType, long elementId, FSMPublisher source, String messageText) {
 		super();		
 		this.elementType = elementType;
 		this.elementId = elementId;

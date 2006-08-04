@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -73,15 +74,14 @@ public class Node extends GraphElement {
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void refresh() 
-	{
-	
+	{	
 		Point2D.Float centre = getLayout().getLocation();
 			
 		label.updateLayout(getLayout().getText(), centre);
 		
 		// compute new radius
-		Rectangle labelBounds = label.bounds();
-		float radius = Math.max(labelBounds.width/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
+		Rectangle2D labelBounds = label.bounds();
+		float radius = (float)Math.max(labelBounds.getWidth()/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
 		getLayout().setRadius(radius);
 		radius=getLayout().getRadius();
 		recomputeEdges();
@@ -160,9 +160,16 @@ public class Node extends GraphElement {
 		}
 		
 		Graphics2D g2d = (Graphics2D)g;
+		
+		Color temp = g2d.getColor();
+		g2d.setColor(getLayout().getBackgroundColor());
+		g2d.fill(circle);
+		g2d.setColor(temp);	
+		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);		
 		g2d.draw(circle);
-				
+			
+		
 		if(state.isMarked()){
 			g2d.draw(innerCircle);
 		}		
@@ -178,6 +185,15 @@ public class Node extends GraphElement {
 	
 	public Rectangle bounds() {		
 		return circle.getBounds();
+	}
+	
+	/**	 
+	 * @param el
+	 * @return bounding rectangle for union of el with all of its children.
+	 */
+	public Rectangle adjacentBounds(){		
+		Rectangle bounds = bounds();		
+		return (Rectangle)bounds.createUnion(super.bounds());
 	}
 	
 	/**

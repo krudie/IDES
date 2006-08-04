@@ -69,7 +69,7 @@ public class CommonTasks {
 			if(FileOperations.saveAutomaton(gm.getAutomaton(),gm.getAutomaton().getFile()))
 			{
 				gm.setDirty(false);
-				gm.notifyAllSubscribers();
+				//gm.notifyAllSubscribers();
 			}
 			else
 				return false;

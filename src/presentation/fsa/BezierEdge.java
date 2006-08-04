@@ -69,8 +69,11 @@ public class BezierEdge extends Edge {
 	}
 
 	/**
+	 * Creates a new directed Bezier edge from <code>source</code> to <code>target</code> 
+	 * with default layout and no transition.
+	 * 
 	 * @param source
-	 * @param source2
+	 * @param target
 	 */
 	public BezierEdge(Node source, Node target) {
 		super(source, target);
@@ -87,7 +90,7 @@ public class BezierEdge extends Edge {
 		
 		if(isDirty()){
 			refresh();
-			getHandler().refresh();			
+			//getHandler().refresh();			
 			getLayout().setDirty(false);
 		}
 	
@@ -134,7 +137,8 @@ public class BezierEdge extends Edge {
 	 * Updates my visualization of curve, arrow and label.
 	 */
 	public void refresh() {		
-		super.refresh();
+		super.refresh(); // refresh all children
+		
 		CubicCurve2D.Float curve = getLayout().getCubicCurve();
 //		 DEBUG
 		assertAllPointsNumbers(curve);		
@@ -154,10 +158,13 @@ public class BezierEdge extends Edge {
 	    getLabel().setLocation(location);
 	    
 	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
+	    // Make certain that it points the right direction when nodes are touching or overlapping.
 	    Point2D.Float dir = computeArrowDirection();
 	    
+	    // FIXME arrow position must be moved to outside boundary of curve (backup by distance radius).
 	    Point2D.Float unitDir = Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
-	    arrowHead.update(unitDir, Geometry.add(curve.getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH))));       
+	    arrowHead.update(unitDir, Geometry.add(curve.getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH))));
+	    getLayout().setDirty(false);
 	    setDirty(false);
 	}
 	
