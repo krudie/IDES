@@ -9,7 +9,7 @@ public class NodeLayout extends GraphicalLayout {
 	
 	private float radius;		
 	private Point2D.Float arrow; // the direction vector for arrow if the state is initial
-	private Node node;
+	private CircleNode node;
 	
 	/**
      * The default radius of the circle which represents this Node, and the
@@ -84,7 +84,7 @@ public class NodeLayout extends GraphicalLayout {
 	/**
 	 * @param node
 	 */
-	public void setNode(Node node) {
+	public void setNode(CircleNode node) {
 		this.node = node;		
 	}	
 	

@@ -71,7 +71,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	
 	public void addFSAModel(FSAModel fsa) {
 		
-		// LENKO What is the meaning of the first case? HB
+		// Remove Untitled model if it has not been modified
 		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
 			removeFSAModel(getActiveGraphModel().getName());
 		
@@ -151,8 +151,8 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 //			 TODO change name to fsa.id for consistency with add and remove
 			fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.FSM, 
 								name, 
-								WorkspaceMessage.MODIFY,
-								this));		
+								WorkspaceMessage.REMOVE,
+								this));
 		}		
 		
 //		if(getActiveModel()!=null)

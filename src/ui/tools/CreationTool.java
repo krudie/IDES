@@ -12,7 +12,7 @@ import main.Hub;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.GraphDrawingView;
-import presentation.fsa.Node;
+import presentation.fsa.CircleNode;
 import presentation.fsa.NodeLayout;
 import ui.command.GraphCommands.CreateCommand;
 
@@ -27,8 +27,8 @@ import ui.command.GraphCommands.CreateCommand;
 public class CreationTool extends DrawingTool {
 	
 	private boolean drawingEdge = false;
-	private Node sourceNode, targetNode; // nodes to be source and target of created edge
-	private Node startNode, endNode; // nodes intersected on mouse pressed and released respectively
+	private CircleNode sourceNode, targetNode; // nodes to be source and target of created edge
+	private CircleNode startNode, endNode; // nodes intersected on mouse pressed and released respectively
 	private BezierEdge edge;
 	private CreateCommand cmd;	
 	private boolean aborted;
@@ -84,7 +84,7 @@ public class CreationTool extends DrawingTool {
 
 		if(context.updateCurrentSelection(me.getPoint())){
 			//try{		
-				startNode = (Node)context.getSelectedElement();
+				startNode = (CircleNode)context.getSelectedElement();
 				if(!drawingEdge){
 					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
 					dragging = true; // assume we're dragging until mouse released decides otherwise.
@@ -104,7 +104,7 @@ public class CreationTool extends DrawingTool {
 			endNode = null;
 			if(context.updateCurrentSelection(me.getPoint())){
 				try{		
-					endNode = (Node)context.getSelectedElement();
+					endNode = (CircleNode)context.getSelectedElement();
 				}catch(ClassCastException e){}
 			}				
 			
@@ -203,7 +203,7 @@ public class CreationTool extends DrawingTool {
 	 * @param n1 source node
 	 * @return a new Edge with source node n1
 	 */
-	private BezierEdge beginEdge(Node n1){
+	private BezierEdge beginEdge(CircleNode n1){
 		BezierLayout layout = new BezierLayout();
 		BezierEdge e = new BezierEdge(layout, n1);
 		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());

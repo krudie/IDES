@@ -18,7 +18,7 @@ import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
-import presentation.fsa.Node;
+import presentation.fsa.CircleNode;
 import presentation.fsa.NodeLabellingDialog;
 import presentation.fsa.SelectionGroup;
 
@@ -60,7 +60,7 @@ public class GraphCommands {
 
 		private GraphDrawingView context;
 		private int elementType;
-		private Node source, target;
+		private CircleNode source, target;
 		private BezierEdge edge;
 		private Point location;
 		
@@ -106,7 +106,7 @@ public class GraphCommands {
 		 * @param self_loop2
 		 * @param n
 		 */
-		public CreateCommand(GraphDrawingView context, int elementType, Node n) {
+		public CreateCommand(GraphDrawingView context, int elementType, CircleNode n) {
 			this.context = context;			
 			this.elementType = elementType;
 			source = n;
@@ -118,7 +118,7 @@ public class GraphCommands {
 		 * @param edge
 		 * @param target
 		 */
-		public CreateCommand(GraphDrawingView context, int elementType, BezierEdge edge, Node target) {
+		public CreateCommand(GraphDrawingView context, int elementType, BezierEdge edge, CircleNode target) {
 			this.context = context;
 			this.elementType = elementType;
 			this.edge = edge;
@@ -131,11 +131,11 @@ public class GraphCommands {
 			this.location = location;
 		}
 		
-		public void setSourceNode(Node s){
+		public void setSourceNode(CircleNode s){
 			source = s;
 		}
 		
-		public void setTargetNode(Node t){
+		public void setTargetNode(CircleNode t){
 			target = t;
 			t.setHighlighted(true);
 		}
@@ -261,8 +261,8 @@ public class GraphCommands {
 				}
 			}else{
 				// KLUGE: instanceof is rotten style, fix this				
-				if (element instanceof Node){				
-					Node node = (Node)element;
+				if (element instanceof CircleNode){				
+					CircleNode node = (CircleNode)element;
 					// if selection is a node				
 					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(context.getGraphModel(),node);
 				}else if(element instanceof BezierEdge){

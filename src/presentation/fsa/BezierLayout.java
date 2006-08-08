@@ -272,7 +272,7 @@ public class BezierLayout extends GraphicalLayout {
 		// e.g. abs(angle between base line and tangent) <= PI/2?
 		
 		Point2D.Float p1p2 = Geometry.subtract(curve.getP2(), curve.getP1());	
-		
+		Point2D.Float p2p1 = Geometry.subtract(curve.getP1(), curve.getP2());
 		Point2D.Float p1c1 = Geometry.subtract(curve.getCtrlP1(), curve.getP1());
 		Point2D.Float p2c2 = Geometry.subtract(curve.getCtrlP2(), curve.getP2());		
 				

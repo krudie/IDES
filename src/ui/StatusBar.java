@@ -49,9 +49,9 @@ public class StatusBar extends JPanel implements FSMSubscriber, WorkspaceSubscri
 		if(Hub.getWorkspace().getActiveModel()!=null)
 		{
 			a=(model.fsa.ver1.Automaton)Hub.getWorkspace().getActiveModel();
-			a.addSubscriber(this);
-			refreshStatusLabel();
-		}			
+			a.addSubscriber(this);			
+		}
+		refreshStatusLabel();
 	}
 		
 	

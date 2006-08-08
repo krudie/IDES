@@ -12,7 +12,7 @@ import model.fsa.ver1.State;
 import org.pietschy.command.ToggleVetoException;
 import org.pietschy.command.undo.UndoableActionCommand;
 
-import presentation.fsa.Node;
+import presentation.fsa.CircleNode;
 
 /**
  * @author Helen Bretzke
@@ -29,7 +29,7 @@ public class NodeCommands {
 	 *
 	 */
 	public static class SetMarkedCommand extends org.pietschy.command.ToggleCommand {
-		private Node node;
+		private CircleNode node;
 		private boolean previousValue; // for undoable edit		
 
 		public SetMarkedCommand(){
@@ -44,14 +44,14 @@ public class NodeCommands {
 			IDESWorkspace.instance().getActiveGraphModel().setMarked(node, arg0); 			
 		}		
 		
-		public void setNode(Node node){
+		public void setNode(CircleNode node){
 			this.node = node;
 		}
 	}
 		
 	public static class SetInitialCommand extends org.pietschy.command.ToggleCommand {
 
-		private Node node;				
+		private CircleNode node;				
 		private boolean previousValue;		
 		
 		public SetInitialCommand(){
@@ -67,14 +67,14 @@ public class NodeCommands {
 			IDESWorkspace.instance().getActiveGraphModel().setInitial(node, arg0);
 		}
 				
-		public void setNode(Node node){
+		public void setNode(CircleNode node){
 			this.node = node;
 		}
 	}
 	
 	public static class SelfLoopCommand extends org.pietschy.command.undo.UndoableActionCommand {
 
-		private Node node;
+		private CircleNode node;
 		
 		public SelfLoopCommand(){
 			super("set.selfloop.command");
@@ -90,7 +90,7 @@ public class NodeCommands {
 			return null;
 		}
 	
-		public void setNode(Node node){
+		public void setNode(CircleNode node){
 			this.node = node;
 		}
 	}

@@ -125,7 +125,9 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 			graphBounds=getGraphModel().getBounds(true);
 			if(graphBounds.x<0||graphBounds.y<0)
 			{
+//				graphModel.removeSubscriber(this);
 				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
+//				graphModel.addSubscriber(this);
 			}
 			if(scaleToFit&&getParent()!=null)
 			{

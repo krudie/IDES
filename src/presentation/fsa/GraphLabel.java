@@ -367,7 +367,7 @@ public class GraphLabel extends GraphElement {
 		GraphicalLayout labelLayout = getLayout();
 		Rectangle2D b = bounds();
 		Rectangle labelBounds = new Rectangle((int)b.getX(), (int)b.getY(), (int)b.getWidth(), (int)b.getHeight());
-		Node parentNode = null;
+		CircleNode parentNode = null;
 		GraphicalLayout nodeLayout = null;
 		
 		// This is taken from Mike Wood - thanks, Mike!!!

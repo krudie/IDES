@@ -18,7 +18,7 @@ import ui.command.NodeCommands.SetMarkedCommand;
 
 public class NodePopup extends JPopupMenu {
 
-	private Node node;
+	private CircleNode node;
 	private JMenuItem miSetMarked, miLabelNode, miSelfLoop, miSetInitial, miDeleteNode;
 	private static GraphDrawingView view;
 	
@@ -38,7 +38,7 @@ public class NodePopup extends JPopupMenu {
 	 */
 	private static final long serialVersionUID = 6664241416811568136L;
 
-	protected static void showPopup(GraphDrawingView context, Node n){
+	protected static void showPopup(GraphDrawingView context, CircleNode n){
 		view = context;
 		if(popup == null)
 		{
@@ -55,7 +55,7 @@ public class NodePopup extends JPopupMenu {
 		popup.show(context, (int)p.x, (int)p.y);
 	}
 		
-	protected NodePopup(Node n) {
+	protected NodePopup(CircleNode n) {
 		super("Node Properties");		
 		markedCmd = new SetMarkedCommand();
 		initialCmd = new SetInitialCommand();
@@ -79,7 +79,7 @@ public class NodePopup extends JPopupMenu {
 		setNode(n);
 	}
 
-	protected void setNode(Node n){
+	protected void setNode(CircleNode n){
 		node = n;
 		
 		markedCmd.setNode(n);

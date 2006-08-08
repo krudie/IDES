@@ -4,7 +4,9 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Float;
@@ -43,7 +45,7 @@ public class BezierEdge extends Edge {
 	 * @param layout
 	 * @param source
 	 */
-	public BezierEdge(BezierLayout layout, Node source){
+	public BezierEdge(BezierLayout layout, CircleNode source){
 		super(source);		
 		setLayout(layout);		
 		setHandler(new BezierHandler(this));		
@@ -58,7 +60,7 @@ public class BezierEdge extends Edge {
 	 * @param target
 	 * @param t
 	 */
-	public BezierEdge(BezierLayout layout, Node source, Node target, FSATransition t){		
+	public BezierEdge(BezierLayout layout, CircleNode source, CircleNode target, FSATransition t){		
 			
 		super(source, target, t);
 		
@@ -75,7 +77,7 @@ public class BezierEdge extends Edge {
 	 * @param source
 	 * @param target
 	 */
-	public BezierEdge(Node source, Node target) {
+	public BezierEdge(CircleNode source, CircleNode target) {
 		super(source, target);
 		setHandler(new BezierHandler(this));
 		setLayout(new BezierLayout());		
@@ -125,8 +127,40 @@ public class BezierEdge extends Edge {
 		// subtract Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH) from P2		
 		g2d.draw(getLayout().getCubicCurve());   
 	    
-		g2d.drawPolygon(arrowHead);
-	    g2d.fillPolygon(arrowHead);
+		
+		// Compute the direction and location of the arrow head
+		AffineTransform at = new AffineTransform();
+		
+		// Compute and *STORE?* the arrow layout (the direction vector from base to tip of the arrow)
+	    // Make certain that it points the right direction when nodes are touching or overlapping.
+	    Point2D.Float unitDir = computeArrowDirection(); 
+	    	   
+	    arrowHead.reset();
+		
+	    // FIXME find point of intersection with target node boundary		
+		Point2D.Float basePt = Geometry.add(getLayout().getCubicCurve().getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
+		at.setToTranslation(basePt.x, basePt.y);
+		g2d.transform(at);
+	    // TODO rotate to align with end of curve
+	    double rho = Geometry.angleFrom(ArrowHead.axis, unitDir);
+		at.setToRotation(rho);		
+		
+		g2d.transform(at);
+			
+		g2d.fill(arrowHead);
+		
+		at.setToRotation(-rho);
+		g2d.transform(at);
+		at.setToTranslation(-basePt.x, -basePt.y);		
+		g2d.transform(at);
+//		try {
+//			g2d.transform(at.createInverse());
+//		} catch (NoninvertibleTransformException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		g2d.drawPolygon(arrowHead);
+//	    g2d.fillPolygon(arrowHead);
 	    
 	    // draw label and handler
 	    super.draw(g);
@@ -159,11 +193,11 @@ public class BezierEdge extends Edge {
 	    
 	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
 	    // Make certain that it points the right direction when nodes are touching or overlapping.
-	    Point2D.Float dir = computeArrowDirection();
-	    
-	    // FIXME arrow position must be moved to outside boundary of curve (backup by distance radius).
-	    Point2D.Float unitDir = Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
-	    arrowHead.update(unitDir, Geometry.add(curve.getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH))));
+//	    Point2D.Float dir = computeArrowDirection();
+//	    
+//	    // FIXME arrow position must be moved to outside boundary of curve (backup by distance radius).
+//	    Point2D.Float unitDir = Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
+//	    arrowHead.update(unitDir, Geometry.add(curve.getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH))));
 	    getLayout().setDirty(false);
 	    setDirty(false);
 	}
@@ -177,8 +211,9 @@ public class BezierEdge extends Edge {
 		// intersects with ...
 		
 		// float d = 2 * target.getRadius() + 2 * ArrowHead.SHORT_HEAD_LENGTH;
-		// Ellipse2D circle = new Ellipse2D.Float(target.getLayout().getLocation().x, target.getLayout().getLocation().y, d, d);		
-		return null;
+		// Ellipse2D circle = new Ellipse2D.Float(target.getLayout().getLocation().x, target.getLayout().getLocation().y, d, d);
+		// KLUGE
+		return Geometry.unit(Geometry.subtract(getLayout().getCubicCurve().getP2(), getLayout().getCubicCurve().getCtrlP2()));
 	}
 
 	/************************************************************
@@ -293,6 +328,16 @@ public class BezierEdge extends Edge {
 	// TODO get rid of this method
 	public BezierLayout getLayout(){
 		return (BezierLayout)super.getLayout();  // FIXME ClassCastException
+	}
+	
+	public CircleNode getSource()
+	{
+		return (CircleNode)super.getSource();
+	}
+	
+	public CircleNode getTarget()
+	{
+		return (CircleNode)super.getTarget();
 	}
 	
 	public void translate(float x, float y){		

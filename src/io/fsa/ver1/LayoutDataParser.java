@@ -15,7 +15,7 @@ import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;
 import presentation.fsa.FSMGraph;
 import presentation.fsa.GraphElement;
-import presentation.fsa.Node;
+import presentation.fsa.CircleNode;
 import presentation.fsa.NodeLayout;
 import presentation.fsa.ReflexiveEdge;
 
@@ -284,7 +284,7 @@ public class LayoutDataParser extends AbstractParser {
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
-	private BezierEdge directedEdgeBetween(Node source, Node target){		
+	private BezierEdge directedEdgeBetween(CircleNode source, CircleNode target){		
 		// TODO check all out edges of source
 		
 		

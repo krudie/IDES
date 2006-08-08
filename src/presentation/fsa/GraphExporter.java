@@ -229,7 +229,7 @@ public class GraphExporter
 		IDESWorkspace workspace = null;
 		FSMGraph graphModel = null;
 		
-		Node[] nodeArray = null;
+		CircleNode[] nodeArray = null;
 		BezierEdge[] edgeArray = null;
 		GraphLabel[] freelabelArray = null;
 
@@ -242,7 +242,7 @@ public class GraphExporter
 		}
 
 		// Step #2 - Get the Nodes, Edges and Labels
-		nodeArray = (Node[]) graphModel.getNodes().toArray(new Node[0]);
+		nodeArray = (CircleNode[]) graphModel.getNodes().toArray(new CircleNode[0]);
 		edgeArray = (BezierEdge[]) graphModel.getEdges().toArray(new BezierEdge[0]);
 		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 

@@ -19,7 +19,8 @@ import model.fsa.ver1.Transition;
 public abstract class Edge extends GraphElement{
 
 	private ArrayList<FSATransition> transitions; // the transitions that this edge represents	
-	private Node source, target;	
+	private Node source; 
+	private Node target;	
 	private EdgeHandler handler; // Anchors for modifying the curve.
 	private GraphLabel label;	 // extra pointer for O(1) access without instanceof
 	

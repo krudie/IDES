@@ -77,7 +77,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Maps used in intersection searches
 	 * TODO replace with Quadtree data structure
 	 */
-	private HashMap<Long, Node> nodes;
+	private HashMap<Long, CircleNode> nodes;
 	private HashMap<Long, Edge> edges;
 	private HashMap<Point2D.Float, GraphLabel> freeLabels; // use location as key
 	private HashMap<Long, GraphLabel> edgeLabels; // use parent edge's id as key
@@ -116,9 +116,12 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		
 		this.metaData = data;	
 			
-		initializeGraph();
+		nodes = new HashMap<Long, CircleNode>();
+		edges = new HashMap<Long, Edge>();
+		edgeLabels = new HashMap<Long, GraphLabel>();
+		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
 		
-		setDirty(false);
+		initializeGraph();	
 	}
 	
 	/**
@@ -128,8 +131,6 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	public FSMGraph(Automaton fsa)  //, GraphElement graph)
 	{
-//		 TODO set this.children = graph.children
-		//this.graph = graph; 
 		this.fsa = fsa;
 		fsa.addSubscriber(this);		
 		buildIntersectionDS();
@@ -142,12 +143,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	private void buildIntersectionDS()
 	{
-		nodes = new HashMap<Long, Node>();
+		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
-	
-		// TODO change this to this.children()
+			
 		Iterator children = children();
 		
 		// children can be Nodes or FreeLabels
@@ -157,11 +157,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		while(children.hasNext())
 		{
 			el = (GraphElement)children.next();
-			Node n;
+			CircleNode n;
 			
-			if(el instanceof Node)
+			if(el instanceof CircleNode)
 			{	
-				n = (Node)el;
+				n = (CircleNode)el;
 				nodes.put(new Long(n.getId()), n);
 						
 				Iterator nodeChildren = n.children();
@@ -207,7 +207,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Returns the set of all nodes in the graph.
 	 * @return the set of all nodes in the graph
 	 */
-	public Collection<Node> getNodes()
+	public Collection<CircleNode> getNodes()
 	{
 		return nodes.values();
 	}
@@ -235,20 +235,15 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Graph to be built in LayoutDataParser.
 	 * Replace the intersection lists with a quadtree.
 	 */
-	private void initializeGraph(){
-				
-		nodes = new HashMap<Long, Node>();
-		edges = new HashMap<Long, Edge>();
-		edgeLabels = new HashMap<Long, GraphLabel>();
-		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
+	private void initializeGraph(){		
 		
-//		for(Node n:nodes.values())
-//			((NodeLayout)n.getLayout()).dispose();
-//		
-//		nodes.clear();
-//		edges.clear();
-//		edgeLabels.clear();
-//		freeLabels.clear();		
+		for(CircleNode n:nodes.values())
+			((NodeLayout)n.getLayout()).dispose();
+		
+		nodes.clear();
+		edges.clear();
+		edgeLabels.clear();
+		freeLabels.clear();		
 		
 		// for all states in fsa, 
 		// get the graphic data, 
@@ -256,13 +251,13 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		// add to set of nodes		
 		Iterator iter = fsa.getStateIterator();
 		State s;
-		Node n1;
+		CircleNode n1;
 				
 		while(iter.hasNext()){
 			s = (State)iter.next();
 			NodeLayout nL=metaData.getLayoutData(s);
 			nL.setUniformRadius(uniformR);
-			n1 = new Node(s, nL);			
+			n1 = new CircleNode(s, nL);			
 			insert(n1);
 			nodes.put(new Long(s.getId()), n1);
 //			maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
@@ -274,7 +269,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		// add events to collection for that edge.
 		iter = fsa.getTransitionIterator();
 		Transition t;
-		Node n2;
+		CircleNode n2;
 		Edge e;
 		while(iter.hasNext()){						
 			t = (Transition)iter.next();
@@ -331,7 +326,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
-	private Edge directEdgeBetween(Node source, Node target){		
+	private Edge directEdgeBetween(CircleNode source, CircleNode target){		
 		for(Edge e : edges.values())
 		{			
 			if(e.getSource().equals(source) && e.getTarget().equals(target)){
@@ -423,7 +418,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	  * @param n1 
 	  * @param n2	
 	  */
-	public void finishEdge(BezierEdge e, Node n2){
+	public void finishEdge(BezierEdge e, CircleNode n2){
 		//if( directEdgeBetween(e.getSource(), n2) == null){
 		
 		e.setTarget(n2);			
@@ -477,7 +472,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param p the centre point for the new node
 	 * @return the node added
 	 */
-	public Node addNode(Point2D.Float p){
+	public CircleNode addNode(Point2D.Float p){
 		State s = new State(fsa.getFreeStateId());
 		s.setInitial(false);
 		s.setMarked(false);
@@ -487,7 +482,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		fsa.add(s);
 		fsa.addSubscriber(this);
 		
-		Node n = new Node(s, layout);	
+		CircleNode n = new CircleNode(s, layout);	
 		nodes.put(new Long(s.getId()), n);
 		insert(n);
 		setDirty(true);		
@@ -509,7 +504,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param n1 source node 
 	 * @param n2 target node
 	 */
-	public void addEdge(Node n1, Node n2){
+	public void addEdge(CircleNode n1, CircleNode n2){
 		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(n1.getId()), fsa.getState(n2.getId()));
 		// computes layout of new edges (default to straight edge between pair of nodes)
 		BezierLayout layout = new BezierLayout(n1.getLayout(), n2.getLayout());				
@@ -539,7 +534,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param source
 	 * @param p
 	 */
-	public void addEdgeAndNode(Node source, Point2D.Float p){		
+	public void addEdgeAndNode(CircleNode source, Point2D.Float p){		
 		addEdge(source, addNode(p));
 	}
 
@@ -555,7 +550,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			if(edgeLabels.containsValue(el)){
 				saveMovement((GraphLabel)el);
 			}else if(nodes.containsValue(el)){
-				saveMovement((Node)el);
+				saveMovement((CircleNode)el);
 			}else if(edges.containsValue(el)){
 				if( ((BezierEdge)el).isSelfLoop() ){					
 					saveMovement((BezierEdge)el);
@@ -601,7 +596,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 //				this, ""));
 	}
 
-	private void saveMovement(Node node){
+	private void saveMovement(CircleNode node){
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
 		metaData.setLayoutData(s, node.getLayout());
@@ -630,7 +625,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	///////////////////////////////////////////////////////////////////
 	
 	
-	public void setInitial(Node n, boolean b){
+	public void setInitial(CircleNode n, boolean b){
 		// update the state
 		((State)n.getState()).setInitial(b);
 		// add an arrow to the node layout
@@ -647,7 +642,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
     			FSMMessage.STATE, n.getId(), fsa));
 	}
 	
-	public void setMarked(Node n, boolean b){
+	public void setMarked(CircleNode n, boolean b){
 		// update the state
 		((State)n.getState()).setMarked(b);
 		n.setDirty(true);
@@ -663,7 +658,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param node
 	 * @param arg0
 	 */
-	public void setSelfLoop(Node node, boolean b) {
+	public void setSelfLoop(CircleNode node, boolean b) {
 		Edge selfLoop = directEdgeBetween(node, node);
 		if(!b && selfLoop != null){			
 			delete(selfLoop);		
@@ -785,7 +780,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
-			delete((Node)el);			
+			delete((CircleNode)el);			
 		}else if(edges.containsValue(el)){
 			delete((BezierEdge)el);
 		}else{
@@ -794,7 +789,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		}
 	}
 	
-	private void delete(Node n){
+	private void delete(CircleNode n){
 		// delete all adjacent edges
 		Iterator edges = n.adjacentEdges();
 		while(edges.hasNext()){
@@ -841,7 +836,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param n the node to be labelled
 	 * @param text the name for the node
 	 */
-	public void labelNode(Node n, String text){		
+	public void labelNode(CircleNode n, String text){		
 		State s = (State)fsa.getState(n.getId());		
 		n.getLayout().setText(text);
 		metaData.setLayoutData(s, n.getLayout());
@@ -955,7 +950,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		FSAState nodeState = null;
 		
 		// Start with the nodes
-		for (Node graphNode : nodes.values())
+		for (CircleNode graphNode : nodes.values())
 		{
 			// If the node is initial, take into account the initial
 			// arrow
@@ -994,7 +989,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	private Rectangle getElementBounds()
 	{
-		for (Node graphNode : nodes.values())
+		for (CircleNode graphNode : nodes.values())
 		{
 			return graphNode.getSquareBounds();
 		}
@@ -1028,7 +1023,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		SelectionGroup g = new SelectionGroup();
 		
 		// check intersection with all nodes		
-		for(Node n : nodes.values())
+		for(CircleNode n : nodes.values())
 		{
 			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
 				g.insert(n);				
@@ -1064,10 +1059,10 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		// check intersection with all nodes		
 		Iterator iter = nodes.entrySet().iterator();
 		Entry entry;
-		Node n;
+		CircleNode n;
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
-			n = (Node)entry.getValue();
+			n = (CircleNode)entry.getValue();
 			if(n.intersects(p)){				
 				return n;				
 			}

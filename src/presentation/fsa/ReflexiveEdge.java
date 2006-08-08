@@ -25,7 +25,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 * Creates a reflexive edge on <code>source</code> with no underlying transition. 
 	 * @param source
 	 */
-	public ReflexiveEdge(Node source)
+	public ReflexiveEdge(CircleNode source)
 	{
 		super(source, source);
 		setLayout(new ReflexiveLayout());		
@@ -35,7 +35,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 * @param layout
 	 * @param source
 	 */
-	public ReflexiveEdge(BezierLayout layout, Node source, Transition t)
+	public ReflexiveEdge(BezierLayout layout, CircleNode source, Transition t)
 	{
 		super(source, source);
 		addTransition(t);
@@ -115,7 +115,7 @@ public class ReflexiveEdge extends BezierEdge {
 		 * Layout for a reflexive edge with vertical axis vector from centre of
 		 * node to midpoint of bezier curve given by <code>bLayout</code>.
 		 */
-		public ReflexiveLayout(BezierLayout bLayout, Node source)
+		public ReflexiveLayout(BezierLayout bLayout, CircleNode source)
 		{			
 			axis = Geometry.subtract(Geometry.midpoint(bLayout.getCubicCurve()), source.getLocation());			
 		}

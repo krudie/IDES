@@ -41,7 +41,7 @@ public class NodeLabellingDialog extends EscapeDialog {
 	private static NodeLabellingDialog me=null;
 
 	private static FSMGraph gm=null;
-	private static Node n;
+	private static CircleNode n;
 
 	protected Action commitListener = new AbstractAction()
 	{
@@ -105,7 +105,7 @@ public class NodeLabellingDialog extends EscapeDialog {
 
 	protected static JTextArea area;
 	
-	public static void showAndLabel(FSMGraph gm, Node node)
+	public static void showAndLabel(FSMGraph gm, CircleNode node)
 	{
 		NodeLabellingDialog.gm=gm;
 		n=node;

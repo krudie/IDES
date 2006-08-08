@@ -120,8 +120,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 	}
 	
 	/**
-	 * Figure out which graph was selected, toggle it's border (clear all others)
-	 * and make it known to the UIStateModel as the currently active graph. 
+	 * Figure out which graph was selected, 
+	 * and set it as the currently active graph in the workspace. 
 	 * 
 	 * @param arg0
 	 */
@@ -129,7 +129,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 		if(!(arg0.getSource() instanceof GraphView))
 			return;
 		GraphView gv=(GraphView)arg0.getSource();
-		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());  // TODO Ignore modelSwitched event
+		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());
 		// Hub.getWorkspace().notifyAllSubscribers();
 	}
 
@@ -155,10 +155,12 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
-	public void modelSwitched(WorkspaceMessage message) {		
-		buildThumbnailBox();
-		invalidate();
-		Hub.getMainWindow().validate();
+	public void modelSwitched(WorkspaceMessage message) {
+		if(message.getEventType() != WorkspaceMessage.REMOVE){
+			buildThumbnailBox();
+			invalidate();
+			Hub.getMainWindow().validate();
+		}
 	}
 	
 
