@@ -13,8 +13,10 @@ import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierHandler;
+import presentation.fsa.EdgeHandler;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
+import presentation.fsa.ReflexiveEdge;
 import ui.command.EdgeCommands.ModifyEdgeCommand;
 
 /**
@@ -93,8 +95,11 @@ public class ModifyEdgeTool extends DrawingTool {
 	
 	private void prepareToDrag(Point point){
 		if(edge.getHandler().isVisible() && edge.getHandler().intersects(point)){				
-			pointType = ((BezierHandler)edge.getHandler()).getLastIntersected();
-			if(pointType == BezierEdge.CTRL1 || pointType == BezierEdge.CTRL2){								
+			pointType = ((EdgeHandler)edge.getHandler()).getLastIntersected();
+			if(pointType == BezierEdge.CTRL1 || 
+				pointType == BezierEdge.CTRL2 || 
+				pointType == ReflexiveEdge.MIDPOINT)
+			{								
 				dragging = true;
 			}else{														
 				dragging = false;					
@@ -102,10 +107,10 @@ public class ModifyEdgeTool extends DrawingTool {
 		}
 	}
 		
-	private boolean ready(){
-//		 ??? do we need dragging anymore?	
-		return edge != null && pointType != BezierHandler.NO_INTERSECTION && dragging;
-	}
+//	private boolean ready(){
+////		 ??? do we need dragging anymore?	
+//		return edge != null && pointType != BezierHandler.NO_INTERSECTION && dragging;
+//	}
 	
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMouseDragged(java.awt.event.MouseEvent)

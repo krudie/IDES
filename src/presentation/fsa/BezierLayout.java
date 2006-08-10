@@ -6,6 +6,7 @@ import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import presentation.CubicCurve2Dex;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 
@@ -25,26 +26,26 @@ public class BezierLayout extends GraphicalLayout {
 	public static final double EPSILON = 0.0001; // lower bound for abs(angles), below which is angles set to zero.  
 	
 	private ArrayList eventNames;	
-	private CubicCurve2D.Float curve;
+	protected CubicCurve2Dex curve;
 
 	// Compact representation of data required to maintain shape of edge while moving
 	// one or both of its nodes.
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
-	private double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
-	private double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
-	private double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
-	private double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2) 
+	protected double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
+	protected double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
+	protected double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
+	protected double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2) 
 	
 	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 		
 	public BezierLayout(){	
-		curve = new CubicCurve2D.Float();
+		curve = new CubicCurve2Dex();
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
 	}
 	
 	public BezierLayout(Point2D.Float[] bezierControls, boolean selfLoop){		
-		curve = new CubicCurve2D.Float();
+		curve = new CubicCurve2Dex();
 		curve.setCurve(bezierControls, 0);
 		this.selfLoop = selfLoop;
 		eventNames = new ArrayList();
@@ -54,7 +55,7 @@ public class BezierLayout extends GraphicalLayout {
 	}
 	
 	public BezierLayout(Point2D.Float[] bezierControls, ArrayList eventNames){		
-		curve = new CubicCurve2D.Float();
+		curve = new CubicCurve2Dex();
 		curve.setCurve(bezierControls, 0);		
 		this.eventNames = eventNames;
 		setLabelOffset(new Point2D.Float(5,5));
@@ -80,7 +81,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param n2 layout for target node
 	 */
 	public BezierLayout(NodeLayout sourceLayout, NodeLayout targetLayout){		
-		curve = new CubicCurve2D.Float();		
+		curve = new CubicCurve2Dex();		
 		computeCurve(sourceLayout, targetLayout);		
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
@@ -100,7 +101,7 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	public void computeCurve(){
 		if(edge != null){
-			computeCurve(edge.getSource().getLayout(), edge.getTarget().getLayout());			
+			computeCurve((NodeLayout)edge.getSource().getLayout(), (NodeLayout)edge.getTarget().getLayout());			
 		}
 	}
 	
@@ -332,13 +333,17 @@ public class BezierLayout extends GraphicalLayout {
 		updateAnglesAndScalars();				
 		setDirty(true);
 	}
-	
-	
 		
-	public CubicCurve2D.Float getCubicCurve() {
+	public CubicCurve2Dex getCubicCurve() {
 		return curve;
 	}	
 	
+	/**
+	 * @param cubicCurve
+	 */
+	protected void setCurve(CubicCurve2Dex cubicCurve) {
+		this.curve = cubicCurve;		
+	}	
 	
 	/**
 	 * Manage the set of event names to appear on the edge label. 

@@ -37,8 +37,8 @@ public class GraphicalLayout {
 	
 	public GraphicalLayout(String text)	{
 		this.text = text;
-		location = new Point2D.Float();	
-		labelOffset = new Point2D.Float();
+		location = new Point2D.Float(0,0);	
+		labelOffset = new Point2D.Float(0,0);
 	}
 	
 	public GraphicalLayout(Point2D.Float location) {
@@ -48,7 +48,7 @@ public class GraphicalLayout {
 	public GraphicalLayout(Point2D.Float location, String text) {
 		this.location = location;
 		this.text = text;
-		labelOffset = new Point2D.Float();
+		labelOffset = new Point2D.Float(0,0);
 	}
 
 	public GraphicalLayout(Point2D.Float location, String text, Color color, Color highlightColor) {
@@ -56,7 +56,7 @@ public class GraphicalLayout {
 		this.text = text;
 		this.color = color;
 		this.highlightColor = highlightColor;
-		labelOffset = new Point2D.Float();
+		labelOffset = new Point2D.Float(0,0);
 	}
 
 	public Point2D.Float getLocation(){

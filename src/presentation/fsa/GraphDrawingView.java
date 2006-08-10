@@ -502,11 +502,11 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	 * 
 	 * @see observer.FSMGraphSubscriber#fsmGraphSelectionChanged(observer.FSMGraphMessage)
 	 */
-	public void fsmGraphSelectionChanged(FSMGraphMessage message) 
-	{
-		// ??? Do I need to do anything here ?  
-		// Or is this event always going to be fired from within this class ?
-	}
+//	public void fsmGraphSelectionChanged(FSMGraphMessage message) 
+//	{
+//		// ??? Do I need to do anything here ?  
+//		// Or is this event always going to be fired from within this class ?
+//	}
 	
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)

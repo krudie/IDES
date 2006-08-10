@@ -35,8 +35,11 @@ public class CircleNode extends Node {
 
 	// visualization objects
 	private Ellipse2D circle = null;
-	private Ellipse2D innerCircle = null;  // only drawn for final states	
+	private Ellipse2D innerCircle = null;  // only drawn for final states
+	
+	// TODO Change this to type InitialArrow
 	private ArrowHead arrow = null;  // only draw for initial states
+	
 	private Point2D.Float arrow1, arrow2;  // the arrow shaft
 		
 	public CircleNode(FSAState s, NodeLayout layout){
@@ -96,9 +99,10 @@ public class CircleNode extends Node {
 		Iterator children = children();
 		while(children.hasNext()){
 			try{
-				BezierEdge e = (BezierEdge)children.next();
+				Edge e = (Edge)children.next();
 				if(e.getTarget() != null){
-					e.getLayout().computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
+					//e.getLayout().computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
+					e.computeEdge();
 				}
 			}catch(ClassCastException cce){
 				// Child is not an edge
@@ -140,10 +144,10 @@ public class CircleNode extends Node {
 		
 		Graphics2D g2d = (Graphics2D)g;
 		
-		Color temp = g2d.getColor();
-		g2d.setColor(getLayout().getBackgroundColor());
-		g2d.fill(circle);
-		g2d.setColor(temp);	
+//		Color temp = g2d.getColor();
+//		g2d.setColor(getLayout().getBackgroundColor());
+//		g2d.fill(circle);
+//		g2d.setColor(temp);	
 		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);		
 		g2d.draw(circle);
@@ -163,6 +167,9 @@ public class CircleNode extends Node {
 	}
 	
 	public Rectangle bounds() {		
+		if(getState().isInitial()){
+			return (Rectangle)circle.getBounds().union(arrow.getBounds());
+		}
 		return circle.getBounds();
 	}
 	

@@ -29,6 +29,7 @@ import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import presentation.Geometry;
 import presentation.PresentationElement;
+import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import util.BentoBox;
@@ -280,17 +281,18 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			
 			// if the edge corresponding to t already exists,
 			// add t to the edge's set of transitions
-			e = directEdgeBetween(n1, n2); 
-			if(e != null){								
-//				Event event = (Event) t.getEvent();
-//				if(event != null){			
-//					e.addEventName(event.getSymbol());
-//				}				
+			// FIXME make sure that the layout is the same
+			e = directedEdgeBetween(n1, n2); 
+			if(e != null){			
 				e.addTransition(t);			
 			}else{
 				// get the graphic data for the transition and all associated events
-				// construct the edge				
-				e = new BezierEdge(metaData.getLayoutData(t), n1, n2, t);			
+				// construct the edge
+				if(n1.equals(n2)){
+					e = new ReflexiveEdge(metaData.getLayoutData(t), n1, t);
+				}else{
+					e = new BezierEdge(metaData.getLayoutData(t), n1, n2, t);
+				}
 				
 				// add this edge to source and target nodes' children
 				n1.insert(e);				
@@ -298,13 +300,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 				
 				// add to set of edges
 				// id may be misleading since it is the id of only the first transition on this edge
-				edges.put(new Long(t.getId()), e);
+				edges.put(new Long(e.getId()), e);
 			}
-//			maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
-//			FSAEvent event = t.getEvent();
-//			if(event != null){
-//				maxEventId = maxEventId < event.getId() ? event.getId() : maxEventId;
-//			}
 		}
 	
 		// collect all labels on edges				
@@ -326,7 +323,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
-	private Edge directEdgeBetween(CircleNode source, CircleNode target){		
+	private Edge directedEdgeBetween(Node source, Node target){		
 		for(Edge e : edges.values())
 		{			
 			if(e.getSource().equals(source) && e.getTarget().equals(target)){
@@ -351,48 +348,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			edge.addEventName(event.getSymbol());
 		}						
 	}
-
-	////////////////////////////////////////////////////////////////////////////
-	// TODO Move this block of code into GraphDrawingView
-	//
-	/**
-	 * Creates and returns an Edge with source node <code>n1</code>, 
-	 * undefined target node, and terminating at the centre of node <code>n1</code>.
-	 * 
-	 * FIXME should the target point be something more sensible?
-	 * 
-	 * @param n1
-	 * @return a new Edge with source node n1
-	 */
-//	public BezierEdge beginEdge(Node n1){
-//		BezierLayout layout = new BezierLayout();
-//		BezierEdge e = new BezierEdge(layout, n1);
-//		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());		
-//		n1.insert(e);
-//		return e;
-//	}
-//	
-//	public void abortEdge(BezierEdge e){
-//		e.getSource().remove(e);		
-//	}
-//	
-//	/**
-//	 * Updates the layout for the given edge so it extends to the given target point.
-//	 * 
-//	 * @param e the Edge to be updated
-//	 * @param p the target point
-//	 */
-//	public void updateEdge(BezierEdge e, Point2D.Float p){		
-//		NodeLayout s = e.getSource().getLayout();
-//		// only draw the edge if the point is outside the bounds of the source node
-//		if( ! e.getSource().intersects(p) ){
-//			e.computeCurve(s, p);
-//			e.setVisible(true);
-//		}else{
-//			e.setVisible(false);
-//		}
-//	}
-	
+		
 	/**
 	 * Adds a new node at point <code>p</code> and completes the edge from 
 	 * <code>e</code>'s source node to the new node.
@@ -402,7 +358,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	public void finishEdgeAndCreateTargetNode(BezierEdge e, Point2D.Float p){	
 		if( ! e.getSource().intersects(p) ){
-			finishEdge(e, addNode(p));
+			finishEdge(e, createNode(p));
 			//return true;
 		}else{
 			// FIXME dispose of temp edge and return a boolean success indicator
@@ -424,17 +380,17 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		e.setTarget(n2);			
 			
 //		 FIXME Distribute multiple directed edges between same node pair.
-		BezierEdge opposite = (BezierEdge)directEdgeBetween(n2, e.getSource()); 
+		BezierEdge opposite = (BezierEdge)directedEdgeBetween(n2, e.getSource()); 
 		if(opposite != null && opposite.isStraight()){
 			e.arcAway(opposite);
-			opposite.getLayout().computeCurve();
+			opposite.getBezierLayout().computeCurve();
 			saveMovement(opposite);		
 		}
 		
-		e.computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());		
+		e.computeCurve((NodeLayout)e.getSource().getLayout(), (NodeLayout)e.getTarget().getLayout());		
 		
 		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
-		metaData.setLayoutData(t, e.getLayout());
+		metaData.setLayoutData(t, e.getBezierLayout());
 		e.addTransition(t);
 		
 		// NOTE must assign transition to edge before inserting as children of end nodes.
@@ -472,7 +428,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param p the centre point for the new node
 	 * @return the node added
 	 */
-	public CircleNode addNode(Point2D.Float p){
+	public CircleNode createNode(Point2D.Float p){
 		State s = new State(fsa.getFreeStateId());
 		s.setInitial(false);
 		s.setMarked(false);
@@ -504,16 +460,21 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param n1 source node 
 	 * @param n2 target node
 	 */
-	public void addEdge(CircleNode n1, CircleNode n2){
-		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(n1.getId()), fsa.getState(n2.getId()));
-		// computes layout of new edges (default to straight edge between pair of nodes)
-		BezierLayout layout = new BezierLayout(n1.getLayout(), n2.getLayout());				
-		metaData.setLayoutData(t, layout);
+	public void createEdge(Node n1, Node n2){
+		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(n1.getId()), fsa.getState(n2.getId()));				
+		Edge e;
+		if(n1.equals(n2)){
+			// TODO what is the default layout?  What does metaData have to say about this?			
+			e = new ReflexiveEdge(n1, t);			
+		}else{			
+			BezierLayout layout = new BezierLayout((NodeLayout)n1.getLayout(), (NodeLayout)n2.getLayout());
+//			 computes layout of new edges (default to straight edge between pair of nodes)			
+			e = new BezierEdge(layout, n1, n2, t);			
+		}
+		metaData.setLayoutData(t, (BezierLayout)e.getLayout());
 		fsa.removeSubscriber(this);
 		fsa.add(t);
-		fsa.addSubscriber(this);
-		
-		BezierEdge e = new BezierEdge(layout, n1, n2, t);		
+		fsa.addSubscriber(this);		
 		n1.insert(e);
 		n2.insert(e);
 		edges.put(e.getId(), e);		
@@ -534,8 +495,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param source
 	 * @param p
 	 */
-	public void addEdgeAndNode(CircleNode source, Point2D.Float p){		
-		addEdge(source, addNode(p));
+	public void createEdgeAndNode(CircleNode source, Point2D.Float p){		
+		createEdge(source, createNode(p));
 	}
 
 	/////////////////////////////////////////////////////////////////
@@ -552,9 +513,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			}else if(nodes.containsValue(el)){
 				saveMovement((CircleNode)el);
 			}else if(edges.containsValue(el)){
-				if( ((BezierEdge)el).isSelfLoop() ){					
+				//if( ((BezierEdge)el).isSelfLoop() ){					
 					saveMovement((BezierEdge)el);
-				}
+				//}
 			}else if(freeLabels.containsValue(el)){
 				// TODO move free labels
 			}
@@ -580,7 +541,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		if(label.getParent() != null){
 			try{
 				BezierEdge edge = (BezierEdge)label.getParent();
-				BezierLayout layout = edge.getLayout();				
+				BezierLayout layout = edge.getBezierLayout();				
 				Iterator<FSATransition> t = edge.getTransitions();
 				while(t.hasNext()){
 					metaData.setLayoutData(t.next(), layout);
@@ -616,7 +577,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	
 	private void saveMovement(BezierEdge e){
 		// for all transitions in e		
-		BezierLayout layout = e.getLayout();		
+		BezierLayout layout = e.getBezierLayout();		
 		Iterator<FSATransition> t = e.getTransitions();
 		while(t.hasNext()){
 			metaData.setLayoutData(t.next(), layout);
@@ -659,17 +620,17 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param arg0
 	 */
 	public void setSelfLoop(CircleNode node, boolean b) {
-		Edge selfLoop = directEdgeBetween(node, node);
+		Edge selfLoop = directedEdgeBetween(node, node);
 		if(!b && selfLoop != null){			
 			delete(selfLoop);		
 		}
 		// if b and node doesn't have a self loop
 		if(b && selfLoop == null){
 			// add the edge
-			addEdge(node, node);
+			createEdge(node, node);
 		}		
 	}
-
+	
 	/**
 	 * Assigns the set of events to <code>edge</code>, removes any events from edge
 	 * that are not in the given list and commits any changes to the LayoutData (MetaData).
@@ -1010,7 +971,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void translate(float x, float y)
 	{
 		super.translate(x,y);		
-		saveMovement(this);  // calls notifyAllSubscribers				
+		// FIXME refreshBounds
+		saveMovement(this);  // fires graph changed			
 	}
 
 	/**
@@ -1173,7 +1135,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void fsmStructureChanged(FSMMessage message) {
 		// TODO if can isolate the change just modify the structure as required
 		// e.g. properties set on states or events.
-		// just refresh the affected part of the graph
+		// and only refresh the affected part of the graph
 		
 		// otherwise rebuild the graph structure 
 		initializeGraph();		
@@ -1192,9 +1154,23 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsmEventSetChanged(FSMMessage message) {
-		// TODO Redraw all edges with transitions containing the affected events
-		// Might be more efficient to just set all edges to dirty and then repaint
-		// the whole deal.
+		// Flag edges with transitions containing the affected events
+		// TODO construct bounds of area affected
+		
+		for(Edge e : edges.values()){
+			Iterator<FSATransition> trans = e.getTransitions();
+			while(trans.hasNext()){
+				FSATransition t = trans.next();
+				if(t.getEvent().getId() == message.getElementId()){
+					e.setDirty(true);
+				}
+			}
+		}
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY,
+												FSMGraphMessage.EDGE,
+												message.getElementId(),
+												this.bounds(),
+												this));
 		
 	}
 	///////////////////////////////////////////////////////////////////////

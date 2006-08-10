@@ -129,7 +129,14 @@ public class Geometry {
 		Point2D.Float u1, u2;
 		u1 = unit(v1);
 		u2 = unit(v2);
-		double a = Math.acos(dot(u1, u2));
+		double dot = dot(u1, u2);
+		
+		assert(dot >= -1 && dot <= 1);
+		
+		double a = Math.acos(dot);
+		
+		assert(!Double.isNaN(a));
+		
 		double e = 0.001;
 		Float test = rotate(u1, a);
 		if((Math.abs(test.x - u2.x) < e) && (Math.abs(test.y - u2.y) < e)){

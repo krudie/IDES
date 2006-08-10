@@ -4,6 +4,7 @@
 package io.fsa.ver1;
 
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -281,13 +282,20 @@ public class LayoutDataParser extends AbstractParser {
 	}	
 
 	/**
+	 * FIXME There may be a set of these.  
+	 * Find the one that has the same layout as the candidate transition.
+	 * 
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
 	private BezierEdge directedEdgeBetween(CircleNode source, CircleNode target){		
-		// TODO check all out edges of source
-		
-		
+		Iterator<BezierEdge> edges = source.adjacentEdges();
+		while(edges.hasNext()){
+			BezierEdge edge = edges.next();
+			if(source.equals(edge.getSource()) && target.equals(edge.getTarget())){
+				return edge;
+			}
+		}
 		return null;
 	}
 	

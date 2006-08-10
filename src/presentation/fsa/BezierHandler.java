@@ -18,22 +18,15 @@ import presentation.GraphicalLayout;
 public class BezierHandler extends EdgeHandler {
 
 	private Ellipse2D.Double[] anchors;	
-	private static final int RADIUS = 5;
-	public static final int NO_INTERSECTION = -1;
-	
-	/**
-	 * Index of last intersected control point anchor
-	 * @see EdgeLayout.P1, EdgeLayout.CTRL1 etc.
-	 */
-	private int lastIntersected = NO_INTERSECTION;  
-	
+	protected static final int RADIUS = 5;
 	/**
 	 * @param edge
 	 */
 	public BezierHandler(BezierEdge edge) {
 		super(edge);		
-		anchors = new Ellipse2D.Double[4];                      
-		setDirty(true);
+		anchors = new Ellipse2D.Double[4];
+		refresh();
+		//setDirty(true);
 	}
 	
 	public BezierEdge getEdge()
@@ -44,9 +37,9 @@ public class BezierHandler extends EdgeHandler {
 	/**
 	 * Update my layout information from my getEdge().
 	 */
-	public void refresh() {
-		// upper left corner, width and height
+	public void refresh() {		
 		int d = 2*RADIUS;
+		// upper left corner, width and height of circle's bounding box
 		anchors[BezierLayout.P1] = new Ellipse2D.Double(getEdge().getP1().x - RADIUS, getEdge().getP1().y - RADIUS, d, d); 
 		anchors[BezierLayout.CTRL1] = new Ellipse2D.Double(getEdge().getCTRL1().x - RADIUS, getEdge().getCTRL1().y - RADIUS, d, d);				
 		anchors[BezierLayout.CTRL2] = new Ellipse2D.Double(getEdge().getCTRL2().x - RADIUS, getEdge().getCTRL2().y - RADIUS, d, d);
@@ -91,13 +84,5 @@ public class BezierHandler extends EdgeHandler {
 		}
 		lastIntersected = NO_INTERSECTION;
 		return false;
-	}
-	
-	/** 
-	 * @return index of the last intersected control point handle, if no intersection
-	 * returns <code>NO_INTERSECTION</code>. 
-	 */
-	public int getLastIntersected() {
-		return lastIntersected;
 	}
 }

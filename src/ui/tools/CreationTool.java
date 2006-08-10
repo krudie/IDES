@@ -83,17 +83,17 @@ public class CreationTool extends DrawingTool {
 		cmd = null;
 
 		if(context.updateCurrentSelection(me.getPoint())){
-			//try{		
+			try{		
 				startNode = (CircleNode)context.getSelectedElement();
 				if(!drawingEdge){
 					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
 					dragging = true; // assume we're dragging until mouse released decides otherwise.
 					return;
 				}
-			//}catch(ClassCastException e){
+			}catch(ClassCastException e){
 				//Hub.displayAlert(e.getMessage());
 				startNode = null;
-			//}
+			}
 		}		
 	}
 
@@ -176,7 +176,7 @@ public class CreationTool extends DrawingTool {
 				CreateCommand.NODE_AND_EDGE, edge, point);				
 		cmd.execute();
 		// IDEA Don't keep a copy of the temp edge in this class, just use the get and set in context.
-		// TODO not just call abortEdge here and have it do all the work (duplicate code here and in finishEdge).
+		// TODO call abortEdge here and have it do all the work (duplicate code here and in finishEdge).
 		edge = null;
 		context.setTempEdge(null);
 		drawingEdge = false;
@@ -192,7 +192,7 @@ public class CreationTool extends DrawingTool {
 	private void startEdge() {
 		sourceNode = startNode;
 		targetNode = null;
-		edge = beginEdge(sourceNode); //context.getGraphModel().beginEdge(sourceNode);				
+		edge = beginEdge(sourceNode);				
 		drawingEdge = true;		
 	}
 	
@@ -208,7 +208,6 @@ public class CreationTool extends DrawingTool {
 		BezierEdge e = new BezierEdge(layout, n1);
 		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());
 		context.setTempEdge(e);
-//		n1.insert(e);
 		return e;
 	}
 	
@@ -220,7 +219,7 @@ public class CreationTool extends DrawingTool {
 	 * @param p the target point
 	 */
 	private void updateEdge(BezierEdge e, Point2D.Float p){		
-		NodeLayout s = e.getSource().getLayout();
+		NodeLayout s = (NodeLayout)e.getSource().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSource().intersects(p) ){
 			e.computeCurve(s, p);
@@ -230,9 +229,7 @@ public class CreationTool extends DrawingTool {
 		}
 	}
 	
-	/**
-	 * 
-	 */
+	
 	private void finishEdge() {		
 		targetNode = endNode;				
 		cmd = new CreateCommand(context, CreateCommand.EDGE, edge, targetNode);

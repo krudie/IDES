@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.awt.geom.Point2D;
 
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
@@ -23,6 +24,7 @@ public abstract class Edge extends GraphElement{
 	private Node target;	
 	private EdgeHandler handler; // Anchors for modifying the curve.
 	private GraphLabel label;	 // extra pointer for O(1) access without instanceof
+	private Point2D.Float sourceEndPoint, targetEndPoint;
 	
 	public Edge(Node source)
 	{
@@ -54,6 +56,15 @@ public abstract class Edge extends GraphElement{
 	 */
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
 	
+	
+	/**
+	 * Computes an approximation to the point where this edge intersects 
+	 * the boundary of <code>node</code>.
+	 * 
+	 * @param node 
+	 * @return the point where this edge intersects the boundary of <code>node</code> 
+	 */
+	public abstract Point2D.Float intersectionWithBoundary(Node node);
 	
 	/**
 	 * Sets the handler for this edge with <code>handler</code>. 
@@ -153,4 +164,28 @@ public abstract class Edge extends GraphElement{
 		// to the layout and extend to BezierLayout.
 		
 	}
+
+	public Point2D.Float getSourceEndPoint() {
+		return sourceEndPoint;
+	}
+
+	public Point2D.Float getTargetEndPoint() {
+		return targetEndPoint;
+	}
+
+	protected void setSourceEndPoint(Point2D.Float sourceEndPoint) {
+		this.sourceEndPoint = sourceEndPoint;
+	}
+
+	protected void setTargetEndPoint(Point2D.Float targetEndPoint) {
+		this.targetEndPoint = targetEndPoint;
+	}
+
+	/**
+	 * Compute the edge from the source node to the target node. 
+	 *
+	 * @param source
+	 * @param target
+	 */
+	public abstract void computeEdge();
 }

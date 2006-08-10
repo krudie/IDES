@@ -234,8 +234,8 @@ public class GraphLabel extends GraphElement {
 			else
 			{
 				// FIXME arbitrary dimensions: has to be recomputed after rendering
-				labelBounds.height=10;
-				labelBounds.width=10;
+				labelBounds.height=0;
+				labelBounds.width=0;
 			}
 			
 			// SJW - Now, update the x and y based on the width and height

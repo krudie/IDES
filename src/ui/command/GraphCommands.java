@@ -149,7 +149,7 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			switch(elementType){
 			case NODE:				
-				context.getGraphModel().addNode(new Float(location.x, location.y));
+				context.getGraphModel().createNode(new Float(location.x, location.y));
 				break;
 			case NODE_AND_EDGE:				
 				context.getGraphModel().finishEdgeAndCreateTargetNode(edge, new Float(location.x, location.y));				
