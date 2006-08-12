@@ -270,6 +270,7 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 	/** 
 	 * Enables appropriate menus and tools depending on whether there is a
 	 * model open in the workspace.
+	 * 
 	 */
 	private void configureTools(){
 		CommandManager commandManager = CommandManager.defaultInstance();

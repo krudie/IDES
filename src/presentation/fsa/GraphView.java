@@ -26,7 +26,7 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	protected Rectangle graphBounds=new Rectangle();
 	
 	/**
-	 * if true, update() will set the scale factor so that the whole model fits in the view
+	 * if true, refreshView() will set the scale factor so that the whole model fits in the view
 	 */
 	protected boolean scaleToFit = true;
 	
@@ -125,9 +125,7 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 			graphBounds=getGraphModel().getBounds(true);
 			if(graphBounds.x<0||graphBounds.y<0)
 			{
-//				graphModel.removeSubscriber(this);
 				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
-//				graphModel.addSubscriber(this);
 			}
 			if(scaleToFit&&getParent()!=null)
 			{
@@ -137,6 +135,7 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 				setScaleFactor(Math.min(xScale,yScale));
 			}
 			invalidate();
+			Hub.getWorkspace().fireRepaintRequired();
 		}
 		repaint();
 	}

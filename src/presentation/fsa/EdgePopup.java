@@ -17,7 +17,7 @@ import main.Hub;
 import ui.command.GraphCommands.DeleteCommand;
 
 /**
- * @author Squirrel
+ * @author Helen Bretzke 2006
  *
  */
 public class EdgePopup extends JPopupMenu {

@@ -64,8 +64,8 @@ public class CircleNode extends Node {
 		// compute new radius
 		Rectangle2D labelBounds = label.bounds();
 		float radius = (float)Math.max(labelBounds.getWidth()/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
-		getLayout().setRadius(radius);
-		radius=getLayout().getRadius();
+		((NodeLayout)getLayout()).setRadius(radius);
+		radius=((NodeLayout)getLayout()).getRadius();
 		recomputeEdges();
 		
 		// upper left corner, width and height
@@ -82,8 +82,8 @@ public class CircleNode extends Node {
 			// The point on the edge of the circle:
 			// centre point - arrow vector
 			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
-			Point2D.Float dir = new Point2D.Float(getLayout().getArrow().x, getLayout().getArrow().y);			
-			float offset = getLayout().getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
+			Point2D.Float dir = new Point2D.Float(((NodeLayout)getLayout()).getArrow().x, ((NodeLayout)getLayout()).getArrow().y);			
+			float offset = ((NodeLayout)getLayout()).getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
 			arrow2 = Geometry.subtract(c, Geometry.scale(dir, offset));
 			arrow = new ArrowHead(dir, arrow2);					
 			// ??? How long should the shaft be?
@@ -174,8 +174,7 @@ public class CircleNode extends Node {
 	}
 	
 	/**	 
-	 * @param el
-	 * @return bounding rectangle for union of el with all of its children.
+	 * @return bounding rectangle for union of this with all of its children.
 	 */
 	public Rectangle adjacentBounds(){		
 		Rectangle bounds = bounds();		
@@ -268,7 +267,7 @@ public class CircleNode extends Node {
 	{
 		String exportString = "";
 		
-		NodeLayout nodeLayout = getLayout();
+		NodeLayout nodeLayout = ((NodeLayout)getLayout());
 		Rectangle squareBounds = getSquareBounds();
 		Point2D.Float nodeLocation = nodeLayout.getLocation();
 		int radius = BentoBox.convertFloatToInt(nodeLayout.getRadius());
@@ -344,9 +343,9 @@ public class CircleNode extends Node {
 	 * @return
 	 */
 	public boolean hasSelfLoop() {
-		Iterator<BezierEdge> edges = adjacentEdges();
+		Iterator<Edge> edges = adjacentEdges();
 		while(edges.hasNext()){
-			BezierEdge e = edges.next();
+			Edge e = edges.next();
 			if(e.getSource().equals(this) && e.getTarget().equals(this)){
 					return true;
 			}			
@@ -357,12 +356,12 @@ public class CircleNode extends Node {
 	/**
 	 * @return an iterator of all adjacent edges
 	 */
-	public Iterator<BezierEdge> adjacentEdges() {
+	public Iterator<Edge> adjacentEdges() {
 		Iterator children = children();
-		ArrayList<BezierEdge> edges = new ArrayList<BezierEdge>();
+		ArrayList<Edge> edges = new ArrayList<Edge>();
 		while(children.hasNext()){
 			try{
-				BezierEdge e = (BezierEdge)children.next();				
+				Edge e = (Edge)children.next();				
 				edges.add(e);
 			}catch(ClassCastException cce){
 				// Child is not an edge
@@ -375,7 +374,7 @@ public class CircleNode extends Node {
 	 * @return
 	 */
 	public float getRadius() {	
-		return getLayout().getRadius();
+		return ((NodeLayout)getLayout()).getRadius();
 	}
 	
 	/**
@@ -401,12 +400,12 @@ public class CircleNode extends Node {
 	//			getLayout().dispose();
 	//		
 			super.setLayout(layout);
-			getLayout().setNode(this);
+			((NodeLayout)getLayout()).setNode(this);
 			setDirty(true);
 		}
 
-	public NodeLayout getLayout() {
-		return (NodeLayout)super.getLayout();
-	}
+//	public NodeLayout getLayout() {
+//		return (NodeLayout)super.getLayout();
+//	}
 
 }

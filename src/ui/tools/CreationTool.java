@@ -206,7 +206,7 @@ public class CreationTool extends DrawingTool {
 	private BezierEdge beginEdge(CircleNode n1){
 		BezierLayout layout = new BezierLayout();
 		BezierEdge e = new BezierEdge(layout, n1);
-		layout.computeCurve(n1.getLayout(), n1.getLayout().getLocation());
+		layout.computeCurve((NodeLayout)n1.getLayout(), n1.getLayout().getLocation());
 		context.setTempEdge(e);
 		return e;
 	}

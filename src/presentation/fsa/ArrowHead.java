@@ -98,9 +98,9 @@ public class ArrowHead extends Polygon {
     {
     	super.reset();
     	// compute default arrowhead pointing down    	
-	    addPoint(0, SHORT_HEAD_LENGTH);	     
-		addPoint(-4, -4);	    
+	    addPoint(0, HEAD_LENGTH);	     
+		addPoint(-6, -5);	    
 		addPoint(0, 0);	   
-	    addPoint(4, -4);
+	    addPoint(6, -5);
     }
 }

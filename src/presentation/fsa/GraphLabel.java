@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import main.Hub;
+import presentation.Geometry;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import services.cache.Cache;
@@ -183,6 +184,8 @@ public class GraphLabel extends GraphElement {
 	 * @param g
 	 */
 	private void drawBorderAndTether(Graphics g) {	
+		if(getParent() != null && getParent() instanceof Node) return;
+		
 		if(selected){
 			g.setColor(getLayout().getSelectionColor());
 		}else if(highlighted){
@@ -191,28 +194,74 @@ public class GraphLabel extends GraphElement {
 			g.setColor(getLayout().getColor());
 		}
 		
-//		Rectangle border = bounds();
-//		border.width += TEXT_MARGIN_WIDTH;
-//		border.height += TEXT_MARGIN_WIDTH;
-		
 		Stroke s = ((Graphics2D)g).getStroke();
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
-				
+			
+		Rectangle bounds = bounds();
+		((Graphics2D)g).draw(bounds);	// TODO draw border for free labels too
+		
 		// FIXME only show for edge labels
 		// KLUGE instanceof, should have subclasses EdgeLabel and NodeLabel
-		if(getParent() != null && getParent() instanceof BezierEdge ){  // draw the tether
-			
-			((Graphics2D)g).draw(bounds());	// TODO draw border for free labels too 
-			
-			// TODO compute corner of bounding box that is nearest to the parent's centre			
-			g.drawLine((int)bounds().getX(), 
-						(int)bounds().getY(), 
+		if(getParent() != null && getParent() instanceof Edge ){  // draw the tether
+						
+			Point2D.Double corner = nearestCorner(getParent().getLocation(), bounds);
+						
+//			g.drawLine((int)bounds().getX(), 
+//						(int)bounds().getY(), 
+//						(int)getParent().getLocation().x, 
+//						(int)getParent().getLocation().y);
+			g.drawLine((int)corner.x, (int)corner.y,
 						(int)getParent().getLocation().x, 
 						(int)getParent().getLocation().y);
 		}
 		((Graphics2D)g).setStroke(s);		
 	}
 
+	/**
+	 *  Computes the corner of <code>rect</code> that is nearest to <code>point</code>. 
+	 *  
+	 *  FIXME Always returns the top-right corner.
+	 */
+	private Point2D.Double nearestCorner(Point2D.Float point, Rectangle rect)
+	{
+		Point2D.Double nearest=null;
+		
+		// bottom left
+		Point2D.Double corner = new Point2D.Double(rect.getX(), rect.getY());
+		
+		double distance = point.distance(corner);
+		double min = distance;
+		nearest = corner;
+
+		// top left
+		corner.y -= rect.height;
+		distance = point.distance(corner);
+		if(distance < min) {
+			min = distance; 
+			nearest = corner;
+		}
+
+		
+		// top right
+		corner.x += rect.width;		
+		distance = point.distance(corner);
+		if(distance < min) {
+			min = distance; 
+			nearest = corner;
+		}
+
+		
+		// bottom right
+		corner.y += rect.height;
+		distance = point.distance(corner);
+		if(distance < min) {
+			min = distance; 
+			nearest = corner;
+		}
+		
+		return nearest;
+	}
+	
 	public Rectangle bounds() {
 		
 		Rectangle labelBounds = new Rectangle();
@@ -234,6 +283,8 @@ public class GraphLabel extends GraphElement {
 			else
 			{
 				// FIXME arbitrary dimensions: has to be recomputed after rendering
+				// NOTE if not set to values > zero, causes an update loop because empty labels at location (0,0)
+				// are given negative bounds below.
 				labelBounds.height=0;
 				labelBounds.width=0;
 			}

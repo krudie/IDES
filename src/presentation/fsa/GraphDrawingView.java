@@ -194,6 +194,9 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 		}
 	}
 	
+	/**
+	 * TODO If no model open, set BG colour to some inactive looking grey.
+	 */
 	public void paint(Graphics g){
 		Graphics2D g2D = (Graphics2D)g;
 		if(gridBG == null)
@@ -220,13 +223,22 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	    	g2D.fillRect(0,0,getBounds().width,getBounds().height);
 		}
 		super.paint(g,false);
-		g2D.setStroke(GraphicalLayout.DASHED_STROKE);
-		g2D.setColor(Color.DARK_GRAY);
 		
 		if(tempEdge != null) {
 			tempEdge.draw(g2D);
 		}
-		g2D.draw(selectionArea);		
+		
+		if(selectionArea.height > 0 && selectionArea.width > 0){
+			g2D.setStroke(GraphicalLayout.DASHED_STROKE);
+			g2D.setColor(Color.DARK_GRAY);
+					
+			// DEBUG
+			try{
+				g2D.draw(selectionArea);
+			}catch(Exception e){
+				System.out.println(selectionArea.toString());
+			}
+		}
 	}
 	
 	// Mouse events

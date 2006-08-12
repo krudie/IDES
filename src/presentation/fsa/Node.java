@@ -4,6 +4,8 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 
 import model.fsa.FSAState;
 
@@ -19,6 +21,13 @@ public abstract class Node extends GraphElement {
 
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
 
+	public abstract Iterator<Edge> adjacentEdges();
+	
+	/**
+	 * @return bounding rectangle for union of this Node with all of its children.
+	 */
+	public abstract Rectangle2D adjacentBounds();
+	
 	public Long getId() {
 		return state.getId();
 	}
@@ -34,5 +43,7 @@ public abstract class Node extends GraphElement {
 	public GraphLabel getLabel() {
 		return label;
 	}
+
+	
 		
 }

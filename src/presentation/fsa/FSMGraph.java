@@ -557,10 +557,10 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 //				this, ""));
 	}
 
-	private void saveMovement(CircleNode node){
+	private void saveMovement(Node node){
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
-		metaData.setLayoutData(s, node.getLayout());
+		metaData.setLayoutData(s, (NodeLayout)node.getLayout());
 //		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
 //				FSMGraphMessage.NODE,
 //				node.getId(), 
@@ -568,8 +568,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 //				this, ""));
 
 		// for all edges adjacent to node, save layout
-		Iterator<BezierEdge> adjEdges = node.adjacentEdges();
-		while(adjEdges.hasNext()){			
+		Iterator<Edge> adjEdges = node.adjacentEdges();
+		while(adjEdges.hasNext()){	
+			// KLUGE
 			saveMovement((BezierEdge)adjEdges.next());
 		}
 		
@@ -589,18 +590,25 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void setInitial(CircleNode n, boolean b){
 		// update the state
 		((State)n.getState()).setInitial(b);
+		fsa.removeSubscriber(this);
+		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
+    			FSMMessage.STATE, n.getId(), fsa));
+		fsa.addSubscriber(this);
+		
+		// TODO Let the node do this as needed before drawing
 		// add an arrow to the node layout
-		NodeLayout layout = n.getLayout();
+		NodeLayout layout = (NodeLayout)n.getLayout();
 		if(b){
 			// TODO compute best position for arrow
 			layout.setArrow(new Point2D.Float(1,0));
 		}else{			
 			layout.setArrow(null);
 		}
+		
+		// NOTE metaData will be obsolete.
 		metaData.setLayoutData((State)n.getState(), layout);
+		
 		//setDirty(true);		
-		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
-    			FSMMessage.STATE, n.getId(), fsa));
 	}
 	
 	public void setMarked(CircleNode n, boolean b){
@@ -741,16 +749,16 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
-			delete((CircleNode)el);			
+			delete((Node)el);			
 		}else if(edges.containsValue(el)){
-			delete((BezierEdge)el);
+			delete((Edge)el);
 		}else{
 			freeLabels.remove(el);
 			// TODO notify
 		}
 	}
 	
-	private void delete(CircleNode n){
+	private void delete(Node n){
 		// delete all adjacent edges
 		Iterator edges = n.adjacentEdges();
 		while(edges.hasNext()){
@@ -797,10 +805,12 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param n the node to be labelled
 	 * @param text the name for the node
 	 */
-	public void labelNode(CircleNode n, String text){		
+	public void labelNode(Node n, String text){		
 		State s = (State)fsa.getState(n.getId());		
 		n.getLayout().setText(text);
-		metaData.setLayoutData(s, n.getLayout());
+		// KLUGE ///////////////////////////////////////////
+		metaData.setLayoutData(s, (NodeLayout)n.getLayout());
+		/////////////////////////////////////////////////////
 		setDirty(true);		
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
 				FSMGraphMessage.NODE,
@@ -813,13 +823,27 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		GraphLabel label = new GraphLabel(text, p);
 		freeLabels.put(p, label);
 		insert(label);
-		setDirty(true);
-		setDirty(true);
+		setDirty(true);		
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
 				FSMGraphMessage.LABEL,
 				FSMGraphMessage.UNKNOWN_ID, 
 				label.bounds(),
 				this, ""));
+	}
+	
+	
+	/**
+	 * @param freeLabel
+	 * @param text
+	 */
+	public void setLabelText(GraphLabel freeLabel, String text) {
+		freeLabel.setText(text);
+		setDirty(true);		
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+				FSMGraphMessage.LABEL,
+				FSMGraphMessage.UNKNOWN_ID, 
+				freeLabel.bounds(),
+				this, ""));		
 	}
 
 	/**
@@ -1154,23 +1178,32 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsmEventSetChanged(FSMMessage message) {
-		// Flag edges with transitions containing the affected events
+		// Remove transitions fired by affected events
 		// TODO construct bounds of area affected
 		
-		for(Edge e : edges.values()){
-			Iterator<FSATransition> trans = e.getTransitions();
-			while(trans.hasNext()){
-				FSATransition t = trans.next();
-				if(t.getEvent().getId() == message.getElementId()){
-					e.setDirty(true);
+		if(message.getEventType() == FSMMessage.REMOVE){
+		
+			for(Edge e : edges.values()){
+				Iterator<FSATransition> trans = e.getTransitions();
+				while(trans.hasNext()){
+					FSATransition t = trans.next();  // FIXME ConcurrentModificationException
+					FSAEvent event = t.getEvent();
+					if(event != null && event.getId() == message.getElementId()){
+						if(e.transitionCount() > 1){  // edge must have at least one transition
+							trans.remove();						
+						}else{
+							t.setEvent(null);
+						}
+						e.setDirty(true);
+					}
 				}
 			}
+			fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY,
+													FSMGraphMessage.EDGE,
+													message.getElementId(),
+													this.bounds(),
+													this));	
 		}
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY,
-												FSMGraphMessage.EDGE,
-												message.getElementId(),
-												this.bounds(),
-												this));
 		
 	}
 	///////////////////////////////////////////////////////////////////////

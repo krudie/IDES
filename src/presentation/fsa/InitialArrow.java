@@ -54,4 +54,10 @@ public class InitialArrow extends Edge {
 				
 	}
 
+	/**
+	 * Does nothing since initial arrows don't have events.
+	 */
+	@Override
+	public void addEventName(String symbol) {}
+
 }

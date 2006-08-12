@@ -114,18 +114,16 @@ public abstract class Edge extends GraphElement{
 	}
 	
 	public boolean hasUncontrollableEvent()
-	{
-		boolean hasUE=false;
+	{		
 		for(Iterator<FSATransition> i=getTransitions();i.hasNext();)
 		{
 			FSATransition t=i.next();
 			if(t.getEvent()!=null&&!t.getEvent().isControllable())
 			{
-				hasUE=true;
-				break;
+				return true;
 			}
 		}
-		return hasUE;
+		return false;
 	}
 
 	/**
@@ -157,13 +155,12 @@ public abstract class Edge extends GraphElement{
 	}
 
 	/**
+	 * TODO create an EdgeLayout class that will add the given symbol 
+	 * to the layout and extend to BezierLayout.
+	 * 	
 	 * @param symbol
 	 */
-	public void addEventName(String symbol) {
-		// TODO create an EdgeLayout class that will add the given symbol
-		// to the layout and extend to BezierLayout.
-		
-	}
+	public abstract void addEventName(String symbol);
 
 	public Point2D.Float getSourceEndPoint() {
 		return sourceEndPoint;

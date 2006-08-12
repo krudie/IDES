@@ -32,9 +32,14 @@ public class Geometry {
 	 * @return the unit direction vector for vector from (0,0) to v.
 	 */
 	public static Point2D.Float unit(Point2D.Float p){
-		float n = (float)norm(p);
-		Point2D.Float p1 = new Point2D.Float(p.x/n, p.y/n);
-		return p1;
+		double n = norm(p);
+		if(n != 0){
+			Point2D.Float p1 = new Point2D.Float((float)(p.x/n), (float)(p.y/n));
+			//System.err.println(norm(p1));
+			// assert( norm(p1) == 1 );
+			return p1;
+		}
+		return p;		
 	}
 
 	/**
@@ -129,13 +134,16 @@ public class Geometry {
 		Point2D.Float u1, u2;
 		u1 = unit(v1);
 		u2 = unit(v2);
-		double dot = dot(u1, u2);
+		double dot = dot(u1, u2);		
+		double epsilon = 0.0000001;
 		
-		assert(dot >= -1 && dot <= 1);
+		// DEBUG
+		if(dot < -1 || dot > 1 || Double.isNaN(dot))	System.err.println(dot);
+		//assert(dot >= -1 && dot <= 1);
 		
 		double a = Math.acos(dot);
 		
-		assert(!Double.isNaN(a));
+		//assert(!Double.isNaN(a));
 		
 		double e = 0.001;
 		Float test = rotate(u1, a);

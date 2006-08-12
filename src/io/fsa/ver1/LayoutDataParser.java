@@ -288,10 +288,10 @@ public class LayoutDataParser extends AbstractParser {
 	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
 	 * Otherwise returns null.
 	 */
-	private BezierEdge directedEdgeBetween(CircleNode source, CircleNode target){		
-		Iterator<BezierEdge> edges = source.adjacentEdges();
+	private Edge directedEdgeBetween(CircleNode source, CircleNode target){		
+		Iterator<Edge> edges = source.adjacentEdges();
 		while(edges.hasNext()){
-			BezierEdge edge = edges.next();
+			Edge edge = edges.next();
 			if(source.equals(edge.getSource()) && target.equals(edge.getTarget())){
 				return edge;
 			}

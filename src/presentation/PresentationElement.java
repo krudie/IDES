@@ -109,6 +109,5 @@ public interface PresentationElement {
 
 	public void refresh();	
 	
-	public Long getId();
-	
+	public Long getId();	
 }

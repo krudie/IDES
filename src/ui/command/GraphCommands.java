@@ -14,11 +14,13 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 import presentation.fsa.BezierEdge;
+import presentation.fsa.Edge;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.CircleNode;
+import presentation.fsa.Node;
 import presentation.fsa.NodeLabellingDialog;
 import presentation.fsa.SelectionGroup;
 
@@ -254,30 +256,32 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			if(element == null){ 
 				// create a new free label
+				presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(context.getGraphModel(), location);
 				// TODO use an extension of EscapeDialog and set its location
-				text = JOptionPane.showInputDialog("Enter label text: ");
-				if(text != null){
-					context.getGraphModel().addFreeLabel(text, location);
-				}
+//				text = JOptionPane.showInputDialog("Enter label text: ");
+//				if(text != null){
+//					context.getGraphModel().addFreeLabel(text, location);
+//				}
 			}else{
 				// KLUGE: instanceof is rotten style, fix this				
 				if (element instanceof CircleNode){				
-					CircleNode node = (CircleNode)element;
+					Node node = (Node)element;
 					// if selection is a node				
 					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(context.getGraphModel(),node);
 				}else if(element instanceof BezierEdge){
 					BezierEdge edge = (BezierEdge)element;			
 					EdgeLabellingDialog.showDialog(context, edge);					
 					// TODO accumulate set of edits that were performed in the edge labelling dialog
-				}else if(element instanceof GraphLabel && element.getParent() instanceof BezierEdge){
-					BezierEdge edge = (BezierEdge)element.getParent();
+				}else if(element instanceof GraphLabel && element.getParent() instanceof Edge){
+					Edge edge = (Edge)element.getParent();
 					EdgeLabellingDialog.showDialog(context, edge);
 				}else{					
+					presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(context.getGraphModel(), (GraphLabel)element);
 					// TODO use an extension of EscapeDialog and set its location AND REFACTOR
-					String text = JOptionPane.showInputDialog("Enter label text: ");
-					if(text != null){
-						context.getGraphModel().addFreeLabel(text, location);
-					}				
+//					String text = JOptionPane.showInputDialog("Enter label text: ");
+//					if(text != null){
+//						context.getGraphModel().addFreeLabel(text, location);
+//					}				
 				}
 				context.repaint();
 			}

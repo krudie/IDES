@@ -2,16 +2,11 @@ package presentation.fsa;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Vector;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.Point2D.Float;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
@@ -75,31 +70,19 @@ public class GraphElement implements PresentationElement {
 	}
 
 	/**
-	 * TEST Make certain that elements that have an id don't hash to
-	 * the same location as those that use a hashcode.
-	 */
-//	public void insert(PresentationElement child, long key) {				
-//		children.put(new Long(key), child);
-//		child.setParent(this);
-//	}
-
-	/**
 	 * Inserts the given child at key <code>Object.hashCode()</code>.
 	 */
 	public void insert(PresentationElement child) {
-		children.put(child.getId(), child);	
+		children.put((long)child.hashCode(), child);	
 		child.setParent(this);
 	}
 	
 	public boolean contains(PresentationElement child){
 		return children.containsValue(child);		
 	}
-	
-	/**
-	 * FIXME does this remove the given child or the child at the given key?
-	 */
-	public void remove(PresentationElement child) {
-		children.remove(child.getId());		
+		
+	public void remove(PresentationElement child) {		
+		children.remove((long)child.hashCode());		
 	}
 
 	public void clear() {
@@ -110,7 +93,7 @@ public class GraphElement implements PresentationElement {
 	 * @returns the child at the given key
 	 */
 	public PresentationElement child(long key) {
-		return children.get(new Long(key));		
+		return children.get(key);		
 	}
 
 	public Iterator children() { 
@@ -231,8 +214,8 @@ public class GraphElement implements PresentationElement {
 		return layout.getLocation();
 	}
 
-	/* (non-Javadoc)
-	 * @see presentation.PresentationElement#getId()
+	/**
+	 * @return the hashCode of this GraphElement
 	 */
 	public Long getId() {		
 		return (long)hashCode();

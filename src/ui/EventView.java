@@ -40,7 +40,7 @@ import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 
-public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber, FSMSubscriber, ActionListener {
+public class EventView extends JPanel implements WorkspaceSubscriber, FSMSubscriber, ActionListener {
 
 	protected class EventTableModel extends AbstractTableModel
 	{
@@ -222,10 +222,13 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 			FSAEvent[] delEvents=new FSAEvent[rows.length];
 			for(int i=0;i<rows.length;++i)
 				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
+			
+			// FIXME Issue a command that goes straight through automaton. 
 			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
 			for(int i=0;i<delEvents.length;++i)
 				Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
-			update();
+			
+			refreshEventTable();
 		}
 	};
 
@@ -244,6 +247,8 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
 			if(a==null||"".equals(eventNameField.getText()))
 				return;
+			
+			// FIXME issue a command to the Automaton and let messaging notify the graph model. 
 			Event event=Hub.getWorkspace().getActiveGraphModel().createEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
 //			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
 //			event.setSymbol(eventNameField.getText());
@@ -251,7 +256,8 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 //			event.setObservable(observableCBox.isSelected());
 //			a.add(event);
 //			a.notifyAllSubscribers();
-			update();
+			
+			//update();
 			int rows=table.getModel().getRowCount();
 			for(int i=0;i<rows;++i)
 			{
@@ -371,7 +377,7 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 		mainBox.add(deleteBox);
 
 		add(mainBox);
-		update();
+		refreshEventTable();
 		Hub.getWorkspace().addSubscriber(this);
 	}
 	
@@ -412,15 +418,15 @@ public class EventView extends JPanel implements Subscriber, WorkspaceSubscriber
 			}
 		}	
 	}
-	
-	/**
-	 * TODO remove this method when no longer extends Publisher
-	 */
-	public void update()
-	{
-		refreshEventTable();
-	}
-	
+//	
+//	/**
+//	 * TODO remove this method when no longer extends Publisher
+//	 */
+//	public void update()
+//	{
+//		refreshEventTable();
+//	}
+//	
 	public void actionPerformed(ActionEvent e){}
 
 	/* (non-Javadoc)

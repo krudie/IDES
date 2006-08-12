@@ -4,15 +4,12 @@
 package presentation.fsa;
 
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
@@ -29,38 +26,41 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import main.Hub;
-
 import util.EscapeDialog;
-import util.ProperSingleton;
 
 /**
+ * @author helen
  *
- * @author Lenko Grigorov
  */
-public class SingleLineNodeLabellingDialog extends EscapeDialog {
+public class SingleLineFreeLabellingDialog extends EscapeDialog {
 
 	protected static final int WIDTH=15;
 	protected static final int HEIGHT=4;
 	
-	private static SingleLineNodeLabellingDialog me=null;
-	
-	private static FSMGraph gm=null;
-	private static Node n;
+	private static SingleLineFreeLabellingDialog me=null;	
+	private static FSMGraph gm=null;	
 
 	protected Action commitListener = new AbstractAction()
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
+			// TODO these changes should be sent through undoable commands
 			if(gm!= null){
-				gm.labelNode(n,area.getText());						
+				if(freeLabel == null){
+					// add a free label
+					gm.addFreeLabel(area.getText(), new Point2D.Float(me.getLocation().x, me.getLocation().y));
+				}else{
+					// change the text on an existing one.
+					gm.setLabelText(freeLabel, area.getText());
+				}
 			}
 			setVisible(false);
 		}
 	};
 
-	private SingleLineNodeLabellingDialog()
+	private SingleLineFreeLabellingDialog()
 	{
-		super(Hub.getMainWindow(),Hub.string("nodeLabellingTitle"));
+		super(Hub.getMainWindow(),Hub.string("freeLabellingTitle"));
 		addWindowListener(new WindowAdapter() {
 		    public void windowClosing(WindowEvent e) {
 		    	onEscapeEvent();
@@ -91,15 +91,14 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 		//labelBox.add(new JLabel(Hub.string("ctrlEnter4NewLine")));
 		//labelBox.add(Box.createHorizontalGlue());
 		//mainBox.add(labelBox);
-
 		getContentPane().add(mainBox);
 		pack();
 	}
 
-	public static SingleLineNodeLabellingDialog instance()
+	public static SingleLineFreeLabellingDialog instance()
 	{
 	    if (me == null)
-	        me = new SingleLineNodeLabellingDialog();
+	        me = new SingleLineFreeLabellingDialog();
 	    return me;
 	}
 
@@ -109,17 +108,17 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 	}
 
 	protected static JTextField area;
+	protected static GraphLabel freeLabel;
 	
-	public static void showAndLabel(FSMGraph gm, Node node)
+	public static void showAndLabel(FSMGraph gm, GraphLabel label)
 	{
-		SingleLineNodeLabellingDialog.gm=gm;
-		n=node;
-		Point p=new Point((int)node.getLayout().getLocation().x,
-				(int)node.getLayout().getLocation().y);
+		SingleLineFreeLabellingDialog.gm=gm;
+		freeLabel=label;
+		Point p=new Point((int)label.getLayout().getLocation().x,
+				(int)label.getLayout().getLocation().y);
 		instance();
-		me.pack();
-		String label=node.getLabel().getLayout().getText();
-		area.setText(label);
+		me.pack();		
+		area.setText(label.getText());
 		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
 		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
 		p.x=(int)r.x+Hub.getWorkspace().getDrawingBoardDisplacement().x;
@@ -132,8 +131,30 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 		me.setVisible(true);
 	}
 	
+	/**
+	 * TODO Create a label where none exists so show the dialog at the given point
+	 * and place the new label at this location.
+	 */
+	public static void showAndLabel(FSMGraph gm, Point2D.Float p){
+		SingleLineFreeLabellingDialog.gm=gm;
+		freeLabel = null;
+		instance();
+		me.pack();		
+		area.setText("");
+		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
+		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
+		p.x=(int)r.x+Hub.getWorkspace().getDrawingBoardDisplacement().x;
+		p.y=(int)r.y+Hub.getWorkspace().getDrawingBoardDisplacement().y;
+		if(p.x+me.getWidth()>Toolkit.getDefaultToolkit().getScreenSize().getWidth())
+			p.x=p.x-me.getWidth();
+		if(p.y+me.getHeight()>Toolkit.getDefaultToolkit().getScreenSize().getHeight())
+			p.y=p.y-me.getHeight();
+		me.setLocation((int)p.x, (int)p.y);
+		me.setVisible(true);
+	}
+	
 	public void onEscapeEvent()
 	{
 		setVisible(false);
-	}
+	}	
 }

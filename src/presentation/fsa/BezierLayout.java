@@ -199,24 +199,30 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param endPoint endpoint for the edge	  
 	 */
 	public void computeCurve(NodeLayout s, Point2D.Float endPoint){		
-		Point2D.Float centre1 = s.getLocation();
-		Point2D.Float dir = Geometry.subtract(endPoint, centre1);
-	
-		float norm = (float)Geometry.norm(dir);
-		Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-		
+
 		Point2D.Float[] ctrls = new Point2D.Float[4];
-	
-		ctrls[P1] = s.getLocation();
-//		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
+		Point2D.Float centre1 = s.getLocation();
+		ctrls[P1] = centre1;
 		
-		dir = Geometry.subtract(endPoint, ctrls[P1]);
-		norm = (float)Geometry.norm(dir);
-		unit = Geometry.unit(dir);
-		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
-		ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(2 * norm * s2)));
-		ctrls[P2] = endPoint;
+		if(s.getLocation().distance(endPoint) < 0.00001 ){ // TODO within epsilon of 0
+			// set control points to node's centre
+			ctrls[CTRL1] = centre1;
+			ctrls[CTRL2] = centre1;
+		}else{				
+			Point2D.Float dir = Geometry.subtract(endPoint, centre1);		
+			float norm = (float)Geometry.norm(dir);			
+			Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
+			
+	//		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
+			
+			dir = Geometry.subtract(endPoint, ctrls[P1]);
+			norm = (float)Geometry.norm(dir);
+			unit = Geometry.unit(dir);
+			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
+			ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(2 * norm * s2)));
+		}
 		
+		ctrls[P2] = endPoint;		
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
@@ -285,12 +291,14 @@ public class BezierLayout extends GraphicalLayout {
 		}else{
 			double n = Geometry.norm(p1p2);
 			
-			// TODO check length of n			
-			
-			s1 = Geometry.norm(p1c1)/n;
-			s2 = Geometry.norm(p2c2)/n;		
-			angle1 = Geometry.angleFrom(p1p2, p1c1);
-			angle2 = Geometry.angleFrom(Geometry.scale(p1p2, -1), p2c2);
+			if(n >= 1){			
+				s1 = Geometry.norm(p1c1)/n;
+				s2 = Geometry.norm(p2c2)/n;		
+				angle1 = Geometry.angleFrom(p1p2, p1c1);
+				angle2 = Geometry.angleFrom(p2p1, p2c2);
+			}else{
+				// FIXME do what? set to defaults?
+			}
 		}
 		
 		// DEBUG

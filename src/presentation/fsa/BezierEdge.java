@@ -1,11 +1,13 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -94,7 +96,7 @@ public class BezierEdge extends Edge {
 			getBezierLayout().setDirty(false);
 		}
 	
-		Graphics2D g2d = (Graphics2D)g;		
+		Graphics2D g2d = (Graphics2D)g;	
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.
 		if(highlighted ||
@@ -121,25 +123,31 @@ public class BezierEdge extends Edge {
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		}		   
 
-		// FIXME stop drawing at base of arrowhead
-		// subtract Geometry.scale(unitDir, ArrowHead.SHORT_HEAD_LENGTH) from P2		
+		// FIXME stop drawing at base of arrowhead and at node boundaries
+		
 		g2d.draw(getBezierLayout().getCubicCurve());   
 	    
 		
 		// Compute the direction and location of the arrow head
 		AffineTransform at = new AffineTransform();
 		
-		// Compute and *STORE?* the arrow layout (the direction vector from base to tip of the arrow)
+		// FIXME Compute and *STORE?* the arrow layout (the direction vector from base to tip of the arrow)
 	    // Make certain that it points the right direction when nodes are touching or overlapping.
 	    Point2D.Float unitDir = computeArrowDirection(); 
 	    	   
 	    arrowHead.reset();
 		
-	    // FIXME find point of intersection with target node boundary		
-		Point2D.Float basePt = Geometry.add(getBezierLayout().getCubicCurve().getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
+	    // If available, use point of intersection with target node boundary		
+	    Point2D.Float basePt;
+	    if(getTargetEndPoint() != null){
+	    	basePt = Geometry.add(getTargetEndPoint(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
+	    }else{
+	    	basePt = Geometry.add(getBezierLayout().getCubicCurve().getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH)));	
+	    }
 		at.setToTranslation(basePt.x, basePt.y);
 		g2d.transform(at);
-	    // TODO rotate to align with end of curve
+		
+	    // rotate to align with end of curve
 	    double rho = Geometry.angleFrom(ArrowHead.axis, unitDir);
 		at.setToRotation(rho);		
 		
@@ -151,18 +159,22 @@ public class BezierEdge extends Edge {
 		g2d.transform(at);
 		at.setToTranslation(-basePt.x, -basePt.y);		
 		g2d.transform(at);
-//		try {
-//			g2d.transform(at.createInverse());
-//		} catch (NoninvertibleTransformException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		g2d.drawPolygon(arrowHead);
-//	    g2d.fillPolygon(arrowHead);
-	    
-	    // draw label and handler
-	    super.draw(g);
+
+		// DEBUG
+		Ellipse2D.Double anchorS = new Ellipse2D.Double(getSourceEndPoint().x - 1, getSourceEndPoint().y - 1, 2, 2);
+		Color temp = g2d.getColor();
+		g2d.setColor(getBezierLayout().getHighlightColor());
+		g2d.draw(anchorS);
+		g2d.setColor(temp);
 		
+//		if(getTarget() != null){
+//			Ellipse2D.Double anchorT = new Ellipse2D.Double(getTargetEndPoint().x - 3, getTargetEndPoint().y - 3, 6, 6);
+//			g2d.draw(anchorT);
+//		}
+		// end DEBUG
+		
+	    // draw label and handler
+	    super.draw(g);		
 	}
 	
 	/**
@@ -174,6 +186,9 @@ public class BezierEdge extends Edge {
 		CubicCurve2D.Float curve = getBezierLayout().getCubicCurve();
 //		 DEBUG
 		assertAllPointsNumbers(curve);		
+		
+		setSourceEndPoint(intersectionWithBoundary(getSource()));
+		if(getTarget() != null)	setTargetEndPoint(intersectionWithBoundary(getTarget()));
 		
 		if(!isSelected()){
 			getHandler().setVisible(false);
@@ -207,11 +222,12 @@ public class BezierEdge extends Edge {
 	private Float computeArrowDirection() {
 		// Starting at p2, find point on curve where base of arrow head
 		// intersects with ...
-		
-		// float d = 2 * target.getRadius() + 2 * ArrowHead.SHORT_HEAD_LENGTH;
-		// Ellipse2D circle = new Ellipse2D.Float(target.getLayout().getLocation().x, target.getLayout().getLocation().y, d, d);
 		// KLUGE
-		return Geometry.unit(Geometry.subtract(getBezierLayout().getCubicCurve().getP2(), getBezierLayout().getCubicCurve().getCtrlP2()));
+		if(getTargetEndPoint() == null){
+			return Geometry.unit(Geometry.subtract(getBezierLayout().getCubicCurve().getP2(), getBezierLayout().getCubicCurve().getCtrlP2()));
+		}else{
+			return Geometry.unit(Geometry.subtract(getBezierLayout().getCubicCurve().getP2(), getTargetEndPoint()));
+		}
 	}
 
 	/************************************************************
@@ -550,30 +566,75 @@ public class BezierEdge extends Edge {
 		return getBezierLayout().isStraight();
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * FIXME close but not close enough; 
+	 * does step size vanish too quickly when oscillating across border
+	 * or is Node's boundary for the bounding rectangle?
+	 * 
+	 * Think I've got an inf loop... :(
+	 * 
+	 * Precondition: node != null and target != null
 	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node)
 	 */
 	@Override
-	public Float intersectionWithBoundary(Node node) {
-		// starting at the centre of node
-		Point2D.Float p_n = node.getLocation();
+	public Point2D.Float intersectionWithBoundary(Node node) {
+		
+		// setup curves for iterative subdivision
 		CubicCurve2Dex curve = this.getBezierLayout().getCubicCurve();
-		CubicCurve2Dex part1 = new CubicCurve2Dex();
-		CubicCurve2Dex part2 = new CubicCurve2Dex();
+		
+		// if endpoints are both inside node (self-loop or overlapping target and source)
+		// KLUGE
+		if(node.intersects(curve.getP1()) && node.intersects(curve.getP2()) ) {
+			return node.getLocation();
+		}
+		
+		CubicCurve2Dex left = new CubicCurve2Dex();
+		CubicCurve2Dex right = new CubicCurve2Dex();
+		
+		// if target, then this algorithm needs to be reversed since
+		// it searches curve assuming t=0 is inside the node.
+		if( node.equals(getTarget()) ) {
+			// swap endpoints and control points
+			CubicCurve2Dex temp = new CubicCurve2Dex();
+			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());
+			curve = temp;
+		}
 		
 		// search towards middle of curve until we escape the boundary of node
 		// and we are within epsilon (one pixel) of the boundary		
-		float epsilon = 0.001f;
-		float t = 0.5f;
-		float tLast = 1f;
-		curve.subdivide(part1, part2, t);
-		 
-		Point2D p = part1.getP2();
+		float epsilon = 0.000001f;		
+		//float tPrevious = -1f;
+		float t = 0f; 	// starting at the centre of node (assuming source)		
+		float step = 1f;
+		boolean wasInside = true; // true iff c_t was inside the node's boundary on the previous iteration.
 		
-//		while(Math.abs(tLast - t) > epsilon){
-//			
-//		}
-		return null;
+		curve.subdivide(left, right, t);		
+		// the point on curve at param t
+		Point2D c_t = left.getP2();
+		
+		while(Math.abs(step) > epsilon){
+			//tPrevious = t;
+			if(node.intersects(c_t)){  // inside boundary
+				if(!wasInside){  // was outside
+					//	reduce step size and search in opposite direction
+					step *= -0.5;
+					wasInside = true;
+				}
+			}else if(wasInside){ // outside and was inside boundary 
+				// reduce step size and search in opposite direction
+				step *= -0.5;
+				wasInside = false;
+			} // otherwise maintain step size and continue searching in the same direction			
+			t += step;
+			// recompute the point on curve at param t
+			curve.subdivide(left, right, t);		
+			c_t = left.getP2();
+		}		
+		
+		// TODO keep searching from c_t towards t=0 until we're sure we've found the first intersection.
+		// Start again with step size at t.
+		// ??? When do we terminate?
+		return new Point2D.Float((float)c_t.getX(), (float)c_t.getY());
 	}
 
 	/* (non-Javadoc)
