@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 import presentation.CubicCurve2Dex;
 import presentation.Geometry;
@@ -14,7 +15,7 @@ import presentation.GraphicalLayout;
 public class BezierLayout extends GraphicalLayout {
 
 	private BezierEdge edge;
-	private boolean selfLoop = false;	
+//	private boolean selfLoop = false;	
 	
 	/**
 	 * Indices of bezier curve control points. 
@@ -30,13 +31,13 @@ public class BezierLayout extends GraphicalLayout {
 
 	// Compact representation of data required to maintain shape of edge while moving
 	// one or both of its nodes.
+	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
+	private static final double DEFAULT_CONTROL_HANDLE_ANGLE = Math.PI/6;
 	protected double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
 	protected double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
 	protected double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
-	protected double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2) 
-	
-	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
+	protected double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)	
 		
 	public BezierLayout(){	
 		curve = new CubicCurve2Dex();
@@ -44,10 +45,10 @@ public class BezierLayout extends GraphicalLayout {
 		setLabelOffset(new Point2D.Float(5,5));
 	}
 	
-	public BezierLayout(Point2D.Float[] bezierControls, boolean selfLoop){		
+	public BezierLayout(Point2D.Float[] bezierControls){		
 		curve = new CubicCurve2Dex();
 		curve.setCurve(bezierControls, 0);
-		this.selfLoop = selfLoop;
+//		this.selfLoop = selfLoop;
 		eventNames = new ArrayList();
 		setLabelOffset(new Point2D.Float(5,5));
 		updateAnglesAndScalars();
@@ -122,7 +123,7 @@ public class BezierLayout extends GraphicalLayout {
 		// if source and target nodes are the same, compute a self-loop
 		if(s.equals(t) && angle1 == 0 && angle2 == 0){
 				computeDefaultSelfLoop(s);
-				selfLoop = true;
+				//selfLoop = true;
 				return;
 		}
 		////////////////////////////////////////////////////////////////
@@ -137,7 +138,7 @@ public class BezierLayout extends GraphicalLayout {
 		
 		Point2D.Float[] ctrls = new Point2D.Float[4]; 
 		
-		// FIXME No curves happen on/after save.
+		// TODO remove self-loop case
 		if(s.equals(t)){  
 			// endpoints are at intersections of circle with rotations from vertical vector			
 			ctrls[P1] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle1));
@@ -203,11 +204,12 @@ public class BezierLayout extends GraphicalLayout {
 		Point2D.Float[] ctrls = new Point2D.Float[4];
 		Point2D.Float centre1 = s.getLocation();
 		ctrls[P1] = centre1;
+		ctrls[P2] = endPoint;
 		
 		if(s.getLocation().distance(endPoint) < 0.00001 ){ // TODO within epsilon of 0
 			// set control points to node's centre
 			ctrls[CTRL1] = centre1;
-			ctrls[CTRL2] = centre1;
+			ctrls[CTRL2] = endPoint;
 		}else{				
 			Point2D.Float dir = Geometry.subtract(endPoint, centre1);		
 			float norm = (float)Geometry.norm(dir);			
@@ -219,10 +221,10 @@ public class BezierLayout extends GraphicalLayout {
 			norm = (float)Geometry.norm(dir);
 			unit = Geometry.unit(dir);
 			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
-			ctrls[CTRL2] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(2 * norm * s2)));
+			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(unit, (float)(-norm * s2)));
 		}
 		
-		ctrls[P2] = endPoint;		
+			
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
@@ -231,6 +233,7 @@ public class BezierLayout extends GraphicalLayout {
 	
 	
 	/**
+	 * @deprecated see class ReflexiveEdge
 	 * Returns a cubic bezier curve representing a self-loop for the
 	 * given node layout oriented in the given unit direction.
 	 * 
@@ -258,7 +261,7 @@ public class BezierLayout extends GraphicalLayout {
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
-	    selfLoop = true;
+	    //selfLoop = true;
 		setDirty(true);
 	}
 		
@@ -283,15 +286,15 @@ public class BezierLayout extends GraphicalLayout {
 		Point2D.Float p1c1 = Geometry.subtract(curve.getCtrlP1(), curve.getP1());
 		Point2D.Float p2c2 = Geometry.subtract(curve.getCtrlP2(), curve.getP2());		
 				
-		if(selfLoop){			
-			s1 = Geometry.norm(p1c1);
-			s2 = Geometry.norm(p2c2);		
-			angle1 = Geometry.angleFrom(UNIT_VERTICAL, p1c1);
-			angle2 = Geometry.angleFrom(UNIT_VERTICAL, p2c2);
-		}else{
+//		if(selfLoop){			
+//			s1 = Geometry.norm(p1c1);
+//			s2 = Geometry.norm(p2c2);		
+//			angle1 = Geometry.angleFrom(UNIT_VERTICAL, p1c1);
+//			angle2 = Geometry.angleFrom(UNIT_VERTICAL, p2c2);
+//		}else{
 			double n = Geometry.norm(p1p2);
 			
-			if(n >= 1){			
+			if(n != 0){			
 				s1 = Geometry.norm(p1c1)/n;
 				s2 = Geometry.norm(p2c2)/n;		
 				angle1 = Geometry.angleFrom(p1p2, p1c1);
@@ -299,7 +302,7 @@ public class BezierLayout extends GraphicalLayout {
 			}else{
 				// FIXME do what? set to defaults?
 			}
-		}
+		//}
 		
 		// DEBUG
 		assert(!Double.isNaN(angle1));
@@ -398,33 +401,126 @@ public class BezierLayout extends GraphicalLayout {
 	////////////////////////////////////////////////////////////
 	/**
 	 * Computes the angles and scalars such that this and other curve away from each other.
-	 * Precondition: this.source = other.target and other.source = this.target and both are straight edges.
+	 * \
+	 * Precondition: this.source = other.target and other.source = this.target 
+	 * 					and both are straight edges.
 	 * 
 	 * @param other another edge layout
 	 */
 	protected void arcAway(BezierLayout other){
-		this.angle1 = Math.PI/6;
-		this.angle2 = this.angle1/2;
-		other.angle1 = this.angle1;
-		other.angle2 = this.angle2;
+//		this.angle1 = Math.PI/6;
+//		this.angle2 = this.angle1;
+//		other.angle1 = this.angle1;
+//		other.angle2 = this.angle2;
+		this.arcMore();
+		other.arcMore();
+		
+		// ??? is this necessary ?
 		this.s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
-		this.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;
+		this.s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
 		other.s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
-		other.s2 = 2 * DEFAULT_CONTROL_HANDLE_SCALAR;		
+		other.s2 = DEFAULT_CONTROL_HANDLE_SCALAR;		
 	}
 	
+	/**
+	 * Increase tangential angle by DEFAULT_CONTROL_HANDLE_ANGLE / 2 
+	 * and tangent length by ?say 20%?
+	 * 
+	 * If either angle is within epsilon of 0, sets it to minimum of Math.PI/6.
+	 *  
+	 * TODO decide whether to arc Clockwise or CCW.
+	 */
 	protected void arcMore()
+	{
+		// FIXME only works for positive angles
+		
+		if(Math.abs(angle1) < EPSILON){
+			angle1 = DEFAULT_CONTROL_HANDLE_ANGLE;
+			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		}else{
+			if(angle1 > 0){
+				angle1 += DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+			}else{
+				angle1 -= DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+			}
+			s1 *= 1.2;
+		}
+		
+		if(Math.abs(angle2) < EPSILON){
+			angle2 = -DEFAULT_CONTROL_HANDLE_ANGLE;
+			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		}else{		
+			if(angle2 < 0){
+				angle2 -= DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+			}else{
+				angle2 += DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+			}
+			s2 *= 1.2;
+		}
+	}
+	
+	/**
+	 * Increase the arc on this edge layout, clockwise along circumference of
+	 * source node if clockwise, otherwise counter-clockwise.
+	 * 
+	 * @param clockwise
+	 */
+	protected void arcMore(boolean clockwise)
 	{
 		
 	}
 	
+	/**
+	 * Decreases tangential angle by DEFAULT_CONTROL_HANDLE_ANGLE / 2. 
+	 * and tangent length by ? say 20%?
+	 *  
+	 * FIXME if angle < DEFAULT_CONTROL_HANDLE_ANGLE / 2, set to 0
+	 *  
+	 */
 	protected void arcLess()
 	{
-				
+		// May need to swap angle depending on whether direction of arrow
+		// and which was is 'up'...
+		
+		if(Math.abs(angle1) < DEFAULT_CONTROL_HANDLE_ANGLE / 2) { //EPSILON){
+			angle1 = 0;
+			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		}else{
+			//angle1 *= 0.70;
+			if(angle1 > 0){
+				angle1 -= DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+				/*if(angle1 < DEFAULT_CONTROL_HANDLE_ANGLE / 2){
+					angle1 = 0;
+					s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+					return;
+				}*/
+			}else{
+				angle1 += DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+			}
+			s1 *= 0.8;
+		}
+
+		if(Math.abs(angle2) < DEFAULT_CONTROL_HANDLE_ANGLE / 2) { //EPSILON){
+			angle2 = 0;
+			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		}else{
+			//angle2 *= 0.70;
+			if(angle2 < 0){
+				angle2 += DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+				/*if(angle2 > -DEFAULT_CONTROL_HANDLE_ANGLE / 2){
+					angle2 = 0;
+					s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
+					return;
+				}*/
+			}else{
+				angle2 -= DEFAULT_CONTROL_HANDLE_ANGLE / 2;
+			}
+			s2 *= 0.8;
+		}
 	}
 		
 	/**
-	 * TODO DEBUG
+	 * FIXME This doesn't work since changed Point[] to CubicCurve2D and lots of other changes :(
 	 */
 	protected void symmetrize(){
 		Point2D.Float[] points=new Point2D.Float[4];
@@ -432,6 +528,7 @@ public class BezierLayout extends GraphicalLayout {
 		points[1]=Geometry.translate(curve.getCtrlP1(),-curve.getX1(),-curve.getY1());
 		points[2]=Geometry.translate(curve.getCtrlP2(),-curve.getX1(),-curve.getY1());
 		points[3]=Geometry.translate(curve.getP2(),-curve.getX1(),-curve.getY1());
+		
 		float edgeAngle=(float)Math.atan(Geometry.slope(curve.getP1(),curve.getP2()));
 		points[0]=Geometry.rotate(points[0],-edgeAngle);
 		points[1]=Geometry.rotate(points[1],-edgeAngle);
@@ -488,11 +585,4 @@ public class BezierLayout extends GraphicalLayout {
 		this.rigidTranslation = rigid;
 	}
 
-	/**
-	 * @param b
-	 */
-	public void setSelfLoop(boolean b) {
-		selfLoop = b;		
-	}
-	
 }
