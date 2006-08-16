@@ -18,6 +18,7 @@ import presentation.fsa.FSMGraph;
 
 import model.fsa.ver1.Automaton;
 
+import services.General;
 import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
@@ -100,7 +101,6 @@ public class Main {
 		LatexManager.init(); 
 		
 		Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
-		fsa.setId(Hub.getWorkspace().getRandomId());
 		Hub.getWorkspace().addFSAModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());

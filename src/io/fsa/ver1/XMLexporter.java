@@ -84,6 +84,25 @@ public class XMLexporter{
             transitionLayoutToXML((Transition)ti.next(),ps, INDENT);
         }
         ps.println("</meta>");
+        ps.println("<meta tag=\"FSAcomposition\" version=\"2.1\">");
+        //TODO: the following has to be refactored
+        ps.println("\t<models>");
+        for(int i=0;i<a.getAutomataCompositionList().length;++i)
+        {
+        	ps.println("\t\t<id>"+a.getAutomataCompositionList()[i]+"</id>");
+        }
+        ps.println("\t</models>");
+        si = a.getStateIterator();
+        while(si.hasNext()){
+        	State s=(State)si.next();
+        	ps.println("\t<state id=\""+s.getId()+"\">");
+            for(int i=0;i<s.getStateCompositionList().length;++i)
+            {
+            	ps.println("\t\t<id>"+s.getStateCompositionList()[i]+"</id>");
+            }
+            ps.println("\t</state>");
+        }
+        ps.println("</meta>");        
         ps.println("</model>");
     }
     

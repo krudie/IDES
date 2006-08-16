@@ -4,6 +4,7 @@ import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 import model.fsa.FSATransition;
@@ -15,6 +16,7 @@ import model.fsa.FSATransition;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  * @author Helen Bretzke
+ * @author Lenko Grigorov
  *
  */
 public class State extends SubElementContainer implements model.fsa.FSAState {
@@ -23,6 +25,10 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
     private LinkedList<FSATransition> sourceT, targetT;
 
     private long id;
+    
+    // if this state represents the composition of the states of other automata,
+    // this will contain a list the ids of these other states
+    protected long[] composedOf=null;
 
     /**
      * constructs a state with the given id.
@@ -211,6 +217,24 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	public String get(String attribute) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * Gets the list of ids of the states of which this state is a composition.
+	 * @return the list of ids of the states of which this state is a composition
+	 */
+	public long[] getStateCompositionList()
+	{
+		return composedOf;
+	}
+	
+	/**
+	 * Sets the list of ids of the states of which this state is a composition.
+	 * @param list the list of ids of the states of which this state is a composition
+	 */
+	public void setStateCompositionList(long[] list)
+	{
+		composedOf=list;
 	}
 	
 	public static final String ATTR_MARKED = "marked";

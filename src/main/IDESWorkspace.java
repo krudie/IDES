@@ -349,21 +349,6 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		myFile=f;
 	}
 	
-	public String getRandomId()
-	{
-		String data=new Double(Math.random()).toString()+
-			new Long(System.currentTimeMillis()).toString()+
-			systems.size()+System.getProperty("user.name");
-		for(Iterator<FSAModel> i=getAutomata();i.hasNext();)
-		{
-			FSAModel a=i.next();
-			data+=a.getEventCount();
-			data+=a.getStateCount();
-			data+=a.getTransitionCount();
-		}
-		return DigestUtils.md5Hex(data);
-	}
-	
 	/**
 	 * TODO: fix this
 	 * @return the top-left corner of the drawing area
@@ -386,5 +371,14 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	protected presentation.fsa.GraphDrawingView getDrawingBoard()
 	{
 		return ((MainWindow)Hub.getMainWindow()).getDrawingBoard();
+	}
+	
+	/**
+	 * Get the number of models in the workspace
+	 * @return number of models in the workspace
+	 */
+	public int size()
+	{
+		return systems.size();
 	}
 }

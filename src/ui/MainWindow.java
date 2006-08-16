@@ -47,6 +47,7 @@ import presentation.fsa.GraphDrawingView;
 import ui.command.EditCommands;
 import ui.command.FileCommands;
 import ui.command.HelpCommands;
+import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
 import ui.command.GraphCommands.*;
 
@@ -196,6 +197,8 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 		new OptionsCommands.MoreOptionsCommand().export();
 		
 		new HelpCommands.AboutCommand().export();
+		
+		new OperationsCommands.ProductCommand().export();
 	}
 	
 	/**

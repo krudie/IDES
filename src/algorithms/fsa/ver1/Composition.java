@@ -6,8 +6,11 @@ import io.fsa.ver1.SubElement;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import model.fsa.FSAEvent;
+import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
@@ -22,6 +25,11 @@ import model.fsa.ver1.Transition;
  * @author Axel Gottlieb Michelsen
  */
 public class Composition{
+	
+	/**
+	 * To be used to store the ids of pairs of states
+	 */
+	protected static Map<String,Long> pairIds=new TreeMap<String,Long>(); 
 
     /**
      * Takes multiple automata and makes the product of them all
@@ -56,17 +64,20 @@ public class Composition{
      * @param b an automaton
      * @param product the accesible product of a and b.
      */
-    public static void product(Automaton a, Automaton b, Automaton product){
+    public static void product(FSAModel a, FSAModel b, Automaton product){
+    	
+    	product.setAutomataCompositionList(new String[]{a.getId(),b.getId()});
+    	
         // Add the intersection between the eventsets as the products eventset.
         ListIterator<FSAEvent> eventsa = a.getEventIterator();
         while(eventsa.hasNext()){
-            Event eventa = (Event)eventsa.next();
+            FSAEvent eventa = eventsa.next();
             ListIterator<FSAEvent> eventsb = b.getEventIterator();
             while(eventsb.hasNext()){
-                Event eventb = (Event)eventsb.next();
-                if(eventa.getSubElement("name").getChars().equals(
-                        eventb.getSubElement("name").getChars())){
-                    // is this right? Does the new event have the same
+                FSAEvent eventb = eventsb.next();
+                if(eventa.getSymbol().equals(eventb.getSymbol()))
+                {
+                    //TODO: is this right? Does the new event have the same
                     // properties as the old event?
                     Event event = new Event(eventa);
                     product.add(event);
@@ -76,20 +87,20 @@ public class Composition{
         }
 
         // find initial states, mark them as reached and add them to the que
-        State[] initial = new State[2];
+        FSAState[] initial = new FSAState[2];
         int stateNumber = 0;
-        LinkedList<State[]> searchList = new LinkedList<State[]>();
+        LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
 
         Iterator<FSAState> sia = a.getStateIterator();
         while(sia.hasNext()){
-            initial[0] = (State)sia.next();
-            if(initial[0].getSubElement("properties").hasSubElement("initial")){
+            initial[0] = sia.next();
+            if(initial[0].isInitial()){
                 Iterator<FSAState> sib = b.getStateIterator();
                 while(sib.hasNext()){
                     initial[1] = (State)sib.next();
-                    if(initial[1].getSubElement("properties").hasSubElement("initial")){
+                    if(initial[1].isInitial()){
                         searchList.add(initial.clone());
-                        product.add(makeState(initial, stateNumber));
+                        product.add(makeState(initial,stateNumber));
                         setStateId(initial, stateNumber++);
                     }
                 }
@@ -103,9 +114,9 @@ public class Composition{
         // originating from the two
         // states are the transitions of state in product.
         int transitionNumber = 0;
-        State[] s = new State[2];
+        FSAState[] s = new FSAState[2];
         while(!searchList.isEmpty()){
-            State[] sa = searchList.removeFirst();
+            FSAState[] sa = searchList.removeFirst();
             FSAState source = product.getState(getStateId(sa));
 
             ListIterator<FSATransition> sti0 = sa[0].getSourceTransitionsListIterator();
@@ -123,7 +134,7 @@ public class Composition{
                         s[0] = (State)t0.getTarget();
                         s[1] = (State)t1.getTarget();
 
-                        int id = getStateId(s);
+                        long id = getStateId(s);
                         if(id != -1){
                             product.add(new Transition(transitionNumber++, source, product
                                     .getState(id), event));
@@ -139,11 +150,8 @@ public class Composition{
                 }
             }
         }
-        // tidy up the mess I left.
-        ListIterator<FSAState> sli = a.getStateIterator();
-        while(sli.hasNext()){
-            ((State)sli.next()).removeSubElement("searched");
-        }
+
+        pairIds.clear();
     }
 
     /**
@@ -259,7 +267,7 @@ public class Composition{
                         s[(i + 1) % 2] = sa[(i + 1) % 2];
                         s[i] = (State)t.getTarget();
 
-                        int id = getStateId(s);
+                        long id = getStateId(s);
                         if(id != -1){
                             parallel.add(new Transition(transitionNumber++, source, parallel
                                     .getState(id), event));
@@ -293,7 +301,7 @@ public class Composition{
                         s[0] = (State)t0.getTarget();
                         s[1] = (State)t1.getTarget();
 
-                        int id = getStateId(s);
+                        long id = getStateId(s);
                         if(id != -1){
                             parallel.add(new Transition(transitionNumber++, source, parallel
                                     .getState(id), event));
@@ -568,27 +576,23 @@ public class Composition{
      * @param stateNumber the id of the new state
      * @return the newly created state
      */
-    private static State makeState(State[] s, int stateNumber){
+    private static State makeState(FSAState[] s, long stateNumber){
         State state = new State(stateNumber);
-        SubElement name = new SubElement("name");
-        name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
-                + s[1].getSubElement("name").getChars() + ")");
-        state.addSubElement(name);
+//        SubElement name = new SubElement("name");
+//        name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
+//                + s[1].getSubElement("name").getChars() + ")");
+//        state.addSubElement(name);
 
-        SubElement properties = new SubElement("properties");
+//        SubElement properties = new SubElement("properties");
 
-        if(s[0].getSubElement("properties").hasSubElement("initial")
-                && s[1].getSubElement("properties").hasSubElement("initial")){
-            SubElement initial = new SubElement("initial");
-            properties.addSubElement(initial);
-        }
+        state.setStateCompositionList(
+        		new long[]{s[0].getId(),s[1].getId()});
+        
+        if(s[0].isInitial() && s[1].isInitial())
+        	state.setInitial(true);
 
-        if(s[0].getSubElement("properties").hasSubElement("marked")
-                && s[1].getSubElement("properties").hasSubElement("marked")){
-            SubElement marked = new SubElement("marked");
-            properties.addSubElement(marked);
-        }
-        state.addSubElement(properties);
+        if(s[0].isMarked() && s[1].isMarked())
+        	state.setMarked(true);
         return state;
     }
 
@@ -597,11 +601,8 @@ public class Composition{
      * @param s the stateset
      * @param stateId the id to set
      */
-    private static void setStateId(State[] s, int stateId){
-        if(!s[0].hasSubElement("searched")) s[0].addSubElement(new SubElement("searched"));
-
-        s[0].getSubElement("searched").setAttribute(""+s[1].getId(),
-                Integer.toString(stateId));
+    private static void setStateId(FSAState[] s, long stateId){
+    	pairIds.put(""+s[0].getId()+","+s[1].getId(),new Long(stateId));
     }
 
     /**
@@ -610,11 +611,10 @@ public class Composition{
      * @param s the stateset
      * @return the id of the stateset
      */
-    private static int getStateId(State[] s){
-        if(s[0].hasSubElement("searched")
-                && s[0].getSubElement("searched").hasAttribute("" + s[1].getId())){
-            return Integer.parseInt(s[0].getSubElement("searched").getAttribute("" + s[1].getId()));
-        }
+    private static long getStateId(FSAState[] s){
+    	String key=""+s[0].getId()+","+s[1].getId();
+        if(pairIds.containsKey(key))
+            return pairIds.get(key).longValue();
         return -1;
     }
 }

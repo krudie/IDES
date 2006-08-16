@@ -137,9 +137,9 @@ public class GraphExporter
 	///////////////////////////////////////////////////////////////////
     
 	/**
-     * TODO: Comment this nicely.
-     * 
-     */	
+	 * Creates a LaTeX document which contains a PSTricks figure of the current model
+	 * @return LaTeX document containing a PSTricks description of the current model
+	 */
 	public static String createPSTricksFileContents()
 	{
 		String contentsString = STR_PSTRICKS_BEGIN_FIGURE;
@@ -208,9 +208,10 @@ public class GraphExporter
 			+ "{\n"
 			+ "\\psset{unit=1pt}\n";
 		
+		// Step #5 - Get the PSTricks figure
 		contentsString += createPSPicture(exportBounds,useFrame);
 
-		// Step #8 - End the pciture and add the commented LaTeX
+		// Step #6 - End the pciture and add the commented LaTeX
 		// document declaration
 		contentsString += STR_PSTRICKS_END_FIGURE
 			+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION;
@@ -246,11 +247,14 @@ public class GraphExporter
 		edgeArray = (BezierEdge[]) graphModel.getEdges().toArray(new BezierEdge[0]);
 		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 
+		// Step #3 - Initialize the pspicture environment and set linewidth to 1 pt
 		String contentsString =
 			"\\begin{pspicture}(0,0)(" 
 			+ exportBounds.width + "," 
 			+ exportBounds.height + ")\n" 
 			+	"  \\psset{linewidth=1pt}\n";
+		
+		// Step #4 - Create frame if needed
 		if (useFrame)
 		{
 			contentsString += "  \\psframe(0,0)(" 
@@ -280,8 +284,10 @@ public class GraphExporter
 			contentsString += freelabelArray[i].createExportString(exportBounds,
 				INT_EXPORT_TYPE_PSTRICKS);
 		}		
-		contentsString += "\n" +
-		"\\end{pspicture}\n";
+		contentsString += "\n";
+		
+		// Step #8 - Close the pspicture environment
+		contentsString += "\\end{pspicture}\n";
 
 		return contentsString;
 	}
@@ -342,9 +348,10 @@ public class GraphExporter
 			+ "\\begin{document}\n"	
 			+ "\\psset{unit=1pt}\n";
 		
+		// Step #5 - Get the PSTricks figure
 		contentsString+=createPSPicture(exportBounds,useFrame);
 
-		// Step #8 - End the pciture and add the commented LaTeX
+		// Step #6 - End the pciture and add the commented LaTeX
 		// document declaration
 		contentsString += STR_EPS_END_DOC +
 			STR_EPS_COMMENTED_DOC_DECLARATION;

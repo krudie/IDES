@@ -8,7 +8,9 @@ import java.util.ListIterator;
 import observer.FSMMessage;
 import observer.FSMPublisher;
 import observer.Publisher;
+import services.General;
 
+import main.Hub;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
@@ -22,6 +24,7 @@ import model.fsa.FSATransition;
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
+ * @author Lenko Grigorov
  */
 public class Automaton extends FSMPublisher implements Cloneable, FSAModel {	
 	
@@ -36,6 +39,10 @@ public class Automaton extends FSMPublisher implements Cloneable, FSAModel {
     private File myFile = null;
     
     protected String id = "";
+    
+    // if this automaton represents the composition of other automata,
+    // this will contain a list the ids of these other automata
+    protected String[] composedOf=null;
     
     private SubElement meta=null;
 
@@ -53,6 +60,7 @@ public class Automaton extends FSMPublisher implements Cloneable, FSAModel {
         maxStateId = -1;
 		maxTransitionId = -1;
 		maxEventId = -1;
+		id=General.getRandomId();
     }
     
     /**
@@ -592,6 +600,24 @@ public class Automaton extends FSMPublisher implements Cloneable, FSAModel {
     {
     	return myFile;
     }
+    
+	/**
+	 * Gets the list of ids of the automata of which this automaton is a composition.
+	 * @return the list of ids of the automata of which this automaton is a composition
+	 */
+	public String[] getAutomataCompositionList()
+	{
+		return composedOf;
+	}
+	
+	/**
+	 * Sets the list of ids of the automata of which this automaton is a composition.
+	 * @param list the list of ids of the automata of which this automaton is a composition
+	 */
+	public void setAutomataCompositionList(String[] list)
+	{
+		composedOf=list;
+	}
 
     public SubElement getMeta()
     {

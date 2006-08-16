@@ -1,5 +1,6 @@
 package model.fsa.ver1;
 
+import model.fsa.FSAEvent;
 import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;
 
@@ -33,7 +34,21 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
         addSubElement(new SubElement("properties"));
         addSubElement(new SubElement("name"));
     }
-    
+
+    /**
+     * constructs an event with all internal variables equal to the event e.
+     * @param e the event the new event must equal.
+     */
+    public Event(FSAEvent e){
+        this.id = e.getId();
+        addSubElement(new SubElement("properties"));
+        addSubElement(new SubElement("name"));
+        this.setSymbol(e.getSymbol());
+        this.setControllable(e.isControllable());
+        this.setObservable(e.isObservable());
+        //TODO: also transfer other properties
+    }
+
     /**     
      * @return the symbol that represents this event
      */
