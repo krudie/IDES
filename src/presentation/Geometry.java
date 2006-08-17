@@ -3,6 +3,7 @@ package presentation;
 import java.awt.Point;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.awt.geom.Point2D.Float;
 
 public class Geometry {
@@ -20,26 +21,49 @@ public class Geometry {
 	/**
 	 * Returns the norm of the given vector.
 	 * 
-	 * @param vector
+	 * @param v
 	 * @return norm (length) of vector
 	 */
-	public static double norm(Point2D.Float vector) {
-		return Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2));		
+	public static double norm(Point2D.Float v) {
+		return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));		
 	}
 	
+	/**
+	 * @param v
+	 * @return
+	 */
+	private static double norm(Point2D.Double v) {
+		return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));		
+	}
+
 	/**  
-	 * @param p
+	 * TODO specify and enforce precision to unit length
+	 * 
+	 * @param v
 	 * @return the unit direction vector for vector from (0,0) to v.
 	 */
-	public static Point2D.Float unit(Point2D.Float p){
-		double n = norm(p);
+	public static Point2D.Float unit(Point2D.Float v){
+		double n = norm(v);
 		if(n != 0){
-			Point2D.Float p1 = new Point2D.Float((float)(p.x/n), (float)(p.y/n));
-			//System.err.println(norm(p1));
-			// assert( norm(p1) == 1 );
-			return p1;
+			Point2D.Float v1 = new Point2D.Float((float)(v.x/n), (float)(v.y/n));			
+			return v1;
 		}
-		return p;		
+		return v;		
+	}
+
+	/**
+	 * TODO specify and enforce precision to unit length
+	 * 
+	 * @param v
+	 * @return the unit direction vector for vector from (0,0) to v.
+	 */
+	private static Double unit(Point2D.Double v) {
+		double n = norm(v);
+		if(n != 0){
+			Point2D.Double v1 = new Point2D.Double((float)(v.x/n), (float)(v.y/n));			
+			return v1;
+		}
+		return v;		
 	}
 
 	/**
@@ -60,7 +84,7 @@ public class Geometry {
 	}
 	
 	/**
-	 * @param v vector with origin at (0,0) and given direction
+	 * @param v vector
 	 * @param r radians
 	 * @return the vector resulting from rotating v by r radians
 	 */
@@ -70,6 +94,17 @@ public class Geometry {
 		return new Point2D.Float(v.x*c - v.y*s, v.y*c + v.x*s);	
 	}
 	
+	/**
+	 * @param v vector
+	 * @param r radians
+	 * @return the vector resulting from rotating v by r radians
+	 */
+	private static Point2D.Double rotate(Point2D.Double v, double r) {
+		double c = Math.cos(r);
+		double s = Math.sin(r);
+		return new Point2D.Double(v.x*c - v.y*s, v.y*c + v.x*s);	
+	}
+
 	/** 
 	 * @param v vector with origin at (0,0) and given direction
 	 * @param s the scalar 
@@ -129,24 +164,34 @@ public class Geometry {
 		 (2) compute the dot product, 
 		 (3) take the arc cos to get the angle.
 
-		 */ 
-
-		Point2D.Float u1, u2;
-		u1 = unit(v1);
-		u2 = unit(v2);
-		double dot = dot(u1, u2);		
-		double epsilon = 0.0000001;
+		 */
+		
+		// convert everything to double precision
+		Point2D.Double v1d, v2d;
+		v1d = new Point2D.Double(v1.x, v1.y);
+		v2d = new Point2D.Double(v2.x, v2.y);
+		
+		Point2D.Double u1, u2;
+		u1 = unit(v1d);
+		u2 = unit(v2d);
+		double dot = dot(u1, u2);	
 		
 		// DEBUG
-		if(dot < -1 || dot > 1 || Double.isNaN(dot))	System.err.println(dot);
-		//assert(dot >= -1 && dot <= 1);
+//		if(dot < -1 || dot > 1)	System.err.println(dot);
+//		assert(dot >= -1 && dot <= 1);
 		
+		double e = 0.0000001;
+		if(Math.abs(dot - 1) < e )
+		{
+			// close enough
+			dot = 1;
+		}
 		double a = Math.acos(dot);
-		
-		//assert(!Double.isNaN(a));
-		
-		double e = 0.001;
-		Float test = rotate(u1, a);
+
+		// DEBUG
+		assert(!java.lang.Double.isNaN(a));
+				
+		Point2D.Double test = rotate(u1, a);
 		if((Math.abs(test.x - u2.x) < e) && (Math.abs(test.y - u2.y) < e)){
 			return a;
 		}else{
@@ -158,6 +203,10 @@ public class Geometry {
 		return v1.x * v2.x + v1.y * v2.y;
 	}
 	
+	private static double dot(Point2D.Double v1, Point2D.Double v2) {		
+		return v1.x * v2.x + v1.y * v2.y;
+	}
+
 	/**
 	 * Given two points, find the slope (Y2-Y1)/(X2-X1) of the line between them
 	 * @param p1 point 1

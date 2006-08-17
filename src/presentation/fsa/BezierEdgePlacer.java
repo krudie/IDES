@@ -36,22 +36,26 @@ public class BezierEdgePlacer {
 		if(straightEdge != null) {			
 			// find outermost position
 			BezierLayout outPos = setToOutermostFreeLayout(edge, edges);
-	
-			// move the straight edge to reflection of edge
-			BezierLayout reflection = outPos.reflect();	
-			if( straightEdge.getSource().equals(edge.getTarget())){
-				// swap angles (for reversed arrow direction)
-				reflection.swapAngles();				
-			}
-			((BezierLayout)straightEdge.getLayout()).setCurve(reflection.getCurve());
+				
+			//if( straightEdge.getSource().equals(edge.getTarget())){				
+			outPos.setToReflection(((BezierLayout)straightEdge.getLayout()));				
+				
+//			}else{
+//				// move the straight edge to reflection of edge
+//				BezierLayout reflection = outPos.getReflection();	
+//				reflection.computeCurve();
+//				((BezierLayout)straightEdge.getLayout()).setCurve(reflection.getCurve());
+//			}
+				
 			// TODO if we only call this to update the endpts, then call a method that is named appropriately
-			straightEdge.computeEdge();
+			//straightEdge.computeEdge();
 			
-			// unless that position is taken
+			// unless that position is taken			
 			if(tooClose(straightEdge, edges))
 			{				
 				((BezierLayout)straightEdge.getLayout()).arcMore(false);
-			}			
+			}	
+			
 		}else{	// No straight edge
 			if(n % 2 != 0) // Even # of neighbours			
 			{
@@ -92,7 +96,7 @@ public class BezierEdgePlacer {
 			}else{
 			*/
 				// otherwise, try reflected position
-				BezierLayout reflection = layout.reflect();
+				BezierLayout reflection = layout.getReflection();
 				edge.setLayout(reflection);
 				edge.computeEdge();
 				
@@ -100,10 +104,10 @@ public class BezierEdgePlacer {
 				// ??? or the reflection?
 				if(tooClose(edge, edges))
 				{                                                
-					reflection.arcMore();
+					reflection.arcMore();				
 				}				
 			//}
-			return layout;
+			return reflection;
 		}
 		// ??? How should this be initialized ?
 		return new BezierLayout();
@@ -147,7 +151,7 @@ public class BezierEdgePlacer {
 		// TODO find a nice-looking min distance
 		// minimum comfortable distance between endpoints to allow margins 
 		// for arrow head along node boundary
-		double min = ArrowHead.SHORT_HEAD_LENGTH;
+		double min = ArrowHead.SHORT_HEAD_LENGTH/2;
 	
 		for(Edge edge : edges)
 		{
@@ -156,10 +160,14 @@ public class BezierEdgePlacer {
 			
 			// check if any pair of visible endpoints (intersections with node boundary) are too close
 			// FIXME this may not be the best way to test for proximity...
-			return (edge.getSourceEndPoint().distance(edge1.getSourceEndPoint()) > min)
-					|| (edge.getSourceEndPoint().distance(edge1.getTargetEndPoint()) > min)
-					|| (edge.getTargetEndPoint().distance(edge1.getTargetEndPoint()) > min)
-					|| (edge.getTargetEndPoint().distance(edge1.getSourceEndPoint()) > min);			
+			if( !edge.equals(edge1) && ((edge.getSourceEndPoint().distance(edge1.getSourceEndPoint()) < min)
+				|| (edge.getSourceEndPoint().distance(edge1.getTargetEndPoint()) < min)
+				|| (edge.getTargetEndPoint().distance(edge1.getTargetEndPoint()) < min)
+				|| (edge.getTargetEndPoint().distance(edge1.getSourceEndPoint()) < min)) )
+			{
+				return true;
+			}
+			
 		}
 		return false;
 	}

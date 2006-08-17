@@ -92,7 +92,7 @@ public class BezierLayout extends GraphicalLayout {
 	{
 		edge = other.edge;
 		curve = new CubicParamCurve2D();		
-		curve.setCurve(other.curve);
+		curve.setCurve(new CubicParamCurve2D(other.curve));
 		updateAnglesAndScalars();
 		eventNames = new ArrayList<String>();
 		setLabelOffset(new Point2D.Float(5,5));
@@ -149,12 +149,12 @@ public class BezierLayout extends GraphicalLayout {
 	public void computeCurve(NodeLayout s, NodeLayout t){
 
 		////////////////////////////////////////////////////////////////
-		// if source and target nodes are the same, compute a self-loop
-		if(s.equals(t) && angle1 == 0 && angle2 == 0){
-				computeDefaultSelfLoop(s);
-				//selfLoop = true;
-				return;
-		}
+//		// if source and target nodes are the same, compute a self-loop
+//		if(s.equals(t) && angle1 == 0 && angle2 == 0){
+//				computeDefaultSelfLoop(s);
+//				//selfLoop = true;
+//				return;
+//		}
 		////////////////////////////////////////////////////////////////
 		
 		
@@ -382,7 +382,8 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param cubicCurve
 	 */
 	protected void setCurve(CubicParamCurve2D cubicCurve) {
-		this.curve = cubicCurve;		
+		this.curve = cubicCurve;
+		updateAnglesAndScalars();
 	}	
 	
 	/** 
@@ -391,6 +392,8 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	public CubicCurve2D getVisibleCurve()
 	{
+		// TODO check sourceT and targetT
+		
 		Node s = edge.getSource();
 		Node t = edge.getTarget();
 		if(s.intersects(curve.getPointAt(targetT)) || 
@@ -400,7 +403,7 @@ public class BezierLayout extends GraphicalLayout {
 		}
 		
 		// FIXME check for NaN here or in CubicCurve2Dex class
-	return curve.getSegment(sourceT, targetT);		
+		return curve.getSegment(sourceT, targetT);		
 	}
 
 	/**
@@ -623,10 +626,24 @@ public class BezierLayout extends GraphicalLayout {
 	}
 
 	/**
-	 * @return a new layout instance that is reflection of this layout about the straight line
-	 * between my edge's source and target nodes.
+	 * Reflects my curve about the straight line segment between centres of
+	 * source and target nodes.
 	 */
-	public BezierLayout reflect() {
+	public void reflect() {
+		if( ! isStraight() )
+		{
+			angle1 *= -1;
+			angle2 *= -1;
+		}
+	}
+	
+	/** 
+	 * @return a new layout instance that is reflection of this layout about the straight line
+	 * 	between my edge's source and target nodes.
+	 */
+	
+	public BezierLayout getReflection() 
+	{
 		BezierLayout reflection = new BezierLayout(this);
 		if( ! isStraight() )
 		{
@@ -635,19 +652,64 @@ public class BezierLayout extends GraphicalLayout {
 		}
 		// FIXME update sourceT and targetT
 		//setDirty(true);
-		return reflection;
+		return reflection;	
 	}
 	
-	public void swapAngles() {
-		if(! isStraight() )
-		{
-			double temp = angle1;
-			angle1 = angle2;
-			angle2 = temp;
+	/**
+	 * Set the given layout to be the reflection of me. 
+	 * 
+	 * @param other
+	 */
+	public void setToReflection(BezierLayout other)
+	{
+		if( this.edge.getSource().equals(other.edge.getSource()) ){
+			if( ! isStraight() )
+			{
+				other.angle1 = this.angle1 * -1;
+				other.angle2 = this.angle2 * -1;				
+			}
+		}else{ // sixty-nine
+			other.angle1 = this.angle1;
+			other.angle2 = this.angle2;			
 		}
-		//setDirty(true);
-		// FIXME update sourceT and targetT
+		other.s1 = this.s1;
+		other.s2 = this.s2;
+		other.computeCurve();
 	}
+	
+	/**
+	 * Set this layout to be the reflection of <code>other</code>.  
+	 * 
+	 * @param other
+	 */
+	public void setToReflectionOf(BezierLayout other)
+	{
+		if( this.edge.getSource().equals(other.edge.getSource()) ){
+			if( ! other.isStraight() )
+			{
+				this.angle1 = other.angle1 * -1;
+				this.angle2 = other.angle2 * -1;				
+			}
+		}else{ // sixty-nine
+			this.angle1 = other.angle1;
+			this.angle2 = other.angle2;			
+		}
+		this.s1 = other.s1;
+		this.s2 = other.s2;
+		this.computeCurve();
+	}
+	
+//	/**
+//	 * Sets the given layout to be the yin to my yang.
+//	 * Given that my source node is <code>other</code>'s target node and
+//	 * my target node is <code>other</code>'s source.
+//	 */
+//	public void sixtyNine(BezierLayout other) {
+//		other.angle1 = this.angle1;
+//		other.angle2 = this.angle2;
+//		other.s1 = this.s1;
+//		other.s2 = this.s2;
+//	}
 
 	protected float getSourceT() {
 		return sourceT;

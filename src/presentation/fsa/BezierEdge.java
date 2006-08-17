@@ -692,6 +692,7 @@ public class BezierEdge extends Edge {
 		if( getTarget() != null && nodeShape.equals(getTarget().getShape()) ) 
 		{
 			t = 1-t;
+			assert(0 <= t && t <=1);
 		}
 		
 		intersection.x = (float)c_t.getX();

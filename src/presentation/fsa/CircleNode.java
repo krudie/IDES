@@ -140,9 +140,9 @@ public class CircleNode extends Node {
 		if (isSelected()){
 			g.setColor(getLayout().getSelectionColor());
 // DEBUG
-			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
-			g2d.draw(bounds());
-			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+//			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
+//			g2d.draw(bounds());
+//			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 // END DEBUG		
 		}else if(isHighlighted()){
 			g.setColor(getLayout().getHighlightColor());			

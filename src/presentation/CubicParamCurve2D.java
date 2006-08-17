@@ -37,6 +37,13 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
 
     /**
+	 * @param curve the curve to clone
+	 */
+	public CubicParamCurve2D(CubicParamCurve2D curve) {
+		setCurve(curve);
+	}
+
+	/**
      * Subdivides this cubic curve and stores the resulting two subdivided
      * curves into the left and right curve parameters. Either or both of the
      * left and right objects may be the same as this object or null.
@@ -227,7 +234,11 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
      */
     public CubicParamCurve2D getSegment(float tStart, float tEnd)
     {
-    	assert(0 <= tStart && tStart < tEnd && tEnd <=1 );
+    	// DEBUG
+    	if(! (0 <= tStart && tStart < tEnd && tEnd <=1) )
+    		System.err.println("tStart= " + tStart + " tEnd = " + tEnd );
+    	
+    	assert(0 <= tStart && tStart < tEnd && tEnd <=1);
     	
 //    	if(! (0 <= tStart && tStart < tEnd && tEnd <=1 ) ){
 //    		throw new RuntimeException("precondition violated: ! (0 <= tStart < tEnd <= 1)");
