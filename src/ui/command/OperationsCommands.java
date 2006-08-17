@@ -35,6 +35,7 @@ import presentation.fsa.FSMGraph;
 import presentation.fsa.GraphExporter;
 import services.latex.LatexManager;
 import services.latex.LatexRenderException;
+import ui.OperationDialog;
 
 /**
  *
@@ -50,12 +51,13 @@ public class OperationsCommands {
 
 		@Override
 		protected void handleExecute() {
-			Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();
-			FSAModel a1=i.next();
-			FSAModel a2=i.next();
-			Automaton a=new Automaton("P("+a1.getName()+","+a2.getName()+")");
-			Composition.product(a1,a2,a);
-			FileOperations.saveAutomatonAs(a);
+			new OperationDialog();
+//			Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();
+//			FSAModel a1=i.next();
+//			FSAModel a2=i.next();
+//			Automaton a=new Automaton("P("+a1.getName()+","+a2.getName()+")");
+//			Composition.product(a1,a2,a);
+//			FileOperations.saveAutomatonAs(a);
 		}
 		
 	}
