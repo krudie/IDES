@@ -24,8 +24,6 @@ public abstract class Edge extends GraphElement{
 	private Node target;	
 	private EdgeHandler handler; // Anchors for modifying the curve.
 	private GraphLabel label;	 // extra pointer for O(1) access without instanceof
-	private Point2D.Float sourceEndPoint, targetEndPoint;
-	
 	public Edge(Node source)
 	{
 		this(source, null);
@@ -162,22 +160,10 @@ public abstract class Edge extends GraphElement{
 	 */
 	public abstract void addEventName(String symbol);
 
-	public Point2D.Float getSourceEndPoint() {
-		return sourceEndPoint;
-	}
+	public abstract Point2D.Float getSourceEndPoint();
 
-	public Point2D.Float getTargetEndPoint() {
-		return targetEndPoint;
-	}
-
-	protected void setSourceEndPoint(Point2D.Float sourceEndPoint) {
-		this.sourceEndPoint = sourceEndPoint;
-	}
-
-	protected void setTargetEndPoint(Point2D.Float targetEndPoint) {
-		this.targetEndPoint = targetEndPoint;
-	}
-
+	public abstract Point2D.Float getTargetEndPoint();
+	
 	/**
 	 * Compute the edge from the source node to the target node. 
 	 *
@@ -185,4 +171,6 @@ public abstract class Edge extends GraphElement{
 	 * @param target
 	 */
 	public abstract void computeEdge();
+		
+	public abstract boolean isStraight();
 }

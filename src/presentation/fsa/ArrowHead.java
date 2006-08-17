@@ -17,6 +17,8 @@ import presentation.Geometry;
 @SuppressWarnings("serial")
 public class ArrowHead extends Polygon {
 
+	private Point2D.Float basePt = new Point2D.Float(0,0); // the nock where the shaft terminates
+	
     public static final int HEAD_LENGTH = 9, SHORT_HEAD_LENGTH = 7;
     private static final double ANGLE = 3*Math.PI/4;
 	
@@ -24,6 +26,7 @@ public class ArrowHead extends Polygon {
      * Centre axis vector of default direction. 
      */
     public static final Point2D.Float axis = new Point2D.Float(0, 1);   
+    
     
     /**
      * Construct an invisible ArrowHead.
@@ -84,7 +87,7 @@ public class ArrowHead extends Polygon {
 //	    addPoint(0, 0);
 //	    v = Geometry.scale(Geometry.rotate(temp, -ANGLE), 0.75f);	
 //	    addPoint((int)v.x, (int)v.y);
-    	    	
+    	this.basePt = base;    	
     	double alpha = Geometry.angleFrom(axis, dir);
     	for(int i=0; i<npoints; i++){
     		Point2D.Float temp = new Point2D.Float(xpoints[i], ypoints[i]);
@@ -97,10 +100,17 @@ public class ArrowHead extends Polygon {
     public void reset()
     {
     	super.reset();
+    	basePt = new Point2D.Float(0,0);
     	// compute default arrowhead pointing down    	
 	    addPoint(0, HEAD_LENGTH);	     
 		addPoint(-6, -5);	    
-		addPoint(0, 0);	   
+		addPoint((int)basePt.x, (int)basePt.y);	   
 	    addPoint(6, -5);
     }
+
+	protected Point2D.Float getBasePt() {
+		return basePt;
+	}
+    
+    
 }

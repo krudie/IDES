@@ -4,6 +4,7 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
@@ -19,6 +20,8 @@ public abstract class Node extends GraphElement {
 	FSAState state;
 	GraphLabel label;
 
+	public abstract Shape getShape();
+	
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
 
 	public abstract Iterator<Edge> adjacentEdges();

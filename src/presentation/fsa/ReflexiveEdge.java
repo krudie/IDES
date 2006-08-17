@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 
 import model.fsa.ver1.Transition;
@@ -134,7 +135,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 */
 	public Rectangle bounds()
 	{
-		return ((ReflexiveLayout)getLayout()).getCubicCurve().getBounds().union(getLabel().bounds());		
+		return ((ReflexiveLayout)getLayout()).getCurve().getBounds().union(getLabel().bounds());		
 	}
 	
 	public void translate(float x, float y){
@@ -145,6 +146,11 @@ public class ReflexiveEdge extends BezierEdge {
 	
 	public void computeEdge() {
 		((ReflexiveLayout)getLayout()).computeCurve();
+	}
+	
+	public boolean isStraight()
+	{
+		return false;
 	}
 	
 	/**
@@ -163,23 +169,24 @@ public class ReflexiveEdge extends BezierEdge {
 		private Point2D.Float midpoint;
 		
 		// default angle from centre axis vector to the tangents of the bezier curve
-		public static final double DEFAULT_ANGLE = Math.PI /4; 
-				
+		public static final double DEFAULT_ANGLE = Math.PI /5; 
+		public static final float DEFAULT_SCALAR = 2f;
+		
 		/**
 		 * Layout for a reflexive edge with vertical axis vector from centre of
 		 * node to midpoint of bezier curve given by <code>bLayout</code>.
 		 */
 		public ReflexiveLayout(Node source, ReflexiveEdge edge, BezierLayout bLayout)
 		{	
-			Point2D temp = Geometry.midpoint(bLayout.getCubicCurve());
+			Point2D temp = Geometry.midpoint(bLayout.getCurve());
 			midpoint = new Point2D.Float((float)temp.getX(), (float)temp.getY());			
 			setLocation(midpoint.x, midpoint.y);
 			
-			axis = Geometry.subtract(Geometry.midpoint(bLayout.getCubicCurve()), source.getLocation());
+			axis = Geometry.subtract(Geometry.midpoint(bLayout.getCurve()), source.getLocation());
 			
 			setEdge(edge);
-			setCurve(bLayout.getCubicCurve());			
-			setSelfLoop(true);
+			setCurve(bLayout.getCurve());			
+			//setSelfLoop(true);
 			setEventNames(bLayout.getEventNames());	
 		
 			updateAnglesAndScalars();
@@ -192,7 +199,7 @@ public class ReflexiveEdge extends BezierEdge {
 		public ReflexiveLayout(Node source) 
 		{			
 			// TODO set location to default midpoint			
-			midpoint = Geometry.add(source.getLocation(), new Point2D.Float(0,-source.bounds().height));
+			midpoint = Geometry.add(source.getLocation(), new Point2D.Float(0, - source.bounds().height));
 			setLocation(midpoint.x, midpoint.y);
 			updateAnglesAndScalars();			
 		}
@@ -208,6 +215,14 @@ public class ReflexiveEdge extends BezierEdge {
 		}
 		
 		/**
+		 * @param controls
+		 */
+		public ReflexiveLayout(Float[] controls) {
+			super(controls);
+		}
+
+
+		/**
 		 * @return the midpoint of the curve.
 		 */
 		public Point2D.Float getMidpoint() {
@@ -216,17 +231,28 @@ public class ReflexiveEdge extends BezierEdge {
 
 		/**
 		 * TODO
-		 * chech and use the midpoint
+		 * check and use the midpoint
 		 * if it is unknown, we set to defaults
 		 * otherwise...
 		 */
 		public void updateAnglesAndScalars(){
 			angle1 = -DEFAULT_ANGLE;
 			angle2 = DEFAULT_ANGLE;
+
+			
+			// compute length of axis from centre of node to midpoint of curve
+//			Point2D oldMidpoint = Geometry.midpoint(curve);
+//			double n = curve.getP1().distance(oldMidpoint);
+			
 			// Proportion of the length of axis from node centre to midpoint of curve
 			// to the length of line segment from  node centre to each symmetric control point.
-			s1 = 2.0f;
-			s2 = 2.0f;
+			//if(midpoint == null || n == 0){
+				s1 = DEFAULT_SCALAR;
+				s2 = DEFAULT_SCALAR;
+			/*}else{
+				s1 = curve.getCtrlP1().distance(oldMidpoint)/n;
+				s2 = s1;
+			}*/
 		}
 		
 		/**
@@ -242,17 +268,16 @@ public class ReflexiveEdge extends BezierEdge {
 			// is the axis around with a symmetrical arc is drawn.
 			
 			// *** if(isDirty()) updateAnglesAndScalars();
-			
-			axis = Geometry.subtract(midpoint, getEdge().getSource().getLocation());
+					
 			setPoint(getEdge().getSource().getLocation(), P1);
 			setPoint(getEdge().getSource().getLocation(), P2);
-			
+			axis = Geometry.subtract(midpoint, curve.getP1());
 			Point2D.Float v1 = Geometry.rotate(axis, angle1);
 			Point2D.Float v2 = Geometry.rotate(axis, angle2);
 							
 			setPoint(Geometry.add(getEdge().getP1(), Geometry.scale(v1, (float)s1)), CTRL1);
 			setPoint(Geometry.add(getEdge().getP2(), Geometry.scale(v2, (float)s2)), CTRL2);
-	
+			
 			// *** setDirty(false);
 			setDirty(true);
 		}		
@@ -267,9 +292,10 @@ public class ReflexiveEdge extends BezierEdge {
 			switch(index)
 			{			
 				case MIDPOINT:
-					midpoint = point;
-					setLocation(midpoint.x, midpoint.y);					
+					midpoint = point;					
+					updateAnglesAndScalars();
 					computeCurve();
+					setLocation(midpoint.x, midpoint.y);
 					break;
 				case P1:
 					curve.x1 = point.x;

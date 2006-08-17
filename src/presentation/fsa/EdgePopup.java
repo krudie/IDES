@@ -24,7 +24,7 @@ public class EdgePopup extends JPopupMenu {
 
 	private Edge edge;
 	private DeleteCommand deleteCmd;
-	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge, miSymmetrize;
+	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge, miSymmetrize, miArcMore, miArcLess;
 	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
@@ -48,6 +48,7 @@ public class EdgePopup extends JPopupMenu {
 		//TODO symmetrize should be an undoable command
 		miSymmetrize.addActionListener(listener);
 		add(miSymmetrize);
+		
 //		miStraighten = new JMenuItem("Straighten");
 //		miStraighten.setEnabled(false);
 //		add(miStraighten);
@@ -58,7 +59,14 @@ public class EdgePopup extends JPopupMenu {
 		add(miDeleteEdge);
 		
 		// TODO arc more
+		miArcMore = new JMenuItem(Hub.string("arcmore"));
+		miArcMore.addActionListener(listener);
+		add(miArcMore);
+		
 		// TODO arc less
+		miArcLess = new JMenuItem(Hub.string("arcless"));
+		miArcLess.addActionListener(listener);
+		add(miArcLess);
 		// TODO reverse
 		
 		addPopupMenuListener(new PopupListener());
@@ -95,8 +103,15 @@ public class EdgePopup extends JPopupMenu {
 				view.setTool(GraphDrawingView.MODIFY);
 			}else if(source.equals(miEditEvents)){				
 				EdgeLabellingDialog.showDialog(view, edge);
+				
+			// NOTE these last three cases do not apply to reflexive edges
+			// and they should be UNDOABLE graph commands
 			}else if(source.equals(miSymmetrize)){				
 				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);
+			}else if(source.equals(miArcMore)){
+				Hub.getWorkspace().getActiveGraphModel().arcMore(edge);
+			}else if(source.equals(miArcLess)){
+				Hub.getWorkspace().getActiveGraphModel().arcLess(edge);			
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
 			}			

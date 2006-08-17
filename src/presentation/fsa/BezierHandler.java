@@ -40,10 +40,10 @@ public class BezierHandler extends EdgeHandler {
 	public void refresh() {		
 		int d = 2*RADIUS;
 		// upper left corner, width and height of circle's bounding box
-		anchors[BezierLayout.P1] = new Ellipse2D.Double(getEdge().getP1().x - RADIUS, getEdge().getP1().y - RADIUS, d, d); 
+		anchors[BezierLayout.P1] = new Ellipse2D.Double(getEdge().getP1().x - RADIUS/2, getEdge().getP1().y - RADIUS/2, RADIUS, RADIUS); 
 		anchors[BezierLayout.CTRL1] = new Ellipse2D.Double(getEdge().getCTRL1().x - RADIUS, getEdge().getCTRL1().y - RADIUS, d, d);				
 		anchors[BezierLayout.CTRL2] = new Ellipse2D.Double(getEdge().getCTRL2().x - RADIUS, getEdge().getCTRL2().y - RADIUS, d, d);
-		anchors[BezierLayout.P2] = new Ellipse2D.Double(getEdge().getP2().x - RADIUS, getEdge().getP2().y - RADIUS, d, d);
+		anchors[BezierLayout.P2] = new Ellipse2D.Double(getEdge().getP2().x - RADIUS/2, getEdge().getP2().y - RADIUS/2, RADIUS, RADIUS);
 		setDirty(false);
 	}
 	
@@ -55,10 +55,16 @@ public class BezierHandler extends EdgeHandler {
 					
 			g2d.setColor(Color.BLUE);
 			g2d.setStroke(GraphicalLayout.FINE_STROKE);
-						
+			
 			for(int i=1; i<3; i++){  // don't display end point circles since not moveable.
-				g2d.draw(anchors[i]);
+				g2d.setColor(Color.WHITE);
+				g2d.fill(anchors[i]);
+				g2d.setColor(Color.BLUE);
 			}
+			
+			// solid endpoints
+			g2d.fill(anchors[0]);
+			g2d.fill(anchors[3]);
 			
 			g2d.drawLine((int)(getEdge().getP1().x), 
 					(int)(getEdge().getP1().y), 
@@ -69,6 +75,10 @@ public class BezierHandler extends EdgeHandler {
 					(int)(getEdge().getP2().y), 
 					(int)(getEdge().getCTRL2().x), 
 					(int)(getEdge().getCTRL2().y));
+			
+			for(int i=1; i<3; i++){  // don't display end point circles since not moveable.
+				g2d.draw(anchors[i]);			
+			}
 		}
 	}
 	

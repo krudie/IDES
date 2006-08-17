@@ -60,4 +60,29 @@ public class InitialArrow extends Edge {
 	@Override
 	public void addEventName(String symbol) {}
 
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#isStraight()
+	 */
+	@Override
+	public boolean isStraight() {		
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#getSourceEndPoint()
+	 */
+	@Override
+	public Float getSourceEndPoint() {
+		// TODO ////////////////////////////////
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#getTargetEndPoint()
+	 */
+	@Override
+	public Float getTargetEndPoint() {		
+		return arrowHead.getBasePt();
+	}
+
 }

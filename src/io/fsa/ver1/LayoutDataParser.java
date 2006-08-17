@@ -264,8 +264,13 @@ public class LayoutDataParser extends AbstractParser {
 		controls[BezierLayout.CTRL2] = new Point2D.Float(Float.parseFloat(bezier.getAttribute("ctrlx2")),
 				Float.parseFloat(bezier.getAttribute("ctrly2")));
 
-		// TODO find out if self-loop
-		BezierLayout edgeLayout = new BezierLayout(controls, t.getSource().equals(t.getTarget()));		
+		BezierLayout edgeLayout = new BezierLayout(controls);; 
+		
+//		if(t.getSource().equals(t.getTarget())){
+//			edgeLayout = new ReflexiveEdge.ReflexiveLayout(controls);
+//		}else{
+//			edgeLayout = new BezierLayout(controls);
+//		}
 				
 		// extract label offset
 		Point2D.Float offset = new Point2D.Float();

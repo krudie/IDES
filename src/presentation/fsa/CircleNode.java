@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.BasicStroke;
+import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -50,6 +51,7 @@ public class CircleNode extends Node {
 		circle = new Ellipse2D.Double();
 		arrow1 = new Point2D.Float();
 		arrow2 = new Point2D.Float();
+		arrow = new ArrowHead();
 		refresh();
 	}
 
@@ -132,26 +134,29 @@ public class CircleNode extends Node {
 				// Why am I skipping the label?				
 			}
 		}
-		
+
+		Graphics2D g2d = (Graphics2D)g;
 		
 		if (isSelected()){
 			g.setColor(getLayout().getSelectionColor());
+// DEBUG
+			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
+			g2d.draw(bounds());
+			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+// END DEBUG		
 		}else if(isHighlighted()){
 			g.setColor(getLayout().getHighlightColor());			
 		}else{
 			g.setColor(getLayout().getColor());	
 		}
-		
-		Graphics2D g2d = (Graphics2D)g;
-		
+	
 //		Color temp = g2d.getColor();
 //		g2d.setColor(getLayout().getBackgroundColor());
 //		g2d.fill(circle);
 //		g2d.setColor(temp);	
 		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);		
-		g2d.draw(circle);
-			
+		g2d.draw(circle);		
 		
 		if(state.isMarked()){
 			g2d.draw(innerCircle);
@@ -217,7 +222,7 @@ public class CircleNode extends Node {
 	 */
 	public boolean equals(Object n){
 		try{
-			return this.getId() == ((CircleNode)n).getId();
+			return this.getId().equals( ((CircleNode)n).getId() );
 		}catch(Exception e){
 			return false;
 		}
@@ -403,6 +408,14 @@ public class CircleNode extends Node {
 			((NodeLayout)getLayout()).setNode(this);
 			setDirty(true);
 		}
+
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Node#getShape()
+	 */
+	@Override
+	public Shape getShape() {		
+		return circle;
+	}
 
 //	public NodeLayout getLayout() {
 //		return (NodeLayout)super.getLayout();

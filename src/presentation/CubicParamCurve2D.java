@@ -7,27 +7,31 @@
  */
 package presentation;
 
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Point2D;
+
 /**
  * A cubic parametric curve segment specified with float coordinates and
  * extended capabilities: parameter-specified subdivision and computation of
  * bounds on curve length.
  * 
  * @author Lenko Grigorov
+ * @author Helen Bretzke
  */
-public class CubicCurve2Dex extends java.awt.geom.CubicCurve2D.Float{
+public class CubicParamCurve2D extends CubicCurve2D.Float{
 
     /**
      * Constructs and initializes a CubicCurve with coordinates (0, 0, 0, 0, 0,
      * 0).
      */
-    public CubicCurve2Dex(){
+    public CubicParamCurve2D(){
         super();
     }
 
     /**
      * Constructs and initializes a CubicCurve2D from the specified coordinates.
      */
-    public CubicCurve2Dex(float x1, float y1, float ctrlx1, float ctrly1, float ctrlx2,
+    public CubicParamCurve2D(float x1, float y1, float ctrlx1, float ctrly1, float ctrlx2,
             float ctrly2, float x2, float y2){
         super(x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2);
     }
@@ -187,7 +191,7 @@ public class CubicCurve2Dex extends java.awt.geom.CubicCurve2D.Float{
      *            the cubic curve parameter where the splitting has to occur (0
      *            to 1)
      */
-    public void subdivide(CubicCurve2Dex part1, CubicCurve2Dex part2, float t){
+    public void subdivide(CubicParamCurve2D part1, CubicParamCurve2D part2, float t){
         float t2 = t * t;
         float t3 = t2 * t;
         float ti = 1 - t;
@@ -197,16 +201,56 @@ public class CubicCurve2Dex extends java.awt.geom.CubicCurve2D.Float{
         float tt3 = 3 * t2 - 3 * t3;
         float ttt = 3 * t - 6 * t2 + 3 * t3;
 
-        if(part1 != null) part1.setCurve(x1, y1, ti * x1 + t * ctrlx1, ti * y1 + t * ctrly1, ti2
+        if(part1 != null) 
+        {
+        	part1.setCurve(x1, y1, ti * x1 + t * ctrlx1, ti * y1 + t * ctrly1, ti2
+        
                 * x1 + tt2 * ctrlx1 + t2 * ctrlx2, ti2 * y1 + tt2 * ctrly1 + t2 * ctrly2, ti3 * x1
                 + ttt * ctrlx1 + tt3 * ctrlx2 + t3 * x2, ti3 * y1 + ttt * ctrly1 + tt3 * ctrly2
                 + t3 * y2);
-        if(part2 != null) part2.setCurve(ti3 * x1 + ttt * ctrlx1 + tt3 * ctrlx2 + t3 * x2, ti3 * y1
+        }
+        if(part2 != null)
+        {
+        	part2.setCurve(ti3 * x1 + ttt * ctrlx1 + tt3 * ctrlx2 + t3 * x2, ti3 * y1
                 + ttt * ctrly1 + tt3 * ctrly2 + t3 * y2, ti2 * ctrlx1 + tt2 * ctrlx2 + t2 * x2, ti2
                 * ctrly1 + tt2 * ctrly2 + t2 * y2, ti * ctrlx2 + t * x2, ti * ctrly2 + t * y2, x2,
                 y2);
+        }
     }
 
+    /**
+     * @precondition 0 <= tStart < tEnd <= 1
+     * 
+     * @param tStart 	0 <= tStart < tEnd
+     * @param tEnd  	tStart < tEnd <= 1
+     * @return the segment of this curve between the given pair of parameters
+     */
+    public CubicParamCurve2D getSegment(float tStart, float tEnd)
+    {
+    	assert(0 <= tStart && tStart < tEnd && tEnd <=1 );
+    	
+//    	if(! (0 <= tStart && tStart < tEnd && tEnd <=1 ) ){
+//    		throw new RuntimeException("precondition violated: ! (0 <= tStart < tEnd <= 1)");
+//    	}
+    	
+    	CubicParamCurve2D left = new CubicParamCurve2D();
+    	CubicParamCurve2D right = new CubicParamCurve2D();
+    	subdivide(left, right, tStart);
+    	right.subdivide(left, null, tEnd);
+    	return left;
+    }
+    
+    /** 
+     * @param t in [0,1]
+     * @return the point on the curve at the given parameter
+     */
+    public Point2D.Float getPointAt(float t)
+    {
+    	CubicParamCurve2D left = new CubicParamCurve2D();
+    	subdivide(left, null, t);
+    	return new Point2D.Float((float)left.getP2().getX(), (float)left.getP2().getY());
+    }
+    
     /**
      * Returns an upper bound on the length of the curve.
      * 
@@ -257,5 +301,17 @@ public class CubicCurve2Dex extends java.awt.geom.CubicCurve2D.Float{
     	coeffs[1][2] = c_y;
     	
     	return coeffs;
+    }
+    
+    /**
+     * TODO Implement
+     */    
+    public boolean equals(Object o)
+    {
+    	CubicCurve2D other = (CubicCurve2D)o; 
+    	return getP1().equals(other.getP1()) 
+    		&& getP2().equals(other.getP2()) 
+    		&& getCtrlP1().equals(other.getCtrlP1())
+    		&& this.getCtrlP2().equals(other.getCtrlP2());    	
     }
 }

@@ -6,19 +6,11 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Map.Entry;
 
-import observer.FSMGraphMessage;
-import observer.FSMGraphSubscriber;
-import observer.FSMMessage;
-import observer.FSMPublisher;
-import observer.FSMSubscriber;
-import observer.Publisher;
-import observer.Subscriber;
-
-import main.Hub;
-import main.IDESWorkspace;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -27,12 +19,11 @@ import model.fsa.ver1.Event;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
-import presentation.Geometry;
+import observer.FSMGraphMessage;
+import observer.FSMGraphSubscriber;
+import observer.FSMMessage;
+import observer.FSMSubscriber;
 import presentation.PresentationElement;
-import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
-import services.latex.LatexManager;
-import services.latex.LatexPrerenderer;
-import util.BentoBox;
 
 /**
  * Mediates between the Automaton model and the visual representation.
@@ -280,18 +271,19 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			n2 = nodes.get(new Long(t.getTarget().getId()));
 			
 			// if the edge corresponding to t already exists,
-			// add t to the edge's set of transitions
-			// FIXME make sure that the layout is the same
+			// and its layout is the same
+			// add t to the edge's set of transitions			
 			e = directedEdgeBetween(n1, n2); 
-			if(e != null){			
-				e.addTransition(t);			
+			BezierLayout layout = metaData.getLayoutData(t);
+			if(e != null && e.getLayout().equals(layout)){			
+				e.addTransition(t);
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge
 				if(n1.equals(n2)){
-					e = new ReflexiveEdge(metaData.getLayoutData(t), n1, t);
+					e = new ReflexiveEdge(layout, n1, t);
 				}else{
-					e = new BezierEdge(metaData.getLayoutData(t), n1, n2, t);
+					e = new BezierEdge(layout, n1, n2, t);
 				}
 				
 				// add this edge to source and target nodes' children
@@ -372,30 +364,48 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	  * and a adds a new transition to the automaton.
 	  * 
 	  * @param n1 
-	  * @param n2	
+	  * @param target	
 	  */
-	public void finishEdge(BezierEdge e, CircleNode n2){
-		//if( directEdgeBetween(e.getSource(), n2) == null){
-		
-		e.setTarget(n2);			
+	public void finishEdge(BezierEdge e, CircleNode target){
 			
-//		 FIXME Distribute multiple directed edges between same node pair.
-		BezierEdge opposite = (BezierEdge)directedEdgeBetween(n2, e.getSource()); 
+		e.setTarget(target);			
+		e.computeEdge();	
+		
+////// FIXME Distribute multiple directed edges between same node pair. /////////////
+		Set<Edge> neighbours = getEdgesBetween(target, e.getSource());
+		if(neighbours.size() > 0)
+		{
+			e.insertAmong(neighbours);
+		}
+		
+////////////////////////////////////////////////////////////////////////////////////
+		
+		/*BezierEdge opposite = (BezierEdge)directedEdgeBetween(target, e.getSource()); 
 		if(opposite != null && opposite.isStraight()){
 			e.arcAway(opposite);
 			opposite.getBezierLayout().computeCurve();
 			saveMovement(opposite);		
-		}
+		}*/
 		
-		e.computeCurve((NodeLayout)e.getSource().getLayout(), (NodeLayout)e.getTarget().getLayout());		
+		// TODO save movement of any affected edges in set of neighbours
 		
-		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(n2.getId()));
+		// TODO Don't forget to fire a graph layout changed event for any edges that are modified
+		// to accomodate the new edge.
+		
+		//e.computeEdge(); // Curve((NodeLayout)e.getSource().getLayout(), (NodeLayout)e.getTarget().getLayout());		
+//////////////////////////////////////////////////////////////////////////////////////
+		
+		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(target.getId()));
+		
+		// TO BE REMOVED /////////////////////////////
 		metaData.setLayoutData(t, e.getBezierLayout());
+		//////////////////////////////////////////////
+		
 		e.addTransition(t);
 		
-		// NOTE must assign transition to edge before inserting as children of end nodes.
+		// NOTE must assign transition to edge before inserting edge as children of end nodes.
 		e.getSource().insert(e);	
-		n2.insert(e);		
+		target.insert(e);		
 
 		//fsa.notifyAllBut(this);
 		// avoid spurious update
@@ -412,12 +422,25 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 				e.getId(), 
 				e.bounds(),
 				this, ""));
-		
-		//notifyAllSubscribers();
-//		}else{ // duplicate edge
-//			abortEdge(e);
-//		}
 	}	
+	
+	/** 
+	 * @param n1
+	 * @param n2
+	 * @return the set of all edges connecting n1 and n2
+	 */
+	private Set<Edge> getEdgesBetween(Node n1, Node n2){
+		Set<Edge> set = new HashSet<Edge>();
+		for(Edge e : edges.values())
+		{			
+			if(e.getSource().equals(n1) && e.getTarget().equals(n2) 
+				|| e.getSource().equals(n2) && e.getTarget().equals(n1) )
+			{
+				set.add(e);
+			}
+		}		
+		return set;
+	}
 	
 	/////////////////////////////////////////////////////////////////////////////
 	
@@ -1189,15 +1212,20 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 					FSATransition t = trans.next();  // FIXME ConcurrentModificationException
 					FSAEvent event = t.getEvent();
 					if(event != null && event.getId() == message.getElementId()){
-						if(e.transitionCount() > 1){  // edge must have at least one transition
-							trans.remove();						
+						if(e.transitionCount() > 1){  // edge must have at least one transition							
+							
+							trans.remove();					
 						}else{
 							t.setEvent(null);
 						}
+						// TODO handle different edge types
+						((BezierLayout)e.getLayout()).removeEventName(event.getSymbol());
 						e.setDirty(true);
 					}
 				}
 			}
+			
+			// FIXME this does not update the labels on the edges
 			fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY,
 													FSMGraphMessage.EDGE,
 													message.getElementId(),
@@ -1207,6 +1235,24 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		
 	}
 	///////////////////////////////////////////////////////////////////////
+
+	/**
+	 * @param edge
+	 */
+	public void arcMore(Edge edge) {
+		((BezierEdge)edge).arcMore();
+		// TODO fire graph changed event
+	}
+
+	/**
+	 * @param edge
+	 */
+	public void arcLess(Edge edge) {
+		((BezierEdge)edge).arcLess();	
+		// TODO fire graph changed event
+	}
+
+	
 	
 }
 

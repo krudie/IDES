@@ -113,7 +113,7 @@ public class MetaData implements FSAMetaData {
 	
 	/**	
 	 * Sets the graphical layout information required to display the given transition
-	 * and if it does not yet exist, adds the transition to the FSAModel.
+	 * and packs it into a subelement of <code>transition</code>.
 	 * 
 	 * @param transition the transition to be stored
 	 * @param layout the graphical layout data for an edge
@@ -123,14 +123,14 @@ public class MetaData implements FSAMetaData {
 		SubElement g = new SubElement("graphic");
 		SubElement b = new SubElement("bezier");
 		SubElement l = new SubElement("label");
-		b.setAttribute("x1", "" + layout.getCubicCurve().getX1());
-		b.setAttribute("y1", "" + layout.getCubicCurve().getY1());
-		b.setAttribute("x2", "" + layout.getCubicCurve().getX2());
-		b.setAttribute("y2", "" + layout.getCubicCurve().getY2());
-		b.setAttribute("ctrlx1", "" + layout.getCubicCurve().getCtrlX1());
-		b.setAttribute("ctrly1", "" + layout.getCubicCurve().getCtrlY1());
-		b.setAttribute("ctrlx2", "" + layout.getCubicCurve().getCtrlX2());
-		b.setAttribute("ctrly2", "" + layout.getCubicCurve().getCtrlY2());
+		b.setAttribute("x1", "" + layout.getCurve().getX1());
+		b.setAttribute("y1", "" + layout.getCurve().getY1());
+		b.setAttribute("x2", "" + layout.getCurve().getX2());
+		b.setAttribute("y2", "" + layout.getCurve().getY2());
+		b.setAttribute("ctrlx1", "" + layout.getCurve().getCtrlX1());
+		b.setAttribute("ctrly1", "" + layout.getCurve().getCtrlY1());
+		b.setAttribute("ctrlx2", "" + layout.getCurve().getCtrlX2());
+		b.setAttribute("ctrly2", "" + layout.getCurve().getCtrlY2());
 		l.setAttribute("x", "" + layout.getLabelOffset().x);
 		l.setAttribute("y", "" + layout.getLabelOffset().y);
 		g.addSubElement(b);
@@ -163,7 +163,7 @@ public class MetaData implements FSAMetaData {
 		// 		Node layouts.
 		// Need to know if this is a self-loop before calling this constructor 
 		// (since constructor calls updateAnglesEtc...)
-		BezierLayout edgeLayout = new BezierLayout(controls, t.getSource().equals(t.getTarget()));		
+		BezierLayout edgeLayout = new BezierLayout(controls); //, t.getSource().equals(t.getTarget()));		
 		
 		// extract label offset
 		Point2D.Float offset = new Point2D.Float();

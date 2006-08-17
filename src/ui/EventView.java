@@ -221,13 +221,16 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSMSubscri
 			}
 			FSAEvent[] delEvents=new FSAEvent[rows.length];
 			for(int i=0;i<rows.length;++i)
+			{
 				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
-			
-			// FIXME Issue a command that goes straight through automaton. 
+			}
+			// FIXME Issue a command that goes to automaton.
 			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
 			for(int i=0;i<delEvents.length;++i)
-				Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
-			
+			{
+				//Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
+				a.remove((Event)delEvents[i]);
+			}
 			refreshEventTable();
 		}
 	};

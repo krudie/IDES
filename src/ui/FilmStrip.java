@@ -168,6 +168,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
 	public void repaintRequired(WorkspaceMessage message) {	
+		//buildThumbnailBox();  hangs the filmstrip...
+		// FIXME need to redraw the decorated names over each thumbnail view when changes are saved
+		// or graph becomes dirty.
 		for(GraphView gv:graphViews){
 			gv.repaint();
 		}
