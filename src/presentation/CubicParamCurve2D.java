@@ -246,9 +246,9 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     	
     	CubicParamCurve2D left = new CubicParamCurve2D();
     	CubicParamCurve2D right = new CubicParamCurve2D();
-    	subdivide(left, right, tStart);
-    	right.subdivide(left, null, tEnd);
-    	return left;
+    	subdivide(left, right, tEnd);
+    	left.subdivide(null, right, tStart/tEnd);
+    	return right;
     }
     
     /** 
