@@ -116,6 +116,7 @@ public class BezierEdgePlacer {
 
 	/**
 	 * NOTE Outermost is defined as having the greatest arc in the curve. 
+	 * @see CubicCurve2D.flatness()
 	 * 
 	 * Precondition: edges is not empty
 	 * 

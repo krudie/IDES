@@ -263,15 +263,32 @@ public class BezierEdge extends Edge {
 	/**
 	 * @return
 	 */
-	private Float computeArrowDirection() {
-		// Starting at p2, find point on curve where base of arrow head
-		// intersects with ...
-		// KLUGE
-		if(getTargetEndPoint() == null){
-			return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2()));
+	private Point2D.Float computeArrowDirection() {	
+			// Starting at p2, find point on curve where base of arrow head
+			// intersects with ...
+			// KLUGE
+			if(getTargetEndPoint() == null){
+				return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2()));
+			}else{
+				return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getTargetEndPoint()));
+			}
+	
+		/*Node target = getTarget();
+		if(target == null)
+		{
+			return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2())); 
 		}else{
-			return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getTargetEndPoint()));
-		}
+			Shape s = getTarget().getShape();
+			Rectangle box = s.getBounds();
+			double delta = ArrowHead.SHORT_HEAD_LENGTH;
+			Rectangle fat = new Rectangle((int)(box.x - delta/2), 
+					(int)(box.y - delta/2), 
+					(int)(box.width + delta), 
+					(int)(box.height + delta) );
+			Point2D.Float p = new Point2D.Float();			
+			double t = this.intersectionWithBoundary(fat, p);
+			return Geometry.subtract(getTargetEndPoint(), p);
+		}	*/	
 	}
 
 	/************************************************************
@@ -399,19 +416,19 @@ public class BezierEdge extends Edge {
 	public void addTransition(Transition t)
 	{
 		super.addTransition(t);
-		Event event = (Event) t.getEvent();
-		if(event != null){			
-			addEventName(event.getSymbol());
-		}	
+//		Event event = (Event) t.getEvent();
+//		if(event != null){			
+//			addEventName(event.getSymbol());
+//		}	
 	}
 	
 	public void removeTransition(Transition t)
 	{
 		super.removeTransition(t);
-		Event event = (Event) t.getEvent();
-		if(event != null){
-			getBezierLayout().removeEventName(event.getSymbol());
-		}
+//		Event event = (Event) t.getEvent();
+//		if(event != null){
+//			getBezierLayout().removeEventName(event.getSymbol());
+//		}
 	}
 
 	public void translate(float x, float y){		
@@ -644,7 +661,8 @@ public class BezierEdge extends Edge {
 		CubicParamCurve2D curve = this.getBezierLayout().getCurve();
 		
 		// if endpoints are both inside node (self-loop or overlapping target and source)
-		// KLUGE		
+		// KLUGE
+		
 		if(nodeShape.contains(curve.getP1()) && nodeShape.contains(curve.getP2()) ) {
 			return 0.5f;
 			//return node.getLocation();
@@ -653,23 +671,25 @@ public class BezierEdge extends Edge {
 		CubicParamCurve2D left = new CubicParamCurve2D();
 		CubicParamCurve2D right = new CubicParamCurve2D();
 		
+		CubicParamCurve2D temp = new CubicParamCurve2D();
 		// if target, then this algorithm needs to be reversed since
 		// it searches curve assuming t=0 is inside the node.
 		if( getTarget() != null && nodeShape.equals(getTarget().getShape()) ) {
-			// swap endpoints and control points
-			CubicParamCurve2D temp = new CubicParamCurve2D();
-			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());
-			curve = temp;
+			// swap endpoints and control points		
+			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());			
+		}else{
+			temp.setCurve(curve);
 		}
 		
 		float epsilon = 0.00001f;		
 		float tPrevious = 0f;
-		float t = 1f;		
-		float step = 1f;
+		float t = 0.5f; //1f;		
+		float step = 0.5f; //1f;
 		
-		curve.subdivide(left, right, t);		
+		temp.subdivide(left, right, t);		
 		// the point on curve at param t
 		Point2D c_t = left.getP2();
+	
 		while(Math.abs(t - tPrevious) > epsilon){			
 			step =  Math.abs(t - tPrevious);
 			tPrevious = t;
@@ -682,7 +702,7 @@ public class BezierEdge extends Edge {
 				t -= step/2;
 			}
 			
-			curve.subdivide(left, right, t);					
+			temp.subdivide(left, right, t);					
 			c_t = left.getP2();
 		}		
 		
@@ -692,8 +712,12 @@ public class BezierEdge extends Edge {
 		if( getTarget() != null && nodeShape.equals(getTarget().getShape()) ) 
 		{
 			t = 1-t;
-			assert(0 <= t && t <=1);
+			assert(0 <= t && t <=1);			
 		}
+//			System.out.println(temp.getPointAt(1-t).distance(intersection));
+//		}else{
+//			System.out.println(temp.getPointAt(t).distance(intersection));
+//		}
 		
 		intersection.x = (float)c_t.getX();
 		intersection.y = (float)c_t.getY();
