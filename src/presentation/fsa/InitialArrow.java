@@ -8,7 +8,12 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D.Float;
 
 /**
- * @author helen
+ * TODO
+ * What should the layout and handler look like for this class?
+ * Implement insertAmong and intersectionWithBoundary
+ * Implement draw method
+ * 
+ * @author helen bretzke
  *
  */
 public class InitialArrow extends Edge {
@@ -16,7 +21,7 @@ public class InitialArrow extends Edge {
 	private ArrowHead arrowHead = new ArrowHead();
 	private GeneralPath shaft = new GeneralPath();
 	
-	// What should the layout and handler look like for this class?
+	
 	
 	/**
 	 * Initial node pointing to the given target node with null source node. 
@@ -41,7 +46,7 @@ public class InitialArrow extends Edge {
 	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node)
 	 */
 	@Override
-	public Float intersectionWithBoundary(Node node) {
+	public Float intersectionWithBoundary(Node node, int type) {
 		// TODO Auto-generated method stub
 		return null;
 	}

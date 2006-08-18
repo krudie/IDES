@@ -3,10 +3,7 @@
  */
 package presentation.fsa;
 
-import java.awt.geom.CubicCurve2D;
 import java.util.Set;
-
-import presentation.GraphicalLayout;
 
 /**
  * Algorithms for laying out a Bezier edge among a set of existing edges
@@ -147,7 +144,7 @@ public class BezierEdgePlacer {
 	 * @param edges
 	 * @return true iff <code>layout</code> is already present in <code>edges</code>
 	 */
-	private static boolean tooClose(Edge edge1, Set<Edge> edges)
+	public static boolean tooClose(Edge edge1, Set<Edge> edges)
 	{
 		// TODO find a nice-looking min distance
 		// minimum comfortable distance between endpoints to allow margins 
@@ -159,8 +156,7 @@ public class BezierEdgePlacer {
 			assert(edge.getSourceEndPoint() != null);			
 			assert(edge.getTargetEndPoint() != null);		
 			
-			// check if any pair of visible endpoints (intersections with node boundary) are too close
-			// FIXME this may not be the best way to test for proximity...
+			// check if any pair of visible endpoints (intersections with node
 			if( !edge.equals(edge1) && ((edge.getSourceEndPoint().distance(edge1.getSourceEndPoint()) < min)
 				|| (edge.getSourceEndPoint().distance(edge1.getTargetEndPoint()) < min)
 				|| (edge.getTargetEndPoint().distance(edge1.getTargetEndPoint()) < min)

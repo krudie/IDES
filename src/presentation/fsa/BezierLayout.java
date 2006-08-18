@@ -5,7 +5,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
 
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;

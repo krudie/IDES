@@ -55,14 +55,21 @@ public abstract class Edge extends GraphElement{
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
 	
 	
+	protected static int SOURCE_NODE = 0;
+	protected static int TARGET_NODE = 1;
+	
 	/**
 	 * Computes an approximation to the point where this edge intersects 
 	 * the boundary of <code>node</code>.
 	 * 
-	 * @param node 
+	 * PROBLEM more than one intersection possible 
+	 * (e.g. reflexive edges and curved edges with multiple crossings).
+	 * 
+	 * @param node
+	 * @param type SOURCE or TARGET 
 	 * @return the point where this edge intersects the boundary of <code>node</code> 
 	 */
-	public abstract Point2D.Float intersectionWithBoundary(Node node);
+	public abstract Point2D.Float intersectionWithBoundary(Node node, int type);
 	
 	/**
 	 * Sets the handler for this edge with <code>handler</code>. 

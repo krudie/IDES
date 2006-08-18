@@ -9,6 +9,73 @@ import java.awt.geom.Point2D.Float;
 public class Geometry {
 
 	/**
+		 * @param v1 source vector
+		 * @param v2 target vector (within a scalar)
+		 * @return the angle to rotate v1 to make it a scalar of v2
+		 */
+		public static double angleFrom(Point2D.Float v1, Point2D.Float v2){
+			
+			 /* a · b  =  cos ? 
+	
+			 For non-unit vectors: 
+			 (1) normalize each vector, 
+			 (2) compute the dot product, 
+			 (3) take the arc cos to get the angle.
+	
+			 */
+			
+			// convert everything to double precision
+			Point2D.Double v1d, v2d;
+			v1d = new Point2D.Double(v1.x, v1.y);
+			v2d = new Point2D.Double(v2.x, v2.y);
+						
+			double n1 = norm(v1d);
+			double n2 = norm(v2d);
+			
+			if(n1 == 0 || n2 == 0)
+			{
+				return 0;
+			}
+			
+			double dot = dot(v1d, v2d);	
+			double cosA = dot/(n1*n2);
+			
+			// DEBUG
+			//if(cosA < -1 || cosA > 1)	System.err.println(cosA);
+//			assert(cosA >= -1 && cosA <= 1);
+			
+			double e = 0.00000000000000001; 
+			if(Math.abs(cosA) > 1 && Math.abs(1 - cosA) < e )
+			{				
+				if(cosA < 0)
+				{
+					cosA = -1.0;
+				}else{
+					cosA = 1.0;
+				}
+			}
+			double a = Math.acos(cosA);
+	
+			e = 0.01;
+			// DEBUG
+			assert(!java.lang.Double.isNaN(a));
+					
+			// Try sending unit v1 to unit v2
+			Point2D.Double test = rotate(unit(v1d), a);
+			//double distance = test.distance(v2d); 
+			//if(distance < e){
+//			double dx = Math.abs(test.x - v2.x);
+//			double dy = Math.abs(test.y - v2.y);
+//			if(dx < e && dy < e)
+			if(unit(v2).distance(test) < e)
+			{
+				return a;
+			}else{
+				return -a;
+			}		
+		}
+
+	/**
 	 * @param curve2
 	 * @return the midpoint of curve2
 	 */
@@ -17,7 +84,7 @@ public class Geometry {
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    return left.getP2();
 	}
-	
+
 	/**
 	 * Returns the norm of the given vector.
 	 * 
@@ -75,6 +142,7 @@ public class Geometry {
 		return unit(subtract(p2, p1));
 	}
 	
+
 	/** 
 	 * @param v vector with origin at (0,0) and given direction
 	 * @return the vector perpendicular to v (rotated 90 degrees clockwise)
@@ -150,55 +218,6 @@ public class Geometry {
 		return add(new Point2D.Float((float)p1.getX(), (float)p1.getY()), p2);
 	}
 
-	/**
-	 * @param v1 source vector
-	 * @param v2 target vector (within a scalar)
-	 * @return the angle to rotate v1 to make it a scalar of v2
-	 */
-	public static double angleFrom(Point2D.Float v1, Point2D.Float v2){
-		
-		 /* a · b  =  cos ? 
-
-		 For non-unit vectors: 
-		 (1) normalize each vector, 
-		 (2) compute the dot product, 
-		 (3) take the arc cos to get the angle.
-
-		 */
-		
-		// convert everything to double precision
-		Point2D.Double v1d, v2d;
-		v1d = new Point2D.Double(v1.x, v1.y);
-		v2d = new Point2D.Double(v2.x, v2.y);
-		
-		Point2D.Double u1, u2;
-		u1 = unit(v1d);
-		u2 = unit(v2d);
-		double dot = dot(u1, u2);	
-		
-		// DEBUG
-//		if(dot < -1 || dot > 1)	System.err.println(dot);
-//		assert(dot >= -1 && dot <= 1);
-		
-		double e = 0.0000001;
-		if(Math.abs(dot - 1) < e )
-		{
-			// close enough
-			dot = 1;
-		}
-		double a = Math.acos(dot);
-
-		// DEBUG
-		assert(!java.lang.Double.isNaN(a));
-				
-		Point2D.Double test = rotate(u1, a);
-		if((Math.abs(test.x - u2.x) < e) && (Math.abs(test.y - u2.y) < e)){
-			return a;
-		}else{
-			return -a;
-		}		
-	}
-	
 	public static double dot(Point2D.Float v1, Point2D.Float v2){		
 		return v1.x * v2.x + v1.y * v2.y;
 	}

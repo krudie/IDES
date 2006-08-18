@@ -104,8 +104,8 @@ public class GraphCommands {
 
 		
 		/**
-		 * @param context2
-		 * @param self_loop2
+		 * @param context
+		 * @param elementType
 		 * @param n
 		 */
 		public CreateCommand(GraphDrawingView context, int elementType, CircleNode n) {
@@ -160,7 +160,7 @@ public class GraphCommands {
 				context.getGraphModel().finishEdge(edge, target);				
 				break;
 			case SELF_LOOP:
-				context.getGraphModel().setSelfLoop(source, true);
+				context.getGraphModel().createEdge(source, source);
 				break;				
 			default:
 				 context.setTool(GraphDrawingView.CREATE);

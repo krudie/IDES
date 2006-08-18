@@ -371,30 +371,13 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		e.setTarget(target);			
 		e.computeEdge();	
 		
-////// FIXME Distribute multiple directed edges between same node pair. /////////////
+		// Distribute multiple directed edges between same node pair.
 		Set<Edge> neighbours = getEdgesBetween(target, e.getSource());
 		if(neighbours.size() > 0)
 		{
 			e.insertAmong(neighbours);
 		}
-		
-////////////////////////////////////////////////////////////////////////////////////
-		
-		/*BezierEdge opposite = (BezierEdge)directedEdgeBetween(target, e.getSource()); 
-		if(opposite != null && opposite.isStraight()){
-			e.arcAway(opposite);
-			opposite.getBezierLayout().computeCurve();
-			saveMovement(opposite);		
-		}*/
-		
-		// TODO save movement of any affected edges in set of neighbours
-		
-		// TODO Don't forget to fire a graph layout changed event for any edges that are modified
-		// to accomodate the new edge.
-		
-		//e.computeEdge(); // Curve((NodeLayout)e.getSource().getLayout(), (NodeLayout)e.getTarget().getLayout());		
-//////////////////////////////////////////////////////////////////////////////////////
-		
+
 		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(target.getId()));
 		
 		// TO BE REMOVED /////////////////////////////
@@ -487,7 +470,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(n1.getId()), fsa.getState(n2.getId()));				
 		Edge e;
 		if(n1.equals(n2)){
-			// TODO what is the default layout?  What does metaData have to say about this?			
+			// let e figure out how to place itself among its neighbours			
 			e = new ReflexiveEdge(n1, t);			
 		}else{			
 			BezierLayout layout = new BezierLayout((NodeLayout)n1.getLayout(), (NodeLayout)n2.getLayout());
@@ -650,16 +633,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param node
 	 * @param arg0
 	 */
-	public void setSelfLoop(CircleNode node, boolean b) {
-		Edge selfLoop = directedEdgeBetween(node, node);
-		if(!b && selfLoop != null){			
-			delete(selfLoop);		
-		}
-		// if b and node doesn't have a self loop
-		if(b && selfLoop == null){
-			// add the edge
-			createEdge(node, node);
-		}		
+	public void addSelfLoop(CircleNode node) {	
+		createEdge(node, node);			
 	}
 	
 	/**

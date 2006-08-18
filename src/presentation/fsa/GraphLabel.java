@@ -224,42 +224,47 @@ public class GraphLabel extends GraphElement {
 	 */
 	private Point2D.Double nearestCorner(Point2D.Float point, Rectangle rect)
 	{
-		Point2D.Double nearest=null;
+		Point2D.Double nearest = new Point2D.Double(0, 0);
 		
-		// bottom left
+		// upper left
 		Point2D.Double corner = new Point2D.Double(rect.getX(), rect.getY());
 		
 		double distance = point.distance(corner);
 		double min = distance;
-		nearest = corner;
+		nearest.x = corner.x;
+		nearest.y = corner.y;
 
-		// top left
-		corner.y -= rect.height;
-		distance = point.distance(corner);
-		if(distance < min) {
-			min = distance; 
-			nearest = corner;
-		}
-
-		
-		// top right
-		corner.x += rect.width;		
-		distance = point.distance(corner);
-		if(distance < min) {
-			min = distance; 
-			nearest = corner;
-		}
-
-		
-		// bottom right
+		// bottom left
 		corner.y += rect.height;
 		distance = point.distance(corner);
+				
 		if(distance < min) {
 			min = distance; 
-			nearest = corner;
+			nearest.x = corner.x;
+			nearest.y = corner.y;
 		}
 		
-		return nearest;
+		// bottom right
+		corner.x += rect.width;		
+		distance = point.distance(corner);
+		
+		if(distance < min) {
+			min = distance; 
+			nearest.x = corner.x;
+			nearest.y = corner.y;
+		}
+		
+		// top right
+		corner.y -= rect.height;
+		distance = point.distance(corner);
+		
+		if(distance < min) {
+			min = distance; 
+			nearest.x = corner.x;
+			nearest.y = corner.y;
+		}
+		
+		return nearest;		
 	}
 	
 	public Rectangle bounds() {

@@ -86,7 +86,7 @@ public class NodeCommands {
 		@Override
 		protected UndoableEdit performEdit() {
 			
-			IDESWorkspace.instance().getActiveGraphModel().setSelfLoop(node, true);
+			IDESWorkspace.instance().getActiveGraphModel().createEdge(node, node);
 			return null;
 		}
 	

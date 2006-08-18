@@ -7,14 +7,19 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import model.fsa.ver1.Transition;
 
+import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 import util.BentoBox;
@@ -36,7 +41,7 @@ public class ReflexiveEdge extends BezierEdge {
 	public static final int MIDPOINT = 4;
 	
 	/**
-	 * Creates a reflexive edge on <code>source</code> with no underlying transition. 
+	 * Creates a reflexive edge on <code>node</code> with no underlying transition. 
 	 * @param node
 	 */
 	public ReflexiveEdge(Node node)
@@ -47,8 +52,10 @@ public class ReflexiveEdge extends BezierEdge {
 	}
 		
 	/**
+	 * Creates a reflexive edge on <code>node</code> with the given layout and transition.
 	 * @param layout
 	 * @param node
+	 * @param t a transition this represented by this edge
 	 */
 	public ReflexiveEdge(BezierLayout layout, Node node, Transition t)
 	{
@@ -60,16 +67,64 @@ public class ReflexiveEdge extends BezierEdge {
 	}
 	
 	/**
+	 * Creates a reflexive edge on <code>node</code> representing the given transition.
 	 * @param node
-	 * @param t
+	 * @param t a transition this represented by this edge
 	 */
 	public ReflexiveEdge(Node node, Transition t) {
 		super(node, node);
-		addTransition(t);
-		setLayout(new ReflexiveLayout(node, this));	
+		addTransition(t);				
+		setLayout(new ReflexiveLayout(node, this));
 		setHandler(new ReflexiveHandler(this));
+		
+		computeEdge();
+		// place me among any other edges adjacent to node
+		Iterator<Edge> neighbours = node.adjacentEdges();
+		if(neighbours.hasNext()){
+			Set<Edge> n = new HashSet<Edge>();
+			while(neighbours.hasNext())
+			{
+				n.add(neighbours.next());
+			}
+			insertAmong(n);
+		}
+		
 	}
 
+	/**
+	 * Searchs for enough room along circumference of node to place this edge.  
+	 * If not enough space, looks for a layout that doesn't clobber another reflexive edge.
+	 */
+	public void insertAmong(Set<Edge> neighbours)
+	{	
+		double delta = Math.toRadians(1.0);
+		double alpha = 0.0; 
+		
+		if(!BezierEdgePlacer.tooClose(this, neighbours))
+		{
+			return;
+		}
+		
+		/**
+		 * Brute force and ignorance.
+		 */
+		while(BezierEdgePlacer.tooClose(this, neighbours) && alpha < 360)
+		{
+			((ReflexiveLayout)getLayout()).axis = Geometry.rotate(((ReflexiveLayout)getLayout()).axis, delta);
+			
+			// FIXME move midpoint
+			
+			computeEdge();
+			alpha ++;
+		}
+		
+		if(alpha == 360)
+		{
+			// TODO find a spot that doesn't mask another reflexive edge
+			
+		}
+	}
+	
 	/**
 	 * Set the midpoint of the curve to <code>point</code>. 
 	 * 
@@ -146,12 +201,82 @@ public class ReflexiveEdge extends BezierEdge {
 	
 	public void computeEdge() {
 		((ReflexiveLayout)getLayout()).computeCurve();
+		refresh();
 	}
 	
 	public boolean isStraight()
 	{
 		return false;
 	}
+		
+	
+	/** 
+	 * Sets the coordinates of <code>intersection</code> to the location where
+	 * my bezier curve intersects the boundary of <code>node</code>. 
+	 * 
+	 * @return param t at which my bezier curve intersects <code>node</code>
+	 *  
+	 * @precondition node != null and intersection != null
+	 */
+	protected float intersectionWithBoundary(Shape nodeShape, Point2D.Float intersection, int type) {
+		
+		// setup curves for iterative subdivision
+		CubicParamCurve2D curve = this.getBezierLayout().getCurve();
+			
+		CubicParamCurve2D left = new CubicParamCurve2D();
+		CubicParamCurve2D right = new CubicParamCurve2D();
+		
+		CubicParamCurve2D temp = new CubicParamCurve2D();
+		// if target, then this algorithm needs to be reversed since
+		// it searches curve assuming t=0 is inside the node.		
+				
+		if( type == TARGET_NODE ) {
+			// swap endpoints and control points		
+			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());			
+		}else if( type == SOURCE_NODE ){
+			temp.setCurve(curve);
+		}else{
+			return 0f;
+		}
+		
+		float epsilon = 0.00001f;		
+		float tPrevious = 0f;
+		float t = 0.5f - 0.01f; //1f;		
+		float step = t; //1f;
+		
+		temp.subdivide(left, right, t);		
+		// the point on curve at param t
+		Point2D c_t = left.getP2();
+	
+		while(Math.abs(t - tPrevious) > epsilon){			
+			step =  Math.abs(t - tPrevious);
+			tPrevious = t;
+			if(nodeShape.contains(c_t)){  // inside boundary
+				// search right segment
+				t += step/2;
+			}else{
+				// search left segment
+				t -= step/2;
+			}
+			temp.subdivide(left, right, t);					
+			c_t = left.getP2();
+		}		
+		
+		// TODO keep searching from c_t towards t=0 until we're sure we've found the first intersection.
+		// Start again with step size at t.
+		
+		if( type == TARGET_NODE  ) 
+		{
+			t = 1-t;
+			assert(0 <= t && t <=1);			
+		}
+	
+		intersection.x = (float)c_t.getX();
+		intersection.y = (float)c_t.getY();
+			
+		return t;		
+	}
+
 	
 	/**
 	 * Same data as BezierLayout (control points and label offset vector)
@@ -229,61 +354,52 @@ public class ReflexiveEdge extends BezierEdge {
 			return midpoint;
 		}
 
+		
 		/**
-		 * TODO
-		 * check and use the midpoint
-		 * if it is unknown, we set to defaults
-		 * otherwise...
+		 * FIXME midpoint handler drifts away from midpoint of curve
+		 * using fixed scalars and angles. 
+		 *
 		 */
 		public void updateAnglesAndScalars(){
 			angle1 = -DEFAULT_ANGLE;
 			angle2 = DEFAULT_ANGLE;
-
-			
-			// compute length of axis from centre of node to midpoint of curve
-//			Point2D oldMidpoint = Geometry.midpoint(curve);
-//			double n = curve.getP1().distance(oldMidpoint);
-			
-			// Proportion of the length of axis from node centre to midpoint of curve
-			// to the length of line segment from  node centre to each symmetric control point.
-			//if(midpoint == null || n == 0){
-				s1 = DEFAULT_SCALAR;
-				s2 = DEFAULT_SCALAR;
-			/*}else{
-				s1 = curve.getCtrlP1().distance(oldMidpoint)/n;
-				s2 = s1;
-			}*/
+			s1 = DEFAULT_SCALAR;
+			s2 = s1;
 		}
 		
-		/**
-		 * Override
+		/** 
+		 * @return the portion of the curve that is external to the node,
+		 * null if no such segment exists
+		 */
+		public CubicCurve2D getVisibleCurve()
+		{
+			// FIXME check for NaN here or in CubicCurve2Dex class
+			return curve.getSegment(sourceT, targetT);		
+		}
+		
+		/**		 
 		 * Computes a symmetric reflexive bezier curve based on location of node,
 		 * and angle of tangent vectors (to bezier curve) from centre axis vector.
 		 * 
 		 */
 		public void computeCurve()
-		{
-			// TODO Implement
-			// vector from centre of source/target node to this point 
-			// is the axis around with a symmetrical arc is drawn.
-			
-			// *** if(isDirty()) updateAnglesAndScalars();
-					
+		{			
 			setPoint(getEdge().getSource().getLocation(), P1);
 			setPoint(getEdge().getSource().getLocation(), P2);
+			
 			axis = Geometry.subtract(midpoint, curve.getP1());
 			Point2D.Float v1 = Geometry.rotate(axis, angle1);
 			Point2D.Float v2 = Geometry.rotate(axis, angle2);
 							
 			setPoint(Geometry.add(getEdge().getP1(), Geometry.scale(v1, (float)s1)), CTRL1);
 			setPoint(Geometry.add(getEdge().getP2(), Geometry.scale(v2, (float)s2)), CTRL2);
-			
-			// *** setDirty(false);
+						
 			setDirty(true);
-		}		
+		}	
 		
 		/**
 		 * Set the midpoint for a symmetric, reflexive bezier edge.
+		 * Constraint: if midpoint is inside node, set to minimum distance from node border. 
 		 * 
 		 * @param midpoint
 		 * @param index
@@ -291,8 +407,20 @@ public class ReflexiveEdge extends BezierEdge {
 		public void setPoint(Point2D.Float point, int index){
 			switch(index)
 			{			
-				case MIDPOINT:
-					midpoint = point;					
+				case MIDPOINT:					
+					if(getSource().intersects(point))
+					{
+						// snap to border
+						midpoint = Geometry.add(curve.getP1(), 
+								Geometry.scale(Geometry.unitDirectionVector(
+												new Point2D.Float((float)curve.getP1().getX(), 
+																	(float)curve.getP1().getY()),
+												midpoint), 
+								getSource().getShape().getBounds().width));
+						  
+					}else{					
+						midpoint = point;
+					}
 					updateAnglesAndScalars();
 					computeCurve();
 					setLocation(midpoint.x, midpoint.y);

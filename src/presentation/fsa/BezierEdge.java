@@ -1,24 +1,16 @@
 package presentation.fsa;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Float;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import model.fsa.FSATransition;
-import model.fsa.ver1.Event;
 import model.fsa.ver1.Transition;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
@@ -215,7 +207,7 @@ public class BezierEdge extends Edge {
 			sourceEndPt = new Point2D.Float();
 		}
 		
-		float tSource = intersectionWithBoundary(getSource().getShape(), sourceEndPt);
+		float tSource = intersectionWithBoundary(getSource().getShape(), sourceEndPt, SOURCE_NODE);
 		//((BezierLayout)getLayout()).setSourceEndPoint(sourceEndPt);
 		((BezierLayout)getLayout()).setSourceT(tSource);
 		
@@ -227,7 +219,7 @@ public class BezierEdge extends Edge {
 				targetEndPt = new Point2D.Float();
 			}
 			
-			float tTarget = intersectionWithBoundary(getTarget().getShape(), targetEndPt);
+			float tTarget = intersectionWithBoundary(getTarget().getShape(), targetEndPt, TARGET_NODE);
 			//((BezierLayout)getLayout()).setTargetEndPoint(targetEndPt);
 			((BezierLayout)getLayout()).setTargetT(tTarget);
 		}	
@@ -267,13 +259,13 @@ public class BezierEdge extends Edge {
 			// Starting at p2, find point on curve where base of arrow head
 			// intersects with ...
 			// KLUGE
-			if(getTargetEndPoint() == null){
+			/*if(getTargetEndPoint() == null){
 				return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2()));
 			}else{
 				return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getTargetEndPoint()));
-			}
+			}*/
 	
-		/*Node target = getTarget();
+		Node target = getTarget();
 		if(target == null)
 		{
 			return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2())); 
@@ -286,9 +278,10 @@ public class BezierEdge extends Edge {
 					(int)(box.width + delta), 
 					(int)(box.height + delta) );
 			Point2D.Float p = new Point2D.Float();			
-			double t = this.intersectionWithBoundary(fat, p);
-			return Geometry.subtract(getTargetEndPoint(), p);
-		}	*/	
+			double t = this.intersectionWithBoundary(fat, p, TARGET_NODE);
+			// TODO use t -> store new endpoint in layout
+			return Geometry.unitDirectionVector(p, getTargetEndPoint());
+		}
 	}
 
 	/************************************************************
@@ -618,12 +611,12 @@ public class BezierEdge extends Edge {
 		getBezierLayout().computeCurve(nL1, nL2);		
 	}
 
-	/**
-	 * @param opposite
-	 */
-	public void arcAway(BezierEdge opposite) {
-		getBezierLayout().arcAway(opposite.getBezierLayout());		
-	}
+//	/**
+//	 * @param opposite
+//	 */
+//	public void arcAway(BezierEdge opposite) {
+//		getBezierLayout().arcAway(opposite.getBezierLayout());		
+//	}
 
 	/**
 	 * @return
@@ -635,34 +628,29 @@ public class BezierEdge extends Edge {
 	/**
 	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node)
 	 */
-	public Point2D.Float intersectionWithBoundary(Node node)
+	public Point2D.Float intersectionWithBoundary(Node node, int type)
 	{
 		Point2D.Float intersection = new Point2D.Float();
-		intersectionWithBoundary(node.getShape(), intersection);
+		intersectionWithBoundary(node.getShape(), intersection, type);
 		return intersection;
 	}
 	
-	/**
-	 * FIXME not close enough 
-	 * Assumes we are starting at t outside of node boundary.
-	 * need to do some exploration first.
-	 *
+	/** 
 	 * Sets the coordinates of <code>intersection</code> to the location where
 	 * my bezier curve intersects the boundary of <code>node</code>. 
+	 * @param type 
 	 * 
 	 * @return param t at which my bezier curve intersects <code>node</code>
-	 * 
-	 * @throws ??? this would enforce the precondition...
-	 * @precondition node != null and target != null and intersection != null
+	 *  
+	 * @precondition node != null and intersection != null
 	 */
-	private float intersectionWithBoundary(Shape nodeShape, Point2D.Float intersection) {
+	protected float intersectionWithBoundary(Shape nodeShape, Point2D.Float intersection, int type) {
 		
 		// setup curves for iterative subdivision
 		CubicParamCurve2D curve = this.getBezierLayout().getCurve();
 		
 		// if endpoints are both inside node (self-loop or overlapping target and source)
-		// KLUGE
-		
+		// FIXME		
 		if(nodeShape.contains(curve.getP1()) && nodeShape.contains(curve.getP2()) ) {
 			return 0.5f;
 			//return node.getLocation();
@@ -673,8 +661,10 @@ public class BezierEdge extends Edge {
 		
 		CubicParamCurve2D temp = new CubicParamCurve2D();
 		// if target, then this algorithm needs to be reversed since
-		// it searches curve assuming t=0 is inside the node.
-		if( getTarget() != null && nodeShape.equals(getTarget().getShape()) ) {
+		// it searches curve assuming t=0 is inside the node.		
+		boolean intersectWithTarget = nodeShape.contains(curve.getP2()); //nodeShape.equals(getTarget().getShape());
+		
+		if( intersectWithTarget ) {
 			// swap endpoints and control points		
 			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());			
 		}else{
@@ -693,7 +683,6 @@ public class BezierEdge extends Edge {
 		while(Math.abs(t - tPrevious) > epsilon){			
 			step =  Math.abs(t - tPrevious);
 			tPrevious = t;
-		
 			if(nodeShape.contains(c_t)){  // inside boundary
 				// search right segment
 				t += step/2;
@@ -701,7 +690,6 @@ public class BezierEdge extends Edge {
 				// search left segment
 				t -= step/2;
 			}
-			
 			temp.subdivide(left, right, t);					
 			c_t = left.getP2();
 		}		
@@ -709,23 +697,16 @@ public class BezierEdge extends Edge {
 		// TODO keep searching from c_t towards t=0 until we're sure we've found the first intersection.
 		// Start again with step size at t.
 		
-		if( getTarget() != null && nodeShape.equals(getTarget().getShape()) ) 
+		if( intersectWithTarget ) 
 		{
 			t = 1-t;
 			assert(0 <= t && t <=1);			
 		}
-//			System.out.println(temp.getPointAt(1-t).distance(intersection));
-//		}else{
-//			System.out.println(temp.getPointAt(t).distance(intersection));
-//		}
-		
+	
 		intersection.x = (float)c_t.getX();
 		intersection.y = (float)c_t.getY();
-		
-		//assert(nodeShape.contains(intersection));
-		
-		return t;
-		//return new Point2D.Float((float)c_t.getX(), (float)c_t.getY());
+			
+		return t;		
 	}
 
 	/* (non-Javadoc)
