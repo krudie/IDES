@@ -24,12 +24,13 @@ import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
+import operations.fsa.ver1.Composition;
+
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
-import algorithms.fsa.ver1.Composition;
 
 import presentation.fsa.FSMGraph;
 import presentation.fsa.GraphExporter;
@@ -46,7 +47,7 @@ public class OperationsCommands {
 	public static class ProductCommand extends ActionCommand {
 
 		public ProductCommand() {
-			super("product.command");			
+			super("operations.menu");			
 		}
 
 		@Override

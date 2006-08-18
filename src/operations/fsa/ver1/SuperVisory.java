@@ -1,4 +1,4 @@
-package algorithms.fsa.ver1;
+package operations.fsa.ver1;
 
 import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;

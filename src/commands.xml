@@ -513,14 +513,18 @@
     	</face>
     </command>
     
+	<command id="operations.menu">	 
+	<face>
+		<text>DES operations</text>
+	</face>
+	</command>
+
 	<group id="operations.menu.group">
 		<face>
     		<text>O_perations</text>
     	</face>
 		<members>
-			<member command-id="unary.group"/>		
-			<member command-id="compositions.group"/>
-			<member command-id="supervisory.group"/>		
+			<member command-id="operations.menu"/>		
 		</members>
 	</group>
 	

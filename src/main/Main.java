@@ -13,6 +13,9 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
+import operations.fsa.ver1.Product;
+
+import pluggable.operation.OperationManager;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSMGraph;
 
@@ -85,6 +88,8 @@ public class Main {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		
 		Cache.init();
+		// TODO: move operations to the plugin manager eventually
+		OperationManager.register(new Product());
 
 		try {
 	        UIManager.setLookAndFeel(
