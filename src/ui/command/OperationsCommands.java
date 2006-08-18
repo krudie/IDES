@@ -32,6 +32,7 @@ import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
 
+import pluggable.layout.LayoutManager;
 import presentation.fsa.FSMGraph;
 import presentation.fsa.GraphExporter;
 import services.latex.LatexManager;
@@ -52,7 +53,8 @@ public class OperationsCommands {
 
 		@Override
 		protected void handleExecute() {
-			new OperationDialog();
+			LayoutManager.getDefaultFSMLayouter().layout(Hub.getWorkspace().getActiveGraphModel());
+			//new OperationDialog();
 //			Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();
 //			FSAModel a1=i.next();
 //			FSAModel a2=i.next();
