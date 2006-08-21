@@ -117,9 +117,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	}
 	
 	/**
-	 * 
-	 * @param fsa the mathematical model
-	 * @param graph the graphical layout structure
+	 * @param fsa the mathematical model	
 	 */
 	public FSMGraph(Automaton fsa)  //, GraphElement graph)
 	{
@@ -363,7 +361,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	  * Updates the given edge from node <code>n1</code> to node <code>n2</code>.
 	  * and a adds a new transition to the automaton.
 	  * 
-	  * @param n1 
+	  * @param e 
 	  * @param target	
 	  */
 	public void finishEdge(BezierEdge e, CircleNode target){
@@ -628,10 +626,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	}
 	
 	/**
-	 * FIXME Change to add self-loop, so can have multiples. 
-	 * 
+	 * Adds a self-loop adjacent on the given node. 
+	 *  
 	 * @param node
-	 * @param arg0
 	 */
 	public void addSelfLoop(CircleNode node) {	
 		createEdge(node, node);			
@@ -731,7 +728,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Stores the layout for the given edge for every transition represented
 	 * by this edge.
 	 * 
-	 * @parasm edge
+	 * @param edge
 	 */
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);
@@ -846,11 +843,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 
 	/**
 	 * @param symbol
-	 * @param b
-	 * @param c
-	 * @return
+	 * @param controllable
+	 * @param observable
+	 * @return the new Event
 	 */
-	public Event createEvent(String symbol, boolean controllable, boolean observable) {
+	public Event createAndAddEvent(String symbol, boolean controllable, boolean observable) {
 		Event event=new Event(fsa.getFreeEventId());
 		event.setSymbol(symbol);
 		event.setControllable(controllable);
@@ -918,7 +915,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * Visits every node, edge and label and uses the union of
 	 * their bounds to create the box.
 	 * 
-	 * @param boolean Whether you want the box to begin at (0, 0) 
+	 * @param initAtZeroZero Whether you want the box to begin at (0, 0) 
 	 *                (true) or tightly bound around the graph (false) 
 	 * @return Rectangle The bounding box for the graph
 	 * 

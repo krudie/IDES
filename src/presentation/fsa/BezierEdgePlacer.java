@@ -9,8 +9,9 @@ import java.util.Set;
  * Algorithms for laying out a Bezier edge among a set of existing edges
  * connecting the same pair of nodes.
  * 
- * @author Helen Bretzke for DES Lab, Dept of ECE, Queen's University, Kingston
- * @date 13 August 2006
+ * @author Helen Bretzke 
+ * for DES Lab, Dept of ECE, Queen's University, Kingston
+ * 13 August 2006
  */
 public class BezierEdgePlacer {
 
@@ -34,9 +35,13 @@ public class BezierEdgePlacer {
 			// find outermost position
 			BezierLayout outPos = setToOutermostFreeLayout(edge, edges);
 				
-			//if( straightEdge.getSource().equals(edge.getTarget())){				
-			outPos.setToReflection(((BezierLayout)straightEdge.getLayout()));				
-				
+			//if( straightEdge.getSource().equals(edge.getTarget())){
+			// DONE name is weird, should reverse caller and param and
+			// rename caller.setToReflectionOf(param) 
+			//outPos.setToReflection((BezierLayout)straightEdge.getLayout());				
+			((BezierLayout)straightEdge.getLayout()).setToReflectionOf(outPos);	
+			//straightEdge.computeEdge();
+			
 //			}else{
 //				// move the straight edge to reflection of edge
 //				BezierLayout reflection = outPos.getReflection();	
@@ -49,8 +54,13 @@ public class BezierEdgePlacer {
 			
 			// unless that position is taken			
 			if(tooClose(straightEdge, edges))
-			{				
-				((BezierLayout)straightEdge.getLayout()).arcMore(false);
+			{			
+//				if(straightEdge.getSource().equals(edge.getTarget()))
+//				{
+//					((BezierLayout)straightEdge.getLayout()).arcMore(true);
+//				}else{
+					((BezierLayout)straightEdge.getLayout()).arcMore(false);
+//				}
 			}	
 			
 		}else{	// No straight edge
@@ -93,15 +103,17 @@ public class BezierEdgePlacer {
 			}else{
 			*/
 				// otherwise, try reflected position
-				BezierLayout reflection = layout.getReflection();
+				BezierLayout reflection = new BezierLayout(layout);
 				edge.setLayout(reflection);
+				reflection.setToReflectionOf(layout);	
+				//edge.setLayout(reflection);
 				edge.computeEdge();
 				
 				// if tooClose, arc the layout more
 				// ??? or the reflection?
 				if(tooClose(edge, edges))
-				{                                                
-					reflection.arcMore();				
+				{	
+					reflection.arcMore();					
 				}				
 			//}
 			return reflection;
@@ -140,7 +152,7 @@ public class BezierEdgePlacer {
 	
 	/**
 	 * 
-	 * @param layout
+	 * @param edge1
 	 * @param edges
 	 * @return true iff <code>layout</code> is already present in <code>edges</code>
 	 */
@@ -149,7 +161,7 @@ public class BezierEdgePlacer {
 		// TODO find a nice-looking min distance
 		// minimum comfortable distance between endpoints to allow margins 
 		// for arrow head along node boundary
-		double min = ArrowHead.SHORT_HEAD_LENGTH/2;
+		double min = ArrowHead.SHORT_HEAD_LENGTH; // /2;
 	
 		for(Edge edge : edges)
 		{
@@ -157,7 +169,8 @@ public class BezierEdgePlacer {
 			assert(edge.getTargetEndPoint() != null);		
 			
 			// check if any pair of visible endpoints (intersections with node
-			if( !edge.equals(edge1) && ((edge.getSourceEndPoint().distance(edge1.getSourceEndPoint()) < min)
+			if( !edge.equals(edge1) && 
+				((edge.getSourceEndPoint().distance(edge1.getSourceEndPoint()) < min)
 				|| (edge.getSourceEndPoint().distance(edge1.getTargetEndPoint()) < min)
 				|| (edge.getTargetEndPoint().distance(edge1.getTargetEndPoint()) < min)
 				|| (edge.getTargetEndPoint().distance(edge1.getSourceEndPoint()) < min)) )

@@ -12,7 +12,10 @@ import java.awt.geom.Point2D;
 import presentation.GraphicalLayout;
 
 /**
- * @author helen
+ * Visual representation of the control points for the bezier curve
+ * of an edge.  Used to modify the shape of a bezier edge.
+ * 
+ * @author helen bretzke
  *
  */
 public class BezierHandler extends EdgeHandler {

@@ -5,6 +5,7 @@ package presentation.fsa;
 
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
@@ -47,6 +48,22 @@ public abstract class Node extends GraphElement {
 		return label;
 	}
 
-	
-		
-}
+	public void setLocation(Point2D p) {
+		super.setLocation(p);
+		recomputeEdges();		
+	}
+
+	/**
+	 * Compute edge layout for each edge adjacent to this Node.
+	 */
+	protected void recomputeEdges() {
+		Iterator adjacent = adjacentEdges();
+		while(adjacent.hasNext()){
+			Edge e = (Edge)adjacent.next();
+			if(e.getTarget() != null){
+				e.computeEdge();
+			}
+		}
+	}		
+}		
+

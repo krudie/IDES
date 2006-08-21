@@ -208,7 +208,6 @@ public class BezierEdge extends Edge {
 		}
 		
 		float tSource = intersectionWithBoundary(getSource().getShape(), sourceEndPt, SOURCE_NODE);
-		//((BezierLayout)getLayout()).setSourceEndPoint(sourceEndPt);
 		((BezierLayout)getLayout()).setSourceT(tSource);
 		
 		if(getTarget() != null)	
@@ -220,7 +219,6 @@ public class BezierEdge extends Edge {
 			}
 			
 			float tTarget = intersectionWithBoundary(getTarget().getShape(), targetEndPt, TARGET_NODE);
-			//((BezierLayout)getLayout()).setTargetEndPoint(targetEndPt);
 			((BezierLayout)getLayout()).setTargetT(tTarget);
 		}	
 		
@@ -403,12 +401,11 @@ public class BezierEdge extends Edge {
 		}
 	}
 	
-	/**
-	 * @override
-	 */
+	
 	public void addTransition(Transition t)
 	{
 		super.addTransition(t);
+		// TODO uncomment after MetaData class is disconnected
 //		Event event = (Event) t.getEvent();
 //		if(event != null){			
 //			addEventName(event.getSymbol());
@@ -418,6 +415,7 @@ public class BezierEdge extends Edge {
 	public void removeTransition(Transition t)
 	{
 		super.removeTransition(t);
+//		 TODO uncomment after MetaData class is disconnected
 //		Event event = (Event) t.getEvent();
 //		if(event != null){
 //			getBezierLayout().removeEventName(event.getSymbol());
@@ -617,16 +615,13 @@ public class BezierEdge extends Edge {
 //	public void arcAway(BezierEdge opposite) {
 //		getBezierLayout().arcAway(opposite.getBezierLayout());		
 //	}
-
-	/**
-	 * @return
-	 */
+	
 	public boolean isStraight() {		
 		return getBezierLayout().isStraight();
 	}
 
 	/**
-	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node)
+	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int type)
 	 */
 	public Point2D.Float intersectionWithBoundary(Node node, int type)
 	{

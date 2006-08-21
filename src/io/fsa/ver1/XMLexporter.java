@@ -30,7 +30,7 @@ public class XMLexporter{
     
     /**
      * prints a object to XML.
-     * @param p the project to convert to XML
+     * @param wd the workspace descriptor to convert to XML
      * @param ps the printstream this object should be printed to.
      */
     public static void workspaceToXML(WorkspaceDescriptor wd, PrintStream ps) {
@@ -84,7 +84,7 @@ public class XMLexporter{
             transitionLayoutToXML((Transition)ti.next(),ps, INDENT);
         }
         ps.println("</meta>");
-        ps.println("<meta tag=\"FSAcomposition\" version=\"2.1\">");
+        /*ps.println("<meta tag=\"FSAcomposition\" version=\"2.1\">");
         //TODO: the following has to be refactored
         ps.println("\t<models>");
         for(int i=0;i<a.getAutomataCompositionList().length;++i)
@@ -102,7 +102,7 @@ public class XMLexporter{
             }
             ps.println("\t</state>");
         }
-        ps.println("</meta>");        
+        ps.println("</meta>");   */     
         ps.println("</model>");
     }
     

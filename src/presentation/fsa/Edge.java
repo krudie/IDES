@@ -170,13 +170,7 @@ public abstract class Edge extends GraphElement{
 	public abstract Point2D.Float getSourceEndPoint();
 
 	public abstract Point2D.Float getTargetEndPoint();
-	
-	/**
-	 * Compute the edge from the source node to the target node. 
-	 *
-	 * @param source
-	 * @param target
-	 */
+		
 	public abstract void computeEdge();
 		
 	public abstract boolean isStraight();

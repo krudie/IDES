@@ -396,7 +396,7 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	/**
 	 * Returns the set of currently selected elements in this view.
 	 * 
-	 * @return
+	 * @return the set of currently selected elements in this view
 	 */
 	public SelectionGroup getSelectedGroup() {
 		return selectedGroup;

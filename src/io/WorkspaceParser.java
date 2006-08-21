@@ -43,11 +43,7 @@ public class WorkspaceParser extends AbstractFileParser {
     public WorkspaceParser() {
         super();
     }
-
-    
-    /**
-     * @see projectPresentation.AbstractFileParser#parse(java.io.File)
-     */
+   
     public WorkspaceDescriptor parse(File f) {
         file = f;
         state = STATE_IDLE;

@@ -70,8 +70,8 @@ public class BezierLayout extends GraphicalLayout {
 	 * Constructs an edge layout object for a straight, directed edge from nodes with
 	 * source and target layouts <code>n1</code> and <code>n2</code> respectively.
 	 * 
-	 * @param n1 layout for source node
-	 * @param n2 layout for target node
+	 * @param sourceLayout layout for source node
+	 * @param targetLayout layout for target node
 	 */
 	public BezierLayout(NodeLayout sourceLayout, NodeLayout targetLayout){		
 		curve = new CubicParamCurve2D();		
@@ -87,7 +87,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * 
 	 * @param other
 	 */
-	private BezierLayout(BezierLayout other) 
+	BezierLayout(BezierLayout other) 
 	{
 		edge = other.edge;
 		curve = new CubicParamCurve2D();		
@@ -142,8 +142,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * Precondition: must call updateAnglesAndScalars() before calling this method.
 	 * 
 	 * @param s layout for source node, s != null
-	 * @param t layout for target node, t != null
-	 * @return array of 4 Bezier control points for a straight, directed edge
+	 * @param t layout for target node, t != null 
 	 */
 	public void computeCurve(NodeLayout s, NodeLayout t){
 
@@ -641,7 +640,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * 	between my edge's source and target nodes.
 	 */
 	
-	public BezierLayout getReflection() 
+	/*public BezierLayout getReflection() 
 	{
 		BezierLayout reflection = new BezierLayout(this);
 		if( ! isStraight() )
@@ -652,14 +651,14 @@ public class BezierLayout extends GraphicalLayout {
 		// FIXME update sourceT and targetT
 		//setDirty(true);
 		return reflection;	
-	}
+	}*/
 	
 	/**
 	 * Set the given layout to be the reflection of me. 
 	 * 
 	 * @param other
 	 */
-	public void setToReflection(BezierLayout other)
+	/*public void setToReflection(BezierLayout other)
 	{
 		if( this.edge.getSource().equals(other.edge.getSource()) ){
 			if( ! isStraight() )
@@ -674,7 +673,7 @@ public class BezierLayout extends GraphicalLayout {
 		other.s1 = this.s1;
 		other.s2 = this.s2;
 		other.computeCurve();
-	}
+	}*/
 	
 	/**
 	 * Set this layout to be the reflection of <code>other</code>.  
@@ -683,32 +682,19 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	public void setToReflectionOf(BezierLayout other)
 	{
-		if( this.edge.getSource().equals(other.edge.getSource()) ){
-			if( ! other.isStraight() )
-			{
+		if( other.isStraight() ) return;
+		
+		if( this.edge.getSource().equals(other.edge.getSource()) ){			
 				this.angle1 = other.angle1 * -1;
-				this.angle2 = other.angle2 * -1;				
-			}
-		}else{ // sixty-nine
-			this.angle1 = other.angle1;
-			this.angle2 = other.angle2;			
+				this.angle2 = other.angle2 * -1;							
+		}else{ // heads to toes			
+				this.angle1 = other.angle2; //other.angle1;
+				this.angle2 = other.angle1; // other.angle2;			
 		}
 		this.s1 = other.s1;
 		this.s2 = other.s2;
 		this.computeCurve();
 	}
-	
-//	/**
-//	 * Sets the given layout to be the yin to my yang.
-//	 * Given that my source node is <code>other</code>'s target node and
-//	 * my target node is <code>other</code>'s source.
-//	 */
-//	public void sixtyNine(BezierLayout other) {
-//		other.angle1 = this.angle1;
-//		other.angle2 = this.angle2;
-//		other.s1 = this.s1;
-//		other.s2 = this.s2;
-//	}
 
 	protected float getSourceT() {
 		return sourceT;

@@ -90,7 +90,7 @@ public class GraphElement implements PresentationElement {
 	}
 	
 	/**
-	 * @returns the child at the given key
+	 * @return the child at the given key
 	 */
 	public PresentationElement child(long key) {
 		return children.get(key);		

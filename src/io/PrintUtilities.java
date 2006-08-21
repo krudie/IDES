@@ -4,7 +4,8 @@ package io;
 	import javax.swing.*;
 	import java.awt.print.*;
 
-	/** A simple utility class that lets you very simply print
+	/** 
+	 * A simple utility class that lets you very simply print
 	 *  an arbitrary component. Just pass the component to the
 	 *  PrintUtilities.printComponent. The component you want to
 	 *  print doesn't need a print method and doesn't have to
@@ -63,7 +64,7 @@ package io;
 	  /** The speed and quality of printing suffers dramatically if
 	   *  any of the containers have double buffering turned on.
 	   *  So this turns if off globally.
-	   *  @see enableDoubleBuffering
+	   *  @see #enableDoubleBuffering(Component c)
 	   */
 	  public static void disableDoubleBuffering(Component c) {
 	    RepaintManager currentManager = RepaintManager.currentManager(c);

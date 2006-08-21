@@ -88,7 +88,7 @@ public class FileOperations {
 	/**
      * Saves an automaton to a file
      * @param a the automaton to save
-     * @param path the path to save it to
+     * @param file the file to save it to
      * @return if file was saved
      */      
     public static boolean saveAutomaton(Automaton a, File file){    	

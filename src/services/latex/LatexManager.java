@@ -154,8 +154,7 @@ public class LatexManager {
 	/**
 	 * Switches LaTeX rendering of labels on and off.
 	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off
-	 * @see #setLatexEnabledFromMenu(boolean)
-	 * @see LatexManager.SetLatexUpdater  
+	 * @see #setLatexEnabledFromMenu(boolean)	
 	 */
 	public static void setLatexEnabled(boolean b)
 	{

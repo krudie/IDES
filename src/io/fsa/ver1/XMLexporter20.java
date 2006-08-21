@@ -31,7 +31,7 @@ public class XMLexporter20{
     
     /**
      * prints a object to XML.
-     * @param p the project to convert to XML
+     * @param wd wd the workspace descriptor to convert to XML
      * @param ps the printstream this object should be printed to.
      */
     public static void workspaceToXML(WorkspaceDescriptor wd, PrintStream ps) {

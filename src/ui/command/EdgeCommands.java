@@ -66,8 +66,8 @@ public class EdgeCommands {
 		}
 		
 		/**
-		 * @param edge2
-		 * @param previousLayout2
+		 * @param edge
+		 * @param previousLayout
 		 */
 		public ModifyEdgeCommand(Edge edge, GraphicalLayout previousLayout) {
 			setEdge(edge);

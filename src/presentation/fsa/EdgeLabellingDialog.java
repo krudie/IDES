@@ -107,7 +107,7 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 			}
 			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
-				newEvent = IDESWorkspace.instance().getActiveGraphModel().createEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
+				newEvent = IDESWorkspace.instance().getActiveGraphModel().createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
 				updateOnlyAvailable();			
 				listAvailableEvents.setSelectedValue(newEvent, true);
 			}

@@ -28,16 +28,13 @@ import services.latex.LatexUtils;
 import util.BentoBox;
 
 /**
- * TODO Change so that doesn't extend label; waste of space and rounds the location to int coords.
- * 
- * @author helen
- *
+ * @author helen bretzke
  */
 @SuppressWarnings("serial")
 public class GraphLabel extends GraphElement {
 	// SJW - The bounds should be calculated on the fly
 	// to make sure updates are observed
-	//protected Rectangle bounds;
+	// protected Rectangle bounds;
 	
 	protected Font font;
 	protected BufferedImage rendered = null;

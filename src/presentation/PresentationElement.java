@@ -50,7 +50,7 @@ public interface PresentationElement {
 	/**
 	 * Inserts the given child element.
 	 * 
-	 * @param g
+	 * @param child
 	 */
 	public void insert(PresentationElement child);
 	

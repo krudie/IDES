@@ -95,24 +95,6 @@ public class CircleNode extends Node {
 	}
 	
 	/**
-	 * Compute edge layout for each edge adjacent to this Node.
-	 */
-	private void recomputeEdges() {
-		Iterator children = children();
-		while(children.hasNext()){
-			try{
-				Edge e = (Edge)children.next();
-				if(e.getTarget() != null){
-					//e.getLayout().computeCurve(e.getSource().getLayout(), e.getTarget().getLayout());
-					e.computeEdge();
-				}
-			}catch(ClassCastException cce){
-				// Child is not an edge
-			}
-		}		
-	}
-
-	/**
 	 * Draws this node and all of its out edges in the given graphics context.
 	 */
 	public void draw(Graphics g) {
@@ -214,7 +196,7 @@ public class CircleNode extends Node {
 	}
 	
 	/**
-	 * DEBUG: since we are sharing references to unique node objects, 
+	 * NOTE since we are sharing references to unique node objects, 
 	 * this shouldn't be necessary.
 	 *  
 	 * @param n
@@ -343,9 +325,9 @@ public class CircleNode extends Node {
 	public boolean isDirty(){
 		return super.isDirty() || getLayout().isDirty();
 	}
-
-	/**
-	 * @return
+	
+	/** 
+	 * @deprecated
 	 */
 	public boolean hasSelfLoop() {
 		Iterator<Edge> edges = adjacentEdges();
@@ -374,10 +356,7 @@ public class CircleNode extends Node {
 		}		
 		return edges.iterator();
 	}
-
-	/**
-	 * @return
-	 */
+	
 	public float getRadius() {	
 		return ((NodeLayout)getLayout()).getRadius();
 	}

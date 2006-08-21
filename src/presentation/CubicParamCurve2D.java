@@ -226,7 +226,7 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
 
     /**
-     * @precondition 0 <= tStart < tEnd <= 1
+     * precondition 0 <= tStart < tEnd <= 1
      * 
      * @param tStart 	0 <= tStart < tEnd
      * @param tEnd  	tStart < tEnd <= 1
@@ -289,8 +289,7 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
      * 
      * @return {a_x, b_x, c_x
      * 			a_y, b_y, c_y}
-     * 
-     *  @author Helen Bretzke
+     *    
      */
     public float[][] getCoefficients()
     {

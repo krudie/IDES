@@ -229,17 +229,11 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		}
 		return g.iterator();
     }
-	
-    /**
-     * @see projectPresentation.ProjectPresentation#hasUnsavedData()
-     */
+	    
     public boolean isDirty(){
         return dirty;
     }
-
-    /**
-     * @see projectPresentation.ProjectPresentation#setUnsavedData(boolean)
-     */
+    
     public void setDirty(boolean state){
         dirty = state;
     }

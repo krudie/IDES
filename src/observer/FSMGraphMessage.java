@@ -51,6 +51,9 @@ public class FSMGraphMessage {
 	// the location on the source canvas where the event occurred
 	private Rectangle2D location;
 	
+	// a description of the event fired
+	private String message;
+	
 	/**
 	 * Creates a change notification message for FSMGraph to pass
 	 * to FSMGraphSubscribers. 
@@ -76,13 +79,14 @@ public class FSMGraphMessage {
 	 * @param source message sender
 	 * @param message a description of the event fired
 	 */
-	public FSMGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSMGraph source, String Message) {
+	public FSMGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSMGraph source, String message) {
 		super();		
 		this.source = source;
 		this.elementType = elementType;
 		this.elementId = elementId;
 		this.eventType = eventType;
 		this.location = location;
+		this.message = message;
 	}
 	
 	

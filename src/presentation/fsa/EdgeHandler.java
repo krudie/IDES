@@ -4,8 +4,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Visual representation of the control points for the bezier curve
- * of an edge.
+ * Visual representation of the modification handles of an edge.
  * 
  * @author Helen Bretzke
  *

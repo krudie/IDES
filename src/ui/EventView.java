@@ -252,7 +252,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSMSubscri
 				return;
 			
 			// FIXME issue a command to the Automaton and let messaging notify the graph model. 
-			Event event=Hub.getWorkspace().getActiveGraphModel().createEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
+			Event event=Hub.getWorkspace().getActiveGraphModel().createAndAddEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
 //			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
 //			event.setSymbol(eventNameField.getText());
 //			event.setControllable(controllableCBox.isSelected());

@@ -58,7 +58,11 @@ public class Geometry {
 	
 			e = 0.01;
 			// DEBUG
-			assert(!java.lang.Double.isNaN(a));
+			if(java.lang.Double.isNaN(a))
+			{
+				System.err.println("angle is NaN: cosA is " + cosA);
+			}
+			//assert(!java.lang.Double.isNaN(a));
 					
 			// Try sending unit v1 to unit v2
 			Point2D.Double test = rotate(unit(v1d), a);
@@ -76,8 +80,8 @@ public class Geometry {
 		}
 
 	/**
-	 * @param curve2
-	 * @return the midpoint of curve2
+	 * @param curve
+	 * @return the midpoint of curve
 	 */
 	public static Point2D midpoint(CubicCurve2D.Float curve) {
 		CubicCurve2D.Float left = new CubicCurve2D.Float(); 
@@ -192,8 +196,8 @@ public class Geometry {
 	}
 
 	/**
-	 * @param p2
-	 * @param midpoint
+	 * @param a
+	 * @param b
 	 * @return
 	 */
 	public static Float subtract(Point2D a, Point2D b) {
@@ -208,12 +212,7 @@ public class Geometry {
 	public static Point2D.Float add(Point2D.Float a, Point2D.Float v){
 		return new Point2D.Float(a.x + v.x, a.y + v.y);		
 	}
-	
-	/**
-	 * @param p2
-	 * @param float1
-	 * @return
-	 */
+		
 	public static Float add(Point2D p1, Float p2) {		
 		return add(new Point2D.Float((float)p1.getX(), (float)p1.getY()), p2);
 	}
