@@ -42,6 +42,7 @@ public class OperationDialog extends EscapeDialog {
 	protected JList modelList=new JList();
 	protected JList opList=new JList();
 	protected JTextField nameField=new JTextField(20);
+	protected FSAModel a;
 	
 	public OperationDialog()
 	{
@@ -121,9 +122,8 @@ public class OperationDialog extends EscapeDialog {
 					Object[] inputs=modelList.getSelectedValues();
 					for(int i=0;i<inputs.length;++i)
 						inputs[i]=Hub.getWorkspace().getFSAModel(inputs[i].toString());
-					Automaton a=(Automaton)op.perform(inputs)[0];
+					a=(Automaton)op.perform(inputs)[0];
 					a.setName(nameField.getText());
-					FileOperations.saveAutomatonAs(a);
 					onEscapeEvent();
 				}
 			}
@@ -150,8 +150,13 @@ public class OperationDialog extends EscapeDialog {
 		cancelButton.setPreferredSize(new Dimension(
 				Math.max(okButton.getWidth(),cancelButton.getWidth()),cancelButton.getHeight()));
 		cancelButton.invalidate();
-
+	}
+	
+	public FSAModel queryOperation()
+	{
+		a=null;
 		setVisible(true);
+		return a;
 	}
 	
 	protected void setSuggestedValue()

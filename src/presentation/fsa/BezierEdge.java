@@ -402,7 +402,7 @@ public class BezierEdge extends Edge {
 	}
 	
 	
-	public void addTransition(Transition t)
+	public void addTransition(FSATransition t)
 	{
 		super.addTransition(t);
 		// TODO uncomment after MetaData class is disconnected

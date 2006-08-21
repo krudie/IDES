@@ -53,14 +53,13 @@ public class OperationsCommands {
 
 		@Override
 		protected void handleExecute() {
-			LayoutManager.getDefaultFSMLayouter().layout(Hub.getWorkspace().getActiveGraphModel());
-			//new OperationDialog();
-//			Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();
-//			FSAModel a1=i.next();
-//			FSAModel a2=i.next();
-//			Automaton a=new Automaton("P("+a1.getName()+","+a2.getName()+")");
-//			Composition.product(a1,a2,a);
-//			FileOperations.saveAutomatonAs(a);
+			OperationDialog od=new OperationDialog();
+			Automaton a=(Automaton)od.queryOperation();
+			if(a!=null)
+			{
+				FSMGraph g=new FSMGraph(a);
+				FileOperations.saveAutomatonAs(a);
+			}
 		}
 		
 	}

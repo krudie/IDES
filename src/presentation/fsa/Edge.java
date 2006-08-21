@@ -106,11 +106,11 @@ public abstract class Edge extends GraphElement{
 		this.target = target;
 	}
 	
-	public void addTransition(Transition t) {
-		transitions.add(t);		
+	public void addTransition(FSATransition t) {
+		transitions.add(t);
 	}
 	
-	public void removeTransition(Transition t){
+	public void removeTransition(FSATransition t){
 		transitions.remove(t);
 	}
 	

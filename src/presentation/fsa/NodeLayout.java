@@ -93,7 +93,8 @@ public class NodeLayout extends GraphicalLayout {
 	 */
 	public void setDirty(boolean d){
 		super.setDirty(d);
-		node.setDirty(d);
+		if(node!=null)
+			node.setDirty(d);
 	}
 	
 	public void dispose()

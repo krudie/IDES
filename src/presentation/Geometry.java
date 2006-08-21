@@ -44,7 +44,7 @@ public class Geometry {
 			//if(cosA < -1 || cosA > 1)	System.err.println(cosA);
 //			assert(cosA >= -1 && cosA <= 1);
 			
-			double e = 0.00000000000000001; 
+			double e = 0.000000000001;
 			if(Math.abs(cosA) > 1 && Math.abs(1 - cosA) < e )
 			{				
 				if(cosA < 0)

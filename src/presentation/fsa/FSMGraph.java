@@ -23,6 +23,7 @@ import observer.FSMGraphMessage;
 import observer.FSMGraphSubscriber;
 import observer.FSMMessage;
 import observer.FSMSubscriber;
+import pluggable.layout.LayoutManager;
 import presentation.PresentationElement;
 
 /**
@@ -119,10 +120,40 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	/**
 	 * @param fsa the mathematical model	
 	 */
-	public FSMGraph(Automaton fsa)  //, GraphElement graph)
+	public FSMGraph(Automaton fsa)
 	{
 		this.fsa = fsa;
-		fsa.addSubscriber(this);		
+		metaData=new MetaData(fsa);
+		fsa.addSubscriber(this);
+		nodes = new HashMap<Long, CircleNode>();
+		edges = new HashMap<Long, Edge>();
+		edgeLabels = new HashMap<Long, GraphLabel>();
+		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
+		
+		Set<Set<FSATransition>> groups=new HashSet<Set<FSATransition>>();
+		HashMap<FSAState,Set<FSATransition>> stateGroups=new HashMap<FSAState,Set<FSATransition>>();
+		for(Iterator<FSAState> i=fsa.getStateIterator();i.hasNext();)
+		{
+			FSAState s=i.next();
+			wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
+			stateGroups.clear();
+			for(Iterator<FSATransition> j=s.getSourceTransitionsListIterator();j.hasNext();)
+			{
+				FSATransition t=j.next();
+				Set<FSATransition> ts;
+				if(stateGroups.containsKey(t.getTarget()))
+					ts=stateGroups.get(t.getTarget());
+				else
+					ts=new HashSet<FSATransition>();
+				ts.add(t);
+				stateGroups.put(t.getTarget(),ts);
+			}
+			groups.addAll(stateGroups.values());
+		}
+		for(Iterator<Set<FSATransition>> i=groups.iterator();i.hasNext();)
+			wrapTransitions(i.next());
+		
+		LayoutManager.getDefaultFSMLayouter().layout(this);
 		buildIntersectionDS();
 	}
 	
@@ -456,6 +487,34 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		return n;
 	}
 	
+	/**
+	 * Creates a new node which wraps the provided automaton state.
+	 * 
+	 * @param s automaton state to be wrapped
+	 * @param p the centre point for the new node
+	 * @return the node added
+	 */
+	public CircleNode wrapState(FSAState s, Point2D.Float p){
+		NodeLayout layout = new NodeLayout(uniformR,p);
+		if(s.isInitial())
+			layout.setArrow(new Point2D.Float(1,0));
+		
+		metaData.setLayoutData(s, layout);
+		
+		CircleNode n = new CircleNode(s, layout);
+		nodes.put(new Long(s.getId()), n);
+		insert(n);
+		setDirty(true);		
+		
+		Rectangle2D dirtySpot = n.adjacentBounds(); 
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
+				FSMGraphMessage.NODE,
+				n.getId(), 
+				dirtySpot,
+				this, ""));
+		//labelNode(n,)
+		return n;
+	}	
 	
 	/** 
 	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
@@ -484,6 +543,46 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		edges.put(e.getId(), e);		
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
+		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
+				FSMGraphMessage.EDGE,
+				e.getId(), 
+				e.bounds(),
+				this, ""));
+	}
+	
+	/** 
+	 * Creates a new edge between the nodes which correspond to the states
+	 * between which is the first transition in the provided set. All transitions
+	 * from the set are wrapped by the edge.
+	 * 
+	 * @param ts the set of transitions to be wrapped
+	 */
+	public void wrapTransitions(Set<FSATransition> ts){
+		if(ts.isEmpty())
+			return;
+		Iterator<FSATransition> i=ts.iterator();
+		FSATransition t=i.next();
+		Node n1=nodes.get(new Long(t.getSource().getId()));
+		Node n2=nodes.get(new Long(t.getTarget().getId()));
+		Edge e;
+		if(n1.equals(n2)){
+			// let e figure out how to place itself among its neighbours			
+			e = new ReflexiveEdge(n1, t);
+		}else{			
+			BezierLayout layout = new BezierLayout((NodeLayout)n1.getLayout(), (NodeLayout)n2.getLayout());
+//			 computes layout of new edges (default to straight edge between pair of nodes)			
+			e = new BezierEdge(layout, n1, n2, t);			
+		}
+		metaData.setLayoutData(t, (BezierLayout)e.getLayout());
+		n1.insert(e);
+		n2.insert(e);
+		edges.put(e.getId(), e);		
+		edgeLabels.put(e.getId(), e.getLabel());
+		setDirty(true);
+
+		while(i.hasNext())
+			e.addTransition(i.next());
+
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
 				FSMGraphMessage.EDGE,
 				e.getId(), 

@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
 
 import presentation.CubicParamCurve2D;
@@ -71,7 +72,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 * @param node
 	 * @param t a transition this represented by this edge
 	 */
-	public ReflexiveEdge(Node node, Transition t) {
+	public ReflexiveEdge(Node node, FSATransition t) {
 		super(node, node);
 		addTransition(t);				
 		setLayout(new ReflexiveLayout(node, this));

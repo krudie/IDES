@@ -3,6 +3,7 @@
  */
 package pluggable.layout;
 
+import pluggable.layout.jung.JUNGLayouter;
 import pluggable.layout.prefuse.PrefuseLayouter;
 
 /**
@@ -11,11 +12,11 @@ import pluggable.layout.prefuse.PrefuseLayouter;
  */
 public class LayoutManager {
 	
-	//protected static FSMLayouter l=new PrefuseLayouter();
+	protected static FSMLayouter l=new JUNGLayouter();
 
 	public static FSMLayouter getDefaultFSMLayouter()
 	{
-		return null;
+		return l;
 	}
 	
 }
