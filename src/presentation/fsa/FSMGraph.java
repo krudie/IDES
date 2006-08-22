@@ -220,6 +220,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		return fsa;
 	}
 	
+	public MetaData getMeta()
+	{
+		return metaData;
+	}
+	
 //	public GraphElement getGraph() {
 //		return graph;
 //	}
@@ -233,6 +238,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		return nodes.values();
 	}
 
+	public Node getNode(long id)
+	{
+		return nodes.get(new Long(id));
+	}
+	
 	/**
 	 * Returns the set of all edges in the graph.
 	 * @return the set of all edges in the graph

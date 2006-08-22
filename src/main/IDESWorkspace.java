@@ -68,6 +68,38 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		name=Hub.string("newAutomatonName");
 //		eventsModel = new EventsModel();
 	}
+
+	public void addFSAGraph(FSMGraph g)
+	{
+		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
+			removeFSAModel(getActiveGraphModel().getName());
+		
+//		if(getActiveModel()!=null)
+//			getActiveGraphModel().removeSubscriber(getDrawingBoard());
+		
+		systems.add(g.getAutomaton());
+		metadata.add(g.getMeta());
+		graphs.add(g);
+		activeModelIdx=systems.size()-1;
+		
+		//eventsModel.addLocalEvents(fsa);
+		
+		if(LatexManager.isLatexEnabled())
+		{
+			new LatexPrerenderer(getActiveGraphModel());
+		}
+		
+//		getActiveGraphModel().addSubscriber(getDrawingBoard());
+//		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
+		//notifyAllSubscribers();
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+									g.getAutomaton().getId(), 
+									WorkspaceMessage.ADD, 
+									this));		
+		if(countAdd!=0)
+			dirty = true;
+		countAdd++;
+	}
 	
 	public void addFSAModel(FSAModel fsa) {
 		
@@ -115,6 +147,22 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		if(idx<0)
 			return null;
 		return systems.elementAt(idx);
+	}
+	
+	public FSAModel getFSAModelById(String id)
+	{
+		for(int i=0;i<systems.size();++i)
+			if(systems.elementAt(i).getId().equals(id))
+				return systems.elementAt(i);
+		return null;
+	}
+
+	public FSMGraph getGraphById(String id)
+	{
+		for(int i=0;i<systems.size();++i)
+			if(systems.elementAt(i).getId().equals(id))
+				return graphs.elementAt(i);
+		return null;
 	}
 
 	public FSMGraph getGraphModel(String name) {	

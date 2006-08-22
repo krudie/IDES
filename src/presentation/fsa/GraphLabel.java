@@ -173,7 +173,7 @@ public class GraphLabel extends GraphElement {
 	/**
 	 * @return
 	 */
-	String getText() {
+	public String getText() {
 		return getLayout().getText();
 	}
 
