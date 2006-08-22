@@ -147,6 +147,15 @@ public class Geometry {
 	}
 	
 
+	/**
+	 * @param p1
+	 * @param p2
+	 * @return
+	 */
+	public static Float unitDirectionVector(Point2D p1, Point2D p2) {		
+		return unit(subtract(p2, p1));
+	}
+
 	/** 
 	 * @param v vector with origin at (0,0) and given direction
 	 * @return the vector perpendicular to v (rotated 90 degrees clockwise)

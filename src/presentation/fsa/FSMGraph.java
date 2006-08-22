@@ -830,8 +830,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param edge
 	 */
 	public void commitEdgeLayout(Edge edge){
-		saveMovement(edge);
-//		fsa.notifyAllBut(this);		
+		saveMovement(edge);	
 		setDirty(true);
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
 				FSMGraphMessage.EDGE,
@@ -848,7 +847,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			delete((Edge)el);
 		}else{
 			freeLabels.remove(el);
-			// TODO notify
+			fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
+					FSMGraphMessage.LABEL,
+					FSMGraphMessage.UNKNOWN_ID, 
+					el.bounds(),
+					this, ""));
 		}
 	}
 	

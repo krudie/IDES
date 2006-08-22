@@ -24,6 +24,7 @@ public abstract class Edge extends GraphElement{
 	private Node target;	
 	private EdgeHandler handler; // Anchors for modifying the curve.
 	private GraphLabel label;	 // extra pointer for O(1) access without instanceof
+	
 	public Edge(Node source)
 	{
 		this(source, null);

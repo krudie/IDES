@@ -462,9 +462,7 @@ public class ReflexiveEdge extends BezierEdge {
 			setDirty(false);
 		}
 		
-		/**
-		 * TODO implement
-		 * 
+		/**		 
 		 * @return true iff p intersects the control point circle. 
 		 */
 		public boolean intersects(Point2D p) {

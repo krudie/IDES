@@ -99,13 +99,13 @@ public class BezierEdge extends Edge {
 				getSource().isHighlighted() || 
 				getTarget() != null && getTarget().isHighlighted()){
 			setHighlighted(true);
-			g2d.setColor(getBezierLayout().getHighlightColor());
+			g2d.setColor(getLayout().getHighlightColor());
 		}else{
-			g2d.setColor(getBezierLayout().getColor());
+			g2d.setColor(getLayout().getColor());
 		}		
 		
 		if(isSelected()){
-			g2d.setColor(getBezierLayout().getSelectionColor());
+			g2d.setColor(getLayout().getSelectionColor());
 			getHandler().setVisible(true);
 		}else{
 			//handler.setVisible(false); // KLUGE to clean up after modify edge tool
@@ -115,7 +115,6 @@ public class BezierEdge extends Edge {
 		if(hasUncontrollableEvent()){
 			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
 		}else{
-
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		}		   
 
@@ -253,16 +252,7 @@ public class BezierEdge extends Edge {
 	/**
 	 * @return
 	 */
-	private Point2D.Float computeArrowDirection() {	
-			// Starting at p2, find point on curve where base of arrow head
-			// intersects with ...
-			// KLUGE
-			/*if(getTargetEndPoint() == null){
-				return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2()));
-			}else{
-				return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getTargetEndPoint()));
-			}*/
-	
+	private Point2D.Float computeArrowDirection() {			
 		Node target = getTarget();
 		if(target == null)
 		{
@@ -439,14 +429,14 @@ public class BezierEdge extends Edge {
 			l.setRigidTranslation(false);
 			super.translate(x, y);
 			
-		}else if(isSelfLoop()){
+		/*}else if(isSelfLoop()){
 			// TODO make sure (x,y) is outside my source/target node
 			
 			// TODO rotate the orientation of loop in direction of vector from centre to (x,y)
 			Point2D.Float centre = getSource().getLayout().getLocation();
 			Point2D.Float dir = Geometry.subtract(new Point2D.Float(x, y), centre);
 			
-			l.computeCurve();
+			l.computeCurve();*/
 
 		}else{ 	// reset the control points in the layout object
 
@@ -462,14 +452,14 @@ public class BezierEdge extends Edge {
 	 * @deprecated Delete after ReflexiveEdge class has been debugged. 
 	 * 
 	 * @return true iff source node is same as target node
-	 */
+	 *//*
 
 	public boolean isSelfLoop() {
 		if(getSource() != null && getTarget()!= null){
 			return getSource().equals(getTarget());
 		}
 		return false;
-	}
+	}*/
 
 	/**
 	 * This method is responsible for creating a string that contains
@@ -583,6 +573,7 @@ public class BezierEdge extends Edge {
 	
 	
 	/**
+	 * Sets the point of the given type to <code>point</code>.
 	 * @param point
 	 * @param pointType
 	 */
