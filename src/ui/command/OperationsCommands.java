@@ -62,13 +62,31 @@ public class OperationsCommands {
 			if(a!=null)
 			{
 				FSMGraph g=new FSMGraph(a);
-				FSMGraph g1=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[0]);
-				FSMGraph g2=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[1]);				
-				for(Node n:g.getNodes())
+				if(a.getAutomataCompositionList().length>1)
 				{
-					State s=(State)n.getState();
-					g.labelNode(n,"("+g1.getNode(s.getStateCompositionList()[0]).getLabel().getText()+
+					FSMGraph g1=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[0]);
+					FSMGraph g2=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[1]);				
+					for(Node n:g.getNodes())
+					{
+						State s=(State)n.getState();
+						g.labelNode(n,"("+g1.getNode(s.getStateCompositionList()[0]).getLabel().getText()+
 							","+g2.getNode(s.getStateCompositionList()[1]).getLabel().getText()+")");
+					}
+				}
+				else
+				{
+					FSMGraph g1=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[0]);
+					for(Node n:g.getNodes())
+					{
+						State s=(State)n.getState();
+						String label="(";
+						for(int i=0;i<s.getStateCompositionList().length;++i)
+							label+=g1.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+						if(label.endsWith(","))
+							label=label.substring(0,label.length()-1);
+						label+=")";
+						g.labelNode(n,label);
+					}
 				}
 				Hub.getWorkspace().addFSAGraph(g);
 			}

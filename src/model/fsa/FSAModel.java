@@ -110,6 +110,8 @@ public interface FSAModel {
 	 * @return a custom list iterator for the events.
 	 */
 	public abstract ListIterator<FSAEvent> getEventIterator();
+	
+	public abstract FSAEventSet getEventSet();
 
 	/**
 	 * searches for the event with the given event id.

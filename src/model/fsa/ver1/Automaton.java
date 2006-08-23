@@ -2,6 +2,8 @@ package model.fsa.ver1;
 import io.fsa.ver1.SubElement;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -12,6 +14,7 @@ import services.General;
 
 import main.Hub;
 import model.fsa.FSAEvent;
+import model.fsa.FSAEventSet;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -277,6 +280,10 @@ public class Automaton extends FSMPublisher implements Cloneable, FSAModel {
         return new EventIterator(events.listIterator(), this);
     }
 
+    public FSAEventSet getEventSet()
+    {
+    	return (FSAEventSet)new HashSet<FSAEvent>(events);
+    }
     
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getEvent(int)

@@ -161,4 +161,11 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 	public int compareTo(Object arg0) {		
 		return getSymbol().compareTo(((Event)arg0).getSymbol());
 	}
+	
+	public boolean equals(Object o)
+	{
+		if(!(o instanceof FSAEvent))
+			return false;
+		return getSymbol().equals(((FSAEvent)o).getSymbol());
+	}
 }

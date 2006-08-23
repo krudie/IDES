@@ -13,7 +13,9 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
-import operations.fsa.ver1.Product;
+import operations.fsa.ver1.Meet;
+import operations.fsa.ver1.Observer;
+import operations.fsa.ver1.SynchronousProduct;
 
 import pluggable.operation.OperationManager;
 import presentation.fsa.GraphExporter;
@@ -89,7 +91,9 @@ public class Main {
 		
 		Cache.init();
 		// TODO: move operations to the plugin manager eventually
-		OperationManager.register(new Product());
+		OperationManager.register(new Meet());
+		OperationManager.register(new SynchronousProduct());
+		OperationManager.register(new Observer());
 
 		try {
 	        UIManager.setLookAndFeel(

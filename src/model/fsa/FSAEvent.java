@@ -10,5 +10,6 @@ public interface FSAEvent extends DESElement {
 	public abstract void setControllable(boolean b);
 	public abstract boolean isObservable();
 	public abstract void setObservable(boolean b);
+	public abstract boolean equals(Object o);
 
 }

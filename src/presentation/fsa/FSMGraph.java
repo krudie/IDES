@@ -583,6 +583,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 //			 computes layout of new edges (default to straight edge between pair of nodes)			
 			e = new BezierEdge(layout, n1, n2, t);			
 		}
+		((BezierLayout)e.getLayout()).addEventName(t.getEvent().getSymbol());
 		metaData.setLayoutData(t, (BezierLayout)e.getLayout());
 		n1.insert(e);
 		n2.insert(e);
@@ -591,7 +592,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		setDirty(true);
 
 		while(i.hasNext())
-			e.addTransition(i.next());
+		{
+			t=i.next();
+			e.addTransition(t);
+			((BezierLayout)e.getLayout()).addEventName(t.getEvent().getSymbol());
+		}
 
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
 				FSMGraphMessage.EDGE,
@@ -1296,8 +1301,10 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 					FSATransition t = trans.next();  // FIXME ConcurrentModificationException
 					FSAEvent event = t.getEvent();
 					if(event != null && event.getId() == message.getElementId()){
-						if(e.transitionCount() > 1){  // edge must have at least one transition							
-							
+						if(e.transitionCount() > 1){  // edge must have at least one transition
+							fsa.removeSubscriber(this);
+							fsa.remove(t);
+							fsa.addSubscriber(this);
 							trans.remove();					
 						}else{
 							t.setEvent(null);

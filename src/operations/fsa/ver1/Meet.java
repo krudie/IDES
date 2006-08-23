@@ -8,12 +8,12 @@ import model.fsa.ver1.Automaton;
 import pluggable.operation.Operation;
 
 /**
- * @author lenko
+ * @author Lenko Grigorov
  *
  */
-public class Product implements Operation {
+public class Meet implements Operation {
 
-	public final static String NAME="product";
+	public final static String NAME="meet";
 	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
