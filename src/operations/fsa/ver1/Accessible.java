@@ -11,9 +11,9 @@ import pluggable.operation.Operation;
  *
  * @author Lenko Grigorov
  */
-public class Observer implements Operation {
+public class Accessible implements Operation {
 
-	public final static String NAME="observer";
+	public final static String NAME="accessible";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
@@ -74,8 +74,8 @@ public class Observer implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		Automaton a=new Automaton("none");
-		Composition.observer((FSAModel)inputs[0],a);
+		FSAModel a=((Automaton)inputs[0]).clone();
+		Unary.accessible(a);
 		return new Object[]{a};
 	}
 

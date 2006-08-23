@@ -13,9 +13,15 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
+import operations.fsa.ver1.Accessible;
+import operations.fsa.ver1.Coaccessible;
+import operations.fsa.ver1.Controllable;
 import operations.fsa.ver1.Meet;
-import operations.fsa.ver1.Observer;
+import operations.fsa.ver1.PrefixClosure;
+import operations.fsa.ver1.Projection;
+import operations.fsa.ver1.SupCon;
 import operations.fsa.ver1.SynchronousProduct;
+import operations.fsa.ver1.Trim;
 
 import pluggable.operation.OperationManager;
 import presentation.fsa.GraphExporter;
@@ -90,10 +96,16 @@ public class Main {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		
 		Cache.init();
-		// TODO: move operations to the plugin manager eventually
+		// TODO: move operation inits to the plugin manager eventually
 		OperationManager.register(new Meet());
 		OperationManager.register(new SynchronousProduct());
-		OperationManager.register(new Observer());
+		OperationManager.register(new Projection());
+		OperationManager.register(new Accessible());
+		OperationManager.register(new Coaccessible());
+		OperationManager.register(new Trim());
+		OperationManager.register(new PrefixClosure());
+		OperationManager.register(new Controllable());
+		OperationManager.register(new SupCon());
 
 		try {
 	        UIManager.setLookAndFeel(

@@ -45,7 +45,7 @@ public class Automaton extends FSMPublisher implements Cloneable, FSAModel {
     
     // if this automaton represents the composition of other automata,
     // this will contain a list the ids of these other automata
-    protected String[] composedOf=null;
+    protected String[] composedOf=new String[0];
     
     private SubElement meta=null;
 
@@ -70,7 +70,9 @@ public class Automaton extends FSMPublisher implements Cloneable, FSAModel {
      * @see java.lang.Object#clone()
      */
     public FSAModel clone(){
-        FSAModel clone = new Automaton(this.name);
+        Automaton clone = new Automaton(this.name);
+        clone.setAutomataCompositionList(new String[]{id});
+		clone.setId(General.getRandomId());
         ListIterator<FSAEvent> ei = getEventIterator();
         while(ei.hasNext()){
             clone.add(new Event((Event)ei.next()));

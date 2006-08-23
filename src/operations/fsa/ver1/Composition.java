@@ -29,6 +29,7 @@ import model.fsa.ver1.Transition;
  * This class contains methods for composing new automata from existing automata.
  * @author Kristian Edlund 
  * @author Axel Gottlieb Michelsen
+ * @author Lenko Grigorov
  */
 public class Composition{
 	
@@ -134,8 +135,8 @@ public class Composition{
                 ListIterator<FSATransition> sti1 = sa[1].getSourceTransitionsListIterator();
                 while(sti1.hasNext()){
                     FSATransition t1 = sti1.next();
-                    if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent() != null
-                            && t1.getEvent() != null && t0.getEvent().equals(t1.getEvent())))){
+                    if((t0.getEvent() == null && t1.getEvent() == null) || (t0.getEvent() != null
+                            && t1.getEvent() != null && t0.getEvent().equals(t1.getEvent()))){
 
                         FSAEvent event = (t0.getEvent() == null) ? null : product.getEvent(t0
                                 .getEvent().getId());

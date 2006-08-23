@@ -51,4 +51,15 @@ public interface FSAState extends DESElement {
 	 */
 	public boolean isMarked();
 	
+	/**
+	 * sets the "initial" property of the state 
+	 * @param b true if state to become initial, false otherwise
+	 */
+	public void setInitial(boolean b);
+	
+	/**
+	 * sets the "marked" property of the state
+	 * @param b true if state to become marked, false otherwise
+	 */
+	public void setMarked(boolean b);
 }

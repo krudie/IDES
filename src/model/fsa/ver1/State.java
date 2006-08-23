@@ -28,7 +28,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
     
     // if this state represents the composition of the states of other automata,
     // this will contain a list the ids of these other states
-    protected long[] composedOf=null;
+    protected long[] composedOf=new long[0];
 
     /**
      * constructs a state with the given id.
@@ -54,6 +54,8 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
         targetT = new LinkedList<FSATransition>();
         addSubElement(new SubElement("properties"));
         addSubElement(new SubElement("name"));
+        setInitial(s.isInitial());
+        setMarked(s.isMarked());
     }
 
     /**
