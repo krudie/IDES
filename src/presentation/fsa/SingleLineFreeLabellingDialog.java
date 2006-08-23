@@ -29,8 +29,11 @@ import main.Hub;
 import util.EscapeDialog;
 
 /**
- * @author helen
- *
+ * A dialog window for entering a single line of text and creating a free label 
+ * (i.e. not associated with any graph element) on the drawing canvas.
+ * Commits text and creates label when user types enter or when dialog loses focus. 
+ * 
+ * @author Helen Bretzke 
  */
 public class SingleLineFreeLabellingDialog extends EscapeDialog {
 
@@ -45,14 +48,16 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 		public void actionPerformed(ActionEvent actionEvent)
 		{
 			// TODO these changes should be sent through undoable commands
-			if(gm!= null){
+			if(gm!= null && !area.getText().equals("")){
 				if(freeLabel == null){
 					// add a free label
-					gm.addFreeLabel(area.getText(), new Point2D.Float(me.getLocation().x, me.getLocation().y));
+					gm.addFreeLabel(area.getText(), 
+							new Point2D.Float(me.getLocation().x, me.getLocation().y - me.getHeight()));
 				}else{
 					// change the text on an existing one.
 					gm.setLabelText(freeLabel, area.getText());
 				}
+				area.setText("");
 			}
 			setVisible(false);
 		}

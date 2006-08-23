@@ -101,7 +101,7 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	}
 
 	/**
-	 * Refresh my visual model from GraphModel.
+	 * Respond to change notification from underlying graph model.
 	 *  
 	 * @see observer.FSMGraphSubscriber#fsmGraphChanged(observer.FSMGraphMessage)
 	 */
@@ -111,14 +111,9 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	}
 
 	/**
-	 * Refresh my visual model from GraphModel.
+	 * Refresh my visual display from
 	 */
 	protected void refreshView(){
-//		if(getGraphModel() != null){
-//			graph = getGraphModel();
-//		}else{
-//			graph = new GraphElement();
-//		}
 		
 		if(getGraphModel()!=null)  // Why can't this be moved into first case above?
 		{

@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -22,25 +23,53 @@ import presentation.GraphicalLayout;
  * node in a finite state machine.
  * 
  * @author Helen Bretzke
- * DES Lab, ECE Dept., Queen's University 
+ * DES Lab, ECE Dept. Queen's University 
  * 2 August 2006
  *
  */
 public class InitialArrow extends Edge {
 
+	private Point2D.Float direction;  // redundant since stored in target node's layout
+	private Point2D.Float targetPoint;
 	private Line2D.Float line;
 	private ArrowHead arrowHead;
 		
 	public InitialArrow(Node target) {
 		super(null, target);
-		Point2D.Float offset = new Point2D.Float( (float)(target.getShape().getBounds2D().getWidth() * 2), 0f);
-		line = new Line2D.Float(Geometry.add(target.getLocation(), offset), target.getLocation());
+		
+		// TODO move this into computeEdge ///////////////////////////////////////////
+		// will need to check the length and direction of the arrow
+		// each time node is e.g. resized, loaded
+		NodeLayout layout = (NodeLayout)target.getLayout();
+		if(layout != null){
+			direction = layout.getArrow();
+		}
+		
+		// check the magnitude of the arrow shaft
+		// make sure it is long enough
+		double width = target.getShape().getBounds2D().getWidth();
+		if(direction != null && Geometry.norm(direction) <= width){
+			direction = Geometry.unit(direction);
+			double n = target.getShape().getBounds2D().getWidth();
+			direction = Geometry.scale( direction, (float)n );
+		}
+
+		if(layout == null || direction == null){	
+			// compute default direction vector for this edge
+			direction = new Point2D.Float( (float)(target.getShape().getBounds2D().getWidth() * -1), 0f);			
+		}
+		
+		line = new Line2D.Float(Geometry.add(target.getLocation(), Geometry.scale(direction, -1)), target.getLocation());
+		targetPoint = new Point2D.Float((float)line.getP2().getX(), (float)line.getP2().getY());
 		arrowHead = new ArrowHead();
 		setHandler(new Handler(this));
+		refresh();
 	}
 	
 	public void draw(Graphics g){
-		// TODO implement
+		
+		if( ! isVisible() ) return;
+		
 		if(isDirty())
 		{
 			getHandler().refresh();
@@ -65,11 +94,14 @@ public class InitialArrow extends Edge {
 		}
 
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);
-		g2d.draw(line);
+		
+		// visible segment of line
+		Line2D visible = new Line2D.Float(line.getP1(), targetPoint);		
+		g2d.draw(visible);
 		
 		// Compute the direction and location of the arrow head
 		AffineTransform at = new AffineTransform();
-		Point2D.Float unitArrowDir = Geometry.unitDirectionVector(line.getP1(), line.getP2());
+		Point2D.Float unitArrowDir = Geometry.unit(direction); //Geometry.unitDirectionVector(line.getP1(), line.getP2());
 	    Point2D.Float tEndPt = getTargetEndPoint();
 	    Point2D.Float basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
 	    
@@ -78,9 +110,12 @@ public class InitialArrow extends Edge {
 		
 	    // rotate to align with end of curve
 	    double rho = Geometry.angleFrom(ArrowHead.axis, unitArrowDir);
-		at.setToRotation(rho);		
+		at.setToRotation(rho);
 		g2d.transform(at);
+		g2d.setStroke(GraphicalLayout.FINE_STROKE);
+		g2d.draw(arrowHead);		
 		g2d.fill(arrowHead);
+		
 		// invert transformation
 		at.setToRotation(-rho);
 		g2d.transform(at);
@@ -92,8 +127,9 @@ public class InitialArrow extends Edge {
 	}
 	
 	public void refresh(){
-		// TODO compute the endpoints of the visible line
-				
+		// TODO update the shape (direction and magnitude) and
+		// compute the endpoints of the visible line
+		targetPoint = intersectionWithBoundary(getTarget(), Edge.TARGET_NODE);		
 		setDirty(false);
 	}
 	
@@ -111,17 +147,47 @@ public class InitialArrow extends Edge {
 	 */
 	@Override
 	public Point2D.Float intersectionWithBoundary(Node node, int type) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Shape nodeShape = node.getShape();
+		
+		float epsilon = 0.00001f;		
+		float tPrevious = 0f;
+		float t = 0.5f;	
+		float step = 0.5f;
+		
+		// use equation of line
+		Point2D p = line.getP1();
+		Point2D.Float d = direction;
+		
+		// FIXME What should happen if arrow shaft is contained in node shape?
+		if(nodeShape.contains(p)){
+			return null;
+		}
+		
+		// the point on curve at param t
+		Point2D L_t = Geometry.add(p, Geometry.scale(d, t)); 
+	
+		while(Math.abs(t - tPrevious) > epsilon){			
+			step =  Math.abs(t - tPrevious);
+			tPrevious = t;
+			if(nodeShape.contains(L_t)){  // inside boundary				
+				t -= step/2;
+			}else{				
+				t += step/2;				
+			}								
+			L_t = Geometry.add(p, Geometry.scale(d, t)); 
+		}		
+		
+		return new Point2D.Float((float)L_t.getX(), (float)L_t.getY());
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * No transitions/events on this edge type. 
+	 * 
 	 * @see presentation.fsa.Edge#addEventName(java.lang.String)
 	 */
 	@Override
-	public void addEventName(String symbol) {
-		// No events on this edge type		
-	}
+	public void addEventName(String symbol) {}
 
 	/* (non-Javadoc)
 	 * @see presentation.fsa.Edge#getSourceEndPoint()
@@ -136,10 +202,8 @@ public class InitialArrow extends Edge {
 	 * @see presentation.fsa.Edge#getTargetEndPoint()
 	 */
 	@Override
-	public Point2D.Float getTargetEndPoint() {
-		// TODO compute intersection with node boundary
-		return new Point2D.Float(line.x2, line.y2);
-		// return arrowHead.getBasePt();
+	public Point2D.Float getTargetEndPoint() {		
+		return targetPoint;		
 	}
 
 	/** the only valid pointType for method setPoint : starting point of the line */
@@ -154,6 +218,10 @@ public class InitialArrow extends Edge {
 		if(pointType == P1){
 			line.x1 = point.x;
 			line.y1 = point.y;
+			// update direction vector here and in NodeLayout
+			// TODO get rid of direction field
+			direction = Geometry.subtract(line.getP2(), line.getP1());
+			((NodeLayout)getTarget().getLayout()).setArrow(direction);
 			setDirty(true);
 		}
 	}
@@ -169,13 +237,12 @@ public class InitialArrow extends Edge {
 		// What happens when move handler (P1)?
 		
 		// preserve the direction and magnitude of the line		
-		Point2D.Float direction = Geometry.subtract(line.getP2(), line.getP1());		
+		//direction = Geometry.subtract(line.getP2(), line.getP1());	
 		line.x2 = getTarget().getLocation().x;
 		line.y2 = getTarget().getLocation().y;
-		Point2D.Float sourcePt = Geometry.subtract(line.getP1(), direction);
+		Point2D.Float sourcePt = Geometry.subtract(line.getP2(), direction);
 		line.x1 = sourcePt.x;
-		line.y1 = sourcePt.y;
-		refresh();
+		line.y1 = sourcePt.y;		
 	}
 	
 	/**
@@ -193,7 +260,8 @@ public class InitialArrow extends Edge {
 		if(isSelected()){
 			return line.contains(point) || getHandler().intersects(point);
 		}
-		return line.contains(point) || arrowHead.contains(point);
+		boolean b = line.intersects(point.getX() - 4, point.getY() - 4, 8, 8);
+		return b; // || arrowHead.contains(point);
 	}
 	
 	public void translate(float x, float y) {
@@ -211,7 +279,18 @@ public class InitialArrow extends Edge {
 	public boolean isStraight() {		
 		return true;
 	}
-
+	
+	// Nothing to do with this type of edge except move and delete.
+	public void showPopup(){}
+	
+	/**
+	 * FIXME can't use arrow to compute bounds since it is never moved to where it is drawn
+	 * (see java.awt.geom.AffineTransform)
+	 */
+	public Rectangle bounds() {
+		return line.getBounds();
+	}
+	
 	/**
 	 * Edge handler for modifying the position and length of
 	 * the initial arrow.
@@ -227,13 +306,14 @@ public class InitialArrow extends Edge {
 		 * @param edge the edge to be handled
 		 */
 		public Handler(Edge edge) {
-			super(edge);			
+			super(edge);
+			refresh();
 		}
 		
 		public void refresh(){
 			int d = 2*RADIUS;
 			// upper left corner, width and height of circle's bounding box
-			anchor = new Ellipse2D.Double(getEdge().getSourceEndPoint().x - RADIUS, getEdge().getSourceEndPoint().y - d, d, d);
+			anchor = new Ellipse2D.Double(getEdge().getSourceEndPoint().x - RADIUS, getEdge().getSourceEndPoint().y - RADIUS, d, d);
 			setDirty(false);
 		}
 		

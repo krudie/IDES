@@ -47,11 +47,18 @@ public abstract class Edge extends GraphElement{
 	}
 	
 	/**
-	 * TODO comment
+	 * This method is responsible for creating a string that contains
+	 * an appropriate (depending on the type) representation of this
+	 * edge.
+	 *  
+	 * @param selectionBox The area being selected or considered
+	 * @param exportType The export format
+	 * @see GraphExporter#INT_EXPORT_TYPE_EPS 
+	 * @see GraphExporter#INT_EXPORT_TYPE_PSTRICKS
+	 *  
+	 * @return String The string representation
 	 * 
-	 * @param selectionBox
-	 * @param exportType
-	 * @return
+	 * @author Sarah-Jane Whittaker
 	 */
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
 	

@@ -8,7 +8,7 @@ import presentation.GraphicalLayout;
 public class NodeLayout extends GraphicalLayout {
 	
 	private float radius;		
-	private Point2D.Float arrow; // the direction vector for arrow if the state is initial
+	private Point2D.Float arrow = new Point2D.Float(1, 0); // the direction vector for arrow if the state is initial
 	private CircleNode node;
 	
 	/**
@@ -35,7 +35,6 @@ public class NodeLayout extends GraphicalLayout {
 	public NodeLayout(FSMGraph.UniformRadius u,Point2D.Float centre, float radius, String name) {
 		super(centre, name);
 		this.radius = radius;		
-		arrow = null;
 		uniformR=u;
 		uniformR.updateUniformRadius(this,radius);
 	}
@@ -56,7 +55,6 @@ public class NodeLayout extends GraphicalLayout {
 	public NodeLayout(Point2D.Float centre, float radius, String name) {
 		super(centre, name);
 		this.radius = radius;		
-		arrow = null;
 	}
 
 	public float getRadius() {
@@ -73,7 +71,7 @@ public class NodeLayout extends GraphicalLayout {
 		this.arrow = arrow;
 		setDirty(true);
 	}
-
+		
 	public void setRadius(float radius) {
 		this.radius = radius;
 		setDirty(true);
@@ -88,10 +86,8 @@ public class NodeLayout extends GraphicalLayout {
 		this.node = node;		
 	}	
 	
-	/**
-	 * KLUGE: all accesss to NodeLayout should go through the Node interface.
-	 */
 	public void setDirty(boolean d){
+		// KLUGE all accesss to NodeLayout should go through the Node interface.
 		super.setDirty(d);
 		if(node!=null)
 			node.setDirty(d);

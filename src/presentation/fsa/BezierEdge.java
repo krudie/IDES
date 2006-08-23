@@ -118,7 +118,7 @@ public class BezierEdge extends Edge {
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		}		   
 
-		// FIXME stop drawing at base of arrowhead and at node boundaries
+		// UGLY should stop drawing at base of arrowhead and at outside of node boundaries.
 		CubicCurve2D curve = getBezierLayout().getVisibleCurve();
 		if(curve != null)
 		{
@@ -206,8 +206,8 @@ public class BezierEdge extends Edge {
 			sourceEndPt = new Point2D.Float();
 		}
 		
-		float tSource = intersectionWithBoundary(getSource().getShape(), sourceEndPt, SOURCE_NODE);
-		((BezierLayout)getLayout()).setSourceT(tSource);
+		float sourceT = intersectionWithBoundary(getSource().getShape(), sourceEndPt, SOURCE_NODE);		
+		((BezierLayout)getLayout()).setSourceT(sourceT);
 		
 		if(getTarget() != null)	
 		{
@@ -250,7 +250,9 @@ public class BezierEdge extends Edge {
 		
 
 	/**
-	 * @return
+	 * FIXME points wrong direction when tangent angle is close to +- PI. 
+	 * 
+	 * @return unit direction vector for arrow head to point
 	 */
 	private Point2D.Float computeArrowDirection() {			
 		Node target = getTarget();
@@ -267,7 +269,7 @@ public class BezierEdge extends Edge {
 					(int)(box.height + delta) );
 			Point2D.Float p = new Point2D.Float();			
 			double t = this.intersectionWithBoundary(fat, p, TARGET_NODE);
-			// TODO use t -> store new endpoint in layout
+			// TODO use t; store as new endpoint in layout
 			return Geometry.unitDirectionVector(p, getTargetEndPoint());
 		}
 	}
@@ -648,7 +650,7 @@ public class BezierEdge extends Edge {
 		CubicParamCurve2D temp = new CubicParamCurve2D();
 		// if target, then this algorithm needs to be reversed since
 		// it searches curve assuming t=0 is inside the node.		
-		boolean intersectWithTarget = nodeShape.contains(curve.getP2()); //nodeShape.equals(getTarget().getShape());
+		boolean intersectWithTarget = (type == this.TARGET_NODE); //nodeShape.contains(curve.getP2()); //nodeShape.equals(getTarget().getShape());
 		
 		if( intersectWithTarget ) {
 			// swap endpoints and control points		
@@ -700,14 +702,11 @@ public class BezierEdge extends Edge {
 	 */
 	@Override
 	public void computeEdge() {
-		getBezierLayout().computeCurve((NodeLayout)getSource().getLayout(), 
-								(NodeLayout)getTarget().getLayout());
-		refresh();
-//		((BezierLayout)getLayout()).setSourceEndPoint(intersectionWithBoundary(getSource()));
-//		if(getTarget() != null)	
-//		{
-//			((BezierLayout)getLayout()).setTargetEndPoint(intersectionWithBoundary(getTarget()));
-//		}
+		if(getSource() != null && getTarget() != null){
+			getBezierLayout().computeCurve((NodeLayout)getSource().getLayout(), 
+											(NodeLayout)getTarget().getLayout());
+			refresh();
+		}
 	}
 
 	public void arcMore() {

@@ -23,7 +23,7 @@ public class EdgeHandler extends GraphElement {
 	{		
 		this.edge = edge;
 		setParent(edge);
-		setDirty(true);		
+//		setDirty(true);		
 	}	
 	
 	public Edge getEdge()
@@ -38,5 +38,4 @@ public class EdgeHandler extends GraphElement {
 	public int getLastIntersected() {
 		return lastIntersected;
 	}	
-	
 }

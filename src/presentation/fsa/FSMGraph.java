@@ -24,13 +24,16 @@ import observer.FSMGraphSubscriber;
 import observer.FSMMessage;
 import observer.FSMSubscriber;
 import pluggable.layout.LayoutManager;
+import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 
 /**
- * Mediates between the Automaton model and the visual representation.
+ * A recursive structure used to draw and edit the graph representation of an Automaton.
+ * Computes intersections with graph elements given a point or rectangular area.
+ * 
  * Observes and updates the Automaton.
  * Updates the graphical visualization metadata and synchronizes it with the Automaton model.
- * Is observed and updated by the GraphDrawingView.  
+ * Is observed and updated by the GraphView and GraphDrawingView.  
  * 
  * @author helen bretzke
  *
@@ -72,14 +75,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	private HashMap<Long, CircleNode> nodes;
 	private HashMap<Long, Edge> edges;
-	private HashMap<Point2D.Float, GraphLabel> freeLabels; // use location as key
+	private HashMap<Long, GraphLabel> freeLabels;
 	private HashMap<Long, GraphLabel> edgeLabels; // use parent edge's id as key
-	
-	/**
-	 * The recursive structure used to draw the graph.
-	 * TODO remove after this class extends GraphElement
-	 */
-	//private GraphElement graph;
 	
 	protected boolean dirty=false;
 	
@@ -112,7 +109,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
-		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
+		freeLabels = new HashMap<Long, GraphLabel>();
 		
 		initializeGraph();	
 	}
@@ -128,7 +125,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
-		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
+		freeLabels = new HashMap<Long, GraphLabel>();
 		
 		Set<Set<FSATransition>> groups=new HashSet<Set<FSATransition>>();
 		HashMap<FSAState,Set<FSATransition>> stateGroups=new HashMap<FSAState,Set<FSATransition>>();
@@ -167,7 +164,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
-		freeLabels = new HashMap<Point2D.Float, GraphLabel>();
+		freeLabels = new HashMap<Long, GraphLabel>();
 			
 		Iterator children = children();
 		
@@ -200,7 +197,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			}else if(el instanceof GraphLabel)
 			{
 				GraphLabel label = (GraphLabel)el;
-				freeLabels.put(label.getLocation(), label);
+				freeLabels.put(label.getId(), label);
 			}
 		}
 	}
@@ -224,10 +221,6 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	{
 		return metaData;
 	}
-	
-//	public GraphElement getGraph() {
-//		return graph;
-//	}
 
 	/**
 	 * Returns the set of all nodes in the graph.
@@ -262,14 +255,19 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	}
 	
 	/**
+	 * Builds this graph from the elements in <code>fsa</code>. 
+	 * 
 	 * TODO 
-	 * Graph to be built in LayoutDataParser.
-	 * Replace the intersection lists with a quadtree.
+	 * Build this graph in LayoutDataParser
+	 * Build free labels (those not associated with elements of the automaton).
+	 * Replace the intersection lists with a quadtree
 	 */
 	private void initializeGraph(){		
 		
 		for(CircleNode n:nodes.values())
 			((NodeLayout)n.getLayout()).dispose();
+		
+		this.clear();
 		
 		nodes.clear();
 		edges.clear();
@@ -291,7 +289,6 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			n1 = new CircleNode(s, nL);			
 			insert(n1);
 			nodes.put(new Long(s.getId()), n1);
-//			maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
 		}
 
 		// for all transitions in fsa
@@ -341,6 +338,14 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			edgeLabels.put(edge.getId(), edge.getLabel());
 		}
 		
+		// add all intialArrows to the set of edges
+		for(Node node : nodes.values())
+		{
+			if(node.getState().isInitial()){
+				edges.put(node.getInitialArrow().getId(), node.getInitialArrow());
+			}
+		}
+		
 		// TODO for all free labels in layout data structure
 		
 		// clear all dirty bits in the graph structure		
@@ -357,7 +362,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	private Edge directedEdgeBetween(Node source, Node target){		
 		for(Edge e : edges.values())
 		{			
-			if(e.getSource().equals(source) && e.getTarget().equals(target)){
+			if(e.getSource() != null && e.getSource().equals(source) 
+					&& e.getTarget() != null && e.getTarget().equals(target)){
 				return e;
 			}
 		}		
@@ -455,7 +461,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		Set<Edge> set = new HashSet<Edge>();
 		for(Edge e : edges.values())
 		{			
-			if(e.getSource().equals(n1) && e.getTarget().equals(n2) 
+			if(e.getSource() != null && e.getTarget() != null 
+				&& 
+				e.getSource().equals(n1) && e.getTarget().equals(n2) 
 				|| e.getSource().equals(n2) && e.getTarget().equals(n1) )
 			{
 				set.add(e);
@@ -486,7 +494,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		CircleNode n = new CircleNode(s, layout);	
 		nodes.put(new Long(s.getId()), n);
 		insert(n);
-		setDirty(true);		
+		//setDirty(true);		
 		
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
@@ -631,11 +639,10 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			}else if(nodes.containsValue(el)){
 				saveMovement((CircleNode)el);
 			}else if(edges.containsValue(el)){
-				//if( ((BezierEdge)el).isSelfLoop() ){					
-					saveMovement((BezierEdge)el);
-				//}
+				saveMovement((Edge)el);				
 			}else if(freeLabels.containsValue(el)){
-				// TODO move free labels
+				// FIXME move free labels
+				saveMovement((GraphLabel)el);
 			}
 		}
 
@@ -646,9 +653,6 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 				FSMGraphMessage.UNKNOWN_ID, 
 				selection.bounds(),
 				this, ""));
-		
-//		setDirty(true);
-//		this.notifyAllSubscribers();
 	}
 		
 	/**
@@ -679,64 +683,61 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
 		metaData.setLayoutData(s, (NodeLayout)node.getLayout());
-//		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-//				FSMGraphMessage.NODE,
-//				node.getId(), 
-//				node.adjacentBounds(),
-//				this, ""));
 
 		// for all edges adjacent to node, save layout
 		Iterator<Edge> adjEdges = node.adjacentEdges();
-		while(adjEdges.hasNext()){	
-			// KLUGE
-			saveMovement((BezierEdge)adjEdges.next());
-		}
-		
+		while(adjEdges.hasNext()){			
+			saveMovement(adjEdges.next());
+		}	
 	}
 	
-	private void saveMovement(BezierEdge e){
-		// for all transitions in e		
-		BezierLayout layout = e.getBezierLayout();		
+	private void saveMovement(Edge e){		
+		GraphicalLayout layout = e.getLayout();		
 		Iterator<FSATransition> t = e.getTransitions();
+		// for all transitions in e, save the edge layout		
 		while(t.hasNext()){
-			metaData.setLayoutData(t.next(), layout);
+			try{  // FIXME need to handle other types of layout (e.g. Quad, Linear) 
+				metaData.setLayoutData(t.next(), (BezierLayout)layout);
+			}catch(ClassCastException cce){
+				// FIXME InitialArrows are a special case 
+				// and are saved as properties of their parent nodes.
+				// DEBUG
+				System.err.println(cce.getMessage());
+			}
 		}		
 	}
+	
 	///////////////////////////////////////////////////////////////////
 	
 	
 	public void setInitial(CircleNode n, boolean b){
-		// update the state
-		((State)n.getState()).setInitial(b);
+		
+		n.setInitial(b);
+		
+		// add or remove the intial arrow from the set of edges
+		if(b){
+			edges.put(n.getInitialArrow().getId(), n.getInitialArrow());						
+		}else{			
+			edges.remove(n.getInitialArrow().getId());			
+		}				
+		
 		fsa.removeSubscriber(this);
 		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
     			FSMMessage.STATE, n.getId(), fsa));
 		fsa.addSubscriber(this);
 		
-		// TODO Let the node do this as needed before drawing
-		// add an arrow to the node layout
-		NodeLayout layout = (NodeLayout)n.getLayout();
-		if(b){
-			// TODO compute best position for arrow
-			layout.setArrow(new Point2D.Float(1,0));
-		}else{			
-			layout.setArrow(null);
-		}
-		
-		// NOTE metaData will be obsolete.
-		metaData.setLayoutData((State)n.getState(), layout);
-		
-		//setDirty(true);		
 	}
 	
 	public void setMarked(CircleNode n, boolean b){
 		// update the state
-		((State)n.getState()).setMarked(b);
-		n.setDirty(true);
-		// update the node		
-		//setDirty(true);
+		((State)n.getState()).setMarked(b);		
+		
+		n.setDirty(true);		
+		
+		fsa.removeSubscriber(this);
 		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
     			FSMMessage.STATE, n.getId(), fsa));
+		fsa.addSubscriber(this);
 	}
 	
 	/**
@@ -846,7 +847,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);	
-		setDirty(true);
+		//setDirty(true);
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
 				FSMGraphMessage.EDGE,
 				edge.getId(), 
@@ -861,7 +862,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		}else if(edges.containsValue(el)){
 			delete((Edge)el);
 		}else{
-			freeLabels.remove(el);
+			freeLabels.remove(el.getId());
+			this.remove(el);
 			fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
 					FSMGraphMessage.LABEL,
 					FSMGraphMessage.UNKNOWN_ID, 
@@ -872,9 +874,10 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	
 	private void delete(Node n){
 		// delete all adjacent edges
-		Iterator edges = n.adjacentEdges();
+		// TODO does this include the initial arrow ?
+		Iterator<Edge> edges = n.adjacentEdges();
 		while(edges.hasNext()){
-			delete((BezierEdge)edges.next());
+			delete(edges.next());
 		}
 		// remove n
 		fsa.removeSubscriber(this);
@@ -899,8 +902,14 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			fsa.remove(transitions.next());
 			fsa.addSubscriber(this);
 		}
-		e.getSource().remove(e);
-		e.getTarget().remove(e);
+		Node source = e.getSource();
+		if(source != null){
+			source.remove(e);
+		}
+		Node target = e.getTarget();
+		if(target != null){
+			target.remove(e);
+		}
 		edgeLabels.remove(e.getId());
 		edges.remove(e.getId());
 		setDirty(true);		
@@ -933,7 +942,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 
 	public void addFreeLabel(String text, Point2D.Float p) {		
 		GraphLabel label = new GraphLabel(text, p);
-		freeLabels.put(p, label);
+		freeLabels.put(label.getId(), label);
 		insert(label);
 		setDirty(true);		
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
@@ -950,7 +959,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	public void setLabelText(GraphLabel freeLabel, String text) {
 		freeLabel.setText(text);
-		setDirty(true);		
+		//setDirty(true);		
 		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
 				FSMGraphMessage.LABEL,
 				FSMGraphMessage.UNKNOWN_ID, 
@@ -1063,7 +1072,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	
 		for (Edge graphEdge : edges.values())
 		{
-			graphBounds = graphBounds.union(((BezierEdge)graphEdge).bounds());
+			graphBounds = graphBounds.union(graphEdge.bounds());
 		}
 		
 		for (GraphLabel edgeLabel : edgeLabels.values())
@@ -1120,24 +1129,21 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	protected SelectionGroup getElementsContainedBy(Rectangle rectangle) {
 		SelectionGroup g = new SelectionGroup();
 		
-		// check intersection with all nodes		
-		for(CircleNode n : nodes.values())
-		{
+		
+		for(CircleNode n : nodes.values()) {
 			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
 				g.insert(n);				
 			}
 		}
 				
-		for(Edge e : edges.values())
-		{
+		for(Edge e : edges.values()) {
 			if(rectangle.contains(e.bounds())){
 				g.insert(e);
 			}
 		}
 		
 		// check for intersection with free labels 
-		for(GraphLabel l : freeLabels.values())
-		{
+		for(GraphLabel l : freeLabels.values()) {
 			if(rectangle.contains(l.bounds())){
 				g.insert(l);				
 			}
@@ -1154,46 +1160,26 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @return the graph element intersected by the given point or null if nothing hit.
 	 */
 	protected GraphElement getElementIntersectedBy(Point2D p){
-		// check intersection with all nodes		
-		Iterator iter = nodes.entrySet().iterator();
-		Entry entry;
-		CircleNode n;
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			n = (CircleNode)entry.getValue();
-			if(n.intersects(p)){				
-				return n;				
-			}
-		}
-		
-		
-		GraphLabel gLabel;
-		iter = edgeLabels.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			gLabel = (GraphLabel)entry.getValue();
+						
+		for(GraphLabel gLabel : edgeLabels.values()){
 			if(gLabel.intersects(p)){		
 				return gLabel;				
 			}
 		}
-		
-		BezierEdge e;
-		// check for intersection with edges
-		iter = edges.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			e = (BezierEdge)entry.getValue();
+					
+		for(Edge e : edges.values()){			
 			if(e.intersects(p)){		
 				return e;				
 			}
 		}
 		
-		GraphLabel l;
-		// check for intersection with free labels
-		iter = freeLabels.entrySet().iterator();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			l = (GraphLabel)entry.getValue();
+		for(Node n : nodes.values()){			
+			if(n.intersects(p)){				
+				return n;				
+			}
+		}	
+			
+		for(GraphLabel l : freeLabels.values()){			
 			if(l.intersects(p)){				
 				return l;				
 			}
@@ -1272,17 +1258,50 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		// TODO if can isolate the change just modify the structure as required
 		// e.g. properties set on states or events.
 		// and only refresh the affected part of the graph
-		
+		int elementType = message.getElementType();
 		// otherwise rebuild the graph structure 
-		initializeGraph();		
+		switch(elementType){
+		case FSMMessage.STATE:
+			
+			
+			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
+					FSMGraphMessage.???,
+					?.getId(), 
+					?.bounds(),
+					this, ""));
+					*/	
+			break;
+		case FSMMessage.TRANSITION:
+
+			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
+			FSMGraphMessage.???,
+			?.getId(), 
+			?.bounds(),
+			this, ""));
+			*/	
+
+			break;
+		case FSMMessage.EVENT:
+
+			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
+			FSMGraphMessage.???,
+			?.getId(), 
+			?.bounds(),
+			this, ""));
+			*/	
+
+			break;
+		default:
+			initializeGraph();
 		
-		// TODO fireGraphChanged event
-		// Message args depend on FSMMessage contents
-//		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
-//				FSMGraphMessage.???,
-//				?.getId(), 
-//				?.bounds(),
-//				this, ""));		
+		/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
+		FSMGraphMessage.???,
+		?.getId(), 
+		?.bounds(),
+		this, ""));
+		*/	
+
+		}		
 		
 	}
 

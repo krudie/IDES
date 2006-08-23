@@ -140,24 +140,23 @@ public class ReflexiveEdge extends BezierEdge {
 		return ((ReflexiveLayout)getLayout()).getMidpoint();		
 	}
 
+	/**
+	 * TODO customize so that if curve is invisible, arrow points to centre of node.
+	 */
 	public void draw(Graphics g)
-	{
-		if(isDirty()){		
-			refresh();
-		}
+	{		
 		super.draw(g);	
 	}
 
+	/**
+	 * TODO customize so that intersection with boundary is computed properly;
+	 * parameters (sourceT and targetT) are currently being reverse.
+	 */
 	public void refresh()
-	{
-		((ReflexiveLayout)getLayout()).computeCurve();
+	{		
 		super.refresh();
 	}
-	
-//	public ReflexiveLayout getLayout()
-//	{
-//		return (ReflexiveLayout)super.getLayout();
-//	}
+
 	
 	/**
 	 * To be used when moving/reshaping self-loops.
@@ -304,8 +303,7 @@ public class ReflexiveEdge extends BezierEdge {
 			setCurve(bLayout.getCurve());
 //			 TODO updateAnglesAndScalars(); from shape of given curve
 			
-			setEventNames(bLayout.getEventNames());		
-			
+			setEventNames(bLayout.getEventNames());			
 		}
 		
 
@@ -378,6 +376,9 @@ public class ReflexiveEdge extends BezierEdge {
 				return;
 			}
 			
+			// TODO compute curve from centre and midpoint such that midpoint is fixed
+			// and curve has same shape as default.
+			
 			setPoint(getEdge().getSource().getLocation(), P1);
 			setPoint(getEdge().getSource().getLocation(), P2);
 
@@ -402,7 +403,8 @@ public class ReflexiveEdge extends BezierEdge {
 		public void setPoint(Point2D.Float point, int index){
 			switch(index)
 			{			
-				case MIDPOINT:					
+				case MIDPOINT:	
+// FIXME don't constrain the point, but make sure the midpoint, arrowhead and the handler behave properly.				
 					if(getSource().intersects(point))
 					{
 						// snap to arc minimum distance from border of node
@@ -415,10 +417,9 @@ public class ReflexiveEdge extends BezierEdge {
 						  
 					}else{					
 						midpoint = point;
-					}
-					// initAnglesAndScalars();					
+					}										
 					setLocation(midpoint.x, midpoint.y);
-					//computeCurve();
+					// TODO computeCurve();
 					break;
 				case P1:
 					curve.x1 = point.x;

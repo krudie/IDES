@@ -31,7 +31,9 @@ public class ArrowHead extends Polygon {
     /**
      * Construct an invisible ArrowHead.
      */
-    public ArrowHead(){}
+    public ArrowHead(){
+    	reset();
+    }
 
     /**
      * Construct the ArrowHead.

@@ -37,9 +37,7 @@ public class NodeCommands {
 		}	
 		
 		@Override
-		protected void handleSelection(boolean arg0) throws ToggleVetoException {
-			// FIXME do this in GraphModel and split this command into 
-			// mark.node.command and initial.node.command
+		protected void handleSelection(boolean arg0) throws ToggleVetoException {			
 			previousValue = !arg0;
 			IDESWorkspace.instance().getActiveGraphModel().setMarked(node, arg0); 			
 		}		

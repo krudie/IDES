@@ -37,27 +37,15 @@ public class BezierEdgePlacer {
 			// rename caller.setToReflectionOf(param) 
 			//outPos.setToReflection((BezierLayout)straightEdge.getLayout());				
 			((BezierLayout)straightEdge.getLayout()).setToReflectionOf(outPos);	
-			//straightEdge.computeEdge();
-			
-//			}else{
-//				// move the straight edge to reflection of edge
-//				BezierLayout reflection = outPos.getReflection();	
-//				reflection.computeCurve();
-//				((BezierLayout)straightEdge.getLayout()).setCurve(reflection.getCurve());
-//			}
-				
+						
 			// TODO if we only call this to update the endpts, then call a method that is named appropriately
-			//straightEdge.computeEdge();
+			straightEdge.computeEdge();
 			
 			// unless that position is taken			
 			if(tooClose(straightEdge, edges))
-			{			
-//				if(straightEdge.getSource().equals(edge.getTarget()))
-//				{
-//					((BezierLayout)straightEdge.getLayout()).arcMore(true);
-//				}else{
-					((BezierLayout)straightEdge.getLayout()).arcMore(false);
-//				}
+			{
+				// ??? Why false ?
+				((BezierLayout)straightEdge.getLayout()).arcMore(false);
 			}	
 			
 		}else{	// No straight edge
@@ -99,24 +87,20 @@ public class BezierEdgePlacer {
 				
 			}else{
 			*/
-				// otherwise, try reflected position
-				BezierLayout reflection = new BezierLayout(layout);
-				edge.setLayout(reflection);
-				reflection.setToReflectionOf(layout);	
-				//edge.setLayout(reflection);
-				edge.computeEdge();
-				
-				// if tooClose, arc the layout more
-				// ??? or the reflection?
-				if(tooClose(edge, edges))
-				{	
-					reflection.arcMore();					
-				}				
-			//}
-			return reflection;
+			BezierLayout layout1 = (BezierLayout)edge.getLayout();
+			// otherwise, try reflected position				
+			layout1.setToReflectionOf(layout);			
+			edge.computeEdge();
+							
+			if(tooClose(edge, edges))
+			{	
+				layout1.arcMore();					
+			}
+			
+			return layout1;
 		}
-		// ??? How should this be initialized ?
-		return new BezierLayout();
+		// let edge do what it wants to by default
+		return (BezierLayout)edge.getLayout();
 	}
 
 

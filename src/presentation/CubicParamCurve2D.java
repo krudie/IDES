@@ -238,7 +238,7 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     	if(! (0 <= tStart && tStart < tEnd && tEnd <=1) )
     		System.err.println("tStart= " + tStart + " tEnd = " + tEnd );
     	
-    	assert(0 <= tStart && tStart < tEnd && tEnd <=1);
+    	//assert(0 <= tStart && tStart < tEnd && tEnd <=1);
     	
 //    	if(! (0 <= tStart && tStart < tEnd && tEnd <=1 ) ){
 //    		throw new RuntimeException("precondition violated: ! (0 <= tStart < tEnd <= 1)");

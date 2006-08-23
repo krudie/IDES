@@ -10,11 +10,15 @@ import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 
-
+/**
+ * Graphical data and operations for visual display of a BezierEdge. 
+ * 
+ * @author helen bretzke
+ */
+		
 public class BezierLayout extends GraphicalLayout {
 
 	private BezierEdge edge;
-//	private boolean selfLoop = false;	
 	
 	/**
 	 * Indices of bezier curve control points. 
@@ -28,8 +32,9 @@ public class BezierLayout extends GraphicalLayout {
 	private ArrayList<String> eventNames;	
 	protected CubicParamCurve2D curve;
 
-	// Compact representation of data required to maintain shape of edge while moving
-	// one or both of its nodes.
+	/* 	Compact representation of data required to maintain shape of edge while moving
+	 	one or both of its nodes.
+	 */
 	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
 	private static final double DEFAULT_CONTROL_HANDLE_ANGLE = Math.PI/6;
@@ -38,7 +43,7 @@ public class BezierLayout extends GraphicalLayout {
 	protected double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
 	protected double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)	
 		
-	/** the start and end parameters for the visible portion of the curve */
+	/* the start and end parameters for the visible portion of the curve */
 	protected float sourceT = 0;
 	protected float targetT = 1;
 	
@@ -365,7 +370,7 @@ public class BezierLayout extends GraphicalLayout {
 			default: throw new IllegalArgumentException("Invalid control point index: " + index);
 		}
 		
-// DEBUG  OKAY before call updateAnglesEtc...
+		// DEBUG  OKAY before call updateAnglesEtc...
 		edge.assertAllPointsNumbers(curve);
 		
 		updateAnglesAndScalars();				
@@ -445,29 +450,13 @@ public class BezierLayout extends GraphicalLayout {
 		}			
 	    setText(s);
 	}
-	
-	////////////////////////////////////////////////////////////
+		
+
 	/**
-	 * @deprecated
-	 * Computes the angles and scalars such that this and other curve away from each other.
-	 * 
-	 * Precondition: this.source = other.target and other.source = this.target 
-	 * 					and both are straight edges.
-	 * 
-	 * @param other another edge layout
-	 */
-	protected void arcAway(BezierLayout other){
-		this.arcMore();
-		other.arcMore();
-	}
-	
-	/**
-	 * Increase tangential angle by DEFAULT_CONTROL_HANDLE_ANGLE / 2 
-	 * and tangent length by ?say 20%?
-	 * 
-	 * If either angle is within epsilon of 0, sets it to minimum of Math.PI/6.
-	 *  
-	 * TODO decide whether to arc Clockwise or CCW.
+	 * Increase the arc on this edge layout.
+	 * Increases the angle of the tangents to the curve, 
+	 * clockwise around circumference of source node if <code>clockwise</code>, 
+	 * otherwise counter-clockwise.
 	 */
 	protected void arcMore()
 	{	
@@ -475,8 +464,10 @@ public class BezierLayout extends GraphicalLayout {
 	}		
 	
 	/**
-	 * Increase the arc on this edge layout, clockwise along circumference of
-	 * source node if clockwise, otherwise counter-clockwise.
+	 * Increase the arc on this edge layout.
+	 * Increases the angle of the tangents to the curve, 
+	 * clockwise around circumference of source node if <code>clockwise</code>, 
+	 * otherwise counter-clockwise.
 	 * 
 	 * @param clockwise
 	 */
@@ -521,11 +512,10 @@ public class BezierLayout extends GraphicalLayout {
 	}
 	
 	/**
-	 * Decreases tangential angle by DEFAULT_CONTROL_HANDLE_ANGLE / 2  
+	 * Decreases angles of tangents to curve by DEFAULT_CONTROL_HANDLE_ANGLE / 2  
 	 * and tangent length by 20%. 
 	 *  
-	 * FIXME if angle < DEFAULT_CONTROL_HANDLE_ANGLE / 2, set to 0
-	 *  Doesn't always work.
+	 * If angle < DEFAULT_CONTROL_HANDLE_ANGLE / 2, set it to 0 (i.e. flatten the curve).  
 	 */
 	protected void arcLess()
 	{
@@ -555,6 +545,8 @@ public class BezierLayout extends GraphicalLayout {
 	}
 		
 	/**
+	 * ??? What does this method claim to be doing?
+	 * 
 	 * FIXME This doesn't work since changed Point[] to CubicCurve2D and lots of other changes :(
 	 */
 	protected void symmetrize(){
@@ -609,12 +601,9 @@ public class BezierLayout extends GraphicalLayout {
 
 	// Indicates whether an edge can be rigidly translated 
 	// with both of its nodes or must be recomputed.
-	// Default value is false;
+	// Default value is false.
 	private boolean rigidTranslation = false;
-	
-//	private Point2D.Float sourceEndPoint;
-//	private Point2D.Float targetEndPoint; 
-	
+
 	protected boolean isRigidTranslation() {
 		return rigidTranslation;
 	}
@@ -622,63 +611,13 @@ public class BezierLayout extends GraphicalLayout {
 	protected void setRigidTranslation(boolean rigid) {
 		this.rigidTranslation = rigid;
 	}
-
-	/**
-	 * Reflects my curve about the straight line segment between centres of
-	 * source and target nodes.
-	 */
-	public void reflect() {
-		if( ! isStraight() )
-		{
-			angle1 *= -1;
-			angle2 *= -1;
-		}
-	}
 	
-	/** 
-	 * @return a new layout instance that is reflection of this layout about the straight line
-	 * 	between my edge's source and target nodes.
-	 */
-	
-	/*public BezierLayout getReflection() 
-	{
-		BezierLayout reflection = new BezierLayout(this);
-		if( ! isStraight() )
-		{
-			reflection.angle1 *= -1;
-			reflection.angle2 *= -1;
-		}
-		// FIXME update sourceT and targetT
-		//setDirty(true);
-		return reflection;	
-	}*/
 	
 	/**
-	 * Set the given layout to be the reflection of me. 
+	 * Set this layout to be the reflection of <code>other</code>
+	 * where reflection is about the line between source and target nodes.  
 	 * 
-	 * @param other
-	 */
-	/*public void setToReflection(BezierLayout other)
-	{
-		if( this.edge.getSource().equals(other.edge.getSource()) ){
-			if( ! isStraight() )
-			{
-				other.angle1 = this.angle1 * -1;
-				other.angle2 = this.angle2 * -1;				
-			}
-		}else{ // sixty-nine
-			other.angle1 = this.angle1;
-			other.angle2 = this.angle2;			
-		}
-		other.s1 = this.s1;
-		other.s2 = this.s2;
-		other.computeCurve();
-	}*/
-	
-	/**
-	 * Set this layout to be the reflection of <code>other</code>.  
-	 * 
-	 * @param other
+	 * @param other the other layout whose reflection this layout will take
 	 */
 	public void setToReflectionOf(BezierLayout other)
 	{
@@ -688,19 +627,30 @@ public class BezierLayout extends GraphicalLayout {
 				this.angle1 = other.angle1 * -1;
 				this.angle2 = other.angle2 * -1;							
 		}else{ // heads to toes			
-				this.angle1 = other.angle2; //other.angle1;
-				this.angle2 = other.angle1; // other.angle2;			
+				this.angle1 = other.angle1;
+				this.angle2 = other.angle2;			
 		}
 		this.s1 = other.s1;
 		this.s2 = other.s2;
 		this.computeCurve();
 	}
-
+	
+	/**
+	 * @return sourceT the parameter of point on parametric cubic curve 
+	 * where my edge intersects with its source node
+	 */	
 	protected float getSourceT() {
 		return sourceT;
 	}
 
+	/**
+	 * Precondition: 0 <= targetT <=1
+	 * @param sourceT the parameter of point on parametric cubic curve 
+	 * where my edge intersects with its source node
+	 */
 	protected void setSourceT(float sourceT) {
+		//assert(0 <= sourceT && sourceT < targetT);
+		if(! (0 <= sourceT && sourceT < targetT ) ) System.err.println("s=" + sourceT + ", t=" + targetT);
 		this.sourceT = sourceT;
 	}
 
@@ -708,37 +658,30 @@ public class BezierLayout extends GraphicalLayout {
 		return targetT;
 	}
 
+	/**
+	 * Precondition: 0 <= targetT <=1
+	 * 
+	 * @param targetT the parameter of point on parametric cubic curve 
+	 * where my edge intersects with its target node
+	 */
 	protected void setTargetT(float targetT) {
+		//assert(sourceT < targetT && targetT <=1);
+		if(! (sourceT < targetT && targetT <=1) ) System.err.println("s=" + sourceT + ", t=" + targetT);
 		this.targetT = targetT;
 	}
 
-	//////////// Delete ////////////////////////////
+	/** 
+	 * @return point where my edge intersects with its source node
+	 */
 	public Point2D.Float getSourceEndPoint() {
 		return curve.getPointAt(sourceT);//sourceEndPoint;
 	}
 
+	/** 
+	 * @return point where my edge intersects with its target node
+	 */
 	public Point2D.Float getTargetEndPoint() {
 		return curve.getPointAt(targetT); //targetEndPoint;
 	}
 
-//	protected void setSourceEndPoint(Point2D.Float sourceEndPoint) {
-//		this.sourceEndPoint = sourceEndPoint;
-//	}
-//
-//	protected void setTargetEndPoint(Point2D.Float targetEndPoint) {
-//		this.targetEndPoint = targetEndPoint;
-//	}	
-	////////////////////////////////////////////////
-	
-	/*
-	 * KLUGE distance between two layouts with same target and source nodes.
-	 * NOTE A more sensible distance would be between all pairs of control points.
-	 * 
-	 * @param other
-	 * @return
-	 */
-	/*public double distance(BezierLayout other)
-	{
-		return Math.abs(this.angle1 - other.angle1) + Math.abs(this.angle2 - other.angle2);
-	}*/
 }

@@ -1,33 +1,26 @@
 package presentation.fsa;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Point2D.Float;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import presentation.GraphicalLayout;
-import presentation.PresentationElement;
-import presentation.Geometry;
-import main.Hub;
 import model.fsa.FSAState;
 import model.fsa.ver1.State;
-import model.fsa.ver1.Transition;
+import presentation.Geometry;
+import presentation.GraphicalLayout;
 import util.BentoBox;
 
 /**
- * The graphical representation of a state in a finite state automaton.
- * Child glyphs are its out edges.
+ * The circular representation of a state in a finite state automaton.
+ * Maintains a label and set of adjacent edges. Provides popup menu for operations 
+ * @see NodePopup#showPopup
  * 
  * @author helen bretzke
  *
@@ -37,22 +30,29 @@ public class CircleNode extends Node {
 	// visualization objects
 	private Ellipse2D circle = null;
 	private Ellipse2D innerCircle = null;  // only drawn for final states
-	
-	// TODO Change this to type InitialArrow
-	private ArrowHead arrow = null;  // only draw for initial states
-	
-	private Point2D.Float arrow1, arrow2;  // the arrow shaft
-		
+			
 	public CircleNode(FSAState s, NodeLayout layout){
 		this.state = s;
 		setLayout(layout);		
 		label = new GraphLabel("");
+		/*if(layout != null){	
+			label.updateLayout(layout.getText(), layout.getLocation());
+		}*/
 		this.insert(label);
-		circle = new Ellipse2D.Double();
-		arrow1 = new Point2D.Float();
-		arrow2 = new Point2D.Float();
-		arrow = new ArrowHead();
+		circle = defaultCircle();
+		if(s.isInitial()){
+			setInitialArrow(new InitialArrow(this));
+		}
 		refresh();
+	}
+
+	/**
+	 * @return
+	 */
+	private Ellipse2D defaultCircle() {
+		Point2D.Float centre = getLayout().getLocation();
+		float d = 2 * NodeLayout.DEFAULT_RADIUS;
+		return new Ellipse2D.Double(centre.x - NodeLayout.DEFAULT_RADIUS, centre.y - NodeLayout.DEFAULT_RADIUS, d, d);
 	}
 
 	// TODO change to iterate over collection of labels on a state
@@ -68,9 +68,10 @@ public class CircleNode extends Node {
 		float radius = (float)Math.max(labelBounds.getWidth()/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
 		((NodeLayout)getLayout()).setRadius(radius);
 		radius=((NodeLayout)getLayout()).getRadius();
+		
 		recomputeEdges();
 		
-		// upper left corner, width and height
+//		 upper left corner, width and height
 		float d = 2*radius;
 		circle = new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
 
@@ -80,18 +81,23 @@ public class CircleNode extends Node {
 			innerCircle = new Ellipse2D.Double(centre.x - r, centre.y - r, d, d);
 		}
 			
-		if(state.isInitial()){
+		if(initialArrow != null){
+			initialArrow.setVisible(state.isInitial());
+		}
+		
+		/*if(state.isInitial()){
+			
 			// The point on the edge of the circle:
 			// centre point - arrow vector
 			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
+			
 			Point2D.Float dir = new Point2D.Float(((NodeLayout)getLayout()).getArrow().x, ((NodeLayout)getLayout()).getArrow().y);			
 			float offset = ((NodeLayout)getLayout()).getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
-			arrow2 = Geometry.subtract(c, Geometry.scale(dir, offset));
-			arrow = new ArrowHead(dir, arrow2);					
-			// ??? How long should the shaft be?
+			arrow2 = Geometry.subtract(c, Geometry.scale(dir, offset));		
+			arrow = new ArrowHead(dir, arrow2);								
 			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
-		}
-		super.refresh();					
+		}*/
+		//super.refresh();  already called on all edges (with target nodes) via recomputeEdges. 		
 	}
 	
 	/**
@@ -113,7 +119,8 @@ public class CircleNode extends Node {
 				}
 			}catch(ClassCastException cce){ 
 				// skip the label and keep going
-				// Why am I skipping the label?				
+				// Why am I skipping the label?	
+				// Easy enough to do it at the end...
 			}
 		}
 
@@ -131,31 +138,23 @@ public class CircleNode extends Node {
 		}else{
 			g.setColor(getLayout().getColor());	
 		}
-	
-//		Color temp = g2d.getColor();
-//		g2d.setColor(getLayout().getBackgroundColor());
-//		g2d.fill(circle);
-//		g2d.setColor(temp);	
-		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);		
 		g2d.draw(circle);		
 		
 		if(state.isMarked()){
 			g2d.draw(innerCircle);
 		}		
-		
+
 		if(state.isInitial()){
-			g2d.drawLine((int)arrow1.x, (int)arrow1.y, (int)arrow2.x, (int)arrow2.y);
-			g2d.setStroke(GraphicalLayout.FINE_STROKE);
-			g2d.draw(arrow);
-			g2d.fill(arrow);
-		}				
+			initialArrow.draw(g);
+		}
+		
 		label.draw(g);
 	}
 	
 	public Rectangle bounds() {		
 		if(getState().isInitial()){
-			return (Rectangle)circle.getBounds().union(arrow.getBounds());
+			return (Rectangle)circle.getBounds().union(initialArrow.bounds());
 		}
 		return circle.getBounds();
 	}
@@ -169,24 +168,14 @@ public class CircleNode extends Node {
 	}
 	
 	/**
-	 * Try with a rectangle of dimensions 1,1
-	 * public boolean contains(double x,
-                        double y,
-                        double w,
-                        double h)
-
-       Tests if the interior of this Ellipse2D entirely contains the specified rectangular area.
-       
-   	// FIXME this is calling RectangularShape.contains(p) which computes intersection with bounding box
-	// instead of with circle.
-
+	 * 
 	 */
 	public boolean intersects(Point2D p) {
 		
 		if(state.isInitial()){
 			//return circle.contains(p) || arrow.contains(p);
 			return circle.intersects(p.getX() - 5, p.getY() - 5, 10, 10) ||
-					arrow.intersects(p.getX() - 4, p.getY() - 4, 8, 8);
+					initialArrow.intersects(p); //(p.getX() - 4, p.getY() - 4, 8, 8);
 		}
 		return circle.intersects(p.getX() - 5, p.getY() - 5, 10, 10); 
 	}	
@@ -230,11 +219,12 @@ public class CircleNode extends Node {
 	protected Rectangle getInitialArrowBounds()
 	{
 		return (state.isInitial() ?
-			new Rectangle(
+				initialArrow.bounds()
+			/*new Rectangle(
 				BentoBox.convertFloatToInt(arrow1.x + ArrowHead.SHORT_HEAD_LENGTH), 
 				BentoBox.convertFloatToInt(arrow1.y), 
 				BentoBox.convertFloatToInt(arrow2.x - arrow1.x),
-				BentoBox.convertFloatToInt(arrow2.y - arrow1.y)) 
+				BentoBox.convertFloatToInt(arrow2.y - arrow1.y)) */
 			:
 			new Rectangle(0, 0, 0, 0));
 	}
@@ -245,7 +235,10 @@ public class CircleNode extends Node {
 	 * node.
 	 *  
 	 * @param selectionBox The area being selected or considered
-	 * @param exportType The export format
+	 * @param exportType The export format 
+	 * @see GraphExporter#INT_EXPORT_TYPE_EPS
+	 * @see GraphExporter#INT_EXPORT_TYPE_PSTRICKS
+	 * 
 	 * @return String The string representation
 	 * 
 	 * @author Sarah-Jane Whittaker
@@ -318,28 +311,7 @@ public class CircleNode extends Node {
 
 		return exportString;
 	}
-	
-	/**
-	 * NOTE super isDirty no longer checks children, assumes children set this.
-	 */
-	public boolean isDirty(){
-		return super.isDirty() || getLayout().isDirty();
-	}
-	
-	/** 
-	 * @deprecated
-	 */
-	public boolean hasSelfLoop() {
-		Iterator<Edge> edges = adjacentEdges();
-		while(edges.hasNext()){
-			Edge e = edges.next();
-			if(e.getSource().equals(this) && e.getTarget().equals(this)){
-					return true;
-			}			
-		}		
-		return false;
-	}
-
+			
 	/**
 	 * @return an iterator of all adjacent edges
 	 */
@@ -396,8 +368,16 @@ public class CircleNode extends Node {
 		return circle;
 	}
 
-//	public NodeLayout getLayout() {
-//		return (NodeLayout)super.getLayout();
-//	}
-
+	/**
+	 * Sets my state's initial property to <code>b</code>
+	 * and activates my initial arrow. 
+	 * 
+	 * @param b
+	 */
+	public void setInitial(boolean b) {
+		if(b && initialArrow == null){
+			setInitialArrow(new InitialArrow(this));
+		}
+		((State)getState()).setInitial(b);		
+	}
 }
