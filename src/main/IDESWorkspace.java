@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -422,5 +423,13 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	public int size()
 	{
 		return systems.size();
+	}
+	
+	public Collection getModelsOfType(Class type)
+	{
+		if(type.equals(FSAModel.class))
+			return (Collection)systems.clone();
+		else
+			return new Vector();
 	}
 }

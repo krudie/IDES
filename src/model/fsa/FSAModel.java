@@ -4,8 +4,10 @@ import io.fsa.ver1.SubElement;
 
 import java.util.ListIterator;
 
+import model.DESModel;
 
-public interface FSAModel {
+
+public interface FSAModel extends DESModel {
 
 	/**
 	 * @return the ID of the automaton
@@ -17,11 +19,6 @@ public interface FSAModel {
 	 */
 	public abstract void setId(String id);
 	
-	/**
-	 * @return the name of the automaton
-	 */
-	public abstract String getName();
-
 	/**
 	 * @param name the name of the automaton
 	 */

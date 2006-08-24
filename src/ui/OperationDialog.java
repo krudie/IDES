@@ -11,12 +11,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,6 +31,7 @@ import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
 
 import main.Hub;
+import model.DESModel;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import util.EscapeDialog;
@@ -43,6 +46,9 @@ public class OperationDialog extends EscapeDialog {
 	protected JList opList=new JList();
 	protected JTextField nameField=new JTextField(20);
 	protected FSAModel a;
+	protected Vector<JComboBox> inputs=null;
+	protected JList listInput=null;
+	private Box inputsBox;
 	
 	public OperationDialog()
 	{
@@ -57,29 +63,11 @@ public class OperationDialog extends EscapeDialog {
 		Box mainBox=Box.createVerticalBox();
 		
 		Box controlBox=Box.createHorizontalBox();
-		Vector models=new Vector();
-		for(Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();i.hasNext();)
-			models.add(i.next().getName());
-		modelList.setListData(models);
-		modelList.addListSelectionListener(
-				new ListSelectionListener()
-				{
-					public void valueChanged(ListSelectionEvent e)
-					{
-						if(!e.getValueIsAdjusting()&&!opList.isSelectionEmpty())
-							setSuggestedValue();
-					}
-				}
-		);
-		JScrollPane spm=new JScrollPane(modelList);
-		spm.setBorder(BorderFactory.createTitledBorder(Hub.string("modelListTitle")));
-		controlBox.add(spm);
 		
-		controlBox.add(Box.createRigidArea(new Dimension(5,0)));
-		
-		Vector ops=new Vector();
+		Vector<String> ops=new Vector<String>();
 		for(Iterator<String> i=OperationManager.getOperationNames().iterator();i.hasNext();)
 			ops.add(i.next());
+		Collections.sort(ops);
 		opList.setListData(ops);
 		opList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		opList.addListSelectionListener(
@@ -88,13 +76,42 @@ public class OperationDialog extends EscapeDialog {
 					public void valueChanged(ListSelectionEvent e)
 					{
 						if(!e.getValueIsAdjusting())
+						{
 							setSuggestedValue();
+							resetInputBox(inputsBox,OperationManager.getOperation(opList.getSelectedValue().toString()));
+						}
 					}
 				}
 		);
 		JScrollPane spo=new JScrollPane(opList);
 		spo.setBorder(BorderFactory.createTitledBorder(Hub.string("operationsListTitle")));
 		controlBox.add(spo);
+		
+		controlBox.add(Box.createRigidArea(new Dimension(5,0)));
+		
+		inputsBox=Box.createVerticalBox();
+		JScrollPane spm=new JScrollPane(inputsBox);
+		spm.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		spm.setBorder(BorderFactory.createTitledBorder(Hub.string("modelListTitle")));
+		controlBox.add(spm);
+
+//		Vector models=new Vector();
+//		for(Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();i.hasNext();)
+//			models.add(i.next().getName());
+//		modelList.setListData(models);
+//		modelList.addListSelectionListener(
+//				new ListSelectionListener()
+//				{
+//					public void valueChanged(ListSelectionEvent e)
+//					{
+//						if(!e.getValueIsAdjusting()&&!opList.isSelectionEmpty())
+//							setSuggestedValue();
+//					}
+//				}
+//		);
+//		JScrollPane spm=new JScrollPane(modelList);
+//		spm.setBorder(BorderFactory.createTitledBorder(Hub.string("modelListTitle")));
+//		controlBox.add(spm);
 		
 		controlBox.add(Box.createRigidArea(new Dimension(5,0)));
 
@@ -176,4 +193,31 @@ public class OperationDialog extends EscapeDialog {
 		dispose();
 	}
 
+	protected void resetInputBox(Box b, Operation o)
+	{
+		b.removeAll();
+		inputs=new Vector<JComboBox>();
+		String[] descs=o.getDescriptionOfInputs();
+		Class[] types=o.getTypeOfInputs();
+		for(int i=0;i<descs.length;++i)
+		{
+			Vector v=new Vector(Hub.getWorkspace().getModelsOfType(types[i]));
+			for(int j=0;j<v.size();++j)
+			{
+				if(v.elementAt(j) instanceof DESModel)
+					v.setElementAt(((DESModel)v.elementAt(j)).getName(),j);
+				else
+					v.setElementAt(v.elementAt(j).toString(),j);
+			}
+			v.add(0,"");
+			JPanel p=new JPanel();
+			JComboBox cb=new JComboBox(v);
+			inputs.add(cb);
+			p.add(cb);
+			p.setBorder(BorderFactory.createTitledBorder(descs[i]));
+			b.add(p);
+			b.add(Box.createRigidArea(new Dimension(0,5)));
+		}
+		pack();
+	}
 }
