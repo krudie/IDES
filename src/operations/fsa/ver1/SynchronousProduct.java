@@ -26,48 +26,42 @@ public class SynchronousProduct implements Operation {
 	 * @see pluggable.operation.Operation#getNumberOfInputs()
 	 */
 	public int getNumberOfInputs() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 2;
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getTypeOfInputs()
 	 */
 	public Class[] getTypeOfInputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Class[]{FSAModel.class,FSAModel.class};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
 	 */
 	public String[] getDescriptionOfInputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[]{"Finite-state automaton","Finite-state automaton"};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getNumberOfOutputs()
 	 */
 	public int getNumberOfOutputs() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getTypeOfOutputs()
 	 */
 	public Class[] getTypeOfOutputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Class[]{FSAModel.class};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
 	 */
 	public String[] getDescriptionOfOutputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[]{"synchronous product of two automata"};
 	}
 
 	/* (non-Javadoc)

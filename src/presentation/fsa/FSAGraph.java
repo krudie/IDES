@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import main.Hub;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -19,10 +20,10 @@ import model.fsa.ver1.Event;
 import model.fsa.ver1.MetaData;
 import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
-import observer.FSMGraphMessage;
-import observer.FSMGraphSubscriber;
-import observer.FSMMessage;
-import observer.FSMSubscriber;
+import observer.FSAGraphMessage;
+import observer.FSAGraphSubscriber;
+import observer.FSAMessage;
+import observer.FSASubscriber;
 import pluggable.layout.LayoutManager;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
@@ -38,7 +39,7 @@ import presentation.PresentationElement;
  * @author helen bretzke
  *
  */
-public class FSMGraph extends GraphElement implements FSMSubscriber {
+public class FSAGraph extends GraphElement implements FSASubscriber {
 
 	
 	protected class UniformRadius extends HashMap<NodeLayout,Float>
@@ -99,7 +100,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param fsa
 	 * @param data
 	 */
-	public FSMGraph(Automaton fsa, MetaData data){
+	public FSAGraph(Automaton fsa, MetaData data){
 		
 		this.fsa = fsa;
 		fsa.addSubscriber(this);
@@ -117,7 +118,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	/**
 	 * @param fsa the mathematical model	
 	 */
-	public FSMGraph(Automaton fsa)
+	public FSAGraph(Automaton fsa)
 	{
 		this.fsa = fsa;
 		metaData=new MetaData(fsa);
@@ -205,6 +206,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public String getName()
 	{
 		return fsa.getName();
+	}
+	
+	public void setName(String name)
+	{
+		fsa.setName(name);
 	}
 	
 	public String getDecoratedName()
@@ -445,8 +451,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
 	
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
-				FSMGraphMessage.EDGE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.EDGE,
 				e.getId(), 
 				e.bounds(),
 				this, ""));
@@ -497,8 +503,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		//setDirty(true);		
 		
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
-				FSMGraphMessage.NODE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.NODE,
 				n.getId(), 
 				dirtySpot,
 				this, ""));
@@ -525,8 +531,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		setDirty(true);		
 		
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
-				FSMGraphMessage.NODE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.NODE,
 				n.getId(), 
 				dirtySpot,
 				this, ""));
@@ -561,8 +567,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		edges.put(e.getId(), e);		
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
-				FSMGraphMessage.EDGE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.EDGE,
 				e.getId(), 
 				e.bounds(),
 				this, ""));
@@ -608,8 +614,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 				((BezierLayout)e.getLayout()).addEventName(t.getEvent().getSymbol());
 		}
 
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
-				FSMGraphMessage.EDGE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.EDGE,
 				e.getId(), 
 				e.bounds(),
 				this, ""));
@@ -650,9 +656,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 
 		// ??? fire one nodification for the whole selection 
 		// or a message for each element in the group?
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-				FSMGraphMessage.SELECTION,
-				FSMGraphMessage.UNKNOWN_ID, 
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.SELECTION,
+				FSAGraphMessage.UNKNOWN_ID, 
 				selection.bounds(),
 				this, ""));
 	}
@@ -727,8 +733,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		}				
 		
 		fsa.removeSubscriber(this);
-		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
-    			FSMMessage.STATE, n.getId(), fsa));
+		fsa.fireFSMStructureChanged(new FSAMessage(FSAMessage.MODIFY,
+    			FSAMessage.STATE, n.getId(), fsa));
 		fsa.addSubscriber(this);
 		
 	}
@@ -740,8 +746,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		n.setDirty(true);		
 		
 		fsa.removeSubscriber(this);
-		fsa.fireFSMStructureChanged(new FSMMessage(FSMMessage.MODIFY,
-    			FSMMessage.STATE, n.getId(), fsa));
+		fsa.fireFSMStructureChanged(new FSAMessage(FSAMessage.MODIFY,
+    			FSAMessage.STATE, n.getId(), fsa));
 		fsa.addSubscriber(this);
 	}
 	
@@ -837,8 +843,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		}		
 		
 		setDirty(true);
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-				FSMGraphMessage.EDGE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
 				edge.getId(), 
 				edge.bounds(),
 				this, "replaced events on edge label"));
@@ -853,8 +859,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);	
 		//setDirty(true);
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-				FSMGraphMessage.EDGE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
 				edge.getId(), 
 				edge.bounds(),
 				this, "commit edge layout"));		
@@ -869,9 +875,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		}else{
 			freeLabels.remove(el.getId());
 			this.remove(el);
-			fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
-					FSMGraphMessage.LABEL,
-					FSMGraphMessage.UNKNOWN_ID, 
+			fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+					FSAGraphMessage.LABEL,
+					FSAGraphMessage.UNKNOWN_ID, 
 					el.bounds(),
 					this, ""));
 		}
@@ -893,8 +899,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		((NodeLayout)n.getLayout()).dispose();
 		nodes.remove(new Long(n.getId()));
 		setDirty(true);
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
-				FSMGraphMessage.NODE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+				FSAGraphMessage.NODE,
 				n.getId(), 
 				n.adjacentBounds(),
 				this, ""));
@@ -918,8 +924,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		edgeLabels.remove(e.getId());
 		edges.remove(e.getId());
 		setDirty(true);		
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.REMOVE, 
-				FSMGraphMessage.NODE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+				FSAGraphMessage.NODE,
 				e.getId(), 
 				e.bounds(),
 				this, ""));
@@ -938,8 +944,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		metaData.setLayoutData(s, (NodeLayout)n.getLayout());
 		/////////////////////////////////////////////////////
 		setDirty(true);		
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-				FSMGraphMessage.NODE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.NODE,
 				n.getId(), 
 				n.bounds(),
 				this, ""));
@@ -950,9 +956,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		freeLabels.put(label.getId(), label);
 		insert(label);
 		setDirty(true);		
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.ADD, 
-				FSMGraphMessage.LABEL,
-				FSMGraphMessage.UNKNOWN_ID, 
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.LABEL,
+				FSAGraphMessage.UNKNOWN_ID, 
 				label.bounds(),
 				this, ""));
 	}
@@ -965,9 +971,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void setLabelText(GraphLabel freeLabel, String text) {
 		freeLabel.setText(text);
 		//setDirty(true);		
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-				FSMGraphMessage.LABEL,
-				FSMGraphMessage.UNKNOWN_ID, 
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.LABEL,
+				FSAGraphMessage.UNKNOWN_ID, 
 				freeLabel.bounds(),
 				this, ""));		
 	}
@@ -1018,15 +1024,15 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	public void setControllable(Event event, boolean b){
 		// update the event
 		event.setControllable(b);
-		fsa.fireFSMEventSetChanged(new FSMMessage(FSMMessage.MODIFY,
-    			FSMMessage.EVENT, event.getId(), fsa));
+		fsa.fireFSMEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+    			FSAMessage.EVENT, event.getId(), fsa));
 	}
 
 	public void setObservable(Event event, boolean b){
 		// update the event
 		event.setObservable(b);
-		fsa.fireFSMEventSetChanged(new FSMMessage(FSMMessage.MODIFY,
-    			FSMMessage.EVENT, event.getId(), fsa));
+		fsa.fireFSMEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+    			FSAMessage.EVENT, event.getId(), fsa));
 	}
 	
 	public void symmetrize(Edge edge){
@@ -1034,8 +1040,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		el.symmetrize();	
 		
 		// TODO include edge label in bounds (dirty spot)
-		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-				FSMGraphMessage.EDGE,
+		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
 				edge.getId(), 
 				edge.bounds(),
 				this, "symmetrized edge"));
@@ -1154,8 +1160,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			}
 		}
 		
-		fireFSMGraphSelectionChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-										FSMGraphMessage.SELECTION, g.getId(), g.bounds(), this));
+		fireFSMGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+										FSAGraphMessage.SELECTION, g.getId(), g.bounds(), this));
 		
 		return g;
 	}
@@ -1170,11 +1176,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	protected GraphElement getElementIntersectedBy(Point2D p){
 						
 		GraphElement el = null;
-		int type = FSMGraphMessage.UNKNOWN_TYPE;
+		int type = FSAGraphMessage.UNKNOWN_TYPE;
 		
 		for(GraphLabel gLabel : edgeLabels.values()){
 			if(gLabel.intersects(p)){
-				type = FSMGraphMessage.LABEL;
+				type = FSAGraphMessage.LABEL;
 				el = gLabel;				
 			}
 		}
@@ -1182,7 +1188,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		if(el == null){
 			for(Edge e : edges.values()){			
 				if(e.intersects(p)){		
-					type  = FSMGraphMessage.EDGE;
+					type  = FSAGraphMessage.EDGE;
 					el = e;				
 				}
 			}
@@ -1191,7 +1197,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		if(el == null){
 			for(Node n : nodes.values()){			
 				if(n.intersects(p)){
-					type = FSMGraphMessage.NODE;
+					type = FSAGraphMessage.NODE;
 					el = n;				
 				}
 			}	
@@ -1200,14 +1206,14 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		if(el == null){
 			for(GraphLabel l : freeLabels.values()){			
 				if(l.intersects(p)){
-					type = FSMGraphMessage.LABEL;
+					type = FSAGraphMessage.LABEL;
 					el = l;				
 				}
 			}		
 		}
 		
 		if(el != null){
-			fireFSMGraphSelectionChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+			fireFSMGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 											type, el.getId(), el.bounds(), this));
 		}
 		return el;
@@ -1218,7 +1224,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	/* FSMGraphPublisher part which maintains a collection of, and 
 	 * sends change notifications to, all interested observers (subscribers). 
 	 **/
-	private ArrayList<FSMGraphSubscriber> subscribers = new ArrayList<FSMGraphSubscriber>();
+	private ArrayList<FSAGraphSubscriber> subscribers = new ArrayList<FSAGraphSubscriber>();
 		
 	/**
 	 * Attaches the given subscriber to this publisher.
@@ -1226,7 +1232,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(FSMGraphSubscriber subscriber) {
+	public void addSubscriber(FSAGraphSubscriber subscriber) {
 		subscribers.add(subscriber);		
 	}
 	
@@ -1236,7 +1242,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(FSMGraphSubscriber subscriber) {
+	public void removeSubscriber(FSAGraphSubscriber subscriber) {
 		subscribers.remove(subscriber);
 	}
 	
@@ -1247,9 +1253,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * 
 	 * @param message
 	 */
-	private void fireFSMGraphChanged(FSMGraphMessage message)
+	private void fireFSMGraphChanged(FSAGraphMessage message)
 	{
-		for(FSMGraphSubscriber s : subscribers)
+		for(FSAGraphSubscriber s : subscribers)
 		{
 			s.fsmGraphChanged(message);
 		}		
@@ -1263,9 +1269,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * 
 	 * @param message
 	 */
-	protected void fireFSMGraphSelectionChanged(FSMGraphMessage message)
+	protected void fireFSMGraphSelectionChanged(FSAGraphMessage message)
 	{
-		for(FSMGraphSubscriber s : subscribers)
+		for(FSAGraphSubscriber s : subscribers)
 		{
 			s.fsmGraphSelectionChanged(message);
 		}		
@@ -1279,14 +1285,14 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsmStructureChanged(FSMMessage message) {
+	public void fsmStructureChanged(FSAMessage message) {
 		// TODO if can isolate the change just modify the structure as required
 		// e.g. properties set on states or events.
 		// and only refresh the affected part of the graph
 		int elementType = message.getElementType();
 		// otherwise rebuild the graph structure 
 		switch(elementType){
-		case FSMMessage.STATE:
+		case FSAMessage.STATE:
 			
 			
 			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
@@ -1296,7 +1302,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 					this, ""));
 					*/	
 			break;
-		case FSMMessage.TRANSITION:
+		case FSAMessage.TRANSITION:
 
 			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
 			FSMGraphMessage.???,
@@ -1306,7 +1312,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			*/	
 
 			break;
-		case FSMMessage.EVENT:
+		case FSAMessage.EVENT:
 
 			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
 			FSMGraphMessage.???,
@@ -1333,11 +1339,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsmEventSetChanged(FSMMessage message) {
+	public void fsmEventSetChanged(FSAMessage message) {
 		// Remove transitions fired by affected events
 		// TODO construct bounds of area affected
 		
-		if(message.getEventType() == FSMMessage.REMOVE){
+		if(message.getEventType() == FSAMessage.REMOVE){
 		
 			for(Edge e : edges.values()){
 				Iterator<FSATransition> trans = e.getTransitions();
@@ -1361,8 +1367,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			}
 			
 			// FIXME this does not update the labels on the edges
-			fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY,
-													FSMGraphMessage.EDGE,
+			fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
+													FSAGraphMessage.EDGE,
 													message.getElementId(),
 													this.bounds(),
 													this));	
@@ -1387,8 +1393,51 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		// TODO fire graph changed event
 	}
 
-	
-	
+	//FIXME: move this to a plugin that reads/writes composition data for states
+	public void labelCompositeNodes()
+	{
+		if(fsa.getAutomataCompositionList().length>1)
+		{
+			FSAGraph[] gs=new FSAGraph[fsa.getAutomataCompositionList().length];
+			for(int i=0;i<gs.length;++i)
+			{
+				FSAGraph g=Hub.getWorkspace().getGraphById(fsa.getAutomataCompositionList()[i]);
+				if(g==null)
+					return;
+				gs[i]=g;
+			}
+			for(Node n:nodes.values())
+			{
+				State s=(State)n.getState();
+				String label="(";
+				for(int i=0;i<gs.length-1;++i)
+					label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+				label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()+")";
+				labelNode(n,label);
+			}
+		}
+		else if(fsa.getAutomataCompositionList().length==1)
+		{
+			FSAGraph g=Hub.getWorkspace().getGraphById(fsa.getAutomataCompositionList()[0]);
+			if(g==null)
+				return;
+			for(Node n:nodes.values())
+			{
+				State s=(State)n.getState();
+				String label="";
+				if(s.getStateCompositionList().length>1)
+				{
+					label="(";
+					for(int i=0;i<s.getStateCompositionList().length-1;++i)
+						label+=g.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+					label+=g.getNode(s.getStateCompositionList()[s.getStateCompositionList().length-1]).getLabel().getText()+")";
+				}
+				else if(s.getStateCompositionList().length>0)
+					label=g.getNode(s.getStateCompositionList()[0]).getLabel().getText();
+				labelNode(n,label);
+			}
+		}
+	}
 }
 
 

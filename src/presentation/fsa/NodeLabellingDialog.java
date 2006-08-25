@@ -40,7 +40,7 @@ public class NodeLabellingDialog extends EscapeDialog {
 	
 	private static NodeLabellingDialog me=null;
 
-	private static FSMGraph gm=null;
+	private static FSAGraph gm=null;
 	private static CircleNode n;
 
 	protected Action commitListener = new AbstractAction()
@@ -51,6 +51,17 @@ public class NodeLabellingDialog extends EscapeDialog {
 				gm.labelNode(n,area.getText());						
 			}
 			setVisible(false);
+		}
+	};
+	
+	protected static FocusListener commitOnFocusLost=new FocusListener()
+	{
+		public void focusLost(FocusEvent e)
+		{
+			me.commitListener.actionPerformed(new ActionEvent(this,0,""));	
+		}
+		public void focusGained(FocusEvent e)
+		{
 		}
 	};
 
@@ -66,16 +77,6 @@ public class NodeLabellingDialog extends EscapeDialog {
 		Box mainBox=Box.createVerticalBox();
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		area=new JTextArea(HEIGHT,WIDTH);
-		area.addFocusListener(new FocusListener()
-		{
-			public void focusLost(FocusEvent e)
-			{
-				commitListener.actionPerformed(new ActionEvent(this,0,""));	
-			}
-			public void focusGained(FocusEvent e)
-			{
-			}
-		});
 		Object actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),this);
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
@@ -105,7 +106,7 @@ public class NodeLabellingDialog extends EscapeDialog {
 
 	protected static JTextArea area;
 	
-	public static void showAndLabel(FSMGraph gm, CircleNode node)
+	public static void showAndLabel(FSAGraph gm, CircleNode node)
 	{
 		NodeLabellingDialog.gm=gm;
 		n=node;
@@ -114,6 +115,12 @@ public class NodeLabellingDialog extends EscapeDialog {
 		instance();
 		me.pack();
 		String label=node.getLabel().getLayout().getText();
+		boolean hasOurListener=false;
+		for(int i=0;i<area.getFocusListeners().length;++i)
+			if(area.getFocusListeners()[i]==commitOnFocusLost)
+				hasOurListener=true;
+		if(!hasOurListener)
+			area.addFocusListener(commitOnFocusLost);
 		area.setText(label);
 		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
 		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
@@ -125,10 +132,12 @@ public class NodeLabellingDialog extends EscapeDialog {
 			p.y=p.y-me.getHeight();
 		me.setLocation(p);
 		me.setVisible(true);
+		area.requestFocus();
 	}
 	
 	public void onEscapeEvent()
 	{
+		area.removeFocusListener(commitOnFocusLost);
 		setVisible(false);
 	}
 }

@@ -6,7 +6,7 @@ import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
 import org.pietschy.command.ToggleVetoException;
 
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 
 import services.latex.LatexManager;
 
@@ -28,7 +28,7 @@ public class UniformNodesCommand extends ToggleCommand {
 		// so when repaint happens, graph will recompute its layout.
 		// NOTE depends on FSMGraph extending GraphElement
 		// ??? will FSMGraph fire any notifications ?
-		FSMGraph gm = Hub.getWorkspace().getActiveGraphModel();
+		FSAGraph gm = Hub.getWorkspace().getActiveGraphModel();
 		if(gm != null){
 			gm.setDirty(true);
 		// gm.setDirty(true);

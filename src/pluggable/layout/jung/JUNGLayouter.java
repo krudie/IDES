@@ -4,6 +4,7 @@
 package pluggable.layout.jung;
 
 import java.awt.Dimension;
+import java.awt.geom.Point2D;
 
 import javax.swing.JFrame;
 
@@ -20,9 +21,9 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.contrib.DAGLayout;
 import edu.uci.ics.jung.visualization.contrib.KKLayout;
 import edu.uci.ics.jung.visualization.contrib.TreeLayout;
-import pluggable.layout.FSMLayouter;
+import pluggable.layout.FSALayouter;
 import presentation.fsa.Edge;
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 import presentation.fsa.Node;
 import samples.graph.BasicRenderer;
 
@@ -30,12 +31,12 @@ import samples.graph.BasicRenderer;
  *
  * @author Lenko Grigorov
  */
-public class JUNGLayouter implements FSMLayouter {
+public class JUNGLayouter implements FSALayouter {
 
 	/* (non-Javadoc)
 	 * @see pluggable.layout.FSMLayouter#layout(presentation.fsa.FSMGraph)
 	 */
-	public void layout(FSMGraph graph) {
+	public void layout(FSAGraph graph) {
 		DirectedSparseGraph g=new DirectedSparseGraph();
 		BridgeMapper.nodeMap.clear();
 		BridgeMapper.nodeMapInverse.clear();
@@ -63,7 +64,7 @@ public class JUNGLayouter implements FSMLayouter {
 		for(Vertex v:BridgeMapper.nodeMapInverse.keySet())
 		{
 			Node n=BridgeMapper.nodeMapInverse.get(v);
-			n.setLocation(l.getLocation(v));
+			n.setLocation(new Point2D.Float((float)l.getLocation(v).getX(),(float)l.getLocation(v).getY()));
 			graph.saveMovement(graph);
 		}
 	}

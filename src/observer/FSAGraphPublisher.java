@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author helen bretzke
  *
  */
-public class FSMGraphPublisher {
+public class FSAGraphPublisher {
 
 //	private ArrayList<FSMGraphSubscriber> subscribers;
 //	

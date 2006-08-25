@@ -9,9 +9,9 @@ package observer;
  * @author helen bretzke
  *
  */
-public interface FSMSubscriber {
+public interface FSASubscriber {
 
-	public void fsmStructureChanged(FSMMessage message);
-	public void fsmEventSetChanged(FSMMessage message);
+	public void fsmStructureChanged(FSAMessage message);
+	public void fsmEventSetChanged(FSAMessage message);
 	
 }

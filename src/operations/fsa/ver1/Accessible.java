@@ -62,7 +62,7 @@ public class Accessible implements FilterOperation {
 	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
 	 */
 	public String[] getDescriptionOfOutputs() {
-		return new String[]{"Accessible automaton"};
+		return new String[]{"accessible automaton"};
 	}
 
 	/* (non-Javadoc)
@@ -70,6 +70,7 @@ public class Accessible implements FilterOperation {
 	 */
 	public Object[] perform(Object[] inputs) {
 		FSAModel a=((Automaton)inputs[0]).clone();
+		Unary.buildStateCompositionOfClone((Automaton)a);		
 		Unary.accessible(a);
 		return new Object[]{a};
 	}

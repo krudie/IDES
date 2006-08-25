@@ -26,7 +26,6 @@ public class Meet implements Operation {
 	 * @see pluggable.operation.Operation#getNumberOfInputs()
 	 */
 	public int getNumberOfInputs() {
-		// TODO Auto-generated method stub
 		return 2;
 	}
 
@@ -62,7 +61,7 @@ public class Meet implements Operation {
 	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
 	 */
 	public String[] getDescriptionOfOutputs() {
-		return new String[]{"Meet of two automata"};
+		return new String[]{"meet of two automata"};
 	}
 
 	/* (non-Javadoc)

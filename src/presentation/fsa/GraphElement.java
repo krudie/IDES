@@ -162,7 +162,7 @@ public class GraphElement implements PresentationElement {
 		setDirty(true);		
 	}
 
-	public void setLocation(Point2D p) {
+	public void setLocation(Point2D.Float p) {
 		layout.setLocation((float)p.getX(), (float)p.getY());		
 	}
 

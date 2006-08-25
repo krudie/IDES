@@ -5,13 +5,14 @@ package operations.fsa.ver1;
 
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
+import pluggable.operation.FilterOperation;
 import pluggable.operation.Operation;
 
 /**
  *
  * @author Lenko Grigorov
  */
-public class PrefixClosure implements Operation {
+public class PrefixClosure implements FilterOperation {
 
 	public final static String NAME="prefix closure";
 
@@ -26,48 +27,42 @@ public class PrefixClosure implements Operation {
 	 * @see pluggable.operation.Operation#getNumberOfInputs()
 	 */
 	public int getNumberOfInputs() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getTypeOfInputs()
 	 */
 	public Class[] getTypeOfInputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Class[]{FSAModel.class};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
 	 */
 	public String[] getDescriptionOfInputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[]{"Finite-state automaton"};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getNumberOfOutputs()
 	 */
 	public int getNumberOfOutputs() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getTypeOfOutputs()
 	 */
 	public Class[] getTypeOfOutputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Class[]{FSAModel.class};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
 	 */
 	public String[] getDescriptionOfOutputs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[]{"prefix-closed automaton"};
 	}
 
 	/* (non-Javadoc)
@@ -75,8 +70,20 @@ public class PrefixClosure implements Operation {
 	 */
 	public Object[] perform(Object[] inputs) {
 		FSAModel a=((Automaton)inputs[0]).clone();
+		Unary.buildStateCompositionOfClone((Automaton)a);		
 		Unary.prefixClosure(a);
 		return new Object[]{a};
 	}
 
+	public int[] getInputOutputIndexes()
+	{
+		return new int[]{0};
+	}
+	
+	public Object[] filter(Object[] inputs)
+	{
+		FSAModel a=(FSAModel)inputs[0];
+		Unary.prefixClosure(a);
+		return new Object[]{a};
+	}
 }

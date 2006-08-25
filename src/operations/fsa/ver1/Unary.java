@@ -127,7 +127,7 @@ public class Unary{
      * make sure to copy it first.
      * @param automaton The automaton to prefix close
      */    
-    public static  void prefixClosure(FSAModel automaton){
+    public static void prefixClosure(FSAModel automaton){
         LinkedList<FSAState> searchList = new LinkedList<FSAState>();
         ListIterator<FSAState> states = automaton.getStateIterator();
         // add all marked states to the list.
@@ -150,5 +150,14 @@ public class Unary{
                 }
             }
         }
+    }
+    
+    public static void buildStateCompositionOfClone(Automaton clone)
+    {
+    	for(Iterator<FSAState> i=clone.getStateIterator();i.hasNext();)
+    	{
+    		State s=(State)i.next();
+    		s.setStateCompositionList(new long[]{s.getId()});
+    	}
     }
 }

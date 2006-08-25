@@ -25,7 +25,7 @@ import operations.fsa.ver1.Trim;
 
 import pluggable.operation.OperationManager;
 import presentation.fsa.GraphExporter;
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 
 import model.fsa.ver1.Automaton;
 
@@ -50,9 +50,9 @@ public class Main {
 		if(Hub.getWorkspace().isDirty())
 			if(!CommonTasks.handleUnsavedWorkspace())
 				return;
-		for(Iterator<FSMGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 		{
-			FSMGraph gm=i.next();
+			FSAGraph gm=i.next();
 			if(gm.isDirty())
 				if(!CommonTasks.handleUnsavedModel(gm))
 					return;

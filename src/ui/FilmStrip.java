@@ -17,14 +17,14 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-import observer.FSMGraphMessage;
-import observer.FSMGraphSubscriber;
+import observer.FSAGraphMessage;
+import observer.FSAGraphSubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
 import main.Hub;
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphView;
 
 /**
@@ -63,7 +63,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 
 	private void buildThumbnailBox()
 	{
-		FSMGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
+		FSAGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
 		thumbnailBox.removeAll();
 		for(GraphView gv:graphViews)
 		{
@@ -86,10 +86,10 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 //		 Get all graph models from the workspace and render them here,
 		// each in its own GraphView object.
 		
-		Vector<FSMGraph> currentModels=new Vector<FSMGraph>();
-		for(Iterator<FSMGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		Vector<FSAGraph> currentModels=new Vector<FSAGraph>();
+		for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 		{
-			FSMGraph gm=i.next();
+			FSAGraph gm=i.next();
 			currentModels.add(gm);
 		}
 		
@@ -108,7 +108,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, Subscriber
 		
 		for(int i=0;i<currentModels.size();++i)
 		{
-			FSMGraph gm=currentModels.elementAt(i);
+			FSAGraph gm=currentModels.elementAt(i);
 			if(graphViews.size()<=i||!graphViews.elementAt(i).getGraphModel().equals(gm))
 			{
 				GraphView gv = new GraphView(gm);				

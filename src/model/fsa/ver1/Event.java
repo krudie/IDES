@@ -33,6 +33,10 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
         this.id = e.id;
         addSubElement(new SubElement("properties"));
         addSubElement(new SubElement("name"));
+        this.setSymbol(e.getSymbol());
+        this.setControllable(e.isControllable());
+        this.setObservable(e.isObservable());
+        //TODO: also transfer other properties
     }
 
     /**

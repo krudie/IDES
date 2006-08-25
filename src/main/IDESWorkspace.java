@@ -21,7 +21,7 @@ import observer.WorkspacePublisher;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import ui.MainWindow;
@@ -49,7 +49,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	// maps name of each model to the abstract FSA model, 
 	// graph representation and metadata respectively.
 	private Vector<Automaton> systems;
-	private Vector<FSMGraph> graphs;
+	private Vector<FSAGraph> graphs;
 	private Vector<MetaData> metadata;
 
 	static IDESWorkspace me;
@@ -64,17 +64,24 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	protected IDESWorkspace(){
 		activeModelIdx=-1;
 		systems=new Vector<Automaton>();
-		graphs=new Vector<FSMGraph>();
+		graphs=new Vector<FSAGraph>();
 		metadata=new Vector<MetaData>();
 		name=Hub.string("newAutomatonName");
 //		eventsModel = new EventsModel();
 	}
 
-	public void addFSAGraph(FSMGraph g)
-	{
+	public void addFSAGraph(FSAGraph g)
+	{	
 		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
 			removeFSAModel(getActiveGraphModel().getName());
 		
+		if(getFSAModel(g.getName())!=null)
+		{
+			int i=1;
+			while(getFSAModel(g.getName()+" ("+i+")")!=null)
+				++i;
+			g.setName(g.getName()+" ("+i+")");
+		}
 //		if(getActiveModel()!=null)
 //			getActiveGraphModel().removeSubscriber(getDrawingBoard());
 		
@@ -108,12 +115,19 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
 			removeFSAModel(getActiveGraphModel().getName());
 		
+		if(getFSAModel(fsa.getName())!=null)
+		{
+			int i=1;
+			while(getFSAModel(fsa.getName()+" ("+i+")")!=null)
+				++i;
+			fsa.setName(fsa.getName()+" ("+i+")");
+		}
 //		if(getActiveModel()!=null)
 //			getActiveGraphModel().removeSubscriber(getDrawingBoard());
 		
 		systems.add((Automaton) fsa);
 		metadata.add(new MetaData((Automaton)fsa));
-		graphs.add(new FSMGraph((Automaton)fsa, metadata.lastElement()));
+		graphs.add(new FSAGraph((Automaton)fsa, metadata.lastElement()));
 		activeModelIdx=systems.size()-1;
 		
 		//eventsModel.addLocalEvents(fsa);
@@ -158,7 +172,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		return null;
 	}
 
-	public FSMGraph getGraphById(String id)
+	public FSAGraph getGraphById(String id)
 	{
 		for(int i=0;i<systems.size();++i)
 			if(systems.elementAt(i).getId().equals(id))
@@ -166,7 +180,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		return null;
 	}
 
-	public FSMGraph getGraphModel(String name) {	
+	public FSAGraph getGraphModel(String name) {	
 		int idx=getFSAIndex(name);
 		if(idx<0)
 			return null;
@@ -178,7 +192,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	}
 	
 	public void removeFSAModel(String name) {
-		FSMGraph gm=getGraphModel(name);
+		FSAGraph gm=getGraphModel(name);
 		if(gm==null)
 			return;
 		if(gm.isDirty())
@@ -257,9 +271,9 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	 * 
 	 * @return an iterator of all graph models in this workspace
 	 */
-	public Iterator<FSMGraph> getGraphModels(){
-		ArrayList<FSMGraph> g = new ArrayList<FSMGraph>();
-		Iterator<FSMGraph> iter = graphs.iterator();
+	public Iterator<FSAGraph> getGraphModels(){
+		ArrayList<FSAGraph> g = new ArrayList<FSAGraph>();
+		Iterator<FSAGraph> iter = graphs.iterator();
 		while(iter.hasNext()){
 			g.add(iter.next());
 		}
@@ -295,7 +309,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		return systems.isEmpty();
 	}
 
-	public FSMGraph getActiveGraphModel() {	
+	public FSAGraph getActiveGraphModel() {	
 		if(activeModelIdx<0)
 			return null;
 		return graphs.elementAt(activeModelIdx);

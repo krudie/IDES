@@ -8,11 +8,11 @@ package observer;
  * 
  * @author helen bretzke
  */
-public interface FSMGraphSubscriber {
+public interface FSAGraphSubscriber {
 
-	public void fsmGraphChanged(FSMGraphMessage message);	
+	public void fsmGraphChanged(FSAGraphMessage message);	
 	
 	// NOTES thumbnails (filmstrip) don't need to respond to selection events
-	public void fsmGraphSelectionChanged(FSMGraphMessage message);
+	public void fsmGraphSelectionChanged(FSAGraphMessage message);
 	
 }

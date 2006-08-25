@@ -6,7 +6,7 @@ package observer;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 
 /**
  * Message sent to subscribers to event notifications from 
@@ -14,7 +14,7 @@ import presentation.fsa.FSMGraph;
  * 
  * @author helen bretzke
  */
-public class FSMGraphMessage {
+public class FSAGraphMessage {
 	
 	/* the possible graph elements that were changed by the event */
 	/** Indicates element of type Node was affected by event */	
@@ -40,7 +40,7 @@ public class FSMGraphMessage {
 	
 	
 	/** the publisher that sent this message */
-	private FSMGraph source;
+	private FSAGraph source;
 	
 	/** type of graph element that was changed by the event */
 	private int elementType;	
@@ -67,7 +67,7 @@ public class FSMGraphMessage {
 	 * @param location area in the display where the event occurred
 	 * @param source message sender
 	 */
-	public FSMGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSMGraph source) {
+	public FSAGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSAGraph source) {
 		this(eventType, elementType, elementId, location, source, "");		
 	}
 
@@ -82,7 +82,7 @@ public class FSMGraphMessage {
 	 * @param source message sender
 	 * @param message a description of the event fired
 	 */
-	public FSMGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSMGraph source, String message) {
+	public FSAGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSAGraph source, String message) {
 		super();		
 		this.source = source;
 		this.elementType = elementType;
@@ -105,7 +105,7 @@ public class FSMGraphMessage {
 		return eventType;
 	}
 
-	public FSMGraph getSource() {
+	public FSAGraph getSource() {
 		return source;
 	}
 

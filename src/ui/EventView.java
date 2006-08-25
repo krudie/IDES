@@ -27,9 +27,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
-import observer.FSMMessage;
-import observer.FSMPublisher;
-import observer.FSMSubscriber;
+import observer.FSAMessage;
+import observer.FSAPublisher;
+import observer.FSASubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
@@ -40,7 +40,7 @@ import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 
-public class EventView extends JPanel implements WorkspaceSubscriber, FSMSubscriber, ActionListener {
+public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscriber, ActionListener {
 
 	protected class EventTableModel extends AbstractTableModel
 	{
@@ -152,8 +152,8 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSMSubscri
 	    		observable.insertElementAt((Boolean)value, row);	    		
 	    	}
 	    		    		
-	    	((FSMPublisher)a).fireFSMEventSetChanged(new FSMMessage(FSMMessage.MODIFY,
-	    			FSMMessage.EVENT, events.elementAt(row).getId(), (FSMPublisher)a));			
+	    	((FSAPublisher)a).fireFSMEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+	    			FSAMessage.EVENT, events.elementAt(row).getId(), (FSAPublisher)a));			
 	    	
 	    	if(col==0)
 	    	{
@@ -455,12 +455,12 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSMSubscri
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsmStructureChanged(FSMMessage message) {}
+	public void fsmStructureChanged(FSAMessage message) {}
 
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsmEventSetChanged(FSMMessage message) {
+	public void fsmEventSetChanged(FSAMessage message) {
 		refreshEventTable();		
 	}
 }

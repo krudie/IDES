@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 
 import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
+import presentation.fsa.FSAGraph;
 
 import main.Hub;
 import model.DESModel;
@@ -42,13 +43,20 @@ import util.EscapeDialog;
  */
 public class OperationDialog extends EscapeDialog {
 
-	protected JList modelList=new JList();
 	protected JList opList=new JList();
-	protected JTextField nameField=new JTextField(20);
-	protected FSAModel a;
 	protected Vector<JComboBox> inputs=null;
+	//FIXME: listInput should be used with unbounded-input operations
 	protected JList listInput=null;
+	protected Vector<JTextField> outputNames=null;
 	private Box inputsBox;
+	private Box outputsBox;
+	private ActionListener al=new ActionListener()
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			setSuggestedValue();
+		}
+	};
 	
 	public OperationDialog()
 	{
@@ -77,50 +85,31 @@ public class OperationDialog extends EscapeDialog {
 					{
 						if(!e.getValueIsAdjusting())
 						{
-							setSuggestedValue();
-							resetInputBox(inputsBox,OperationManager.getOperation(opList.getSelectedValue().toString()));
+							resetInputOutputBoxes(inputsBox,outputsBox,OperationManager.getOperation(opList.getSelectedValue().toString()));
 						}
 					}
 				}
 		);
 		JScrollPane spo=new JScrollPane(opList);
+		spo.setPreferredSize(new Dimension(225,350));
 		spo.setBorder(BorderFactory.createTitledBorder(Hub.string("operationsListTitle")));
 		controlBox.add(spo);
 		
 		controlBox.add(Box.createRigidArea(new Dimension(5,0)));
 		
 		inputsBox=Box.createVerticalBox();
-		JScrollPane spm=new JScrollPane(inputsBox);
-		spm.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		spm.setBorder(BorderFactory.createTitledBorder(Hub.string("modelListTitle")));
-		controlBox.add(spm);
+		JScrollPane sp=new JScrollPane(inputsBox);
+		sp.setPreferredSize(new Dimension(225,350));
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.setBorder(BorderFactory.createTitledBorder(Hub.string("modelListTitle")));
+		controlBox.add(sp);
 
-//		Vector models=new Vector();
-//		for(Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();i.hasNext();)
-//			models.add(i.next().getName());
-//		modelList.setListData(models);
-//		modelList.addListSelectionListener(
-//				new ListSelectionListener()
-//				{
-//					public void valueChanged(ListSelectionEvent e)
-//					{
-//						if(!e.getValueIsAdjusting()&&!opList.isSelectionEmpty())
-//							setSuggestedValue();
-//					}
-//				}
-//		);
-//		JScrollPane spm=new JScrollPane(modelList);
-//		spm.setBorder(BorderFactory.createTitledBorder(Hub.string("modelListTitle")));
-//		controlBox.add(spm);
-		
-		controlBox.add(Box.createRigidArea(new Dimension(5,0)));
-
-		nameField.setMaximumSize(new Dimension(nameField.getMaximumSize().width,
-				nameField.getPreferredSize().height));
-		JPanel namePanel=new JPanel();
-		namePanel.add(nameField);
-		namePanel.setBorder(BorderFactory.createTitledBorder(Hub.string("outputModelName")));
-		controlBox.add(namePanel);
+		outputsBox=Box.createVerticalBox();
+		sp=new JScrollPane(outputsBox);
+		sp.setPreferredSize(new Dimension(225,350));
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.setBorder(BorderFactory.createTitledBorder(Hub.string("outputTitle")));
+		controlBox.add(sp);
 		
 		mainBox.add(controlBox);
 		
@@ -131,16 +120,41 @@ public class OperationDialog extends EscapeDialog {
 		okButton = new JButton(Hub.string("OK"));
 		okButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
-				if(opList.isSelectionEmpty()||nameField.getText().equals(""))
+				boolean emptyInput=false;
+				for(int i=0;i<inputs.size();++i)
+					if(inputs.elementAt(i)==null||inputs.elementAt(i).getSelectedItem().toString().equals(""))
+						emptyInput=true;
+				boolean emptyField=false;
+				for(int i=0;i<outputNames.size();++i)
+					if(outputNames.elementAt(i)!=null&&outputNames.elementAt(i).getText().equals(""))
+						emptyField=true;
+				if(opList.isSelectionEmpty()||emptyInput||emptyField)
 					Hub.displayAlert(Hub.string("missingOperationParams"));
 				else
 				{
 					Operation op=OperationManager.getOperation(opList.getSelectedValue().toString());
-					Object[] inputs=modelList.getSelectedValues();
-					for(int i=0;i<inputs.length;++i)
-						inputs[i]=Hub.getWorkspace().getFSAModel(inputs[i].toString());
-					a=(Automaton)op.perform(inputs)[0];
-					a.setName(nameField.getText());
+					Object[] inputModels=new Object[inputs.size()];
+					for(int i=0;i<inputs.size();++i)
+						inputModels[i]=Hub.getWorkspace().getFSAModel(inputs.elementAt(i).getSelectedItem().toString());
+					Object[] outputs=op.perform(inputModels);
+					for(int i=0;i<outputs.length;++i)
+					{
+						if(outputs[i] instanceof FSAModel)
+						{
+							((FSAModel)outputs[i]).setName(outputNames.elementAt(i).getText());
+							FSAGraph g=new FSAGraph((Automaton)outputs[i]);
+							g.labelCompositeNodes();
+							Hub.getWorkspace().addFSAGraph(g);
+						}
+						else if(outputs[i] instanceof Boolean)
+						{
+							Hub.displayAlert(op.getDescriptionOfOutputs()[i]+": "+(Boolean)outputs[i]);
+						}
+						else
+						{
+							Hub.displayAlert(Hub.string("cantInterpretOutput"));
+						}
+					}
 					onEscapeEvent();
 				}
 			}
@@ -167,25 +181,24 @@ public class OperationDialog extends EscapeDialog {
 		cancelButton.setPreferredSize(new Dimension(
 				Math.max(okButton.getWidth(),cancelButton.getWidth()),cancelButton.getHeight()));
 		cancelButton.invalidate();
-	}
-	
-	public FSAModel queryOperation()
-	{
-		a=null;
+		
 		setVisible(true);
-		return a;
 	}
 	
 	protected void setSuggestedValue()
 	{
 		String suggestedName=opList.getSelectedValue().toString()+"(";
-		for(int i=0;i<=modelList.getSelectedValues().length-2;++i)
-			suggestedName+=modelList.getSelectedValues()[i]+",";
-		if(!modelList.isSelectionEmpty())
-			suggestedName+=modelList.getSelectedValues()
-				[modelList.getSelectedValues().length-1];
+		for(int i=0;i<inputs.size()-1;++i)
+			suggestedName+=inputs.elementAt(i).getSelectedItem().toString()+",";
+		if(!inputs.isEmpty())
+			suggestedName+=inputs.lastElement().getSelectedItem().toString();
 		suggestedName+=")";
-		nameField.setText(suggestedName);		
+		if(outputNames.size()==1&&outputNames.firstElement()!=null)
+			outputNames.firstElement().setText(suggestedName);
+		else
+			for(int i=0;i<outputNames.size();++i)
+				if(outputNames.elementAt(i)!=null)
+					outputNames.elementAt(i).setText(suggestedName+" ("+i+")");
 	}
 
 	protected void onEscapeEvent()
@@ -193,9 +206,9 @@ public class OperationDialog extends EscapeDialog {
 		dispose();
 	}
 
-	protected void resetInputBox(Box b, Operation o)
+	protected void resetInputOutputBoxes(Box in, Box out, Operation o)
 	{
-		b.removeAll();
+		in.removeAll();
 		inputs=new Vector<JComboBox>();
 		String[] descs=o.getDescriptionOfInputs();
 		Class[] types=o.getTypeOfInputs();
@@ -212,12 +225,33 @@ public class OperationDialog extends EscapeDialog {
 			v.add(0,"");
 			JPanel p=new JPanel();
 			JComboBox cb=new JComboBox(v);
+			cb.addActionListener(al);
 			inputs.add(cb);
 			p.add(cb);
 			p.setBorder(BorderFactory.createTitledBorder(descs[i]));
-			b.add(p);
-			b.add(Box.createRigidArea(new Dimension(0,5)));
+			in.add(p);
+			in.add(Box.createRigidArea(new Dimension(0,5)));
 		}
+		in.add(Box.createVerticalGlue());
+		out.removeAll();
+		outputNames=new Vector<JTextField>();
+		descs=o.getDescriptionOfOutputs();
+		types=o.getTypeOfOutputs();
+		for(int i=0;i<descs.length;++i)
+			if(types[i].equals(FSAModel.class))
+			{
+				JPanel p=new JPanel();
+				JTextField tf=new JTextField(20);
+				outputNames.add(tf);
+				p.add(tf);
+				p.setBorder(BorderFactory.createTitledBorder(Hub.string("nameFor")+descs[i]));
+				out.add(p);
+				out.add(Box.createRigidArea(new Dimension(0,5)));
+			}
+			else
+				outputNames.add(null);
+		out.add(Box.createVerticalGlue());
 		pack();
+		repaint();
 	}
 }

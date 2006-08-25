@@ -12,9 +12,9 @@ import pluggable.layout.prefuse.PrefuseLayouter;
  */
 public class LayoutManager {
 	
-	protected static FSMLayouter l=new JUNGLayouter();
+	protected static FSALayouter l=new JUNGLayouter();
 
-	public static FSMLayouter getDefaultFSMLayouter()
+	public static FSALayouter getDefaultFSMLayouter()
 	{
 		return l;
 	}

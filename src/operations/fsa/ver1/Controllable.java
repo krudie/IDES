@@ -27,21 +27,21 @@ public class Controllable implements Operation {
 	 * @see pluggable.operation.Operation#getNumberOfInputs()
 	 */
 	public int getNumberOfInputs() {
-		return 1;
+		return 2;
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getTypeOfInputs()
 	 */
 	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class};
+		return new Class[]{FSAModel.class,FSAModel.class};
 	}
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
 	 */
 	public String[] getDescriptionOfInputs() {
-		return new String[]{"Finite-state automaton"};
+		return new String[]{"Plant","Specification"};
 	}
 
 	/* (non-Javadoc)
@@ -62,7 +62,7 @@ public class Controllable implements Operation {
 	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
 	 */
 	public String[] getDescriptionOfOutputs() {
-		return new String[]{"True or false"};
+		return new String[]{"controllability of specification"};
 	}
 
 	/* (non-Javadoc)

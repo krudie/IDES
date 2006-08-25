@@ -11,13 +11,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import observer.FSMMessage;
-import observer.FSMSubscriber;
+import observer.FSAMessage;
+import observer.FSASubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 
 import main.Hub;
 
@@ -25,7 +25,7 @@ import main.Hub;
  *
  * @author Lenko Grigorov
  */
-public class StatusBar extends JPanel implements FSMSubscriber, WorkspaceSubscriber {
+public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscriber {
 
 	JLabel numbersLabel=new JLabel();
 	model.fsa.ver1.Automaton a=null;
@@ -96,12 +96,12 @@ public class StatusBar extends JPanel implements FSMSubscriber, WorkspaceSubscri
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsmStructureChanged(FSMMessage message) {
+	public void fsmStructureChanged(FSAMessage message) {
 		// if states or transitions added or removed
-		if( (message.getElementType() == FSMMessage.STATE || 
-				message.getElementType() == FSMMessage.TRANSITION) &&
-			(message.getEventType() == FSMMessage.ADD || 
-				message.getEventType() == FSMMessage.REMOVE) )
+		if( (message.getElementType() == FSAMessage.STATE || 
+				message.getElementType() == FSAMessage.TRANSITION) &&
+			(message.getEventType() == FSAMessage.ADD || 
+				message.getEventType() == FSAMessage.REMOVE) )
 		{
 			refreshStatusLabel();
 		}
@@ -110,5 +110,5 @@ public class StatusBar extends JPanel implements FSMSubscriber, WorkspaceSubscri
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsmEventSetChanged(FSMMessage message) {}
+	public void fsmEventSetChanged(FSAMessage message) {}
 }

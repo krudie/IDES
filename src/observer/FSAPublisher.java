@@ -9,13 +9,13 @@ import java.util.ArrayList;
  * @author helen
  *
  */
-public class FSMPublisher {
+public class FSAPublisher {
 
-	private ArrayList<FSMSubscriber> subscribers;
+	private ArrayList<FSASubscriber> subscribers;
 		
-	public FSMPublisher() {
+	public FSAPublisher() {
 		super();
-		subscribers = new ArrayList<FSMSubscriber>();
+		subscribers = new ArrayList<FSASubscriber>();
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class FSMPublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(FSMSubscriber subscriber) {
+	public void addSubscriber(FSASubscriber subscriber) {
 		subscribers.add(subscriber);		
 	}
 	
@@ -34,19 +34,19 @@ public class FSMPublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(FSMSubscriber subscriber) {
+	public void removeSubscriber(FSASubscriber subscriber) {
 		subscribers.remove(subscriber);
 	}
 	
-	public void fireFSMStructureChanged(FSMMessage message){
-		for(FSMSubscriber s : subscribers)
+	public void fireFSMStructureChanged(FSAMessage message){
+		for(FSASubscriber s : subscribers)
 		{
 			s.fsmStructureChanged(message);
 		}
 	}	
 	
-	public void fireFSMEventSetChanged(FSMMessage message){
-		for(FSMSubscriber s : subscribers)
+	public void fireFSMEventSetChanged(FSAMessage message){
+		for(FSASubscriber s : subscribers)
 		{
 			s.fsmEventSetChanged(message);
 		}			

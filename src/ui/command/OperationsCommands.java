@@ -35,7 +35,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 
 
 import pluggable.layout.LayoutManager;
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
@@ -58,38 +58,6 @@ public class OperationsCommands {
 		@Override
 		protected void handleExecute() {
 			OperationDialog od=new OperationDialog();
-			Automaton a=(Automaton)od.queryOperation();
-			if(a!=null)
-			{
-				FSMGraph g=new FSMGraph(a);
-				if(a.getAutomataCompositionList().length>1)
-				{
-					FSMGraph g1=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[0]);
-					FSMGraph g2=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[1]);				
-					for(Node n:g.getNodes())
-					{
-						State s=(State)n.getState();
-						g.labelNode(n,"("+g1.getNode(s.getStateCompositionList()[0]).getLabel().getText()+
-							","+g2.getNode(s.getStateCompositionList()[1]).getLabel().getText()+")");
-					}
-				}
-				else
-				{
-					FSMGraph g1=Hub.getWorkspace().getGraphById(a.getAutomataCompositionList()[0]);
-					for(Node n:g.getNodes())
-					{
-						State s=(State)n.getState();
-						String label="(";
-						for(int i=0;i<s.getStateCompositionList().length;++i)
-							label+=g1.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
-						if(label.endsWith(","))
-							label=label.substring(0,label.length()-1);
-						label+=")";
-						g.labelNode(n,label);
-					}
-				}
-				Hub.getWorkspace().addFSAGraph(g);
-			}
 		}
 		
 	}

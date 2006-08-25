@@ -29,7 +29,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 
 //<<<<<<< FileCommands.java
 import presentation.fsa.GraphExporter;
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 //=======
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
@@ -104,9 +104,9 @@ public class FileCommands {
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-			for(Iterator<FSMGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+			for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
 			{
-				FSMGraph gm=i.next();
+				FSAGraph gm=i.next();
 				Automaton fsa=gm.getAutomaton();
 				if(fsa!=null)
 					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))

@@ -54,6 +54,7 @@ import util.EscapeDialog;
  * to transitions represented by an edge in the graph model. 
  * 
  * @author helen bretzke
+ * @author Lenko Grigorov
  *
  */
 public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
@@ -78,7 +79,8 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		dialog.checkObservable.setSelected(dialog.cbOState);
         dialog.setEdge(e);
         dialog.setLocationRelativeTo(view);
-        dialog.setVisible(true);        	
+        dialog.textField.requestFocus();
+        dialog.setVisible(true);      	
 	}
 	
 	private EdgeLabellingDialog(){

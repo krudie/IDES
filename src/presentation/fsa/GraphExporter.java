@@ -144,7 +144,7 @@ public class GraphExporter
 	{
 		String contentsString = STR_PSTRICKS_BEGIN_FIGURE;
 		IDESWorkspace workspace = null;
-		FSMGraph graphModel = null;
+		FSAGraph graphModel = null;
 		
 		Rectangle exportBounds = null;
 		int border = 0;
@@ -228,7 +228,7 @@ public class GraphExporter
 	public static String createPSPicture(Rectangle exportBounds, boolean useFrame)
 	{
 		IDESWorkspace workspace = null;
-		FSMGraph graphModel = null;
+		FSAGraph graphModel = null;
 		
 		CircleNode[] nodeArray = null;
 		BezierEdge[] edgeArray = null;
@@ -300,7 +300,7 @@ public class GraphExporter
 	{
 		String contentsString = STR_EPS_BEGIN_DOC;
 		IDESWorkspace workspace = null;
-		FSMGraph graphModel = null;
+		FSAGraph graphModel = null;
 		
 		Rectangle exportBounds = null;
 		int border = 0;

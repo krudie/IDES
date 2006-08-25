@@ -10,15 +10,15 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
-import observer.FSMGraphMessage;
-import observer.FSMGraphSubscriber;
+import observer.FSAGraphMessage;
+import observer.FSAGraphSubscriber;
 import observer.Subscriber;
 
 import ui.GUISettings;
 
 import main.Hub;
 
-public class GraphView extends JComponent implements FSMGraphSubscriber {
+public class GraphView extends JComponent implements FSAGraphSubscriber {
 
 	protected static final int GRAPH_BORDER_THICKNESS=10;
 	
@@ -34,13 +34,13 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	 * Presentation model (the composite structure that represents the DES model.)
 	 * which handles synchronizing FSA model with the displayed graph.
 	 */
-	protected FSMGraph graphModel;
+	protected FSAGraph graphModel;
 		
 	public GraphView(){
 		setGraphModel(null);
 	}
 	
-	public GraphView(FSMGraph graphModel){
+	public GraphView(FSAGraph graphModel){
 		setGraphModel(graphModel);
 	}
 
@@ -66,7 +66,7 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	    if(graphModel != null)	graphModel.draw(g2D);	    
 	}
 
-	public void setGraphModel(FSMGraph graphModel) {
+	public void setGraphModel(FSAGraph graphModel) {
 		if(this.graphModel != null){
 			this.graphModel.removeSubscriber(this);
 		}		
@@ -81,7 +81,7 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 		}
 	}
 
-	public FSMGraph getGraphModel() {
+	public FSAGraph getGraphModel() {
 		return graphModel;
 	}
 
@@ -103,9 +103,9 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	/**
 	 * Respond to change notification from underlying graph model.
 	 *  
-	 * @see observer.FSMGraphSubscriber#fsmGraphChanged(observer.FSMGraphMessage)
+	 * @see observer.FSAGraphSubscriber#fsmGraphChanged(observer.FSAGraphMessage)
 	 */
-	public void fsmGraphChanged(FSMGraphMessage message) {
+	public void fsmGraphChanged(FSAGraphMessage message) {
 		// TODO check contents of message to determine minimal response required
 		refreshView();			
 	}
@@ -140,5 +140,5 @@ public class GraphView extends JComponent implements FSMGraphSubscriber {
 	 * (non-Javadoc)
 	 * @see observer.FSMGraphSubscriber#fsmGraphSelectionChanged(observer.FSMGraphMessage)
 	 */
-	public void fsmGraphSelectionChanged(FSMGraphMessage message) {	}
+	public void fsmGraphSelectionChanged(FSAGraphMessage message) {	}
 }

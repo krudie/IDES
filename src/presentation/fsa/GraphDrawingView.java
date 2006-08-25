@@ -23,7 +23,7 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import main.Hub;
-import observer.FSMGraphMessage;
+import observer.FSAGraphMessage;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
@@ -512,7 +512,7 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	/**
 	 * Override
 	 * 
-	 * @see observer.FSMGraphSubscriber#fsmGraphSelectionChanged(observer.FSMGraphMessage)
+	 * @see observer.FSAGraphSubscriber#fsmGraphSelectionChanged(observer.FSAGraphMessage)
 	 */
 //	public void fsmGraphSelectionChanged(FSMGraphMessage message) 
 //	{

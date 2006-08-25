@@ -76,7 +76,7 @@ public abstract class Node extends GraphElement {
 	 * and adjusts the location of all adjacent edges. 
 	 * @param p the new location 
 	 */
-	public void setLocation(Point2D p) {
+	public void setLocation(Point2D.Float p) {
 		super.setLocation(p);
 		recomputeEdges();		
 	}

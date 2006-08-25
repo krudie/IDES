@@ -7,7 +7,7 @@ package observer;
  * @author helen
  *
  */
-public class FSMMessage {
+public class FSAMessage {
 
 	/**
 	 * possible element types
@@ -26,14 +26,14 @@ public class FSMMessage {
 	private int elementType; // the type of element that was affected by the event	
 	private long elementId; // unique id of the element
 	private int eventType; // the type of event that occurred	
-	private FSMPublisher source; // the publisher that sent this message
+	private FSAPublisher source; // the publisher that sent this message
 	private String messageText;
 	
-	public FSMMessage(int eventType, int elementType, long elementId, FSMPublisher source) {
+	public FSAMessage(int eventType, int elementType, long elementId, FSAPublisher source) {
 		this(eventType, elementType, elementId, source, "");
 	}	
 
-	public FSMMessage(int eventType, int elementType, long elementId, FSMPublisher source, String messageText) {
+	public FSAMessage(int eventType, int elementType, long elementId, FSAPublisher source, String messageText) {
 		super();		
 		this.elementType = elementType;
 		this.elementId = elementId;
@@ -54,7 +54,7 @@ public class FSMMessage {
 		return eventType;
 	}
 
-	public FSMPublisher getSource() {
+	public FSAPublisher getSource() {
 		return source;
 	}
 

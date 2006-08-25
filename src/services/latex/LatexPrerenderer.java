@@ -7,7 +7,7 @@ import java.util.Iterator;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.Edge;
 import presentation.fsa.GraphLabel;
-import presentation.fsa.FSMGraph;
+import presentation.fsa.FSAGraph;
 import presentation.fsa.CircleNode;
 
 import main.Hub;
@@ -27,7 +27,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	/**
 	 * The DES model whose labels will be rendered.
 	 */
-	protected Iterator<FSMGraph> models;
+	protected Iterator<FSAGraph> models;
 
 	/**
 	 * Set to <code>true</code> if the rendering has to be interrupted.
@@ -36,14 +36,14 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	
 	/**
 	 * Displays a dialog box with a progress bar and starts rendering the labels of a
-	 * {@link FSMGraph}. The user may cancel the process
+	 * {@link FSAGraph}. The user may cancel the process
 	 * using the controls in the dialog box. 
 	 * @param model the DES model whose labels have to be rendered 
 	 */
-	public LatexPrerenderer(FSMGraph model)
+	public LatexPrerenderer(FSAGraph model)
 	{
 		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),"");
-		HashSet<FSMGraph> set=new HashSet<FSMGraph>();
+		HashSet<FSAGraph> set=new HashSet<FSAGraph>();
 		set.add(model);
 		this.models=set.iterator();
 		new Thread(this).start();
@@ -52,11 +52,11 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	
 	/**
 	 * Displays a dialog box with a progress bar and starts rendering the labels of a
-	 * set of {@link FSMGraph}s. The user may cancel the process
+	 * set of {@link FSAGraph}s. The user may cancel the process
 	 * using the controls in the dialog box. 
 	 * @param models an iterator over the set of DES models whose labels have to be rendered
 	 */
-	public LatexPrerenderer(Iterator<FSMGraph> models)
+	public LatexPrerenderer(Iterator<FSAGraph> models)
 	{
 		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),"");
 		this.models=models;
@@ -85,7 +85,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 		{
 			if(cancel)
 				break;
-			FSMGraph model=models.next();
+			FSAGraph model=models.next();
 			label.setText(Hub.string("renderPrerender")+model.getName());
 			HashSet<GraphLabel> labels=new HashSet<GraphLabel>();
 			Collection<CircleNode> nodes=model.getNodes();

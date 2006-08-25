@@ -185,13 +185,14 @@ public class InitialArrow extends Edge {
 	 * @see presentation.fsa.Edge#computeEdge()
 	 */
 	@Override
-	public void computeEdge() {		
-		setLocation(getTargetNode().getLocation());			
+	public void computeEdge() {
+		setLocation(getTargetNode().getLocation());
+		targetPoint=intersectionWithBoundary(getTargetNode(), Edge.TARGET_NODE);
 		line.x2 = targetPoint.x;
-		line.y2 = targetPoint.y;		
+		line.y2 = targetPoint.y;
 		Point2D.Float sourcePt = Geometry.subtract(getLocation(), direction);
 		line.x1 = sourcePt.x;
-		line.y1 = sourcePt.y;			
+		line.y1 = sourcePt.y;
 	}
 
 	/* (non-Javadoc)
@@ -214,7 +215,20 @@ public class InitialArrow extends Edge {
 		// NOTE point movement will be constrained to be outside of node boundary so targetPt should never be null.
 		// no intersection with boundary
 		if(nodeShape.contains(p)){
-			return null; //new Point2D.Float((float)p.getX(), (float)p.getY());
+//FIXME: this condition was hit a few times when node was dragged outside of drawing boundary
+//and when some operations called auto layout
+//			Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
+//			at presentation.fsa.InitialArrow.computeEdge(InitialArrow.java:191)
+//			at presentation.fsa.Node.recomputeEdges(Node.java:91)
+//			at presentation.fsa.CircleNode.refresh(CircleNode.java:72)
+//			at presentation.fsa.CircleNode.translate(CircleNode.java:204)
+//			at presentation.fsa.GraphElement.translate(GraphElement.java:160)
+//			at ui.tools.MovementTool.handleMouseDragged(MovementTool.java:56)
+//			at presentation.fsa.GraphDrawingView.mouseDragged(GraphDrawingView.java:282)
+//TEMP SOLUTION: reset arrow
+			direction = new Point2D.Float( (float)(minShaftLength * -1), 0f);	
+			return Geometry.add(getLocation(), Geometry.scale(direction, -1));
+			//return null; //new Point2D.Float((float)p.getX(), (float)p.getY());
 		}
 		
 		// the point on curve at param t
