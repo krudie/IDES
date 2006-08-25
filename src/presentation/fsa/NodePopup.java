@@ -30,12 +30,8 @@ public class NodePopup extends JPopupMenu {
 	private SetInitialCommand initialCmd;
 	private TextCommand textCmd;
 	private SelfLoopCommand selfLoopCmd;
-	private DeleteCommand deleteCmd;
-	 
+	private DeleteCommand deleteCmd;	 
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6664241416811568136L;
 
 	protected static void showPopup(GraphDrawingView context, CircleNode n){
@@ -87,13 +83,9 @@ public class NodePopup extends JPopupMenu {
 		selfLoopCmd.setNode(n);
 		deleteCmd.setElement(n);
 		textCmd.setElement(n);
-		
-		//TODO this is bad since setSelected actually calls the selection handling
-		//miSetMarked.setSelected(node.getState().isMarked());
-		markedCmd.setSelected(node.getState().isMarked());
-		//miSetInitial.setSelected(node.getState().isInitial());
+				
+		markedCmd.setSelected(node.getState().isMarked());		
 		initialCmd.setSelected(node.getState().isInitial());
-		//miSelfLoop.setSelected(node.hasSelfLoop());
 	}
 	
 	

@@ -177,11 +177,8 @@ public class GraphElement implements PresentationElement {
 		}
 	}
 	
-	// TODO what is a generic response to this call?
-	public void showPopup(Component context){
-		//DEBUG
-		//main.Hub.displayAlert("TODO: define showPopup(Component) for this subclass");		
-	}
+	// TODO define a generic response
+	public void showPopup(Component context){}
 	
 	public boolean hasChildren() {		
 		return !children.isEmpty();

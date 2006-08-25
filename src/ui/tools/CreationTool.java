@@ -219,9 +219,9 @@ public class CreationTool extends DrawingTool {
 	 * @param p the target point
 	 */
 	private void updateEdge(BezierEdge e, Point2D.Float p){		
-		NodeLayout s = (NodeLayout)e.getSource().getLayout();
+		NodeLayout s = (NodeLayout)e.getSourceNode().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
-		if( ! e.getSource().intersects(p) ){
+		if( ! e.getSourceNode().intersects(p) ){
 			e.computeCurve(s, p);
 			e.setVisible(true);
 		}else{

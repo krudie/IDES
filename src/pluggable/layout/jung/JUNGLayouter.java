@@ -49,8 +49,8 @@ public class JUNGLayouter implements FSMLayouter {
 		for(Edge e:graph.getEdges())
 		{
 			DirectedSparseEdge edge=new DirectedSparseEdge(
-					BridgeMapper.nodeMap.get(e.getSource()),
-					BridgeMapper.nodeMap.get(e.getTarget()));
+					BridgeMapper.nodeMap.get(e.getSourceNode()),
+					BridgeMapper.nodeMap.get(e.getTargetNode()));
 			g.addEdge(edge);
 		}
 		KKLayout l=new KKLayout(g);

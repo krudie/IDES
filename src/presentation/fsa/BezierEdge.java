@@ -96,8 +96,8 @@ public class BezierEdge extends Edge {
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.
 		if(highlighted ||
-				getSource().isHighlighted() || 
-				getTarget() != null && getTarget().isHighlighted()){
+				getSourceNode().isHighlighted() || 
+				getTargetNode() != null && getTargetNode().isHighlighted()){
 			setHighlighted(true);
 			g2d.setColor(getLayout().getHighlightColor());
 		}else{
@@ -206,10 +206,10 @@ public class BezierEdge extends Edge {
 			sourceEndPt = new Point2D.Float();
 		}
 		
-		float sourceT = intersectionWithBoundary(getSource().getShape(), sourceEndPt, SOURCE_NODE);		
+		float sourceT = intersectionWithBoundary(getSourceNode().getShape(), sourceEndPt, SOURCE_NODE);		
 		((BezierLayout)getLayout()).setSourceT(sourceT);
 		
-		if(getTarget() != null)	
+		if(getTargetNode() != null)	
 		{
 			Point2D.Float targetEndPt = getTargetEndPoint();
 			if(targetEndPt == null) 
@@ -217,7 +217,7 @@ public class BezierEdge extends Edge {
 				targetEndPt = new Point2D.Float();
 			}
 			
-			float tTarget = intersectionWithBoundary(getTarget().getShape(), targetEndPt, TARGET_NODE);
+			float tTarget = intersectionWithBoundary(getTargetNode().getShape(), targetEndPt, TARGET_NODE);
 			((BezierLayout)getLayout()).setTargetT(tTarget);
 		}	
 		
@@ -255,12 +255,12 @@ public class BezierEdge extends Edge {
 	 * @return unit direction vector for arrow head to point
 	 */
 	private Point2D.Float computeArrowDirection() {			
-		Node target = getTarget();
+		Node target = getTargetNode();
 		if(target == null)
 		{
 			return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2())); 
 		}else{
-			Shape s = getTarget().getShape();
+			Shape s = getTargetNode().getShape();
 			Rectangle box = s.getBounds();
 			double delta = ArrowHead.SHORT_HEAD_LENGTH;
 			Rectangle fat = new Rectangle((int)(box.x - delta/2), 
@@ -292,21 +292,24 @@ public class BezierEdge extends Edge {
 	/*************************************************************/
 	
 	/**	 
+	 * FIXME change to return true iff intersects VISIBLE part of curve.
+	 * 
 	 * @return true iff p intersects with this edge. 
 	 */
 	public boolean intersects(Point2D p){
 		
 		boolean hit=false;
 		boolean limitReached=false;
-		CubicCurve2D.Float curve= getBezierLayout().getCurve();
+		CubicCurve2D curve= getBezierLayout().getVisibleCurve();
 		
+		if(curve == null) return false;
 		// DEBUG
-		assertAllPointsNumbers(curve);
+		//assertAllPointsNumbers(curve);
 		
 		do
 		{
 			// DEBUG
-			assertAllPointsNumbers(curve);
+			//assertAllPointsNumbers(curve);
 			
 			CubicCurve2D.Float c1=new CubicCurve2D.Float(),c2=new CubicCurve2D.Float();
 			curve.subdivide(c1,c2);
@@ -442,9 +445,9 @@ public class BezierEdge extends Edge {
 
 		}else{ 	// reset the control points in the layout object
 
-			if(getTarget()!=null) //translation can occur in the middle of drawing a new edge
+			if(getTargetNode()!=null) //translation can occur in the middle of drawing a new edge
 			{
-				l.computeCurve((NodeLayout)getSource().getLayout(), (NodeLayout)getTarget().getLayout());
+				l.computeCurve((NodeLayout)getSourceNode().getLayout(), (NodeLayout)getTargetNode().getLayout());
 			}			
 
 		}		
@@ -579,7 +582,7 @@ public class BezierEdge extends Edge {
 	 * @param point
 	 * @param pointType
 	 */
-	public void setPoint(Float point, int pointType) {
+	public void setPoint(Point2D point, int pointType) {
 		getBezierLayout().setPoint(point, pointType);		
 	}
 
@@ -702,9 +705,9 @@ public class BezierEdge extends Edge {
 	 */
 	@Override
 	public void computeEdge() {
-		if(getSource() != null && getTarget() != null){
-			getBezierLayout().computeCurve((NodeLayout)getSource().getLayout(), 
-											(NodeLayout)getTarget().getLayout());
+		if(getSourceNode() != null && getTargetNode() != null){
+			getBezierLayout().computeCurve((NodeLayout)getSourceNode().getLayout(), 
+											(NodeLayout)getTargetNode().getLayout());
 			refresh();
 		}
 	}
@@ -742,6 +745,14 @@ public class BezierEdge extends Edge {
 	@Override
 	public Float getTargetEndPoint() {
 		return ((BezierLayout)getLayout()).getTargetEndPoint();	
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#isMovable(int)
+	 */
+	@Override
+	public boolean isMovable(int pointType) {
+		return(pointType == BezierEdge.CTRL1 ||	pointType == BezierEdge.CTRL2);		
 	}		
 	
 }

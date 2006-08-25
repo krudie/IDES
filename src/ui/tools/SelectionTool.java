@@ -1,6 +1,5 @@
 package ui.tools;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -9,12 +8,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import main.Hub;
-
-import presentation.PresentationElement;
-import presentation.fsa.BoundingBox;
-import presentation.fsa.BezierEdge;
+import presentation.fsa.Edge;
 import presentation.fsa.GraphDrawingView;
-import presentation.fsa.SelectionGroup;
 
 /**
  * Selects and highlights graph elements using either single click or bounding box.
@@ -31,6 +26,7 @@ public class SelectionTool extends DrawingTool {
 	Dimension d;
 	Point topLeftPt;
 	Rectangle box;
+	
 	// TODO more cursors for resizing the bounding box
 	
 	private boolean resizing = false;
@@ -38,7 +34,6 @@ public class SelectionTool extends DrawingTool {
 	
 	public SelectionTool(GraphDrawingView board){
 		context = board;
-//		cursor = new Cursor(Cursor.HAND_CURSOR);
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/modify_.gif")), new Point(0,0), "SELECT_NODES_OR_EDGES");		
 		d = new Dimension();
@@ -109,7 +104,7 @@ public class SelectionTool extends DrawingTool {
 		
 		// If an edge is selected and i have hit a control point handle
 		// start modifying the edge		
-		if(context.hasCurrentSelection() && context.getSelectedElement() instanceof BezierEdge) { // KLUGE instanceof is YUCK
+		if(context.hasCurrentSelection() && context.getSelectedElement() instanceof Edge) { // KLUGE instanceof is evidence of poor design
 			context.setTool(GraphDrawingView.MODIFY);
 			context.getCurrentTool().handleMousePressed(me);
 			return;
@@ -151,9 +146,7 @@ public class SelectionTool extends DrawingTool {
 			startPoint = null;
 			endPoint = null;			
 			dragging = false;
-		}
-
-		//context.getGraphModel().notifyAllSubscribers();
+		}		
 		context.repaint();
 	}
 
@@ -168,8 +161,7 @@ public class SelectionTool extends DrawingTool {
 		if(ke.getKeyChar() == KeyEvent.VK_ESCAPE){
 			context.clearCurrentSelection();
 			context.repaint();
-		}		
-	//	context.getGraphModel().notifyAllSubscribers();
+		}	
 	}
 
 	@Override

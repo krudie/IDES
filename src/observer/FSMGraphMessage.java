@@ -15,43 +15,46 @@ import presentation.fsa.FSMGraph;
  * @author helen bretzke
  */
 public class FSMGraphMessage {
-	/** 
-	 * the possible graph elements that were changed by the event 
-	 * */
+	
+	/* the possible graph elements that were changed by the event */
+	/** Indicates element of type Node was affected by event */	
 	public static final int NODE = 0;
+	/** Indicates element of type Edge was affected by event */	
 	public static final int EDGE = 1;
+	/** Indicates element of type Label was affected by event */
 	public static final int LABEL = 2;	
-	public static final int SELECTION = 3;
+	/** Indicates element of type SelectionGroup was affected by event */
+	public static final int SELECTION = 3;	
+	/** Default for when type of element is unknown. */
+	public static final int UNKNOWN_TYPE = -1;
 	
-	/** 
-	 * the possible events that fired this message 
-	 * */
+	/* the possible events that fired this message */
+	/** An addition occurred */
 	public static final int ADD = 0;
+	/** A removal (deletion) occurred */
 	public static final int REMOVE = 1;
-	public static final int MODIFY = 2;
+	/** A modification occurred */
+	public static final int MODIFY = 2;	
+	/** Default id for a group of elements or when id is unknown. */
+	public static final long UNKNOWN_ID = -1;	
 	
-	/**
-	 * Default id for a group of elements or when id is unknown. 
-	 */
-	public static final long UNKNOWN_ID = -1;
 	
-	/**
-	 * the publisher that sent this message
-	 */
+	/** the publisher that sent this message */
 	private FSMGraph source;
 	
-	// type of graph element that was changed by the event
+	/** type of graph element that was changed by the event */
 	private int elementType;	
-	// the id of the element changed
+	
+	/** the id of the element changed */
 	private long elementId;
 
-	// the type of event that occurred
+	/** the type of event that occurred */
 	private int eventType;
 	
-	// the location on the source canvas where the event occurred
+	/** the location on the source canvas where the event occurred */
 	private Rectangle2D location;
 	
-	// a description of the event fired
+	/** a description of the event fired */
 	private String message;
 	
 	/**

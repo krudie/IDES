@@ -18,6 +18,9 @@ public class BezierEdgePlacer {
 	 * Computes the layouts for each edge such that they are distributed comfortably
 	 * along the circumferences of each end node.
 	 * 
+	 * TODO change this algorithm so that it accommodates reflexive edges and initial arrows 
+	 * (adjacent on only one of the edges end nodes).
+	 * 
 	 * @param edge the edge to be inserted
 	 * @param edges set of all other edges connecting the same pair of nodes
 	 */
@@ -26,18 +29,13 @@ public class BezierEdgePlacer {
 		// compute default straight edge
 		edge.computeEdge();
 		
-		int n = edges.size();
+		//int n = edges.size();
 		Edge straightEdge = containsStraightEdge(edges);
 		if(straightEdge != null) {			
-			// find outermost position
+			// find outermost free position
 			BezierLayout outPos = setToOutermostFreeLayout(edge, edges);
-				
-			//if( straightEdge.getSource().equals(edge.getTarget())){
-			// DONE name is weird, should reverse caller and param and
-			// rename caller.setToReflectionOf(param) 
-			//outPos.setToReflection((BezierLayout)straightEdge.getLayout());				
-			((BezierLayout)straightEdge.getLayout()).setToReflectionOf(outPos);	
-						
+			// move straight edge to reflection of newly placed edge					
+			((BezierLayout)straightEdge.getLayout()).setToReflectionOf(outPos);						
 			// TODO if we only call this to update the endpts, then call a method that is named appropriately
 			straightEdge.computeEdge();
 			
@@ -48,10 +46,9 @@ public class BezierEdgePlacer {
 				((BezierLayout)straightEdge.getLayout()).arcMore(false);
 			}	
 			
-		}else{	// No straight edge
-			if(n % 2 != 0) // Even # of neighbours			
+		}/*else{	// No straight edge
+			if(n % 2 != 0) // Odd # of neighbours			
 			{
-//				 Odd # of neighbours
 				// LENKO: Why not use straight position?
 				// For now...
 				//edge.computeEdge();				
@@ -63,7 +60,7 @@ public class BezierEdgePlacer {
 				
 			} 
 			// otherwise do nothing since edge is already straight by default						
-		}			
+		}	*/		
 	}
 	
 	/**

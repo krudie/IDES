@@ -114,7 +114,7 @@ public class CircleNode extends Node {
 		while(c.hasNext()){
 			try{
 				BezierEdge child = (BezierEdge)c.next();
-				if(child.getSource().equals(this)){
+				if(child.getSourceNode().equals(this)){
 					child.draw(g);
 				}
 			}catch(ClassCastException cce){ 

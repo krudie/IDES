@@ -112,7 +112,7 @@ public class ReflexiveEdge extends BezierEdge {
 		while(BezierEdgePlacer.tooClose(this, neighbours) && alpha < 360)
 		{
 			((ReflexiveLayout)getLayout()).axis = Geometry.rotate(((ReflexiveLayout)getLayout()).axis, delta);			
-			setMidpoint(Geometry.add(getSource().getLocation(), ((ReflexiveLayout)getLayout()).axis));
+			setMidpoint(Geometry.add(getSourceNode().getLocation(), ((ReflexiveLayout)getLayout()).axis));
 			computeEdge();
 			alpha ++;
 		}
@@ -140,6 +140,10 @@ public class ReflexiveEdge extends BezierEdge {
 		return ((ReflexiveLayout)getLayout()).getMidpoint();		
 	}
 
+	public boolean isMovable(int pointType) {
+		return pointType == MIDPOINT;	
+	}
+	
 	/**
 	 * TODO customize so that if curve is invisible, arrow points to centre of node.
 	 */
@@ -379,8 +383,8 @@ public class ReflexiveEdge extends BezierEdge {
 			// TODO compute curve from centre and midpoint such that midpoint is fixed
 			// and curve has same shape as default.
 			
-			setPoint(getEdge().getSource().getLocation(), P1);
-			setPoint(getEdge().getSource().getLocation(), P2);
+			setPoint(getEdge().getSourceNode().getLocation(), P1);
+			setPoint(getEdge().getSourceNode().getLocation(), P2);
 
 			axis = Geometry.subtract(midpoint, curve.getP1());
 			
@@ -400,12 +404,15 @@ public class ReflexiveEdge extends BezierEdge {
 		 * @param point
 		 * @param index
 		 */
-		public void setPoint(Point2D.Float point, int index){
+		public void setPoint(Point2D point, int index){
+			float x = (float)point.getX();
+			float y = (float)point.getY();
+			
 			switch(index)
 			{			
 				case MIDPOINT:	
 // FIXME don't constrain the point, but make sure the midpoint, arrowhead and the handler behave properly.				
-					if(getSource().intersects(point))
+					if(getSourceNode().intersects(point))
 					{
 						// snap to arc minimum distance from border of node
 						midpoint = Geometry.add(curve.getP1(), 
@@ -413,29 +420,29 @@ public class ReflexiveEdge extends BezierEdge {
 												new Point2D.Float((float)curve.getP1().getX(), 
 																	(float)curve.getP1().getY()),
 												midpoint), 
-								getSource().getShape().getBounds().width));
+								getSourceNode().getShape().getBounds().width));
 						  
 					}else{					
-						midpoint = point;
+						midpoint = new Point2D.Float(x, y);
 					}										
 					setLocation(midpoint.x, midpoint.y);
 					// TODO computeCurve();
 					break;
 				case P1:
-					curve.x1 = point.x;
-					curve.y1 = point.y;
+					curve.x1 = x;
+					curve.y1 = y;
 					break;
 				case P2:
-					curve.x2 = point.x;
-					curve.y2 = point.y;
+					curve.x2 = x;
+					curve.y2 = y;
 					break;				
 				case CTRL1:
-					curve.ctrlx1 = point.x;
-					curve.ctrly1 = point.y;
+					curve.ctrlx1 = x;
+					curve.ctrly1 = y;
 					break;
 				case CTRL2:
-					curve.ctrlx2 = point.x;
-					curve.ctrly2 = point.y;
+					curve.ctrlx2 = x;
+					curve.ctrly2 = y;
 					break;
 				default: throw new IllegalArgumentException("Invalid control point index: " + index);				
 			}			

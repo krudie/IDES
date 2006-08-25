@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
@@ -68,16 +69,19 @@ public abstract class Edge extends GraphElement{
 	
 	/**
 	 * Computes an approximation to the point where this edge intersects 
-	 * the boundary of <code>node</code>.
+	 * the boundary of <code>node</code>.  Returns the first point between midpoint of the edge 
+	 * and centre of Node with given type where this edge intersects the boundary of <code>node</code>, 
+	 * null if no intersection exists. 
 	 * 
 	 * PROBLEM more than one intersection possible 
 	 * (e.g. reflexive edges and curved edges with multiple crossings).
 	 * 
 	 * @param node
 	 * @param type SOURCE or TARGET 
-	 * @return the point where this edge intersects the boundary of <code>node</code> 
+	 * @return the first point between middle of edge and centre of Node with given type 
+	 * where this edge intersects the boundary of <code>node</code>, null if no intersection exists. 
 	 */
-	public abstract Point2D.Float intersectionWithBoundary(Node node, int type);
+	public abstract Point2D intersectionWithBoundary(Node node, int type);
 	
 	/**
 	 * Sets the handler for this edge with <code>handler</code>. 
@@ -98,19 +102,19 @@ public abstract class Edge extends GraphElement{
 		return handler;
 	}	
 	
-	public Node getSource() {
+	public Node getSourceNode() {
 		return source;
 	}
 
-	public void setSource(Node source) {
+	public void setSourceNode(Node source) {
 		this.source = source;		
 	}
 
-	public Node getTarget() {
+	public Node getTargetNode() {
 		return target;
 	}
 
-	public void setTarget(Node target) {
+	public void setTargetNode(Node target) {
 		this.target = target;
 	}
 	
@@ -175,11 +179,44 @@ public abstract class Edge extends GraphElement{
 	 */
 	public abstract void addEventName(String symbol);
 
+	
+	/**
+	 * Returns the point where this edge intersects its source node.
+	 * 
+	 * @return the point where this edge intersects its source node.
+	 */
 	public abstract Point2D.Float getSourceEndPoint();
 
+	/**
+	 * Returns the point where this edge intersects its target node.
+	 * 
+	 * @return the point where this edge intersects its target node.
+	 */
 	public abstract Point2D.Float getTargetEndPoint();
 		
+	/**
+	 * Computes the shape (curve, line etc.) that visually represents this edge.
+	 */
 	public abstract void computeEdge();
 		
+	/**
+	 * Returns true iff this is a straight edge. 
+	 * 
+	 * @return true iff this is a straight edge
+	 */
 	public abstract boolean isStraight();
+
+	/**
+	 * Sets the point of type <code>pointType</code> to <code>point</code>. 
+	 * 
+	 * @param point the value to set the point 
+	 * @param pointType a constant indicating which point to set
+	 */
+	public abstract void setPoint(Point2D point, int pointType);
+
+	/**
+	 * @param pointType
+	 * @return true iff the given point type is movable for this edge
+	 */
+	public abstract boolean isMovable(int pointType);	
 }

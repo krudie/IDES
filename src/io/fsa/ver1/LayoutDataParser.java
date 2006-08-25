@@ -297,7 +297,7 @@ public class LayoutDataParser extends AbstractParser {
 		Iterator<Edge> edges = source.adjacentEdges();
 		while(edges.hasNext()){
 			Edge edge = edges.next();
-			if(source.equals(edge.getSource()) && target.equals(edge.getTarget())){
+			if(source.equals(edge.getSourceNode()) && target.equals(edge.getTargetNode())){
 				return edge;
 			}
 		}

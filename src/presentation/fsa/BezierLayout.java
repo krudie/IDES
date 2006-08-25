@@ -135,7 +135,7 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	public void computeCurve(){
 		if(edge != null){
-			computeCurve((NodeLayout)edge.getSource().getLayout(), (NodeLayout)edge.getTarget().getLayout());			
+			computeCurve((NodeLayout)edge.getSourceNode().getLayout(), (NodeLayout)edge.getTargetNode().getLayout());			
 		}
 	}
 	
@@ -164,10 +164,6 @@ public class BezierLayout extends GraphicalLayout {
 		Point2D.Float centre1 = s.getLocation();
 		Point2D.Float centre2 = t.getLocation();		
 		
-		// FIXME endpoints must be spaced around node arc; need to know about fellow edges.
-		// IDEA have the NodeLayout wiggle (rotate edges about centre) the desired/ideal adjacent edge 
-		// endpoints as calculated by EdgeLayout.
-		
 		Point2D.Float[] ctrls = new Point2D.Float[4]; 
 		
 		// TODO remove self-loop case
@@ -187,10 +183,6 @@ public class BezierLayout extends GraphicalLayout {
 			ctrls[P1] = s.getLocation();//		
 			ctrls[P2] = t.getLocation();
 			
-			
-			// endpoints are at intersection of straight line from centre1 to centre2 with arcs of nodes
-//			ctrls[P1] = Geometry.add(centre1, Geometry.scale(unitBase, s.getRadius()));//		
-//			ctrls[P2] = Geometry.add(centre2, Geometry.scale(unitBase, -t.getRadius())); // -ArrowHead.SHORT_HEAD_LENGTH));
 			base = Geometry.subtract(ctrls[P2], ctrls[P1]);
 			norm = (float)Geometry.norm(base);
 			unitBase = Geometry.unit(base);		
@@ -238,17 +230,14 @@ public class BezierLayout extends GraphicalLayout {
 		ctrls[P1] = centre1;
 		ctrls[P2] = endPoint;
 		
-		if(s.getLocation().distance(endPoint) < 0.00001 ){ // TODO within epsilon of 0
+		if(s.getLocation().distance(endPoint) < 0.00001 ){ 
 			// set control points to node's centre
 			ctrls[CTRL1] = centre1;
 			ctrls[CTRL2] = endPoint;
 		}else{				
 			Point2D.Float dir = Geometry.subtract(endPoint, centre1);		
 			float norm = (float)Geometry.norm(dir);			
-			Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(
-			
-	//		ctrls[P1] = Geometry.add(centre1, Geometry.scale(unit, s.getRadius()));
-			
+			Point2D.Float unit = Geometry.unit(dir);  // computing norm twice :(			
 			dir = Geometry.subtract(endPoint, ctrls[P1]);
 			norm = (float)Geometry.norm(dir);
 			unit = Geometry.unit(dir);
@@ -263,40 +252,6 @@ public class BezierLayout extends GraphicalLayout {
 		setDirty(true);		
 	}
 	
-	
-	/**
-	 * @deprecated see class ReflexiveEdge
-	 * Returns a cubic bezier curve representing a self-loop for the
-	 * given node layout oriented in the given unit direction.
-	 * 
-	 * @param s the node layout	 
-	 */
-	public void computeDefaultSelfLoop(NodeLayout s){		
-		// rotate direction vector by alpha and -alpha
-		double angleScalar = 5 * s.getRadius() / NodeLayout.DEFAULT_RADIUS;  
-		angle1 = -Math.PI/angleScalar;
-		angle2 = -angle1;
-		s1 = 3f*NodeLayout.DEFAULT_RADIUS;
-		s2 = 3f*NodeLayout.DEFAULT_RADIUS;						
-		Point2D.Float axis = Geometry.scale(UNIT_VERTICAL, s.getRadius());
-		
-		Point2D.Float v1 = Geometry.rotate(axis, angle1);
-		Point2D.Float v2 = Geometry.rotate(axis, angle2);
-		
-		Point2D.Float[] ctrls = new Point2D.Float[4];
-		
-		ctrls[P1] = Geometry.add(s.getLocation(), v1);
-		ctrls[P2] = Geometry.add(s.getLocation(), v2);
-		ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(Geometry.unit(v1), (float)s1));
-		ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(Geometry.unit(v2), (float)s2));
-		
-		curve.setCurve(ctrls, 0);
-		Point2D midpoint = Geometry.midpoint(curve);
-	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
-	    //selfLoop = true;
-		setDirty(true);
-	}
-		
 	
 	/**
 	 * Computes and stores:
@@ -344,34 +299,38 @@ public class BezierLayout extends GraphicalLayout {
 	/** 
 	 * Sets the control point with the given index to <code>point</code>.  
 	 * Precondition: <code>index</code> is a valid index i.e. P1, P2, CTRL1, CTRL2.
+	 * Precondition: point != null
 	 *   
 	 * @param point the value of the control point
 	 * @param index the index of the control point to be set
 	 */
-	public void setPoint(Point2D.Float point, int index){		
+	public void setPoint(Point2D point, int index){		
+		
+		float x = (float)point.getX();
+		float y = (float)point.getY();
 		
 		switch (index){
 			case P1:
-				curve.x1 = point.x;
-				curve.y1 = point.y;
+				curve.x1 = x;
+				curve.y1 = y;
 				break;
 			case P2:
-				curve.x2 = point.x;
-				curve.y2 = point.y;
+				curve.x2 = x;
+				curve.y2 = y;
 				break;				
 			case CTRL1:
-				curve.ctrlx1 = point.x;
-				curve.ctrly1 = point.y;
+				curve.ctrlx1 = x;
+				curve.ctrly1 = y;
 				break;
 			case CTRL2:
-				curve.ctrlx2 = point.x;
-				curve.ctrly2 = point.y;
+				curve.ctrlx2 = x;
+				curve.ctrly2 = y;
 				break;
 			default: throw new IllegalArgumentException("Invalid control point index: " + index);
 		}
 		
 		// DEBUG  OKAY before call updateAnglesEtc...
-		edge.assertAllPointsNumbers(curve);
+		//edge.assertAllPointsNumbers(curve);
 		
 		updateAnglesAndScalars();				
 		setDirty(true);
@@ -397,8 +356,8 @@ public class BezierLayout extends GraphicalLayout {
 	{
 		// TODO check sourceT and targetT
 		
-		Node s = edge.getSource();
-		Node t = edge.getTarget();
+		Node s = edge.getSourceNode();
+		Node t = edge.getTargetNode();
 		if(s.intersects(curve.getPointAt(targetT)) || 
 				( t != null && t.intersects(curve.getPointAt(sourceT)) ) )
 		{
@@ -623,7 +582,7 @@ public class BezierLayout extends GraphicalLayout {
 	{
 		if( other.isStraight() ) return;
 		
-		if( this.edge.getSource().equals(other.edge.getSource()) ){			
+		if( this.edge.getSourceNode().equals(other.edge.getSourceNode()) ){			
 				this.angle1 = other.angle1 * -1;
 				this.angle2 = other.angle2 * -1;							
 		}else{ // heads to toes			
@@ -650,7 +609,7 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	protected void setSourceT(float sourceT) {
 		//assert(0 <= sourceT && sourceT < targetT);
-		if(! (0 <= sourceT && sourceT < targetT ) ) System.err.println("s=" + sourceT + ", t=" + targetT);
+		//if(! (0 <= sourceT && sourceT < targetT ) ) System.err.println("s=" + sourceT + ", t=" + targetT);
 		this.sourceT = sourceT;
 	}
 
@@ -666,7 +625,7 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	protected void setTargetT(float targetT) {
 		//assert(sourceT < targetT && targetT <=1);
-		if(! (sourceT < targetT && targetT <=1) ) System.err.println("s=" + sourceT + ", t=" + targetT);
+		//if(! (sourceT < targetT && targetT <=1) ) System.err.println("s=" + sourceT + ", t=" + targetT);
 		this.targetT = targetT;
 	}
 

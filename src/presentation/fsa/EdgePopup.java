@@ -86,9 +86,12 @@ public class EdgePopup extends JPopupMenu {
 				(int)p.y);
 	}
 			
-	public void setEdge(Edge edge){
+	public void setEdge(Edge edge){		
 		this.edge = edge;
 		deleteCmd.setElement(edge);
+		if(edge != null){
+			miArcLess.setEnabled(!edge.isStraight());
+		}
 	}
 
 	class MenuListener implements ActionListener {

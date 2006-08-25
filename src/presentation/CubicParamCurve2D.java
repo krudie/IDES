@@ -226,7 +226,7 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
 
     /**
-     * precondition 0 <= tStart < tEnd <= 1
+     * Precondition 0 <= tStart < tEnd <= 1
      * 
      * @param tStart 	0 <= tStart < tEnd
      * @param tEnd  	tStart < tEnd <= 1
@@ -235,8 +235,8 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     public CubicParamCurve2D getSegment(float tStart, float tEnd)
     {
     	// DEBUG
-    	if(! (0 <= tStart && tStart < tEnd && tEnd <=1) )
-    		System.err.println("tStart= " + tStart + " tEnd = " + tEnd );
+    	/*if(! (0 <= tStart && tStart < tEnd && tEnd <=1) )
+    		System.err.println("tStart= " + tStart + " tEnd = " + tEnd );*/
     	
     	//assert(0 <= tStart && tStart < tEnd && tEnd <=1);
     	

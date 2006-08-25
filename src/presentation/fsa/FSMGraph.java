@@ -362,8 +362,8 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	private Edge directedEdgeBetween(Node source, Node target){		
 		for(Edge e : edges.values())
 		{			
-			if(e.getSource() != null && e.getSource().equals(source) 
-					&& e.getTarget() != null && e.getTarget().equals(target)){
+			if(e.getSourceNode() != null && e.getSourceNode().equals(source) 
+					&& e.getTargetNode() != null && e.getTargetNode().equals(target)){
 				return e;
 			}
 		}		
@@ -394,7 +394,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 * @param p the location of the new node
 	 */
 	public void finishEdgeAndCreateTargetNode(BezierEdge e, Point2D.Float p){	
-		if( ! e.getSource().intersects(p) ){
+		if( ! e.getSourceNode().intersects(p) ){
 			finishEdge(e, createNode(p));
 			//return true;
 		}else{
@@ -413,17 +413,17 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	  */
 	public void finishEdge(BezierEdge e, CircleNode target){
 			
-		e.setTarget(target);			
+		e.setTargetNode(target);			
 		e.computeEdge();	
 		
 		// Distribute multiple directed edges between same node pair.
-		Set<Edge> neighbours = getEdgesBetween(target, e.getSource());
+		Set<Edge> neighbours = getEdgesBetween(target, e.getSourceNode());
 		if(neighbours.size() > 0)
 		{
 			e.insertAmong(neighbours);
 		}
 
-		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSource().getId()), fsa.getState(target.getId()));
+		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSourceNode().getId()), fsa.getState(target.getId()));
 		
 		// TO BE REMOVED /////////////////////////////
 		metaData.setLayoutData(t, e.getBezierLayout());
@@ -432,7 +432,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		e.addTransition(t);
 		
 		// NOTE must assign transition to edge before inserting edge as children of end nodes.
-		e.getSource().insert(e);	
+		e.getSourceNode().insert(e);	
 		target.insert(e);		
 
 		//fsa.notifyAllBut(this);
@@ -461,10 +461,10 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		Set<Edge> set = new HashSet<Edge>();
 		for(Edge e : edges.values())
 		{			
-			if(e.getSource() != null && e.getTarget() != null 
-				&& 
-				e.getSource().equals(n1) && e.getTarget().equals(n2) 
-				|| e.getSource().equals(n2) && e.getTarget().equals(n1) )
+			if((e.getSourceNode() != null && e.getTargetNode() != null)
+				&& (e.getSourceNode().equals(n1) && e.getTargetNode().equals(n2) 
+						|| e.getSourceNode().equals(n2) && e.getTargetNode().equals(n1)) 
+				)
 			{
 				set.add(e);
 			}
@@ -717,10 +717,13 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 		n.setInitial(b);
 		
 		// add or remove the intial arrow from the set of edges
-		if(b){
-			edges.put(n.getInitialArrow().getId(), n.getInitialArrow());						
-		}else{			
-			edges.remove(n.getInitialArrow().getId());			
+		InitialArrow arrow = n.getInitialArrow();
+		if(arrow != null){
+			if(b){
+				edges.put(arrow.getId(), arrow);					
+			}else{
+				edges.remove(arrow.getId());			
+			}
 		}				
 		
 		fsa.removeSubscriber(this);
@@ -792,7 +795,7 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 				 t.setEvent(e);
 			}else{ // more events than transitions
 				// create a new transition
-				toAdd.add(new Transition(fsa.getFreeTransitionId(), edge.getSource().getState(), edge.getTarget().getState(), e));
+				toAdd.add(new Transition(fsa.getFreeTransitionId(), edge.getSourceNode().getState(), edge.getTargetNode().getState(), e));
 			}
 		}
 		
@@ -904,11 +907,11 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			fsa.remove(transitions.next());
 			fsa.addSubscriber(this);
 		}
-		Node source = e.getSource();
+		Node source = e.getSourceNode();
 		if(source != null){
 			source.remove(e);
 		}
-		Node target = e.getTarget();
+		Node target = e.getTargetNode();
 		if(target != null){
 			target.remove(e);
 		}
@@ -1151,6 +1154,9 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 			}
 		}
 		
+		fireFSMGraphSelectionChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+										FSMGraphMessage.SELECTION, g.getId(), g.bounds(), this));
+		
 		return g;
 	}
 
@@ -1163,31 +1169,48 @@ public class FSMGraph extends GraphElement implements FSMSubscriber {
 	 */
 	protected GraphElement getElementIntersectedBy(Point2D p){
 						
+		GraphElement el = null;
+		int type = FSMGraphMessage.UNKNOWN_TYPE;
+		
 		for(GraphLabel gLabel : edgeLabels.values()){
-			if(gLabel.intersects(p)){		
-				return gLabel;				
-			}
-		}
-					
-		for(Edge e : edges.values()){			
-			if(e.intersects(p)){		
-				return e;				
+			if(gLabel.intersects(p)){
+				type = FSMGraphMessage.LABEL;
+				el = gLabel;				
 			}
 		}
 		
-		for(Node n : nodes.values()){			
-			if(n.intersects(p)){				
-				return n;				
+		if(el == null){
+			for(Edge e : edges.values()){			
+				if(e.intersects(p)){		
+					type  = FSMGraphMessage.EDGE;
+					el = e;				
+				}
 			}
-		}	
+		}
+		
+		if(el == null){
+			for(Node n : nodes.values()){			
+				if(n.intersects(p)){
+					type = FSMGraphMessage.NODE;
+					el = n;				
+				}
+			}	
+		}
 			
-		for(GraphLabel l : freeLabels.values()){			
-			if(l.intersects(p)){				
-				return l;				
-			}
-		}		
-		// no intersection
-		return null;
+		if(el == null){
+			for(GraphLabel l : freeLabels.values()){			
+				if(l.intersects(p)){
+					type = FSMGraphMessage.LABEL;
+					el = l;				
+				}
+			}		
+		}
+		
+		if(el != null){
+			fireFSMGraphSelectionChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
+											type, el.getId(), el.bounds(), this));
+		}
+		return el;
 	}
 
 	
