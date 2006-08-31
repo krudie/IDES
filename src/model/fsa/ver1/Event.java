@@ -5,7 +5,7 @@ import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;
 
 /**
- * Represents an events in an automaton.
+ * Represents an event in an automaton.
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
@@ -25,7 +25,7 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 
     
     /**
-     * constructs an event with all internal variables equal to the event e.
+     * Constructs an event with all internal variables equal to the event e.
      * @param e the event the new event must equal.
      */
     public Event(Event e){
@@ -40,7 +40,7 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
     }
 
     /**
-     * constructs an event with all internal variables equal to the event e.
+     * Constructs an event with all internal variables equal to the event e.
      * @param e the event the new event must equal.
      */
     public Event(FSAEvent e){
@@ -53,7 +53,9 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
         //TODO: also transfer other properties
     }
 
-    /**     
+    /**
+     * Returns the symbol that represents this event in the (local?) alphabet.
+     *      
      * @return the symbol that represents this event
      */
 	public String getSymbol() {
@@ -61,6 +63,11 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 		return eventSymbol != null ? eventSymbol.getChars() : "";
 	}
 
+	/**
+	 * Sets the symbol for this event to <code>symbol</code>.
+	 * 
+	 * @param the symbol to set
+	 */
 	public void setSymbol(String symbol){		
 		SubElement eventSymbol = getSubElement("name");
 		if(eventSymbol == null){
@@ -69,15 +76,29 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 		eventSymbol.setChars(symbol);	
 	}
 
+	/**
+	 * Returns the unique id for this event. 
+	 * 
+	 * @return the unique id among the (local?) event set
+	 */
 	public long getId() {
 		return id;
 	}
 
-
+	/**
+	 * Sets the unique id among the (local?) event set to <code>id</code>. 
+	 * 
+	 * @param id the id to set
+	 */
 	public void setId(long id) {
 		this.id = id;
 	}
 
+	/**
+	 * Returns the event symbol. 
+	 * 
+	 * @return event symbol as a string
+	 */
 	public String toString(){
 		return getSymbol();
 	}
@@ -113,51 +134,6 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 		SubElement properties = this.getSubElement("properties");
 		return properties.getSubElement("observable") != null;
 	}
-	
-	////////////////////////////////////////////////////////////
-	// Not using this code yet.  Had an idea that we'd keep property
-	// access generic to reduce number of commands kicking around ...
-	/**
-	 * Sets the given attribute to the given value.
-	 * If <code>attribute</code> is not a valid attribute name,
-	 * does nothing.  
-	 */
-	public void set(String attribute, String value) {
-		if(attribute.equals("controllable")){
-			
-			return;
-		}
-		if(attribute.equals("observable")){
-			
-			return;
-		}
-		if(attribute.equals("symbol")){
-			setSymbol(value);
-			return;
-		}
-		// DEBUG
-		System.err.println("State: cannot set attribute " + attribute);		
-	}
-	
-	public String get(String attribute) {
-		if(attribute.equals("controllable")){
-			
-			return null;
-		}
-		if(attribute.equals("observable")){
-			
-			return null;
-		}
-		if(attribute.equals("symbol")){
-			
-			return null;
-		}
-		// DEBUG
-		System.err.println("State: cannot get attribute " + attribute);		
-		return null;
-	}
-	///////////////////////////////////////////////////////////////////
-
 
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(T)
@@ -168,8 +144,9 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 	
 	public boolean equals(Object o)
 	{
-		if(!(o instanceof FSAEvent))
+		if(!(o instanceof FSAEvent)){
 			return false;
+		}
 		return getSymbol().equals(((FSAEvent)o).getSymbol());
 	}
 }

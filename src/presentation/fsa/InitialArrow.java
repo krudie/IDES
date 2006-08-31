@@ -1,6 +1,3 @@
-/**
- * 
- */
 package presentation.fsa;
 
 import java.awt.Color;
@@ -13,15 +10,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 import java.util.Set;
 
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 
 /**
- * A visual representation of the arrow indicating the initial 
- * node in a finite state machine.
+ * A visual representation of the arrow on a node indicating the initial 
+ *  state in a finite state machine.
  * 
  * @author Helen Bretzke
  * DES Lab, ECE Dept. Queen's University 
@@ -95,8 +91,7 @@ public class InitialArrow extends Edge {
 		if( ! isVisible() ) return;
 		
 		if(isDirty()){
-			refresh();
-			getHandler().refresh();			
+			refresh();				
 		}
 
 		Graphics2D g2d = (Graphics2D)g;
@@ -175,6 +170,7 @@ public class InitialArrow extends Edge {
 		// TODO get rid of direction field and just use get and setArrow in NodeLayout		
 		((NodeLayout)getTargetNode().getLayout()).setArrow(direction);		
 		computeEdge();
+		getHandler().refresh();
 		setDirty(false);
 	}
 	
@@ -297,8 +293,8 @@ public class InitialArrow extends Edge {
 		if(pointType == P1){			
 			line.x1 = (float)point.getX();
 			line.y1 = (float)point.getY();
-			setDirty(true);
-		}		
+			refresh();	
+		}				
 	}
 
 	/* (non-Javadoc)

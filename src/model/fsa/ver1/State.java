@@ -11,7 +11,7 @@ import model.fsa.FSATransition;
 
 
 /**
- * Model of the state
+ * Model of a state in a finite state automaton. 
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
@@ -137,16 +137,27 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		return props.getSubElement("marked") != null;		
 	}	
 
-	public void setInitial(boolean b){
+	/**
+	 * Flags this state as initial iff <code>initial</code> is true.
+	 * 
+	 * @param initial the initial property to set
+	 */
+	public void setInitial(boolean initial){
 		SubElement props = getSubElement("properties");
-		if(b && !isInitial()){			
+		if(initial && !isInitial()){			
 			props.addSubElement(new SubElement("initial"));			
 		}
-		if(!b && isInitial()){
+		if(!initial && isInitial()){
 			props.removeSubElement("initial");
 		}
 	}
 	
+	/**
+	 * Marks this state as final iff <code>mark</code> is true.
+	 * i.e. sets the marked property to the given value.
+	 * 
+	 * @param mark the marked property to set
+	 */
 	public void setMarked(boolean mark){
 		SubElement props = getSubElement("properties");
 		if(mark && !isMarked()){					
@@ -157,34 +168,6 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		}
 	}
 	
-//	/******************************************************************
-//	 * REMOVE from this class, the name is graphical layout information, 
-//	 * not pertinent to the machine.
-//	 * 
-//	 * @param name
-//	 */
-//	public void setName(String name){
-//		SubElement n = new SubElement("name");
-//		n.setChars(name);
-//		addSubElement(n);
-//	}
-//	
-//	/**
-//	 * If this state has been labelled, returns the name
-//	 * otherwise returns the empty string.
-//	 * 
-//	 * @return the name of this state
-//	 */
-//	public String getName(){
-//		SubElement name = getSubElement("name");
-//		if(name != null){
-//			return (name.getChars() != null) ? name.getChars() : "";
-//		}else{
-//			return "";
-//		}
-//	}
-//	/********************************************************************/
-	
 	public void setId(long id) {
 		this.id = id;		
 	}
@@ -193,33 +176,6 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		return id;
 	}
 
-	/**
-	 * Sets the given attribute to the given value.
-	 * If <code>attribute</code> is not a valid attribute name,
-	 * does nothing.	 
-	 * 
-	 * TODO change string literals to constants in a set of valid attribute names. 
-	 */
-	public void set(String attribute, String value) {
-		// TODO Auto-generated method stub
-		if(attribute.equals(ATTR_MARKED)){
-			setMarked(Boolean.parseBoolean(value)); 
-			return;
-		}
-		
-		if(attribute.equals(ATTR_INITIAL)){
-			setInitial(Boolean.parseBoolean(value));
-			return;
-		}
-
-		// DEBUG
-		System.err.println("State: cannot set attribute " + attribute);
-	}
-
-	public String get(String attribute) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	/**
 	 * Gets the list of ids of the states of which this state is a composition.

@@ -141,12 +141,5 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
     }
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	/**************************************************************
-	 * Does nothing since transitions don't have attributes (yet).
-	 */
-	public void set(String attribute, String value) {}
-	public String get(String attribute) {return null;}
-	/**************************************************************/
+	}	
 }

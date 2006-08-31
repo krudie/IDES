@@ -13,7 +13,5 @@ public interface DESElement {
 	 * @param id the id to be set.
 	 */
 	public abstract void setId(long id);
-	
-	public abstract void set(String attribute, String value);
-	public abstract String get(String attribute);
+		
 }

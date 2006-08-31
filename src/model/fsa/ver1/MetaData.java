@@ -15,14 +15,7 @@ import presentation.fsa.NodeLayout;
 
 /**
  * Store and extracts the metadata for a given Automaton.
- * 
- * ??? Is this class a publisher or a subscriber?  
- * to Automaton (pushes and pulls)? 
- * to GraphModel (pushes and pulls)?
- * 
- * TODO  If layout information is missing, call GraphViz(?) to layout the graph
- * representing the Automaton. 
- * 
+ * @deprecated 
  * @author helen bretzke
  *
  */

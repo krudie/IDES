@@ -5,12 +5,11 @@ package presentation.fsa;
 
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 
 import presentation.Geometry;
 
 /**
- * This is a filled polygon in the shape of an arrowhead.
+ * A filled polygon in the shape of an arrowhead.
  * 
  * @author Helen Bretzke
  */
@@ -20,8 +19,6 @@ public class ArrowHead extends Polygon {
 	private Point2D.Float basePt = new Point2D.Float(0,0); // the nock where the shaft terminates
 	
     public static final int HEAD_LENGTH = 9, SHORT_HEAD_LENGTH = 7;
-    private static final double ANGLE = 3*Math.PI/4;
-	
     /**
      * Centre axis vector of default direction. 
      */
@@ -29,66 +26,50 @@ public class ArrowHead extends Polygon {
     
     
     /**
-     * Construct an invisible ArrowHead.
+     * Construct a default arrowhead at location (0,0) and orientation
+     * in direction (0,1) ie. pointing down.
      */
     public ArrowHead(){
     	reset();
     }
 
     /**
-     * Construct the ArrowHead.
+     * Construct an ArrowHead shape oriented in direction <code>dir</code>
+     * with nock located at <code>base</code>.
      * 
      * @param dir A unit direction from nock to tip.
      * @param base the coordinates of the nock
      */
     public ArrowHead(Point2D.Float dir, Point2D.Float base){
-        update(dir, base);
+        setLocationAndDirection(base, dir);
     } 
       
-    public ArrowHead(Point2D.Float dir, Point2D base){
-        update(dir, new Point2D.Float((float)base.getX(), (float)base.getY()));
+    /**
+     * Construct an ArrowHead shape oriented in direction <code>dir</code>
+     * with nock located at <code>base</code>.
+     * 
+     * @param dir A unit direction from nock to tip.
+     * @param base the coordinates of the nock
+     */
+    public ArrowHead(Point2D dir, Point2D base){
+        setLocationAndDirection(new Point2D.Float((float)base.getX(), (float)base.getY()),
+        						new Point2D.Float((float)dir.getX(), (float)dir.getY()) );
     } 
+        
     
-    /**
-     * TODO reimplement to use a table of points for all of 360 possible arrows.
-     * Do all possible rotations on a single initialization.
-     *  
-     * @param dir unit direction vector
+    /** 
+     * Set my location to <code>base</code> and rotate all of my points to
+     * orient with direction vector <code>dir</code>.
+     * 
+     * NOTE this method is not used when drawing the arrowhead
+     * on edges since problems occurred with flicker.
+     * When drawing arrowhead on canvas use AffineTransform on the Graphics context.
+     * 
      * @param base base point of the arrow head
-     */
-//    public void update(Point2D.Float dir, Point2D.Float base){
-//    	reset();
-////    	 TODO replace magic number with the stroke width for the border of node's circle + 1
-//    	dir = Geometry.scale(dir, SHORT_HEAD_LENGTH - 2);  
-//	    addPoint((int)(base.x + dir.x), (int)(base.y + dir.y));
-//	    
-//	    // FIXME fix the length of the v vectors
-//	    Point2D.Float v = Geometry.scale(Geometry.rotate(dir, ANGLE),0.75f);
-//		addPoint((int)(base.x + v.x), (int)(base.y + v.y));	    
-//	    addPoint((int)base.x, (int)base.y);
-//	    v = Geometry.scale(Geometry.rotate(dir, -ANGLE), 0.75f);	
-//	    addPoint((int)(base.x + v.x), (int)(base.y + v.y));
-//    }   
- 
-    
-    /**
-     * FIXME 
-     * - ArrowHead direction is oscillating as target node is moved
-     * - symmetry of shape is lost due to precision problems when rotating
-     *  
      * @param dir unit direction vector
-     * @param base base point of the arrow head
      */
-    public void update(Point2D.Float dir, Point2D.Float base){
+    public void setLocationAndDirection(Point2D.Float base, Point2D.Float dir){
     	reset();
-//    	double alpha = Geometry.angleFrom(vert, dir);
-//    	Point2D.Float temp = Geometry.rotate(vert, alpha);
-//	    addPoint((int)temp.x, (int)temp.y);
-//	    Point2D.Float v = Geometry.scale(Geometry.rotate(temp, ANGLE), 0.75f);
-//		addPoint((int)v.x, (int)v.y);	    
-//	    addPoint(0, 0);
-//	    v = Geometry.scale(Geometry.rotate(temp, -ANGLE), 0.75f);	
-//	    addPoint((int)v.x, (int)v.y);
     	this.basePt = base;    	
     	double alpha = Geometry.angleFrom(axis, dir);
     	for(int i=0; i<npoints; i++){
@@ -99,6 +80,10 @@ public class ArrowHead extends Polygon {
     	}    	    	
     }   
     
+    /**
+     * Sets arrowhead to default location (0,0) and orientation
+     * in direction (0,1) ie. pointing down.
+     */
     public void reset()
     {
     	super.reset();
@@ -110,6 +95,11 @@ public class ArrowHead extends Polygon {
 	    addPoint(6, -5);
     }
 
+    /**
+     * Returns the base point or location of nock of this arrowhead. 
+     * 
+     * @return the base point
+     */
 	protected Point2D.Float getBasePt() {
 		return basePt;
 	}
