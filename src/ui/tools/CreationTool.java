@@ -58,7 +58,9 @@ public class CreationTool extends DrawingTool {
 	}
 	
 	@Override
-	public void handleMouseClicked(MouseEvent me) {	
+	public void handleMouseClicked(MouseEvent me) {
+		super.handleMouseClicked(me);
+		
 		if(aborted){
 			aborted = false;
 			return;
@@ -77,7 +79,9 @@ public class CreationTool extends DrawingTool {
 	}
 
 	@Override
-	public void handleMousePressed(MouseEvent me) {		
+	public void handleMousePressed(MouseEvent me) {
+		super.handleMousePressed(me);
+		
 		context.clearCurrentSelection();
 		startNode = null;
 		cmd = null;
@@ -99,6 +103,7 @@ public class CreationTool extends DrawingTool {
 
 	@Override
 		public void handleMouseReleased(MouseEvent me) {
+			super.handleMouseReleased(me);
 			    
 			context.clearCurrentSelection();			
 			endNode = null;
@@ -244,6 +249,7 @@ public class CreationTool extends DrawingTool {
 	}	
 
 	public void handleRightClick(MouseEvent me){
+		super.handleRightClick(me);
 		abortEdge();
 		context.repaint();
 		super.handleRightClick(me);		
@@ -266,6 +272,8 @@ public class CreationTool extends DrawingTool {
 
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
+		super.handleMouseDragged(me);
+		
 		// if drawing an edge, recompute the curve
 		if(dragging && drawingEdge){
 			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));

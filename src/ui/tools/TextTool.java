@@ -28,6 +28,8 @@ public class TextTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
+		super.handleMouseClicked(me);
+		
 		if(me.getClickCount() != 2){
 			context.setTool(GraphDrawingView.SELECT);
 			context.getCurrentTool().handleMouseClicked(me);
@@ -45,24 +47,24 @@ public class TextTool extends DrawingTool {
 		context.setTool(GraphDrawingView.DEFAULT);
 	}
 
-	@Override
-	public void handleKeyTyped(KeyEvent ke) {}
-	
-	@Override
-	public void handleMouseDragged(MouseEvent me) {}
-
-	@Override
-	public void handleMouseMoved(MouseEvent me) {}
-
-	@Override
-	public void handleMousePressed(MouseEvent me) {}
-
-	@Override
-	public void handleMouseReleased(MouseEvent me) {}
-
-	@Override
-	public void handleKeyPressed(KeyEvent ke) {}
-
-	@Override
-	public void handleKeyReleased(KeyEvent ke) {}
+//	@Override
+//	public void handleKeyTyped(KeyEvent ke) {}
+//	
+//	@Override
+//	public void handleMouseDragged(MouseEvent me) {}
+//
+//	@Override
+//	public void handleMouseMoved(MouseEvent me) {}
+//
+//	@Override
+//	public void handleMousePressed(MouseEvent me) {}
+//
+//	@Override
+//	public void handleMouseReleased(MouseEvent me) {}
+//
+//	@Override
+//	public void handleKeyPressed(KeyEvent ke) {}
+//
+//	@Override
+//	public void handleKeyReleased(KeyEvent ke) {}
 }

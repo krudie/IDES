@@ -25,6 +25,8 @@ public class MovementTool extends DrawingTool {
 	
 	@Override
 	public void handleMousePressed(MouseEvent me) {
+		super.handleMousePressed(me);
+		
 		// get the object to be moved		
 		start = me.getPoint();
 		prev = start;
@@ -46,6 +48,8 @@ public class MovementTool extends DrawingTool {
 	}
 	
 	public void handleMouseDragged(MouseEvent me) {
+		super.handleMouseDragged(me);
+		
 		// update the location of the selected objects 
 		if(start == null){
 			start = me.getPoint();
@@ -60,6 +64,8 @@ public class MovementTool extends DrawingTool {
 
 	@Override
 	public void handleMouseReleased(MouseEvent me) {
+		super.handleMouseReleased(me);
+		
 		end = me.getPoint();
 
 		// Null pointer exception, hard to replicate
@@ -103,16 +109,16 @@ public class MovementTool extends DrawingTool {
         }
 	}
 	
-	@Override
-	public void handleMouseMoved(MouseEvent me) {}
-	
-	@Override
-	public void handleMouseClicked(MouseEvent me) {}
-
-	@Override
-	public void handleKeyPressed(KeyEvent ke) {}
-
-	@Override
-	public void handleKeyReleased(KeyEvent ke) {}
+//	@Override
+//	public void handleMouseMoved(MouseEvent me) {}
+//	
+//	@Override
+//	public void handleMouseClicked(MouseEvent me) {}
+//
+//	@Override
+//	public void handleKeyPressed(KeyEvent ke) {}
+//
+//	@Override
+//	public void handleKeyReleased(KeyEvent ke) {}
 	
 }

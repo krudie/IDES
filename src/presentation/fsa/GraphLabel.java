@@ -360,6 +360,18 @@ public class GraphLabel extends GraphElement {
 		updateMetrics();
 	}
 
+	public void softSetText(String s){
+		if(s==null)
+			s="";
+		if(!s.equals(getLayout().getText()))
+		{
+			getLayout().setText(s);
+			rendered=null;
+		}
+		setDirty(true);
+		updateMetrics();
+	}
+
 	/**
 	 * Renders the label using LaTeX.
 	 * @throws LatexRenderException if rendering fails

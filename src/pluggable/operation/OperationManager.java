@@ -33,4 +33,12 @@ public class OperationManager {
 	{
 		return operations.get(name);
 	}
+	
+	public static FilterOperation getFilterOperation(String name)
+	{
+		if(operations.get(name) instanceof FilterOperation)
+			return (FilterOperation)operations.get(name);
+		else
+			return null;
+	}
 }

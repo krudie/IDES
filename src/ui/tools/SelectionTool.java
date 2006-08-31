@@ -45,7 +45,9 @@ public class SelectionTool extends DrawingTool {
 	/**
 	 * Stretch the selection rectangle.
 	 */
-	public void handleMouseDragged(MouseEvent me) {		
+	public void handleMouseDragged(MouseEvent me) {
+		super.handleMouseDragged(me);
+		
 		if(moving){ return; }
 		
 		if(!dragging) {
@@ -91,7 +93,8 @@ public class SelectionTool extends DrawingTool {
 	/**
 	 * Handle mouse down events by preparing for a drag.
 	 */
-	public void handleMousePressed(MouseEvent me) {		
+	public void handleMousePressed(MouseEvent me) {
+		super.handleMousePressed(me);
 		
 		// Prepare to move a group of multiple selected elements on drag event
 		// only if I have intersected the group.		
@@ -136,7 +139,9 @@ public class SelectionTool extends DrawingTool {
 	 * On mouse up, select or toggle the items under the mouse 
 	 * or in the selection rectangle.
 	 */
-	public void handleMouseReleased(MouseEvent me) {		
+	public void handleMouseReleased(MouseEvent me) {
+		super.handleMouseReleased(me);
+		
 		if(dragging){
 			// compute the set of graph elements hit by rectangle
 			context.updateCurrentSelection(box);
@@ -151,7 +156,9 @@ public class SelectionTool extends DrawingTool {
 	}
 
 	@Override
-	public void handleMouseClicked(MouseEvent me) {		
+	public void handleMouseClicked(MouseEvent me) {	
+		super.handleMouseClicked(me);
+		
 		// TODO if keyboard shift or control, add currently selected item to buffer		
 	}	
 	
@@ -164,9 +171,9 @@ public class SelectionTool extends DrawingTool {
 		}	
 	}
 
-	@Override
-	public void handleKeyPressed(KeyEvent ke) {}
-
-	@Override
-	public void handleKeyReleased(KeyEvent ke) {}
+//	@Override
+//	public void handleKeyPressed(KeyEvent ke) {}
+//
+//	@Override
+//	public void handleKeyReleased(KeyEvent ke) {}
 }

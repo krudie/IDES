@@ -107,7 +107,7 @@ public class Composition{
             if(initial[0].isInitial()){
                 Iterator<FSAState> sib = b.getStateIterator();
                 while(sib.hasNext()){
-                    initial[1] = (State)sib.next();
+                    initial[1] = sib.next();
                     if(initial[1].isInitial()){
                         searchList.add(initial.clone());
                         product.add(makeState(initial,stateNumber));

@@ -52,11 +52,6 @@ public class EdgePopup extends JPopupMenu {
 //		miStraighten = new JMenuItem("Straighten");
 //		miStraighten.setEnabled(false);
 //		add(miStraighten);
-
-		add(new JPopupMenu.Separator());		
-		deleteCmd = new DeleteCommand(view);
-		miDeleteEdge = deleteCmd.createMenuItem();
-		add(miDeleteEdge);
 		
 		// TODO arc more
 		miArcMore = new JMenuItem(Hub.string("arcmore"));
@@ -68,6 +63,11 @@ public class EdgePopup extends JPopupMenu {
 		miArcLess.addActionListener(listener);
 		add(miArcLess);
 		// TODO reverse
+
+		add(new JPopupMenu.Separator());		
+		deleteCmd = new DeleteCommand(view);
+		miDeleteEdge = deleteCmd.createMenuItem();
+		add(miDeleteEdge);
 		
 		addPopupMenuListener(new PopupListener());
 		setEdge(e);

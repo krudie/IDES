@@ -451,7 +451,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
 	
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.EDGE,
 				e.getId(), 
 				e.bounds(),
@@ -503,7 +503,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		//setDirty(true);		
 		
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.NODE,
 				n.getId(), 
 				dirtySpot,
@@ -531,7 +531,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		setDirty(true);		
 		
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.NODE,
 				n.getId(), 
 				dirtySpot,
@@ -567,7 +567,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		edges.put(e.getId(), e);		
 		edgeLabels.put(e.getId(), e.getLabel());
 		setDirty(true);
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.EDGE,
 				e.getId(), 
 				e.bounds(),
@@ -614,7 +614,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				((BezierLayout)e.getLayout()).addEventName(t.getEvent().getSymbol());
 		}
 
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.EDGE,
 				e.getId(), 
 				e.bounds(),
@@ -656,7 +656,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 
 		// ??? fire one nodification for the whole selection 
 		// or a message for each element in the group?
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.SELECTION,
 				FSAGraphMessage.UNKNOWN_ID, 
 				selection.bounds(),
@@ -843,7 +843,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}		
 		
 		setDirty(true);
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
 				edge.bounds(),
@@ -859,7 +859,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);	
 		//setDirty(true);
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
 				edge.bounds(),
@@ -875,7 +875,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}else{
 			freeLabels.remove(el.getId());
 			this.remove(el);
-			fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
 					FSAGraphMessage.LABEL,
 					FSAGraphMessage.UNKNOWN_ID, 
 					el.bounds(),
@@ -899,7 +899,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		((NodeLayout)n.getLayout()).dispose();
 		nodes.remove(new Long(n.getId()));
 		setDirty(true);
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
 				FSAGraphMessage.NODE,
 				n.getId(), 
 				n.adjacentBounds(),
@@ -924,7 +924,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		edgeLabels.remove(e.getId());
 		edges.remove(e.getId());
 		setDirty(true);		
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
 				FSAGraphMessage.NODE,
 				e.getId(), 
 				e.bounds(),
@@ -938,13 +938,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @param text the name for the node
 	 */
 	public void labelNode(Node n, String text){		
-		State s = (State)fsa.getState(n.getId());		
+		State s = (State)fsa.getState(n.getId());
 		n.getLayout().setText(text);
+		n.getLabel().setText(text);
 		// KLUGE ///////////////////////////////////////////
 		metaData.setLayoutData(s, (NodeLayout)n.getLayout());
 		/////////////////////////////////////////////////////
 		setDirty(true);		
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.NODE,
 				n.getId(), 
 				n.bounds(),
@@ -956,7 +957,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		freeLabels.put(label.getId(), label);
 		insert(label);
 		setDirty(true);		
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.LABEL,
 				FSAGraphMessage.UNKNOWN_ID, 
 				label.bounds(),
@@ -971,7 +972,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void setLabelText(GraphLabel freeLabel, String text) {
 		freeLabel.setText(text);
 		//setDirty(true);		
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.LABEL,
 				FSAGraphMessage.UNKNOWN_ID, 
 				freeLabel.bounds(),
@@ -1001,6 +1002,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		BezierEdge edge;
 		FSATransition toRemove = null;
 		Iterator iter = edges.entrySet().iterator();
+		Set<BezierEdge> edgesToRemove=new HashSet<BezierEdge>();
 		while(iter.hasNext()){			
 			entry = (Entry)iter.next();
 			edge = (BezierEdge)entry.getValue();
@@ -1014,11 +1016,20 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 					toRemove = t;
 				}
 			}
-			if(edge.transitionCount() > 1 && toRemove != null){
+			if(toRemove != null){
 				edge.removeTransition((Transition)toRemove);
 			}
-		}		
+			if(edge.transitionCount()==0)
+			{
+				edgesToRemove.add(edge);
+			}
+		}
+		for(BezierEdge e:edgesToRemove)
+			delete(e);
+		
+		fsa.removeSubscriber(this);
 		fsa.remove(event);
+		fsa.addSubscriber(this);
 	}
 	
 	public void setControllable(Event event, boolean b){
@@ -1040,7 +1051,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		el.symmetrize();	
 		
 		// TODO include edge label in bounds (dirty spot)
-		fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
 				edge.bounds(),
@@ -1160,7 +1171,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			}
 		}
 		
-		fireFSMGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+		fireFSAGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 										FSAGraphMessage.SELECTION, g.getId(), g.bounds(), this));
 		
 		return g;
@@ -1213,7 +1224,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}
 		
 		if(el != null){
-			fireFSMGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+			fireFSAGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 											type, el.getId(), el.bounds(), this));
 		}
 		return el;
@@ -1253,7 +1264,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * 
 	 * @param message
 	 */
-	private void fireFSMGraphChanged(FSAGraphMessage message)
+	private void fireFSAGraphChanged(FSAGraphMessage message)
 	{
 		for(FSAGraphSubscriber s : subscribers)
 		{
@@ -1269,7 +1280,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * 
 	 * @param message
 	 */
-	protected void fireFSMGraphSelectionChanged(FSAGraphMessage message)
+	protected void fireFSAGraphSelectionChanged(FSAGraphMessage message)
 	{
 		for(FSAGraphSubscriber s : subscribers)
 		{
@@ -1344,30 +1355,36 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		// TODO construct bounds of area affected
 		
 		if(message.getEventType() == FSAMessage.REMOVE){
-		
+			Set<Edge> edgesToRemove=new HashSet<Edge>();
 			for(Edge e : edges.values()){
 				Iterator<FSATransition> trans = e.getTransitions();
 				while(trans.hasNext()){
 					FSATransition t = trans.next();  // FIXME ConcurrentModificationException
 					FSAEvent event = t.getEvent();
 					if(event != null && event.getId() == message.getElementId()){
-						if(e.transitionCount() > 1){  // edge must have at least one transition
+						if(e.transitionCount()>0){
 							fsa.removeSubscriber(this);
 							fsa.remove(t);
 							fsa.addSubscriber(this);
-							trans.remove();					
+							trans.remove();		
 						}else{
 							t.setEvent(null);
 						}
 						// TODO handle different edge types
-						((BezierLayout)e.getLayout()).removeEventName(event.getSymbol());
-						e.setDirty(true);
+						if(e.transitionCount()>0)
+						{
+							((BezierLayout)e.getLayout()).removeEventName(event.getSymbol());
+							e.setDirty(true);
+						}
+						else
+							edgesToRemove.add(e);
 					}
 				}
 			}
-			
+			for(Edge e:edgesToRemove)
+				delete(e);
 			// FIXME this does not update the labels on the edges
-			fireFSMGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
 													FSAGraphMessage.EDGE,
 													message.getElementId(),
 													this.bounds(),
@@ -1409,11 +1426,31 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			for(Node n:nodes.values())
 			{
 				State s=(State)n.getState();
+				boolean emptyLabel=true;
 				String label="(";
 				for(int i=0;i<gs.length-1;++i)
+				{
+					if(!"".equals(gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()))
+						emptyLabel=false;
 					label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+				}
+				if(!"".equals(gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()))
+					emptyLabel=false;
 				label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()+")";
-				labelNode(n,label);
+				if(!emptyLabel)
+				{
+					n.getLayout().setText(label);
+					n.getLabel().softSetText(label);
+					// KLUGE ///////////////////////////////////////////
+					metaData.setLayoutData(s, (NodeLayout)n.getLayout());
+					/////////////////////////////////////////////////////
+					setDirty(true);		
+					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+							FSAGraphMessage.NODE,
+							n.getId(), 
+							n.bounds(),
+							this, ""));
+				}
 			}
 		}
 		else if(fsa.getAutomataCompositionList().length==1)
@@ -1434,7 +1471,19 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				}
 				else if(s.getStateCompositionList().length>0)
 					label=g.getNode(s.getStateCompositionList()[0]).getLabel().getText();
-				labelNode(n,label);
+				{
+					n.getLayout().setText(label);
+					n.getLabel().softSetText(label);
+					// KLUGE ///////////////////////////////////////////
+					metaData.setLayoutData(s, (NodeLayout)n.getLayout());
+					/////////////////////////////////////////////////////
+					setDirty(true);		
+					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+							FSAGraphMessage.NODE,
+							n.getId(), 
+							n.bounds(),
+							this, ""));
+				}
 			}
 		}
 	}

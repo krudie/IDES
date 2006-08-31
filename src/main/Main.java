@@ -15,6 +15,8 @@ import javax.swing.UIManager;
 
 import operations.fsa.ver1.Accessible;
 import operations.fsa.ver1.Coaccessible;
+import operations.fsa.ver1.Conflicting;
+import operations.fsa.ver1.Containment;
 import operations.fsa.ver1.Controllable;
 import operations.fsa.ver1.Meet;
 import operations.fsa.ver1.PrefixClosure;
@@ -106,6 +108,8 @@ public class Main {
 		OperationManager.register(new PrefixClosure());
 		OperationManager.register(new Controllable());
 		OperationManager.register(new SupCon());
+		OperationManager.register(new Containment());
+		OperationManager.register(new Conflicting());
 
 		try {
 	        UIManager.setLookAndFeel(

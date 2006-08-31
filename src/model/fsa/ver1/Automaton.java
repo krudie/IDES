@@ -4,6 +4,7 @@ import io.fsa.ver1.SubElement;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -271,6 +272,11 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
 	 */
     public void remove(FSAEvent e){
         events.remove(e);
+        for(Iterator<FSATransition> i=getTransitionIterator();i.hasNext();)
+        {
+        	if(e.equals(i.next().getEvent()))
+        		i.remove();
+        }
     	fireFSMEventSetChanged(new FSAMessage(FSAMessage.REMOVE,
     			FSAMessage.EVENT, e.getId(), this));
     }

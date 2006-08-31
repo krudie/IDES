@@ -44,6 +44,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m) {
+		super.handleMousePressed(m);
 			
 		// FIXME If an edge was just selected by SelectionTool,
 		// use it, don't lose it.
@@ -116,6 +117,8 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMouseDragged(MouseEvent m) {
+		super.handleMouseDragged(m);
+		
 		// came from selection tool
 		if(edge == null && context.hasCurrentSelection()){
 			edge = getEdge(context.getSelectedElement());
@@ -139,6 +142,8 @@ public class ModifyEdgeTool extends DrawingTool {
 	 */
 	@Override
 	public void handleMouseReleased(MouseEvent m) {
+		super.handleMouseReleased(m);
+		
 		if(dragging){ // TODO check to see if edge has been changed
 			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
 			cmd.execute();		
@@ -152,10 +157,10 @@ public class ModifyEdgeTool extends DrawingTool {
 	/* (non-Javadoc)
 	 * @see ui.tools.DrawingTool#handleMouseClicked(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void handleMouseClicked(MouseEvent m) {}
-	public void handleKeyTyped(KeyEvent ke) {}
-	public void handleKeyPressed(KeyEvent ke) {}
-	public void handleKeyReleased(KeyEvent ke) {}
-	public void handleMouseMoved(MouseEvent m) {}
+//	@Override
+//	public void handleMouseClicked(MouseEvent m) {}
+//	public void handleKeyTyped(KeyEvent ke) {}
+//	public void handleKeyPressed(KeyEvent ke) {}
+//	public void handleKeyReleased(KeyEvent ke) {}
+//	public void handleMouseMoved(MouseEvent m) {}
 }

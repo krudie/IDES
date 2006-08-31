@@ -31,6 +31,9 @@ public abstract class DrawingTool {
 	public Cursor getCursor() { return cursor; }
 	
 	public void handleRightClick(MouseEvent m){
+		if(context!=null)
+			context.requestFocus();
+		
 		// get intersected element and display appropriate popup menu
 		context.clearCurrentSelection();
 		if(context.updateCurrentSelection(m.getPoint())){
@@ -40,13 +43,34 @@ public abstract class DrawingTool {
 		}
 	}
 	
-	public abstract void handleMouseClicked(MouseEvent m);
-	public abstract void handleMouseDragged(MouseEvent m);
-	public abstract void handleMouseMoved(MouseEvent m);
-	public abstract void handleMousePressed(MouseEvent m);	
-	public abstract void handleMouseReleased(MouseEvent m);
-	public abstract void handleKeyTyped(KeyEvent ke);	
-	public abstract void handleKeyPressed(KeyEvent ke);
-	public abstract void handleKeyReleased(KeyEvent ke);
+	public void handleMouseClicked(MouseEvent m)
+	{
+		if(context!=null)
+			context.requestFocus();
+	}
+	
+	public void handleMouseDragged(MouseEvent m)
+	{
+		if(context!=null)
+			context.requestFocus();
+	}
+	
+	public void handleMouseMoved(MouseEvent m){}
+	
+	public void handleMousePressed(MouseEvent m)	
+	{
+		if(context!=null)
+			context.requestFocus();
+	}
+	
+	public void handleMouseReleased(MouseEvent m)
+	{
+		if(context!=null)
+			context.requestFocus();
+	}
+	
+	public void handleKeyTyped(KeyEvent ke){}	
+	public void handleKeyPressed(KeyEvent ke){}
+	public void handleKeyReleased(KeyEvent ke){}
 	
 }
