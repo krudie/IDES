@@ -81,6 +81,11 @@ public class BezierEdge extends Edge {
 	}
 	
 
+	/**
+	 * Renders this edge in the given graphics context.
+	 * 
+	 * @param g the graphics context. 
+	 */
 	public void draw(Graphics g) {
 		if( ! isVisible() ){
 			return;
@@ -193,12 +198,10 @@ public class BezierEdge extends Edge {
 		super.refresh(); // refresh all children
 		
 		CubicCurve2D.Float curve = getBezierLayout().getCurve();
-//		 DEBUG
-		assertAllPointsNumbers(curve);		
 		
-		// Should be computed and at least stored in layout class ////////////////////////////////
-		// TODO don't bother storing these points, just store the params (which are initialized to 0 and 1
-		// and ask for the visible segment of the curve as needed
+// DEBUG //////////////////////////////
+		assertAllPointsNumbers(curve);		
+///////////////////////////////////////
 		
 		Point2D.Float sourceEndPt = getSourceEndPoint();
 		if(sourceEndPt == null) 
@@ -225,9 +228,9 @@ public class BezierEdge extends Edge {
 		
 		if(!isSelected()){
 			getHandler().setVisible(false);
-		}	
-				
-	    getLabel().setText(getBezierLayout().getText());
+		}			
+		// FIXME text should always live in label's layout, not also in BezierLayout
+	    getLabel().setText(getBezierLayout().getText());	    
 	    
 	    // Compute location of label: midpoint of curve	plus offset vector     
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
@@ -235,15 +238,8 @@ public class BezierEdge extends Edge {
 	    Point2D.Float midpoint = (Point2D.Float)left.getP2();	    
 	    this.setLocation(midpoint);
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), getBezierLayout().getLabelOffset());	    
-	    getLabel().setLocation(location);
+	    getLabel().setLocation(location);	
 	    
-	    // Compute and store the arrow layout (the direction vector from base to tip of the arrow)
-	    // Make certain that it points the right direction when nodes are touching or overlapping.
-//	    Point2D.Float dir = computeArrowDirection();
-//	    
-//	    // FIXME arrow position must be moved to outside boundary of curve (backup by distance radius).
-//	    Point2D.Float unitDir = Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
-//	    arrowHead.update(unitDir, Geometry.add(curve.getP2(), Geometry.scale(unitDir, -(ArrowHead.SHORT_HEAD_LENGTH))));
 	    getBezierLayout().setDirty(false);
 	    setDirty(false);
 	}
@@ -447,7 +443,7 @@ public class BezierEdge extends Edge {
 
 			if(getTargetNode()!=null) //translation can occur in the middle of drawing a new edge
 			{
-				l.computeCurve((NodeLayout)getSourceNode().getLayout(), (NodeLayout)getTargetNode().getLayout());
+				l.computeCurve((CircleNodeLayout)getSourceNode().getLayout(), (CircleNodeLayout)getTargetNode().getLayout());
 			}			
 
 		}		
@@ -577,6 +573,14 @@ public class BezierEdge extends Edge {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#isMovable(int)
+	 */
+	@Override
+	public boolean isMovable(int pointType) {
+		return(pointType == BezierEdge.CTRL1 ||	pointType == BezierEdge.CTRL2);		
+	}
+
 	/**
 	 * Sets the point of the given type to <code>point</code>.
 	 * @param point
@@ -597,11 +601,11 @@ public class BezierEdge extends Edge {
 	 * @param s
 	 * @param p
 	 */
-	public void computeCurve(NodeLayout s, Float p) {
+	public void computeCurve(CircleNodeLayout s, Float p) {
 		getBezierLayout().computeCurve(s,p);		
 	}
 
-	public void computeCurve(NodeLayout nL1, NodeLayout nL2) {
+	public void computeCurve(CircleNodeLayout nL1, CircleNodeLayout nL2) {
 		getBezierLayout().computeCurve(nL1, nL2);		
 	}
 
@@ -612,8 +616,45 @@ public class BezierEdge extends Edge {
 //		getBezierLayout().arcAway(opposite.getBezierLayout());		
 //	}
 	
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#computeEdge(presentation.fsa.Node, presentation.fsa.Node)
+	 */
+	@Override
+	public void computeEdge() {
+		if(getSourceNode() != null && getTargetNode() != null){
+			getBezierLayout().computeCurve((CircleNodeLayout)getSourceNode().getLayout(), 
+											(CircleNodeLayout)getTargetNode().getLayout());
+			refresh();
+		}
+	}
+
 	public boolean isStraight() {		
 		return getBezierLayout().isStraight();
+	}
+
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#straighten()
+	 */
+	@Override
+	public void straighten() {
+		((BezierLayout)getLayout()).straighten();		
+	}
+
+	/**
+	 * Returns whether the shape of this curve can be modified; always true.  
+	 * 
+	 * @return true
+	 */
+	public boolean canStraighten(){
+		return true;
+	}
+
+	public void arcMore() {
+		((BezierLayout)getLayout()).arcMore();		
+	}
+
+	public void arcLess() {
+		((BezierLayout)getLayout()).arcLess();		
 	}
 
 	/**
@@ -700,26 +741,6 @@ public class BezierEdge extends Edge {
 		return t;		
 	}
 
-	/* (non-Javadoc)
-	 * @see presentation.fsa.Edge#computeEdge(presentation.fsa.Node, presentation.fsa.Node)
-	 */
-	@Override
-	public void computeEdge() {
-		if(getSourceNode() != null && getTargetNode() != null){
-			getBezierLayout().computeCurve((NodeLayout)getSourceNode().getLayout(), 
-											(NodeLayout)getTargetNode().getLayout());
-			refresh();
-		}
-	}
-
-	public void arcMore() {
-		((BezierLayout)getLayout()).arcMore();		
-	}
-	
-	public void arcLess() {
-		((BezierLayout)getLayout()).arcLess();		
-	}
-
 	/**
 	 * Sets my layout to fit among the set of existing edges between 
 	 * my source and target nodes.  Other edges' layouts are adjusted 
@@ -746,13 +767,5 @@ public class BezierEdge extends Edge {
 	public Float getTargetEndPoint() {
 		return ((BezierLayout)getLayout()).getTargetEndPoint();	
 	}
-
-	/* (non-Javadoc)
-	 * @see presentation.fsa.Edge#isMovable(int)
-	 */
-	@Override
-	public boolean isMovable(int pointType) {
-		return(pointType == BezierEdge.CTRL1 ||	pointType == BezierEdge.CTRL2);		
-	}		
 	
 }

@@ -17,7 +17,7 @@ import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphElement;
 import presentation.fsa.CircleNode;
-import presentation.fsa.NodeLayout;
+import presentation.fsa.CircleNodeLayout;
 import presentation.fsa.ReflexiveEdge;
 
 import model.fsa.FSAState;
@@ -215,7 +215,7 @@ public class LayoutDataParser extends AbstractParser {
      * @return an object encapsulating all of the graphical layout 
 	 * 	information required to display the given state.
 	 */
-	public NodeLayout getLayoutData(FSAState state) {
+	public CircleNodeLayout getLayoutData(FSAState state) {
 		State s = (State)state;
 		
 		// radius, centre point, label text and arrow vector (if initial)
@@ -237,9 +237,9 @@ public class LayoutDataParser extends AbstractParser {
 								 					Float.parseFloat(a.getAttribute("y")));
         	
         	
-        	return new NodeLayout(centre, radius, name, arrow);
+        	return new CircleNodeLayout(centre, radius, name, arrow);
         } else {
-		 	return new NodeLayout(centre, radius, name);
+		 	return new CircleNodeLayout(centre, radius, name);
         }	
 	}
 

@@ -11,7 +11,7 @@ import model.fsa.FSATransition;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
-import presentation.fsa.NodeLayout;
+import presentation.fsa.CircleNodeLayout;
 
 /**
  * Store and extracts the metadata for a given Automaton.
@@ -43,7 +43,7 @@ public class MetaData implements FSAMetaData {
 	 * @return an object encapsulating all of the graphical layout 
 	 * 	information required to display the given state.
 	 */
-	public NodeLayout getLayoutData(FSAState state) {
+	public CircleNodeLayout getLayoutData(FSAState state) {
 		State s = (State)state;
 		
 		// radius, centre point, label text and arrow vector (if initial)
@@ -65,9 +65,9 @@ public class MetaData implements FSAMetaData {
 								 					Float.parseFloat(a.getAttribute("y")));
         	
         	
-        	return new NodeLayout(centre, radius, name, arrow);
+        	return new CircleNodeLayout(centre, radius, name, arrow);
         } else {
-		 	return new NodeLayout(centre, radius, name);
+		 	return new CircleNodeLayout(centre, radius, name);
         }	
 	}
 
@@ -78,7 +78,7 @@ public class MetaData implements FSAMetaData {
 	 * @param state the state
 	 * @param layout the graphical layout data for a node
 	 */
-	public void setLayoutData(FSAState state, NodeLayout layout){
+	public void setLayoutData(FSAState state, CircleNodeLayout layout){
 		// Set the layout data for state
 		State s = (State)state;
 		

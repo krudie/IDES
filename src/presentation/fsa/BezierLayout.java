@@ -78,7 +78,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param sourceLayout layout for source node
 	 * @param targetLayout layout for target node
 	 */
-	public BezierLayout(NodeLayout sourceLayout, NodeLayout targetLayout){		
+	public BezierLayout(CircleNodeLayout sourceLayout, CircleNodeLayout targetLayout){		
 		curve = new CubicParamCurve2D();		
 		computeCurve(sourceLayout, targetLayout);		
 		eventNames = new ArrayList<String>();
@@ -135,7 +135,7 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	public void computeCurve(){
 		if(edge != null){
-			computeCurve((NodeLayout)edge.getSourceNode().getLayout(), (NodeLayout)edge.getTargetNode().getLayout());			
+			computeCurve((CircleNodeLayout)edge.getSourceNode().getLayout(), (CircleNodeLayout)edge.getTargetNode().getLayout());			
 		}
 	}
 	
@@ -149,7 +149,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param s layout for source node, s != null
 	 * @param t layout for target node, t != null 
 	 */
-	public void computeCurve(NodeLayout s, NodeLayout t){
+	public void computeCurve(CircleNodeLayout s, CircleNodeLayout t){
 
 		////////////////////////////////////////////////////////////////
 //		// if source and target nodes are the same, compute a self-loop
@@ -223,7 +223,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param s layout for source node
 	 * @param endPoint endpoint for the edge	  
 	 */
-	public void computeCurve(NodeLayout s, Point2D.Float endPoint){		
+	public void computeCurve(CircleNodeLayout s, Point2D.Float endPoint){		
 
 		Point2D.Float[] ctrls = new Point2D.Float[4];
 		Point2D.Float centre1 = s.getLocation();
@@ -503,6 +503,14 @@ public class BezierLayout extends GraphicalLayout {
 		}
 	}
 		
+	protected void straighten() {
+		angle1 = 0;
+		s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		angle2 = 0;
+		s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
+		
+	}
+	
 	/**
 	 * ??? What does this method claim to be doing?
 	 * 

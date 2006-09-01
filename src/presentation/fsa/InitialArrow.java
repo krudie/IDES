@@ -41,7 +41,7 @@ public class InitialArrow extends Edge {
 	// For a fixed-length arrow shaft, max and min are equal; 
 	// may wish to allow user to expand and shrink in future
 	/** maximum distance between node centre and tail of arrow shaft */
-	private double maxShaftLength = NodeLayout.DEFAULT_RADIUS;
+	private double maxShaftLength = CircleNodeLayout.DEFAULT_RADIUS * 2;
 	/** minimum distance between node centre and tail of arrow shaft */
 	private double minShaftLength = maxShaftLength;
 		
@@ -59,14 +59,14 @@ public class InitialArrow extends Edge {
 		// TODO move this into computeEdge ///////////////////////////////////////////
 		// will need to check the length and direction of the arrow
 		// each time node is e.g. resized, loaded
-		NodeLayout layout = (NodeLayout)target.getLayout();
+		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
 		if(layout != null){
 			direction = layout.getArrow();
 		}
 		
 		// check the magnitude of the arrow shaft
 		// make sure it is long enough
-		maxShaftLength = target.getShape().getBounds2D().getWidth();
+		maxShaftLength = target.getShape().getBounds2D().getHeight();
 		minShaftLength = maxShaftLength;
 		if(direction != null) {
 			direction = Geometry.unit(direction);			
@@ -74,24 +74,28 @@ public class InitialArrow extends Edge {
 		}
 
 		if(layout == null || direction == null){	
-			// compute default direction vector for this edge
-			direction = new Point2D.Float( (float)(minShaftLength * -1), 0f);			
+			// compute default direction and magnitude for this edge
+			direction = new Point2D.Float( (float)(minShaftLength), 0f );
+			// TODO do something about the missing node layout info?
 		}
 				
-		line = new Line2D.Float(Geometry.add(target.getLocation(), Geometry.scale(direction, -1)), target.getLocation());
-		targetPoint = intersectionWithBoundary(getTargetNode(), Edge.TARGET_NODE);	
-		computeEdge();		
+		line = new Line2D.Float();			
 		arrowHead = new ArrowHead();
 		setHandler(new Handler(this));
-		refresh();
+		computeEdge();		
 	}
 	
+	/**
+	 * Renders this arrow in the given graphics context.
+	 * 
+	 * @param g the graphics context. 
+	 */
 	public void draw(Graphics g){
 		
 		if( ! isVisible() ) return;
 		
 		if(isDirty()){
-			refresh();				
+			computeEdge();
 		}
 
 		Graphics2D g2d = (Graphics2D)g;
@@ -103,12 +107,16 @@ public class InitialArrow extends Edge {
 			g2d.setColor(getLayout().getColor());
 		}		
 		
-		if(isSelected()){
+		if(isSelected() || getTargetNode() != null && getTargetNode().isSelected()){
 			g2d.setColor(getLayout().getSelectionColor());
+		}
+				
+		// only show handler if target node is not also selected
+		if(isSelected() && getTargetNode() != null && !getTargetNode().isSelected()){
 			getHandler().setVisible(true);
 		}else{			
 			getHandler().setVisible(false);
-		}
+		}		
 
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);			
 		g2d.draw(line);		
@@ -119,14 +127,9 @@ public class InitialArrow extends Edge {
 	    Point2D.Float tEndPt = getTargetEndPoint();
 	    
 	    // NOTE point movement will be constrained to be outside of node boundary so targetPt should never be null.
-	    Point2D.Float basePt;
-	    //if(tEndPt != null){
+	    Point2D.Float basePt;	    
 	    basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
-	   // }else{ // end point is inside the node boundary so draw the arrow in default location
-	    	// what happens to direction vector when target point is null ?
-	    	
-	   // }
-	    
+	   	    
 		at.setToTranslation(basePt.x, basePt.y);
 		g2d.transform(at);
 		
@@ -147,33 +150,7 @@ public class InitialArrow extends Edge {
 		// draw handler
 	    super.draw(g);		
 	}
-	
-	/**
-	 * Refreshes the shape (position, direction and magnitude) of this arrow and
-	 * compute the endpoints of the visible line.
-	 * Constrains P1 such that the arrow shaft length is between 
-	 * MIN_SHAFT_LENGTH and MAX_SHAFT_LENGTH.	 
-	 */
-	public void refresh(){		
-		// compute direction vector from P1 to centre of node
-		direction = Geometry.subtract(getLocation(), line.getP1());
-		double n = Geometry.norm(direction);
-		double e = 0.0001;
-		if( n < minShaftLength + e  || n > maxShaftLength - e ){
-			// constrain to fixed length
-			direction = Geometry.unit(direction);			
-			direction = Geometry.scale( direction, (float)minShaftLength );
-		}
 		
-		targetPoint = intersectionWithBoundary(getTargetNode(), Edge.TARGET_NODE);		
-		// Since updating direction vector both in this class and in NodeLayout
-		// TODO get rid of direction field and just use get and setArrow in NodeLayout		
-		((NodeLayout)getTargetNode().getLayout()).setArrow(direction);		
-		computeEdge();
-		getHandler().refresh();
-		setDirty(false);
-	}
-	
 	/**
 	 * Using the shape, update the visible curve (in this case a straight line).
 	 * 
@@ -183,83 +160,14 @@ public class InitialArrow extends Edge {
 	@Override
 	public void computeEdge() {
 		setLocation(getTargetNode().getLocation());
-		targetPoint=intersectionWithBoundary(getTargetNode(), Edge.TARGET_NODE);
-		line.x2 = targetPoint.x;
-		line.y2 = targetPoint.y;
 		Point2D.Float sourcePt = Geometry.subtract(getLocation(), direction);
 		line.x1 = sourcePt.x;
 		line.y1 = sourcePt.y;
+		targetPoint=intersectionWithBoundary(getTargetNode(), Edge.TARGET_NODE);
+		line.x2 = targetPoint.x;
+		line.y2 = targetPoint.y;		
+		getHandler().refresh();
 	}
-
-	/* (non-Javadoc)
-	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int)
-	 */
-	@Override
-	public Point2D.Float intersectionWithBoundary(Node node, int type) {
-		
-		Shape nodeShape = node.getShape();
-		
-		float epsilon = 0.00001f;		
-		float tPrevious = 0f;
-		float t = 0.5f;	
-		float step = 0.5f;
-		
-		// use equation of line
-		Point2D p = line.getP1();
-		Point2D.Float d = direction;
-	
-		// NOTE point movement will be constrained to be outside of node boundary so targetPt should never be null.
-		// no intersection with boundary
-		if(nodeShape.contains(p)){
-//FIXME: this condition was hit a few times when node was dragged outside of drawing boundary
-//and when some operations called auto layout
-//			Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
-//			at presentation.fsa.InitialArrow.computeEdge(InitialArrow.java:191)
-//			at presentation.fsa.Node.recomputeEdges(Node.java:91)
-//			at presentation.fsa.CircleNode.refresh(CircleNode.java:72)
-//			at presentation.fsa.CircleNode.translate(CircleNode.java:204)
-//			at presentation.fsa.GraphElement.translate(GraphElement.java:160)
-//			at ui.tools.MovementTool.handleMouseDragged(MovementTool.java:56)
-//			at presentation.fsa.GraphDrawingView.mouseDragged(GraphDrawingView.java:282)
-//TEMP SOLUTION: reset arrow
-			direction = new Point2D.Float( (float)(minShaftLength * -1), 0f);	
-			return Geometry.add(getLocation(), Geometry.scale(direction, -1));
-			//return null; //new Point2D.Float((float)p.getX(), (float)p.getY());
-		}
-		
-		// the point on curve at param t
-		Point2D L_t = Geometry.add(p, Geometry.scale(d, t)); 
-	
-		while(Math.abs(t - tPrevious) > epsilon){			
-			step =  Math.abs(t - tPrevious);
-			tPrevious = t;
-			if(nodeShape.contains(L_t)){  // inside boundary				
-				t -= step/2;
-			}else{				
-				t += step/2;				
-			}								
-			L_t = Geometry.add(p, Geometry.scale(d, t)); 
-		}		
-		
-		return new Point2D.Float((float)L_t.getX(), (float)L_t.getY());
-	}
-
-	/* (non-Javadoc)
-	 * @see presentation.fsa.Edge#createExportString(java.awt.Rectangle, int)
-	 */
-	@Override
-	public String createExportString(Rectangle selectionBox, int exportType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * Does nothing since there are no transitions or events on this edge type. 
-	 * 
-	 * @see presentation.fsa.Edge#addEventName(java.lang.String)
-	 */
-	@Override
-	public void addEventName(String symbol) {}
 
 	/* (non-Javadoc)
 	 * @see presentation.fsa.Edge#getSourceEndPoint()
@@ -291,11 +199,80 @@ public class InitialArrow extends Edge {
 	 */	
 	public void setPoint(Point2D point, int pointType) {
 		if(pointType == P1){			
-			line.x1 = (float)point.getX();
-			line.y1 = (float)point.getY();
-			refresh();	
+			// compute direction vector from P1 to centre of node
+			direction = Geometry.subtract(getLocation(), point);
+			double n = Geometry.norm(direction);			
+			if( n < minShaftLength ){ // too short
+				// constrain to min length
+				direction = Geometry.unit(direction);			
+				direction = Geometry.scale( direction, (float)minShaftLength );
+			}
+			if( n > maxShaftLength ){ // too long
+				// constrain to max length
+				direction = Geometry.unit(direction);			
+				direction = Geometry.scale( direction, (float)maxShaftLength );
+			}					
+			/* 	TODO Since updating direction vector both in this class and in NodeLayout
+			 	get rid of direction field and just use get and setArrow in NodeLayout 
+			 */		
+			((CircleNodeLayout)getTargetNode().getLayout()).setArrow(direction);
+			// TODO fire an event and make certain this info is saved to file
+			computeEdge();
 		}				
 	}
+
+	/* (non-Javadoc)
+		 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int)
+		 */
+		@Override
+		public Point2D.Float intersectionWithBoundary(Node node, int type) {
+			
+			Shape nodeShape = node.getShape();
+			
+			float epsilon = 0.00001f;		
+			float tPrevious = 0f;
+			float t = 0.5f;	
+			float step = 0.5f;
+			
+			// use equation of line
+			Point2D p = line.getP1();
+			Point2D.Float d = direction;
+		
+			// NOTE point movement will be constrained to be outside of node boundary so targetPt should never be null.
+			// no intersection with boundary
+			if(nodeShape.contains(p)){
+	//FIXME: this condition was hit a few times when node was dragged outside of drawing boundary
+	//and when some operations called auto layout
+	//			Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
+	//			at presentation.fsa.InitialArrow.computeEdge(InitialArrow.java:191)
+	//			at presentation.fsa.Node.recomputeEdges(Node.java:91)
+	//			at presentation.fsa.CircleNode.refresh(CircleNode.java:72)
+	//			at presentation.fsa.CircleNode.translate(CircleNode.java:204)
+	//			at presentation.fsa.GraphElement.translate(GraphElement.java:160)
+	//			at ui.tools.MovementTool.handleMouseDragged(MovementTool.java:56)
+	//			at presentation.fsa.GraphDrawingView.mouseDragged(GraphDrawingView.java:282)
+	//TEMP SOLUTION: reset arrow
+				direction = new Point2D.Float( (float)(minShaftLength * -1), 0f);	
+				return Geometry.add(getLocation(), Geometry.scale(direction, -1));
+				//return null; //new Point2D.Float((float)p.getX(), (float)p.getY());
+			}
+			
+			// the point on curve at param t
+			Point2D L_t = Geometry.add(p, Geometry.scale(d, t)); 
+		
+			while(Math.abs(t - tPrevious) > epsilon){			
+				step =  Math.abs(t - tPrevious);
+				tPrevious = t;
+				if(nodeShape.contains(L_t)){  // inside boundary				
+					t -= step/2;
+				}else{				
+					t += step/2;				
+				}								
+				L_t = Geometry.add(p, Geometry.scale(d, t)); 
+			}		
+			
+			return new Point2D.Float((float)L_t.getX(), (float)L_t.getY());
+		}
 
 	/* (non-Javadoc)
 	 * @see presentation.fsa.Edge#isMovable(int)
@@ -322,15 +299,7 @@ public class InitialArrow extends Edge {
 		return b; // || arrowHead.contains(point);
 		// FIXME arrow head is only rotated to visible orientation when drawn
 		// it is not stored at the location in memory...
-	}
-	
-	public void translate(float x, float y) {
-		line.x1 += x;
-		line.x2 += x;
-		line.y1 += y;
-		line.y2 += y;
-		setDirty(true);
-	}
+	}	
 	
 	/* (non-Javadoc)
 	 * @see presentation.fsa.Edge#isStraight()
@@ -340,6 +309,33 @@ public class InitialArrow extends Edge {
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see presentation.fsa.Edge#straighten()
+	 */
+	@Override
+	public void straighten() { 
+		// does nothing since already a straight line
+	}
+	
+	/**
+	 * Does nothing since there are no transitions or events on this edge type. 
+	 * 
+	 * @see presentation.fsa.Edge#addEventName(java.lang.String)
+	 */
+	@Override
+	public void addEventName(String symbol) {}
+
+	/* TODO ask SJW what she needs to export to LaTeX and eps. 
+	 * 
+	 * (non-Javadoc)
+	 * @see presentation.fsa.Edge#createExportString(java.awt.Rectangle, int)
+	 */
+	@Override
+	public String createExportString(Rectangle selectionBox, int exportType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * Edge popup disabled since there is nothing to do with this type of edge 
 	 * except move with mouse and toggle on/off via target's NodePopup.
@@ -392,6 +388,11 @@ public class InitialArrow extends Edge {
 			return false;	
 		}
 		
+		/**
+		 * Renders this handler in the given graphics context.
+		 * 
+		 * @param g the graphics context. 
+		 */
 		public void draw(Graphics g){
 			if(isDirty()) refresh();
 					

@@ -10,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 import model.fsa.FSAState;
+import model.fsa.ver1.State;
 
 
 /**
@@ -19,12 +20,19 @@ import model.fsa.FSAState;
  *
  */
 public abstract class Node extends GraphElement {
-	//	 the state to be represented
+	//	the state to be represented
 	FSAState state;
+	
+	// label for text to be displayed on node
 	GraphLabel label;
+	
+	// arrow to indicate that this represents an initial state
+	// null or invisible if state is not initial
 	InitialArrow initialArrow;
 
 	/**
+	 * Returns the shape that visually represents this Node in a graphical display.
+	 * 
 	 * @return the shape that visually represents this Node in a graphical display
 	 */
 	public abstract Shape getShape();
@@ -46,11 +54,16 @@ public abstract class Node extends GraphElement {
 	public abstract String createExportString(Rectangle selectionBox, int exportType);
 		
 	/**
+	 * Returns an iterator of all edges adjacent to this node, i.e. have this node
+	 * as either source or target. 
+	 * 
 	 * @return an iterator of all adjacent edges
 	 */
 	public abstract Iterator<Edge> adjacentEdges();
 	
 	/**
+	 * Return a bounding rectangle for the union of this Node with all of its child elements (e.g. edges and label). 
+	 * 
 	 * @return bounding rectangle for union of this Node with all of its children.
 	 */
 	public abstract Rectangle2D adjacentBounds();
@@ -91,6 +104,19 @@ public abstract class Node extends GraphElement {
 				e.computeEdge();			
 		}
 	}
+	
+	/**
+	 * Sets my state's initial property to <code>b</code>
+	 * and activates my initial arrow. 
+	 * 
+	 * @param b
+	 */
+	public void setInitial(boolean b) {
+		if(b && initialArrow == null){
+			setInitialArrow(new InitialArrow(this));
+		}
+		((State)getState()).setInitial(b);		
+	}
 
 	/**
 	 * @return the initial arrow for this node
@@ -103,6 +129,7 @@ public abstract class Node extends GraphElement {
 	 * Sets my intial arrow to the given instance and
 	 * adds it as one of my child elements.  If already have an initial arrow
 	 * in my set of children, removes it.
+	 * 
 	 * @param initialArrow
 	 */
 	protected void setInitialArrow(InitialArrow initialArrow) {

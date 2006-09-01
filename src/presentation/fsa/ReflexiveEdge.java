@@ -140,6 +140,10 @@ public class ReflexiveEdge extends BezierEdge {
 		return ((ReflexiveLayout)getLayout()).getMidpoint();		
 	}
 
+	/**
+	 * Returns true iff pointType is MIDPOINT since all other points are either
+	 * fixed or computed from this point. 
+	 */
 	public boolean isMovable(int pointType) {
 		return pointType == MIDPOINT;	
 	}
@@ -147,17 +151,15 @@ public class ReflexiveEdge extends BezierEdge {
 	/**
 	 * TODO customize so that if curve is invisible, arrow points to centre of node.
 	 */
-	public void draw(Graphics g)
-	{		
+	public void draw(Graphics g) {		
 		super.draw(g);	
 	}
 
 	/**
-	 * TODO customize so that intersection with boundary is computed properly;
+	 * FIXME customize so that intersection with boundary is computed properly;
 	 * parameters (sourceT and targetT) are currently being reverse.
 	 */
-	public void refresh()
-	{		
+	public void refresh() {		
 		super.refresh();
 	}
 
@@ -202,11 +204,19 @@ public class ReflexiveEdge extends BezierEdge {
 		refresh();
 	}
 	
-	public boolean isStraight()
-	{
+	/**
+	 * Returns false since a self-loop cannot be straight. 
+	 */
+	public boolean isStraight()	{
 		return false;
 	}
 		
+	/**
+	 * Returns false since cannot straighten a self-loop. 
+	 */
+	public boolean canStraighten(){
+		return false;
+	}
 	
 	/** 
 	 * Sets the coordinates of <code>intersection</code> to the location where

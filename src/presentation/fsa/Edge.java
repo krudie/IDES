@@ -61,8 +61,7 @@ public abstract class Edge extends GraphElement{
 	 * 
 	 * @author Sarah-Jane Whittaker
 	 */
-	public abstract String createExportString(Rectangle selectionBox, int exportType);
-	
+	public abstract String createExportString(Rectangle selectionBox, int exportType);	
 	
 	protected static int SOURCE_NODE = 0;
 	protected static int TARGET_NODE = 1;
@@ -218,5 +217,20 @@ public abstract class Edge extends GraphElement{
 	 * @param pointType
 	 * @return true iff the given point type is movable for this edge
 	 */
-	public abstract boolean isMovable(int pointType);	
+	public abstract boolean isMovable(int pointType);
+
+	/**
+	 * If this edge is not straight and can be straightened 
+	 * straightens it.
+	 */
+	public abstract void straighten();
+
+	/**
+	 * Returns whether this edge can be straightened. 
+	 * 
+	 * @return false by default
+	 */
+	public boolean canStraighten() {
+		return false;
+	}
 }

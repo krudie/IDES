@@ -36,7 +36,9 @@ public class GraphElement implements PresentationElement {
 	}
 	
 	/**
-	 * Draws all of my children.
+	 * Draws all of my children in the given graphics context.
+	 * 
+	 * @param g the graphics context
 	 */
 	public void draw(Graphics g) {
 		
@@ -48,6 +50,8 @@ public class GraphElement implements PresentationElement {
 	}
 
 	/**
+	 * Returns the smallest rectangle containing all of my children. 
+	 * 
 	 * @return the smallest rectangle containing all of my children 
 	 */
 	public Rectangle bounds() {			
@@ -71,55 +75,101 @@ public class GraphElement implements PresentationElement {
 
 	/**
 	 * Inserts the given child at key <code>Object.hashCode()</code>.
+	 * 
+	 * @param the child to be inserted
 	 */
 	public void insert(PresentationElement child) {
 		children.put((long)child.hashCode(), child);	
 		child.setParent(this);
 	}
 	
+	/**
+	 * Returns true iff <code>child</code> is present in the set of child elements.
+	 *  
+	 * @param child
+	 * @return true iff <code>child</code> is present in the set of child elements
+	 */
 	public boolean contains(PresentationElement child){
 		return children.containsValue(child);		
 	}
 		
+	/**
+	 * Remove <code>child</code> from the set of child elements.
+	 * 
+	 * @param child
+	 */
 	public void remove(PresentationElement child) {		
 		children.remove((long)child.hashCode());		
 	}
 
+	/**
+	 * Removes all elements from the set of child elements.
+	 */
 	public void clear() {
 		children.clear();
 	}
 	
 	/**
+	 * Returns the child element at the given key or null 
+	 * if there is no child corresponding to <code>key</code>. 
+	 * 
+	 * @param key the key that maps to the returned child
 	 * @return the child at the given key
 	 */
 	public PresentationElement child(long key) {
 		return children.get(key);		
 	}
 
-	public Iterator children() { 
+	/**
+	 * Returns an iterator of all child elements.
+	 * 
+	 *  @return an iterator of all child elements
+	 */
+	public Iterator<PresentationElement> children() { 
 		return children.values().iterator();
 	}
 
-//	public ArrayList<PresentationElement> getChildren() {
-//		return children;
-//	}
-
+	/**
+	 * Sets the set of child elements to <code>children</code>. 
+	 * 
+	 * @param children the map of child elements to set
+	 */
 	public void setChildren(HashMap<Long, PresentationElement> children) {
 		this.children = children;
 	}
 
+	/**
+	 * Returns the parent element for this presentation element. 
+	 * 
+	 * @return the parent element
+	 */
 	public PresentationElement getParent() {
 		return parent;
 	}
 
+	/**
+	 * Sets the parent element for this presentation element to <code>parent</code>. 
+	 * 
+	 * @param parent the parent element to set
+	 */
 	public void setParent(PresentationElement parent) {
 		this.parent = parent;
 	}
 
+	/**
+	 * Returns true iff this element is visible. 
+	 * 
+	 * @return true iff this element is visible
+	 */
 	public boolean isVisible() {
 		return visible;
 	}
 
+	/**
+	 * Sets this element to visible iff the given parameter is true.
+	 * 
+	 * @param visible
+	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;		
 		for(PresentationElement g : children.values()){			
@@ -154,22 +204,42 @@ public class GraphElement implements PresentationElement {
 	}
 
 
-	public void translate(float x, float y){
-		layout.translate(x, y);
+	/**
+	 * Translates this element in the plane by the given displacement.
+	 * 
+	 * @param dx displacement in x dimension
+	 * @param dy displacement in y dimension
+	 */
+	public void translate(float dx, float dy){
+		layout.translate(dx, dy);
 		for(PresentationElement g : children.values()){
-			g.translate(x,y);
+			g.translate(dx,dy);
 		}
 		setDirty(true);		
 	}
 
+	/**
+	 * Sets the location of this element to <code>p</code>. 
+	 * 
+	 * @param p the new location to set
+	 */
 	public void setLocation(Point2D.Float p) {
 		layout.setLocation((float)p.getX(), (float)p.getY());		
 	}
 
+	/**
+	 * Returns true iff the dirty flag has been set, indicating that
+	 * this element needs to be refreshed. 
+	 */
 	public boolean isDirty() { 
 		return dirty;
 	}
 
+	/**
+	 * Sets the dirty flag to <code>d</code> 
+	 * 
+	 * @param d the flag to set
+	 */
 	public void setDirty(boolean d){
 		dirty = d;
 		if(parent != null && d){
@@ -180,10 +250,18 @@ public class GraphElement implements PresentationElement {
 	// TODO define a generic response
 	public void showPopup(Component context){}
 	
+	/**
+	 * Returns true iff the set of children is non-empty. 
+	 * 
+	 * @return true iff the set of children is non-empty
+	 */
 	public boolean hasChildren() {		
 		return !children.isEmpty();
 	}
 
+	/**
+	 * Refreshes all of children and clears the dirty flag. 
+	 */
 	public void refresh(){
 		for(PresentationElement g : children.values()){
 			g.refresh();
@@ -191,8 +269,12 @@ public class GraphElement implements PresentationElement {
 		setDirty(false);
 	}
 	
-	public int size()
-	{
+	/**
+	 * Returns the number of children for this element. 
+	 * 
+	 * @return the number of children
+	 */
+	public int size(){
 		return children.size();
 	}
 
@@ -212,7 +294,9 @@ public class GraphElement implements PresentationElement {
 	}
 
 	/**
-	 * @return the hashCode of this GraphElement
+	 * Returns the unique id (hash code as a Long) for this element instance. 
+	 * 
+	 * @return the unique id for this element instance
 	 */
 	public Long getId() {		
 		return (long)hashCode();

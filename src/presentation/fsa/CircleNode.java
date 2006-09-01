@@ -31,7 +31,7 @@ public class CircleNode extends Node {
 	private Ellipse2D circle = null;
 	private Ellipse2D innerCircle = null;  // only drawn for final states
 			
-	public CircleNode(FSAState s, NodeLayout layout){
+	public CircleNode(FSAState s, CircleNodeLayout layout){
 		this.state = s;
 		setLayout(layout);		
 		label = new GraphLabel("");
@@ -51,8 +51,8 @@ public class CircleNode extends Node {
 	 */
 	private Ellipse2D defaultCircle() {
 		Point2D.Float centre = getLayout().getLocation();
-		float d = 2 * NodeLayout.DEFAULT_RADIUS;
-		return new Ellipse2D.Double(centre.x - NodeLayout.DEFAULT_RADIUS, centre.y - NodeLayout.DEFAULT_RADIUS, d, d);
+		float d = 2 * CircleNodeLayout.DEFAULT_RADIUS;
+		return new Ellipse2D.Double(centre.x - CircleNodeLayout.DEFAULT_RADIUS, centre.y - CircleNodeLayout.DEFAULT_RADIUS, d, d);
 	}
 
 	// TODO change to iterate over collection of labels on a state
@@ -65,9 +65,9 @@ public class CircleNode extends Node {
 		
 		// compute new radius
 		Rectangle2D labelBounds = label.bounds();
-		float radius = (float)Math.max(labelBounds.getWidth()/2 + 2* NodeLayout.RDIF, NodeLayout.DEFAULT_RADIUS + 2 * NodeLayout.RDIF);			
-		((NodeLayout)getLayout()).setRadius(radius);
-		radius=((NodeLayout)getLayout()).getRadius();
+		float radius = (float)Math.max(labelBounds.getWidth()/2 + 2* CircleNodeLayout.RADIUS_MARGIN, CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN);			
+		((CircleNodeLayout)getLayout()).setRadius(radius);
+		radius=((CircleNodeLayout)getLayout()).getRadius();
 		
 		recomputeEdges();
 		
@@ -76,7 +76,7 @@ public class CircleNode extends Node {
 		circle = new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
 
 		if(state.isMarked()){			
-			float r = radius - NodeLayout.RDIF;
+			float r = radius - CircleNodeLayout.RADIUS_MARGIN;
 			d = 2*r;
 			innerCircle = new Ellipse2D.Double(centre.x - r, centre.y - r, d, d);
 		}
@@ -97,11 +97,14 @@ public class CircleNode extends Node {
 			arrow = new ArrowHead(dir, arrow2);								
 			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
 		}*/
-		//super.refresh();  already called on all edges (with target nodes) via recomputeEdges. 		
+		//super.refresh();  already called on all edges (with target nodes) via recomputeEdges. 
+		setDirty(false);
 	}
 	
 	/**
 	 * Draws this node and all of its out edges in the given graphics context.
+	 * 
+	 * @param g the graphics context
 	 */
 	public void draw(Graphics g) {
 		if(isDirty()){
@@ -247,7 +250,7 @@ public class CircleNode extends Node {
 	{
 		String exportString = "";
 		
-		NodeLayout nodeLayout = ((NodeLayout)getLayout());
+		CircleNodeLayout nodeLayout = ((CircleNodeLayout)getLayout());
 		Rectangle squareBounds = getSquareBounds();
 		Point2D.Float nodeLocation = nodeLayout.getLocation();
 		int radius = BentoBox.convertFloatToInt(nodeLayout.getRadius());
@@ -330,7 +333,7 @@ public class CircleNode extends Node {
 	}
 	
 	public float getRadius() {	
-		return ((NodeLayout)getLayout()).getRadius();
+		return ((CircleNodeLayout)getLayout()).getRadius();
 	}
 	
 	/**
@@ -351,12 +354,12 @@ public class CircleNode extends Node {
 			BentoBox.convertFloatToInt(radius * 2));
 	}
 
-	public void setLayout(NodeLayout layout) {
+	public void setLayout(CircleNodeLayout layout) {
 	//		if(getLayout()!=null)
 	//			getLayout().dispose();
 	//		
 			super.setLayout(layout);
-			((NodeLayout)getLayout()).setNode(this);
+			((CircleNodeLayout)getLayout()).setNode(this);
 			setDirty(true);
 		}
 
@@ -367,17 +370,5 @@ public class CircleNode extends Node {
 	public Shape getShape() {		
 		return circle;
 	}
-
-	/**
-	 * Sets my state's initial property to <code>b</code>
-	 * and activates my initial arrow. 
-	 * 
-	 * @param b
-	 */
-	public void setInitial(boolean b) {
-		if(b && initialArrow == null){
-			setInitialArrow(new InitialArrow(this));
-		}
-		((State)getState()).setInitial(b);		
-	}
+	
 }

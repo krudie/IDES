@@ -42,10 +42,10 @@ import presentation.PresentationElement;
 public class FSAGraph extends GraphElement implements FSASubscriber {
 
 	
-	protected class UniformRadius extends HashMap<NodeLayout,Float>
+	protected class UniformRadius extends HashMap<CircleNodeLayout,Float>
 	{
-		protected float r = NodeLayout.DEFAULT_RADIUS;
-		protected void updateUniformRadius(NodeLayout n, float radius)
+		protected float r = CircleNodeLayout.DEFAULT_RADIUS;
+		protected void updateUniformRadius(CircleNodeLayout n, float radius)
 		{
 			put(n,new Float(radius));
 			updateUniformRadius();
@@ -55,7 +55,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			if(size()>0)
 				r=Float.MIN_VALUE;
 			else
-				r=NodeLayout.DEFAULT_RADIUS;
+				r=CircleNodeLayout.DEFAULT_RADIUS;
 			for(Float ff:values())
 			{
 				float f=ff.floatValue();
@@ -271,7 +271,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	private void initializeGraph(){		
 		
 		for(CircleNode n:nodes.values())
-			((NodeLayout)n.getLayout()).dispose();
+			((CircleNodeLayout)n.getLayout()).dispose();
 		
 		this.clear();
 		
@@ -290,7 +290,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				
 		while(iter.hasNext()){
 			s = (State)iter.next();
-			NodeLayout nL=metaData.getLayoutData(s);
+			CircleNodeLayout nL=metaData.getLayoutData(s);
 			nL.setUniformRadius(uniformR);
 			n1 = new CircleNode(s, nL);			
 			insert(n1);
@@ -491,7 +491,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		State s = new State(fsa.getFreeStateId());
 		s.setInitial(false);
 		s.setMarked(false);
-		NodeLayout layout = new NodeLayout(uniformR,p);			
+		CircleNodeLayout layout = new CircleNodeLayout(uniformR,p);			
 		metaData.setLayoutData(s, layout);
 		fsa.removeSubscriber(this);
 		fsa.add(s);
@@ -519,7 +519,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @return the node added
 	 */
 	public CircleNode wrapState(FSAState s, Point2D.Float p){
-		NodeLayout layout = new NodeLayout(uniformR,p);
+		CircleNodeLayout layout = new CircleNodeLayout(uniformR,p);
 		if(s.isInitial())
 			layout.setArrow(new Point2D.Float(1,0));
 		
@@ -554,7 +554,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			// let e figure out how to place itself among its neighbours			
 			e = new ReflexiveEdge(n1, t);			
 		}else{			
-			BezierLayout layout = new BezierLayout((NodeLayout)n1.getLayout(), (NodeLayout)n2.getLayout());
+			BezierLayout layout = new BezierLayout((CircleNodeLayout)n1.getLayout(), (CircleNodeLayout)n2.getLayout());
 //			 computes layout of new edges (default to straight edge between pair of nodes)			
 			e = new BezierEdge(layout, n1, n2, t);			
 		}
@@ -593,7 +593,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			// let e figure out how to place itself among its neighbours			
 			e = new ReflexiveEdge(n1, t);
 		}else{			
-			BezierLayout layout = new BezierLayout((NodeLayout)n1.getLayout(), (NodeLayout)n2.getLayout());
+			BezierLayout layout = new BezierLayout((CircleNodeLayout)n1.getLayout(), (CircleNodeLayout)n2.getLayout());
 //			 computes layout of new edges (default to straight edge between pair of nodes)			
 			e = new BezierEdge(layout, n1, n2, t);			
 		}
@@ -690,7 +690,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	private void saveMovement(Node node){
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
-		metaData.setLayoutData(s, (NodeLayout)node.getLayout());
+		metaData.setLayoutData(s, (CircleNodeLayout)node.getLayout());
 
 		// for all edges adjacent to node, save layout
 		Iterator<Edge> adjEdges = node.adjacentEdges();
@@ -718,7 +718,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	///////////////////////////////////////////////////////////////////
 	
 	
-	public void setInitial(CircleNode n, boolean b){
+	public void setInitial(Node n, boolean b){
 		
 		n.setInitial(b);
 		
@@ -731,6 +731,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				edges.remove(arrow.getId());			
 			}
 		}				
+		
+		n.setDirty(true);
 		
 		fsa.removeSubscriber(this);
 		fsa.fireFSMStructureChanged(new FSAMessage(FSAMessage.MODIFY,
@@ -870,7 +872,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
 			delete((Node)el);			
-		}else if(edges.containsValue(el)){
+		}else if(edges.containsValue(el)){			
 			delete((Edge)el);
 		}else{
 			freeLabels.remove(el.getId());
@@ -896,7 +898,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		fsa.addSubscriber(this);
 				
 		super.remove(n);
-		((NodeLayout)n.getLayout()).dispose();
+		((CircleNodeLayout)n.getLayout()).dispose();
 		nodes.remove(new Long(n.getId()));
 		setDirty(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
@@ -907,28 +909,32 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}
 	
 	private void delete(Edge e){
-		Iterator<FSATransition> transitions = e.getTransitions();
-		while(transitions.hasNext()){
-			fsa.removeSubscriber(this);
-			fsa.remove(transitions.next());
-			fsa.addSubscriber(this);
+		if(e instanceof InitialArrow){
+			setInitial(e.getTargetNode(), false);			
+		}else{		
+			Iterator<FSATransition> transitions = e.getTransitions();
+			while(transitions.hasNext()){
+				fsa.removeSubscriber(this);
+				fsa.remove(transitions.next());
+				fsa.addSubscriber(this);
+			}
+			Node source = e.getSourceNode();
+			if(source != null){
+				source.remove(e);
+			}
+			Node target = e.getTargetNode();
+			if(target != null){
+				target.remove(e);
+			}
+			edgeLabels.remove(e.getId());
+			edges.remove(e.getId());
+			setDirty(true);		
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+					FSAGraphMessage.EDGE,
+					e.getId(), 
+					e.bounds(),
+					this, ""));
 		}
-		Node source = e.getSourceNode();
-		if(source != null){
-			source.remove(e);
-		}
-		Node target = e.getTargetNode();
-		if(target != null){
-			target.remove(e);
-		}
-		edgeLabels.remove(e.getId());
-		edges.remove(e.getId());
-		setDirty(true);		
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
-				FSAGraphMessage.NODE,
-				e.getId(), 
-				e.bounds(),
-				this, ""));
 	}
 
 	/**
@@ -942,7 +948,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		n.getLayout().setText(text);
 		n.getLabel().setText(text);
 		// KLUGE ///////////////////////////////////////////
-		metaData.setLayoutData(s, (NodeLayout)n.getLayout());
+		metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
 		/////////////////////////////////////////////////////
 		setDirty(true);		
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
@@ -1046,6 +1052,36 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
     			FSAMessage.EVENT, event.getId(), fsa));
 	}
 	
+	///////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Increases the amplitude of the arc on this edge. 
+	 * 
+	 * @param edge
+	 */
+	public void arcMore(Edge edge) {
+		((BezierEdge)edge).arcMore();
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "increased arc of edge"));
+	}
+
+	/**
+	 * Flattens the given edge by a fixed amount.
+	 *  
+	 * @param edge
+	 */
+	public void arcLess(Edge edge) {
+		((BezierEdge)edge).arcLess();	
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "reduced arc of edge"));
+	}
+
 	public void symmetrize(Edge edge){
 		BezierLayout el=(BezierLayout)edge.getLayout();
 		el.symmetrize();	
@@ -1056,8 +1092,25 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				edge.getId(), 
 				edge.bounds(),
 				this, "symmetrized edge"));
-	}	
-	
+	}
+
+	/**
+	 * If this edge is not straight and can be straightened (e.g. is not reflexive)
+	 * straighten it.
+	 * 
+	 * @param edge
+	 */
+	public void straighten(Edge edge) {
+		if(!edge.isStraight() && edge.canStraighten()){
+			edge.straighten();
+		}
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "straightened edge"));
+	}
+
 	/**
 	 * Calculates the size of the bounding box necessary for the entire graph.  
 	 * Visits every node, edge and label and uses the union of
@@ -1135,8 +1188,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		return new Rectangle();
 	}
 	
-	public void translate(float x, float y)
-	{
+	
+	public void translate(float x, float y) {
 		super.translate(x,y);		
 		// FIXME refreshBounds
 		saveMovement(this);  // fires graph changed			
@@ -1394,23 +1447,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}
 	///////////////////////////////////////////////////////////////////////
 
-	/**
-	 * @param edge
-	 */
-	public void arcMore(Edge edge) {
-		((BezierEdge)edge).arcMore();
-		// TODO fire graph changed event
-	}
-
-	/**
-	 * @param edge
-	 */
-	public void arcLess(Edge edge) {
-		((BezierEdge)edge).arcLess();	
-		// TODO fire graph changed event
-	}
-
+	// TODO: comment
 	//FIXME: move this to a plugin that reads/writes composition data for states
+	// @author Lenko Grigorov
 	public void labelCompositeNodes()
 	{
 		if(fsa.getAutomataCompositionList().length>1)
@@ -1442,7 +1481,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 					n.getLayout().setText(label);
 					n.getLabel().softSetText(label);
 					// KLUGE ///////////////////////////////////////////
-					metaData.setLayoutData(s, (NodeLayout)n.getLayout());
+					metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
 					/////////////////////////////////////////////////////
 					setDirty(true);		
 					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
@@ -1475,7 +1514,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 					n.getLayout().setText(label);
 					n.getLabel().softSetText(label);
 					// KLUGE ///////////////////////////////////////////
-					metaData.setLayoutData(s, (NodeLayout)n.getLayout());
+					metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
 					/////////////////////////////////////////////////////
 					setDirty(true);		
 					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 

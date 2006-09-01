@@ -32,39 +32,36 @@ public class EdgePopup extends JPopupMenu {
 	private static EdgePopup popup;
 	
 	/**
-	 * @param e
+	 * Creates a popup menu to for displaying when user right-clicks on an edge.
+	 * 
+	 * @param e the edge to associate with this menu instance
 	 */
-	protected EdgePopup(Edge e) {
-		// TODO Auto-generated constructor stub
-//		miModify = new JMenuItem("Modify curve", new ImageIcon(Hub.getResource("images/icons/graphic_alledges.gif")));
+	protected EdgePopup(Edge e) {		
+
 		MenuListener listener = new MenuListener();
-//		miModify.addActionListener(listener);
-//		add(miModify);
+
 		miEditEvents = new JMenuItem("Label with events", new ImageIcon(Hub.getResource("images/icons/machine_alpha.gif")));
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
 
-		miSymmetrize = new JMenuItem(Hub.string("symmetrize"));
-		//TODO symmetrize should be an undoable command
+		miSymmetrize = new JMenuItem(Hub.string("symmetrize"));		
 		miSymmetrize.addActionListener(listener);
 		add(miSymmetrize);
 		
-//		miStraighten = new JMenuItem("Straighten");
-//		miStraighten.setEnabled(false);
-//		add(miStraighten);
+		miStraighten = new JMenuItem("Straighten");
+		miStraighten.addActionListener(listener);
+		add(miStraighten);
 		
-		// TODO arc more
 		miArcMore = new JMenuItem(Hub.string("arcmore"));
 		miArcMore.addActionListener(listener);
 		add(miArcMore);
-		
-		// TODO arc less
+				
 		miArcLess = new JMenuItem(Hub.string("arcless"));
 		miArcLess.addActionListener(listener);
-		add(miArcLess);
-		// TODO reverse
+		add(miArcLess);		
 
-		add(new JPopupMenu.Separator());		
+		add(new JPopupMenu.Separator());
+		
 		deleteCmd = new DeleteCommand(view);
 		miDeleteEdge = deleteCmd.createMenuItem();
 		add(miDeleteEdge);
@@ -86,14 +83,35 @@ public class EdgePopup extends JPopupMenu {
 				(int)p.y);
 	}
 			
+	/**
+	 * Associates the given edge with this menu instance. 
+	 * 
+	 * @param edge the edge to associate with this menu instance
+	 */
 	public void setEdge(Edge edge){		
 		this.edge = edge;
 		deleteCmd.setElement(edge);
-		if(edge != null){
+		if(edge != null){			
+			miStraighten.setVisible(edge.canStraighten());
+			// if the edge can't be straightened, then we assume we cannot 
+			// otherwise tamper with its shape
+			miArcLess.setVisible(edge.canStraighten());
+			miArcMore.setVisible(edge.canStraighten());
+			miSymmetrize.setVisible(edge.canStraighten());
+			
+			// Don't enable straightening, flattening or symmetrizing if edge is already straight
+			// since there is nothing to to.  
 			miArcLess.setEnabled(!edge.isStraight());
-		}
+			miStraighten.setEnabled(!edge.isStraight());
+			miSymmetrize.setEnabled(!edge.isStraight());
+		}		
 	}
 
+	/**
+	 * Listens to events on the EdgePopup menu.
+	 * 
+	 * @author helen bretzke
+	 */
 	class MenuListener implements ActionListener {
 
 		/* (non-Javadoc)
@@ -107,14 +125,16 @@ public class EdgePopup extends JPopupMenu {
 			}else if(source.equals(miEditEvents)){				
 				EdgeLabellingDialog.showDialog(view, edge);
 				
-			// NOTE these last three cases do not apply to reflexive edges
-			// and they should be UNDOABLE graph commands
+			// TODO these last three cases do not apply to reflexive edges
+			// and should be UNDOABLE graph commands
 			}else if(source.equals(miSymmetrize)){				
 				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);
 			}else if(source.equals(miArcMore)){
 				Hub.getWorkspace().getActiveGraphModel().arcMore(edge);
 			}else if(source.equals(miArcLess)){
-				Hub.getWorkspace().getActiveGraphModel().arcLess(edge);			
+				Hub.getWorkspace().getActiveGraphModel().arcLess(edge);
+			}else if(source.equals(miStraighten)){
+				Hub.getWorkspace().getActiveGraphModel().straighten(edge);
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
 			}			

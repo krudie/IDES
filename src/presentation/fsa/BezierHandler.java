@@ -28,8 +28,7 @@ public class BezierHandler extends EdgeHandler {
 	public BezierHandler(BezierEdge edge) {
 		super(edge);		
 		anchors = new Ellipse2D.Double[4];
-		refresh();
-		//setDirty(true);
+		refresh();		
 	}
 	
 	public BezierEdge getEdge()
@@ -69,7 +68,7 @@ public class BezierHandler extends EdgeHandler {
 			/*g2d.fill(anchors[0]);
 			g2d.fill(anchors[3]);*/
 			
-			/*g2d.drawLine((int)(getEdge().getP1().x), 
+			g2d.drawLine((int)(getEdge().getP1().x), 
 					(int)(getEdge().getP1().y), 
 					(int)(getEdge().getCTRL1().x), 
 					(int)(getEdge().getCTRL1().y));
@@ -77,18 +76,19 @@ public class BezierHandler extends EdgeHandler {
 			g2d.drawLine((int)(getEdge().getP2().x), 
 					(int)(getEdge().getP2().y), 
 					(int)(getEdge().getCTRL2().x), 
-					(int)(getEdge().getCTRL2().y));*/
+					(int)(getEdge().getCTRL2().y));
 			
-			g2d.drawLine((int)getEdge().getCTRL1().x,
+			/*g2d.drawLine((int)getEdge().getCTRL1().x,
 					(int)getEdge().getCTRL1().y,
 					(int)getEdge().getCTRL2().x,
 					(int)getEdge().getCTRL2().y);
+			*/
 			
 			for(int i=1; i<3; i++){  // don't display end point circles since not moveable.
 				g2d.draw(anchors[i]);			
 			}
 			
-			g2d.fill(anchors[2]);
+			//g2d.fill(anchors[2]);
 		}
 	}
 	

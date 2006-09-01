@@ -403,8 +403,8 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	}
 
 	/**	 
-	 * @return If exist, the single element currently selected
-	 * otherwise returns null
+	 * @return the single element currently selected (if exists),
+	 *  		otherwise returns null
 	 */
 	public GraphElement getSelectedElement() {
 		if(selectedGroup.size() == 1)

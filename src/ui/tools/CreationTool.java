@@ -13,7 +13,7 @@ import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
-import presentation.fsa.NodeLayout;
+import presentation.fsa.CircleNodeLayout;
 import ui.command.GraphCommands.CreateCommand;
 
 /**
@@ -211,7 +211,7 @@ public class CreationTool extends DrawingTool {
 	private BezierEdge beginEdge(CircleNode n1){
 		BezierLayout layout = new BezierLayout();
 		BezierEdge e = new BezierEdge(layout, n1);
-		layout.computeCurve((NodeLayout)n1.getLayout(), n1.getLayout().getLocation());
+		layout.computeCurve((CircleNodeLayout)n1.getLayout(), n1.getLayout().getLocation());
 		context.setTempEdge(e);
 		return e;
 	}
@@ -224,7 +224,7 @@ public class CreationTool extends DrawingTool {
 	 * @param p the target point
 	 */
 	private void updateEdge(BezierEdge e, Point2D.Float p){		
-		NodeLayout s = (NodeLayout)e.getSourceNode().getLayout();
+		CircleNodeLayout s = (CircleNodeLayout)e.getSourceNode().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSourceNode().intersects(p) ){
 			e.computeCurve(s, p);
