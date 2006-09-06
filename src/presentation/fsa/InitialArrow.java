@@ -41,7 +41,7 @@ public class InitialArrow extends Edge {
 	// For a fixed-length arrow shaft, max and min are equal; 
 	// may wish to allow user to expand and shrink in future
 	/** maximum distance between node centre and tail of arrow shaft */
-	private double maxShaftLength = CircleNodeLayout.DEFAULT_RADIUS * 2;
+	private double maxShaftLength = 2 * ( CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN );
 	/** minimum distance between node centre and tail of arrow shaft */
 	private double minShaftLength = maxShaftLength;
 		
@@ -69,8 +69,11 @@ public class InitialArrow extends Edge {
 		maxShaftLength = target.getShape().getBounds2D().getHeight();
 		minShaftLength = maxShaftLength;
 		if(direction != null) {
-			direction = Geometry.unit(direction);			
-			direction = Geometry.scale( direction, (float)minShaftLength);
+			double norm = Geometry.norm(direction);
+			if(norm < minShaftLength){
+				direction = Geometry.unit(direction);			
+				direction = Geometry.scale( direction, (float)minShaftLength);
+			}
 		}
 
 		if(layout == null || direction == null){	
@@ -79,6 +82,7 @@ public class InitialArrow extends Edge {
 			// TODO do something about the missing node layout info?
 		}
 				
+		layout.setArrow(direction);
 		line = new Line2D.Float();			
 		arrowHead = new ArrowHead();
 		setHandler(new Handler(this));
@@ -215,8 +219,7 @@ public class InitialArrow extends Edge {
 			/* 	TODO Since updating direction vector both in this class and in NodeLayout
 			 	get rid of direction field and just use get and setArrow in NodeLayout 
 			 */		
-			((CircleNodeLayout)getTargetNode().getLayout()).setArrow(direction);
-			// TODO fire an event and make certain this info is saved to file
+			((CircleNodeLayout)getTargetNode().getLayout()).setArrow(direction);			
 			computeEdge();
 		}				
 	}

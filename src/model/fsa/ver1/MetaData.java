@@ -81,25 +81,42 @@ public class MetaData implements FSAMetaData {
 	public void setLayoutData(FSAState state, CircleNodeLayout layout){
 		// Set the layout data for state
 		State s = (State)state;
+				
+		SubElement n = s.getSubElement("name");
+		if(n == null){
+			n = new SubElement("name");
+			s.addSubElement(n);
+		}
+		n.setChars(layout.getText());		
 		
-		// ??? What if the state doesn't have a name?  Should we be creating this subelement?
-		SubElement n = new SubElement("name");
-		n.setChars(layout.getText());
-		s.addSubElement(n);
+		SubElement g = s.getSubElement("graphic");
+		if(g == null){
+			g = new SubElement("graphic");
+			s.addSubElement(g);
+		}
 		
-		SubElement g = new SubElement("graphic");
-		SubElement c = new SubElement("circle");
+		SubElement c = g.getSubElement("circle");
+		if(c == null){
+			c = new SubElement("circle");
+			g.addSubElement(c);
+		}
 		c.setAttribute("r", Math.round(layout.getRadius()) + "");
 		c.setAttribute("x", Math.round(layout.getLocation().x) + "");
 		c.setAttribute("y", Math.round(layout.getLocation().y) + "");
-		g.addSubElement(c);		
+
+    	SubElement a = g.getSubElement("arrow");
 		if(s.isInitial()) {
-        	SubElement a = new SubElement("arrow");
+        	if(a == null){
+        		a = new SubElement("arrow");
+            	g.addSubElement(a);
+        	}
         	a.setAttribute("x", layout.getArrow().x + "");
-        	a.setAttribute("y", layout.getArrow().y + "");
-        	g.addSubElement(a);
+        	a.setAttribute("y", layout.getArrow().y + "");        	
+		}else{
+			if(a != null){
+				g.removeSubElement("arrow");
+			}
 		}
-		s.addSubElement(g);		
 	}
 	
 	

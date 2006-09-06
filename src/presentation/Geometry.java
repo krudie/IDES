@@ -83,7 +83,7 @@ public class Geometry {
 	 * @param curve
 	 * @return the midpoint of curve
 	 */
-	public static Point2D midpoint(CubicCurve2D.Float curve) {
+	public static Point2D midpoint(CubicCurve2D curve) {
 		CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
 	    return left.getP2();
@@ -92,11 +92,11 @@ public class Geometry {
 	/**
 	 * Returns the norm of the given vector.
 	 * 
-	 * @param v
+	 * @param axis
 	 * @return norm (length) of vector
 	 */
-	public static double norm(Point2D.Float v) {
-		return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));		
+	public static double norm(Point2D v) {
+		return Math.sqrt(Math.pow(v.getX(), 2) + Math.pow(v.getY(), 2));		
 	}
 	
 	/**
@@ -165,14 +165,14 @@ public class Geometry {
 	}
 	
 	/**
-	 * @param v vector
+	 * @param point2D vector
 	 * @param r radians
 	 * @return the vector resulting from rotating v by r radians
 	 */
-	public static Point2D.Float rotate(Point2D.Float v, double r) {
+	public static Point2D.Float rotate(Point2D v, double r) {
 		float c = (float)Math.cos(r);
 		float s = (float)Math.sin(r);
-		return new Point2D.Float(v.x*c - v.y*s, v.y*c + v.x*s);	
+		return new Point2D.Float((float)(v.getX()*c - v.getY()*s), (float)(v.getY()*c + v.getX()*s));	
 	}
 	
 	/**
@@ -188,11 +188,11 @@ public class Geometry {
 
 	/** 
 	 * @param v vector with origin at (0,0) and given direction
-	 * @param s the scalar 
+	 * @param d the scalar 
 	 * @return the result of scaling v by s
 	 */
-	public static Point2D.Float scale(Point2D.Float v, float s) {		
-		return new Point2D.Float(v.x * s, v.y * s);		
+	public static Point2D.Float scale(Point2D v, double s) {		
+		return new Point2D.Float((float)(v.getX() * s), (float)(v.getY() * s));		
 	}	
 		
 	
@@ -222,8 +222,8 @@ public class Geometry {
 		return new Point2D.Float(a.x + v.x, a.y + v.y);		
 	}
 		
-	public static Float add(Point2D p1, Float p2) {		
-		return add(new Point2D.Float((float)p1.getX(), (float)p1.getY()), p2);
+	public static Point2D add(Point2D p1, Point2D p2) {		
+		return new Point2D.Float((float)(p1.getX() + p2.getX()), (float)(p1.getY() + p2.getY()));
 	}
 
 	public static double dot(Point2D.Float v1, Point2D.Float v2){		

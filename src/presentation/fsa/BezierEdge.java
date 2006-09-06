@@ -140,14 +140,14 @@ public class BezierEdge extends Edge {
 	    arrowHead.reset();
 		
 	    // If available, use point of intersection with target node boundary		
-	    Point2D.Float basePt;
+	    Point2D basePt;
 	    Point2D.Float tEndPt = getTargetEndPoint();
 	    if(tEndPt != null){
 	    	basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
 	    }else{
 	    	basePt = Geometry.add(getBezierLayout().getCurve().getP2(), Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));	
 	    }
-		at.setToTranslation(basePt.x, basePt.y);
+		at.setToTranslation(basePt.getX(), basePt.getY());
 		g2d.transform(at);
 		
 	    // rotate to align with end of curve
@@ -169,7 +169,7 @@ public class BezierEdge extends Edge {
 		
 		at.setToRotation(-rho);
 		g2d.transform(at);
-		at.setToTranslation(-basePt.x, -basePt.y);		
+		at.setToTranslation(-basePt.getX(), -basePt.getY());		
 		g2d.transform(at);
 
 		// DEBUG

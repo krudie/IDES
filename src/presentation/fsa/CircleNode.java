@@ -39,7 +39,7 @@ public class CircleNode extends Node {
 			label.updateLayout(layout.getText(), layout.getLocation());
 		}*/
 		this.insert(label);
-		circle = defaultCircle();
+		circle = computeCircle(CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN);
 		if(s.isInitial()){
 			setInitialArrow(new InitialArrow(this));
 		}
@@ -49,55 +49,38 @@ public class CircleNode extends Node {
 	/**
 	 * @return
 	 */
-	private Ellipse2D defaultCircle() {
+	private Ellipse2D computeCircle(float radius) {
 		Point2D.Float centre = getLayout().getLocation();
-		float d = 2 * CircleNodeLayout.DEFAULT_RADIUS;
-		return new Ellipse2D.Double(centre.x - CircleNodeLayout.DEFAULT_RADIUS, centre.y - CircleNodeLayout.DEFAULT_RADIUS, d, d);
+		float d = 2 * radius;
+		return new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
 	}
 
 	// TODO change to iterate over collection of labels on a state
 	// (requires change to file reading and writing, states be composed of many states)		
 	public void refresh() 
 	{	
-		Point2D.Float centre = getLayout().getLocation();
-			
+		Point2D.Float centre = getLayout().getLocation();			
 		label.updateLayout(getLayout().getText(), centre);
 		
-		// compute new radius
+		// compute new radius and visible circle
 		Rectangle2D labelBounds = label.bounds();
 		float radius = (float)Math.max(labelBounds.getWidth()/2 + 2* CircleNodeLayout.RADIUS_MARGIN, CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN);			
 		((CircleNodeLayout)getLayout()).setRadius(radius);
 		radius=((CircleNodeLayout)getLayout()).getRadius();
+		circle = computeCircle(radius);
 		
-		recomputeEdges();
-		
-//		 upper left corner, width and height
-		float d = 2*radius;
-		circle = new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
+		recomputeEdges();	
 
 		if(state.isMarked()){			
-			float r = radius - CircleNodeLayout.RADIUS_MARGIN;
-			d = 2*r;
-			innerCircle = new Ellipse2D.Double(centre.x - r, centre.y - r, d, d);
+			/*float r = radius - CircleNodeLayout.RADIUS_MARGIN;
+			d = 2*r;*/
+			innerCircle = computeCircle(radius - CircleNodeLayout.RADIUS_MARGIN); //new Ellipse2D.Double(centre.x - r, centre.y - r, d, d);
 		}
 			
 		if(initialArrow != null){
 			initialArrow.setVisible(state.isInitial());
 		}
 		
-		/*if(state.isInitial()){
-			
-			// The point on the edge of the circle:
-			// centre point - arrow vector
-			Point2D.Float c = new Point2D.Float(centre.x, centre.y);
-			
-			Point2D.Float dir = new Point2D.Float(((NodeLayout)getLayout()).getArrow().x, ((NodeLayout)getLayout()).getArrow().y);			
-			float offset = ((NodeLayout)getLayout()).getRadius() + ArrowHead.SHORT_HEAD_LENGTH;
-			arrow2 = Geometry.subtract(c, Geometry.scale(dir, offset));		
-			arrow = new ArrowHead(dir, arrow2);								
-			arrow1 = Geometry.subtract(arrow2, Geometry.scale(dir, ArrowHead.SHORT_HEAD_LENGTH * 2));
-		}*/
-		//super.refresh();  already called on all edges (with target nodes) via recomputeEdges. 
 		setDirty(false);
 	}
 	

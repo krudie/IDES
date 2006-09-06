@@ -2,14 +2,13 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
-import main.Hub;
 import main.IDESWorkspace;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
-import presentation.fsa.BezierEdge;
 import presentation.fsa.Edge;
+import presentation.fsa.SelectionGroup;
 import presentation.GraphicalLayout;
 
 public class EdgeCommands {
@@ -86,8 +85,10 @@ public class EdgeCommands {
 		 * @see org.pietschy.command.undo.UndoableActionCommand#performEdit()
 		 */
 		@Override
-		protected UndoableEdit performEdit() {			
-			IDESWorkspace.instance().getActiveGraphModel().commitEdgeLayout(edge);
+		protected UndoableEdit performEdit() {
+			SelectionGroup sg = new SelectionGroup();
+			sg.insert(edge);
+			IDESWorkspace.instance().getActiveGraphModel().commitMovement(sg);
 			// TODO UndoableEdit containing the Edge id and a clone of the previous layout OR
 			// just of the curve.
 			return null;

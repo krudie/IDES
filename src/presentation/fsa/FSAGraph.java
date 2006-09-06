@@ -273,7 +273,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * TODO 
 	 * Build this graph in LayoutDataParser
 	 * Build free labels (those not associated with elements of the automaton).
-	 * Replace the intersection lists with a quadtree
+	 * Replace the intersection lists with a quadtree. 
 	 */
 	private void initializeGraph(){		
 		
@@ -645,35 +645,27 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * TODO remove this and delay committing layout changes until save. 
 	 * @param selection
 	 */
-	public void saveMovement(PresentationElement selection){
+	public void commitMovement(PresentationElement selection){
 		Iterator children = selection.children();
 		while(children.hasNext()){
 			PresentationElement el = (PresentationElement)children.next();
 			if(edgeLabels.containsValue(el)){
-				saveMovement((GraphLabel)el);
+				commitMovement((GraphLabel)el);
 			}else if(nodes.containsValue(el)){
-				saveMovement((CircleNode)el);
+				commitMovement((CircleNode)el);
 			}else if(edges.containsValue(el)){
-				saveMovement((Edge)el);				
-			}else if(freeLabels.containsValue(el)){
-				// FIXME move free labels
-				saveMovement((GraphLabel)el);
+				commitMovement((Edge)el);				
+			}else if(freeLabels.containsValue(el)){				
+				commitMovement((GraphLabel)el);
 			}
 		}
-		setDirty(true);
-		// ??? fire one nodification for the whole selection 
-		// or a message for each element in the group?
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-				FSAGraphMessage.SELECTION,
-				FSAGraphMessage.UNKNOWN_ID, 
-				selection.bounds(),
-				this, ""));
+		setDirty(true);		
 	}
 		
 	/**
 	 * @param label
 	 */
-	private void saveMovement(GraphLabel label) {
+	private void commitMovement(GraphLabel label) {
 		// update offset vector in EdgeLayout		
 		if(label.getParent() != null){
 			try{
@@ -684,17 +676,18 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 					metaData.setLayoutData(t.next(), layout);
 				}
 			}catch(ClassCastException cce){}			
-		}else{ // TODO Move free label, tell MetaData
-			
+		}else{ 
+// TODO Move free label, tell MetaData
 		}
-//		fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.MODIFY, 
-//				FSMGraphMessage.LABEL,
-//				label.getId(), 
-//				label.bounds(),
-//				this, ""));
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.LABEL,
+				label.getId(), 
+				label.bounds(),
+				this, "committed label movement: " + label.toString())
+		);
 	}
 
-	private void saveMovement(Node node){
+	private void commitMovement(Node node){
 		// save location of node to metadata
 		State s = (State)fsa.getState(node.getId());
 		metaData.setLayoutData(s, (CircleNodeLayout)node.getLayout());
@@ -702,62 +695,96 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		// for all edges adjacent to node, save layout
 		Iterator<Edge> adjEdges = node.adjacentEdges();
 		while(adjEdges.hasNext()){			
-			saveMovement(adjEdges.next());
+			commitMovement(adjEdges.next());
 		}	
+		
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.NODE,
+				node.getId(), 
+				node.bounds(),
+				this, "committed node movement: " + node.toString()));
 	}
 	
-	private void saveMovement(Edge e){		
-		GraphicalLayout layout = e.getLayout();		
-		Iterator<FSATransition> t = e.getTransitions();
-		// for all transitions in e, save the edge layout		
-		while(t.hasNext()){
-			try{  // FIXME need to handle other types of layout (e.g. Quad, Linear) 
-				metaData.setLayoutData(t.next(), (BezierLayout)layout);
-			}catch(ClassCastException cce){
-				// FIXME InitialArrows are a special case 
-				// and are saved as properties of their parent nodes.
-				// DEBUG
-				System.err.println(cce.getMessage());
+	/**
+	 * Stores the layout for the given edge for every transition represented
+	 * by this edge.
+	 * 
+	 * @param edge
+	 */
+	private void commitMovement(Edge edge){
+		if(edge instanceof InitialArrow){ // arrow layout is stored as part of target Node's layout
+			Node node = ((Node)edge.getParent());
+			State s = (State)fsa.getState(node.getId());
+			metaData.setLayoutData(s, (CircleNodeLayout)node.getLayout());	
+		}else{		
+			GraphicalLayout layout = edge.getLayout();		
+			Iterator<FSATransition> t = edge.getTransitions();
+			// for all transitions in e, save the edge layout		
+			while(t.hasNext()){
+				try{  // FIXME need to handle other types of layout (e.g. Quad, Linear) 
+					metaData.setLayoutData(t.next(), (BezierLayout)layout);				
+				}catch(ClassCastException cce){
+					System.err.println(cce.getMessage());
+				}
 			}
-		}		
+		}
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "committed edge movement: " + edge.toString()));
 	}
 	
 	///////////////////////////////////////////////////////////////////
 	
-	
-	public void setInitial(Node n, boolean b){
+	public void setInitial(Node node, boolean b){
 		
-		n.setInitial(b);
+		node.setInitial(b);
 		
 		// add or remove the intial arrow from the set of edges
-		InitialArrow arrow = n.getInitialArrow();
+		InitialArrow arrow = node.getInitialArrow();
 		if(arrow != null){
 			if(b){
 				edges.put(arrow.getId(), arrow);					
 			}else{
-				edges.remove(arrow.getId());			
+				edges.remove(arrow.getId());				
 			}
 		}				
 		
-		n.setDirty(true);
+		node.setDirty(true);
+		
+		// save arrow to metadata
+		State s = (State)fsa.getState(node.getId());
+		metaData.setLayoutData(s, (CircleNodeLayout)node.getLayout());
 		
 		fsa.removeSubscriber(this);
 		fsa.fireFSAStructureChanged(new FSAMessage(FSAMessage.MODIFY,
-    			FSAMessage.STATE, n.getId(), fsa));
+    			FSAMessage.STATE, node.getId(), fsa));
 		fsa.addSubscriber(this);
 		
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.NODE,
+				node.getId(), 
+				node.bounds(),
+				this, "set initial property: " + node.toString()));
 	}
 	
-	public void setMarked(CircleNode n, boolean b){
+	public void setMarked(CircleNode node, boolean b){
 		// update the state
-		((State)n.getState()).setMarked(b);		
+		((State)node.getState()).setMarked(b);		
 		
-		n.setDirty(true);		
+		node.setDirty(true);		
 		
 		fsa.removeSubscriber(this);
 		fsa.fireFSAStructureChanged(new FSAMessage(FSAMessage.MODIFY,
-    			FSAMessage.STATE, n.getId(), fsa));
+    			FSAMessage.STATE, node.getId(), fsa));
 		fsa.addSubscriber(this);
+		
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.NODE,
+				node.getId(), 
+				node.bounds(),
+				this, "set initial property: " + node.toString()));
 	}
 	
 	/**
@@ -859,22 +886,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				this, "replaced events on edge label"));
 	}
 	
-	/**
-	 * Stores the layout for the given edge for every transition represented
-	 * by this edge.
-	 * 
-	 * @param edge
-	 */
-	public void commitEdgeLayout(Edge edge){
-		saveMovement(edge);	
-		setDirty(true);
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-				FSAGraphMessage.EDGE,
-				edge.getId(), 
-				edge.bounds(),
-				this, "commit edge layout"));		
-	}
-		
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
@@ -1203,7 +1214,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void translate(float x, float y) {
 		super.translate(x,y);		
 		// FIXME refreshBounds
-		saveMovement(this);  // fires graph changed			
+		commitMovement(this);  // fires graph changed			
 	}
 
 	/**
