@@ -24,7 +24,9 @@ public class FSAGraphMessage {
 	/** Indicates element of type Label was affected by event */
 	public static final int LABEL = 2;	
 	/** Indicates element of type SelectionGroup was affected by event */
-	public static final int SELECTION = 3;	
+	public static final int SELECTION = 3;
+	/** Indicates that the whole graph was affected by the event */
+	public static final int GRAPH = 4;
 	/** Default for when type of element is unknown. */
 	public static final int UNKNOWN_TYPE = -1;
 	
@@ -35,6 +37,8 @@ public class FSAGraphMessage {
 	public static final int REMOVE = 1;
 	/** A modification occurred */
 	public static final int MODIFY = 2;	
+	/** A save occurred */
+	public static final int SAVE = 3;
 	/** Default id for a group of elements or when id is unknown. */
 	public static final long UNKNOWN_ID = -1;	
 	

@@ -93,10 +93,9 @@ public class FileOperations {
      */      
     public static boolean saveAutomaton(Automaton a, File file){    	
         PrintStream ps = IOUtilities.getPrintStream(file);
-        if(ps == null)
+        if(ps == null){
         	return saveAutomatonAs(a);
-        else
-        {
+        }else{
         	// write the automaton to file
         	XMLexporter.automatonToXML(a, ps);
         	
@@ -106,7 +105,7 @@ public class FileOperations {
         		Hub.getWorkspace().removeFSAModel(newName);
         	a.setName(newName);
         	a.setFile(file);
-        	//a.notifyAllSubscribers();
+        	a.fireFSASaved();
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
             
             return true;
@@ -119,16 +118,21 @@ public class FileOperations {
 	 */
 	public static boolean saveAutomatonAs(Automaton a) {
 		JFileChooser fc;
-		if(a.getFile()!=null)
+		
+		if(a.getFile()!=null){
 			fc=new JFileChooser(a.getFile().getParent());
-		else
+		}else{
 			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
+		}
+		
 		fc.setDialogTitle(Hub.string("saveModelTitle"));
 		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
-		if(a.getFile()!=null)
+		
+		if(a.getFile()!=null){
 			fc.setSelectedFile(a.getFile());
-		else
+		}else{
 			fc.setSelectedFile(new File(a.getName()));
+		}
 		int retVal;
 		boolean fcDone=true;
 		File file=null;
@@ -151,8 +155,10 @@ public class FileOperations {
 					retVal=JFileChooser.CANCEL_OPTION;
 			}
 		} while(!fcDone);
-    	if(retVal == JFileChooser.APPROVE_OPTION)
+    	
+		if(retVal == JFileChooser.APPROVE_OPTION){
     		return saveAutomaton(a,file);
+		}
     	return false;
 	}
 	

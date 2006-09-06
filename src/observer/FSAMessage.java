@@ -4,7 +4,9 @@
 package observer;
 
 /**
- * @author helen
+ * Message sent to subscribers listening for changes to a FSA.
+ * 
+ * @author helen bretzke
  *
  */
 public class FSAMessage {
@@ -58,11 +60,8 @@ public class FSAMessage {
 		return source;
 	}
 
-
-
 	public String getMessageText() {
 		return messageText;
 	}
-	
 	
 }

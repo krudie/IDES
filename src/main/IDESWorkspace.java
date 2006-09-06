@@ -43,8 +43,8 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	// index of the currently active FSAModel
 	private int activeModelIdx;
 		
-	// A model of global events set (alphabet) and all local alphabets
-//	private FSAEventsModel eventsModel;
+	// TODO A model of global events set (alphabet) and all local alphabets
+	//private FSAEventsModel eventsModel;
 	
 	// maps name of each model to the abstract FSA model, 
 	// graph representation and metadata respectively.
@@ -72,18 +72,19 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 
 	public void addFSAGraph(FSAGraph g)
 	{	
-		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
+		// Remove Untitled graph if it has not been modified
+		if(countAdd==1 && getActiveGraphModel()!=null && getActiveGraphModel().size() == 0){
 			removeFSAModel(getActiveGraphModel().getName());
+		}
 		
 		if(getFSAModel(g.getName())!=null)
 		{
 			int i=1;
-			while(getFSAModel(g.getName()+" ("+i+")")!=null)
+			while(getFSAModel(g.getName()+" ("+i+")")!=null){
 				++i;
+			}
 			g.setName(g.getName()+" ("+i+")");
 		}
-//		if(getActiveModel()!=null)
-//			getActiveGraphModel().removeSubscriber(getDrawingBoard());
 		
 		systems.add(g.getAutomaton());
 		metadata.add(g.getMeta());
@@ -96,35 +97,32 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		{
 			new LatexPrerenderer(getActiveGraphModel());
 		}
-		
-//		getActiveGraphModel().addSubscriber(getDrawingBoard());
-//		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
-		//notifyAllSubscribers();
+
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
 									g.getAutomaton().getId(), 
 									WorkspaceMessage.ADD, 
 									this));		
-		if(countAdd!=0)
+		if(countAdd!=0){
 			dirty = true;
+		}
 		countAdd++;
 	}
 	
 	public void addFSAModel(FSAModel fsa) {
 		
-		// Remove Untitled model if it has not been modified
-		if(countAdd==1&&getActiveGraphModel()!=null&&!getActiveGraphModel().isDirty())
-			removeFSAModel(getActiveGraphModel().getName());
+		// Remove Untitled model if it is empty
+		if(countAdd==1 && getActiveGraphModel()!=null && getActiveGraphModel().size() == 0){
+			removeFSAModel(getActiveGraphModel().getName());		
+		}
 		
-		if(getFSAModel(fsa.getName())!=null)
-		{
+		if(getFSAModel(fsa.getName())!=null){
 			int i=1;
-			while(getFSAModel(fsa.getName()+" ("+i+")")!=null)
+			while(getFSAModel(fsa.getName()+" ("+i+")")!=null){
 				++i;
+			}
 			fsa.setName(fsa.getName()+" ("+i+")");
 		}
-//		if(getActiveModel()!=null)
-//			getActiveGraphModel().removeSubscriber(getDrawingBoard());
-		
+
 		systems.add((Automaton) fsa);
 		metadata.add(new MetaData((Automaton)fsa));
 		graphs.add(new FSAGraph((Automaton)fsa, metadata.lastElement()));
@@ -132,20 +130,17 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		
 		//eventsModel.addLocalEvents(fsa);
 		
-		if(LatexManager.isLatexEnabled())
-		{
+		if(LatexManager.isLatexEnabled()){
 			new LatexPrerenderer(getActiveGraphModel());
 		}
 		
-//		getActiveGraphModel().addSubscriber(getDrawingBoard());
-//		graphs.elementAt(activeModelIdx).notifyAllSubscribers();
-		//notifyAllSubscribers();
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
 									fsa.getId(), 
 									WorkspaceMessage.ADD, 
 									this));		
-		if(countAdd!=0)
+		if(countAdd!=0){
 			dirty = true;
+		}
 		countAdd++;
 	}
 
@@ -193,11 +188,16 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	
 	public void removeFSAModel(String name) {
 		FSAGraph gm=getGraphModel(name);
-		if(gm==null)
+		
+		if(gm==null){
 			return;
-		if(gm.isDirty())
-			if(!CommonTasks.handleUnsavedModel(gm))
+		}
+		
+		if(gm.isDirty()){
+			if(!CommonTasks.handleUnsavedModel(gm)){
 				return;
+			}
+		}
 		
 		// Assumes that the current model is the same as the one named.
 //		if(getActiveModel()!=null)
@@ -218,15 +218,11 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 								this));
 		}		
 		
-//		if(getActiveModel()!=null)
-//			((Automaton)getActiveModel()).addSubscriber(getDrawingBoard());
-		
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
 				fsa.getId(), 
 				WorkspaceMessage.REMOVE, 
 				this));
-		
-		//this.notifyAllSubscribers();
+
 		dirty = true;
 	}
 
@@ -236,14 +232,16 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	}
 
 	public String getActiveModelName() {
-		if(activeModelIdx<0)
+		if(activeModelIdx<0){
 			return "";
+		}
 		return systems.elementAt(activeModelIdx).getName();
 	}
 
 	public FSAModel getActiveModel(){
-		if(activeModelIdx<0)
+		if(activeModelIdx<0){
 			return null;
+		}
 		return systems.elementAt(activeModelIdx);
 	}
 	
@@ -254,11 +252,13 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	 * @param name
 	 */
 	public void setActiveModel(String name) {
-		if(getActiveModel()!=null)
+		if(getActiveModel()!=null){
 			getActiveGraphModel().removeSubscriber(getDrawingBoard());
+		}
 		activeModelIdx=getFSAIndex(name);
-		if(getActiveModel()!=null)
+		if(getActiveModel()!=null){
 			getActiveGraphModel().addSubscriber(getDrawingBoard());
+		}
 		
 		// TODO change name to fsa.id for consistency with add and remove
 		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.FSM, 

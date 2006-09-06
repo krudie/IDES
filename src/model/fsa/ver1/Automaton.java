@@ -117,7 +117,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
 	 * @see model.fsa.ver1.FSAModel#setName(java.lang.String)
 	 */
     public void setName(String name){
-        this.name = name;    
+        this.name = name;        
     }
 
     /* (non-Javadoc)
@@ -168,7 +168,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
 	public void add(FSAState s){
 	    states.add(s); 
 	    maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
-    	fireFSMStructureChanged(new FSAMessage(FSAMessage.ADD,
+    	fireFSAStructureChanged(new FSAMessage(FSAMessage.ADD,
     			FSAMessage.STATE, s.getId(), this));
 
 	}
@@ -192,7 +192,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
             t.getTarget().removeTargetTransition(t);            
         }
         states.remove(s);
-        fireFSMStructureChanged(new FSAMessage(FSAMessage.REMOVE,
+        fireFSAStructureChanged(new FSAMessage(FSAMessage.REMOVE,
     			FSAMessage.STATE, s.getId(), this));
     }
     
@@ -223,7 +223,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
         t.getTarget().addTargetTransition(t);
         transitions.add(t);
         maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
-        fireFSMStructureChanged(new FSAMessage(FSAMessage.ADD,
+        fireFSAStructureChanged(new FSAMessage(FSAMessage.ADD,
     			FSAMessage.TRANSITION, t.getId(), this));
     }
 
@@ -234,7 +234,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
         t.getSource().removeSourceTransition(t);
         t.getTarget().removeTargetTransition(t);
         transitions.remove(t);
-        fireFSMStructureChanged(new FSAMessage(FSAMessage.REMOVE,
+        fireFSAStructureChanged(new FSAMessage(FSAMessage.REMOVE,
     			FSAMessage.TRANSITION, t.getId(), this));
     }
 
@@ -263,7 +263,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
     public void add(FSAEvent e){
         events.add(e);
     	maxEventId = maxEventId < e.getId() ? e.getId() : maxEventId;    	
-    	fireFSMEventSetChanged(new FSAMessage(FSAMessage.ADD,
+    	fireFSAEventSetChanged(new FSAMessage(FSAMessage.ADD,
     			FSAMessage.EVENT, e.getId(), this));
     }
 
@@ -277,7 +277,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
         	if(e.equals(i.next().getEvent()))
         		i.remove();
         }
-    	fireFSMEventSetChanged(new FSAMessage(FSAMessage.REMOVE,
+    	fireFSAEventSetChanged(new FSAMessage(FSAMessage.REMOVE,
     			FSAMessage.EVENT, e.getId(), this));
     }
 

@@ -96,7 +96,7 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsmStructureChanged(FSAMessage message) {
+	public void fsaStructureChanged(FSAMessage message) {
 		// if states or transitions added or removed
 		if( (message.getElementType() == FSAMessage.STATE || 
 				message.getElementType() == FSAMessage.TRANSITION) &&
@@ -110,5 +110,13 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsmEventSetChanged(FSAMessage message) {}
+	public void fsaEventSetChanged(FSAMessage message) {}
+
+	/* (non-Javadoc)
+	 * @see observer.FSASubscriber#fsaSaved()
+	 */
+	public void fsaSaved() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -152,7 +152,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	    		observable.insertElementAt((Boolean)value, row);	    		
 	    	}
 	    		    		
-	    	((FSAPublisher)a).fireFSMEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+	    	((FSAPublisher)a).fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
 	    			FSAMessage.EVENT, events.elementAt(row).getId(), (FSAPublisher)a));			
 	    	
 	    	if(col==0)
@@ -455,12 +455,20 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsmStructureChanged(FSAMessage message) {}
+	public void fsaStructureChanged(FSAMessage message) {}
 
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsmEventSetChanged(FSAMessage message) {
+	public void fsaEventSetChanged(FSAMessage message) {
 		refreshEventTable();		
+	}
+
+	/* (non-Javadoc)
+	 * @see observer.FSASubscriber#fsaSaved()
+	 */
+	public void fsaSaved() {
+		// TODO Auto-generated method stub
+		
 	}
 }

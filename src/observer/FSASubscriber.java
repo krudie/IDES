@@ -11,7 +11,8 @@ package observer;
  */
 public interface FSASubscriber {
 
-	public void fsmStructureChanged(FSAMessage message);
-	public void fsmEventSetChanged(FSAMessage message);
+	public void fsaStructureChanged(FSAMessage message);
+	public void fsaEventSetChanged(FSAMessage message);
+	public void fsaSaved();
 	
 }

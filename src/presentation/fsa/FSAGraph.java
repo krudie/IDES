@@ -78,15 +78,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	private HashMap<Long, Edge> edges;
 	private HashMap<Long, GraphLabel> freeLabels;
 	private HashMap<Long, GraphLabel> edgeLabels; // use parent edge's id as key
-	
-	protected boolean dirty=false;
-	
+		
 	/**
 	 * The data models to keep synchronized.
 	 */	
 	private Automaton fsa;	   // system model
 	
-	// TODO remove after testing graph extraction by LayoutDataParser
+	/* TODO remove after testing graph extraction by LayoutDataParser and 
+		committing all changes only on save.
+	*/ 
 	private MetaData metaData; // presentation data for the system model	
 	
 	/**
@@ -216,6 +216,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public String getDecoratedName()
 	{
 		return (isDirty()?"* ":"")+getName();
+	}
+	
+	/**
+	 * DEBUG
+	 */
+	public void setDirty(boolean b){
+		super.setDirty(b);
 	}
 	
 	public Automaton getAutomaton()
@@ -500,7 +507,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		CircleNode n = new CircleNode(s, layout);	
 		nodes.put(new Long(s.getId()), n);
 		insert(n);
-		//setDirty(true);		
+		setDirty(true);		
 		
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
@@ -653,7 +660,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				saveMovement((GraphLabel)el);
 			}
 		}
-
+		setDirty(true);
 		// ??? fire one nodification for the whole selection 
 		// or a message for each element in the group?
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
@@ -735,7 +742,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		n.setDirty(true);
 		
 		fsa.removeSubscriber(this);
-		fsa.fireFSMStructureChanged(new FSAMessage(FSAMessage.MODIFY,
+		fsa.fireFSAStructureChanged(new FSAMessage(FSAMessage.MODIFY,
     			FSAMessage.STATE, n.getId(), fsa));
 		fsa.addSubscriber(this);
 		
@@ -748,7 +755,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		n.setDirty(true);		
 		
 		fsa.removeSubscriber(this);
-		fsa.fireFSMStructureChanged(new FSAMessage(FSAMessage.MODIFY,
+		fsa.fireFSAStructureChanged(new FSAMessage(FSAMessage.MODIFY,
     			FSAMessage.STATE, n.getId(), fsa));
 		fsa.addSubscriber(this);
 	}
@@ -860,7 +867,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 */
 	public void commitEdgeLayout(Edge edge){
 		saveMovement(edge);	
-		//setDirty(true);
+		setDirty(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
@@ -877,6 +884,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}else{
 			freeLabels.remove(el.getId());
 			this.remove(el);
+			setDirty(true);
 			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
 					FSAGraphMessage.LABEL,
 					FSAGraphMessage.UNKNOWN_ID, 
@@ -977,7 +985,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 */
 	public void setLabelText(GraphLabel freeLabel, String text) {
 		freeLabel.setText(text);
-		//setDirty(true);		
+		setDirty(true);		
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.LABEL,
 				FSAGraphMessage.UNKNOWN_ID, 
@@ -1041,14 +1049,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void setControllable(Event event, boolean b){
 		// update the event
 		event.setControllable(b);
-		fsa.fireFSMEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+		fsa.fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
     			FSAMessage.EVENT, event.getId(), fsa));
 	}
 
 	public void setObservable(Event event, boolean b){
 		// update the event
 		event.setObservable(b);
-		fsa.fireFSMEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+		fsa.fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
     			FSAMessage.EVENT, event.getId(), fsa));
 	}
 	
@@ -1074,7 +1082,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @param edge
 	 */
 	public void arcLess(Edge edge) {
-		((BezierEdge)edge).arcLess();	
+		((BezierEdge)edge).arcLess();
+		setDirty(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
@@ -1085,7 +1094,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void symmetrize(Edge edge){
 		BezierLayout el=(BezierLayout)edge.getLayout();
 		el.symmetrize();	
-		
+		setDirty(true);
 		// TODO include edge label in bounds (dirty spot)
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
@@ -1103,12 +1112,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void straighten(Edge edge) {
 		if(!edge.isStraight() && edge.canStraighten()){
 			edge.straighten();
+			setDirty(true);
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+					FSAGraphMessage.EDGE,
+					edge.getId(), 
+					edge.bounds(),
+					this, "straightened edge"));
+
 		}
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-				FSAGraphMessage.EDGE,
-				edge.getId(), 
-				edge.bounds(),
-				this, "straightened edge"));
 	}
 
 	/**
@@ -1349,7 +1360,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsmStructureChanged(FSAMessage message) {
+	public void fsaStructureChanged(FSAMessage message) {
 		// TODO if can isolate the change just modify the structure as required
 		// e.g. properties set on states or events.
 		// and only refresh the affected part of the graph
@@ -1403,7 +1414,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsmEventSetChanged(FSAMessage message) {
+	public void fsaEventSetChanged(FSAMessage message) {
 		// Remove transitions fired by affected events
 		// TODO construct bounds of area affected
 		
@@ -1446,6 +1457,18 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		
 	}
 	///////////////////////////////////////////////////////////////////////
+
+	/* (non-Javadoc)
+	 * @see observer.FSASubscriber#fsaPersistenceChanged(observer.FSAMessage)
+	 */
+	public void fsaSaved() {
+		setDirty(false);		
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.SAVE, 
+				FSAGraphMessage.GRAPH,
+				this.getId(), 
+				this.bounds(),
+				this, ""));
+	}
 
 	// TODO: comment
 	//FIXME: move this to a plugin that reads/writes composition data for states

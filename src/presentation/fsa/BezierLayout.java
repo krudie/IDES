@@ -559,12 +559,12 @@ public class BezierLayout extends GraphicalLayout {
 	/**
 	 * KLUGE: all accesss to EdgeLayout should go through the Edge interface.
 	 */
-	public void setDirty(boolean b){
+	/*public void setDirty(boolean b){
 		super.setDirty(b);
 		if(edge != null){
 			edge.setDirty(b);
 		}
-	}
+	}*/
 
 	// Indicates whether an edge can be rigidly translated 
 	// with both of its nodes or must be recomputed.

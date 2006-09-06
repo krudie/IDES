@@ -91,9 +91,8 @@ public class BezierEdge extends Edge {
 			return;
 		}
 		
-		if(isDirty()){
-			refresh();
-			//getHandler().refresh();			
+		if(isDirty() || getBezierLayout().isDirty()){
+			refresh();			
 			getBezierLayout().setDirty(false);
 		}
 	

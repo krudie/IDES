@@ -38,17 +38,24 @@ public class FSAPublisher {
 		subscribers.remove(subscriber);
 	}
 	
-	public void fireFSMStructureChanged(FSAMessage message){
+	public void fireFSAStructureChanged(FSAMessage message){
 		for(FSASubscriber s : subscribers)
 		{
-			s.fsmStructureChanged(message);
+			s.fsaStructureChanged(message);
 		}
 	}	
 	
-	public void fireFSMEventSetChanged(FSAMessage message){
+	public void fireFSAEventSetChanged(FSAMessage message){
 		for(FSASubscriber s : subscribers)
 		{
-			s.fsmEventSetChanged(message);
+			s.fsaEventSetChanged(message);
 		}			
-	}	
+	}
+	
+	public void fireFSASaved(){
+		for(FSASubscriber s : subscribers)
+		{
+			s.fsaSaved();
+		}	
+	}
 }

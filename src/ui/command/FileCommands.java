@@ -134,7 +134,7 @@ public class FileCommands {
 			if(fsa!=null)
 				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
 				{
-					Hub.getWorkspace().getActiveGraphModel().setDirty(false);
+					//Hub.getWorkspace().getActiveGraphModel().setDirty(false);
 					// FIXME Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
 					Hub.getWorkspace().fireRepaintRequired();
 				}
