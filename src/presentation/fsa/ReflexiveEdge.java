@@ -174,13 +174,72 @@ public class ReflexiveEdge extends BezierEdge {
 		
 	}
 	
-	/* (non-Javadoc)
-	 * @see presentation.fsa.Edge#createExportString(java.awt.Rectangle, int)
+	/**
+	 * This method is responsible for creating a string that contains
+	 * an appropriate (depending on the type) representation of this
+	 * self-loop.
+	 * 
+	 * TODO: Calculate a better C1 and C2 or export - there are no
+	 * PSTricks self-loop options
+	 *  
+	 * @param selectionBox The area being selected or considered
+	 * @param exportType The export format
+	 * @return String The string representation
+	 * 
+	 * @author Sarah-Jane Whittaker
 	 */
 	@Override
 	public String createExportString(Rectangle selectionBox, int exportType) {
-		// TODO Auto-generated method stub
-		return null;
+		String exportString = "";
+		
+		Point2D.Float edgeP1 = getSourceEndPoint();
+		Point2D.Float edgeP2 = getTargetEndPoint();
+		Point2D.Float edgeCTRL1 = getCTRL1();
+		Point2D.Float edgeCTRL2 = getCTRL2();
+				
+		// Make sure this node is contained within the selection box
+		if (! (selectionBox.contains(edgeP1) && selectionBox.contains(edgeP2)
+			&& selectionBox.contains(edgeCTRL1) && selectionBox.contains(edgeCTRL2)))
+		{
+			System.out.println("Self-loop " + edgeP1 + " "
+				+ edgeP2 + " "
+				+ edgeCTRL1 + " "
+				+ edgeCTRL2 + " "
+				+ " outside bounds " + selectionBox);
+			return exportString;
+		}
+		
+		// Adjust the y value for the CTRL points based on the midpoint
+		
+		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
+		{
+			// Draw the curve				
+			exportString += "  \\psbezier[arrowsize=5pt";
+			exportString += (hasUncontrollableEvent() ?
+					", linestyle=dashed" : "");
+			exportString += "]{->}"
+				+ "(" + (edgeP1.x - selectionBox.x) + "," 
+				+ (selectionBox.y + selectionBox.height - edgeP1.y) + ")(" 
+				+ (edgeCTRL1.x - selectionBox.x) + "," 
+				+ (selectionBox.y + selectionBox.height -edgeCTRL1.y) + ")(" 
+				+ (edgeCTRL2.x - selectionBox.x) + "," 
+				+ (selectionBox.y + selectionBox.height -edgeCTRL2.y) + ")(" 
+				+ (edgeP2.x - selectionBox.x) + "," 
+				+ (selectionBox.y + selectionBox.height - edgeP2.y) + ")\n";
+			
+			// Now for the label
+			if ((getBezierLayout().getText() != null) && (getLabel().getText().length() > 0))
+			{
+				exportString += "  " 
+					+ getLabel().createExportString(selectionBox, exportType);
+			}
+		}
+		else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS)
+		{	
+			// LENKO!!!
+		}
+
+		return exportString;
 	}
 	
 	/**

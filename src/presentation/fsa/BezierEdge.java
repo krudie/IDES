@@ -478,8 +478,8 @@ public class BezierEdge extends Edge {
 	{
 		String exportString = "";
 		
-		Point2D.Float edgeP1 = getP1();
-		Point2D.Float edgeP2 = getP2();
+		Point2D.Float edgeP1 = getSourceEndPoint();
+		Point2D.Float edgeP2 = getTargetEndPoint();
 		Point2D.Float edgeCTRL1 = getCTRL1();
 		Point2D.Float edgeCTRL2 = getCTRL2();
 		BezierLayout edgeLayout = (BezierLayout) getBezierLayout();

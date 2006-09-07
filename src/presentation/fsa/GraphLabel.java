@@ -419,6 +419,8 @@ public class GraphLabel extends GraphElement {
 	 * This method is responsible for creating a string that contains
 	 * an appropriate (depending on the type) representation of this
 	 * edge.
+	 * 
+	 * TODO: Do a final fix on the "y" issue
 	 *  
 	 * @param selectionBox The area being selected or considered
 	 * @param exportType The export format
@@ -432,8 +434,6 @@ public class GraphLabel extends GraphElement {
 		GraphicalLayout labelLayout = getLayout();
 		Rectangle2D b = bounds();
 		Rectangle labelBounds = new Rectangle((int)b.getX(), (int)b.getY(), (int)b.getWidth(), (int)b.getHeight());
-		CircleNode parentNode = null;
-		GraphicalLayout nodeLayout = null;
 		
 		// This is taken from Mike Wood - thanks, Mike!!!
 		String safeLabel = labelLayout.getText();
@@ -445,6 +445,12 @@ public class GraphLabel extends GraphElement {
 				BentoBox.STR_ASCII_STANDARD_RETURN + BentoBox.STR_ASCII_STANDARD_RETURN, "\\\\ ");
 		safeLabel = BentoBox.replaceAll(safeLabel, BentoBox.STR_ASCII_STANDARD_RETURN, " ");
 
+		// If this label is empty, ignore it
+		if (safeLabel.length() == 0)
+		{
+			return "";
+		}
+		
 		// Make sure this node is contained within the selection box
 		if (! (selectionBox.contains(labelBounds)))
 		{
@@ -453,19 +459,28 @@ public class GraphLabel extends GraphElement {
 			return exportString;
 		}
 		
-		// Adjust the bounds for PSTricks export		
-		labelBounds.x = BentoBox.convertDoubleToInt(
-			getLayout().getLocation().x - (getLayout().getLocation().x * 0.00001));
-		labelBounds.y = BentoBox.convertDoubleToInt(
-			getLayout().getLocation().y 
-				+ (getLayout().getLocation().y * getLayout().getLocation().y * 0.00002));
+		// Adjust the bounds for PSTricks export
+		/*
+		if (getParent() instanceof CircleNode)
+		{
+			CircleNode parentNode = (CircleNode) getParent();
+			CircleNodeLayout nodeLayout = (CircleNodeLayout) parentNode.getLayout();
+			
+			if (nodeLayout.getLocation().y < 
+				(labelBounds.y + (labelBounds.height / 2.0)))
+			{ 
+				labelBounds.y = BentoBox.convertDoubleToInt(
+						nodeLayout.getLocation().y);
+			}
+		}
+		*/
 		
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
 			// Don't forget the font size!!!
 			exportString = "  \\rput(" 
-				+ (labelBounds.x - selectionBox.x) + "," 
-				+ (selectionBox.y + selectionBox.height - labelBounds.y) + "){\\parbox{" 
+				+ (labelBounds.x - selectionBox.x + (labelBounds.width / 2.0)) + "," 
+				+ (selectionBox.y + selectionBox.height - labelBounds.y - (labelBounds.height / 2.0)) + "){\\parbox{" 
 				+ labelBounds.width + "pt}{\\fontsize{"
 				+ getLatexFontSize() + "}{"
 				+ BentoBox.roundDouble(getLatexFontSize() * 

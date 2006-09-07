@@ -219,6 +219,9 @@ public class CircleNode extends Node {
 	 * This method is responsible for creating a string that contains
 	 * an appropriate (depending on the type) representation of this
 	 * node.
+	 * 
+	 * NOTE: Initial arrows aren't handles, as those are now 
+	 * independent edges
 	 *  
 	 * @param selectionBox The area being selected or considered
 	 * @param exportType The export format 
@@ -237,7 +240,6 @@ public class CircleNode extends Node {
 		Rectangle squareBounds = getSquareBounds();
 		Point2D.Float nodeLocation = nodeLayout.getLocation();
 		int radius = BentoBox.convertFloatToInt(nodeLayout.getRadius());
-		Rectangle initialArrowBounds = null;
 
 		// Make sure this node is contained within the selection box
 		if (! selectionBox.contains(squareBounds))
@@ -271,17 +273,6 @@ public class CircleNode extends Node {
 							- GraphExporter.INT_PSTRICKS_MARKED_STATE_RADIUS_DIFF) 
 					+ "}\n";
 			}				
-			
-			// If this is the initial state, draw an initial arrow
-			if (state.isInitial())
-			{
-				initialArrowBounds = getInitialArrowBounds();
-				exportString += "    \\psline[arrowsize=5pt]{->}(" 
-					+ (initialArrowBounds.getMinX() - selectionBox.x) + "," 
-					+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMinY()) + ")(" 
-					+ (initialArrowBounds.getMaxX() - selectionBox.x) + "," 
-					+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMaxY()) + ")\n";
-			}
 			
 			// Now for the label
 			if (getLayout().getText() != null)

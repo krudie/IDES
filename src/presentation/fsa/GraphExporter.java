@@ -231,7 +231,7 @@ public class GraphExporter
 		FSAGraph graphModel = null;
 		
 		CircleNode[] nodeArray = null;
-		BezierEdge[] edgeArray = null;
+		Edge[] edgeArray = null;
 		GraphLabel[] freelabelArray = null;
 
 		// Step #1 - Get the GraphModel
@@ -244,7 +244,7 @@ public class GraphExporter
 
 		// Step #2 - Get the Nodes, Edges and Labels
 		nodeArray = (CircleNode[]) graphModel.getNodes().toArray(new CircleNode[0]);
-		edgeArray = (BezierEdge[]) graphModel.getEdges().toArray(new BezierEdge[0]);
+		edgeArray = (Edge[]) graphModel.getEdges().toArray(new Edge[0]);
 		freelabelArray = (GraphLabel[]) graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 
 		// Step #3 - Initialize the pspicture environment and set linewidth to 1 pt

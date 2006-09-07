@@ -329,14 +329,21 @@ public class InitialArrow extends Edge {
 	public void addEventName(String symbol) {}
 
 	/* TODO ask SJW what she needs to export to LaTeX and eps. 
-	 * 
+	 * Sarah: OK, I've been in and I'm working on it.
 	 * (non-Javadoc)
 	 * @see presentation.fsa.Edge#createExportString(java.awt.Rectangle, int)
 	 */
 	@Override
-	public String createExportString(Rectangle selectionBox, int exportType) {
-		// TODO Auto-generated method stub
-		return null;
+	public String createExportString(Rectangle selectionBox, int exportType) 
+	{
+		Rectangle initialArrowBounds = bounds();
+		
+		return "    \\psline[arrowsize=4pt]{->}(" 
+			+ (initialArrowBounds.getMinX() - selectionBox.x) + "," 
+			+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMinY()) + ")(" 
+			+ (initialArrowBounds.getMaxX() - selectionBox.x) + "," 
+			+ (selectionBox.height + selectionBox.y - initialArrowBounds.getMaxY()) + ")\n";
+
 	}
 
 	/**
