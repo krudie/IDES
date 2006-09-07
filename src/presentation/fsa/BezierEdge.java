@@ -202,6 +202,7 @@ public class BezierEdge extends Edge {
 		assertAllPointsNumbers(curve);		
 ///////////////////////////////////////
 		
+		// Compute points where curve intersects boundaries of source and target nodes		
 		Point2D.Float sourceEndPt = getSourceEndPoint();
 		if(sourceEndPt == null) 
 		{
@@ -229,6 +230,7 @@ public class BezierEdge extends Edge {
 			getHandler().setVisible(false);
 		}			
 		// FIXME text should always live in label's layout, not also in BezierLayout
+		// BezierLayout will no longer act as intermediary after MetaData class is removed.
 	    getLabel().setText(getBezierLayout().getText());	    
 	    
 	    // Compute location of label: midpoint of curve	plus offset vector     

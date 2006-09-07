@@ -321,11 +321,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			
 			// if the edge corresponding to t already exists,
 			// and its layout is the same
-			// add t to the edge's set of transitions			
-			e = directedEdgeBetween(n1, n2); 
+			// add t to the edge's set of transitions	
+			// FIXME Only finds the first one; need to keep searching until find one with matching layout.
+			e = existingEdge(t);
+			// = directedEdgeBetween(n1, n2); 
 			BezierLayout layout = metaData.getLayoutData(t);
-			if(e != null && e.getLayout().equals(layout)){			
+			if(e != null) {// && e.getLayout().equals(layout)){			
 				e.addTransition(t);
+				e.addEventName(t.getEvent().getSymbol());
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge
@@ -363,6 +366,24 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		
 		// clear all dirty bits in the graph structure		
 		refresh();
+	}
+
+	/**
+	 * @param t
+	 * @return
+	 */
+	private Edge existingEdge(Transition t) {
+		// TODO Auto-generated method stub
+		BezierLayout layout = metaData.getLayoutData(t);
+		for(Edge e : edges.values())
+		{			
+			if(e.getSourceNode() != null && e.getSourceNode().getState().equals(t.getSource()) 
+					&& e.getTargetNode() != null && e.getTargetNode().getState().equals(t.getTarget())
+					&& e.getLayout().equals(layout)){
+				return e;
+			}
+		}		
+		return null;
 	}
 
 	/**
@@ -1019,44 +1040,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		return event;
 	}
 	
-	public void removeEvent(Event event)
-	{
-		// remove event from all edges that may have transitions holding
-		// references to it.
-		Entry entry;
-		BezierEdge edge;
-		FSATransition toRemove = null;
-		Iterator iter = edges.entrySet().iterator();
-		Set<BezierEdge> edgesToRemove=new HashSet<BezierEdge>();
-		while(iter.hasNext()){			
-			entry = (Entry)iter.next();
-			edge = (BezierEdge)entry.getValue();
-			Iterator<FSATransition> trans = edge.getTransitions();
-			while(trans.hasNext()){
-				FSATransition t = trans.next();
-				FSAEvent e = t.getEvent();
-				if(e != null && e.equals(event)){
-					// remove e and possibly t from edge
-					t.setEvent(null);
-					toRemove = t;
-				}
-			}
-			if(toRemove != null){
-				edge.removeTransition((Transition)toRemove);
-			}
-			if(edge.transitionCount()==0)
-			{
-				edgesToRemove.add(edge);
-			}
-		}
-		for(BezierEdge e:edgesToRemove)
-			delete(e);
-		
-		fsa.removeSubscriber(this);
-		fsa.remove(event);
-		fsa.addSubscriber(this);
-	}
-	
 	public void setControllable(Event event, boolean b){
 		// update the event
 		event.setControllable(b);
@@ -1376,8 +1359,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		// e.g. properties set on states or events.
 		// and only refresh the affected part of the graph
 		int elementType = message.getElementType();
-		// otherwise rebuild the graph structure 
-		switch(elementType){
+		
+		switch( elementType ){
 		case FSAMessage.STATE:
 			
 			
@@ -1389,15 +1372,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 					*/	
 			break;
 		case FSAMessage.TRANSITION:
-
-			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
-			FSMGraphMessage.???,
-			?.getId(), 
-			?.bounds(),
-			this, ""));
-			*/	
-
+			
+			if( message.getEventType() == FSAMessage.REMOVE ) {
+				Long tId = message.getElementId();
+				removeTransition(tId);				
+			}
+			
 			break;
+			
 		case FSAMessage.EVENT:
 
 			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
@@ -1408,7 +1390,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			*/	
 
 			break;
-		default:
+		default: // otherwise rebuild the graph structure 
 			initializeGraph();
 		
 		/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
@@ -1422,49 +1404,104 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Removes the transition with the given id from its edge
+	 * and if it is the only transition on that edge, deletes the edge.
+	 * 
+	 * @param id  identity of the the transition to remove
+	 */
+	private void removeTransition(Long id) {
+				
+		FSATransition toRemove = fsa.getTransition(id);		
+		Edge edge = null;
+		
+		for( Edge e : edges.values() ) {
+			Iterator<FSATransition> trans = e.getTransitions();
+			
+			while( trans.hasNext() && edge == null ) {
+				FSATransition t = trans.next();						
+				if( t.equals( toRemove ) ) {
+					
+					edge = e;
+					edge.removeTransition( toRemove );
+					edge.setDirty(true);
+						
+					FSAGraphMessage message;
+					if( edge.transitionCount() == 0 ) {
+						delete( edge );
+						message = new FSAGraphMessage( FSAGraphMessage.REMOVE,
+														FSAGraphMessage.EDGE,
+														edge.getId(),
+														edge.bounds(),
+														this );
+					} else {
+						message = new FSAGraphMessage( FSAGraphMessage.MODIFY,
+														FSAGraphMessage.EDGE,
+														edge.getId(),
+														edge.bounds(),
+														this );
+					}
+					
+					fireFSAGraphChanged(message);
+				}					
+			}			
+		}		 
+	}
+
+	/**
+	 * 
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsaEventSetChanged(FSAMessage message) {
-		// Remove transitions fired by affected events
-		// TODO construct bounds of area affected
+		// Remove any edges that have only one transition and
+		// that transition is fired by the removed event
 		
-		if(message.getEventType() == FSAMessage.REMOVE){
+		// IDEA wait for FSAStructureChanged event to be notified of the transition removal.
+		// See removeTransition and fsaStructureChanged. 
+		
+		
+		/*if(message.getEventType() == FSAMessage.REMOVE){
 			Set<Edge> edgesToRemove=new HashSet<Edge>();
 			for(Edge e : edges.values()){
 				Iterator<FSATransition> trans = e.getTransitions();
-				while(trans.hasNext()){
+				while( trans.hasNext() ) {
 					FSATransition t = trans.next();  // FIXME ConcurrentModificationException
 					FSAEvent event = t.getEvent();
-					if(event != null && event.getId() == message.getElementId()){
-						if(e.transitionCount()>0){
-							fsa.removeSubscriber(this);
-							fsa.remove(t);
-							fsa.addSubscriber(this);
+					
+					if( event != null && event.getId() == message.getElementId() ) {
+						
+						if( e.transitionCount() > 0 ) {
+							fsa.removeSubscriber( this );
+							fsa.remove( t );
+							fsa.addSubscriber( this );
 							trans.remove();		
 						}else{
-							t.setEvent(null);
+							t.setEvent( null );
 						}
+						
 						// TODO handle different edge types
-						if(e.transitionCount()>0)
-						{
-							((BezierLayout)e.getLayout()).removeEventName(event.getSymbol());
-							e.setDirty(true);
-						}
-						else
+						if( e.transitionCount() > 0 ) {
+							((BezierLayout)e.getLayout()).removeEventName( event.getSymbol() );
+							e.setDirty( true );
+						} else {
 							edgesToRemove.add(e);
+						}
 					}
 				}
 			}
-			for(Edge e:edgesToRemove)
-				delete(e);
+			
+			for( Edge e : edgesToRemove ) {
+				delete( e );
+			}
+			
 			// FIXME this does not update the labels on the edges
-			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
+			fireFSAGraphChanged( new FSAGraphMessage(FSAGraphMessage.MODIFY,
 													FSAGraphMessage.EDGE,
 													message.getElementId(),
 													this.bounds(),
-													this));	
+													this) );	
 		}
+	*/	
 		
 	}
 	///////////////////////////////////////////////////////////////////////

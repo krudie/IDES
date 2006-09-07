@@ -324,6 +324,7 @@ public class ReflexiveEdge extends BezierEdge {
 			setPoint(new Point2D.Float((float)temp.getX(), (float)temp.getY()), MIDPOINT);			
 			setCurve(bLayout.getCurve());			
 			setEventNames(bLayout.getEventNames());
+			setLabelOffset(bLayout.getLabelOffset());
 			initializeShape();
 		}
 
@@ -458,6 +459,28 @@ public class ReflexiveEdge extends BezierEdge {
 			}			
 			
 		}
+		
+		/**
+		 * Returns true iff <code>o</code> is an instance of ReflexiveLayout and this layout has the same
+		 * curve and label offset as <code>o</code>. 
+		 * 
+		 * @param o the other layout to be compared
+		 * @return true iff <code>o</code> is an instance of ReflexiveLayout and this layout has the same
+		 * curve and label offset as <code>o</code>. 
+		 */
+		/*public boolean equals(Object o)
+		{
+	Won't work since need to use this to compare BezierLayout instances read from file
+	with ReflexiveLayouts in memory.
+		
+			try{
+				ReflexiveLayout other = (ReflexiveLayout)o;
+				return other.curve.equals(this.curve) &&
+						other.getLabelOffset().equals(this.getLabelOffset());
+			}catch(ClassCastException cce){
+				return false;
+			}
+		}*/
 	} // end Layout
 	
 	

@@ -9,6 +9,7 @@ import java.util.Iterator;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
+import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
 
 /**
  * Graphical data and operations for visual display of a BezierEdge. 
@@ -113,18 +114,27 @@ public class BezierLayout extends GraphicalLayout {
 	}
 	
 	/**
-	 * FIXME Always returns false: use an alternate means of comparing curves.
+	 * Returns true iff <code>o</code> is an instance of BezierLayout and this layout has the same
+	 * curve and label offset as <code>o</code>. 
 	 * 
-	 * @return true iff <code>o</code> is an instance of and this layout has the same
+	 * @param o the other layout to be compared
+	 * @return true iff <code>o</code> is an instance of BezierLayout and this layout has the same
 	 * curve and label offset as <code>o</code>. 
 	 */
-	public boolean equals(Object o)
-	{
-		try{
+	public boolean equals( Object o ) {
+		
+		try {
 			BezierLayout other = (BezierLayout)o;
+			// DEBUG
+			/*if(other instanceof ReflexiveLayout || this instanceof ReflexiveLayout){
+				System.out.println(other.getText() + " " + other.getLabelOffset() + " " + other.curve);
+				System.out.println(this.getText() + " " + this.getLabelOffset() + " " + this.curve);
+				System.out.println();
+			}*/
+			
 			return other.curve.equals(this.curve) &&
 					other.getLabelOffset().equals(this.getLabelOffset());
-		}catch(ClassCastException cce){
+		} catch ( ClassCastException cce ) {
 			return false;
 		}
 	}
@@ -368,9 +378,8 @@ public class BezierLayout extends GraphicalLayout {
 		return curve.getSegment(sourceT, targetT);		
 	}
 
-	/**
-	 * Manage the set of event names to appear on the edge label. 
-	 */
+	/* Manage the set of event names to appear on the edge label. */
+	
 	public ArrayList<String> getEventNames() {
 		return eventNames;
 	}

@@ -2,6 +2,7 @@ package model.fsa.ver1;
 import io.fsa.ver1.SubElement;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -267,49 +268,71 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
     			FSAMessage.EVENT, e.getId(), this));
     }
 
-    /* (non-Javadoc)
-	 * @see model.fsa.ver1.FSAModel#remove(model.fsa.FSAEvent)
+    /**
+     * Removes <code>event</code> and all transitions fired by it.
+     * 
+     * @param event  the event to be removed
 	 */
-    public void remove(FSAEvent e){
-        events.remove(e);
-        for(Iterator<FSATransition> i=getTransitionIterator();i.hasNext();)
-        {
-        	if(e.equals(i.next().getEvent()))
-        		i.remove();
+    public void remove(FSAEvent event){
+        
+        Iterator<FSATransition> trans = getTransitionIterator();
+        ArrayList<FSATransition> toRemove = new ArrayList<FSATransition>();
+        
+        while( trans.hasNext()) {
+        	FSATransition t = trans.next() ;
+        	FSAEvent e = t.getEvent(); 
+        	if( event.equals( e ) ) {
+        		toRemove.add( t );
+        	}
         }
+        
+        for( FSATransition t : toRemove ) {        
+        	transitions.remove( t );
+        	fireFSAStructureChanged( new FSAMessage( FSAMessage.REMOVE, 
+        			FSAMessage.TRANSITION, t.getId(), this ) );
+        }
+        
+        events.remove(event);
+        
     	fireFSAEventSetChanged(new FSAMessage(FSAMessage.REMOVE,
-    			FSAMessage.EVENT, e.getId(), this));
+    			FSAMessage.EVENT, event.getId(), this ) );
     }
 
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getEventIterator()
 	 */
-    public ListIterator<FSAEvent> getEventIterator(){
-        return new EventIterator(events.listIterator(), this);
+    public ListIterator<FSAEvent> getEventIterator() {
+        return new EventIterator( events.listIterator(), this );
     }
 
-    public FSAEventSet getEventSet()
-    {
-    	return (FSAEventSet)new HashSet<FSAEvent>(events);
+    /**
+     * TODO Comment!
+     */
+    public FSAEventSet getEventSet() {
+    	return (FSAEventSet)new HashSet<FSAEvent>( events );
     }
     
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#getEvent(int)
 	 */
-    public FSAEvent getEvent(long id){
+    public FSAEvent getEvent( long id ){
         ListIterator<FSAEvent> ei = events.listIterator();
-        while(ei.hasNext()){
+        while( ei.hasNext() ) {
             FSAEvent e = ei.next();
-            if(e.getId() == id) return e;
+            if( e.getId() == id ) {
+            	return e;
+            }
         }
         return null;
     }
     
-    /**
-     * @author agmi02
+    /** 
      * A custom list iterator for states. Preserves data integrity.
+     * 
+     * @author agmi02
      */
-    private class StateIterator implements ListIterator<FSAState>{
+    private class StateIterator implements ListIterator<FSAState> {
+    	
         private ListIterator<FSAState> sli;
         private FSAState current;
         private FSAModel a;
@@ -319,7 +342,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
          * @param sli the listiterator this listiterator shall encapsulate
          * @param a the automaton that is backing the listiterator
          */
-        public StateIterator(ListIterator<FSAState> sli, FSAModel a){
+        public StateIterator( ListIterator<FSAState> sli, FSAModel a ) {
             this.a = a;
             this.sli = sli;
         }
@@ -327,55 +350,57 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
         /**
          * @see java.util.Iterator#hasNext()
          */
-        public boolean hasNext(){
+        public boolean hasNext() {
             return sli.hasNext();
         }
         /**
          * @see java.util.Iterator#next()
          */
-        public FSAState next(){
+        public FSAState next() {
             current = sli.next();
             return current;
         }
         /**
          * @see java.util.ListIterator#hasPrevious()
          */
-        public boolean hasPrevious(){
+        public boolean hasPrevious() {
             return sli.hasPrevious();
         }
         /**
          * @see java.util.ListIterator#previous()
          */
-        public FSAState previous(){
+        public FSAState previous() {
             current = sli.previous();
             return current;
         }
         /**
          * @see java.util.ListIterator#nextIndex()
          */
-        public int nextIndex(){
+        public int nextIndex() {
             return sli.nextIndex();
         }
         /**
          * @see java.util.ListIterator#previousIndex()
          */
-        public int previousIndex(){
+        public int previousIndex() {
             return sli.previousIndex();
         }
+        
         /** 
-         * removes the element last returned by either next or previous. 
-         * removes the transitions originating from this state and leading
+         * Removes the element last returned by either next or previous. 
+         * Removes the transitions originating from this state and leading
          * to this state in order to maintain data integrity.
          */
-        public void remove(){
+        public void remove() {
             ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
-            while(sources.hasNext()){
+            while(sources.hasNext()) {
                 FSATransition t = sources.next();
                 sources.remove();
                 a.remove(t);
                 t.getSource().removeSourceTransition(t);
                 t.getTarget().removeTargetTransition(t);
             }
+            
             ListIterator<FSATransition> targets = current.getTargetTransitionListIterator();
             while(targets.hasNext()){
                 FSATransition t = targets.next();
@@ -386,13 +411,15 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
             }
             sli.remove();
         }
-        public void set(FSAState s){
-            ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
+        
+        public void set(FSAState s){            
+        	ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
             while(sources.hasNext()){
                 FSATransition t = sources.next();
                 t.setSource(s);
                 s.addSourceTransition(t);
             }
+            
             ListIterator<FSATransition> targets = current.getTargetTransitionListIterator();
             while(targets.hasNext()){
                 FSATransition t = targets.next();
@@ -401,6 +428,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
             }
             sli.set(s);
         }
+        
         public void add(FSAState s){
             sli.add(s);
         }
@@ -560,6 +588,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
         public int previousIndex(){
             return eli.previousIndex();
         }
+        
         /**
          * removes the current event from all the transitions it was involved in
          * @see java.util.Iterator#remove()

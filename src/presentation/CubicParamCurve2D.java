@@ -314,7 +314,10 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
     
     /**
-     * TODO Implement
+     * Returns true iff this curve has the same control points as <code>o</code>.
+     * Precondition:  <code>o</code> is a <code>CubicCurve2D</code>
+     * 
+     * @return true iff this curve has the same control points as <code>o</code>
      */    
     public boolean equals(Object o)
     {
@@ -322,6 +325,10 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     	return getP1().equals(other.getP1()) 
     		&& getP2().equals(other.getP2()) 
     		&& getCtrlP1().equals(other.getCtrlP1())
-    		&& this.getCtrlP2().equals(other.getCtrlP2());    	
+    		&& getCtrlP2().equals(other.getCtrlP2());
+    }
+    
+    public String toString(){
+    	return "["+ getP1() + ", " + getCtrlP1() + ", " + getCtrlP2() + ", " + getP2() + "]";
     }
 }

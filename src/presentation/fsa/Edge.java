@@ -26,25 +26,22 @@ public abstract class Edge extends GraphElement{
 	private EdgeHandler handler; // Anchors for modifying the curve.
 	private GraphLabel label;	 // extra pointer for O(1) access without instanceof
 	
-	public Edge(Node source)
-	{
-		this(source, null);
+	public Edge( Node source ) {
+		this( source, null );
 	}
 	
-	public Edge(Node source, Node target, FSATransition t)
-	{
-		this(source, target);	    
-	    transitions.add(t);
+	public Edge( Node source, Node target, FSATransition t ) {
+		this( source, target );	    
+	    transitions.add( t );
 	}	
 	
 	// ? Add a default transition? NO, since ID is missing.
-	public Edge(Node source, Node target)  
-	{
+	public Edge( Node source, Node target ) {
 		transitions = new ArrayList<FSATransition>();
 		this.source = source;
 		this.target = target;
-		this.label = new GraphLabel("");		
-		insert(label);
+		this.label = new GraphLabel( "" );		
+		insert( label );
 	}
 	
 	/**
@@ -68,8 +65,9 @@ public abstract class Edge extends GraphElement{
 	
 	/**
 	 * Computes an approximation to the point where this edge intersects 
-	 * the boundary of <code>node</code>.  Returns the first point between midpoint of the edge 
-	 * and centre of Node with given type where this edge intersects the boundary of <code>node</code>, 
+	 * the boundary of <code>node</code>.  Returns the first point between 
+	 * midpoint of the edge and centre of Node with given type where this 
+	 * edge intersects the boundary of <code>node</code>, 
 	 * null if no intersection exists. 
 	 * 
 	 * PROBLEM more than one intersection possible 
@@ -77,8 +75,9 @@ public abstract class Edge extends GraphElement{
 	 * 
 	 * @param node
 	 * @param type SOURCE or TARGET 
-	 * @return the first point between middle of edge and centre of Node with given type 
-	 * where this edge intersects the boundary of <code>node</code>, null if no intersection exists. 
+	 * @return the first point between middle of edge and centre of Node 
+	 * 			with given type where this edge intersects the boundary of 
+	 * 			<code>node</code>, null if no intersection exists. 
 	 */
 	public abstract Point2D intersectionWithBoundary(Node node, int type);
 	
@@ -129,13 +128,18 @@ public abstract class Edge extends GraphElement{
 		return transitions.iterator();
 	}
 	
-	public boolean hasUncontrollableEvent()
-	{		
-		for(Iterator<FSATransition> i=getTransitions();i.hasNext();)
-		{
-			FSATransition t=i.next();
-			if(t.getEvent()!=null&&!t.getEvent().isControllable())
-			{
+	/**
+	 * Returns true iff this edge has at least one transition fired by 
+	 * an uncontrollable event.  
+	 * 
+	 * @return true iff this edge has at least one transition fired by 
+	 * an uncontrollable event.
+	 */
+	public boolean hasUncontrollableEvent() {
+		Iterator<FSATransition> i = getTransitions();
+		while( i.hasNext() ) {
+			FSATransition t = i.next();
+			if( t.getEvent() != null && !t.getEvent().isControllable() ) {
 				return true;
 			}
 		}
@@ -143,6 +147,8 @@ public abstract class Edge extends GraphElement{
 	}
 
 	/**
+	 * Return the number of transitions that this edge represents. 
+	 * 
 	 * @return the number of transitions that this edge represents
 	 */
 	public int transitionCount() {		
@@ -171,9 +177,10 @@ public abstract class Edge extends GraphElement{
 	}
 
 	/**
-	 * TODO create an EdgeLayout class that will add the given symbol 
-	 * to the layout and extend to BezierLayout.
-	 * 	
+	 * Adds the symbol to the list of event symbols to be displayed on this edge. 
+	 * 
+	 * TODO event symbols should be passed directly to the edge label 
+	 * 
 	 * @param symbol
 	 */
 	public abstract void addEventName(String symbol);
