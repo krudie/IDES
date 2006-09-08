@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import main.Hub;
-import presentation.Geometry;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import services.cache.Cache;

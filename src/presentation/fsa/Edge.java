@@ -8,10 +8,8 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 
 import model.fsa.FSATransition;
-import model.fsa.ver1.Transition;
 
 /**
  * 

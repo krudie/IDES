@@ -10,7 +10,6 @@ import util.BentoBox;
 
 import main.IDESWorkspace;
 import main.Hub;
-import main.PersistentProperties;
 
 
 /**

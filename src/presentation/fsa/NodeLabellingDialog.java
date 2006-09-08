@@ -27,7 +27,6 @@ import javax.swing.KeyStroke;
 import main.Hub;
 
 import util.EscapeDialog;
-import util.ProperSingleton;
 
 /**
  *

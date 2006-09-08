@@ -9,10 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import main.Hub;
-import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;

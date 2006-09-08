@@ -1,7 +1,5 @@
 package presentation.fsa;
 
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 
 /**
  * Visual representation of the modification handles of an edge.

@@ -9,7 +9,6 @@ import java.util.Iterator;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
-import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
 
 /**
  * Graphical data and operations for visual display of a BezierEdge. 

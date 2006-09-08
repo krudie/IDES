@@ -12,18 +12,15 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import model.fsa.FSATransition;
-import model.fsa.ver1.Transition;
 
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
-import util.BentoBox;
 
 /**
  * A symmetric self-loop manipulated by a single control point. 

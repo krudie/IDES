@@ -23,7 +23,6 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import main.Hub;
-import observer.FSAGraphMessage;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 

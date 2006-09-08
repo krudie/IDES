@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import model.fsa.FSAState;
-import model.fsa.ver1.State;
-import presentation.Geometry;
 import presentation.GraphicalLayout;
 import util.BentoBox;
 

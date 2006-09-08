@@ -3,10 +3,8 @@
  */
 package pluggable.operation;
 
-import java.util.Hashtable;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Vector;
 
 /**
