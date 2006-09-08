@@ -4,7 +4,6 @@ import io.fsa.ver1.SubElement;
 import io.fsa.ver1.SubElementContainer;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 
 import model.fsa.FSATransition;

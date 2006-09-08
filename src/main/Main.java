@@ -2,13 +2,9 @@ package main;
 
 import io.fsa.ver1.CommonTasks;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.UIManager;

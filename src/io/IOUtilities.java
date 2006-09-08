@@ -1,16 +1,11 @@
 package io;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.net.QCodec;
-import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 import main.Hub;
 

@@ -11,14 +11,11 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;
-import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphElement;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
-import presentation.fsa.ReflexiveEdge;
 
 import model.fsa.FSAState;
 import model.fsa.FSATransition;

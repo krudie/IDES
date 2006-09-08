@@ -6,24 +6,18 @@ import io.WorkspaceParser;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Iterator;
 
-import javax.swing.filechooser.FileFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.LoadException;
 import org.pietschy.command.file.ExtensionFileFilter;
 
 import main.Hub;
-import main.IDESWorkspace;
 import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;

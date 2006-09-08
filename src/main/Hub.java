@@ -11,13 +11,10 @@ import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 import pluggable.ui.OptionsPane;
 
-import ui.MainWindow;
 import ui.OptionsWindow;
 
 /**

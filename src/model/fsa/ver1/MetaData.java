@@ -8,8 +8,6 @@ import model.DESElement;
 import model.fsa.FSAMetaData;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
-import presentation.GraphicalLayout;
-import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNodeLayout;
 

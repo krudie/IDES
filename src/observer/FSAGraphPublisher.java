@@ -3,8 +3,6 @@
  */
 package observer;
 
-import java.util.ArrayList;
-
 /**
  * @author helen bretzke
  *

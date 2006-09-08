@@ -8,18 +8,12 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
-import observer.Publisher;
 import observer.WorkspaceMessage;
 import observer.WorkspacePublisher;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
@@ -29,7 +23,6 @@ import ui.MainWindow;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
-import model.fsa.ver1.EventsModel;
 import model.fsa.ver1.MetaData;
 
 public class IDESWorkspace extends WorkspacePublisher implements Workspace {
