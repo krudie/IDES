@@ -3,11 +3,6 @@
  */
 package pluggable.layout.prefuse;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
-import pluggable.layout.FSALayouter;
 //import prefuse.Visualization;
 //import prefuse.action.Action;
 //import prefuse.action.layout.CircleLayout;
@@ -20,10 +15,7 @@ import pluggable.layout.FSALayouter;
 //import prefuse.visual.NodeItem;
 //import prefuse.visual.VisualGraph;
 //import prefuse.visual.VisualItem;
-import presentation.fsa.CircleNode;
-import presentation.fsa.Edge;
-import presentation.fsa.FSAGraph;
-import presentation.fsa.Node;
+
 
 /**
  *

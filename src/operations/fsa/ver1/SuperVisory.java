@@ -1,25 +1,12 @@
 package operations.fsa.ver1;
 
-import io.fsa.ver1.SubElement;
-import io.fsa.ver1.SubElementContainer;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Map;
-import java.util.TreeMap;
 
-import pluggable.operation.OperationManager;
-
-import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
-import model.fsa.ver1.Event;
 import model.fsa.ver1.State;
-import model.fsa.ver1.Transition;
-
 
 
 /**

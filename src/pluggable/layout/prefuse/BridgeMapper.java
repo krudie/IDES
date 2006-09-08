@@ -3,10 +3,6 @@
  */
 package pluggable.layout.prefuse;
 
-import java.util.Hashtable;
-
-import presentation.fsa.Node;
-import presentation.fsa.Edge;
 
 /**
  *

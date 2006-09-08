@@ -3,13 +3,6 @@
  */
 package pluggable.layout.prefuse;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import model.fsa.ver1.State;
-
 //import prefuse.data.Edge;
 //import prefuse.data.Graph;
 //import prefuse.data.Node;

@@ -1,8 +1,6 @@
 
 package operations.fsa.ver1;
 
-import io.fsa.ver1.SubElement;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,11 +9,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;

@@ -8,7 +8,6 @@ import java.util.Hashtable;
 import edu.uci.ics.jung.graph.Vertex;
 
 import presentation.fsa.Node;
-import presentation.fsa.Edge;
 
 /**
  *

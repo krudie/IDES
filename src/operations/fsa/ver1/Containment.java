@@ -6,15 +6,11 @@ package operations.fsa.ver1;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
-import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
-import model.fsa.ver1.State;
 import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
 

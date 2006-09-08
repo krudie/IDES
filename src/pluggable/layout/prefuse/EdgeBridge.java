@@ -3,8 +3,6 @@
  */
 package pluggable.layout.prefuse;
 
-import java.util.Date;
-
 //import prefuse.data.Edge;
 //import prefuse.data.Graph;
 //import prefuse.data.Node;

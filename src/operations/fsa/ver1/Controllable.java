@@ -3,9 +3,7 @@
  */
 package operations.fsa.ver1;
 
-import main.Hub;
 import model.fsa.FSAModel;
-import model.fsa.ver1.Automaton;
 import pluggable.operation.Operation;
 
 /**

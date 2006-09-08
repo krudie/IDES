@@ -6,7 +6,6 @@ package operations.fsa.ver1;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import pluggable.operation.FilterOperation;
-import pluggable.operation.Operation;
 
 /**
  *

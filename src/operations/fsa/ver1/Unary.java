@@ -3,9 +3,6 @@
  */
 package operations.fsa.ver1;
 
-import io.fsa.ver1.SubElement;
-import io.fsa.ver1.SubElementContainer;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,7 +13,6 @@ import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.State;
-import model.fsa.ver1.Transition;
 
 
 /**

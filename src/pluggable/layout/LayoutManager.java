@@ -4,7 +4,6 @@
 package pluggable.layout;
 
 import pluggable.layout.jung.JUNGLayouter;
-import pluggable.layout.prefuse.PrefuseLayouter;
 
 /**
  *

@@ -6,26 +6,15 @@ package pluggable.layout.jung;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 
-import javax.swing.JFrame;
-
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
 import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.impl.SimpleDirectedSparseVertex;
-import edu.uci.ics.jung.visualization.DefaultVisualizationModel;
-import edu.uci.ics.jung.visualization.FRLayout;
-import edu.uci.ics.jung.visualization.ISOMLayout;
-import edu.uci.ics.jung.visualization.PluggableRenderer;
-import edu.uci.ics.jung.visualization.SpringLayout;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.contrib.DAGLayout;
 import edu.uci.ics.jung.visualization.contrib.KKLayout;
-import edu.uci.ics.jung.visualization.contrib.TreeLayout;
 import pluggable.layout.FSALayouter;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.Node;
-import samples.graph.BasicRenderer;
 
 /**
  *
