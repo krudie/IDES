@@ -32,6 +32,10 @@ import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
 
+/**
+ * 
+ * @author Lenko Grigorov
+ */
 public class Main {
 	
 	private Main()
@@ -40,34 +44,12 @@ public class Main {
 
 	
 	/**
-	 * Handles stuff that has to be done before the application terminates.
-	 *
-	 */
-	public static void onExit()
-	{
-		if(Hub.getWorkspace().isDirty())
-			if(!CommonTasks.handleUnsavedWorkspace())
-				return;
-		for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
-		{
-			FSAGraph gm=i.next();
-			if(gm.isDirty())
-				if(!CommonTasks.handleUnsavedModel(gm))
-					return;
-		}
-		//store settings
-		Hub.storePersistentData();
-		Cache.close();
-		Hub.getMainWindow().dispose();
-	}
-	
-	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
 		//set up global exception handler
-		//Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 		
 		//load resource with strings used in the program
 		try
@@ -129,5 +111,27 @@ public class Main {
 		//go live!		
 		Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
+	}
+	
+	/**
+	 * Handles stuff that has to be done before the application terminates.
+	 *
+	 */
+	public static void onExit()
+	{
+		if(Hub.getWorkspace().isDirty())
+			if(!CommonTasks.handleUnsavedWorkspace())
+				return;
+		for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		{
+			FSAGraph gm=i.next();
+			if( gm.needsSave() )
+				if(!CommonTasks.handleUnsavedModel(gm))
+					return;
+		}
+		//store settings
+		Hub.storePersistentData();
+		Cache.close();
+		Hub.getMainWindow().dispose();
 	}
 }

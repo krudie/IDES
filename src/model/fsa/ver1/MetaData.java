@@ -13,9 +13,8 @@ import presentation.fsa.CircleNodeLayout;
 
 /**
  * Store and extracts the metadata for a given Automaton.
- * @deprecated 
- * @author helen bretzke
- *
+ * 
+ * @author Helen Bretzke
  */
 public class MetaData implements FSAMetaData {
 	
@@ -51,9 +50,9 @@ public class MetaData implements FSAMetaData {
 								 				Integer.parseInt(layout.getAttribute("y")));
 		String name;
 		SubElement n = s.getSubElement("name");
-		if(n != null){
+		if(n != null) {
 			name = (n.getChars() != null) ? n.getChars() : "";
-		}else{
+		} else {
 			name = "";
 		}
 		
@@ -76,19 +75,19 @@ public class MetaData implements FSAMetaData {
 	 * @param state the state
 	 * @param layout the graphical layout data for a node
 	 */
-	public void setLayoutData(FSAState state, CircleNodeLayout layout){
+	public void setLayoutData( FSAState state, CircleNodeLayout layout ) {
 		// Set the layout data for state
 		State s = (State)state;
 				
 		SubElement n = s.getSubElement("name");
-		if(n == null){
+		if( n == null ) {
 			n = new SubElement("name");
 			s.addSubElement(n);
 		}
 		n.setChars(layout.getText());		
 		
 		SubElement g = s.getSubElement("graphic");
-		if(g == null){
+		if( g == null ) {
 			g = new SubElement("graphic");
 			s.addSubElement(g);
 		}

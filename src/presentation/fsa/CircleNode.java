@@ -79,7 +79,7 @@ public class CircleNode extends Node {
 			initialArrow.setVisible(state.isInitial());
 		}
 		
-		setDirty(false);
+		setNeedsRefresh(false);
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class CircleNode extends Node {
 	 * @param g the graphics context
 	 */
 	public void draw(Graphics g) {
-		if(isDirty()){
+		if(needsRefresh()){
 			refresh();
 			getLayout().setDirty(false);
 		}
@@ -332,7 +332,7 @@ public class CircleNode extends Node {
 	//		
 			super.setLayout(layout);
 			((CircleNodeLayout)getLayout()).setNode(this);
-			setDirty(true);
+			setNeedsRefresh(true);
 		}
 
 	/* (non-Javadoc)

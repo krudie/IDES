@@ -1,10 +1,8 @@
-/**
- * 
- */
 package observer;
 
 /**
- * Implemented by Subscribers to change notifications from FSMGraphPublishers. 
+ * Implemented by Subscribers that wish to receive change notifications 
+ * from FSMGraph(Publisher). 
  * 
  * @author helen bretzke
  */

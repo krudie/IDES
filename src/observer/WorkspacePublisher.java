@@ -13,8 +13,7 @@ public class WorkspacePublisher {
 
 	private ArrayList<WorkspaceSubscriber> subscribers;
 	
-	public WorkspacePublisher()
-	{
+	public WorkspacePublisher() {
 		subscribers = new ArrayList<WorkspaceSubscriber>();
 	}
 	
@@ -24,8 +23,7 @@ public class WorkspacePublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(WorkspaceSubscriber subscriber) 
-	{
+	public void addSubscriber(WorkspaceSubscriber subscriber) {
 		subscribers.add(subscriber);		
 	}
 	
@@ -35,13 +33,11 @@ public class WorkspacePublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(WorkspaceSubscriber subscriber) 
-	{
+	public void removeSubscriber(WorkspaceSubscriber subscriber) {
 		subscribers.remove(subscriber);
 	}
 	
-	public void fireRepaintRequired()
-	{
+	public void fireRepaintRequired() {
 		fireRepaintRequired(new WorkspaceMessage(WorkspaceMessage.DISPLAY,
 												null,
 												WorkspaceMessage.MODIFY,
@@ -54,10 +50,8 @@ public class WorkspacePublisher {
 	 * 
 	 * @param message
 	 */
-	protected void fireRepaintRequired(WorkspaceMessage message)
-	{
-		for(WorkspaceSubscriber s : subscribers)
-		{
+	protected void fireRepaintRequired(WorkspaceMessage message) {
+		for( WorkspaceSubscriber s : subscribers ) {
 			s.repaintRequired(message);
 		}
 	}
@@ -68,10 +62,8 @@ public class WorkspacePublisher {
 	 * 
 	 * @param message
 	 */
-	protected void fireModelCollectionChanged(WorkspaceMessage message)
-	{
-		for(WorkspaceSubscriber s : subscribers)
-		{
+	protected void fireModelCollectionChanged(WorkspaceMessage message)	{
+		for(WorkspaceSubscriber s : subscribers) {
 			s.modelCollectionChanged(message);
 		}
 	}	
@@ -85,10 +77,14 @@ public class WorkspacePublisher {
 	 * @param message
 	 */
 	protected void fireModelSwitched(WorkspaceMessage message){
-		for(WorkspaceSubscriber s : subscribers)
-		{
+		for(WorkspaceSubscriber s : subscribers) {
 			s.modelSwitched(message);
 		}
 	}
 	
+	/*protected void fireSaved() {
+		for( WorkspaceSubscriber s : subscribers ) {
+			s.workspaceSaved();
+		}
+	}*/
 }

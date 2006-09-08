@@ -88,7 +88,9 @@ public class FileOperations {
     public static boolean saveAutomaton(Automaton a, File file){    	
         PrintStream ps = IOUtilities.getPrintStream(file);
         if(ps == null){
+        	
         	return saveAutomatonAs(a);
+        
         }else{
         	// write the automaton to file
         	XMLexporter.automatonToXML(a, ps);
@@ -97,9 +99,11 @@ public class FileOperations {
         	if(!newName.equals(a.getName())
         			&&Hub.getWorkspace().getFSAModel(newName)!=null)
         		Hub.getWorkspace().removeFSAModel(newName);
+        	
         	a.setName(newName);
         	a.setFile(file);
-        	a.fireFSASaved();
+        	a.fireFSASaved(); 
+        	
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
             
             return true;

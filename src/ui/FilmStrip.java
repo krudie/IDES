@@ -33,7 +33,7 @@ import presentation.fsa.GraphView;
  * and highlight the border of the currently active graph.
  * 
  * @author Helen Bretzke
- *
+ * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
 public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSubscriber, MouseListener {
@@ -44,10 +44,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 2);
 	public static final int THUMBNAIL_SIZE = 100;
 	
-	protected Box thumbnailBox;
+	protected Box thumbnailBox;	
 	
-	
-	public FilmStrip(){
+	public FilmStrip() {
 		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 		Hub.getWorkspace().addSubscriber(this);
 		thumbnailBox=Box.createHorizontalBox();
@@ -55,25 +54,16 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		addMouseListener(this);
 	}
 	
-	public void update() {
-		refreshGraphViews();
-		buildThumbnailBox();
-		invalidate();
-		Hub.getMainWindow().validate();
-	}
-
 	/**
 	 * Packs each graph view into it's own panel with titled border.
 	 * The current graph model is rendered with a highlighted border.
 	 * Dirty models are shown with name decorated by an asterisk. 
 	 */
-	private void buildThumbnailBox()
-	{
+	private void buildThumbnailBox() {
 		FSAGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
 		thumbnailBox.removeAll();
 		graphPanels.clear();
-		for(GraphView gv:graphViews)
-		{
+		for( GraphView gv : graphViews ) {
 			JPanel p=new JPanel(new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
@@ -82,7 +72,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 			
 			if(gv.getGraphModel().equals(activeModel)) {
 				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));				
-			}else{
+			} else {
 				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
 			}
 			graphPanels.put(gv.getGraphModel(), p);
@@ -96,31 +86,28 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * each in its own view. 
 	 */
 	private void refreshGraphViews() {		
-		Vector<FSAGraph> currentModels=new Vector<FSAGraph>();
-		for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
-		{
-			FSAGraph gm=i.next();
+		Vector<FSAGraph> currentModels = new Vector<FSAGraph>();
+		Iterator<FSAGraph> iter = Hub.getWorkspace().getGraphModels();
+		while( iter.hasNext() ) {
+			FSAGraph gm = iter.next();
 			currentModels.add(gm);
 		}		
 
 		HashSet<GraphView> toRemove=new HashSet<GraphView>();
-		for(GraphView gv:graphViews)
-		{
+		for( GraphView gv : graphViews ) {
 			if(!currentModels.contains(gv.getGraphModel())) {
 				toRemove.add(gv);
 			}
 		}
-		for(GraphView gv:toRemove)
-		{
+		
+		for( GraphView gv : toRemove ) {
 			gv.getGraphModel().removeSubscriber(gv);
 			graphViews.remove(gv);
 		}
 		
-		for(int i=0;i<currentModels.size();++i)
-		{
-			FSAGraph gm=currentModels.elementAt(i);
-			if(graphViews.size()<=i||!graphViews.elementAt(i).getGraphModel().equals(gm))
-			{
+		for( int i=0; i < currentModels.size(); ++i ) {
+			FSAGraph gm = currentModels.elementAt(i);
+			if( graphViews.size() <=i || !graphViews.elementAt(i).getGraphModel().equals(gm) ) {
 				GraphView gv = new GraphView(gm);				
 				gm.addSubscriber(this);
 				gv.addMouseListener(this);
@@ -136,8 +123,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * @param arg0
 	 */
 	public void mouseClicked(MouseEvent arg0) {
-		if(!(arg0.getSource() instanceof GraphView))
+		if( !(arg0.getSource() instanceof GraphView) ) {
 			return;
+		}
 		GraphView gv=(GraphView)arg0.getSource();
 		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());		
 	}
@@ -154,18 +142,20 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message) {
-		if(message.getEventType() == WorkspaceMessage.ADD || message.getEventType() == WorkspaceMessage.REMOVE)
-		refreshGraphViews();
-		buildThumbnailBox();
-		invalidate();
-		Hub.getMainWindow().validate();
+		if(message.getEventType() == WorkspaceMessage.ADD 
+				|| message.getEventType() == WorkspaceMessage.REMOVE) {
+			refreshGraphViews();
+			buildThumbnailBox();
+			invalidate();
+			Hub.getMainWindow().validate();
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message) {
-		if(message.getEventType() != WorkspaceMessage.REMOVE){
+		if(message.getEventType() != WorkspaceMessage.REMOVE) {
 			buildThumbnailBox();
 			invalidate();
 			Hub.getMainWindow().validate();
@@ -176,11 +166,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message) {	
-		//buildThumbnailBox();  hangs the filmstrip...
-		// FIXME need to redraw the decorated names over each thumbnail view when changes are saved
-		// or graph becomes dirty.
-		for(GraphView gv:graphViews){
+	public void repaintRequired(WorkspaceMessage message) {		
+		for(GraphView gv : graphViews) {
 			gv.repaint();
 		}
 	}
@@ -192,7 +179,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 */
 	public void fsmGraphChanged(FSAGraphMessage message) {	
 		buildThumbnailBox();
-		/*JPanel panel = graphPanels.get(message.getSource());
+		/* A more efficient way
+		JPanel panel = graphPanels.get(message.getSource());
 		if(panel != null){
 			TitledBorder border = (TitledBorder)panel.getBorder();
 			border.setTitle(" "+message.getSource().getDecoratedName());	

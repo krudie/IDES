@@ -186,7 +186,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 			return;
 		}
 		
-		if(gm.isDirty()){
+		if( gm.needsSave() ){
 			if(!CommonTasks.handleUnsavedModel(gm)){
 				return;
 			}
@@ -245,11 +245,11 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	 * @param name
 	 */
 	public void setActiveModel(String name) {
-		if(getActiveModel()!=null){
+		if(getActiveModel() != null) {
 			getActiveGraphModel().removeSubscriber(getDrawingBoard());
 		}
 		activeModelIdx=getFSAIndex(name);
-		if(getActiveModel()!=null){
+		if(getActiveModel() != null) {
 			getActiveGraphModel().addSubscriber(getDrawingBoard());
 		}
 		
@@ -303,8 +303,9 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	}
 
 	public FSAGraph getActiveGraphModel() {	
-		if(activeModelIdx<0)
+		if(activeModelIdx < 0) {
 			return null;
+		}
 		return graphs.elementAt(activeModelIdx);
 	}
 	

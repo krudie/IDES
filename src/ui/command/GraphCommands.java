@@ -32,7 +32,6 @@ public class GraphCommands {
 	 * GraphDrawingView for deleting, copying, pasting and moving.
 	 * 
 	 * @author Helen Bretzke
-	 *
 	 */
 	public static class SelectCommand extends ActionCommand {
 
@@ -51,12 +50,8 @@ public class GraphCommands {
 	
 	/**
 	 * Creates nodes and edges in a GraphDrawingView.
-	 * 
-	 * TODO change to undoable command and 
-	 * figure out how to delete the edge or node that was created.
-	 * 
+	 *	 
 	 * @author Helen Bretzke
-	 *
 	 */
 	public static class CreateCommand extends UndoableActionCommand {
 
@@ -166,7 +161,7 @@ public class GraphCommands {
 				 context.setTool(GraphDrawingView.CREATE);
 			}		
 			 
-			// TODO create and UndoableEdit object and return
+			// TODO create and return an UndoableEdit object
 			return null;
 		}
 	}
@@ -204,9 +199,7 @@ public class GraphCommands {
 				// finalize movement of current selection in graph model
 				context.getGraphModel().commitMovement(context.getSelectedGroup());
 				// TODO create an UndoableEdit object using displacement and 
-				// copy of currentSelection.
-
-				// TODO return undoableEdit object
+				// copy of currentSelection and return undoableEdit object
 				return null;
 			}
 			
@@ -226,7 +219,8 @@ public class GraphCommands {
 			this.context = context;
 		}
 		
-		public TextCommand(GraphDrawingView context, GraphElement currentSelection, String text) {
+		public TextCommand(GraphDrawingView context, 
+							GraphElement currentSelection, String text) {
 			super("text.command");
 			this.element = currentSelection;
 			this.context = context;
@@ -248,7 +242,7 @@ public class GraphCommands {
 			this.location = new Point2D.Float(location.x, location.y);
 		}
 
-		public void setElement(GraphElement element){
+		public void setElement(GraphElement element) {
 			this.element = element;
 		}
 		
@@ -256,32 +250,32 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			if(element == null){ 
 				// create a new free label
-				presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(context.getGraphModel(), location);
-				// TODO use an extension of EscapeDialog and set its location
-//				text = JOptionPane.showInputDialog("Enter label text: ");
-//				if(text != null){
-//					context.getGraphModel().addFreeLabel(text, location);
-//				}
+				//TODO uncomment the following statement when finished implementing
+				// saving and loading free labels to file.
+				/*presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(
+						context.getGraphModel(), location);*/				
 			}else{
 				// KLUGE: instanceof is rotten style, fix this				
 				if (element instanceof CircleNode){				
 					Node node = (Node)element;
 					// if selection is a node				
-					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(context.getGraphModel(),node);
+					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(
+							context.getGraphModel(),node);
 				}else if(element instanceof BezierEdge){
 					BezierEdge edge = (BezierEdge)element;			
 					EdgeLabellingDialog.showDialog(context, edge);					
-					// TODO accumulate set of edits that were performed in the edge labelling dialog
-				}else if(element instanceof GraphLabel && element.getParent() instanceof Edge){
+					// TODO accumulate set of edits that were performed in the edge 
+					// labelling dialog
+				}else if(element instanceof GraphLabel 
+						&& element.getParent() instanceof Edge){
 					Edge edge = (Edge)element.getParent();
 					EdgeLabellingDialog.showDialog(context, edge);
-				}else{					
-					presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(context.getGraphModel(), (GraphLabel)element);
-					// TODO use an extension of EscapeDialog and set its location AND REFACTOR
-//					String text = JOptionPane.showInputDialog("Enter label text: ");
-//					if(text != null){
-//						context.getGraphModel().addFreeLabel(text, location);
-//					}				
+				}else{
+					// TODO uncomment the following statement when finished implementing
+					// saving and loading free labels to file.
+					/*presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(
+							context.getGraphModel(), 
+							(GraphLabel)element);*/									
 				}
 				context.repaint();
 			}
@@ -407,7 +401,7 @@ public class GraphCommands {
 				ge.refresh();
 			}
 		
-			context.getGraphModel().setDirty(true);
+			context.getGraphModel().setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}

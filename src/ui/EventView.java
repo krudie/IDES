@@ -40,6 +40,11 @@ import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 
+/**
+ * TODO Comment
+ * 
+ * @author Lenko Grigorov
+ */
 public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscriber, ActionListener {
 
 	protected class EventTableModel extends AbstractTableModel

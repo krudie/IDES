@@ -30,7 +30,7 @@ public class UniformNodesCommand extends ToggleCommand {
 		// ??? will FSMGraph fire any notifications ?
 		FSAGraph gm = Hub.getWorkspace().getActiveGraphModel();
 		if(gm != null){
-			gm.setDirty(true);
+			gm.setNeedsRefresh(true);
 		// gm.setDirty(true);
 			Hub.getWorkspace().fireRepaintRequired();
 		}

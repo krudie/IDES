@@ -1,10 +1,17 @@
 package presentation.fsa;
 
+import java.util.Iterator;
 import java.util.Set;
+
+import main.Hub;
+import model.fsa.FSATransition;
 
 /**
  * Algorithms for laying out a Bezier edge among a set of existing edges
  * connecting the same pair of nodes.
+ * 
+ * FIXME In some cases, the placed edge increases its arc one 
+ * 			more time than required. 
  * 
  * @author Helen Bretzke 
  * for DES Lab, Dept of ECE, Queen's University, Kingston
@@ -15,14 +22,15 @@ public class BezierEdgePlacer {
 	/**
 	 * Inserts <code>edge</code> among the given set of other edges
 	 * where all edges connect the same pair of nodes.
-	 * Computes the layouts for each edge such that they are distributed comfortably
-	 * along the circumferences of each end node.
+	 * Computes the layouts for each edge such that they are distributed 
+	 * comfortably along the circumferences of each end node.
 	 * 
-	 * TODO change this algorithm so that it accommodates reflexive edges and initial arrows 
-	 * (adjacent on only one of the edges end nodes).
+	 * TODO change this algorithm so that it accommodates reflexive edges 
+	 * and initial arrows (adjacent on only one of the edges end nodes).
 	 * 
 	 * @param edge the edge to be inserted
 	 * @param edges set of all other edges connecting the same pair of nodes
+	 * @return 
 	 */
 	public static void insertEdgeAmong(BezierEdge edge, Set<Edge> edges)
 	{
@@ -40,11 +48,12 @@ public class BezierEdgePlacer {
 			straightEdge.computeEdge();
 			
 			// unless that position is taken			
-			if(tooClose(straightEdge, edges))
-			{
-				// ??? Why false ?
+			if( tooClose(straightEdge, edges) ) {				
 				((BezierLayout)straightEdge.getLayout()).arcMore(false);
 			}	
+			
+			straightEdge.computeEdge();
+			Hub.getWorkspace().getActiveGraphModel().commitMovement(straightEdge);
 			
 		}/*else{	// No straight edge
 			if(n % 2 != 0) // Odd # of neighbours			
@@ -94,6 +103,7 @@ public class BezierEdgePlacer {
 				layout1.arcMore();					
 			}
 			
+			edge.computeEdge();
 			return layout1;
 		}
 		// let edge do what it wants to by default

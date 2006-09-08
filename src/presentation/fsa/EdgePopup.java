@@ -24,7 +24,7 @@ public class EdgePopup extends JPopupMenu {
 
 	private Edge edge;
 	private DeleteCommand deleteCmd;
-	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge, miSymmetrize, miArcMore, miArcLess;
+	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge, miArcMore, miArcLess; // , miSymmetrize;
 	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
@@ -44,9 +44,9 @@ public class EdgePopup extends JPopupMenu {
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
 
-		miSymmetrize = new JMenuItem(Hub.string("symmetrize"));		
+		/*miSymmetrize = new JMenuItem(Hub.string("symmetrize"));		
 		miSymmetrize.addActionListener(listener);
-		add(miSymmetrize);
+		add(miSymmetrize);*/
 		
 		miStraighten = new JMenuItem("Straighten");
 		miStraighten.addActionListener(listener);
@@ -97,13 +97,13 @@ public class EdgePopup extends JPopupMenu {
 			// otherwise tamper with its shape
 			miArcLess.setVisible(edge.canStraighten());
 			miArcMore.setVisible(edge.canStraighten());
-			miSymmetrize.setVisible(edge.canStraighten());
+//			miSymmetrize.setVisible(edge.canStraighten());
 			
 			// Don't enable straightening, flattening or symmetrizing if edge is already straight
 			// since there is nothing to to.  
 			miArcLess.setEnabled(!edge.isStraight());
 			miStraighten.setEnabled(!edge.isStraight());
-			miSymmetrize.setEnabled(!edge.isStraight());
+//			miSymmetrize.setEnabled(!edge.isStraight());
 		}		
 	}
 
@@ -127,9 +127,10 @@ public class EdgePopup extends JPopupMenu {
 				
 			// TODO these last three cases do not apply to reflexive edges
 			// and should be UNDOABLE graph commands
-			}else if(source.equals(miSymmetrize)){				
+				
+/*			}else if(source.equals(miSymmetrize)){				
 				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);
-			}else if(source.equals(miArcMore)){
+*/			}else if(source.equals(miArcMore)){
 				Hub.getWorkspace().getActiveGraphModel().arcMore(edge);
 			}else if(source.equals(miArcLess)){
 				Hub.getWorkspace().getActiveGraphModel().arcLess(edge);

@@ -18,6 +18,12 @@ import ui.GUISettings;
 
 import main.Hub;
 
+/**
+ * TODO Comment
+ * 
+ * @author Helen Bretzke
+ * @author Lenko Grigorov
+ */
 public class GraphView extends JComponent implements FSAGraphSubscriber {
 
 	protected static final int GRAPH_BORDER_THICKNESS=10;
@@ -67,16 +73,16 @@ public class GraphView extends JComponent implements FSAGraphSubscriber {
 	}
 
 	public void setGraphModel(FSAGraph graphModel) {
-		if(this.graphModel != null){
+		if(this.graphModel != null) {
 			this.graphModel.removeSubscriber(this);
 		}		
 		this.graphModel = graphModel;
 		
-		if(graphModel != null){					
+		if(graphModel != null) {					
 			graphModel.addSubscriber(this);
 			this.setName(graphModel.getName());		
 			refreshView();
-		}else{
+		} else {
 			this.setName("No automaton");
 		}
 	}
@@ -85,18 +91,15 @@ public class GraphView extends JComponent implements FSAGraphSubscriber {
 		return graphModel;
 	}
 
-	public float getScaleFactor()
-	{
+	public float getScaleFactor() {
 		return scaleFactor;
 	}
 	
-	public void setScaleFactor(float sf)
-	{
+	public void setScaleFactor(float sf) {
 		scaleFactor=sf;
 	}
 
-	public Dimension getPreferredSize()
-	{
+	public Dimension getPreferredSize()	{
 		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
 	}
 
@@ -110,12 +113,10 @@ public class GraphView extends JComponent implements FSAGraphSubscriber {
 		refreshView();			
 	}
 
-	/**
-	 * Refresh my visual display from
-	 */
+	
 	protected void refreshView(){
 		
-		if(getGraphModel()!=null)  // Why can't this be moved into first case above?
+		if(getGraphModel()!=null)  
 		{
 			graphBounds=getGraphModel().getBounds(true);
 			if(graphBounds.x<0||graphBounds.y<0)
@@ -132,7 +133,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber {
 			invalidate();
 			Hub.getWorkspace().fireRepaintRequired();
 		}
-		repaint();
+//		repaint();
 	}
 	
 	/* Don't need to respond to selection changes.

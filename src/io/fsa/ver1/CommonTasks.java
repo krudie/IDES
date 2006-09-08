@@ -22,6 +22,7 @@ public class CommonTasks {
 	
 	/**
 	 * Asks the user if they want to save the workspace
+	 * 
 	 * @return false if the process was cancelled
 	 */
 	public static boolean handleUnsavedWorkspace()
@@ -53,6 +54,7 @@ public class CommonTasks {
 	
 	/**
 	 * Asks the user if they want to save the model
+	 * 
 	 * @param gm the GraphModel that needs to be saved
 	 * @return false if the process was cancelled
 	 */
@@ -68,7 +70,7 @@ public class CommonTasks {
 		{
 			if(FileOperations.saveAutomaton(gm.getAutomaton(),gm.getAutomaton().getFile()))
 			{
-				gm.setDirty(false);
+//				gm.setNeedsRefresh(false);
 				//gm.notifyAllSubscribers();
 			}
 			else

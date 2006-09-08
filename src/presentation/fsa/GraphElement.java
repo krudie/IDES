@@ -17,7 +17,7 @@ public class GraphElement implements PresentationElement {
 	protected boolean visible = true;
 	protected boolean highlighted = false;
 	protected boolean selected = false;
-	protected boolean dirty = false;
+	protected boolean needsRefresh = false;
 		
 	private GraphicalLayout layout;
 	
@@ -42,7 +42,7 @@ public class GraphElement implements PresentationElement {
 	 */
 	public void draw(Graphics g) {
 		
-		if(isDirty()) refresh();
+		if(needsRefresh()) refresh();
 		
 		for(PresentationElement child : children.values()){			 
 			child.draw(g);
@@ -215,7 +215,7 @@ public class GraphElement implements PresentationElement {
 		for(PresentationElement g : children.values()){
 			g.translate(dx,dy);
 		}
-		setDirty(true);		
+		setNeedsRefresh(true);		
 	}
 
 	/**
@@ -231,8 +231,8 @@ public class GraphElement implements PresentationElement {
 	 * Returns true iff the dirty flag has been set, indicating that
 	 * this element needs to be refreshed. 
 	 */
-	public boolean isDirty() { 
-		return dirty;
+	public boolean needsRefresh() { 
+		return needsRefresh;
 	}
 
 	/**
@@ -240,11 +240,11 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @param d the flag to set
 	 */
-	public void setDirty(boolean d){
-		dirty = d;
-		if(parent != null && d){
-			parent.setDirty(d);
+	public void setNeedsRefresh(boolean d){		
+		if( d && parent != null && needsRefresh != d ) {
+			parent.setNeedsRefresh(d);
 		}
+		needsRefresh = d;
 	}
 	
 	// TODO define a generic response
@@ -266,7 +266,7 @@ public class GraphElement implements PresentationElement {
 		for(PresentationElement g : children.values()){
 			g.refresh();
 		}
-		setDirty(false);
+		setNeedsRefresh(false);
 	}
 	
 	/**

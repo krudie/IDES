@@ -7,59 +7,50 @@ import io.fsa.ver1.FileOperations;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 
 import main.Hub;
 import main.IDESWorkspace;
 import main.Main;
-
-import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
 import org.pietschy.command.CommandManager;
 
 import presentation.fsa.GraphDrawingView;
-
 import ui.command.EditCommands;
 import ui.command.FileCommands;
 import ui.command.HelpCommands;
 import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
-import ui.command.GraphCommands.*;
+import ui.command.GraphCommands.AlignCommand;
+import ui.command.GraphCommands.CreateCommand;
+import ui.command.GraphCommands.DeleteCommand;
+import ui.command.GraphCommands.MoveCommand;
+import ui.command.GraphCommands.SelectCommand;
+import ui.command.GraphCommands.TextCommand;
 
 /**
- * TODO Reimplement using gui-commands library.
- * Commands generate their own toolbuttons and menuitems.
- * Load configuration from a file.
+ * The main window in which the application is displayed.
+ * Provides real estate for all menus, toolbars, graph drawing 
+ * and event set editing.
  * 
- * @author helen bretzke
- *
+ * @author Helen Bretzke
+ * @author Lenko Grigorov
  */
-public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscriber {
+public class MainWindow extends JFrame implements WorkspaceSubscriber {
 
 	String imagePath = "images/icons/";
 	
@@ -87,13 +78,12 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 	
 		loadAndExportCommands();
 		createAndAddMenuBar();
-		createAndAddToolBar();
-		update();
+		createAndAddToolBar();		
 		
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();
 		//TODO uncomment line below before shipping
-	    //setExtendedState(MAXIMIZED_BOTH);
+	    setExtendedState(MAXIMIZED_BOTH);
 	}
 	
 	 private void createAndAddMainPane() {
@@ -127,38 +117,17 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 		 p.add(zoom);
 		 p.add(Box.createHorizontalGlue());
 		 toolbar.add(p);
-		 getContentPane().add(toolbar, BorderLayout.PAGE_START);
-
-		 // Create a vertical toolbar
-//		 toolbar =  CommandManager.defaultInstance().getGroup("ides.toolbar.group").createToolBar(); //"ides.toolbar.group").createToolBar(); // new JToolBar();
-//		 toolbar.setRollover(true);
-//		 toolbar.setOrientation(JToolBar.VERTICAL);
-//		 this.getContentPane().add(toolbar, BorderLayout.WEST);		 	    
+		 getContentPane().add(toolbar, BorderLayout.PAGE_START); 	    
 	 } 
 	 
-	private void createAndAddMenuBar() {
-	 	 
-		 /**
-		  * Menu components
-		  * 
-		  * FIXME 
-		  * Dynamically load and export all commands in 
-		  * package ui.command.
-		  * ??? This is tricky for file commands since need name and reference to command manager and filter.
-		  */
-		
-		 JMenuBar menuBar = CommandManager.defaultInstance().getGroup("ides.menu.group").createMenuBar(); // new JMenuBar();
-		 
-		 // add menubar to this window
+	private void createAndAddMenuBar() {		
+		 JMenuBar menuBar = CommandManager.defaultInstance().getGroup("ides.menu.group").createMenuBar();		 
 		 this.setJMenuBar(menuBar);
 	}
 	
-	/**
-	 * TODO 
-	 * Dynamically load and export all commands in 
+	/** 
+	 * Dynamically loads and export all commands in 
 	 * package ui.command.
-	 * ??? This is tricky for file commands since need the 
-	 * command-id and reference to command manager and filter.
 	 */
 	private void loadAndExportCommands() {
 
@@ -214,21 +183,12 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 		return filmStrip;
 	}
 
-	/**
-	 * Enables appropriate menus and tools depending on whether there is a
-	 * model open in the workspace. 
-	 */
-	public void update() 
-	{
-		
-	}
 
 	/**
 	 * TODO: fix this
 	 * @return the top-left corner fo the drawing area
 	 */
-	public Point getDrawingBoardDisplacement()
-	{
+	public Point getDrawingBoardDisplacement() {
 		return drawingBoard.getLocationOnScreen();
 	}
 	
@@ -236,27 +196,23 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 	 * TODO: fix this
 	 * @return background color of drawing board
 	 */
-	public Color getDrawingBoardBGColor()
-	{
+	public Color getDrawingBoardBGColor() {
 		return drawingBoard.getBackground();
 	}
 	
 	//TODO: fix this
-	public GraphDrawingView getDrawingBoard()
-	{
+	public GraphDrawingView getDrawingBoard() {
 		return drawingBoard;
 	}
 	
-	public ZoomControl getZoomControl()
-	{
+	public ZoomControl getZoomControl() {
 		return zoom;
 	}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
-	public void modelCollectionChanged(WorkspaceMessage message) 
-	{ 
+	public void modelCollectionChanged(WorkspaceMessage message) { 
 		configureTools();
 	}
 
@@ -275,7 +231,7 @@ public class MainWindow extends JFrame implements Subscriber, WorkspaceSubscribe
 	 * model open in the workspace.
 	 * 
 	 */
-	private void configureTools(){
+	private void configureTools() {
 		CommandManager commandManager = CommandManager.defaultInstance();
 		
 		if(IDESWorkspace.instance().getActiveModel() == null){

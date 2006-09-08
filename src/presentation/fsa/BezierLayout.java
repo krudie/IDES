@@ -358,8 +358,8 @@ public class BezierLayout extends GraphicalLayout {
 	}	
 	
 	/** 
-	 * @return the portion of the curve that is external to both source and target nodes,
-	 * null if no such segment exists
+	 * @return the portion of the curve that is external to both 
+	 * source and target nodes, null if no such segment exists
 	 */
 	public CubicCurve2D getVisibleCurve()
 	{
@@ -368,56 +368,12 @@ public class BezierLayout extends GraphicalLayout {
 		Node s = edge.getSourceNode();
 		Node t = edge.getTargetNode();
 		if(s.intersects(curve.getPointAt(targetT)) || 
-				( t != null && t.intersects(curve.getPointAt(sourceT)) ) )
-		{
+				( t != null && t.intersects(curve.getPointAt(sourceT)) ) )	{
 			return null;
 		}
-		
-		// FIXME check for NaN here or in CubicCurve2Dex class
+				
 		return curve.getSegment(sourceT, targetT);		
 	}
-
-	/* Manage the set of event names to appear on the edge label. */
-	
-	public ArrayList<String> getEventNames() {
-		return eventNames;
-	}
-
-	public void setEventNames(ArrayList<String> eventNames) {
-		this.eventNames = eventNames;
-		updateTextFromEventNames();
-		setDirty(true);
-	}
-
-	public void addEventName(String symbol) {
-		eventNames.add(symbol);
-		updateTextFromEventNames();
-		setDirty(true);
-	}
-	
-	public void removeEventName(String symbol) {
-		eventNames.remove(symbol);
-		updateTextFromEventNames();
-	 	setDirty(true);		
-	}
-	
-	private void updateTextFromEventNames()
-	{
-		// Concat label from associated event[s]
-	    String s = "";	    
-
-		if(eventNames != null){
-		    Iterator iter = eventNames.iterator();
-		    while(iter.hasNext()){
-		    	s += (String)iter.next();
-		    	s += ", ";
-		    }
-		    s = s.trim();
-		    if(s.length()>0) s = s.substring(0, s.length() - 1);
-		}			
-	    setText(s);
-	}
-		
 
 	/**
 	 * Increase the arc on this edge layout.
@@ -425,8 +381,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * clockwise around circumference of source node if <code>clockwise</code>, 
 	 * otherwise counter-clockwise.
 	 */
-	protected void arcMore()
-	{	
+	protected void arcMore() {	
 		arcMore(true);
 	}		
 	
@@ -438,8 +393,7 @@ public class BezierLayout extends GraphicalLayout {
 	 * 
 	 * @param clockwise
 	 */
-	protected void arcMore(boolean clockwise)
-	{
+	protected void arcMore(boolean clockwise) {
 			
 		if(clockwise){ // swap angles
 			double temp = angle1;
@@ -520,7 +474,7 @@ public class BezierLayout extends GraphicalLayout {
 	}
 	
 	/**
-	 * ??? What does this method claim to be doing?
+	 * TODO Comment : What does this method claim to be doing?
 	 * 
 	 * FIXME This doesn't work since changed Point[] to CubicCurve2D and lots of other changes :(
 	 */
@@ -563,20 +517,12 @@ public class BezierLayout extends GraphicalLayout {
 		curve.setCurve(points, 0);
 		setDirty(true);
 	}
-
-	/**
-	 * KLUGE: all accesss to EdgeLayout should go through the Edge interface.
+	
+	/* Indicates whether an edge can be rigidly translated 
+	 * with both of its nodes or must be recomputed.
+	 * Default value is false.
+	 * NOT USED
 	 */
-	/*public void setDirty(boolean b){
-		super.setDirty(b);
-		if(edge != null){
-			edge.setDirty(b);
-		}
-	}*/
-
-	// Indicates whether an edge can be rigidly translated 
-	// with both of its nodes or must be recomputed.
-	// Default value is false.
 	private boolean rigidTranslation = false;
 
 	protected boolean isRigidTranslation() {
@@ -659,4 +605,60 @@ public class BezierLayout extends GraphicalLayout {
 		return curve.getPointAt(targetT); //targetEndPoint;
 	}
 
+	/////////////////////////////////////////////////////////////////////////
+	/* TODO REMOVE 
+	 * 
+	 * The following methods manage the set of event names to appear on the edge label.
+	 * This should be between the edge and its label; this class should stay out of it.
+	 */	
+	public ArrayList<String> getEventNames() {
+		return eventNames;
+	}
+
+	public void setEventNames(ArrayList<String> eventNames) {
+		this.eventNames = eventNames;
+		updateTextFromEventNames();
+		setDirty(true);
+	}
+
+	public void addEventName(String symbol) {
+		eventNames.add(symbol);
+		updateTextFromEventNames();
+		setDirty(true);
+	}
+	
+	public void removeEventName(String symbol) {
+		eventNames.remove(symbol);
+		updateTextFromEventNames();
+	 	setDirty(true);		
+	}
+	
+	/**
+	 * KLUGE until all changes to text go directly from Edge to Label.
+	 */
+	public String getText() {
+		updateTextFromEventNames();
+		return super.getText();
+	}
+	
+	/**
+	 * Sets text to comma-delimited string of event symbols.
+	 */
+	private void updateTextFromEventNames()	{
+		// Concat label from associated event[s]
+	    String s = "";	    
+
+		if(eventNames != null) {
+		    Iterator iter = eventNames.iterator();
+		    while(iter.hasNext()) {
+		    	s += (String)iter.next();
+		    	s += ", ";
+		    }
+		    s = s.trim();
+		    if(s.length()>0) s = s.substring(0, s.length() - 1);
+		}			
+	    setText(s);
+	}		
+	///////////////////////////////////////////////////////////////////////////
+	
 }

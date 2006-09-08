@@ -98,7 +98,7 @@ public class InitialArrow extends Edge {
 		
 		if( ! isVisible() ) return;
 		
-		if(isDirty()){
+		if(needsRefresh()){
 			computeEdge();
 		}
 
@@ -383,7 +383,7 @@ public class InitialArrow extends Edge {
 			int d = 2*RADIUS;
 			// upper left corner, width and height of circle's bounding box
 			anchor = new Ellipse2D.Double(getEdge().getSourceEndPoint().x - RADIUS, getEdge().getSourceEndPoint().y - RADIUS, d, d);
-			setDirty(false);
+			setNeedsRefresh(false);
 		}
 		
 		/**		 
@@ -404,7 +404,7 @@ public class InitialArrow extends Edge {
 		 * @param g the graphics context. 
 		 */
 		public void draw(Graphics g){
-			if(isDirty()) refresh();
+			if(needsRefresh()) refresh();
 					
 			if(!visible) return;
 			

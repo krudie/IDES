@@ -46,11 +46,11 @@ public class BezierHandler extends EdgeHandler {
 		anchors[BezierLayout.CTRL1] = new Ellipse2D.Double(getEdge().getCTRL1().x - RADIUS, getEdge().getCTRL1().y - RADIUS, d, d);				
 		anchors[BezierLayout.CTRL2] = new Ellipse2D.Double(getEdge().getCTRL2().x - RADIUS, getEdge().getCTRL2().y - RADIUS, d, d);
 		anchors[BezierLayout.P2] = new Ellipse2D.Double(getEdge().getP2().x - RADIUS/2, getEdge().getP2().y - RADIUS/2, RADIUS, RADIUS);
-		setDirty(false);
+		setNeedsRefresh(false);
 	}
 	
 	public void draw(Graphics g) {
-		if(isDirty()) refresh();
+		if(needsRefresh()) refresh();
 		
 		if(visible){
 			Graphics2D g2d = (Graphics2D)g;

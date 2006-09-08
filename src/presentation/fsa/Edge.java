@@ -1,6 +1,3 @@
-/**
- * 
- */
 package presentation.fsa;
 
 import java.awt.Component;

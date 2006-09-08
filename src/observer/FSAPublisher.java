@@ -45,16 +45,15 @@ public class FSAPublisher {
 		}
 	}	
 	
-	public void fireFSAEventSetChanged(FSAMessage message){
+	public void fireFSAEventSetChanged(FSAMessage message) {
 		for(FSASubscriber s : subscribers)
 		{
 			s.fsaEventSetChanged(message);
 		}			
 	}
 	
-	public void fireFSASaved(){
-		for(FSASubscriber s : subscribers)
-		{
+	public void fireFSASaved() {
+		for(FSASubscriber s : subscribers) {
 			s.fsaSaved();
 		}	
 	}

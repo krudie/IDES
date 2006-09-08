@@ -102,9 +102,9 @@ public interface PresentationElement {
 	
 	public Point2D.Float getLocation();
 	
-	public void setDirty(boolean b);
+	public void setNeedsRefresh(boolean b);
 	
-	public boolean isDirty();
+	public boolean needsRefresh();
 
 	public void refresh();	
 	

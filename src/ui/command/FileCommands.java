@@ -36,7 +36,9 @@ import services.latex.LatexPrerenderer;
 import services.latex.LatexRenderException;
 
 //>>>>>>> 1.10
-
+/**
+ * @author Lenko Grigorov
+ */
 public class FileCommands {	
 	
 	public static class NewAutomatonCommand extends ActionCommand {
@@ -104,15 +106,13 @@ public class FileCommands {
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-			for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
-			{
+
+			// TODO This should be a while loop
+			for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();) {
 				FSAGraph gm=i.next();
 				Automaton fsa=gm.getAutomaton();
-				if(fsa!=null)
-					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
-					{
-						gm.setDirty(false);
-						//gm.notifyAllSubscribers();
+				if( fsa != null )
+					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))	{					
 						Hub.getWorkspace().fireRepaintRequired();
 					}
 			}
@@ -122,7 +122,7 @@ public class FileCommands {
 	
 	public static class SaveAutomatonCommand extends ActionCommand {
 		
-		public SaveAutomatonCommand(){
+		public SaveAutomatonCommand() {
 			super("save.automaton.command");
 		}
 		
@@ -131,13 +131,13 @@ public class FileCommands {
 			Automaton fsa = (Automaton)Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-			if(fsa!=null)
-				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))
-				{
-					//Hub.getWorkspace().getActiveGraphModel().setDirty(false);
-					// FIXME Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+			
+			if( fsa != null ) {
+				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))	{
 					Hub.getWorkspace().fireRepaintRequired();
 				}
+			}
+			
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}
@@ -156,8 +156,7 @@ public class FileCommands {
 			if(fsa!=null)
 				if(FileOperations.saveAutomatonAs(fsa))
 				{
-					Hub.getWorkspace().getActiveGraphModel().setDirty(false);
-					// FIXME Hub.getWorkspace().getActiveGraphModel().notifyAllSubscribers();
+					Hub.getWorkspace().getActiveGraphModel().setNeedsRefresh(false);					
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 			Hub.getMainWindow().setCursor(cursor);
@@ -422,23 +421,15 @@ public class FileCommands {
 		
 	}
 	
-public static class ExitCommand extends ActionCommand {
+	public static class ExitCommand extends ActionCommand {
 		
 		public ExitCommand(){
 			super("exit.command");
 		}
 		
 		@Override
-		protected void handleExecute() {
-			// TODO check all dirty bits and display confirm exit/do you wish to save
-			// dialogs and then fire appropriate save commands.
-			//int retVal = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit IDES 2.1?");
-			//if(retVal == JOptionPane.OK_OPTION){
-				//SystemVariables.instance().saveSettings();
-				Main.onExit();
-			//}else{
-				// TODO
-			//}
+		protected void handleExecute() {			
+			Main.onExit();
 		}	
 	}
 }

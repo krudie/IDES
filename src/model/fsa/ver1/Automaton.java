@@ -42,13 +42,17 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
     
     protected String id = "";
     
-    // if this automaton represents the composition of other automata,
-    // this will contain a list the ids of these other automata
-    protected String[] composedOf=new String[0];
+    /**
+     * If this automaton represents the composition of other automata,
+     * this will contain a list the ids of these other automata.      
+     */ 
+    protected String[] composedOf = new String[0];
     
-    private SubElement meta=null;
+    private SubElement meta = null;
 
-	private long maxStateId, maxEventId, maxTransitionId;
+	private long maxStateId;
+	private long maxEventId;
+	private long maxTransitionId;
 	
     /**
      * constructs a nem automaton with the name name

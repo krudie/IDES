@@ -95,7 +95,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 		// KLUGE all accesss to NodeLayout should go through the Node interface.
 		super.setDirty(d);
 		if(node!=null)
-			node.setDirty(d);
+			node.setNeedsRefresh(d);
 	}
 	
 	public void dispose()

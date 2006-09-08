@@ -355,7 +355,7 @@ public class GraphLabel extends GraphElement {
 			else
 				rendered=null;
 		}
-		setDirty(true);
+		setNeedsRefresh(true);
 		updateMetrics();
 	}
 
@@ -367,7 +367,7 @@ public class GraphLabel extends GraphElement {
 			getLayout().setText(s);
 			rendered=null;
 		}
-		setDirty(true);
+		setNeedsRefresh(true);
 		updateMetrics();
 	}
 
@@ -379,7 +379,7 @@ public class GraphLabel extends GraphElement {
 	 */
 	public void render() throws LatexRenderException
 	{
-		dirty=true;
+		needsRefresh=true;
 		String label=getLayout().getText();
 		if(label==null)
 			label="";
@@ -501,7 +501,7 @@ public class GraphLabel extends GraphElement {
 		if(!location.equals(getLayout().getLocation()))
 		{
 			getLayout().setLocation(location.x,location.y);
-			setDirty(true);
+			setNeedsRefresh(true);
 		}
 	}
 	

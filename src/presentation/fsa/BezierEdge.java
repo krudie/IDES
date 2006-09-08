@@ -8,8 +8,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.util.Iterator;
 import java.util.Set;
 
+import model.fsa.FSAEvent;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Transition;
 import presentation.CubicParamCurve2D;
@@ -49,7 +51,7 @@ public class BezierEdge extends Edge {
 		setLayout(layout);		
 		setHandler(new BezierHandler(this));		
 		arrowHead = new ArrowHead();		   
-		setDirty(true);
+		setNeedsRefresh(true);
 	}
 		
 	/**
@@ -64,7 +66,7 @@ public class BezierEdge extends Edge {
 		setLayout(layout);	
 		setHandler(new BezierHandler(this));		
 		arrowHead = new ArrowHead();		
-		setDirty(true);
+		setNeedsRefresh(true);
 	}
 
 	/**
@@ -77,7 +79,7 @@ public class BezierEdge extends Edge {
 	public BezierEdge(Node source, Node target) {
 		super(source, target);			
 		arrowHead = new ArrowHead();		
-		setDirty(true);
+		setNeedsRefresh(true);
 	}
 	
 
@@ -91,7 +93,7 @@ public class BezierEdge extends Edge {
 			return;
 		}
 		
-		if(isDirty() || getBezierLayout().isDirty()){
+		if(needsRefresh() || getBezierLayout().isDirty()){
 			refresh();			
 			getBezierLayout().setDirty(false);
 		}
@@ -193,7 +195,8 @@ public class BezierEdge extends Edge {
 	/**
 	 * Updates my visualization of curve, arrow and label.
 	 */
-	public void refresh() {		
+	public void refresh() {
+		
 		super.refresh(); // refresh all children
 		
 		CubicCurve2D.Float curve = getBezierLayout().getCurve();
@@ -229,9 +232,8 @@ public class BezierEdge extends Edge {
 		if(!isSelected()){
 			getHandler().setVisible(false);
 		}			
-		// FIXME text should always live in label's layout, not also in BezierLayout
-		// BezierLayout will no longer act as intermediary after MetaData class is removed.
-	    getLabel().setText(getBezierLayout().getText());	    
+			    
+		refreshLabelText();	    
 	    
 	    // Compute location of label: midpoint of curve	plus offset vector     
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
@@ -242,9 +244,30 @@ public class BezierEdge extends Edge {
 	    getLabel().setLocation(location);	
 	    
 	    getBezierLayout().setDirty(false);
-	    setDirty(false);
+	    setNeedsRefresh(false);
 	}
 		
+	/**
+	 * Sets text of label to a comma-delimited string of event symbols.
+	 */
+	private void refreshLabelText()	{
+		// Concat label from associated event[s]
+	    String s = "";		
+	    Iterator<FSATransition> iter = this.getTransitions();
+	    FSAEvent event;
+	    while(iter.hasNext()) {
+	    	event = iter.next().getEvent();
+	    	if(event != null){
+		    	s += event.getSymbol();
+		    	s += ", ";
+	    	}
+	    }
+	    s = s.trim();
+	    if( s.length() > 0 ) {
+	    	s = s.substring( 0, s.length() - 1 );
+	    }			
+	    getLabel().setText(s);
+	}
 
 	/**
 	 * FIXME points wrong direction when tangent angle is close to +- PI. 
@@ -382,7 +405,7 @@ public class BezierEdge extends Edge {
 		super.setLayout(layout);
 		// ??? //
 		//computeEdge();
-		setDirty(true);
+		setNeedsRefresh(true);
 	}
 	
 	public BezierLayout getBezierLayout(){

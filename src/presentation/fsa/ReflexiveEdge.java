@@ -26,7 +26,9 @@ import presentation.GraphicalLayout;
  * A symmetric self-loop manipulated by a single control point. 
  * 
  * TODO 
- * refactor constructors (if super constructors are a pain, don't call them).
+ * - refactor constructors (if super constructors are a pain, don't call them).
+ * - find a way to compute control points from midpoint, centre point, scalars and angles
+ * 	such that the midpoint set by the user remains fixed.
  * 
  * @author Helen Bretzke
  */
@@ -69,8 +71,7 @@ public class ReflexiveEdge extends BezierEdge {
 		Iterator<Edge> neighbours = node.adjacentEdges();
 		if(neighbours.hasNext()){
 			Set<Edge> n = new HashSet<Edge>();
-			while(neighbours.hasNext())
-			{
+			while(neighbours.hasNext()) {
 				n.add(neighbours.next());
 			}
 			insertAmong(n);
@@ -83,29 +84,25 @@ public class ReflexiveEdge extends BezierEdge {
 	 *   
 	 * TODO If not enough space, looks for a layout that doesn't clobber another reflexive edge.
 	 */
-	public void insertAmong(Set<Edge> neighbours)
-	{	
+	public void insertAmong(Set<Edge> neighbours) {	
 		double delta = Math.toRadians(2.0);
 		double alpha = 0.0; 
 		
-		if(!BezierEdgePlacer.tooClose(this, neighbours))
-		{
+		if(!BezierEdgePlacer.tooClose(this, neighbours)) {
 			return;
 		}
 		
 		/**
 		 * Search for a free space using brute force and ignorance.
 		 */
-		while(BezierEdgePlacer.tooClose(this, neighbours) && alpha < 360)
-		{
+		while(BezierEdgePlacer.tooClose(this, neighbours) && alpha < 360) {
 			((ReflexiveLayout)getLayout()).axis = Geometry.rotate(((ReflexiveLayout)getLayout()).axis, delta);			
 			setMidpoint(Geometry.add(getSourceNode().getLocation(), ((ReflexiveLayout)getLayout()).axis));
 			computeEdge();
 			alpha ++;
 		}
 		
-		if(alpha == 360)
-		{
+		if(alpha == 360) {
 			// TODO find a spot that doesn't mask another reflexive edge
 			
 		}
@@ -117,10 +114,9 @@ public class ReflexiveEdge extends BezierEdge {
 	 * 
 	 * @param point the new midpoint.
 	 */
-	public void setMidpoint(Point2D point)
-	{
+	public void setMidpoint(Point2D point) {
 		((ReflexiveLayout)getLayout()).setPoint(point, MIDPOINT);
-		setDirty(true);
+		setNeedsRefresh(true);
 	}
 		
 	/**
@@ -141,34 +137,13 @@ public class ReflexiveEdge extends BezierEdge {
 	public boolean isMovable(int pointType) {
 		return pointType == MIDPOINT;	
 	}
-	
-	/**
-	 * Renders this edge in the given graphics context. 
-	 * 
-	 * @param the graphics context in which to render this edge
-	 */
-	public void draw(Graphics g) {		
-		// TODO customize so that if curve is invisible, arrow points to centre of node.
-		super.draw(g);	
-	}
-
+		
 	/**
 	 * FIXME customize so that intersection with boundary is computed properly;
 	 * parameters (sourceT and targetT) are currently being reverse.
 	 */
 	public void refresh() {		
 		super.refresh();
-	}
-
-	
-	/**
-	 * To be used when moving/reshaping self-loops.
-	 * 
-	 * @param point
-	 * @param index
-	 */
-	public void snapToNode(Point2D.Float point, int index){
-		
 	}
 	
 	/**
@@ -187,6 +162,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 */
 	@Override
 	public String createExportString(Rectangle selectionBox, int exportType) {
+
 		String exportString = "";
 		
 		Point2D.Float edgeP1 = getSourceEndPoint();
@@ -244,8 +220,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 * 
 	 * @return Rectangle The bounds of the Bezier Curve and its label. 
 	 */
-	public Rectangle bounds()
-	{
+	public Rectangle bounds() {
 		return ((ReflexiveLayout)getLayout()).getCurve().getBounds().union(getLabel().bounds());		
 	}
 	
@@ -270,7 +245,7 @@ public class ReflexiveEdge extends BezierEdge {
 	/**
 	 * Returns false since cannot straighten a self-loop. 
 	 */
-	public boolean canStraighten(){
+	public boolean canStraighten() {
 		return false;
 	}
 	
@@ -346,16 +321,18 @@ public class ReflexiveEdge extends BezierEdge {
 	 * Same data as BezierLayout (control points and label offset vector)
 	 * but different algorithms and handlers specific to rendering a self-loop. 
 	 * 
-	 * @author helen bretzke
+	 * @author Helen Bretzke
 	 *
 	 */
 	public class ReflexiveLayout extends BezierLayout
 	{
 		/**
 		 * The minimum length of the axis vector from the centre of the node
-		 * to the midpoint of this edge. 
+		 * to the midpoint of this edge.
+		 * 
+		 * FIXME the axis doesn't reach the *computed* midpoint.		 
 		 */
-		private float minAxisLength; 
+		private float minAxisLength;
 		
 		// NOTE no need to store either of these variables here.		
 		// vector from centre of source/target node to this point 
@@ -364,8 +341,11 @@ public class ReflexiveEdge extends BezierEdge {
 		private Point2D midpoint;
 		////////////////////////////////////////////////////////
 		
-		/** Default angle from centre axis vector to the tangents of the bezier curve */
-		public static final double DEFAULT_ANGLE = Math.PI /5; 
+		/** 
+		 * Default angle from centre axis vector to the tangents of the bezier curve 
+		 * NOTE this looks ugly but minimizes the problem of control (mid)point drift 
+		 */
+		public static final double DEFAULT_ANGLE = Math.PI / 4; 
 		/** Default value to scale the centre axis vector to the length of the tangents of the bezier curve */ 
 		public static final float DEFAULT_SCALAR = 2f;
 		
@@ -374,9 +354,9 @@ public class ReflexiveEdge extends BezierEdge {
 		 * node to midpoint of bezier curve given by <code>bLayout</code>.
 		 */
 		public ReflexiveLayout(Node source, ReflexiveEdge edge, BezierLayout bLayout) {
-			minAxisLength = source.bounds().height;
-			Point2D temp = Geometry.midpoint(bLayout.getCurve());
+			minAxisLength = source.bounds().height;			
 			setEdge(edge);
+			Point2D temp = Geometry.midpoint(bLayout.getCurve());
 			setPoint(new Point2D.Float((float)temp.getX(), (float)temp.getY()), MIDPOINT);			
 			setCurve(bLayout.getCurve());			
 			setEventNames(bLayout.getEventNames());
@@ -403,27 +383,29 @@ public class ReflexiveEdge extends BezierEdge {
 
 		
 		/**
-		 * FIXME using fixed scalars and angles causes midpoint 
+		 * FIXME 
+		 * Problem: using fixed scalars and angles causes midpoint 
 		 * of computed curve to drift away from midpoint set by user.
 		 * 
-		 *
+		 * If the curve has already been loaded from a file,
+		 * compute the correct axis, angles and scalars to 
+		 * correctly reproduce the curve.
+		 *  
 		 */
 		public void initializeShape() {
-			Float centrePoint = getEdge().getSourceNode().getLocation();
-			setPoint(centrePoint, P1);
-			setPoint(centrePoint, P2);
-			if(midpoint == null){
-				setPoint(Geometry.add(centrePoint, Geometry.scale(new Point2D.Float(0, -1), minAxisLength)), MIDPOINT);
-				//axis = Geometry.scale(new Point2D.Float(0, -1), minAxisLength);
-//				computeCurve();
-//				midpoint = Geometry.midpoint(getCurve());
-			}/*else{ // TODO constrain length of axis
-				axis = Geometry.subtract(midpoint, centrePoint);				
-			}*/
 			angle1 = -DEFAULT_ANGLE;
 			angle2 = DEFAULT_ANGLE;
 			s1 = DEFAULT_SCALAR;
-			s2 = s1;					
+			s2 = s1;	
+			
+			Float centrePoint = getEdge().getSourceNode().getLocation();
+			setPoint(centrePoint, P1);
+			setPoint(centrePoint, P2);
+			if(midpoint == null) {
+				setPoint(Geometry.add(centrePoint, 
+						Geometry.scale(new Point2D.Float(0, -1), 
+								minAxisLength)), MIDPOINT);
+			}		
 		}
 		
 		/** 
@@ -447,7 +429,7 @@ public class ReflexiveEdge extends BezierEdge {
 				return;
 			}
 			
-			// TODO compute curve from centre and midpoint such that midpoint is fixed
+			// FIXME compute curve from centre and midpoint such that midpoint is fixed
 			// and curve has same shape as default.
 			
 			setPoint(getEdge().getSourceNode().getLocation(), P1);
@@ -570,7 +552,7 @@ public class ReflexiveEdge extends BezierEdge {
 		public void refresh(){
 			int d = 2*RADIUS;			
 			anchor = new Ellipse2D.Double(((ReflexiveEdge)getEdge()).getMidpoint().getX() - RADIUS, ((ReflexiveEdge)getEdge()).getMidpoint().getY() - d, d, d);
-			setDirty(false);
+			setNeedsRefresh(false);
 		}
 		
 		/**		 
@@ -593,7 +575,7 @@ public class ReflexiveEdge extends BezierEdge {
 		 *  @param g the graphics context in which to render this handler
 		 */
 		public void draw(Graphics g){
-			if(isDirty()) refresh();
+			if(needsRefresh()) refresh();
 					
 			if(!visible) return;
 			
