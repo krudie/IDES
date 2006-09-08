@@ -12,6 +12,7 @@ import java.util.Set;
 
 import main.Hub;
 import model.fsa.FSAState;
+import model.fsa.FSAEvent;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
@@ -326,7 +327,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			BezierLayout layout = metaData.getLayoutData(t);
 			if(e != null) {// && e.getLayout().equals(layout)){			
 				e.addTransition(t);
-				e.addEventName(t.getEvent().getSymbol());
+				
+				//e.addEventName(t.getEvent().getSymbol());
+				// FIX by SJW
+				// Now handles a null event
+				FSAEvent tEvent = t.getEvent();
+				if (tEvent != null)
+				{
+					e.addEventName(tEvent.getSymbol());
+				}
 			}else{
 				// get the graphic data for the transition and all associated events
 				// construct the edge
