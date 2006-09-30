@@ -7,9 +7,10 @@ import java.util.Properties;
  * methods to get and set properties of types other than String.
  * However, the underlying implementation uses strings to store the
  * actual properties. 
+ * 
  * @author Lenko Grigorov
- *
  */
+@SuppressWarnings("serial")
 public class PersistentProperties extends Properties {
 
 	/**

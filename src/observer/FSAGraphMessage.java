@@ -8,10 +8,11 @@ import java.awt.geom.Rectangle2D;
 import presentation.fsa.FSAGraph;
 
 /**
- * Message sent to subscribers to event notifications from 
- * FSMGraphPublishers.
+ * Message sent from FSAGraph to classes that implement 
+ * FSAGraphSubscriber i.e. that subscribe to change notifications
+ * from FSAGraph. 
  * 
- * @author helen bretzke
+ * @author Helen Bretzke
  */
 public class FSAGraphMessage {
 	
@@ -95,25 +96,60 @@ public class FSAGraphMessage {
 		this.message = message;
 	}
 	
-	
+	/**
+	 * Returns the id of the element changed. 
+	 * 
+	 * @return the id of the element changed
+	 */
 	public long getElementId() {
 		return elementId;
 	}
 
+	/**
+	 * Returns the type of the element changed. 
+	 * 
+	 * @return the type of the element changed
+	 */	
 	public int getElementType() {
 		return elementType;
 	}
 
+	/**
+	 * Returns the type of event that occurred. 
+	 * 
+	 * @return the type of event that occurred
+	 */
 	public int getEventType() {
 		return eventType;
 	}
 
+	/**
+	 * Returns the graph that sent this message. 
+	 * 
+	 * @return the graph that sent this message
+	 */
 	public FSAGraph getSource() {
 		return source;
 	}
 
+	/**
+	 * Returns a rectangle the location on the source canvas 
+	 * where the event occurred.
+	 * 
+	 * @return a rectangle representing the region affected by
+	 * the change  
+	 */
 	public Rectangle2D getLocation() {
 		return location;
 	}	
+	
+	/**
+	 * Returns a string describing the message. 
+	 * 
+	 * @return a description of the change event
+	 */
+	public String getMessage() {
+		return message;
+	}
 
 }

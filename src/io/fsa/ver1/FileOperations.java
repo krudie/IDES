@@ -7,28 +7,25 @@ import io.WorkspaceParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.PrintStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
-import org.pietschy.command.CommandManager;
-import org.pietschy.command.LoadException;
-import org.pietschy.command.file.ExtensionFileFilter;
 
 import main.Hub;
 import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
+import org.pietschy.command.CommandManager;
+import org.pietschy.command.LoadException;
+import org.pietschy.command.file.ExtensionFileFilter;
+
 /**
- * TODO 
- * extract interface to package io.fsa
- * implement most methods
+ * Contains operations for reading and writing automaton and workspace files.
  * 
- * @author helen bretzke
- *
+ * @author Helen Bretzke
+ * @author Lenko Grigorov
  */
 public class FileOperations {
 	
@@ -80,7 +77,9 @@ public class FileOperations {
 	}
 		
 	/**
-     * Saves an automaton to a file
+     * Saves the given automaton to <code>file</code> and
+     * if successful, stores the path to the location and returns true. 
+     * 
      * @param a the automaton to save
      * @param file the file to save it to
      * @return if file was saved
@@ -111,6 +110,9 @@ public class FileOperations {
     }  
     
 	/**
+	 * Presents a file dialog and saves the given automaton to a file selected 
+	 * by the user. If successful, stores the path to the location and returns true. 
+	 * 
 	 * @param a automaton to save
 	 * @return if file was saved
 	 */
@@ -124,13 +126,15 @@ public class FileOperations {
 		}
 		
 		fc.setDialogTitle(Hub.string("saveModelTitle"));
-		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
+		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+				Hub.string("modelFileDescription")));
 		
 		if(a.getFile()!=null){
 			fc.setSelectedFile(a.getFile());
 		}else{
 			fc.setSelectedFile(new File(a.getName()));
 		}
+		
 		int retVal;
 		boolean fcDone=true;
 		File file=null;
@@ -169,6 +173,12 @@ public class FileOperations {
 		
 	}
 	
+	/**
+	 * Opens the workspace described in the given configuration file. 
+	 * 
+	 * @param file the file containing the workspace description
+	 * @return a workspace descriptor object if file is valid, null otherwise
+	 */
 	public static WorkspaceDescriptor openWorkspace(File file){
         WorkspaceDescriptor wd = null;
         if(!file.canRead())
@@ -189,8 +199,9 @@ public class FileOperations {
 	
 
 	/**
-	 * Saves the workspace. If the file name is invalid, calls
+	 * Saves the workspace described by <code>wd</code>. If the file name is invalid, calls
 	 * {@link #saveWorkspaceAs(WorkspaceDescriptor)} to get a new file name.
+	 * 
 	 * @param wd the description of the workspace
 	 * @param file the file where the workspace will be written
 	 * @return true if file was saved
@@ -209,22 +220,27 @@ public class FileOperations {
     }
 
     /**
-     * Ask the user for a file name and then call {@link #saveWorkspace(WorkspaceDescriptor, File)}.
+     * Asks the user for a file name and then calls {@link #saveWorkspace(WorkspaceDescriptor, File)}.
+     * 
      * @param wd the description of the workspace
      * @return true if file was saved
      */
     public static boolean saveWorkspaceAs(WorkspaceDescriptor wd){
     	JFileChooser fc;
+    	
     	if(wd.getFile()!=null)
 			fc=new JFileChooser(wd.getFile().getParent());
 		else
 			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
+    	
 		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
 		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+		
 		if(wd.getFile()!=null)
 			fc.setSelectedFile(wd.getFile());
 		else
 			fc.setSelectedFile(new File(Hub.string("newAutomatonName")));
+		
 		int retVal;
 		boolean fcDone=true;
 		File file=null;
@@ -236,6 +252,7 @@ public class FileOperations {
     		file=fc.getSelectedFile();
     		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.WORKSPACE_FILE_EXT))
     			file=new File(file.getPath()+"."+IOUtilities.WORKSPACE_FILE_EXT);
+    		
 			if(file.exists())
 			{
 				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
@@ -247,77 +264,29 @@ public class FileOperations {
 					retVal=JFileChooser.CANCEL_OPTION;
 			}
 		} while(!fcDone);
+		
     	if(retVal == JFileChooser.APPROVE_OPTION)
     		return saveWorkspace(wd,file);
+    	
     	return false;
     }
 
 	/**
+	 * Loads the commands definitions from an xml file with the given name 
+	 * and initializes the command manager (i.e. the singleton class that 
+	 * manages and locates ActionCommand and CommandGroup instances.)
+	 * 
 	 * TODO move this to the io or ui.command package; it doesn't do anything with FSAs. 
-	 * 
-	 * Loads the command configuration files and initializes the CommandManager 
-	 * (i.e. the singleton class that manages and locates ActionCommand and CommandGroup instances.)
-	 * 
+	 *  
 	 * @param commandFileName the absolute path to the command configuration file.
 	 */
-	public static void loadCommandManager(String commandFileName){
-//		load the xml command definition and initialize the manager.
-		//File myCommandFile = new File(commandFileName);
+	public static void loadCommandManager(String commandFileName){		
 		try {
-		   CommandManager.defaultInstance().load(Hub.getResource(commandFileName));//.load(myCommandFile);
+		   CommandManager.defaultInstance().load(Hub.getResource(commandFileName));
 		} catch (LoadException e){
 			throw new RuntimeException(e);
 		}		
-	}
-	
-	/**
-	 * Loads all ActionCommand subclasses in the package with the given name
-	 * and exports them so they can be seen by menu and toolbar groups. 
-	 * 
-	 * Precondition: the given package name contains only classes that extend ActionCommand
-	 * 
-	 * @param packageName
-	 */
-//	public static void loadAndExportCommands(String commandsFileName){	
-//		//ClassLoader loader = ClassLoader.getSystemClassLoader();
-//		BufferedReader in;
-//		String s;
-//	    
-//		try {	
-//			in = new BufferedReader(new FileReader(SystemVariables.instance().getSystem_path() + commandsFileName));
-//			s = in.readLine();
-//		    while (s != null) {
-//					ActionCommand cmd = (ActionCommand)Class.forName(s).newInstance();
-//					cmd.export();
-//					s = in.readLine();
-//		    }
-//		} catch (InstantiationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	
-//	}
-	
-
-
-  
+	}	    
     
-    private static class ClassFileFilter implements FilenameFilter{    	
-		    public boolean accept(File dir, String name) {
-		        return (name.endsWith(".class"));
-		    }
-    }
  }
 

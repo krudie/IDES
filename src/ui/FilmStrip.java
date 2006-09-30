@@ -192,6 +192,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	}
 
 	/* (non-Javadoc)
+	 * NOTE Thumbnails don't need to respond to selection events. 
 	 * @see observer.FSAGraphSubscriber#fsmGraphSelectionChanged(observer.FSAGraphMessage)
 	 */
 	public void fsmGraphSelectionChanged(FSAGraphMessage message) {}

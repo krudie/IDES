@@ -20,7 +20,7 @@ import model.fsa.FSATransition;
  */
 public class State extends SubElementContainer implements model.fsa.FSAState {
     
-    // transitions originating from this state and ending in this state respectively.
+    /* transitions originating from this state and ending in this state respectively. */
     private LinkedList<FSATransition> sourceT, targetT;
 
     private long id;

@@ -1,5 +1,11 @@
 package model;
 
+/**
+ * An obsolete concept intended to retrieve and store metadata
+ * pertinent to a discrete event system model. 
+ * 
+ * @author Helen Bretzke
+ */
 public interface DESMetaData {
 
 	/**

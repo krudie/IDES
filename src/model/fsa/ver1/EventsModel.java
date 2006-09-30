@@ -1,6 +1,6 @@
 package model.fsa.ver1;
 
-import java.util.List;
+import java.util.Set;
 
 import model.fsa.FSAEvent;
 import model.fsa.FSAEventsModel;
@@ -9,18 +9,20 @@ import model.fsa.FSAModel;
 /**
  * A model of global events set (alphabet) and all local alphabets. 
  * 
- * @author helen bretzke
- *
+ * TODO Design and implement a publisher interface for this class to
+ * notify subscribers.
+ * 
+ * @author Helen Bretzke
  */
 public class EventsModel extends observer.Publisher implements FSAEventsModel {
 	
 	
-	public List getGlobalEvents() {
+	public Set getGlobalEvents() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List getLocalEvents(FSAModel fsa) {
+	public Set getLocalEvents(FSAModel fsa) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -4,11 +4,10 @@ import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
 
 /**
- * Manages a collection of FSAModels.
- * Requires that each FSA has a unique name.  
+ * Defines operations required by a class that manages a collection 
+ * of FSAModels. Requires that each FSA has a unique name.  
  * 
- * @author helen bretzke
- *
+ * @author Helen Bretzke
  */
 public interface Workspace {
 	

@@ -6,7 +6,8 @@ import model.fsa.FSAState;
 import io.fsa.ver1.SubElementContainer;
 
 /**
- * This class represent a transition in an automaton.
+ * Represents a transition in an automaton.
+ * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */

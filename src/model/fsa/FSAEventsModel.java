@@ -1,22 +1,44 @@
 package model.fsa;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Interface for managers responsible for synchronizing global and local event
  * set (or alphabets).
  * 
- * @author helen bretzke
- *
+ * @author Helen Bretzke
  */
 public interface FSAEventsModel {
 
-	public List getGlobalEvents();
+	/**
+	 * Returns the global event set; all events in 
+	 * all models in the workspace.
+	 * 
+	 * @return set of events in the global alphabet
+	 */
+	public Set getGlobalEvents();
 	
-//	 not really necessary since FSAModel returns an iterator of events
-	public List getLocalEvents(FSAModel fsa);
+	/**
+	 * Returns the set of events local to the given fsa. 
+	 * 
+	 * @param fsa the fsa for which to retrieve events
+	 * @return set of events in the global alphabet
+	 */ 
+	public Set getLocalEvents(FSAModel fsa);
 	
+	/**
+	 * Adds the given event to the global alphabet. 
+	 * 
+	 * @param e the event to be added
+	 */
 	public void addGlobalEvent(FSAEvent e);
+	
+	/**
+	 * Adds all events local to the given fsa to the
+	 * set of global events. 
+	 * 
+	 * @param fsa the model from which to add events 
+	 */
 	public void addLocalEvents(FSAModel fsa);
 	
 	/**
