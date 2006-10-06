@@ -1,5 +1,5 @@
 /*
- * This entire class is the work of Lenko
+ * This entire class is the work of Lenko except for getCoefficients, equals and toString. 
  */
 
 /*
@@ -11,7 +11,7 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 
 /**
- * A cubic parametric curve segment specified with float coordinates and
+ * A cubic parametric curve segment defined by float coordinates and having
  * extended capabilities: parameter-specified subdivision and computation of
  * bounds on curve length.
  * 
@@ -29,7 +29,8 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
 
     /**
-     * Constructs and initializes a CubicCurve2D from the specified coordinates.
+     * Constructs and initializes a CubicCurve2D from the specified coordinates
+     * for the four control (inflection) points.
      */
     public CubicParamCurve2D(float x1, float y1, float ctrlx1, float ctrly1, float ctrlx2,
             float ctrly2, float x2, float y2){
@@ -37,7 +38,10 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
 
     /**
-	 * @param curve the curve to clone
+     * Constructs a CubicCurve2D and sets the location of the endpoints and controlpoints 
+     * of this curve to the same as those in the specified CubicCurve2D.
+     * 
+	 * @param curve the curve whose control points to copy
 	 */
 	public CubicParamCurve2D(CubicParamCurve2D curve) {
 		setCurve(curve);
@@ -226,10 +230,12 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
 
     /**
+     * Returns the segment of this curve between the given pair of parameters.
+     * 
      * Precondition 0 <= tStart < tEnd <= 1
      * 
-     * @param tStart 	0 <= tStart < tEnd
-     * @param tEnd  	tStart < tEnd <= 1
+     * @param tStart in [0, tEnd)
+     * @param tEnd in (tStart, 1]
      * @return the segment of this curve between the given pair of parameters
      */
     public CubicParamCurve2D getSegment(float tStart, float tEnd)
@@ -252,6 +258,8 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     }
     
     /** 
+     * Returns the point on the curve at the given parameter. 
+     * 
      * @param t in [0,1]
      * @return the point on the curve at the given parameter
      */
@@ -328,6 +336,12 @@ public class CubicParamCurve2D extends CubicCurve2D.Float{
     		&& getCtrlP2().equals(other.getCtrlP2());
     }
     
+    /**
+     * Returns a string representing the control points of this curve.
+     * Formatted by square brackets with each point comma-delimited.
+     * 
+     * @return a string representing the control points of this curve.
+     */
     public String toString(){
     	return "["+ getP1() + ", " + getCtrlP1() + ", " + getCtrlP2() + ", " + getP2() + "]";
     }

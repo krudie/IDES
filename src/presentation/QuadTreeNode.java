@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * TODO Implement for optimization of intersection in FSMGraphModel.
  *  
- * @author helen bretzke
+ * @author Helen Bretzke
  */
 public class QuadTreeNode {
 

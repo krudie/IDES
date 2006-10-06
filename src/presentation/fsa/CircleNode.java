@@ -20,8 +20,7 @@ import util.BentoBox;
  * Maintains a label and set of adjacent edges. Provides popup menu for operations 
  * @see NodePopup#showPopup
  * 
- * @author helen bretzke
- *
+ * @author Helen Bretzke
  */
 public class CircleNode extends Node {
 
@@ -69,13 +68,13 @@ public class CircleNode extends Node {
 		
 		recomputeEdges();	
 
-		if(state.isMarked()){			
+		if(state.isMarked() ) {			
 			/*float r = radius - CircleNodeLayout.RADIUS_MARGIN;
 			d = 2*r;*/
 			innerCircle = computeCircle(radius - CircleNodeLayout.RADIUS_MARGIN); //new Ellipse2D.Double(centre.x - r, centre.y - r, d, d);
 		}
 			
-		if(initialArrow != null){
+		if(initialArrow != null) {
 			initialArrow.setVisible(state.isInitial());
 		}
 		
@@ -110,18 +109,14 @@ public class CircleNode extends Node {
 
 		Graphics2D g2d = (Graphics2D)g;
 		
-		if (isSelected()){
-			g.setColor(getLayout().getSelectionColor());
-// DEBUG
-//			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
-//			g2d.draw(bounds());
-//			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
-// END DEBUG		
-		}else if(isHighlighted()){
+		if (isSelected()) {
+			g.setColor(getLayout().getSelectionColor());		
+		} else if(isHighlighted())  {
 			g.setColor(getLayout().getHighlightColor());			
-		}else{
+		} else {
 			g.setColor(getLayout().getColor());	
 		}
+		
 		g2d.setStroke(GraphicalLayout.WIDE_STROKE);		
 		g2d.draw(circle);		
 		

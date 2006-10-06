@@ -6,13 +6,22 @@ package observer;
 import java.util.ArrayList;
 
 /**
- * @author helen
- *
+ * A publisher of change notification events in a workspace containing multiple 
+ * discrete event system models. Stores a collection of 
+ * <code>WorkspaceSubscriber</code>s to which it sends notifications
+ * of changes in the workspace. 
+ * 
+ * @author Helen Bretzke
  */
 public class WorkspacePublisher {
 
+	// List of subscribers to be notified of change events
 	private ArrayList<WorkspaceSubscriber> subscribers;
 	
+	/**
+	 * Creates a workspace publisher with an empty list of 
+	 * subscribers.
+	 */
 	public WorkspacePublisher() {
 		subscribers = new ArrayList<WorkspaceSubscriber>();
 	}
@@ -37,6 +46,9 @@ public class WorkspacePublisher {
 		subscribers.remove(subscriber);
 	}
 	
+	/**
+	 * Triggers a notification to all subscribers that a repaint is required.
+	 */
 	public void fireRepaintRequired() {
 		fireRepaintRequired(new WorkspaceMessage(WorkspaceMessage.DISPLAY,
 												null,
@@ -45,10 +57,11 @@ public class WorkspacePublisher {
 	}
 	
 	/**
-	 * Sends notification to subscribers of changes to the display options such as 
-	 * Zoom, or toggling show grid, LaTeX rendering, UniformNode size etc.
+	 * Sends a notification to subscribers of changes to the display options such as 
+	 * Zoom, or toggling show grid, LaTeX rendering, UniformNode size etc. Passes the
+	 * given message to each subscriber.
 	 * 
-	 * @param message
+	 * @param message details of the change notification
 	 */
 	protected void fireRepaintRequired(WorkspaceMessage message) {
 		for( WorkspaceSubscriber s : subscribers ) {

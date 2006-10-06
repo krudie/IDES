@@ -12,18 +12,21 @@ import javax.swing.JComponent;
 
 import observer.FSAGraphMessage;
 import observer.FSAGraphSubscriber;
-import observer.Subscriber;
 
-import ui.GUISettings;
+import presentation.GraphicalLayout;
 
 import main.Hub;
 
 /**
- * TODO Comment
+ * The visual display of an FSAGraph.  Subscribes and response to change
+ * notifications from the underlying Publisher portion of the underlying graph
+ * layout model.  Canvas can be scaled to display the graph at any size from full 
+ * to thumbnail representation. 
  * 
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
+@SuppressWarnings("serial")
 public class GraphView extends JComponent implements FSAGraphSubscriber {
 
 	protected static final int GRAPH_BORDER_THICKNESS=10;
@@ -59,7 +62,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber {
 		Graphics2D g2D = (Graphics2D) g;			
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 	                         RenderingHints.VALUE_ANTIALIAS_ON);	    
-	    g2D.setStroke(GUISettings.instance().getWideStroke());
+	    g2D.setStroke(GraphicalLayout.WIDE_STROKE);
 
 	    Rectangle r=getBounds();
 	    if(doFill)

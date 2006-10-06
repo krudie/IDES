@@ -13,23 +13,31 @@ import presentation.GraphicalLayout;
 /**
  * Graphical data and operations for visual display of a BezierEdge. 
  * 
- * @author helen bretzke
- */
-		
+ * @author Helen Bretzke
+ */		
 public class BezierLayout extends GraphicalLayout {
 
+	/* the edge to be laid out */
 	private BezierEdge edge;
 	
-	/**
-	 * Indices of bezier curve control points. 
-	 */
+	/* Indices of bezier curve control points. */
 	public static final int P1 = 0;	
 	public static final int CTRL1 = 1;
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
-	public static final double EPSILON = 0.0001; // lower bound for abs(angles), below which is angles set to zero.  
 	
-	private ArrayList<String> eventNames;	
+	/* default displacement vector for the label from the midpoint of the edge */
+	public static final Point2D.Float DEFAULT_LABEL_OFFSET = new Point2D.Float(5,5);
+	
+	/*	 lower bound for abs(angle), below which is angle set to zero. */
+	public static final double EPSILON = 0.0001;  
+	
+	/* List of event symbols to be displayed on the edge's label
+	 * TODO redundant storage since this information should only be stored in the label's layout 
+	 */
+	private ArrayList<String> eventNames;
+	
+	/** the curve representing the edge being laid out */
 	protected CubicParamCurve2D curve;
 
 	/* 	Compact representation of data required to maintain shape of edge while moving
@@ -43,37 +51,55 @@ public class BezierLayout extends GraphicalLayout {
 	protected double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
 	protected double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)	
 		
-	/* the start and end parameters for the visible portion of the curve */
+	/* the start and end parameters for the visible portion of the curve 
+	 * initialized such that the entire curve is visible 
+	 */
 	protected float sourceT = 0;
 	protected float targetT = 1;
 	
+	/**
+	 * Creates a default layout for a bezier curve.
+	 */
 	public BezierLayout(){	
 		curve = new CubicParamCurve2D();
 		eventNames = new ArrayList<String>();
-		setLabelOffset(new Point2D.Float(5,5));
+		setLabelOffset(DEFAULT_LABEL_OFFSET);
 	}
 	
+	/**
+	 * Creates a layout for a bezier edge with the given control points.
+	 *  
+	 * @param bezierControls the control points for the edge
+	 */
 	public BezierLayout(Point2D.Float[] bezierControls){		
 		curve = new CubicParamCurve2D();
 		curve.setCurve(bezierControls, 0);
 		eventNames = new ArrayList<String>();
-		setLabelOffset(new Point2D.Float(5,5));
+		setLabelOffset(DEFAULT_LABEL_OFFSET);
 		updateAnglesAndScalars();
 		setDirty(true);
 	}
 	
+	
+	/**
+	 * Creates a layout for a bezier edge with the given control points
+	 * and event names.
+	 *  
+	 * @param bezierControls the control points for the edge
+	 * @param eventNames list of event symbols
+	 */
 	public BezierLayout(Point2D.Float[] bezierControls, ArrayList<String> eventNames){		
 		curve = new CubicParamCurve2D();
 		curve.setCurve(bezierControls, 0);		
 		this.eventNames = eventNames;
-		setLabelOffset(new Point2D.Float(5,5));
+		setLabelOffset(DEFAULT_LABEL_OFFSET);
 		setDirty(true);
 		updateAnglesAndScalars();
 	}
 
 	/**
-	 * Constructs an edge layout object for a straight, directed edge from nodes with
-	 * source and target layouts <code>n1</code> and <code>n2</code> respectively.
+	 * Constructs an edge layout object for a straight, directed edge connecting the 
+	 * nodes with source and target layouts <code>n1</code> and <code>n2</code> respectively.
 	 * 
 	 * @param sourceLayout layout for source node
 	 * @param targetLayout layout for target node
@@ -88,27 +114,35 @@ public class BezierLayout extends GraphicalLayout {
 
 	/**
 	 * Creates a layout with same edge and curve as <code>other</code>
-	 * and ?default? label offset. 
+	 * and default label offset. 
 	 * 
-	 * @param other
+	 * @param other the other layout
 	 */
-	BezierLayout(BezierLayout other) 
-	{
+	BezierLayout(BezierLayout other) {
 		edge = other.edge;
 		curve = new CubicParamCurve2D();		
 		curve.setCurve(new CubicParamCurve2D(other.curve));
 		updateAnglesAndScalars();
 		eventNames = new ArrayList<String>();
-		setLabelOffset(new Point2D.Float(5,5));
+		setLabelOffset(DEFAULT_LABEL_OFFSET);
 	}
 
-	public void setEdge(BezierEdge edge){
+	/**
+	 * Sets the edge to <code>edge</code>. 
+	 * 
+	 * @param edge the edge to be set
+	 */
+	public void setEdge(BezierEdge edge) {
 		this.edge = edge;
 		setDirty(true);
 	}
 	
-	protected BezierEdge getEdge()
-	{
+	/**
+	 * Returns the edge associated with this layout.
+	 * 
+	 * @return the edge
+	 */
+	protected BezierEdge getEdge() {
 		return edge;
 	}
 	
@@ -153,36 +187,27 @@ public class BezierLayout extends GraphicalLayout {
 	 * <code>s</code>, the layout for the source node to <code>t</code>, the 
 	 * layout for the target node.
 	 * 
-	 * Precondition: must call updateAnglesAndScalars() before calling this method.
+	 * Precondition: must call updateAnglesAndScalars() before calling this method 
+	 * 	to ensure that the curve shape is in sync.
 	 * 
 	 * @param s layout for source node, s != null
 	 * @param t layout for target node, t != null 
 	 */
 	public void computeCurve(CircleNodeLayout s, CircleNodeLayout t){
 
-		////////////////////////////////////////////////////////////////
-//		// if source and target nodes are the same, compute a self-loop
-//		if(s.equals(t) && angle1 == 0 && angle2 == 0){
-//				computeDefaultSelfLoop(s);
-//				//selfLoop = true;
-//				return;
-//		}
-		////////////////////////////////////////////////////////////////
-		
-		
 		Point2D.Float centre1 = s.getLocation();
 		Point2D.Float centre2 = t.getLocation();		
 		
 		Point2D.Float[] ctrls = new Point2D.Float[4]; 
 		
-		// TODO remove self-loop case
-		if(s.equals(t)){  
+		// TODO remove self-loop case once ReflexiveEdge class is fully debugged
+		if(s.equals(t)) {  
 			// endpoints are at intersections of circle with rotations from vertical vector			
 			ctrls[P1] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle1));
 			ctrls[P2] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle2));
 			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s1), angle1));
 			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s2), angle2));			
-		}else{
+		} else {
 			
 			Point2D.Float base = Geometry.subtract(centre2, centre1);
 			float norm = (float)Geometry.norm(base);
@@ -196,7 +221,7 @@ public class BezierLayout extends GraphicalLayout {
 			norm = (float)Geometry.norm(base);
 			unitBase = Geometry.unit(base);		
 		
-			if(isStraight()){  // compute a default straight edge	
+			if(isStraight()) {  // compute a default straight edge	
 				angle1 = 0;
 				angle2 = 0;					
 				s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
@@ -205,7 +230,7 @@ public class BezierLayout extends GraphicalLayout {
 				ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(norm * s1)));			
 				ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(unitBase, -(float)(norm * s2)));			
 				
-			}else{ // recompute the edge preserving the shape of the curve
+			} else { // recompute the edge preserving the shape of the curve
 
 				ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(base, (float)s1), angle1)); 
 				ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.rotate(Geometry.scale(base, -(float)s2), angle2));
@@ -219,14 +244,18 @@ public class BezierLayout extends GraphicalLayout {
 	}	
 
 	/**
-	 * @return true iff the edge is has tangents within angle EPSILON of being parallel to straight edge.
+	 * Returns true iff the edge is close enough to straight; 
+	 * i.e. has tangents within angle EPSILON of being parallel to 
+	 * to a straight edge.
+	 * 
+	 * @return true iff the edge is straight enough
 	 */
 	protected boolean isStraight() {		
 		return Math.abs(angle1) < EPSILON && Math.abs(angle2) < EPSILON;
 	}
 
 	/**
-	 * Returns an array of 4 control points for a straight, directed edge from
+	 * Computes and stores the control points for a straight, directed edge from
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
 	 * 
 	 * @param s layout for source node
@@ -252,8 +281,7 @@ public class BezierLayout extends GraphicalLayout {
 			unit = Geometry.unit(dir);
 			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
 			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(unit, (float)(-norm * s2)));
-		}
-		
+		}		
 			
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
@@ -263,6 +291,10 @@ public class BezierLayout extends GraphicalLayout {
 	
 	
 	/**
+	 * Computes and store the shape of the curve so that it
+	 * can be preserved under compression or expansion due to
+	 * movement of its end nodes. 
+	 * 
 	 * Computes and stores:
 	 *  s1   scalar |(CTRL1 - P1)|/|(P2-P1)|
 	 *  s2   scalar |(CTRL2 - P2)|/|(P1-P2)|
@@ -338,19 +370,23 @@ public class BezierLayout extends GraphicalLayout {
 			default: throw new IllegalArgumentException("Invalid control point index: " + index);
 		}
 		
-		// DEBUG  OKAY before call updateAnglesEtc...
-		//edge.assertAllPointsNumbers(curve);
-		
 		updateAnglesAndScalars();				
 		setDirty(true);
 	}
-		
+
+	/**
+	 * Returns the curve representing the edge. 
+	 * 
+	 * @return the curve representing the edge
+	 */
 	public CubicParamCurve2D getCurve() {
 		return curve;		
 	}	
 	
 	/**
-	 * @param cubicCurve
+	 * Sets the curve representing the edge.
+	 * 
+	 * @param cubicCurve the curve to be set
 	 */
 	protected void setCurve(CubicParamCurve2D cubicCurve) {
 		this.curve = cubicCurve;
@@ -358,6 +394,10 @@ public class BezierLayout extends GraphicalLayout {
 	}	
 	
 	/** 
+	 * Returns the visible portion of the curve i.e. the part that is 
+	 * outside the boundaries of both source and target nodes; 
+	 * null if no such segment exists.
+	 * 
 	 * @return the portion of the curve that is external to both 
 	 * source and target nodes, null if no such segment exists
 	 */
@@ -378,8 +418,7 @@ public class BezierLayout extends GraphicalLayout {
 	/**
 	 * Increase the arc on this edge layout.
 	 * Increases the angle of the tangents to the curve, 
-	 * clockwise around circumference of source node if <code>clockwise</code>, 
-	 * otherwise counter-clockwise.
+	 * clockwise around circumference of source node. 
 	 */
 	protected void arcMore() {	
 		arcMore(true);
@@ -395,37 +434,37 @@ public class BezierLayout extends GraphicalLayout {
 	 */
 	protected void arcMore(boolean clockwise) {
 			
-		if(clockwise){ // swap angles
+		if(clockwise) { // swap angles
 			double temp = angle1;
 			angle1 = angle2;
 			angle2 = temp;
 		}
 		
-		if(Math.abs(angle1) < EPSILON){
+		if( Math.abs(angle1) < EPSILON ) {
 			angle1 = DEFAULT_CONTROL_HANDLE_ANGLE;
 			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
-		}else{
-			if(angle1 > 0){
+		} else {
+			if( angle1 > 0 ) {
 				angle1 += DEFAULT_CONTROL_HANDLE_ANGLE / 2;
-			}else{
+			} else {
 				angle1 -= DEFAULT_CONTROL_HANDLE_ANGLE / 2;
 			}
 			s1 *= 1.2;
 		}
 		
-		if(Math.abs(angle2) < EPSILON){
+		if( Math.abs(angle2) < EPSILON ) {
 			angle2 = -DEFAULT_CONTROL_HANDLE_ANGLE;
 			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
-		}else{		
-			if(angle2 < 0){
+		} else {		
+			if( angle2 < 0 ) {
 				angle2 -= DEFAULT_CONTROL_HANDLE_ANGLE / 2;
-			}else{
+			} else {
 				angle2 += DEFAULT_CONTROL_HANDLE_ANGLE / 2;
 			}
 			s2 *= 1.2;		
 		}
 				
-		if(clockwise){ // swap back
+		if( clockwise ){ // swap angles back
 			double temp = angle1;
 			angle1 = angle2;
 			angle2 = temp;
@@ -465,12 +504,15 @@ public class BezierLayout extends GraphicalLayout {
 		}
 	}
 		
+	/**
+	 * Straightens the curve representing the edge
+	 * to a straight line.
+	 */
 	protected void straighten() {
 		angle1 = 0;
 		s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
 		angle2 = 0;
-		s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
-		
+		s2 = DEFAULT_CONTROL_HANDLE_SCALAR;		
 	}
 	
 	/**
@@ -518,13 +560,14 @@ public class BezierLayout extends GraphicalLayout {
 		setDirty(true);
 	}
 	
-	/* Indicates whether an edge can be rigidly translated 
+	/**
+	 * Indicates whether an edge can be rigidly translated 
 	 * with both of its nodes or must be recomputed.
 	 * Default value is false.
-	 * NOT USED
+	 * NOT YET USED
 	 */
 	private boolean rigidTranslation = false;
-
+	
 	protected boolean isRigidTranslation() {
 		return rigidTranslation;
 	}
@@ -540,14 +583,13 @@ public class BezierLayout extends GraphicalLayout {
 	 * 
 	 * @param other the other layout whose reflection this layout will take
 	 */
-	public void setToReflectionOf(BezierLayout other)
-	{
+	public void setToReflectionOf(BezierLayout other) {
 		if( other.isStraight() ) return;
 		
-		if( this.edge.getSourceNode().equals(other.edge.getSourceNode()) ){			
+		if( this.edge.getSourceNode().equals(other.edge.getSourceNode()) ) {			
 				this.angle1 = other.angle1 * -1;
 				this.angle2 = other.angle2 * -1;							
-		}else{ // heads to toes			
+		} else { // heads to toes			
 				this.angle1 = other.angle1;
 				this.angle2 = other.angle2;			
 		}
@@ -557,15 +599,22 @@ public class BezierLayout extends GraphicalLayout {
 	}
 	
 	/**
+	 * Returns the parameter in [0,1] of the point on a parametric cubic curve 
+	 * where my edge intersects with with the boundary of its source node.
+	 * 
 	 * @return sourceT the parameter of point on parametric cubic curve 
-	 * where my edge intersects with its source node
+	 *  where my edge intersects with its source node
 	 */	
 	protected float getSourceT() {
 		return sourceT;
 	}
 
 	/**
-	 * Precondition: 0 <= targetT <=1
+	 * Sets the parameter in [0,1] of the point on a parametric cubic curve 
+	 * where my edge intersects with with the boundary of its source node.
+	 * 
+	 * Precondition: 0 <= sourceT <=1
+	 * 
 	 * @param sourceT the parameter of point on parametric cubic curve 
 	 * where my edge intersects with its source node
 	 */
@@ -575,11 +624,21 @@ public class BezierLayout extends GraphicalLayout {
 		this.sourceT = sourceT;
 	}
 
+	/**
+	 * Returns the parameter in [0,1] of the point on a parametric cubic curve 
+	 * where my edge intersects with with the boundary of its target node.
+	 * 
+	 * @return the parameter of point on parametric cubic curve 
+	 *  where my edge intersects with its target node	 
+	 */
 	protected float getTargetT() {
 		return targetT;
 	}
 
 	/**
+	 * Sets the parameter in [0,1] of the point on a parametric cubic curve 
+	 * where my edge intersects with the boundary of its target node.
+	 * 
 	 * Precondition: 0 <= targetT <=1
 	 * 
 	 * @param targetT the parameter of point on parametric cubic curve 
@@ -592,6 +651,8 @@ public class BezierLayout extends GraphicalLayout {
 	}
 
 	/** 
+	 * Returns the point where my edge intersects with the boundary of its source node
+	 * 
 	 * @return point where my edge intersects with its source node
 	 */
 	public Point2D.Float getSourceEndPoint() {
@@ -599,6 +660,8 @@ public class BezierLayout extends GraphicalLayout {
 	}
 
 	/** 
+	 * Returns the point where my edge intersects with the boundary of its target node
+	 * 
 	 * @return point where my edge intersects with its target node
 	 */
 	public Point2D.Float getTargetEndPoint() {

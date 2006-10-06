@@ -6,8 +6,9 @@ package observer;
 import java.util.ArrayList;
 
 /**
- * @author helen
- *
+ * 
+ * 
+ * @author Helen Bretzke
  */
 public class FSAPublisher {
 

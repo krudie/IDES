@@ -21,30 +21,39 @@ import util.BentoBox;
 
 /**
  * The graphical representation of a transition in a finite state automaton.
+ * This edge is represented by a cubic bezier curve which can be reshaped 
+ * by its control points. 
  * 
  * @author Helen Bretzke
- *
+ * @author Sarah-Jane Whittaker
+ * @author Lenko Grigorov
  */
 public class BezierEdge extends Edge {
 	
 	protected static final float INTERSECT_EPSILON=9;
-	/**
-	 * Indices of bezier curve control points. 
-	 */
-	public static final int P1 = 0;	
+	
+	/** Index of first end point */
+	public static final int P1 = 0;
+	/** Index of first control point */
 	public static final int CTRL1 = 1;
+	/** Index of second control point */
 	public static final int CTRL2 = 2;
+	/** Index of second end point */
 	public static final int P2 = 3;
 			
-	
+	/** the arrow head to be rendered at the second end point */
 	private ArrowHead arrowHead;	
 	
 	// TODO Refactor these constructors.
 	
 	/**
-	 * Precondition: layout != null
-	 * @param layout
-	 * @param source
+	 * Creates a new directed Bezier edge emanating from <code>source</code>, with
+	 * null target node, no transition, and having the given layout data. 
+	 * 
+	 * Precondition: layout is not null
+	 * 
+	 * @param layout the layout data
+	 * @param source the source node
 	 */
 	public BezierEdge(BezierLayout layout, CircleNode source){
 		super(source);		
@@ -55,11 +64,15 @@ public class BezierEdge extends Edge {
 	}
 		
 	/**
-	 * Precondition: layout != null
-	 * @param layout
-	 * @param source
-	 * @param target
-	 * @param t
+	 * Creates a new directed Bezier edge from <code>source</code> to <code>target</code> 
+	 * with the given layout data and representing the given transition.
+	 * 
+	 * Precondition: layout is not null
+	 * 
+	 * @param layout the layout data
+	 * @param source the source node
+	 * @param target the target node
+	 * @param t the transition to represent
 	 */
 	public BezierEdge(BezierLayout layout, Node source, Node target, FSATransition t){			
 		super(source, target, t);
@@ -73,8 +86,8 @@ public class BezierEdge extends Edge {
 	 * Creates a new directed Bezier edge from <code>source</code> to <code>target</code> 
 	 * with default layout and no transition.
 	 * 
-	 * @param source
-	 * @param target
+	 * @param source the source node
+	 * @param target the target node
 	 */
 	public BezierEdge(Node source, Node target) {
 		super(source, target);			
@@ -89,16 +102,18 @@ public class BezierEdge extends Edge {
 	 * @param g the graphics context. 
 	 */
 	public void draw(Graphics g) {
-		if( ! isVisible() ){
+		if( ! isVisible() ) {
 			return;
 		}
 		
+		// make sure the appearance is in sync with underlying data
 		if(needsRefresh() || getBezierLayout().isDirty()){
 			refresh();			
 			getBezierLayout().setDirty(false);
 		}
 	
 		Graphics2D g2d = (Graphics2D)g;	
+		
 		// if either my source or target node is highlighted
 		// then I am also hightlighted.
 		if(highlighted ||
@@ -113,8 +128,7 @@ public class BezierEdge extends Edge {
 		if(isSelected()){
 			g2d.setColor(getLayout().getSelectionColor());
 			getHandler().setVisible(true);
-		}else{
-			//handler.setVisible(false); // KLUGE to clean up after modify edge tool
+		}else{		
 			getHandler().setVisible(false);
 		}
 
@@ -124,7 +138,7 @@ public class BezierEdge extends Edge {
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		}		   
 
-		// UGLY should stop drawing at base of arrowhead and at outside of node boundaries.
+		// TODO should stop drawing at base of arrowhead and at outside of node boundaries.
 		CubicCurve2D curve = getBezierLayout().getVisibleCurve();
 		if(curve != null)
 		{
@@ -144,7 +158,7 @@ public class BezierEdge extends Edge {
 	    // If available, use point of intersection with target node boundary		
 	    Point2D basePt;
 	    Point2D.Float tEndPt = getTargetEndPoint();
-	    if(tEndPt != null){
+	    if(tEndPt != null) {
 	    	basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
 	    }else{
 	    	basePt = Geometry.add(getBezierLayout().getCurve().getP2(), Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));	
@@ -155,45 +169,22 @@ public class BezierEdge extends Edge {
 	    // rotate to align with end of curve
 	    double rho = Geometry.angleFrom(ArrowHead.axis, unitArrowDir);
 		at.setToRotation(rho);		
-		
 		g2d.transform(at);
-
-		// DEBUG
-//		Color temp = g2d.getColor();
-//		g2d.setColor(getBezierLayout().getHighlightColor());
 		
-				
 		g2d.fill(arrowHead);
-		
-//		 DEBUG
-//		g2d.setColor(temp);
-//		g2d.draw(arrowHead);
 		
 		at.setToRotation(-rho);
 		g2d.transform(at);
 		at.setToTranslation(-basePt.getX(), -basePt.getY());		
 		g2d.transform(at);
 
-		// DEBUG
-//		Ellipse2D.Double anchorS = new Ellipse2D.Double(getSourceEndPoint().x - 1, getSourceEndPoint().y - 1, 2, 2);
-//		Color temp = g2d.getColor();
-//		g2d.setColor(getBezierLayout().getHighlightColor());
-//		g2d.draw(anchorS);
-				
-//		if(getTarget() != null){
-//			Ellipse2D.Double anchorT = new Ellipse2D.Double(getTargetEndPoint().x - 3, getTargetEndPoint().y - 1, 2, 2);
-//			g2d.draw(anchorT);
-//		}
-	
-// 		g2d.setColor(temp);		
-		// end DEBUG
-		
-	    // draw label and handler
+		// draw label and handler
 	    super.draw(g);		
 	}
 	
 	/**
-	 * Updates my visualization of curve, arrow and label.
+	 * Updates the visualization of this curve, arrow and label
+	 * from underlying data.
 	 */
 	public void refresh() {
 		
@@ -201,25 +192,22 @@ public class BezierEdge extends Edge {
 		
 		CubicCurve2D.Float curve = getBezierLayout().getCurve();
 		
-// DEBUG //////////////////////////////
+		// DEBUG //////////////////////////////
 		assertAllPointsNumbers(curve);		
-///////////////////////////////////////
+		///////////////////////////////////////
 		
 		// Compute points where curve intersects boundaries of source and target nodes		
 		Point2D.Float sourceEndPt = getSourceEndPoint();
-		if(sourceEndPt == null) 
-		{
+		if(sourceEndPt == null) {
 			sourceEndPt = new Point2D.Float();
 		}
 		
 		float sourceT = intersectionWithBoundary(getSourceNode().getShape(), sourceEndPt, SOURCE_NODE);		
 		((BezierLayout)getLayout()).setSourceT(sourceT);
 		
-		if(getTargetNode() != null)	
-		{
+		if(getTargetNode() != null)	{
 			Point2D.Float targetEndPt = getTargetEndPoint();
-			if(targetEndPt == null) 
-			{
+			if(targetEndPt == null) {
 				targetEndPt = new Point2D.Float();
 			}
 			
@@ -248,7 +236,7 @@ public class BezierEdge extends Edge {
 	}
 		
 	/**
-	 * Sets text of label to a comma-delimited string of event symbols.
+	 * Sets the text of the label to a comma-delimited string of event symbols.
 	 */
 	private void refreshLabelText()	{
 		// Concat label from associated event[s]
@@ -270,15 +258,24 @@ public class BezierEdge extends Edge {
 	}
 
 	/**
-	 * FIXME points wrong direction when tangent angle is close to +- PI. 
+	 * FIXME points wrong direction when tangent angle is close to +- PI.
+	 *  
+	 * Computes and returns a unit vector indicating the direction in
+	 * which the arrowhead should point. 
 	 * 
 	 * @return unit direction vector for arrow head to point
 	 */
 	private Point2D.Float computeArrowDirection() {			
 		Node target = getTargetNode();
-		if(target == null)
-		{
-			return Geometry.unit(Geometry.subtract(getBezierLayout().getCurve().getP2(), getBezierLayout().getCurve().getCtrlP2())); 
+		if(target == null) {
+			BezierLayout bL = getBezierLayout();
+			if(bL != null) {
+				CubicCurve2D curve = bL.getCurve();
+				if(curve != null) {
+					return Geometry.unit(Geometry.subtract(curve.getP2(), curve.getCtrlP2()));
+				}
+			}
+			return null;
 		}else{
 			Shape s = getTargetNode().getShape();
 			Rectangle box = s.getBounds();
@@ -289,6 +286,7 @@ public class BezierEdge extends Edge {
 					(int)(box.height + delta) );
 			Point2D.Float p = new Point2D.Float();			
 			double t = this.intersectionWithBoundary(fat, p, TARGET_NODE);
+			
 			// TODO use t; store as new endpoint in layout
 			return Geometry.unitDirectionVector(p, getTargetEndPoint());
 		}
@@ -312,6 +310,8 @@ public class BezierEdge extends Edge {
 	/*************************************************************/
 	
 	/**	 
+	 * Returns whether p intersects with this edge. 
+	 * 
 	 * FIXME change to return true iff intersects VISIBLE part of curve.
 	 * 
 	 * @return true iff p intersects with this edge. 
@@ -323,8 +323,6 @@ public class BezierEdge extends Edge {
 		CubicCurve2D curve= getBezierLayout().getVisibleCurve();
 		
 		if(curve == null) return false;
-		// DEBUG
-		//assertAllPointsNumbers(curve);
 		
 		do
 		{
@@ -380,25 +378,12 @@ public class BezierEdge extends Edge {
 		return new Point2D.Float((float)getBezierLayout().getCurve().getCtrlX2(), (float)getBezierLayout().getCurve().getCtrlY2());		
 	}
 
-	
-	
-//	/**
-//	 * Returns the bounding rectangle with P1 and P2 as vertices.
-//	 * (Assumes for sake of simplicity that the edge is a straight line i.e. ignores control points).
-//	 */
-//	public Rectangle2D bounds(){				
-//		CubicCurve2D curve = getLayout().getCubicCurve();
-//		return new Rectangle2D.Float((float)Math.min(curve.getX1(), curve.getX2()),
-//					  				(float)Math.min(curve.getY1(), curve.getY2()),					  				
-//					  				(float)Math.abs(curve.getX2() - curve.getX1()), 
-//					  				(float)Math.abs(curve.getY2() - curve.getY1()));	
-//	}
-
-	
-
 	/**
+	 * Sets the graphical layout to <code>layout</code>. 
+	 * 
 	 * Precondition: layout != null
-	 * @param layout
+	 * 
+	 * @param layout graphical layout data to be set
 	 */
 	private void setLayout(BezierLayout layout) {		
 		layout.setEdge(this);
@@ -417,18 +402,16 @@ public class BezierEdge extends Edge {
 	}
 	
 	
-	public void addTransition(FSATransition t)
-	{
+	public void addTransition(FSATransition t) {
 		super.addTransition(t);
-		// TODO uncomment after MetaData class is disconnected
+// TODO uncomment after MetaData class is disconnected
 //		Event event = (Event) t.getEvent();
 //		if(event != null){			
 //			addEventName(event.getSymbol());
 //		}	
 	}
 	
-	public void removeTransition(Transition t)
-	{
+	public void removeTransition(Transition t) {
 		super.removeTransition(t);
 //		 TODO uncomment after MetaData class is disconnected
 //		Event event = (Event) t.getEvent();
@@ -437,7 +420,11 @@ public class BezierEdge extends Edge {
 //		}
 	}
 
-	public void translate(float x, float y){		
+	
+	/* (non-Javadoc)
+	 * @see presentation.fsa.GraphElement#translate(float, float)
+	 */
+	public void translate(float x, float y) {		
 		BezierLayout l = (BezierLayout)getBezierLayout();
 		CubicCurve2D.Float curve = l.getCurve();
 		if(l.isRigidTranslation()){			
@@ -448,21 +435,13 @@ public class BezierEdge extends Edge {
 					curve.getCtrlX2()+x, curve.getCtrlY2()+y,						
 					curve.getX2(), curve.getY2()+y);	
 			
-//			 DEBUG
+			// DEBUG ////////////////////
 			assertAllPointsNumbers(curve);
+			//////////////////////////////
 			
 			l.setRigidTranslation(false);
 			super.translate(x, y);
 			
-		/*}else if(isSelfLoop()){
-			// TODO make sure (x,y) is outside my source/target node
-			
-			// TODO rotate the orientation of loop in direction of vector from centre to (x,y)
-			Point2D.Float centre = getSource().getLayout().getLocation();
-			Point2D.Float dir = Geometry.subtract(new Point2D.Float(x, y), centre);
-			
-			l.computeCurve();*/
-
 		}else{ 	// reset the control points in the layout object
 
 			if(getTargetNode()!=null) //translation can occur in the middle of drawing a new edge
@@ -473,29 +452,14 @@ public class BezierEdge extends Edge {
 		}		
 	}
 
-	/**
-	 * @deprecated Delete after ReflexiveEdge class has been debugged. 
-	 * 
-	 * @return true iff source node is same as target node
-	 *//*
-
-	public boolean isSelfLoop() {
-		if(getSource() != null && getTarget()!= null){
-			return getSource().equals(getTarget());
-		}
-		return false;
-	}*/
 
 	/**
-	 * This method is responsible for creating a string that contains
-	 * an appropriate (depending on the type) representation of this
-	 * edge.
+	 * Returns a string that contains an encoding of this edge
+	 * formatted for the given export type.
 	 *  
 	 * @param selectionBox The area being selected or considered
 	 * @param exportType The export format
 	 * @return String The string representation
-	 * 
-	 * @author Sarah-Jane Whittaker
 	 */
 	public String createExportString(Rectangle selectionBox, int exportType)
 	{
@@ -567,12 +531,10 @@ public class BezierEdge extends Edge {
 	}
 	
 	/**
-	 * This method returns the bounding box for the edge based 
-	 * on its four points.
+	 * Returns the bounding box for the edge based
+	 * on its four control points.
 	 * 
 	 * @return Rectangle The bounds of the Bezier Curve
-	 * 
-	 * @author Sarah-Jane Whittaker
 	 */
 	public Rectangle bounds()
 	{
@@ -607,39 +569,46 @@ public class BezierEdge extends Edge {
 
 	/**
 	 * Sets the point of the given type to <code>point</code>.
-	 * @param point
-	 * @param pointType
+	 * 
+	 * @param point the point to set
+	 * @param pointType see <code>P1, CTRL1, CTRL2, P2</code>
 	 */
 	public void setPoint(Point2D point, int pointType) {
 		getBezierLayout().setPoint(point, pointType);		
 	}
 
 	/**
-	 * @param symbol
+	 * Adds the given symbol to be displayed in the label
+	 * on this edge.
+	 * 
+	 * @param symbol the event symbol to be displayed
 	 */
 	public void addEventName(String symbol) {
 		getBezierLayout().addEventName(symbol);		
 	}
 
 	/**
-	 * @param s
-	 * @param p
+	 * Computes this curve as a straight, directed edge from <code>s</code>, 
+	 * the layout for the source node to <code>endPoint</code>.
+	 * 
+	 * @param s layout for source node
+	 * @param endPoint endpoint for the edge	  
 	 */
-	public void computeCurve(CircleNodeLayout s, Float p) {
-		getBezierLayout().computeCurve(s,p);		
+	public void computeCurve(CircleNodeLayout s, Float endPoint) {
+		getBezierLayout().computeCurve(s,endPoint);		
 	}
 
+	/**
+	 * Computes this curve as a straight, directed edge from the source node with 
+	 * layout data <code>nL1</code>, to the target node having layout data <code>nL2</code>. 
+	 * 
+	 * @param nL1 the layout data for the source node
+ 	 * @param nL2 the layout data for the target node 
+	 */
 	public void computeCurve(CircleNodeLayout nL1, CircleNodeLayout nL2) {
 		getBezierLayout().computeCurve(nL1, nL2);		
 	}
 
-//	/**
-//	 * @param opposite
-//	 */
-//	public void arcAway(BezierEdge opposite) {
-//		getBezierLayout().arcAway(opposite.getBezierLayout());		
-//	}
-	
 	/* (non-Javadoc)
 	 * @see presentation.fsa.Edge#computeEdge(presentation.fsa.Node, presentation.fsa.Node)
 	 */
@@ -652,6 +621,11 @@ public class BezierEdge extends Edge {
 		}
 	}
 
+	/**
+	 * Returns whether this edge is straight. 
+	 * 
+	 * @return true iff this edge is straight
+	 */
 	public boolean isStraight() {		
 		return getBezierLayout().isStraight();
 	}
@@ -673,10 +647,16 @@ public class BezierEdge extends Edge {
 		return true;
 	}
 
+	/**
+	 * Increases the arc of this curve.
+	 */
 	public void arcMore() {
 		((BezierLayout)getLayout()).arcMore();		
 	}
 
+	/**
+	 * Decreases the arc of this curve. 
+	 */
 	public void arcLess() {
 		((BezierLayout)getLayout()).arcLess();		
 	}
@@ -684,21 +664,28 @@ public class BezierEdge extends Edge {
 	/**
 	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int type)
 	 */
-	public Point2D.Float intersectionWithBoundary(Node node, int type)
-	{
+	public Point2D.Float intersectionWithBoundary(Node node, int type) {
 		Point2D.Float intersection = new Point2D.Float();
 		intersectionWithBoundary(node.getShape(), intersection, type);
 		return intersection;
 	}
 	
 	/** 
-	 * Sets the coordinates of <code>intersection</code> to the location where
-	 * my bezier curve intersects the boundary of <code>node</code>. 
-	 * @param type 
-	 * 
-	 * @return param t at which my bezier curve intersects <code>node</code>
+	 * A simple binary search starting within the boundary of the given node shape.
+	 * Sets the coordinates of <code>intersection</code> to the point where
+	 * this curve intersects the boundary of <code>nodeShape</code>.
 	 *  
-	 * @precondition node != null and intersection != null
+	 * If endpoints are both inside node (self-loop or overlapping target and source),
+	 * then returns 0.5.
+	 *  
+	 * Precondition: node is not null and intersection is not null
+	 *  
+	 * @param nodeShape the shape representing this node
+	 * @param type ignored
+	 * @param intersection acts as a second return value; 
+	 * 			to be set to the point of intersection with the boundary of the given node shape 
+	 * 
+	 * @return the parameter t in [0,1] at which the bezier curve intersects <code>node</code>
 	 */
 	protected float intersectionWithBoundary(Shape nodeShape, Point2D.Float intersection, int type) {
 		
@@ -708,17 +695,17 @@ public class BezierEdge extends Edge {
 		// if endpoints are both inside node (self-loop or overlapping target and source)
 		// FIXME		
 		if(nodeShape.contains(curve.getP1()) && nodeShape.contains(curve.getP2()) ) {
-			return 0.5f;
-			//return node.getLocation();
+			return 0.5f;		
 		}
 	
 		CubicParamCurve2D left = new CubicParamCurve2D();
 		CubicParamCurve2D right = new CubicParamCurve2D();
 		
 		CubicParamCurve2D temp = new CubicParamCurve2D();
+		
 		// if target, then this algorithm needs to be reversed since
 		// it searches curve assuming t=0 is inside the node.		
-		boolean intersectWithTarget = (type == this.TARGET_NODE); //nodeShape.contains(curve.getP2()); //nodeShape.equals(getTarget().getShape());
+		boolean intersectWithTarget = (type == this.TARGET_NODE);
 		
 		if( intersectWithTarget ) {
 			// swap endpoints and control points		
@@ -729,8 +716,8 @@ public class BezierEdge extends Edge {
 		
 		float epsilon = 0.00001f;		
 		float tPrevious = 0f;
-		float t = 0.5f; //1f;		
-		float step = 0.5f; //1f;
+		float t = 0.5f;		
+		float step = 0.5f;
 		
 		temp.subdivide(left, right, t);		
 		// the point on curve at param t

@@ -30,7 +30,7 @@ public class FSAGraphMessage {
 	/** Default for when type of element is unknown. */
 	public static final int UNKNOWN_TYPE = -1;
 	
-	/* the possible events that fired this message */
+	/* the possible events that caused this message to be sent */
 	/** An addition occurred */
 	public static final int ADD = 0;
 	/** A removal (deletion) occurred */
@@ -59,7 +59,7 @@ public class FSAGraphMessage {
 	private Rectangle2D location;
 	
 	/** a description of the event fired */
-	private String message;
+	private String messageText;
 	
 	/**
 	 * Creates a change notification message for FSMGraph to pass
@@ -93,7 +93,7 @@ public class FSAGraphMessage {
 		this.elementId = elementId;
 		this.eventType = eventType;
 		this.location = location;
-		this.message = message;
+		this.messageText = message;
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class FSAGraphMessage {
 	 * @return a description of the change event
 	 */
 	public String getMessage() {
-		return message;
+		return messageText;
 	}
 
 }

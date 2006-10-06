@@ -4,41 +4,51 @@
 package observer;
 
 /**
- * @author helen bretzke
- *
+ * Message sent by <code>WorkspacePublisher<code>s to classes that implement 
+ * WorkspaceSubscriber i.e. that subscribe to change notifications
+ * from a workspace containing multiple discrete event system models.
+ * 
+ * @author Helen Bretzke
  */
 public class WorkspaceMessage {
 
 	/**
-	 * possible event types
+	 * Possible event types
 	 */
 	public static final int ADD = 0;
 	public static final int REMOVE = 1;
 	public static final int MODIFY = 2;
 	
 	/**
-	 * possible model types
-	 * other types will be required for those who write plugins for different
+	 * Possible model types
+	 * Other types will be required for those who write plugins for different
 	 * model types e.g. hierarchical, petri etc.
 	 */
 	public static final int DISPLAY = 0;
 	public static final int FSM = 1;
 	 
 	
-	/*
+	/**
 	 * Indicates the model type or general DISPLAY has been changed.
 	 * TODO need a better name for this field 
 	 */
 	private int type;
-	private String idString; // of model but not of display
 	
+	/** ID of the model changed; does not apply to display changes */ 
+	private String idString; 
+	
+	/** the type of workspace event that occurred */
 	private int eventType;
+	
+	/** the publisher that sent this message */
 	private WorkspacePublisher source;
 	
+	/** a description of the event fired */
 	private String messageText;
 	
 	/**
-	 * Creates a Workspace change notification message with descriptive string.
+	 * Creates a change notification message for the given model type, model id, event type, 
+	 * source and descriptive text. 
 	 * 
 	 * @param type FSM or DISPLAY
 	 * @param id the model's id, ignored if display changed
@@ -56,8 +66,9 @@ public class WorkspaceMessage {
 	}
 
 	/**
-	 * Creates a Workspace change notification message with empty string.
-	 * 
+	 * Creates a change notification message for the given model type, model id, event type, 
+	 * and source.  Descriptive text is blank. 
+	 *  
 	 * @param type FSM or DISPLAY
 	 * @param id the model's id, ignored if display changed
 	 * @param eventType ADD, REMOVE or MODIFY
@@ -67,22 +78,48 @@ public class WorkspaceMessage {
 		this(type, id, eventType, source, "");
 	}
 
+	/**
+	 * Returns the type of event that occurred. 
+	 * 
+	 * @return the type of event that occurred
+	 */
 	public int getEventType() {
 		return eventType;
 	}
 
+	/**
+	 * Returns the id of the model that was changed. 
+	 * 
+	 * @return the id of the model that was changed
+	 */
 	public String getIdString() {
 		return idString;
 	}
 
+	/**
+	 * Returns a string describing the message. 
+	 * 
+	 * @return a description of the change event
+	 */	
 	public String getMessageText() {
 		return messageText;
 	}
 
+	/**
+	 * Returns the workspace publisher that sent this message. 
+	 * 
+	 * @return the workspace publisher that sent this message
+	 */
 	public WorkspacePublisher getSource() {
 		return source;
 	}
 
+	/**
+	 * Returns the type of entity that was changed; either
+	 * model type or display.
+	 * 
+	 * @return the type of entity that was changed by the event
+	 */
 	public int getType() {
 		return type;
 	}	

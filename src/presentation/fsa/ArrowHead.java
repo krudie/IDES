@@ -16,9 +16,15 @@ import presentation.Geometry;
 @SuppressWarnings("serial")
 public class ArrowHead extends Polygon {
 
-	private Point2D.Float basePt = new Point2D.Float(0,0); // the nock where the shaft terminates
+	// location of the nock (where the shaft meets the head)
+	private Point2D.Float basePt = new Point2D.Float(0,0); 
 	
-    public static final int HEAD_LENGTH = 9, SHORT_HEAD_LENGTH = 7;
+	// distance from nock to tip
+    public static final int HEAD_LENGTH = 9;
+    
+	// distance from nock to tip
+    public static final int SHORT_HEAD_LENGTH = 7;
+    
     /**
      * Centre axis vector of default direction. 
      */
@@ -65,6 +71,10 @@ public class ArrowHead extends Polygon {
      * on edges since problems occurred with flicker.
      * When drawing arrowhead on canvas use AffineTransform on the Graphics context.
      * 
+     * FIXME Since the default orientation is stored in memory but the 
+     * arrowhead is only rotated when rendered, checking for intersections will
+     * not work properly. 
+     * 
      * @param base base point of the arrow head
      * @param dir unit direction vector
      */
@@ -84,8 +94,7 @@ public class ArrowHead extends Polygon {
      * Sets arrowhead to default location (0,0) and orientation
      * in direction (0,1) ie. pointing down.
      */
-    public void reset()
-    {
+    public void reset() {
     	super.reset();
     	basePt = new Point2D.Float(0,0);
     	// compute default arrowhead pointing down    	
@@ -102,7 +111,5 @@ public class ArrowHead extends Polygon {
      */
 	protected Point2D.Float getBasePt() {
 		return basePt;
-	}
-    
-    
+	}    
 }

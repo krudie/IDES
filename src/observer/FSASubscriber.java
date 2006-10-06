@@ -4,7 +4,7 @@
 package observer;
 
 /**
- * Implemented by Subscribers to change notifications from FSMPublishers.
+ * Implemented by Subscribers to change notifications from FSAPublishers.
  * 
  * @author helen bretzke
  *
