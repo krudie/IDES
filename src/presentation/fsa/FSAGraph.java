@@ -29,7 +29,7 @@ import presentation.PresentationElement;
 
 /**
  * A recursive structure used to draw and edit the graph representation of an Automaton.
- * Computes intersections with graph elements given a point or rectangular area.
+ * Given a point or rectangular area, computes intersections with graph elements.
  * 
  * Observes and updates the Automaton.
  * Updates the graphical visualization metadata and synchronizes it with the Automaton model.
@@ -60,7 +60,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	private Automaton fsa;	   // system model
 	
 	/**
-	 * Presentation data for the system model
+	 * Intermediary used to extract and update presentation data between the system model
+	 * and the graphical display. 
 	 * TODO remove after removing all layout data from Automaton,
 	 * 		testing graph extraction by LayoutDataParser, and 
 	 *		delaying committing all changes until time of save.	
@@ -90,7 +91,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}
 	
 	/**
-	 * Creates an graph model from the given system data model using
+	 * Creates a graph model from the given system data model using
 	 * an automatic layout tool.
 	 * 
 	 * @param fsa the mathematical model	
@@ -145,6 +146,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * 
 	 * TODO Reimplement this as a quad tree.
 	 * Currently uses a bunch of maps to store each element type.
+	 * Note that the order in which these maps are checked within the intesection methods is important.
 	 */
 	private void buildIntersectionDS()
 	{
@@ -196,15 +198,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		return ( needsSave ? "* " : "" ) + getName();
 	}
 	
+
 	/**
-	 * DEBUG
+	 * Sets a flag to indicate that this graph needs to refresh itself
+	 * because it is out of sync with its underlying model or some of its elements
+	 * are out of sync.
 	 */
 	public void setNeedsRefresh( boolean b ) {
-/*		if( !b ){
-			// Stop here
-			System.out.print( fsa.getName() );
-			System.out.println(" set to fresh !");
-		}*/
 		super.setNeedsRefresh(b);
 	}
 
@@ -236,6 +236,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 
 	/**
 	 * Returns the set of all nodes in the graph.
+	 * 
 	 * @return the set of all nodes in the graph
 	 */
 	public Collection<CircleNode> getNodes() {
@@ -248,6 +249,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	
 	/**
 	 * Returns the set of all edges in the graph.
+	 * 
 	 * @return the set of all edges in the graph
 	 */
 	public Collection<Edge> getEdges() {
@@ -256,6 +258,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 
 	/**
 	 * Returns the set of all free labels in the graph.
+	 * 
 	 * @return the set of all free labels in the graph
 	 */
 	public Collection<GraphLabel> getFreeLabels() {
@@ -326,15 +329,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				e.addTransition(t);	
 				
 				FSAEvent tEvent = t.getEvent();
-				if (tEvent != null)
-				{
+				if (tEvent != null)	{
 					e.addEventName(tEvent.getSymbol());
 				}
+				
 			}else{
 
 				// get the graphic data for the transition and all associated events
 				// construct the edge
-				if(n1.equals(n2)){
+				if(n1.equals(n2)) {
 					e = new ReflexiveEdge(layout, n1, t);
 				}else{
 					e = new BezierEdge(layout, n1, n2, t);
@@ -369,11 +372,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}
 
 	/** 
-	 * Returns the edge representing the given transition. 
+	 * Returns the edge representing the given transition if it exists,
+	 * otherwise returns null.
+	 *  
 	 * TODO Will need a method like this in LayoutDataParser.
 	 * 
 	 * @param t a transition
-	 * @return the edge representing the given transition
+	 * @return the edge representing the given transition, null if no such edge
 	 */
 	private Edge existingEdge(Transition t) {		
 		BezierLayout layout = metaData.getLayoutData(t);
@@ -482,14 +487,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}	
 	
 	/** 
-	 * @param n1
-	 * @param n2
+	 * @param n1 the source or target node
+	 * @param n2 the target or source node
+	 * 
 	 * @return the set of all edges connecting n1 and n2
 	 */
 	private Set<Edge> getEdgesBetween(Node n1, Node n2){
 		Set<Edge> set = new HashSet<Edge>();
-		for(Edge e : edges.values())
-		{			
+		for(Edge e : edges.values()) {	
 			if((e.getSourceNode() != null && e.getTargetNode() != null)
 				&& (e.getSourceNode().equals(n1) && e.getTargetNode().equals(n2) 
 						|| e.getSourceNode().equals(n2) && e.getTargetNode().equals(n1)) ) {
@@ -929,14 +934,20 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}
 	}
 	
+	/**
+	 * Deletes the given node and all of its adjacent edges from the graph
+	 * and the state from my underlying FSA.
+	 * 
+	 * @param n the node to be deleted
+	 */
 	private void delete(Node n){
-		// delete all adjacent edges
-		// TODO does this include the initial arrow ?
+		// delete all adjacent edges		
 		Iterator<Edge> edges = n.adjacentEdges();
 		while(edges.hasNext()){
 			delete(edges.next());
 		}
-		// remove n
+		// remove n but don't listen to update notifications since 
+		// we already know about the change
 		fsa.removeSubscriber(this);
 		fsa.remove(n.getState());
 		fsa.addSubscriber(this);
@@ -952,6 +963,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				this, ""));
 	}
 	
+	/**
+	 * Deletes the given edge from the graph and all of its transitions
+	 * from my underlying FSA.  
+	 * 
+	 * @param e
+	 */
 	private void delete(Edge e){
 		if(e instanceof InitialArrow){
 			setInitial(e.getTargetNode(), false);			
@@ -982,6 +999,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}
 
 	/**
+	 * Assigns the given text the be displayed on the label of the given
+	 * node. 
+	 * 
 	 * Precondition: <code>n</code> and <code>text</code> are not null
 	 * 
 	 * @param n the node to be labelled
@@ -1002,6 +1022,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				this, ""));
 	}
 
+	/**
+	 * Adds a free label, i.e. one that is not attached to any other 
+	 * graph element, displaying the given text at point <code>p</code>. 
+	 * 
+	 * @param text the text to be displayed 
+	 * @param p the location to place the label
+	 */
 	public void addFreeLabel(String text, Point2D.Float p) {		
 		GraphLabel label = new GraphLabel(text, p);
 		freeLabels.put(label.getId(), label);
@@ -1108,7 +1135,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @param edge
 	 */
 	public void straighten(Edge edge) {
-		if(!edge.isStraight() && edge.canStraighten()){
+		if(!edge.isStraight() && edge.canBeStraightened()){
 			edge.straighten();
 			setNeedsRefresh(true);
 			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
@@ -1201,19 +1228,22 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void translate(float x, float y) {
 		super.translate(x,y);		
 		// FIXME refreshBounds
-		commitMovement(this);  // fires graph changed			
+		commitMovement(this);  // fires graph changed, so don't need to do it here			
 	}
 
 	/**
 	 * Computes and returns the set of graph elements contained by the given rectangle.
-	 * 
-	 * @param rectangle
+	 *  
+	 * @param rectangle the rectangular area
 	 * @return the set of graph elements contained by the given rectangle
 	 */
 	protected SelectionGroup getElementsContainedBy(Rectangle rectangle) {
+		
+		// NOTE that the order in which the element maps are checked is important.
+		
+		// the group of elements selected
 		SelectionGroup g = new SelectionGroup();
-		
-		
+				
 		for(CircleNode n : nodes.values()) {
 			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
 				g.insert(n);				
@@ -1225,8 +1255,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				g.insert(e);
 			}
 		}
-		
-		// check for intersection with free labels 
+				
 		for(GraphLabel l : freeLabels.values()) {
 			if(rectangle.contains(l.bounds())){
 				g.insert(l);				
@@ -1246,8 +1275,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @param p the point of intersection
 	 * @return the graph element intersected by the given point or null if nothing hit.
 	 */
-	protected GraphElement getElementIntersectedBy(Point2D p){
-						
+	protected GraphElement getElementIntersectedBy(Point2D p) {
+		// NOTE the order in which the element maps are checked is important.
+					
+		// The element selected
 		GraphElement el = null;
 		int type = FSAGraphMessage.UNKNOWN_TYPE;
 		
@@ -1257,6 +1288,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				el = gLabel;				
 			}
 		}
+		
+		// Need to check for null so that overlapping elements don't conflict for intersection.
 		
 		if(el == null){
 			for(Edge e : edges.values()){			
@@ -1289,6 +1322,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			fireFSAGraphSelectionChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 											type, el.getId(), el.bounds(), this));
 		}
+		
 		return el;
 	}
 
@@ -1370,12 +1404,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message) {
-		// TODO if can isolate the change just modify the structure as required
+		// TODO if one can isolate the change just modify the structure as required
 		// e.g. properties set on states or events.
 		// and only refresh the affected part of the graph
+		// Currently just rebuilds the whole graph, which is clearly inefficient.
+		
 		int elementType = message.getElementType();
 		
-		switch( elementType ){
+		switch( elementType ) {
 		case FSAMessage.STATE:
 			
 			
@@ -1405,7 +1441,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			*/
 			break;
 			
-		default: // otherwise rebuild the graph structure 
+		default: // otherwise rebuild the graph structure
+			
 			initializeGraph();
 		
 			/*fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???, 
@@ -1472,54 +1509,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	public void fsaEventSetChanged(FSAMessage message) {
 		// Remove any edges that have only one transition and
 		// that transition is fired by the removed event
-		
-		// IDEA wait for FSAStructureChanged event to be notified of the transition removal.
-		// See removeTransition and fsaStructureChanged. 
-		
-		
-		/*if(message.getEventType() == FSAMessage.REMOVE){
-			Set<Edge> edgesToRemove=new HashSet<Edge>();
-			for(Edge e : edges.values()){
-				Iterator<FSATransition> trans = e.getTransitions();
-				while( trans.hasNext() ) {
-					FSATransition t = trans.next();  // FIXME ConcurrentModificationException
-					FSAEvent event = t.getEvent();
-					
-					if( event != null && event.getId() == message.getElementId() ) {
-						
-						if( e.transitionCount() > 0 ) {
-							fsa.removeSubscriber( this );
-							fsa.remove( t );
-							fsa.addSubscriber( this );
-							trans.remove();		
-						}else{
-							t.setEvent( null );
-						}
-						
-						// TODO handle different edge types
-						if( e.transitionCount() > 0 ) {
-							((BezierLayout)e.getLayout()).removeEventName( event.getSymbol() );
-							e.setDirty( true );
-						} else {
-							edgesToRemove.add(e);
-						}
-					}
-				}
-			}
-			
-			for( Edge e : edgesToRemove ) {
-				delete( e );
-			}
-			
-			// FIXME this does not update the labels on the edges
-			fireFSAGraphChanged( new FSAGraphMessage(FSAGraphMessage.MODIFY,
-													FSAGraphMessage.EDGE,
-													message.getElementId(),
-													this.bounds(),
-													this) );	
-		}
-	*/	
-		
+	
+		// NOTE See removeTransition and fsaStructureChanged.		
 	}
 	///////////////////////////////////////////////////////////////////////
 

@@ -42,6 +42,7 @@ public class InitialArrow extends Edge {
 	// may wish to allow user to expand and shrink in future
 	/** maximum distance between node centre and tail of arrow shaft */
 	private double maxShaftLength = 2 * ( CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN );
+	
 	/** minimum distance between node centre and tail of arrow shaft */
 	private double minShaftLength = maxShaftLength;
 		
@@ -224,7 +225,7 @@ public class InitialArrow extends Edge {
 		}				
 	}
 
-	/* (non-Javadoc)
+		/* (non-Javadoc)
 		 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int)
 		 */
 		@Override

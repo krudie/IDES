@@ -53,11 +53,11 @@ import util.EscapeDialog;
  * Dialog window for assigning multiple events from the global events model
  * to transitions represented by an edge in the graph model. 
  * 
- * @author helen bretzke
+ * @author Helen Bretzke
  * @author Lenko Grigorov
  *
  */
-public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
+public class EdgeLabellingDialog extends EscapeDialog {
 	
 	private static EdgeLabellingDialog dialog;
 	
@@ -433,25 +433,28 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 		dialog.setVisible(false);
 	}
 	
-	// Data
+	
 	private Edge edge;
 	private Event newEvent;		
 	private Event selectedEvent;
-	private boolean inserted=false;
+	private boolean inserted = false;
+	
 	/**
 	 * state of the controllable checkbox when creating new event
 	 */
-	private boolean cbCState=true;
+	private boolean cbCState = true;
+	
 	/**
 	 * state of the observable checkbox when creating new event
 	 */
-	private boolean cbOState=true;
+	private boolean cbOState = true;
 	
 	//for bordercolor change
 	private Box createBox;
 	
 	// LATER /////////////////////////////////////////////////////////////
-	private FSAEventsModel eventsModel; // the publisher to which i attach
+	// TODO make this dialog a subscriber to change notification from this model
+	private FSAEventsModel eventsModel; 
 	//////////////////////////////////////////////////////////////////////
 
 	// GUI controls
@@ -462,9 +465,11 @@ public class EdgeLabellingDialog extends EscapeDialog implements Subscriber {
 	private JButton buttonCreate, buttonAdd, buttonRemove, buttonOK, buttonCancel;
 		
 		
+	/*
+	 * Picking up the slack for Swing.
+	 */
 	@SuppressWarnings("serial") 
 	private class MutableList extends JList {
-
 
 		MutableList() {
 	    	super(new DefaultListModel());

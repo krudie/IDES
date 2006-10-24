@@ -643,7 +643,7 @@ public class BezierEdge extends Edge {
 	 * 
 	 * @return true
 	 */
-	public boolean canStraighten(){
+	public boolean canBeStraightened(){
 		return true;
 	}
 

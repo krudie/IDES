@@ -4,10 +4,20 @@ import java.awt.geom.Point2D;
 
 import presentation.GraphicalLayout;
 
+/**
+ * Graphical layout data required to display a circular node.  
+ * 
+ * @author Helen Bretzke
+ */
 public class CircleNodeLayout extends GraphicalLayout {
 	
+	/** the radius of the circle */
 	private float radius;		
-	private Point2D.Float arrow = new Point2D.Float(1, 0); // the direction vector for arrow if the state is initial
+	
+	/** the direction vector for arrow if the state is initial */
+	private Point2D.Float arrow = new Point2D.Float(1, 0);
+	
+	/** the node that is laid out */
 	private CircleNode node;
 	
 	/**
@@ -23,6 +33,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 	 * Keeps track of the maximum radius over all nodes in the graph. 
 	 */
 	protected FSAGraph.UniformRadius uniformR=null;
+	
 	
 	public CircleNodeLayout(FSAGraph.UniformRadius u){
 		this(u,new Point2D.Float(), DEFAULT_RADIUS, "");
@@ -94,14 +105,14 @@ public class CircleNodeLayout extends GraphicalLayout {
 	public void setDirty(boolean d){
 		// KLUGE all accesss to NodeLayout should go through the Node interface.
 		super.setDirty(d);
-		if(node!=null)
+		if( node != null ) {
 			node.setNeedsRefresh(d);
+		}
 	}
 	
 	public void dispose()
 	{
-		if(uniformR!=null)
-		{
+		if(uniformR!=null) {
 			uniformR.remove(this);
 			uniformR.updateUniformRadius();
 		}
@@ -109,9 +120,10 @@ public class CircleNodeLayout extends GraphicalLayout {
 	
 	public void setUniformRadius(FSAGraph.UniformRadius ur)
 	{
-		if(uniformR!=null)
+		if(uniformR != null) {
 			uniformR.remove(uniformR.get(this));
-		uniformR=ur;
+		}
+		uniformR = ur;
 		uniformR.updateUniformRadius(this,radius);
 	}
 }

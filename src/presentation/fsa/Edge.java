@@ -9,28 +9,51 @@ import java.awt.geom.Point2D;
 import model.fsa.FSATransition;
 
 /**
+ * The abstract description of data and behaviours common to all edges
+ * that represent transitions and initial arrows in the graphical display. 
  * 
- * @author helen bretzke
- *
+ * @author Helen Bretzke
  */
 public abstract class Edge extends GraphElement{
 
 	private ArrayList<FSATransition> transitions; // the transitions that this edge represents	
-	private Node source; 
-	private Node target;	
-	private EdgeHandler handler; // Anchors for modifying the curve.
-	private GraphLabel label;	 // extra pointer for O(1) access without instanceof
+	private Node source; // the source node at the edge's head
+	private Node target; // the target node adjacent on the edge's tail
+	private EdgeHandler handler; // Anchors for modifying the shape and position of the curve.
+	private GraphLabel label;	 // extra pointer for O(1) access to avoid iterating over children and using instanceof
 	
+	/**
+	 * Creates an edge emanating from the given source node. 
+	 * 
+	 * @param source the source node
+	 */
 	public Edge( Node source ) {
 		this( source, null );
 	}
 	
+	/**
+	 * Creates an edge emanating from the given source node, 
+	 * terminating at the given target node and representing the
+	 * transition <code>t</code>. 
+	 * 
+	 * @param source the source node
+	 * @param target the target node
+	 * @param t the transition to be represented by this edge
+	 */
 	public Edge( Node source, Node target, FSATransition t ) {
 		this( source, target );	    
 	    transitions.add( t );
 	}	
 	
-	// ? Add a default transition? NO, since ID is missing.
+	/**
+	 * Creates an edge adjacent on the source and target nodes
+	 * with no abstract transition.  
+	 * NOTE No default transition is created
+	 * since this edge gets its Id from its first transition.   
+	 * 
+	 * @param source the source node
+	 * @param target the target node
+	 */
 	public Edge( Node source, Node target ) {
 		transitions = new ArrayList<FSATransition>();
 		this.source = source;
@@ -40,8 +63,8 @@ public abstract class Edge extends GraphElement{
 	}
 	
 	/**
-	 * This method is responsible for creating a string that contains
-	 * an appropriate (depending on the type) representation of this
+	 * Creates a string that contains
+	 * an appropriate (depending on the type) encoding of this
 	 * edge.
 	 *  
 	 * @param selectionBox The area being selected or considered
@@ -65,7 +88,7 @@ public abstract class Edge extends GraphElement{
 	 * edge intersects the boundary of <code>node</code>, 
 	 * null if no intersection exists. 
 	 * 
-	 * PROBLEM more than one intersection possible 
+	 * NOTE more than one intersection is possible 
 	 * (e.g. reflexive edges and curved edges with multiple crossings).
 	 * 
 	 * @param node
@@ -83,8 +106,7 @@ public abstract class Edge extends GraphElement{
 	 * @param handler
 	 */
 	public void setHandler(EdgeHandler handler) {
-		if(this.handler != null)  
-		{
+		if(this.handler != null) {
 			remove(this.handler);
 		}
 		this.handler = handler;
@@ -111,6 +133,12 @@ public abstract class Edge extends GraphElement{
 		this.target = target;
 	}
 	
+	/**
+	 * Adds the given transition to the set of transitions that this
+	 * edge represents. 
+	 * 
+	 * @param t
+	 */
 	public void addTransition(FSATransition t) {
 		transitions.add(t);
 	}
@@ -125,7 +153,7 @@ public abstract class Edge extends GraphElement{
 	
 	/**
 	 * Returns true iff this edge has at least one transition fired by 
-	 * an uncontrollable event.  
+	 * an uncontrollable event.
 	 * 
 	 * @return true iff this edge has at least one transition fired by 
 	 * an uncontrollable event.
@@ -150,6 +178,10 @@ public abstract class Edge extends GraphElement{
 		return transitions.size();
 	}
 
+	/**
+	 * @return the Id of the first transition in the list of
+	 * transitions.  If the list is empty, returns the GraphElement getId()
+	 */
 	public Long getId(){
 		if(!transitions.isEmpty()){
 			return transitions.get(0).getId();
@@ -157,7 +189,10 @@ public abstract class Edge extends GraphElement{
 		return super.getId();
 	}
 	
-	public void showPopup(Component c){
+	/**
+	 * Displays a popup menu providing operations on this edge.
+	 */
+	public void showPopup(Component c) {
 		EdgePopup.showPopup((GraphDrawingView)c, this);
 	}
 	
@@ -222,7 +257,7 @@ public abstract class Edge extends GraphElement{
 	public abstract boolean isMovable(int pointType);
 
 	/**
-	 * If this edge is not straight and can be straightened 
+	 * If this edge is not already straight and can be straightened 
 	 * straightens it.
 	 */
 	public abstract void straighten();
@@ -232,7 +267,7 @@ public abstract class Edge extends GraphElement{
 	 * 
 	 * @return false by default
 	 */
-	public boolean canStraighten() {
+	public boolean canBeStraightened() {
 		return false;
 	}
 }

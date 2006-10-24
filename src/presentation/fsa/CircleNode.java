@@ -24,17 +24,22 @@ import util.BentoBox;
  */
 public class CircleNode extends Node {
 
-	// visualization objects
+	/** the circle that represents the state */
 	private Ellipse2D circle = null;
-	private Ellipse2D innerCircle = null;  // only drawn for final states
+	/** inner circle; only drawn for final (marked) states */
+	private Ellipse2D innerCircle = null;  
 			
+	/**
+	 * Creates a circular node representing the given state
+	 * with the given graphical layout.
+	 * 
+	 * @param s the state to be represented
+	 * @param layout the graphical layout data for the state
+	 */
 	public CircleNode(FSAState s, CircleNodeLayout layout){
 		this.state = s;
 		setLayout(layout);		
-		label = new GraphLabel("");
-		/*if(layout != null){	
-			label.updateLayout(layout.getText(), layout.getLocation());
-		}*/
+		label = new GraphLabel("");		
 		this.insert(label);
 		circle = computeCircle(CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN);
 		if(s.isInitial()){
@@ -44,7 +49,9 @@ public class CircleNode extends Node {
 	}
 
 	/**
-	 * @return
+	 * Returns a circle of the given radius.
+	 * 
+	 * @return a circle of given radius
 	 */
 	private Ellipse2D computeCircle(float radius) {
 		Point2D.Float centre = getLayout().getLocation();
@@ -52,10 +59,15 @@ public class CircleNode extends Node {
 		return new Ellipse2D.Double(centre.x - radius, centre.y - radius, d, d);
 	}
 
+	/**
+	 * Refreshes the visual representation of the node from the underlying
+	 * state and layout data.  Also recomputes the layout for adjacent edges
+	 * should they be affected by changes to the node's size or position.
+	 */
 	// TODO change to iterate over collection of labels on a state
-	// (requires change to file reading and writing, states be composed of many states)		
-	public void refresh() 
-	{	
+	// Note: To accommodate composite states requires change to file reading and writing.		
+	public void refresh() {
+		
 		Point2D.Float centre = getLayout().getLocation();			
 		label.updateLayout(getLayout().getText(), centre);
 		
@@ -65,16 +77,15 @@ public class CircleNode extends Node {
 		((CircleNodeLayout)getLayout()).setRadius(radius);
 		radius=((CircleNodeLayout)getLayout()).getRadius();
 		circle = computeCircle(radius);
-		
+
+		// adjust adjacent edges
 		recomputeEdges();	
 
-		if(state.isMarked() ) {			
-			/*float r = radius - CircleNodeLayout.RADIUS_MARGIN;
-			d = 2*r;*/
+		if( state.isMarked() ) {			
 			innerCircle = computeCircle(radius - CircleNodeLayout.RADIUS_MARGIN); //new Ellipse2D.Double(centre.x - r, centre.y - r, d, d);
 		}
 			
-		if(initialArrow != null) {
+		if( initialArrow != null ) {
 			initialArrow.setVisible(state.isInitial());
 		}
 		
@@ -102,8 +113,8 @@ public class CircleNode extends Node {
 				}
 			}catch(ClassCastException cce){ 
 				// skip the label and keep going
-				// Why am I skipping the label?	
-				// Easy enough to do it at the end...
+				// HB says to self: Why am I skipping the label?	
+				// Why did I decide to do it at the end? 
 			}
 		}
 
@@ -139,7 +150,7 @@ public class CircleNode extends Node {
 	}
 	
 	/**	 
-	 * @return bounding rectangle for union of this with all of its children.
+	 * @return bounding rectangle for union of this node with all of its children.
 	 */
 	public Rectangle adjacentBounds(){		
 		Rectangle bounds = bounds();		
@@ -147,28 +158,30 @@ public class CircleNode extends Node {
 	}
 	
 	/**
-	 * 
+	 * @return true iff p intersects the circle representing this node
 	 */
 	public boolean intersects(Point2D p) {
 		
 		if(state.isInitial()){
-			//return circle.contains(p) || arrow.contains(p);
 			return circle.intersects(p.getX() - 5, p.getY() - 5, 10, 10) ||
 					initialArrow.intersects(p); //(p.getX() - 4, p.getY() - 4, 8, 8);
 		}
 		return circle.intersects(p.getX() - 5, p.getY() - 5, 10, 10); 
 	}	
 
-	public void setSelected(boolean b){
-		this.selected = b;		
+	/**
+	 * Sets the selected property to <code>selected</code>. 
+	 */
+	public void setSelected(boolean selected) {
+		this.selected = selected;		
 	}
 	
 	/**
 	 * NOTE since we are sharing references to unique node objects, 
-	 * this shouldn't be necessary.
-	 *  
-	 * @param n
-	 * @return
+	 * this shouldn't be necessary.  But just in case...
+	 *   
+	 * @param n an instance of a CircleNode
+	 * @return true iff this node has the same ID as the given node
 	 */
 	public boolean equals(Object n){
 		try{
@@ -178,11 +191,21 @@ public class CircleNode extends Node {
 		}
 	}
 	
-	public void translate(float x, float y){
-		super.translate(x,y);		
+	/**
+	 * Translates the location of this node by the given horizontal 
+	 * and vertical displacements.
+	 * 
+	 * @param dx the displacement in the horizontal dimension
+	 * @param dy the displacement in the vertical dimension
+	 */
+	public void translate(float dx, float dy){
+		super.translate(dx,dy);		
 		refresh();
 	}
 	
+	/**
+	 * Displays a popup menu providing operations on this node.
+	 */
 	public void showPopup(Component context){
 		NodePopup.showPopup((GraphDrawingView)context, this); // cast is a KLUGE
 	}
@@ -209,8 +232,8 @@ public class CircleNode extends Node {
 	}
 	
 	/**
-	 * This method is responsible for creating a string that contains
-	 * an appropriate (depending on the type) representation of this
+	 * Creates and returns a string that contains
+	 * an appropriate (depending on the type) encoding of this
 	 * node.
 	 * 
 	 * NOTE: Initial arrows aren't handles, as those are now 
@@ -221,7 +244,7 @@ public class CircleNode extends Node {
 	 * @see GraphExporter#INT_EXPORT_TYPE_EPS
 	 * @see GraphExporter#INT_EXPORT_TYPE_PSTRICKS
 	 * 
-	 * @return String The string representation
+	 * @return the string representation
 	 * 
 	 * @author Sarah-Jane Whittaker
 	 */
@@ -299,6 +322,10 @@ public class CircleNode extends Node {
 		return edges.iterator();
 	}
 	
+	/**
+	 * 
+	 * @return the radius of the circle representing this node
+	 */
 	public float getRadius() {	
 		return ((CircleNodeLayout)getLayout()).getRadius();
 	}
@@ -321,6 +348,11 @@ public class CircleNode extends Node {
 			BentoBox.convertFloatToInt(radius * 2));
 	}
 
+	/**
+	 * Sets the graphical layout to <code>layout</code>. 
+	 * 
+	 * @param layout the graphical layout data to be set
+	 */
 	public void setLayout(CircleNodeLayout layout) {
 	//		if(getLayout()!=null)
 	//			getLayout().dispose();

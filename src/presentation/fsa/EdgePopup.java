@@ -17,8 +17,11 @@ import main.Hub;
 import ui.command.GraphCommands.DeleteCommand;
 
 /**
- * @author Helen Bretzke 2006
- *
+ * A popup menu providing operations to modify or delete an edge.
+ * 
+ * TODO enable Symmetrize command after the command has been debugged and tested. 
+ * 
+ * @author Helen Bretzke
  */
 public class EdgePopup extends JPopupMenu {
 
@@ -92,11 +95,11 @@ public class EdgePopup extends JPopupMenu {
 		this.edge = edge;
 		deleteCmd.setElement(edge);
 		if(edge != null){			
-			miStraighten.setVisible(edge.canStraighten());
+			miStraighten.setVisible(edge.canBeStraightened());
 			// if the edge can't be straightened, then we assume we cannot 
 			// otherwise tamper with its shape
-			miArcLess.setVisible(edge.canStraighten());
-			miArcMore.setVisible(edge.canStraighten());
+			miArcLess.setVisible(edge.canBeStraightened());
+			miArcMore.setVisible(edge.canBeStraightened());
 //			miSymmetrize.setVisible(edge.canStraighten());
 			
 			// Don't enable straightening, flattening or symmetrizing if edge is already straight
@@ -125,8 +128,7 @@ public class EdgePopup extends JPopupMenu {
 			}else if(source.equals(miEditEvents)){				
 				EdgeLabellingDialog.showDialog(view, edge);
 				
-			// TODO these last three cases do not apply to reflexive edges
-			// and should be UNDOABLE graph commands
+			// TODO should be UNDOABLE graph commands
 				
 /*			}else if(source.equals(miSymmetrize)){				
 				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);

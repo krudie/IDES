@@ -245,7 +245,7 @@ public class ReflexiveEdge extends BezierEdge {
 	/**
 	 * Returns false since cannot straighten a self-loop. 
 	 */
-	public boolean canStraighten() {
+	public boolean canBeStraightened() {
 		return false;
 	}
 	
