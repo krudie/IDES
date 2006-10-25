@@ -237,6 +237,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				a.remove((Event)delEvents[i]);
 			}
 			refreshEventTable();
+			eventNameField.requestFocus();
 		}
 	};
 
@@ -322,6 +323,10 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 					observableCBox.setEnabled(false);
 					//observableCBox.setSelected(event.isObservable());
 				}
+				else if ("".equals(s))
+				{
+					createButton.setEnabled(false);
+				}
 				else
 				{
 					createButton.setEnabled(true);
@@ -397,8 +402,6 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 		// CLM: these controls should be disabled whenever eventNameField
 		// is empty
 		createButton.setEnabled(false);
-		controllableCBox.setEnabled(false);
-		observableCBox.setEnabled(false);
 		if(model==null)
 		{
 			table.setModel(new EventTableModel());
@@ -457,6 +460,17 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
 	public void repaintRequired(WorkspaceMessage message) {}
+	
+	/**
+	 * Makes the Event tab visible or invisible
+	 * 
+	 * @param boolean flag indicating visibility status
+	 */
+	public void setVisible(boolean b)
+	{
+		super.setVisible(b);
+		eventNameField.requestFocus();
+	}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)

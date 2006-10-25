@@ -360,6 +360,8 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	public void updateCurrentSelection(Rectangle rectangle){		
 		if(graphModel != null)
 		{
+			// CLM: unhighlight nodes whenever they leave the selection rectangle
+			selectedGroup.setHighlighted(false);
 			selectedGroup = graphModel.getElementsContainedBy(rectangle);
 			selectedGroup.setSelected(true);			
 		}

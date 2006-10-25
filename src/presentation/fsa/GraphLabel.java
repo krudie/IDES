@@ -197,7 +197,7 @@ public class GraphLabel extends GraphElement {
 		((Graphics2D)g).draw(bounds);	// TODO draw border for free labels too
 		
 		// FIXME only show for edge labels
-		// KLUGE instanceof, should have subclasses EdgeLabel and NodeLabel
+		// KLUDGE instanceof, should have subclasses EdgeLabel and NodeLabel
 		if(getParent() != null && getParent() instanceof Edge ){  // draw the tether
 						
 			Point2D.Double corner = nearestCorner(getParent().getLocation(), bounds);
@@ -320,7 +320,7 @@ public class GraphLabel extends GraphElement {
 	}
 
 	public void translate(float x, float y){
-		// KLUGE label should store its offset from its parent,
+		// KLUDGE label should store its offset from its parent,
 		// parent should be oblivious.  No time to fix properly.
 		PresentationElement parent = getParent();
 		if(parent != null){			
