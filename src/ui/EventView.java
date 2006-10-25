@@ -393,12 +393,15 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	{
 		FSAModel model=Hub.getWorkspace().getActiveModel();
 		eventNameField.setText("");
+		
+		// CLM: these controls should be disabled whenever eventNameField
+		// is empty
+		createButton.setEnabled(false);
+		controllableCBox.setEnabled(false);
+		observableCBox.setEnabled(false);
 		if(model==null)
 		{
 			table.setModel(new EventTableModel());
-			createButton.setEnabled(false);
-			controllableCBox.setEnabled(false);
-			observableCBox.setEnabled(false);
 			deleteButton.setEnabled(false);
 			eventNameField.setEnabled(false);
 			table.setEnabled(false);
@@ -411,10 +414,15 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 		else
 		{
 			table.setModel(new EventTableModel(model));
-			createButton.setEnabled(true);
-			controllableCBox.setEnabled(true);
-			observableCBox.setEnabled(true);
-			deleteButton.setEnabled(true);
+			//CLM: these should be enabled iff eventNameField is nonempty
+			//createButton.setEnabled(true);
+			//controllableCBox.setEnabled(true);
+			//observableCBox.setEnabled(true);
+			
+			if (table.getRowCount() == 0)
+				deleteButton.setEnabled(false);
+			else
+				deleteButton.setEnabled(true);
 			eventNameField.setEnabled(true);
 			table.setEnabled(true);
 			if(!model.equals(lastModel))
