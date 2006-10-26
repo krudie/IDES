@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -83,7 +84,9 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();
 		//TODO uncomment line below before shipping
-	    setExtendedState(MAXIMIZED_BOTH);
+	    //setExtendedState(MAXIMIZED_BOTH);
+		setSize(Hub.persistentData.getInt("mainWindowWidth"),
+				Hub.persistentData.getInt("mainWindowHeight"));
 	}
 	
 	 private void createAndAddMainPane() {
@@ -257,5 +260,19 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 			commandManager.getGroup("graph.group").setEnabled(true);
 			commandManager.getGroup("edit.group").setEnabled(false);
 		}
+	}
+	
+	/**
+	 * Store the window size with the persistent properties, then free up
+	 * all screen resources used by this window.
+	 * 
+	 * @author Chris McAloney
+	 */
+	public void dispose()
+	{
+		Dimension d = getSize();
+		Hub.persistentData.setInt("mainWindowWidth", d.width);
+		Hub.persistentData.setInt("mainWindowHeight", d.height);
+		super.dispose();
 	}
 }
