@@ -11,7 +11,12 @@ import java.util.Iterator;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 
-
+/**
+ * The most generic implementation of elements displayed in a graphical view.
+ * Recursive composition of a graph element with child elements of the same type. 
+ * 
+ * @author Helen Bretzke
+ */
 public class GraphElement implements PresentationElement {
 		
 	protected boolean visible = true;
@@ -21,7 +26,7 @@ public class GraphElement implements PresentationElement {
 		
 	private GraphicalLayout layout;
 	
-	// my states and free labels
+	/** Collection of child elements */
 	private HashMap<Long, PresentationElement> children;
 	private PresentationElement parent;
 	

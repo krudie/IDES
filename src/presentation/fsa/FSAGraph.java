@@ -28,7 +28,7 @@ import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 
 /**
- * A recursive structure used to draw and edit the graph representation of an Automaton.
+ * A recursive structure used to view, draw and modify the graph representation of an Automaton.
  * Given a point or rectangular area, computes intersections with graph elements.
  * 
  * Observes and updates the Automaton.
@@ -46,7 +46,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	private boolean needsSave = false;
 	
 	/**
-	 * Maps used in intersection searches
+	 * Maps used in searches of intersection
 	 * TODO replace with Quadtree data structure
 	 */
 	private HashMap<Long, CircleNode> nodes;

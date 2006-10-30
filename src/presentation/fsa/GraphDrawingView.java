@@ -39,11 +39,13 @@ import ui.tools.ModifyEdgeTool;
 import ui.tools.MovementTool;
 import ui.tools.SelectionTool;
 import ui.tools.TextTool;
+
 /**
  * The component in which users view, create and modify a graph representation
  * of an automaton.
  * 
- * @author helen bretzke
+ * @author Helen Bretzke
+ * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, MouseMotionListener, MouseListener, KeyListener {
@@ -70,6 +72,11 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	}
 	
 	private int currentTool = DEFAULT;
+	
+	/**
+	 * The set of drawing tools which handle delegated i.e. events forwarded from this view.
+	 * Each tool corresponds to a drawing mode.
+	 */
 	private DrawingTool[] drawingTools;
 	
 	/**
