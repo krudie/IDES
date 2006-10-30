@@ -109,6 +109,9 @@ public class Main {
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
 		//go live!		
+		// TODO make sure that this second call to pack() is necessary (called
+		// in the MainWindow constructor as well, and interferes with window sizing
+		// code) -- CLM
 		Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
 	}
@@ -130,8 +133,8 @@ public class Main {
 					return;
 		}
 		//store settings
-		Hub.storePersistentData();
 		Cache.close();
 		Hub.getMainWindow().dispose();
+		Hub.storePersistentData();
 	}
 }

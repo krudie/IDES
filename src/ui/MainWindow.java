@@ -85,6 +85,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		pack();
 		//TODO uncomment line below before shipping
 	    //setExtendedState(MAXIMIZED_BOTH);
+		// TODO tidy up the window resizing code, and add logic to
+		// prevent sizing beyond the size of the display -- CLM
 		setSize(Hub.persistentData.getInt("mainWindowWidth"),
 				Hub.persistentData.getInt("mainWindowHeight"));
 	}
