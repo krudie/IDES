@@ -27,7 +27,7 @@ public class BezierLayout extends GraphicalLayout {
 	public static final int P2 = 3;
 	
 	/* default displacement vector for the label from the midpoint of the edge */
-	public static final Point2D.Float DEFAULT_LABEL_OFFSET = new Point2D.Float(5,5);
+	public final Point2D.Float DEFAULT_LABEL_OFFSET = new Point2D.Float(5,5);
 	
 	/*	 lower bound for abs(angle), below which is angle set to zero. */
 	public static final double EPSILON = 0.0001;  
@@ -108,7 +108,7 @@ public class BezierLayout extends GraphicalLayout {
 		curve = new CubicParamCurve2D();		
 		computeCurve(sourceLayout, targetLayout);		
 		eventNames = new ArrayList<String>();
-		setLabelOffset(new Point2D.Float(5,5));
+		setLabelOffset(DEFAULT_LABEL_OFFSET);
 		//updateAnglesAndScalars();
 	}
 
