@@ -236,9 +236,13 @@ public class CreationTool extends DrawingTool {
 	
 	
 	private void finishEdge() {		
-		targetNode = endNode;				
-		cmd = new CreateCommand(context, CreateCommand.EDGE, edge, targetNode);
-		cmd.execute();
+		targetNode = endNode;
+		// DEBUG there are some circumstances where we make it to this method with edge==null
+		// ... don't know what they are yet ...
+		if (edge != null) {
+			cmd = new CreateCommand(context, CreateCommand.EDGE, edge, targetNode);
+			cmd.execute();
+		}
 		edge = null;
 		context.setTempEdge(null);
 		drawingEdge = false;

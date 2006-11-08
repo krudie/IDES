@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,6 +12,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -20,7 +20,6 @@ import javax.swing.border.TitledBorder;
 
 import observer.FSAGraphMessage;
 import observer.FSAGraphSubscriber;
-import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
@@ -40,8 +39,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 
 	private HashMap<FSAGraph, JPanel> graphPanels = new HashMap<FSAGraph, JPanel>();
 	private Vector<GraphView> graphViews=new Vector<GraphView>();
-	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 2);
-	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 2);
+	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 3);
+	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 1);
 	public static final int THUMBNAIL_SIZE = 100;
 	
 	protected Box thumbnailBox;	
@@ -64,16 +63,21 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		thumbnailBox.removeAll();
 		graphPanels.clear();
 		for( GraphView gv : graphViews ) {
-			JPanel p=new JPanel(new BorderLayout());
+			JPanel p = new JPanel(new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
 			
-			if(gv.getGraphModel().equals(activeModel)) {
-				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));				
+//			if(gv.getGraphModel().equals(activeModel)) {
+//				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));				
+//			} else {
+//				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
+//			}
+			if (gv.getGraphModel().equals(activeModel)) {
+				p.setBorder(SELECTED_BORDER);
 			} else {
-				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
+				p.setBorder(PLAIN_BORDER);
 			}
 			graphPanels.put(gv.getGraphModel(), p);
 			thumbnailBox.add(p);
