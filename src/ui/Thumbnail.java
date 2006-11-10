@@ -4,6 +4,7 @@
 package ui;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -33,8 +34,9 @@ public class Thumbnail extends JPanel implements MouseListener {
 	 */
 	public Thumbnail(LayoutManager layout) {
 		super(layout);
-		closeButton.setPreferredSize(new Dimension(BUTTON_SIZE, BUTTON_SIZE));
-		addMouseListener(this);
+		add(closeButton);
+//		closeButton.setPreferredSize(new Dimension(BUTTON_SIZE, BUTTON_SIZE));
+//		addMouseListener(this);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -63,6 +65,12 @@ public class Thumbnail extends JPanel implements MouseListener {
 		if (closePopup != null) {
 			closePopup.hide();
 		}
+	}
+	
+	protected void paintChildren(Graphics g)
+	{
+		super.paintChildren(g);
+		closeButton.setBounds(85,0,15,15);
 	}
 
 }
