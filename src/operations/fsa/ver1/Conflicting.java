@@ -78,9 +78,7 @@ public class Conflicting implements Operation {
 		FSAModel r=(FSAModel)OperationManager.getOperation("prefix closure").perform(new Object[]{
 				OperationManager.getOperation("meet").perform(new Object[]{a,b})[0]})[0];
 		boolean equal=((Boolean)OperationManager.getOperation("containment").perform(new Object[]{
-				l,r})[0]).booleanValue()&&
-			((Boolean)OperationManager.getOperation("containment").perform(new Object[]{
-				r,l})[0]).booleanValue();
+				l,r})[0]).booleanValue();
 		return new Object[]{new Boolean(!equal)};
 	}
 

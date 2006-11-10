@@ -63,7 +63,7 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 			FSAGraph graph = Hub.getWorkspace().getActiveGraphModel();
 			
 			if ( graph != null ) {
-				name = graph.getDecoratedName();
+				name = graph.getName();
 			} else {
 				name = a.getName();
 			}
