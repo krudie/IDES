@@ -112,7 +112,7 @@ public class Main {
 		// TODO make sure that this second call to pack() is necessary (called
 		// in the MainWindow constructor as well, and interferes with window sizing
 		// code) -- CLM
-		Hub.getMainWindow().pack();
+		//Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
 	}
 	

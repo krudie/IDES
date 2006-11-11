@@ -2,11 +2,8 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.GridBagConstraints;
-import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,11 +12,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.OverlayLayout;
-import javax.swing.plaf.metal.MetalIconFactory;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -49,10 +41,6 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 3);
 	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 1);
 	public static final int THUMBNAIL_SIZE = 100;
-	private static final int BUTTON_SIZE = 18;
-	private static final JButton closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(BUTTON_SIZE - 2));
-	private static final PopupFactory popupFactory = PopupFactory.getSharedInstance();
-	private Popup closePopup;
 	
 	protected Box thumbnailBox;	
 	
@@ -61,7 +49,6 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		Hub.getWorkspace().addSubscriber(this);
 		thumbnailBox=Box.createHorizontalBox();
 		add(thumbnailBox);
-		closeButton.setPreferredSize(new Dimension(BUTTON_SIZE,BUTTON_SIZE));
 		addMouseListener(this);
 	}
 	
@@ -75,25 +62,17 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		thumbnailBox.removeAll();
 		graphPanels.clear();
 		for( GraphView gv : graphViews ) {
-			JPanel p = new JPanel();
-			LayoutManager overlay = new OverlayLayout(p);
-			p.setLayout(overlay);
+			JPanel p=new Thumbnail(new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
-			//p.add(closeButton, GridBagConstraints.NORTHEAST);
 			
 			if(gv.getGraphModel().equals(activeModel)) {
 				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));				
 			} else {
 				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
 			}
-//			if (gv.getGraphModel().equals(activeModel)) {
-//				p.setBorder(SELECTED_BORDER);
-//			} else {
-//				p.setBorder(PLAIN_BORDER);
-//			}
 			graphPanels.put(gv.getGraphModel(), p);
 			thumbnailBox.add(p);
 			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));		
@@ -153,21 +132,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 
 	public void mouseReleased(MouseEvent arg0) {}
 
-	public void mouseEntered(MouseEvent arg0) {
-//		if (arg0.getComponent() != this) {
-//			Point p = arg0.getComponent().getParent().getLocationOnScreen();
-//			System.out.println(arg0.getComponent().getParent().toString());
-//			closePopup = popupFactory.getPopup(null, closeButton,
-//					p.x + (THUMBNAIL_SIZE-BUTTON_SIZE), p.y);
-//			closePopup.show();
-//		}
-	}
+	public void mouseEntered(MouseEvent arg0) {}
 
-	public void mouseExited(MouseEvent arg0) {
-//		if (closePopup != null) {
-//			closePopup.hide();
-//		}
-	}
+	public void mouseExited(MouseEvent arg0) {}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)

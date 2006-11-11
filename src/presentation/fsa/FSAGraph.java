@@ -1245,7 +1245,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		SelectionGroup g = new SelectionGroup();
 				
 		for(CircleNode n : nodes.values()) {
-			if(rectangle.contains(n.bounds()) ){ // TODO && do a more thorough intersection test
+			if(rectangle.intersects(n.bounds()) ){ // TODO && do a more thorough intersection test
 				g.insert(n);				
 			}
 		}
@@ -1257,7 +1257,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}
 				
 		for(GraphLabel l : freeLabels.values()) {
-			if(rectangle.contains(l.bounds())){
+			if(rectangle.intersects(l.bounds())){
 				g.insert(l);				
 			}
 		}

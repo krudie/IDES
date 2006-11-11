@@ -26,8 +26,6 @@ public class Thumbnail extends JPanel implements MouseListener {
 	
 	private static final int BUTTON_SIZE = 18;
 	private static final JButton closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(BUTTON_SIZE-2));
-	private static final PopupFactory popupFactory = PopupFactory.getSharedInstance();
-	private Popup closePopup;
 
 	/**
 	 * @param layout
@@ -35,6 +33,7 @@ public class Thumbnail extends JPanel implements MouseListener {
 	public Thumbnail(LayoutManager layout) {
 		super(layout);
 		add(closeButton);
+		addMouseListener(this);
 //		closeButton.setPreferredSize(new Dimension(BUTTON_SIZE, BUTTON_SIZE));
 //		addMouseListener(this);
 		// TODO Auto-generated constructor stub
@@ -55,15 +54,15 @@ public class Thumbnail extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {}
 	
 	public void mouseEntered(MouseEvent arg0) {
-		Point p = arg0.getComponent().getLocationOnScreen();
-		System.out.println(arg0.getComponent().toString());
-		closePopup = popupFactory.getPopup(this, closeButton, p.x+this.getWidth()-BUTTON_SIZE, p.y);
-		closePopup.show();
+//		Point p = arg0.getComponent().getLocationOnScreen();
+//		System.out.println(arg0.getComponent().toString());
+//		closePopup = popupFactory.getPopup(this, closeButton, p.x+this.getWidth()-BUTTON_SIZE, p.y);
+		closeButton.setVisible(true);
 	}
 	
 	public void mouseExited(MouseEvent arg0) {
-		if (closePopup != null) {
-			closePopup.hide();
+		if (!this.getBounds().contains(arg0.getPoint())) {
+			closeButton.setVisible(false);
 		}
 	}
 	

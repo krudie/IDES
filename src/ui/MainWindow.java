@@ -7,6 +7,7 @@ import io.fsa.ver1.FileOperations;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -55,6 +56,9 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 
 	String imagePath = "images/icons/";
 	
+	private static final int MINIMUM_WIDTH = 500;
+	private static final int MINIMUM_HEIGHT = 500;
+	
 	private ZoomControl zoom=new ZoomControl();
 	
 	public MainWindow() {
@@ -85,10 +89,20 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		pack();
 		//TODO uncomment line below before shipping
 	    //setExtendedState(MAXIMIZED_BOTH);
-		// TODO tidy up the window resizing code, and add logic to
-		// prevent sizing beyond the size of the display -- CLM
-		setSize(Hub.persistentData.getInt("mainWindowWidth"),
-				Hub.persistentData.getInt("mainWindowHeight"));
+
+		// get the stored window size information and ensure it falls within
+		// the current display
+		int width = Hub.persistentData.getInt("mainWindowWidth");
+		int height = Hub.persistentData.getInt("mainWindowHeight");
+		
+		// ensure that the stored dimensions fit on our display
+		Rectangle gcRect = this.getGraphicsConfiguration().getBounds();
+		width  = ( width  > gcRect.width  ? gcRect.width  : width  );
+		height = ( height > gcRect.height ? gcRect.height : height );
+		width  = ( width  < MINIMUM_WIDTH  ? MINIMUM_WIDTH  : width  );
+		height = ( height < MINIMUM_HEIGHT ? MINIMUM_HEIGHT : height );
+		
+		setSize(width, height);
 	}
 	
 	 private void createAndAddMainPane() {

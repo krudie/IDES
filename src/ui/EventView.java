@@ -326,6 +326,8 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				else if ("".equals(s))
 				{
 					createButton.setEnabled(false);
+					controllableCBox.setEnabled(true);
+					observableCBox.setEnabled(true);
 				}
 				else
 				{
