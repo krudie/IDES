@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,13 +35,16 @@ import presentation.fsa.GraphView;
  * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
-public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSubscriber, MouseListener {
+public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSubscriber, MouseListener, MouseMotionListener {
 
-	private HashMap<FSAGraph, JPanel> graphPanels = new HashMap<FSAGraph, JPanel>();
+	private HashMap<FSAGraph, Thumbnail> graphPanels = new HashMap<FSAGraph, Thumbnail>();
 	private Vector<GraphView> graphViews=new Vector<GraphView>();
 	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 3);
 	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 1);
+	
+	private static Thumbnail underMouse; // the last Thumbnail that we had a mouseMove event above
 	public static final int THUMBNAIL_SIZE = 100;
+	public static final int SPACER_SIZE = 5;
 	
 	protected Box thumbnailBox;	
 	
@@ -50,6 +54,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		thumbnailBox=Box.createHorizontalBox();
 		add(thumbnailBox);
 		addMouseListener(this);
+		addMouseMotionListener(this);
 	}
 	
 	/**
@@ -62,7 +67,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		thumbnailBox.removeAll();
 		graphPanels.clear();
 		for( GraphView gv : graphViews ) {
-			JPanel p=new Thumbnail(new BorderLayout());
+			Thumbnail p=new Thumbnail(new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
@@ -75,7 +80,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 			}
 			graphPanels.put(gv.getGraphModel(), p);
 			thumbnailBox.add(p);
-			thumbnailBox.add(Box.createRigidArea(new Dimension(5,0)));		
+			thumbnailBox.add(Box.createRigidArea(new Dimension(SPACER_SIZE,0)));		
 		}
 	}
 	
@@ -83,7 +88,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * Gets all graph models from the workspace and renders 
 	 * each in its own view. 
 	 */
-	private void refreshGraphViews() {		
+	private void refreshGraphViews() {
 		Vector<FSAGraph> currentModels = new Vector<FSAGraph>();
 		Iterator<FSAGraph> iter = Hub.getWorkspace().getGraphModels();
 		while( iter.hasNext() ) {
@@ -109,6 +114,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 				GraphView gv = new GraphView(gm);				
 				gm.addSubscriber(this);
 				gv.addMouseListener(this);
+				System.out.println("Inserting element at " + i);
 				graphViews.insertElementAt(gv,i);
 			}
 		}
@@ -135,6 +141,37 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	public void mouseEntered(MouseEvent arg0) {}
 
 	public void mouseExited(MouseEvent arg0) {}
+	
+	public void mouseDragged(MouseEvent arg0) {}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * The FilmStrip class acts as a dispatcher for mouse motion events to distribute
+	 * the events to the closest Thumbnail object.  This activates the closeButton
+	 * in the corner of the thumbnail, and ensures that at most one closeButton is visible
+	 * at any given time.
+	 * 
+	 * We're still having issues with some of the mouse motion events being lost to
+	 * subcomponents (the graphview contained in the thumbnail, to be specific), but it's
+	 * starting to look as though using a glasspane is the only way to catch them all.
+	 * --(CLM)
+	 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+	 */
+	public void mouseMoved(MouseEvent arg0) {
+		int thumbnailIndex = arg0.getPoint().x / (THUMBNAIL_SIZE+SPACER_SIZE);
+		arg0.getPoint().x -= (THUMBNAIL_SIZE+SPACER_SIZE) * thumbnailIndex;
+		Thumbnail current = graphPanels.get(graphViews.elementAt(thumbnailIndex).getGraphModel());
+		current.handleMouseEntered(arg0);
+		if (!(current.equals(underMouse))) {
+			underMouse = current;
+			for (Thumbnail t : graphPanels.values()) {
+				if (!t.equals(current)) {
+					t.handleMouseExited(arg0);
+				}
+			}
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)

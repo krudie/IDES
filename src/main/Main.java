@@ -49,7 +49,9 @@ public class Main {
 	public static void main(String[] args) {
 		
 		//set up global exception handler
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		// TODO uncomment this line before shipping.  Default exception handler
+		// disabled for debugging. -- CLM
+		//Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 		
 		//load resource with strings used in the program
 		try
