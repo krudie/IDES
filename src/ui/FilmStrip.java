@@ -114,7 +114,6 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 				GraphView gv = new GraphView(gm);				
 				gm.addSubscriber(this);
 				gv.addMouseListener(this);
-				System.out.println("Inserting element at " + i);
 				graphViews.insertElementAt(gv,i);
 			}
 		}

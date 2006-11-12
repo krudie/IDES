@@ -94,6 +94,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		// the current display
 		int width = Hub.persistentData.getInt("mainWindowWidth");
 		int height = Hub.persistentData.getInt("mainWindowHeight");
+		int x = Hub.persistentData.getInt("mainWindowPosX");
+		int y = Hub.persistentData.getInt("mainWindowPosY");
 		
 		// ensure that the stored dimensions fit on our display
 		Rectangle gcRect = this.getGraphicsConfiguration().getBounds();
@@ -102,7 +104,11 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		width  = ( width  < MINIMUM_WIDTH  ? MINIMUM_WIDTH  : width  );
 		height = ( height < MINIMUM_HEIGHT ? MINIMUM_HEIGHT : height );
 		
-		setSize(width, height);
+		if (x < 0) x = 0;
+		if (y < 0) y = 0;
+		x = (x+width > gcRect.width ? gcRect.width - width : x);
+		y = (y+height > gcRect.height ? gcRect.height - height : y);
+		setBounds(x, y, width, height);
 	}
 	
 	 private void createAndAddMainPane() {
@@ -286,9 +292,12 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 */
 	public void dispose()
 	{
-		Dimension d = getSize();
-		Hub.persistentData.setInt("mainWindowWidth", d.width);
-		Hub.persistentData.setInt("mainWindowHeight", d.height);
+		// TODO look into setting this as a single entry in settings.ini rather than four
+		Rectangle r = getBounds();
+		Hub.persistentData.setInt("mainWindowWidth", r.width);
+		Hub.persistentData.setInt("mainWindowHeight", r.height);
+		Hub.persistentData.setInt("mainWindowPosX", r.x);
+		Hub.persistentData.setInt("mainWindowPosY", r.y);
 		super.dispose();
 	}
 }
