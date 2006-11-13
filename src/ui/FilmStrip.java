@@ -140,7 +140,11 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 
 	public void mouseEntered(MouseEvent arg0) {}
 
-	public void mouseExited(MouseEvent arg0) {}
+	public void mouseExited(MouseEvent arg0) {
+		if (!this.getBounds().contains(arg0.getPoint())) {
+			underMouse.handleMouseExited(arg0);
+		}
+	}
 	
 	public void mouseDragged(MouseEvent arg0) {}
 	
