@@ -114,6 +114,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 				GraphView gv = new GraphView(gm);				
 				gm.addSubscriber(this);
 				gv.addMouseListener(this);
+				gv.addMouseMotionListener(this);
 				graphViews.insertElementAt(gv,i);
 			}
 		}
@@ -158,9 +159,14 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
 	 */
 	public void mouseMoved(MouseEvent arg0) {
-		int thumbnailIndex = arg0.getPoint().x / (THUMBNAIL_SIZE+SPACER_SIZE);
-		arg0.getPoint().x -= (THUMBNAIL_SIZE+SPACER_SIZE) * thumbnailIndex;
-		Thumbnail current = graphPanels.get(graphViews.elementAt(thumbnailIndex).getGraphModel());
+		Thumbnail current = null;
+		if (arg0.getSource() != this) {
+			current = graphPanels.get(( (GraphView)arg0.getSource() ).getGraphModel());
+		} else {
+			int thumbnailIndex = arg0.getPoint().x / (THUMBNAIL_SIZE+SPACER_SIZE);
+			arg0.getPoint().x -= (THUMBNAIL_SIZE+SPACER_SIZE) * thumbnailIndex;
+			current = graphPanels.get(graphViews.elementAt(thumbnailIndex).getGraphModel());
+		}
 		current.handleMouseEntered(arg0);
 		if (!(current.equals(underMouse))) {
 			underMouse = current;
