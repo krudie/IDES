@@ -21,6 +21,12 @@ import presentation.fsa.Node;
  * @author Lenko Grigorov
  */
 public class JUNGLayouter implements FSALayouter {
+	
+	/**
+	 * A fudge factor for laying out the graph.  Used in determining the dimensions
+	 * of the final layout, and directly affects node spacing.
+	 */
+	private static final int SIZE_FACTOR = 175;
 
 	/* (non-Javadoc)
 	 * @see pluggable.layout.FSMLayouter#layout(presentation.fsa.FSMGraph)
@@ -44,7 +50,7 @@ public class JUNGLayouter implements FSALayouter {
 			g.addEdge(edge);
 		}
 		KKLayout l=new KKLayout(g);
-		int dim=(int)Math.ceil(Math.sqrt(BridgeMapper.nodeMap.size()))*100;
+		int dim=(int)Math.ceil(Math.sqrt(BridgeMapper.nodeMap.size()))*SIZE_FACTOR;
 		l.initialize(new Dimension(dim,dim));
 //		l.setRepulsionMultiplier(.99);
 //		l.update();
