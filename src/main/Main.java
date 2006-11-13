@@ -76,6 +76,7 @@ public class Main {
 		
 		//setup other stuff
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		
 		Cache.init();
 		// TODO: move operation inits to the plugin manager eventually
