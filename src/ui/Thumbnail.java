@@ -53,7 +53,6 @@ public class Thumbnail extends JPanel {
 			cbHeight = cbIcon.getIconHeight();
 			closeButton = new JButton(cbIcon);
 		}
-		System.out.println(closeButton.getSize().toString());
 		closeButton.addActionListener(closeButtonListener);
 		add(closeButton);
 		closeButton.setVisible(false);

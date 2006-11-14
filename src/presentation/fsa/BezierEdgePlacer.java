@@ -158,7 +158,10 @@ public class BezierEdgePlacer {
 		 	between endpoints to allow margins for arrow head along node boundary.			
 			For now just use:
 		 */
-		double min = ArrowHead.SHORT_HEAD_LENGTH; // /2;
+		
+		// CLM: I changed this back to SHORT_HEAD_LENGTH/2 because the higher minimum was
+		// causing some edges to incorrectly be classified as "too close"
+		double min = ArrowHead.SHORT_HEAD_LENGTH/2;
 	
 		for(Edge edge : edges)
 		{
