@@ -469,6 +469,7 @@ public class BezierLayout extends GraphicalLayout {
 			angle1 = angle2;
 			angle2 = temp;
 		}
+		this.computeCurve();
 	}
 	
 	/**
@@ -596,6 +597,23 @@ public class BezierLayout extends GraphicalLayout {
 		this.s1 = other.s1;
 		this.s2 = other.s2;
 		this.computeCurve();
+	}
+	
+	/**
+	 * Check to see if this layout is the reflection of <code>other</code>, about
+	 * the line between source and target nodes.
+	 * 
+	 * @param other the other layout to test against
+	 * @return true if <code>other</code> is a reflection of <code>this</code>; false otherwise.
+	 */
+	public boolean isReflectionOf(BezierLayout other) {
+		if ( this.edge.getSourceNode().equals(other.edge.getSourceNode()) ) {
+			return ( (this.angle1 == other.angle1 * -1)
+					&& (this.angle2 == other.angle2 * -1) );
+		} else {
+			return ( (this.angle1 == other.angle1)
+					&& (this.angle2 == other.angle2) );
+		}
 	}
 	
 	/**

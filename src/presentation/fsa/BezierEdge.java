@@ -753,11 +753,11 @@ public class BezierEdge extends Edge {
 	}
 
 	/**
-	 * Sets my layout to fit among the set of existing edges between 
-	 * my source and target nodes.  Other edges' layouts are adjusted 
+	 * Sets this edge's layout to fit among the set of existing edges between 
+	 * its source and target nodes.  Other edges' layouts are adjusted 
 	 * as necessary. 
 	 * 
-	 * @param neighbours the set of edges between my source and target nodes
+	 * @param neighbours the set of edges between the source and target nodes
 	 */
 	public void insertAmong(Set<Edge> neighbours) {
 		BezierEdgePlacer.insertEdgeAmong(this, neighbours);

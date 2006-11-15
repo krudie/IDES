@@ -34,25 +34,26 @@ public class BezierEdgePlacer {
 		edge.computeEdge();
 		
 		//int n = edges.size();
+		
 		Edge straightEdge = containsStraightEdge(otherEdges);
-		if(straightEdge != null) {			
+		if(straightEdge != null) {
 			// find outermost free position
 			BezierLayout outPos = setToOutermostFreeLayout(edge, otherEdges);
 			// move straight edge to reflection of newly placed edge					
 			((BezierLayout)straightEdge.getLayout()).setToReflectionOf(outPos);						
-	
+
 			// TODO if we only call this to update the endpts, then should be calling 
 			// a method that is named appropriately e.g. updateEndpoints()
 			straightEdge.computeEdge();
-			
+
 			// unless that position is taken			
-			if( tooClose(straightEdge, otherEdges) ) {				
+			if( tooClose(straightEdge, otherEdges) ) {
 				((BezierLayout)straightEdge.getLayout()).arcMore(false);
 			}	
-			
+
 			straightEdge.computeEdge();
 			Hub.getWorkspace().getActiveGraphModel().commitMovement(straightEdge);
-			
+
 		}/*else{	// No straight edge
 			if(n % 2 != 0) // Odd # of neighbours			
 			{
@@ -87,22 +88,28 @@ public class BezierEdgePlacer {
 	private static BezierLayout setToOutermostFreeLayout(Edge edge, Set<Edge> otherEdges) {	
 		BezierLayout layout = findOutermostTakenPosition(otherEdges);
 		if(layout != null) {
-			// if curve is 'S'-shaped
-			/*if(layout.angle1 * layout.angle2 < 0)
-			{
-			// LENKO can we tolerate the intersection of two reflected 'S' curves?
-				
-			}else{
-			*/
+			System.out.println(layout.angle1 + " " + layout.angle2);
 			BezierLayout layout1 = (BezierLayout)edge.getLayout();
-			// otherwise, try reflected position				
-			layout1.setToReflectionOf(layout);			
-			edge.computeEdge();
-							
+			// if curve is 'S'-shaped
+			if (layout.angle1 * layout.angle2 > 0) {
+				double maxAngle = ( Math.abs(layout.angle1) > Math.abs(layout.angle2) ? layout.angle1 : layout.angle2 );
+				layout1.angle1 = maxAngle;
+				layout1.angle2 = maxAngle * -1;
+				layout1.arcMore();
+			} else {
+				// otherwise, try reflected position				
+				layout1.setToReflectionOf(layout);
+
+				// CLM: in accordance with the rules for automatic edge placement, we don't
+				// actually want the "outermost free layout"; but rather the outermost free
+				// PAIR of layouts, to maintain the reflective symmetry of the outermost edges.
+				layout1.arcMore();
+			}
+
 			if(tooClose(edge, otherEdges)) {	
 				layout1.arcMore();					
 			}
-			
+
 			edge.computeEdge();
 			return layout1;
 		}
