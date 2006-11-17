@@ -146,6 +146,7 @@ public class OperationDialog extends EscapeDialog {
 							FSAGraph g=new FSAGraph((Automaton)outputs[i]);
 							g.labelCompositeNodes();
 							Hub.getWorkspace().addFSAGraph(g);
+							closeWindow = true;
 						}
 						else if(outputs[i] instanceof Boolean)
 						{
@@ -155,6 +156,7 @@ public class OperationDialog extends EscapeDialog {
 						else
 						{
 							Hub.displayAlert(Hub.string("cantInterpretOutput"));
+							closeWindow = true;
 						}
 					}
 					if (closeWindow) onEscapeEvent();
