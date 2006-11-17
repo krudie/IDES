@@ -253,7 +253,7 @@ public class BezierLayout extends GraphicalLayout {
 	protected boolean isStraight() {		
 		return Math.abs(angle1) < EPSILON && Math.abs(angle2) < EPSILON;
 	}
-
+	
 	/**
 	 * Computes and stores the control points for a straight, directed edge from
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.

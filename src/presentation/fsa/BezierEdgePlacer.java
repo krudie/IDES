@@ -88,9 +88,8 @@ public class BezierEdgePlacer {
 	private static BezierLayout setToOutermostFreeLayout(Edge edge, Set<Edge> otherEdges) {	
 		BezierLayout layout = findOutermostTakenPosition(otherEdges);
 		if(layout != null) {
-			System.out.println(layout.angle1 + " " + layout.angle2);
 			BezierLayout layout1 = (BezierLayout)edge.getLayout();
-			// if curve is 'S'-shaped
+			// if curve is 'S'-shaped, return a new layout that arcs beyond it
 			if (layout.angle1 * layout.angle2 > 0) {
 				double maxAngle = ( Math.abs(layout.angle1) > Math.abs(layout.angle2) ? layout.angle1 : layout.angle2 );
 				layout1.angle1 = maxAngle;
@@ -106,7 +105,7 @@ public class BezierEdgePlacer {
 				layout1.arcMore();
 			}
 
-			if(tooClose(edge, otherEdges)) {	
+			if(tooClose(edge, otherEdges)) {
 				layout1.arcMore();					
 			}
 

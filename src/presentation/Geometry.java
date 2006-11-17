@@ -95,7 +95,6 @@ public class Geometry {
 	 * @return norm (length) of vector
 	 */
 	public static double norm(Point2D v) {
-		// It's probably slightly faster to use the built-in Point2D.distance() method
 		return Math.sqrt(Math.pow(v.getX(), 2) + Math.pow(v.getY(), 2));		
 	}
 	

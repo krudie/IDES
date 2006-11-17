@@ -660,7 +660,7 @@ public class BezierEdge extends Edge {
 	public void arcLess() {
 		((BezierLayout)getLayout()).arcLess();		
 	}
-
+	
 	/**
 	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int type)
 	 */

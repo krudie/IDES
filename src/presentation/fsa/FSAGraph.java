@@ -1,6 +1,7 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import observer.FSASubscriber;
 import pluggable.layout.LayoutManager;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
+import presentation.Geometry;
 
 /**
  * A recursive structure used to view, draw and modify the graph representation of an Automaton.
@@ -453,12 +455,31 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		e.computeEdge();	
 		
 		// Distribute multiple directed edges between same node pair.
-		Set<Edge> neighbours = getEdgesBetween(target, e.getSourceNode());
-		if( neighbours.size() > 0 ) {
-			e.insertAmong(neighbours);
-			// TODO commit the layout for modified straight edge (if any)
-		}
+//		Set<Edge> neighbours = getEdgesBetween(target, e.getSourceNode());
+//		if( neighbours.size() > 0 ) {
+//			e.insertAmong(neighbours);
+//			// TODO commit the layout for modified straight edge (if any)
+//		}
+		
 
+		// Preliminary code for arcing a newly created edge around any obstructing
+		// nodes.
+		// Commented out while I work out the kinks.  CLM
+//		if (e.isStraight()) {
+//			Set<Node> intersections = new HashSet<Node>();
+//			for (Node n : nodes.values()) {
+//				if (!n.equals(e.getSourceNode()) && !n.equals(e.getTargetNode())
+//						&& e.getBezierLayout().curve.intersects(n.bounds())) {
+//					intersections.add(n);
+//				}
+//			}
+//			if (!intersections.isEmpty()) {
+//				e.arcMore();
+//			}
+//		}
+
+		e.insertAmong(getEdgesBetween(target, e.getSourceNode()));
+		
 		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSourceNode().getId()), fsa.getState(target.getId()));			
 		e.addTransition(t);
 		
