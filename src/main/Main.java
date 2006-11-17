@@ -94,7 +94,7 @@ public class Main {
 
 		try {
 			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
-				UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.metal.MetalLookAndFeel");
 			} else {
 				UIManager.setLookAndFeel(
 						UIManager.getSystemLookAndFeelClassName());

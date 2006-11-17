@@ -41,18 +41,19 @@ public class Thumbnail extends JPanel {
 	 */
 	public Thumbnail(LayoutManager layout) {
 		super(layout);
-		closeButton = new JButton(UIManager.getIcon("InternalFrame.closeIcon"));
+		closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE));
 		
-		// GTKLookAndFeel doesn't provide a FrameCloseIcon, so if we're running on GTK,
-		// take the window close icon from the MetalLookAndFeel -- CLM
-		if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
-			closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE));
-		} else {
-			Icon cbIcon = UIManager.getIcon("InternalFrame.closeIcon");
-			cbWidth = cbIcon.getIconWidth();
-			cbHeight = cbIcon.getIconHeight();
-			closeButton = new JButton(cbIcon);
-		}
+//		// GTKLookAndFeel doesn't provide a FrameCloseIcon, so if we're running on GTK,
+//		// take the window close icon from the MetalLookAndFeel -- CLM
+//		if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
+//			closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE));
+//		} else {
+//			Icon cbIcon = UIManager.getIcon("InternalFrame.closeIcon");
+//			cbWidth = cbIcon.getIconWidth();
+//			cbHeight = cbIcon.getIconHeight();
+//			closeButton = new JButton(cbIcon);
+//		}
+		
 		closeButton.addActionListener(closeButtonListener);
 		add(closeButton);
 		closeButton.setVisible(false);
