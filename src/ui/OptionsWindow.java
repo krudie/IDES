@@ -155,6 +155,7 @@ public class OptionsWindow extends EscapeDialog {
 				}
 		);
 		sectionList.setPreferredSize(new Dimension(LISTWIDTH,sectionList.getPreferredSize().height));
+		sectionList.setMinimumSize(new Dimension(LISTWIDTH,sectionList.getPreferredSize().height));
 		
 		optionsHolder=new JPanel();
 		optionsHolder.setLayout(new BoxLayout(optionsHolder,BoxLayout.Y_AXIS));

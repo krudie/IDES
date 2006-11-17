@@ -93,8 +93,12 @@ public class Main {
 		OperationManager.register(new Conflicting());
 
 		try {
-	        UIManager.setLookAndFeel(
-	            UIManager.getSystemLookAndFeelClassName());
+			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+			} else {
+				UIManager.setLookAndFeel(
+						UIManager.getSystemLookAndFeelClassName());
+			}
 	    } catch (Exception e) { }
 //DEBUG: remove eventually
 //	    for(Object o:UIManager.getLookAndFeelDefaults().keySet())
