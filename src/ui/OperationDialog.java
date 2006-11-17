@@ -137,6 +137,7 @@ public class OperationDialog extends EscapeDialog {
 					for(int i=0;i<inputs.size();++i)
 						inputModels[i]=Hub.getWorkspace().getFSAModel(inputs.elementAt(i).getSelectedItem().toString());
 					Object[] outputs=op.perform(inputModels);
+					boolean closeWindow = true;
 					for(int i=0;i<outputs.length;++i)
 					{
 						if(outputs[i] instanceof FSAModel)
@@ -149,13 +150,14 @@ public class OperationDialog extends EscapeDialog {
 						else if(outputs[i] instanceof Boolean)
 						{
 							Hub.displayAlert(op.getDescriptionOfOutputs()[i]+": "+(Boolean)outputs[i]);
+							closeWindow = false;
 						}
 						else
 						{
 							Hub.displayAlert(Hub.string("cantInterpretOutput"));
 						}
 					}
-					onEscapeEvent();
+					if (closeWindow) onEscapeEvent();
 				}
 			}
 		});
