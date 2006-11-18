@@ -85,8 +85,7 @@ public class NodePopup extends JPopupMenu {
 		initialCmd.setSelected(node.getState().isInitial());
 	}
 	
-	
-	  class PopupListener implements PopupMenuListener {
+	class PopupListener implements PopupMenuListener {
 
 		/* (non-Javadoc)
 		 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
@@ -104,5 +103,5 @@ public class NodePopup extends JPopupMenu {
 		 * @see javax.swing.event.PopupMenuListener#popupMenuCanceled(javax.swing.event.PopupMenuEvent)
 		 */
 		public void popupMenuCanceled(PopupMenuEvent arg0) {}
-	  }	  
+	}	  
 }

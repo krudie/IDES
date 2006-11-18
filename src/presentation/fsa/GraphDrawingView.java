@@ -122,6 +122,18 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 		}
 	};
 	
+	protected Action escapeListener = new AbstractAction()
+	{
+		public void actionPerformed(ActionEvent actionEvent)
+		{
+			if (((CreationTool)drawingTools[CREATE]).isDrawingEdge()) {
+				((CreationTool)drawingTools[CREATE]).abortEdge();
+			} else {
+				setTool(GraphDrawingView.DEFAULT);
+			}
+		}
+	};
+	
 	public GraphDrawingView() {
 		super();
 		Hub.getWorkspace().addSubscriber(this);		
@@ -153,6 +165,8 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),this);
 		getActionMap().put(this,deleteListener);
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),this);
+		getActionMap().put(this, escapeListener);
 		
 	    setVisible(true);
 	}	
@@ -285,7 +299,7 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 
 	public void mouseDragged(MouseEvent arg0) {		
 		arg0=tranformMouseCoords(arg0);
-		drawingTools[currentTool].handleMouseDragged(arg0);		
+		drawingTools[currentTool].handleMouseDragged(arg0);
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
@@ -314,7 +328,7 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	}
 
 
-	public void keyPressed(KeyEvent arg0) {		
+	public void keyPressed(KeyEvent arg0) {
 		drawingTools[currentTool].handleKeyPressed(arg0);	
 	}
 

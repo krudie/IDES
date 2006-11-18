@@ -256,7 +256,7 @@ public class CreationTool extends DrawingTool {
 		super.handleRightClick(me);
 		abortEdge();
 		context.repaint();
-		super.handleRightClick(me);		
+		//super.handleRightClick(me);		
 	}
 	
 	public boolean isDrawingEdge()
@@ -271,7 +271,8 @@ public class CreationTool extends DrawingTool {
 			context.setTempEdge(null);
 			drawingEdge = false;			
 		}
-		aborted = true;		
+		aborted = true;
+		context.repaint();
 	}
 
 	@Override
