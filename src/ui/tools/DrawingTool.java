@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.SelectionGroup;
+import presentation.fsa.ToolPopup;
 
 
 /**
@@ -39,7 +40,7 @@ public abstract class DrawingTool {
 		if(context.updateCurrentSelection(m.getPoint())){
 			context.getSelectedElement().showPopup(context);			
 		}else{
-			// TODO Popup should allow us to change tools in the context
+			ToolPopup.showPopup(context, m);
 		}
 	}
 	
