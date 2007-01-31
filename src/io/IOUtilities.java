@@ -30,6 +30,10 @@ public class IOUtilities {
 	 * Extension for EPS files.
 	 */
 	public static final String EPS_FILE_EXT="eps";
+	/**
+	 * Extension for Grail+ files.
+	 */
+	public static final String FM_FILE_EXT="fm";
 	
 	/**
      * Method for getting a UTF-8 printstream wrapped around a file

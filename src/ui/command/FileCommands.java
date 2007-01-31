@@ -27,15 +27,12 @@ import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
-//<<<<<<< FileCommands.java
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
-//=======
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import services.latex.LatexRenderException;
 
-//>>>>>>> 1.10
 /**
  * @author Lenko Grigorov
  */
@@ -405,7 +402,222 @@ public class FileCommands {
 			}
 		}
 	}
-	
+
+	/**
+	 * FIXME: the whole import/export business should be moved to plugins
+	 * @author grigorov
+	 *
+	 */
+	public static class ExportToGrailCommand extends ActionCommand {
+
+		public ExportToGrailCommand() {
+			super(CommandManager.defaultInstance(), "export.grail.command");
+		}
+
+		@Override
+		protected void handleExecute() {
+			if(Hub.getWorkspace().getActiveModel()==null)
+				return;
+			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
+			fc.setDialogTitle(Hub.string("exportGrailTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.FM_FILE_EXT, Hub.string("fmFileDescription")));
+			fc.setSelectedFile(new File(Hub.getWorkspace().getActiveModelName()));
+			int retVal;
+			boolean fcDone=true;
+			File file=null;
+			do
+			{
+				retVal = fc.showSaveDialog(Hub.getMainWindow());
+				if(retVal != JFileChooser.APPROVE_OPTION)
+					break;
+				file=fc.getSelectedFile();
+	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.FM_FILE_EXT))
+	    			file=new File(file.getPath()+"."+IOUtilities.FM_FILE_EXT);
+				if(file.exists())
+				{
+					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+						Hub.string("exportGrailTitle"),
+						JOptionPane.YES_NO_CANCEL_OPTION);
+					fcDone=choice!=JOptionPane.NO_OPTION;
+					if(choice!=JOptionPane.YES_OPTION)
+						retVal=JFileChooser.CANCEL_OPTION;
+				}
+			} while(!fcDone);
+	    	if(retVal != JFileChooser.APPROVE_OPTION)
+	    		return;
+	    	
+	    	String fileContents = "";
+	    	
+	    	model.fsa.FSAModel a=Hub.getWorkspace().getActiveModel();
+	    	for(Iterator<model.fsa.FSAState> i=a.getStateIterator();i.hasNext();)
+	    	{
+	    		model.fsa.FSAState s=i.next();
+	    		if(s.isInitial())
+	    		{
+	    			fileContents+="(START) |- "+s.getId()+"\n";
+	    		}
+	    		if(s.isMarked())
+	    		{
+	    			fileContents+=""+s.getId()+" -| (FINAL)\n";
+	    		}
+	    		for(Iterator<model.fsa.FSATransition> j=s.getSourceTransitionsListIterator();j.hasNext();)
+	    		{
+	    			model.fsa.FSATransition t=j.next();
+	    			fileContents+=""+s.getId()+" "+(t.getEvent()==null?"NULL":t.getEvent().getSymbol())+" "+t.getTarget().getId()+"\n";
+	    		}
+	    	}
+	    	
+			FileWriter latexWriter = null;
+					
+			if (fileContents == null)
+			{
+				return;
+			}
+			
+			try
+			{
+				latexWriter = new FileWriter(file);
+				latexWriter.write(fileContents);
+				latexWriter.close();
+			}
+			catch (IOException fileException)
+			{
+				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+			}
+		}
+	}
+
+	/**
+	 * FIXME: the whole import/export business should be moved to plugins
+	 * @author grigorov
+	 *
+	 */
+	public static class ImportFromGrailCommand extends ActionCommand {
+
+		public ImportFromGrailCommand() {
+			super(CommandManager.defaultInstance(), "import.grail.command");
+		}
+
+		@Override
+		protected void handleExecute() {
+			if(Hub.getWorkspace().getActiveModel()==null)
+				return;
+			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
+			fc.setDialogTitle(Hub.string("importGrailTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.FM_FILE_EXT, Hub.string("fmFileDescription")));
+			//fc.setSelectedFile(new File(Hub.getWorkspace().getActiveModelName()));
+			int retVal;
+			boolean fcDone=false;
+			File file=null;
+			do
+			{
+				retVal = fc.showOpenDialog(Hub.getMainWindow());
+				if(retVal != JFileChooser.APPROVE_OPTION)
+					break;
+				file=fc.getSelectedFile();
+				if(!file.exists())
+				{
+					Hub.displayAlert(
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileNotExistAsk2"));
+				}
+				else
+					fcDone=true;
+			} while(!fcDone);
+	    	if(retVal != JFileChooser.APPROVE_OPTION)
+	    		return;
+	    	
+	    	java.io.BufferedReader in=null;
+	    	try
+	    	{
+	    		in=new java.io.BufferedReader(new java.io.FileReader(file));
+	    		Automaton a=new Automaton(file.getName());
+	    		long tCount=0;
+	    		long eCount=0;
+	    		java.util.Hashtable<String,Long> events=new java.util.Hashtable<String, Long>();
+	    		String line;
+	    		while((line=in.readLine())!=null)
+	    		{
+	    			String[] parts=line.split(" ");
+	    			if(parts[0].startsWith("("))
+	    			{
+	    				long sId=Long.parseLong(parts[2]);
+	    				model.fsa.ver1.State s=(model.fsa.ver1.State)a.getState(sId);
+	    				if(s==null)
+	    				{
+	    					s=new model.fsa.ver1.State(sId);
+	    					a.add(s);
+	    				}
+	    				s.setInitial(true);
+	    			}
+	    			else if(parts[2].startsWith("("))
+	    			{	    				
+	    				long sId=Long.parseLong(parts[0]);
+	    				model.fsa.ver1.State s=(model.fsa.ver1.State)a.getState(sId);
+	    				if(s==null)
+	    				{
+	    					s=new model.fsa.ver1.State(sId);
+	    					a.add(s);
+	    				}
+	    				s.setMarked(true);
+	    			}
+	    			else
+	    			{
+	    				long sId1=Long.parseLong(parts[0]);
+	    				model.fsa.ver1.State s1=(model.fsa.ver1.State)a.getState(sId1);
+	    				if(s1==null)
+	    				{
+	    					s1=new model.fsa.ver1.State(sId1);
+	    					a.add(s1);
+	    				}
+	    				long sId2=Long.parseLong(parts[2]);
+	    				model.fsa.ver1.State s2=(model.fsa.ver1.State)a.getState(sId2);
+	    				if(s2==null)
+	    				{
+	    					s2=new model.fsa.ver1.State(sId2);
+	    					a.add(s2);
+	    				}
+	    				model.fsa.ver1.Event e=null;
+	    				Long eId=events.get(parts[1]);
+	    				if(eId==null)
+	    				{
+	    					e=new model.fsa.ver1.Event(eCount);
+	    					e.setSymbol(parts[1]);
+	    					e.setObservable(true);
+	    					e.setControllable(true);
+	    					eCount++;
+	    					a.add(e);
+	    					events.put(parts[1], new Long(e.getId()));
+	    				}
+	    				else
+	    					e=(model.fsa.ver1.Event)a.getEvent(eId.longValue());
+	    				model.fsa.ver1.Transition t=new model.fsa.ver1.Transition(tCount,s1,s2,e);
+	    				a.add(t);
+	    				tCount++;
+	    			}
+	    		}
+	    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
+	    		Hub.getWorkspace().addFSAGraph(g);
+	    	}catch(java.io.IOException e)
+	    	{
+	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
+	    	}
+	    	catch(RuntimeException e)
+	    	{
+	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
+	    	}
+	    	finally
+	    	{
+	    		try
+	    		{
+	    			if(in!=null)
+	    				in.close();
+	    		}catch(java.io.IOException e){}
+	    	}
+	    	
+		}
+	}
+
 	public static class ExportToPNGCommand extends AbstractSaveAsCommand {
 
 		public ExportToPNGCommand() {

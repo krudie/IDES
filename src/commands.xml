@@ -67,6 +67,8 @@
          <separator/>
          <member command-id="export.group" inline="true"/>
          <expansion-point separator="before"/>
+         <member command-id="import.grail.command"/>
+         <separator/>
          <member command-id="exit.command"/>
       </members>  
    </group>   
@@ -243,6 +245,7 @@
       <members>  
          <member command-id="export.latex.command"/>         
          <member command-id="export.eps.command"/>
+         <member command-id="export.grail.command"/>
       </members>  
     </group>
     <command id="export.gif.command">    
@@ -275,6 +278,16 @@
          <text/>
       </face>
     </command>
+    <command id="export.grail.command">
+      <face>
+         <text>Export to Grail</text>
+         <icon type="classpath">images/icons/file_export_png.gif</icon>
+         <description>Export to Grail</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>
     <command id="export.png.command">    
       <face>
          <text>Export to PNG</text>
@@ -285,6 +298,16 @@
          <text/>
       </face>
     </command>    
+    <command id="import.grail.command">    
+      <face>
+         <text>Import from Grail</text>
+         <icon type="classpath">images/icons/file_export_png.gif</icon>
+         <description>Import from Grail</description>
+      </face>
+      <face name="toolbar" extends="[default]">
+         <text/>
+      </face>
+    </command>
     
     <command id="exit.command">    
       <face>
