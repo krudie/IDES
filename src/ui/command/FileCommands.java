@@ -501,8 +501,6 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
-			if(Hub.getWorkspace().getActiveModel()==null)
-				return;
 			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
 			fc.setDialogTitle(Hub.string("importGrailTitle"));
 			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.FM_FILE_EXT, Hub.string("fmFileDescription")));
