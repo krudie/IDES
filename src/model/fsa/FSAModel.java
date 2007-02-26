@@ -4,10 +4,11 @@ import io.fsa.ver1.SubElement;
 
 import java.util.ListIterator;
 
+
 import model.DESModel;
 
 
-public interface FSAModel extends DESModel {
+public interface FSAModel extends DESModel,FSAPublisher{
 
 	/**
 	 * @return the ID of the automaton
@@ -123,4 +124,9 @@ public interface FSAModel extends DESModel {
 	//TODO: change to use FSAMetaData
     public void setMeta(SubElement m);
 
+    /**
+     * Creates and returns a copy of this FSAModel. 
+     * @return a copy of the model
+     */
+    public FSAModel clone();
 }

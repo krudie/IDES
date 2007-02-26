@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import main.Annotable;
 import main.Hub;
 import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
@@ -32,7 +33,7 @@ public class FileOperations {
 	public static final String LAST_PATH_SETTING_NAME="lastUsedPath";
 	
 	public static FSAModel openAutomaton(File f) {
-        Automaton a = null;
+        FSAModel a = null;
         if(!f.canRead())
         {
         	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
@@ -70,7 +71,7 @@ public class FileOperations {
         if(a!=null)
         {
         	a.setName(ParsingToolbox.removeFileType(f.getName()));
-        	a.setFile(f);
+        	a.setAnnotation(Annotable.FILE,f);
         }
         Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
         return a;
@@ -84,7 +85,7 @@ public class FileOperations {
      * @param file the file to save it to
      * @return if file was saved
      */      
-    public static boolean saveAutomaton(Automaton a, File file){    	
+    public static boolean saveAutomaton(FSAModel a, File file){    	
         PrintStream ps = IOUtilities.getPrintStream(file);
         if(ps == null){
         	
@@ -100,7 +101,7 @@ public class FileOperations {
         		Hub.getWorkspace().removeFSAModel(newName);
         	
         	a.setName(newName);
-        	a.setFile(file);
+        	a.setAnnotation(Annotable.FILE,file);
         	a.fireFSASaved(); 
         	
             Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
@@ -116,11 +117,11 @@ public class FileOperations {
 	 * @param a automaton to save
 	 * @return if file was saved
 	 */
-	public static boolean saveAutomatonAs(Automaton a) {
+	public static boolean saveAutomatonAs(FSAModel a) {
 		JFileChooser fc;
 		
-		if(a.getFile()!=null){
-			fc=new JFileChooser(a.getFile().getParent());
+		if((File)a.getAnnotation(Annotable.FILE)!=null){
+			fc=new JFileChooser(((File)a.getAnnotation(Annotable.FILE)).getParent());
 		}else{
 			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		}
@@ -129,8 +130,8 @@ public class FileOperations {
 		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
 				Hub.string("modelFileDescription")));
 		
-		if(a.getFile()!=null){
-			fc.setSelectedFile(a.getFile());
+		if((File)a.getAnnotation(Annotable.FILE)!=null){
+			fc.setSelectedFile((File)a.getAnnotation(Annotable.FILE));
 		}else{
 			fc.setSelectedFile(new File(a.getName()));
 		}

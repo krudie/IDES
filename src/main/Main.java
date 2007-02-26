@@ -13,6 +13,7 @@ import operations.fsa.ver1.Accessible;
 import operations.fsa.ver1.Coaccessible;
 import operations.fsa.ver1.Conflicting;
 import operations.fsa.ver1.Containment;
+import operations.fsa.ver1.ControlMap;
 import operations.fsa.ver1.Controllable;
 import operations.fsa.ver1.Meet;
 import operations.fsa.ver1.PrefixClosure;
@@ -25,6 +26,8 @@ import pluggable.operation.OperationManager;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
 
+import model.ModelFactory;
+import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
 import services.General;
@@ -91,6 +94,7 @@ public class Main {
 		OperationManager.register(new SupCon());
 		OperationManager.register(new Containment());
 		OperationManager.register(new Conflicting());
+		OperationManager.register(new ControlMap());
 
 		try {
 			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
@@ -110,7 +114,7 @@ public class Main {
 		//setup stuff that needs the main window
 		LatexManager.init(); 
 		
-		Automaton fsa = new Automaton(Hub.string("newAutomatonName"));
+		FSAModel fsa = ModelFactory.getFSA(Hub.string("newAutomatonName"));
 		Hub.getWorkspace().addFSAModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());

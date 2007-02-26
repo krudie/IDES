@@ -4,17 +4,19 @@ import io.fsa.ver1.SubElement;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import observer.FSAMessage;
-import observer.FSAPublisher;
 import services.General;
 
+import model.ModelFactory;
 import model.fsa.FSAEvent;
 import model.fsa.FSAEventSet;
+import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
+import model.fsa.FSAPublisherAdaptor;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 
@@ -28,7 +30,7 @@ import model.fsa.FSATransition;
  * @author Kristian Edlund
  * @author Lenko Grigorov
  */
-public class Automaton extends FSAPublisher implements Cloneable, FSAModel {	
+public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAModel {	
 	
     private LinkedList<FSAState> states;
 
@@ -38,15 +40,17 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
 
     private String name = null;
 
-    private File myFile = null;
+//    private File myFile = null;
     
     protected String id = "";
+
+    protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
     
-    /**
-     * If this automaton represents the composition of other automata,
-     * this will contain a list the ids of these other automata.      
-     */ 
-    protected String[] composedOf = new String[0];
+//    /**
+//     * If this automaton represents the composition of other automata,
+//     * this will contain a list the ids of these other automata.      
+//     */ 
+//    protected String[] composedOf = new String[0];
     
     private SubElement meta = null;
 
@@ -55,8 +59,11 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
 	private long maxTransitionId;
 	
     /**
-     * constructs a nem automaton with the name name
+     * constructs a nem automaton with the name name.
+     * <p>Do not instantiate directly. Use {@link ModelFactory#getFSA(String)} instead.
      * @param name the name of the automaton
+     * @see ModelFactory#getFSA()
+     * @see ModelFactory#getFSA(String)
      */
     public Automaton(String name){
         states = new LinkedList<FSAState>();
@@ -74,7 +81,7 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
      */
     public FSAModel clone(){
         Automaton clone = new Automaton(this.name);
-        clone.setAutomataCompositionList(new String[]{id});
+//        clone.setAutomataCompositionList(new String[]{id});
 		clone.setId(General.getRandomId());
         ListIterator<FSAEvent> ei = getEventIterator();
         while(ei.hasNext()){
@@ -628,41 +635,41 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
         }
     }
     
-    /**
-     * Set the file for this automaton.
-     * @param f the file
-     */
-    public void setFile(File f)
-    {
-    	myFile=f;
-    }
+//    /**
+//     * Set the file for this automaton.
+//     * @param f the file
+//     */
+//    public void setFile(File f)
+//    {
+//    	myFile=f;
+//    }
+//    
+//    /**
+//     * Get this automaton's file.
+//     * @return
+//     */
+//    public File getFile()
+//    {
+//    	return myFile;
+//    }
     
-    /**
-     * Get this automaton's file.
-     * @return
-     */
-    public File getFile()
-    {
-    	return myFile;
-    }
-    
-	/**
-	 * Gets the list of ids of the automata of which this automaton is a composition.
-	 * @return the list of ids of the automata of which this automaton is a composition
-	 */
-	public String[] getAutomataCompositionList()
-	{
-		return composedOf;
-	}
-	
-	/**
-	 * Sets the list of ids of the automata of which this automaton is a composition.
-	 * @param list the list of ids of the automata of which this automaton is a composition
-	 */
-	public void setAutomataCompositionList(String[] list)
-	{
-		composedOf=list;
-	}
+//	/**
+//	 * Gets the list of ids of the automata of which this automaton is a composition.
+//	 * @return the list of ids of the automata of which this automaton is a composition
+//	 */
+//	public String[] getAutomataCompositionList()
+//	{
+//		return composedOf;
+//	}
+//	
+//	/**
+//	 * Sets the list of ids of the automata of which this automaton is a composition.
+//	 * @param list the list of ids of the automata of which this automaton is a composition
+//	 */
+//	public void setAutomataCompositionList(String[] list)
+//	{
+//		composedOf=list;
+//	}
 
     public SubElement getMeta()
     {
@@ -673,4 +680,19 @@ public class Automaton extends FSAPublisher implements Cloneable, FSAModel {
     {
     	meta=m;
     }
+    
+	public Object getAnnotation(String key)
+	{
+		return annotations.get(key);
+	}
+	
+	public void setAnnotation(String key, Object annotation)
+	{
+		annotations.put(key, annotation);
+	}
+	
+	public boolean hasAnnotation(String key)
+	{
+		return annotations.containsKey(key);
+	}
 }

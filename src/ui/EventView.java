@@ -27,16 +27,17 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
-import observer.FSAMessage;
-import observer.FSAPublisher;
-import observer.FSASubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
 import main.Hub;
 import model.fsa.FSAEvent;
+import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
+import model.fsa.FSAPublisher;
+import model.fsa.FSAPublisherAdaptor;
+import model.fsa.FSASubscriber;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
 
@@ -158,7 +159,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	    	}
 	    		    		
 	    	((FSAPublisher)a).fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
-	    			FSAMessage.EVENT, events.elementAt(row).getId(), (FSAPublisher)a));			
+	    			FSAMessage.EVENT, events.elementAt(row).getId(), (FSAPublisherAdaptor)a));			
 	    	
 	    	if(col==0)
 	    	{
@@ -230,7 +231,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
 			}
 			// FIXME Issue a command that goes to automaton.
-			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
+			FSAModel a=Hub.getWorkspace().getActiveModel();
 			for(int i=0;i<delEvents.length;++i)
 			{
 				//Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
@@ -253,7 +254,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				createButton.doClick();
 				return;
 			}
-			Automaton a=(Automaton)Hub.getWorkspace().getActiveModel();
+			FSAModel a=Hub.getWorkspace().getActiveModel();
 			if(a==null||"".equals(eventNameField.getText()))
 				return;
 			
@@ -287,7 +288,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	protected JCheckBox observableCBox;
 	protected JButton createButton;
 	protected JButton deleteButton;
-	private Automaton lastModel=null;
+	private FSAModel lastModel=null;
 	
 	public EventView()
 	{
@@ -434,7 +435,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 			{
 				if(lastModel!=null)
 					lastModel.removeSubscriber(this);
-				lastModel=(Automaton)model;
+				lastModel=model;
 				lastModel.addSubscriber(this);
 			}
 		}	

@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import model.ModelFactory;
 import model.fsa.*;
 import model.fsa.ver1.*;
 
@@ -39,7 +40,7 @@ public class AutomatonParser extends AbstractFileParser{
 
     private File file;
 
-    private Automaton a;
+    private FSAModel a;
 
     private SubElementContainer sec;
     
@@ -55,7 +56,7 @@ public class AutomatonParser extends AbstractFileParser{
     /**
      * @see projectPresentation.AbstractFileParser#parse(java.io.File)
      */
-    public Automaton parse(File f){
+    public FSAModel parse(File f){
         state = STATE_IDLE;
         a = null;
         file = f;
@@ -128,7 +129,7 @@ public class AutomatonParser extends AbstractFileParser{
     		}
     		else
     		{
-                a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
+                a = ModelFactory.getFSA(ParsingToolbox.removeFileType(file.getName()));
                 a.setId(atts.getValue(ATTRIBUTE_ID));
     			state = STATE_MODEL;
     		}

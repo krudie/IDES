@@ -27,7 +27,14 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
     
     // if this state represents the composition of the states of other automata,
     // this will contain a list the ids of these other states
+    //  TODO move to meta info
     protected long[] composedOf=new long[0];
+    
+    // a set with disable events at this state
+    //  TODO move to meta info
+    protected java.util.Set<model.fsa.FSAEvent> disabledEvents=null;
+    
+    
 
     /**
      * constructs a state with the given id.
@@ -180,7 +187,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * Gets the list of ids of the states of which this state is a composition.
 	 * @return the list of ids of the states of which this state is a composition
 	 */
-	public long[] getStateCompositionList()
+	public long[] getStateCompositionList() //TODO move to meta info
 	{
 		return composedOf;
 	}
@@ -189,9 +196,30 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * Sets the list of ids of the states of which this state is a composition.
 	 * @param list the list of ids of the states of which this state is a composition
 	 */
-	public void setStateCompositionList(long[] list)
+	public void setStateCompositionList(long[] list) //TODO move to meta info
 	{
 		composedOf=list;
+	}
+	
+	/**
+	 * Get the events disabled at the state (if any).
+	 * @return set of disabled events
+	 */
+	public java.util.Set<model.fsa.FSAEvent> getDisabledEvents() //TODO move to meta info
+	{
+		if(disabledEvents==null)
+			return new java.util.HashSet<model.fsa.FSAEvent>();
+		else
+			return disabledEvents;
+	}
+	
+	/**
+	 * Set the events disable at the state. The new set will replace the existing set.
+	 * @param de set of disabled events
+	 */
+	public void setDisabledEvents(java.util.Set<model.fsa.FSAEvent> de) //	TODO move to meta info
+	{
+		disabledEvents=de;
 	}
 	
 	public static final String ATTR_MARKED = "marked";

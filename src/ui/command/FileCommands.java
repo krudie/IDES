@@ -14,11 +14,14 @@ import java.util.Iterator;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import main.Annotable;
 import main.Hub;
 import main.IDESWorkspace;
 import main.IncompleteWorkspaceDescriptorException;
 import main.Main;
 import main.WorkspaceDescriptor;
+import model.ModelFactory;
+import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
 import org.pietschy.command.ActionCommand;
@@ -51,7 +54,7 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = new Automaton(Hub.string("newAutomatonName")+"-"+automatonCount++);
+			FSAModel fsa = ModelFactory.getFSA(Hub.string("newAutomatonName")+"-"+automatonCount++);
 			Hub.getWorkspace().addFSAModel(fsa);
 			Hub.getWorkspace().setActiveModel(fsa.getName());			
 		}	
@@ -82,7 +85,7 @@ public class FileCommands {
 				}
 				else
 				{
-					Automaton fsa = (Automaton)FileOperations.openAutomaton(fc.getSelectedFile());
+					FSAModel fsa = FileOperations.openAutomaton(fc.getSelectedFile());
 					if(fsa != null){
 						Hub.getWorkspace().addFSAModel(fsa);
 						Hub.getWorkspace().setActiveModel(fsa.getName());
@@ -107,9 +110,9 @@ public class FileCommands {
 			// TODO This should be a while loop
 			for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();) {
 				FSAGraph gm=i.next();
-				Automaton fsa=gm.getAutomaton();
+				FSAModel fsa=gm.getModel();
 				if( fsa != null )
-					if(FileOperations.saveAutomaton(fsa,fsa.getFile()))	{					
+					if(FileOperations.saveAutomaton(fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{					
 						Hub.getWorkspace().fireRepaintRequired();
 					}
 			}
@@ -125,12 +128,12 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = (Automaton)Hub.getWorkspace().getActiveModel();
+			FSAModel fsa = Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			
 			if( fsa != null ) {
-				if(FileOperations.saveAutomaton(fsa,fsa.getFile()))	{
+				if(FileOperations.saveAutomaton(fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 			}
@@ -147,7 +150,7 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Automaton fsa = (Automaton)Hub.getWorkspace().getActiveModel();			
+			FSAModel fsa = Hub.getWorkspace().getActiveModel();			
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if(fsa!=null)
@@ -529,7 +532,7 @@ public class FileCommands {
 	    	try
 	    	{
 	    		in=new java.io.BufferedReader(new java.io.FileReader(file));
-	    		Automaton a=new Automaton(file.getName());
+	    		FSAModel a=ModelFactory.getFSA(file.getName());
 	    		long tCount=0;
 	    		long eCount=0;
 	    		java.util.Hashtable<String,Long> events=new java.util.Hashtable<String, Long>();

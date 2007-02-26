@@ -5,6 +5,7 @@ package presentation.fsa;
 
 import java.util.ListIterator;
 
+import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.State;
@@ -15,7 +16,7 @@ import model.fsa.ver1.State;
  */
 public class StateLabeler {
 
-	public static void labelCompositeStates(Automaton a)
+	public static void labelCompositeStates(FSAModel a)
 	{
         ListIterator<FSAState> si = a.getStateIterator();
         while(si.hasNext()){

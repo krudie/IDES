@@ -3,6 +3,7 @@
  */
 package operations.fsa.ver1;
 
+import model.ModelFactory;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import pluggable.operation.Operation;
@@ -68,7 +69,7 @@ public class Projection implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		Automaton a=new Automaton("none");
+		FSAModel a=ModelFactory.getFSA("none");
 		Composition.observer((FSAModel)inputs[0],a);
 		return new Object[]{a};
 	}

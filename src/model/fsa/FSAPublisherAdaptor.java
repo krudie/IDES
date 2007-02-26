@@ -1,7 +1,7 @@
 /**
  * 
  */
-package observer;
+package model.fsa;
 
 import java.util.ArrayList;
 
@@ -10,11 +10,11 @@ import java.util.ArrayList;
  * 
  * @author Helen Bretzke
  */
-public class FSAPublisher {
+public class FSAPublisherAdaptor implements FSAPublisher {
 
 	private ArrayList<FSASubscriber> subscribers;
 		
-	public FSAPublisher() {
+	public FSAPublisherAdaptor() {
 		super();
 		subscribers = new ArrayList<FSASubscriber>();
 	}

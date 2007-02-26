@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import main.WorkspaceDescriptor;
 import model.fsa.FSAEvent;
+import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
@@ -52,7 +53,7 @@ public class XMLexporter{
      * @param a The automaton to make into xml
      * @param ps a printstream that the automaton should be written to.
      */
-    public static void automatonToXML(Automaton a, PrintStream ps){
+    public static void automatonToXML(FSAModel a, PrintStream ps){
         ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         ps.println("<model version=\"2.1\" type=\"FSA\" id=\""+a.getId()+"\">");
         ps.println("<data>");

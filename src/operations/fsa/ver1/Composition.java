@@ -11,6 +11,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import main.Annotable;
+import model.ModelFactory;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
@@ -41,17 +43,17 @@ public class Composition{
      * @param name The name of the end product
      * @return The result of the product
      */
-    public static Automaton product(Automaton[] automata, String name){
+    public static FSAModel product(FSAModel[] automata, String name){
 
         if(automata.length < 2) return null;
 
-        Automaton prevAnswer = new Automaton("temp");
-        Automaton newAnswer;
+        FSAModel prevAnswer = ModelFactory.getFSA("temp");
+        FSAModel newAnswer;
 
         product(automata[0], automata[1], prevAnswer);
 
         for(int i = 2; i < automata.length; i++){
-            newAnswer = new Automaton("temp");
+            newAnswer = ModelFactory.getFSA("temp");
             product(prevAnswer, automata[i], newAnswer);
 
             prevAnswer = newAnswer;
@@ -67,9 +69,9 @@ public class Composition{
      * @param b an automaton
      * @param product the accesible product of a and b.
      */
-    public static void product(FSAModel a, FSAModel b, Automaton product){
+    public static void product(FSAModel a, FSAModel b, FSAModel product){
     	
-    	product.setAutomataCompositionList(new String[]{a.getId(),b.getId()});
+    	product.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId(),b.getId()});
 
     	//long eventid = 0;
     	
@@ -167,17 +169,17 @@ public class Composition{
      * @param name The name of the end product of the parallel composition
      * @return The result of the parallel composition
      */
-    public static Automaton parallel(Automaton[] automata, String name){
+    public static FSAModel parallel(FSAModel[] automata, String name){
 
         if(automata.length < 2) return null;
 
-        Automaton prevAnswer = new Automaton("temp");
-        Automaton newAnswer;
+        FSAModel prevAnswer = ModelFactory.getFSA("temp");
+        FSAModel newAnswer;
 
         parallel(automata[0], automata[1], prevAnswer);
 
         for(int i = 2; i < automata.length; i++){
-            newAnswer = new Automaton("temp");
+            newAnswer = ModelFactory.getFSA("temp");
             parallel(prevAnswer, automata[i], newAnswer);
             prevAnswer = newAnswer;
         }
@@ -192,9 +194,9 @@ public class Composition{
      * @param b an automaton
      * @param parallel a pointer to the result for the accesible parallel product of a and b.
      */
-    public static void parallel(FSAModel a, FSAModel b, Automaton parallel){
+    public static void parallel(FSAModel a, FSAModel b, FSAModel parallel){
 
-    	parallel.setAutomataCompositionList(new String[]{a.getId(),b.getId()});
+    	parallel.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId(),b.getId()});
 
     	// Add the union of the eventsets as the parallel compositions eventset.
         // mark all events in the intersection as being in the intersection.
@@ -338,9 +340,9 @@ public class Composition{
      * @param a a non-deterministic automaton
      * @param observer the output, a deterministic observer of the automaton a.
      */
-    public static void observer(FSAModel a, Automaton observer){
+    public static void observer(FSAModel a, FSAModel observer){
     	
-    	observer.setAutomataCompositionList(new String[]{a.getId()});
+    	observer.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId()});
 
     	//long eventid=0;
     	

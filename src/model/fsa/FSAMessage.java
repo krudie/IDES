@@ -1,7 +1,7 @@
 /**
  * 
  */
-package observer;
+package model.fsa;
 
 /**
  * Message sent to subscribers listening for changes to a FSA.

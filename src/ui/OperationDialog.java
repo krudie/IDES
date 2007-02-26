@@ -143,7 +143,7 @@ public class OperationDialog extends EscapeDialog {
 						if(outputs[i] instanceof FSAModel)
 						{
 							((FSAModel)outputs[i]).setName(outputNames.elementAt(i).getText());
-							FSAGraph g=new FSAGraph((Automaton)outputs[i]);
+							FSAGraph g=new FSAGraph((FSAModel)outputs[i]);
 							g.labelCompositeNodes();
 							Hub.getWorkspace().addFSAGraph(g);
 							closeWindow = true;

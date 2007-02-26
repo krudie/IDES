@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import model.ModelFactory;
 import model.fsa.*;
 import model.fsa.ver1.*;
 
@@ -36,7 +37,7 @@ public class AutomatonParser20 extends AbstractFileParser{
 
     private File file;
 
-    private Automaton a;
+    private FSAModel a;
 
     private SubElementContainer sec;
 
@@ -50,7 +51,7 @@ public class AutomatonParser20 extends AbstractFileParser{
     /**
      * @see projectPresentation.AbstractFileParser#parse(java.io.File)
      */
-    public Automaton parse(File f){
+    public FSAModel parse(File f){
         state = STATE_IDLE;
         a = null;
         file = f;
@@ -103,7 +104,7 @@ public class AutomatonParser20 extends AbstractFileParser{
                         + ": encountered wrong start of element in state document.\n";
                 break;
             }
-            a = new Automaton(ParsingToolbox.removeFileType(file.getName()));
+            a = ModelFactory.getFSA(ParsingToolbox.removeFileType(file.getName()));
             state = STATE_AUTOMATON;
             break;
         case (STATE_AUTOMATON):

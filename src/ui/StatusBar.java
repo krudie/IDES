@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import observer.FSAMessage;
-import observer.FSASubscriber;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
@@ -20,6 +18,9 @@ import observer.WorkspaceSubscriber;
 import presentation.fsa.FSAGraph;
 
 import main.Hub;
+import model.fsa.FSAMessage;
+import model.fsa.FSAModel;
+import model.fsa.FSASubscriber;
 
 /**
  *
@@ -31,7 +32,7 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 	JLabel statsLabel=new JLabel();
 	
 	/** the currently active model */
-	model.fsa.ver1.Automaton a=null;
+	FSAModel a=null;
 	
 	public StatusBar() {
 		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
@@ -49,7 +50,7 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 		}
 			
 		if ( Hub.getWorkspace().getActiveModel()!= null ) {		
-			a=(model.fsa.ver1.Automaton)Hub.getWorkspace().getActiveModel();
+			a=Hub.getWorkspace().getActiveModel();
 			a.addSubscriber(this);			
 		}
 	

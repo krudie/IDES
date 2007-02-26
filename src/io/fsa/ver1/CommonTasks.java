@@ -4,10 +4,12 @@
 package io.fsa.ver1;
 
 import java.awt.Toolkit;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import main.Annotable;
 import main.Hub;
 import main.IncompleteWorkspaceDescriptorException;
 import main.WorkspaceDescriptor;
@@ -68,7 +70,7 @@ public class CommonTasks {
 			return false;
 		if(choice==JOptionPane.YES_OPTION)
 		{
-			if(FileOperations.saveAutomaton(gm.getAutomaton(),gm.getAutomaton().getFile()))
+			if(FileOperations.saveAutomaton(gm.getModel(),(File)gm.getModel().getAnnotation(Annotable.FILE)))
 			{
 //				gm.setNeedsRefresh(false);
 				//gm.notifyAllSubscribers();

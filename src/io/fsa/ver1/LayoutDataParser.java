@@ -17,6 +17,7 @@ import presentation.fsa.GraphElement;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
 
+import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
@@ -43,7 +44,7 @@ public class LayoutDataParser extends AbstractParser {
     private static final int STATE_IDLE = 0, STATE_META = 1,
     STATE_STATE = 2, STATE_TRANSITION = 3, STATE_FONT = 4;
     
-	Automaton a=null;
+	FSAModel a=null;
 	ContentHandler ch=null;
 	
 	/**
@@ -52,7 +53,7 @@ public class LayoutDataParser extends AbstractParser {
 	 */
 	GraphElement graph=null;
 	
-	public LayoutDataParser(Automaton a) {
+	public LayoutDataParser(FSAModel a) {
 		super();
 		this.a=a;
 		this.graph = new GraphElement();

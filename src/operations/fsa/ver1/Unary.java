@@ -148,7 +148,7 @@ public class Unary{
         }
     }
     
-    public static void buildStateCompositionOfClone(Automaton clone)
+    public static void buildStateCompositionOfClone(FSAModel clone)
     {
     	for(Iterator<FSAState> i=clone.getStateIterator();i.hasNext();)
     	{

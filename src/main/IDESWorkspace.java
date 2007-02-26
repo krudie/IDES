@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import observer.WorkspaceMessage;
-import observer.WorkspacePublisher;
+import observer.WorkspacePublisherAdaptor;
 
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
@@ -25,7 +25,7 @@ import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.MetaData;
 
-public class IDESWorkspace extends WorkspacePublisher implements Workspace {
+public class IDESWorkspace extends WorkspacePublisherAdaptor implements Workspace {
 
 	//needed for special handling of first (automatic) add and first (user-initated) add
 	private long countAdd=0;
@@ -41,7 +41,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	
 	// maps name of each model to the abstract FSA model, 
 	// graph representation and metadata respectively.
-	private Vector<Automaton> systems;
+	private Vector<FSAModel> systems;
 	private Vector<FSAGraph> graphs;
 	private Vector<MetaData> metadata;
 
@@ -56,7 +56,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	
 	protected IDESWorkspace(){
 		activeModelIdx=-1;
-		systems=new Vector<Automaton>();
+		systems=new Vector<FSAModel>();
 		graphs=new Vector<FSAGraph>();
 		metadata=new Vector<MetaData>();
 		name=Hub.string("newAutomatonName");
@@ -79,7 +79,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 			g.setName(g.getName()+" ("+i+")");
 		}
 		
-		systems.add(g.getAutomaton());
+		systems.add(g.getModel());
 		metadata.add(g.getMeta());
 		graphs.add(g);
 		activeModelIdx=systems.size()-1;
@@ -92,7 +92,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		}
 
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
-									g.getAutomaton().getId(), 
+									g.getModel().getId(), 
 									WorkspaceMessage.ADD, 
 									this));		
 		if(countAdd!=0){
@@ -116,9 +116,9 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 			fsa.setName(fsa.getName()+" ("+i+")");
 		}
 
-		systems.add((Automaton) fsa);
+		systems.add(fsa);
 		metadata.add(new MetaData((Automaton)fsa));
-		graphs.add(new FSAGraph((Automaton)fsa, metadata.lastElement()));
+		graphs.add(new FSAGraph(fsa, metadata.lastElement()));
 		activeModelIdx=systems.size()-1;
 		
 		//eventsModel.addLocalEvents(fsa);
@@ -198,7 +198,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 //			((Automaton)getActiveModel()).removeSubscriber(getDrawingBoard());
 //		}
 		int idx=getFSAIndex(name);
-		Automaton fsa = systems.get(idx);
+		FSAModel fsa = systems.get(idx);
 		systems.removeElementAt(idx);	
 		metadata.removeElementAt(idx);
 		graphs.removeElementAt(idx);
@@ -279,7 +279,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	 */
     public Iterator<FSAModel> getAutomata() {
     	ArrayList<FSAModel> g = new ArrayList<FSAModel>();
-		Iterator<Automaton> iter = systems.iterator();
+		Iterator<FSAModel> iter = systems.iterator();
 		while(iter.hasNext()){
 			g.add(iter.next());
 		}
@@ -331,7 +331,7 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		String selectedModel=null;
 		for(int i=0;i<files.size();++i)
 		{
-			Automaton fsa = (Automaton)FileOperations.openAutomaton(
+			FSAModel fsa = FileOperations.openAutomaton(
 					new java.io.File(files.elementAt(i)));
 			if(fsa != null)
 			{
@@ -361,17 +361,17 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 	public WorkspaceDescriptor getDescriptor() throws IncompleteWorkspaceDescriptorException
 	{
 		WorkspaceDescriptor wd=new WorkspaceDescriptor(myFile);
-		HashSet<Automaton> unsavedModels=new HashSet<Automaton>();
-		for(Iterator i=getAutomata();i.hasNext();)
+		HashSet<FSAModel> unsavedModels=new HashSet<FSAModel>();
+		for(Iterator<FSAModel> i=getAutomata();i.hasNext();)
 		{
-			Automaton a=(Automaton)i.next();
-			if(a.getFile()==null)
+			FSAModel a=i.next();
+			if((File)a.getAnnotation(Annotable.FILE)==null)
 				unsavedModels.add(a);
 		}
 		if(!unsavedModels.isEmpty())
 		{
 			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
-			for(Automaton a:unsavedModels)
+			for(FSAModel a:unsavedModels)
 			{
 				if(!FileOperations.saveAutomatonAs(a))
 					throw new IncompleteWorkspaceDescriptorException();
@@ -381,8 +381,8 @@ public class IDESWorkspace extends WorkspacePublisher implements Workspace {
 		}
 		for(int counter=0; counter<systems.size(); ++counter)
 		{
-			Automaton a=(Automaton)systems.elementAt(counter);
-			wd.insertModel(a.getFile().getName(),counter);
+			FSAModel a=systems.elementAt(counter);
+			wd.insertModel(((File)a.getAnnotation(Annotable.FILE)).getName(),counter);
 			if(a.getName().equals(getActiveModelName()))
 				wd.setSelectedModel(counter);
 		}

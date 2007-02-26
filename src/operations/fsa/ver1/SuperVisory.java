@@ -2,6 +2,7 @@ package operations.fsa.ver1;
 
 import java.util.ListIterator;
 
+import model.ModelFactory;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -28,7 +29,7 @@ public class SuperVisory{
      * @param legal The legal language
      * @param result An empty automaton to use for the result
      */    
-    public static void supC(FSAModel plant, FSAModel legal, Automaton result){
+    public static void supC(FSAModel plant, FSAModel legal, FSAModel result){
 
         // This is implemented accourding to "Introduction to discrete event
         // systems of Cassandras and Lafortune.
@@ -89,7 +90,7 @@ public class SuperVisory{
      */    
     public static boolean controllable(FSAModel plant, FSAModel legal){
         //This function is very similar to supC besides that it will only run trough the automaton once to see if anyhitng should be cut of.
-        Automaton result = new Automaton("");
+        FSAModel result = ModelFactory.getFSA("");
 
         supCProduct(plant, legal, result);
         
@@ -137,7 +138,7 @@ public class SuperVisory{
      * @param b an automaton
      * @param product the accesible product of a and b.
      */
-    private static void supCProduct(FSAModel a, FSAModel b, Automaton product){
+    private static void supCProduct(FSAModel a, FSAModel b, FSAModel product){
     	
     	Composition.product(a,b,product);
     	Unary.accessible(product);

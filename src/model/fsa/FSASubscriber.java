@@ -1,7 +1,7 @@
 /**
  * 
  */
-package observer;
+package model.fsa;
 
 /**
  * Implemented by Subscribers to change notifications from FSAPublishers.

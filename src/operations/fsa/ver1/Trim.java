@@ -69,8 +69,8 @@ public class Trim implements FilterOperation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		FSAModel a=((Automaton)inputs[0]).clone();
-		Unary.buildStateCompositionOfClone((Automaton)a);		
+		FSAModel a=((FSAModel)inputs[0]).clone();
+		Unary.buildStateCompositionOfClone(a);		
 		Unary.trim(a);
 		return new Object[]{a};
 	}

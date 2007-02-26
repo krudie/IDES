@@ -11,9 +11,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import main.Annotable;
 import main.Hub;
+import model.fsa.FSAMessage;
+import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSAEvent;
+import model.fsa.FSASubscriber;
 import model.fsa.FSATransition;
 import model.fsa.ver1.Automaton;
 import model.fsa.ver1.Event;
@@ -22,8 +26,6 @@ import model.fsa.ver1.State;
 import model.fsa.ver1.Transition;
 import observer.FSAGraphMessage;
 import observer.FSAGraphSubscriber;
-import observer.FSAMessage;
-import observer.FSASubscriber;
 import pluggable.layout.LayoutManager;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
@@ -77,9 +79,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * @param fsa
 	 * @param layoutData
 	 */
-	public FSAGraph(Automaton fsa, MetaData layoutData) {
+	public FSAGraph(FSAModel fsa, MetaData layoutData) {
 		
-		this.fsa = fsa;
+		// FIXME: make FSAGraph be able to handle FSAModels
+		if(!(fsa instanceof Automaton))
+		{
+			throw new RuntimeException("FSAGraph can only layout Automatons");
+		}
+
+		this.fsa = (Automaton)fsa;
 		fsa.addSubscriber(this);
 		
 		this.metaData = layoutData;	
@@ -98,9 +106,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * 
 	 * @param fsa the mathematical model	
 	 */
-	public FSAGraph(Automaton fsa) {
-		this.fsa = fsa;
-		metaData = new MetaData(fsa);
+	public FSAGraph(FSAModel fsa) {
+		// FIXME: make FSAGraph be able to handle FSAModels
+		if(!(fsa instanceof Automaton))
+		{
+			throw new RuntimeException("FSAGraph can only layout Automatons");
+		}
+		this.fsa = (Automaton)fsa;
+		metaData = new MetaData(this.fsa);
 		fsa.addSubscriber(this);
 		
 		nodes = new HashMap<Long, CircleNode>();
@@ -228,7 +241,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		return needsSave;
 	}
 	
-	public Automaton getAutomaton() {
+	public FSAModel getModel() {
 		return fsa;
 	}
 	
@@ -1543,12 +1556,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 */
 	public void labelCompositeNodes()
 	{
-		if(fsa.getAutomataCompositionList().length>1)
+		if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length>1)
 		{
-			FSAGraph[] gs=new FSAGraph[fsa.getAutomataCompositionList().length];
+			FSAGraph[] gs=new FSAGraph[((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length];
 			for(int i=0;i<gs.length;++i)
 			{
-				FSAGraph g=Hub.getWorkspace().getGraphById(fsa.getAutomataCompositionList()[i]);
+				FSAGraph g=Hub.getWorkspace().getGraphById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
 				if(g==null)
 					return;
 				gs[i]=g;
@@ -1583,9 +1596,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 				}
 			}
 		}
-		else if(fsa.getAutomataCompositionList().length==1)
+		else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
 		{
-			FSAGraph g=Hub.getWorkspace().getGraphById(fsa.getAutomataCompositionList()[0]);
+			FSAGraph g=Hub.getWorkspace().getGraphById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
 			if(g==null)
 				return;
 			for(Node n:nodes.values())
