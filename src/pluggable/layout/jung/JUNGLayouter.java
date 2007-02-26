@@ -60,8 +60,8 @@ public class JUNGLayouter implements FSALayouter {
 		{
 			Node n=BridgeMapper.nodeMapInverse.get(v);
 			n.setLocation(new Point2D.Float((float)l.getLocation(v).getX(),(float)l.getLocation(v).getY()));
-			graph.commitMovement(graph);
 		}
+		graph.commitMovement(graph);
 	}
 
 }
