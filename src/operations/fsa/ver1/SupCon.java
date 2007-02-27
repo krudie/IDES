@@ -75,7 +75,7 @@ public class SupCon implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		FSAModel a=ModelManager.getFSA("none");
+		FSAModel a=ModelManager.createModel(FSAModel.class,"none");
 		SuperVisory.supC((FSAModel)inputs[0],(FSAModel)inputs[1],a);
 		FilterOperation fo=OperationManager.getFilterOperation("control map");
 		fo.filter(new Object[]{a,inputs[0]});

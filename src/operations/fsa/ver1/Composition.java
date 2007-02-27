@@ -47,13 +47,13 @@ public class Composition{
 
         if(automata.length < 2) return null;
 
-        FSAModel prevAnswer = ModelManager.getFSA("temp");
+        FSAModel prevAnswer = ModelManager.createModel(FSAModel.class,"temp");
         FSAModel newAnswer;
 
         product(automata[0], automata[1], prevAnswer);
 
         for(int i = 2; i < automata.length; i++){
-            newAnswer = ModelManager.getFSA("temp");
+            newAnswer = ModelManager.createModel(FSAModel.class,"temp");
             product(prevAnswer, automata[i], newAnswer);
 
             prevAnswer = newAnswer;
@@ -173,13 +173,13 @@ public class Composition{
 
         if(automata.length < 2) return null;
 
-        FSAModel prevAnswer = ModelManager.getFSA("temp");
+        FSAModel prevAnswer = ModelManager.createModel(FSAModel.class,"temp");
         FSAModel newAnswer;
 
         parallel(automata[0], automata[1], prevAnswer);
 
         for(int i = 2; i < automata.length; i++){
-            newAnswer = ModelManager.getFSA("temp");
+            newAnswer = ModelManager.createModel(FSAModel.class,"temp");
             parallel(prevAnswer, automata[i], newAnswer);
             prevAnswer = newAnswer;
         }

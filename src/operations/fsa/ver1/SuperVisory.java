@@ -90,7 +90,7 @@ public class SuperVisory{
      */    
     public static boolean controllable(FSAModel plant, FSAModel legal){
         //This function is very similar to supC besides that it will only run trough the automaton once to see if anyhitng should be cut of.
-        FSAModel result = ModelManager.getFSA("");
+        FSAModel result = ModelManager.createModel(FSAModel.class,"");
 
         supCProduct(plant, legal, result);
         

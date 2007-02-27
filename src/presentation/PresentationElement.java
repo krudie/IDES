@@ -153,8 +153,7 @@ public interface PresentationElement {
 	/**
 	 * Sets the location of this element to the given x and y coordinates. 
 	 * 
-	 * @param x the x coordinate
-	 * @param y the y coordinate
+	 * @param p the coordinate
 	 */
 	public void setLocation(Point2D.Float p);	
 	

@@ -61,6 +61,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAMode
 			a.setId(id);
 			return a;
 		}
+		public DESModel createModel(String id, String name)
+		{
+			Automaton a=new Automaton(name);
+			a.setId(id);
+			return a;
+		}
 	}
 	public static final ModelDescriptor myDescriptor=new AutomatonDescriptor();
 	
@@ -92,12 +98,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAMode
 	
     /**
      * constructs a nem automaton with the name name.
-     * <p>Do not instantiate directly. Use {@link ModelManager#getFSA(String)} instead.
+     * <p>Do not instantiate directly. Use {@link ModelManager#createModel(Class, String)} instead.
      * @param name the name of the automaton
-     * @see ModelManager#getFSA()
-     * @see ModelManager#getFSA(String)
+     * @see ModelManager#createModel(Class)
+     * @see ModelManager#createModel(Class, String)
      */
-    public Automaton(String name){
+    protected Automaton(String name){
         states = new LinkedList<FSAState>();
         transitions = new LinkedList<FSATransition>();
         events = new LinkedList<FSAEvent>();

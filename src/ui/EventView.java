@@ -467,7 +467,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	/**
 	 * Makes the Event tab visible or invisible
 	 * 
-	 * @param boolean flag indicating visibility status
+	 * @param b flag indicating visibility status
 	 */
 	public void setVisible(boolean b)
 	{

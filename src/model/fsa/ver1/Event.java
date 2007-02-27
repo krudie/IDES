@@ -66,7 +66,7 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 	/**
 	 * Sets the symbol for this event to <code>symbol</code>.
 	 * 
-	 * @param the symbol to set
+	 * @param symbol the symbol to set
 	 */
 	public void setSymbol(String symbol){		
 		SubElement eventSymbol = getSubElement("name");

@@ -69,7 +69,7 @@ public class Meet implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		FSAModel a=ModelManager.getFSA("none");
+		FSAModel a=ModelManager.createModel(FSAModel.class,"none");
 		Composition.product((FSAModel)inputs[0],(FSAModel)inputs[1],a);
 		return new Object[]{a};
 	}

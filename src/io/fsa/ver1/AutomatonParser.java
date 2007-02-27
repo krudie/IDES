@@ -54,7 +54,7 @@ public class AutomatonParser extends AbstractFileParser{
     }
 
     /**
-     * @see projectPresentation.AbstractFileParser#parse(java.io.File)
+     * @see AbstractFileParser#parse(File)
      */
     public FSAModel parse(File f){
         state = STATE_IDLE;
@@ -129,7 +129,7 @@ public class AutomatonParser extends AbstractFileParser{
     		}
     		else
     		{
-                a = ModelManager.getFSA(ParsingToolbox.removeFileType(file.getName()));
+                a = ModelManager.createModel(FSAModel.class,ParsingToolbox.removeFileType(file.getName()));
                 a.setId(atts.getValue(ATTRIBUTE_ID));
     			state = STATE_MODEL;
     		}

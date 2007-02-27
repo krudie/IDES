@@ -226,7 +226,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	/**
 	 * Tells the graph that it needs to be saved to file. 
 	 *  
-	 * @param d 
+	 * @param b 
 	 */
 	public void setNeedsSave( boolean b ) {			
 		needsSave = b;
@@ -1538,7 +1538,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 
 	/**
 	 * 
-	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
+	 * @see FSASubscriber#fsaEventSetChanged(FSAMessage)
 	 */
 	public void fsaEventSetChanged(FSAMessage message) {
 		// Remove any edges that have only one transition and

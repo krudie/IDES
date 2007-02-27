@@ -81,7 +81,7 @@ public class GraphElement implements PresentationElement {
 	/**
 	 * Inserts the given child at key <code>Object.hashCode()</code>.
 	 * 
-	 * @param the child to be inserted
+	 * @param child the child to be inserted
 	 */
 	public void insert(PresentationElement child) {
 		children.put((long)child.hashCode(), child);	

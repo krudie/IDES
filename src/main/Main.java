@@ -115,7 +115,7 @@ public class Main {
 		//setup stuff that needs the main window
 		LatexManager.init(); 
 		
-		FSAModel fsa = ModelManager.getFSA(Hub.string("newAutomatonName"));
+		FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName"));
 		Hub.getWorkspace().addFSAModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());

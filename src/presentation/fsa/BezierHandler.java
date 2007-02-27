@@ -62,7 +62,7 @@ public class BezierHandler extends EdgeHandler {
 	/**
 	 * Draws this handler in the given graphics context.
 	 * 
-	 *  @param the graphics context
+	 *  @param g the graphics context
 	 */
 	public void draw(Graphics g) {
 		

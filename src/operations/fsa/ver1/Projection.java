@@ -69,7 +69,7 @@ public class Projection implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		FSAModel a=ModelManager.getFSA("none");
+		FSAModel a=ModelManager.createModel(FSAModel.class,"none");
 		Composition.observer((FSAModel)inputs[0],a);
 		return new Object[]{a};
 	}

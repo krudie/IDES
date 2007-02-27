@@ -61,7 +61,7 @@ public class FileCommands {
 				return;
 			if(md.getPreferredModelInterface().equals(FSAModel.class))
 			{
-				FSAModel fsa = ModelManager.getFSA(Hub.string("newAutomatonName")+"-"+automatonCount++);
+				FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName")+"-"+automatonCount++);
 				Hub.getWorkspace().addFSAModel(fsa);
 				Hub.getWorkspace().setActiveModel(fsa.getName());
 			}
@@ -540,7 +540,7 @@ public class FileCommands {
 	    	try
 	    	{
 	    		in=new java.io.BufferedReader(new java.io.FileReader(file));
-	    		FSAModel a=ModelManager.getFSA(file.getName());
+	    		FSAModel a=ModelManager.createModel(FSAModel.class,file.getName());
 	    		long tCount=0;
 	    		long eCount=0;
 	    		java.util.Hashtable<String,Long> events=new java.util.Hashtable<String, Long>();

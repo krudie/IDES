@@ -11,21 +11,6 @@ import model.DESModel;
 public interface FSAModel extends DESModel,FSAPublisher{
 
 	/**
-	 * @return the ID of the automaton
-	 */
-	public abstract String getId();
-	
-	/**
-	 * @param id the ID of the automaton
-	 */
-	public abstract void setId(String id);
-	
-	/**
-	 * @param name the name of the automaton
-	 */
-	public abstract void setName(String name);
-
-	/**
 	 * @param s a state that needs to be added.
 	 */
 	public abstract void add(FSAState s);

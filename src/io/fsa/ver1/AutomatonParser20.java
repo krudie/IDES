@@ -49,7 +49,7 @@ public class AutomatonParser20 extends AbstractFileParser{
     }
 
     /**
-     * @see projectPresentation.AbstractFileParser#parse(java.io.File)
+     * @see AbstractFileParser#parse(File)
      */
     public FSAModel parse(File f){
         state = STATE_IDLE;
@@ -104,7 +104,7 @@ public class AutomatonParser20 extends AbstractFileParser{
                         + ": encountered wrong start of element in state document.\n";
                 break;
             }
-            a = ModelManager.getFSA(ParsingToolbox.removeFileType(file.getName()));
+            a = ModelManager.createModel(FSAModel.class,ParsingToolbox.removeFileType(file.getName()));
             state = STATE_AUTOMATON;
             break;
         case (STATE_AUTOMATON):

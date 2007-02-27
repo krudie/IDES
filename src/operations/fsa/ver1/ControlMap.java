@@ -32,7 +32,7 @@ public class ControlMap implements FilterOperation {
 //		Unary.buildStateCompositionOfClone((Automaton)supervisor);
 		FSAModel plant=(FSAModel)inputs[1];
 		
-		FSAModel product=ModelManager.getFSA("temp");
+		FSAModel product=ModelManager.createModel(FSAModel.class,"temp");
 
         // find initial states, mark them as reached and add them to the que
         FSAState[] initial = new FSAState[2];

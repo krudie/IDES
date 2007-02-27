@@ -19,7 +19,7 @@ public interface FSAEvent extends DESElement {
 	/**
 	 * Sets the symbol for this event to <code>symbol</code>.
 	 * 
-	 * @param the symbol to set
+	 * @param symbol the symbol to set
 	 */
 	public abstract void setSymbol(String symbol);
 	

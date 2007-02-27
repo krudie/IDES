@@ -201,7 +201,7 @@ public class Geometry {
 	 * Returns a vector that is the result of scaling <code>v</code> by <code>s</code>. 
 	 * 
 	 * @param v vector with origin at (0,0) and given direction
-	 * @param d the scalar 
+	 * @param s the scalar 
 	 * @return the result of scaling v by s
 	 */
 	public static Point2D.Float scale(Point2D v, double s) {		
@@ -215,8 +215,8 @@ public class Geometry {
 	 * @param b a point
 	 * @return a - b
 	 */
-	public static Point2D.Float subtract(Point2D.Float a, Point2D.Float v){
-		return new Point2D.Float(a.x - v.x, a.y - v.y);		
+	public static Point2D.Float subtract(Point2D.Float a, Point2D.Float b){
+		return new Point2D.Float(a.x - b.x, a.y - b.y);		
 	}
 
 	/**

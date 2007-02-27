@@ -9,43 +9,82 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import services.General;
+
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
 /**
- * A factory for constructing models. This isolates
- * the rest of the program from the specific implementations.
- * 
+ * The manager of models available to IDES. This allows for
+ * custom model types implemented by plugins.
+ * @see ModelDescriptor
+ * @see #registerModel(ModelDescriptor)
  * @author Lenko Grigorov
  */
 public class ModelManager {
 
+	/**
+	 * Index of all registered {@link ModelDescriptor}s.
+	 * The key is the DES model interface implemented by the model.
+	 * The value is the set of the model descriptors of all models
+	 * implementing the given interface. Note that if a model implements
+	 * a number of interfaces, its model descriptor will be included
+	 * in the set for each one of these interfaces.
+	 * @see #registerModel(ModelDescriptor)
+	 */
 	protected static Hashtable<Class,Set<ModelDescriptor>> class2Model=new Hashtable<Class, Set<ModelDescriptor>>();
 	
 	/**
-	 * Constructs an FSA model with an empty name.
-	 * @return a new FSA model
+	 * Creates and returns a DES model for the supplied interface,
+	 * with the given display name.
+	 * @param iface the interface for which a model has to be created
+	 * @param name the display name for the new model 
+	 * @return a new DES model for the given interface. If no model
+	 * was registered for this interface, returns <code>null</code>.
+	 * @see #createModel(Class) 
 	 */
-	public static FSAModel getFSA()
+	public static <T> T createModel(Class<T> iface, String name)
 	{
-		return new Automaton("");
+		Set<ModelDescriptor> s=class2Model.get(iface);
+		if(s.isEmpty())
+			return null;
+		else
+		{
+			String id=General.getRandomId();
+			return (T)s.iterator().next().createModel(id,name);
+		}
 	}
 
 	/**
-	 * Constructs an FSA model with a given name.
-	 * @param name the name for the new FSA model
-	 * @return the new FSA model
+	 * Creates and returns a DES model for the supplied interface,
+	 * with an empty display name.
+	 * @param iface the interface for which a model has to be created
+	 * @return a new DES model for the given interface. If no model
+	 * was registered for this interface, returns <code>null</code>.
+	 * @see #createModel(Class, String) 
 	 */
-	public static FSAModel getFSA(String name)
+	public static <T> T createModel(Class<T> iface)
 	{
-		return new Automaton(name);
+		return createModel(iface,"");
 	}
 	
+	/**
+	 * Returns the model descriptors for all models that implement
+	 * the given interface.
+	 * @param iface the interface for which model descriptors should be returned
+	 * @return the model descriptors of all models that implement the interface
+	 * @see #getAllModels()
+	 */
 	public static ModelDescriptor[] getModelsForInterface(Class iface)
 	{
 		return class2Model.get(iface).toArray(new ModelDescriptor[0]);
 	}
 	
+	/**
+	 * Returns all model descriptors registered with the manager.
+	 * @return all model descriptors registerd with the manager
+	 * @see #getModelsForInterface(Class)
+	 */
 	public static ModelDescriptor[] getAllModels()
 	{
 		Set<ModelDescriptor> all=new TreeSet<ModelDescriptor>(
@@ -63,6 +102,11 @@ public class ModelManager {
 		return all.toArray(new ModelDescriptor[0]);
 	}
 
+	/**
+	 * Registers a model descriptor so that the corresponding DES model
+	 * becomes available to IDES.
+	 * @param md the model descriptor for the DES model
+	 */
 	public static void registerModel(ModelDescriptor md)
 	{
 		Class[] ifaces=md.getModelInterfaces();
