@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import model.ModelFactory;
+import model.ModelManager;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
@@ -32,7 +32,7 @@ public class ControlMap implements FilterOperation {
 //		Unary.buildStateCompositionOfClone((Automaton)supervisor);
 		FSAModel plant=(FSAModel)inputs[1];
 		
-		FSAModel product=ModelFactory.getFSA("temp");
+		FSAModel product=ModelManager.getFSA("temp");
 
         // find initial states, mark them as reached and add them to the que
         FSAState[] initial = new FSAState[2];

@@ -5,7 +5,7 @@ package operations.fsa.ver1;
 
 import java.util.Iterator;
 
-import model.ModelFactory;
+import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.ver1.Automaton;
@@ -75,7 +75,7 @@ public class SupCon implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		FSAModel a=ModelFactory.getFSA("none");
+		FSAModel a=ModelManager.getFSA("none");
 		SuperVisory.supC((FSAModel)inputs[0],(FSAModel)inputs[1],a);
 		FilterOperation fo=OperationManager.getFilterOperation("control map");
 		fo.filter(new Object[]{a,inputs[0]});

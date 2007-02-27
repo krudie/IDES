@@ -1,6 +1,8 @@
 package model.fsa.ver1;
 import io.fsa.ver1.SubElement;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,7 +13,10 @@ import java.util.ListIterator;
 
 import services.General;
 
-import model.ModelFactory;
+import main.Hub;
+import model.DESModel;
+import model.ModelDescriptor;
+import model.ModelManager;
 import model.fsa.FSAEvent;
 import model.fsa.FSAEventSet;
 import model.fsa.FSAMessage;
@@ -31,6 +36,33 @@ import model.fsa.FSATransition;
  * @author Lenko Grigorov
  */
 public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAModel {	
+	
+	protected static class AutomatonDescriptor implements ModelDescriptor
+	{
+		public Class[] getModelInterfaces()
+		{
+			return new Class[]{FSAModel.class};
+		}
+		public Class getPreferredModelInterface()
+		{
+			return FSAModel.class;
+		}
+		public String getTypeDescription()
+		{
+			return "Finite State Automaton";
+		}
+		public Image getIcon()
+		{
+			return Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/model_fsa.gif"));
+		}
+		public DESModel createModel(String id)
+		{
+			Automaton a=new Automaton("");
+			a.setId(id);
+			return a;
+		}
+	}
+	public static final ModelDescriptor myDescriptor=new AutomatonDescriptor();
 	
     private LinkedList<FSAState> states;
 
@@ -60,10 +92,10 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAMode
 	
     /**
      * constructs a nem automaton with the name name.
-     * <p>Do not instantiate directly. Use {@link ModelFactory#getFSA(String)} instead.
+     * <p>Do not instantiate directly. Use {@link ModelManager#getFSA(String)} instead.
      * @param name the name of the automaton
-     * @see ModelFactory#getFSA()
-     * @see ModelFactory#getFSA(String)
+     * @see ModelManager#getFSA()
+     * @see ModelManager#getFSA(String)
      */
     public Automaton(String name){
         states = new LinkedList<FSAState>();
@@ -122,6 +154,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAMode
         return name;
     }
 
+    public ModelDescriptor getModelDescriptor()
+    {
+    	return myDescriptor;
+    }
+    
     /* (non-Javadoc)
 	 * @see model.fsa.ver1.FSAModel#setName(java.lang.String)
 	 */

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import main.Annotable;
-import model.ModelFactory;
+import model.ModelManager;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
@@ -47,13 +47,13 @@ public class Composition{
 
         if(automata.length < 2) return null;
 
-        FSAModel prevAnswer = ModelFactory.getFSA("temp");
+        FSAModel prevAnswer = ModelManager.getFSA("temp");
         FSAModel newAnswer;
 
         product(automata[0], automata[1], prevAnswer);
 
         for(int i = 2; i < automata.length; i++){
-            newAnswer = ModelFactory.getFSA("temp");
+            newAnswer = ModelManager.getFSA("temp");
             product(prevAnswer, automata[i], newAnswer);
 
             prevAnswer = newAnswer;
@@ -173,13 +173,13 @@ public class Composition{
 
         if(automata.length < 2) return null;
 
-        FSAModel prevAnswer = ModelFactory.getFSA("temp");
+        FSAModel prevAnswer = ModelManager.getFSA("temp");
         FSAModel newAnswer;
 
         parallel(automata[0], automata[1], prevAnswer);
 
         for(int i = 2; i < automata.length; i++){
-            newAnswer = ModelFactory.getFSA("temp");
+            newAnswer = ModelManager.getFSA("temp");
             parallel(prevAnswer, automata[i], newAnswer);
             prevAnswer = newAnswer;
         }

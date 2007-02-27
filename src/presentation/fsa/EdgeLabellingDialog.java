@@ -508,7 +508,6 @@ public class EdgeLabellingDialog extends EscapeDialog {
 	    }
 	    
 	    DefaultListModel getContents() {
-	    	@SuppressWarnings("unused") ListModel m = getModel();
 	    	return (DefaultListModel)getModel();
 	    }
 	    

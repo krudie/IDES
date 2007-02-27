@@ -2,7 +2,7 @@ package operations.fsa.ver1;
 
 import java.util.ListIterator;
 
-import model.ModelFactory;
+import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -90,7 +90,7 @@ public class SuperVisory{
      */    
     public static boolean controllable(FSAModel plant, FSAModel legal){
         //This function is very similar to supC besides that it will only run trough the automaton once to see if anyhitng should be cut of.
-        FSAModel result = ModelFactory.getFSA("");
+        FSAModel result = ModelManager.getFSA("");
 
         supCProduct(plant, legal, result);
         

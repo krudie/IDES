@@ -26,7 +26,7 @@ import pluggable.operation.OperationManager;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
 
-import model.ModelFactory;
+import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
@@ -83,6 +83,7 @@ public class Main {
 		
 		Cache.init();
 		// TODO: move operation inits to the plugin manager eventually
+		ModelManager.registerModel(Automaton.myDescriptor);
 		OperationManager.register(new Meet());
 		OperationManager.register(new SynchronousProduct());
 		OperationManager.register(new Projection());
@@ -114,7 +115,7 @@ public class Main {
 		//setup stuff that needs the main window
 		LatexManager.init(); 
 		
-		FSAModel fsa = ModelFactory.getFSA(Hub.string("newAutomatonName"));
+		FSAModel fsa = ModelManager.getFSA(Hub.string("newAutomatonName"));
 		Hub.getWorkspace().addFSAModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());

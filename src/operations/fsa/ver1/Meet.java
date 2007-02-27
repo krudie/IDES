@@ -3,7 +3,7 @@
  */
 package operations.fsa.ver1;
 
-import model.ModelFactory;
+import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 import pluggable.operation.Operation;
@@ -69,7 +69,7 @@ public class Meet implements Operation {
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	public Object[] perform(Object[] inputs) {
-		FSAModel a=ModelFactory.getFSA("none");
+		FSAModel a=ModelManager.getFSA("none");
 		Composition.product((FSAModel)inputs[0],(FSAModel)inputs[1],a);
 		return new Object[]{a};
 	}

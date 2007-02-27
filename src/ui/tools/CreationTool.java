@@ -42,7 +42,7 @@ public class CreationTool extends DrawingTool {
 		//System.out.println(toolkit.getBestCursorSize(10, 10));
 		
 		// FIXME dynamic cursor names in UISettings class
-		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/create__.gif")), new Point(0,0), "CREATE_NODES_OR_EDGES");		
+		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/create.gif")), new Point(0,0), "CREATE_NODES_OR_EDGES");		
 	}
 	
 	public void init(){

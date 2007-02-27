@@ -20,7 +20,8 @@ import main.IDESWorkspace;
 import main.IncompleteWorkspaceDescriptorException;
 import main.Main;
 import main.WorkspaceDescriptor;
-import model.ModelFactory;
+import model.ModelDescriptor;
+import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver1.Automaton;
 
@@ -35,6 +36,7 @@ import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import services.latex.LatexRenderException;
+import ui.NewModelDialog;
 
 /**
  * @author Lenko Grigorov
@@ -54,9 +56,15 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			FSAModel fsa = ModelFactory.getFSA(Hub.string("newAutomatonName")+"-"+automatonCount++);
-			Hub.getWorkspace().addFSAModel(fsa);
-			Hub.getWorkspace().setActiveModel(fsa.getName());			
+			ModelDescriptor md=new NewModelDialog().selectModel();
+			if(md==null)
+				return;
+			if(md.getPreferredModelInterface().equals(FSAModel.class))
+			{
+				FSAModel fsa = ModelManager.getFSA(Hub.string("newAutomatonName")+"-"+automatonCount++);
+				Hub.getWorkspace().addFSAModel(fsa);
+				Hub.getWorkspace().setActiveModel(fsa.getName());
+			}
 		}	
 	}
 	
@@ -532,7 +540,7 @@ public class FileCommands {
 	    	try
 	    	{
 	    		in=new java.io.BufferedReader(new java.io.FileReader(file));
-	    		FSAModel a=ModelFactory.getFSA(file.getName());
+	    		FSAModel a=ModelManager.getFSA(file.getName());
 	    		long tCount=0;
 	    		long eCount=0;
 	    		java.util.Hashtable<String,Long> events=new java.util.Hashtable<String, Long>();
