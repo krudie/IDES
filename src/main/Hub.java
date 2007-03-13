@@ -233,8 +233,8 @@ public class Hub {
 	 * Gets the main workspace.
 	 * @return the main workspace
 	 */
-	public static IDESWorkspace getWorkspace() {
-		return IDESWorkspace.instance();
+	public static Workspace getWorkspace() {
+		return Workspace.instance();
 	}
 
 	/**

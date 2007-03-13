@@ -7,8 +7,8 @@ import java.util.ListIterator;
 
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
-import model.fsa.ver1.Automaton;
-import model.fsa.ver1.State;
+import model.fsa.ver2_1.Automaton;
+import model.fsa.ver2_1.State;
 
 /**
  *

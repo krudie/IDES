@@ -19,15 +19,16 @@ import model.fsa.FSAState;
 import model.fsa.FSAEvent;
 import model.fsa.FSASubscriber;
 import model.fsa.FSATransition;
-import model.fsa.ver1.Automaton;
-import model.fsa.ver1.Event;
-import model.fsa.ver1.MetaData;
-import model.fsa.ver1.State;
-import model.fsa.ver1.Transition;
+import model.fsa.ver2_1.Automaton;
+import model.fsa.ver2_1.Event;
+import model.fsa.ver2_1.MetaData;
+import model.fsa.ver2_1.State;
+import model.fsa.ver2_1.Transition;
 import observer.FSAGraphMessage;
 import observer.FSAGraphSubscriber;
 import pluggable.layout.LayoutManager;
 import presentation.GraphicalLayout;
+import presentation.ModelWrap;
 import presentation.PresentationElement;
 import presentation.Geometry;
 
@@ -42,7 +43,7 @@ import presentation.Geometry;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class FSAGraph extends GraphElement implements FSASubscriber {
+public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 	
 	protected UniformRadius uniformR=new UniformRadius();
 
@@ -156,6 +157,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	}
 	
 	/**
+	 * Returns a pointer to itself.
+	 * @return a pointer to itself 
+	 */
+	public FSAGraph getGraph()
+	{
+		return this;
+	}
+
+	/**
 	 * Builds the data structure used to compute the intersection of a point 
 	 * or rectangle with elements of the graph. 
 	 * 
@@ -209,9 +219,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		fsa.setName(name);
 	}
 	
-	public String getDecoratedName() {
-		return ( needsSave ? "* " : "" ) + getName();
-	}
+//	public String getDecoratedName() {
+//		return ( needsSave ? "* " : "" ) + getName();
+//	}
 	
 
 	/**
@@ -243,6 +253,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	
 	public FSAModel getModel() {
 		return fsa;
+	}
+	
+	public Class getModelInterface()
+	{
+		return FSAModel.class;
 	}
 	
 	public MetaData getMeta() {
@@ -705,7 +720,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 	 * TODO remove this and delay committing layout changes until save. 
 	 * @param selection
 	 */
-	public void commitMovement(PresentationElement selection){
+	public void commitMovement(GraphElement selection){
 		Iterator children = selection.children();
 		while(children.hasNext()){
 			PresentationElement el = (PresentationElement)children.next();
@@ -1561,7 +1576,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 			FSAGraph[] gs=new FSAGraph[((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length];
 			for(int i=0;i<gs.length;++i)
 			{
-				FSAGraph g=Hub.getWorkspace().getGraphById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
+				FSAGraph g=(FSAGraph)Hub.getWorkspace().getModelWrapById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
 				if(g==null)
 					return;
 				gs[i]=g;
@@ -1598,7 +1613,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber {
 		}
 		else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
 		{
-			FSAGraph g=Hub.getWorkspace().getGraphById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
+			FSAGraph g=(FSAGraph)Hub.getWorkspace().getModelWrapById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
 			if(g==null)
 				return;
 			for(Node n:nodes.values())

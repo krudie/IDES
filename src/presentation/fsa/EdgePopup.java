@@ -133,11 +133,11 @@ public class EdgePopup extends JPopupMenu {
 /*			}else if(source.equals(miSymmetrize)){				
 				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);
 */			}else if(source.equals(miArcMore)){
-				Hub.getWorkspace().getActiveGraphModel().arcMore(edge);
+				edge.getGraph().arcMore(edge);
 			}else if(source.equals(miArcLess)){
-				Hub.getWorkspace().getActiveGraphModel().arcLess(edge);
+				edge.getGraph().arcLess(edge);
 			}else if(source.equals(miStraighten)){
-				Hub.getWorkspace().getActiveGraphModel().straighten(edge);
+				edge.getGraph().straighten(edge);
 			}else{
 				Hub.displayAlert("Edge popup: " + source.toString());
 			}			

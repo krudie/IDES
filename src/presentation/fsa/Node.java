@@ -10,7 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 import model.fsa.FSAState;
-import model.fsa.ver1.State;
+import model.fsa.ver2_1.State;
 
 
 /**

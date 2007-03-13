@@ -12,7 +12,7 @@ import java.util.TreeSet;
 import services.General;
 
 import model.fsa.FSAModel;
-import model.fsa.ver1.Automaton;
+import model.fsa.ver2_1.Automaton;
 
 /**
  * The manager of models available to IDES. This allows for

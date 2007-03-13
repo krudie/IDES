@@ -14,6 +14,7 @@ import ui.OptionsWindow;
 import ui.command.OptionsCommands;
 
 import main.Hub;
+import model.fsa.FSAModel;
 
 /**
  * Coordinates the LaTeX rendering.
@@ -130,9 +131,9 @@ public class LatexManager {
 		{
 			Hub.persistentData.setBoolean("useLatexLabels",setting);
 			if(setting)
-				new LatexPrerenderer(Hub.getWorkspace().getGraphModels());
-			if(Hub.getWorkspace().getActiveGraphModel()!=null)
-				Hub.getWorkspace().getActiveGraphModel().setNeedsRefresh(true);
+				new LatexPrerenderer(Hub.getWorkspace().getModelWrapsOfType(FSAGraph.class).iterator());
+			if(Hub.getWorkspace().getActiveModelWrap()!=null&&Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph)
+				((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();	
 		}
 	}

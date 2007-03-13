@@ -2,8 +2,8 @@ package ui.command;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
-import io.fsa.ver1.CommonTasks;
-import io.fsa.ver1.FileOperations;
+import io.fsa.ver2_1.CommonTasks;
+import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Cursor;
 import java.io.File;
@@ -16,14 +16,15 @@ import javax.swing.JOptionPane;
 
 import main.Annotable;
 import main.Hub;
-import main.IDESWorkspace;
+import main.Workspace;
 import main.IncompleteWorkspaceDescriptorException;
 import main.Main;
 import main.WorkspaceDescriptor;
+import model.DESModel;
 import model.ModelDescriptor;
 import model.ModelManager;
 import model.fsa.FSAModel;
-import model.fsa.ver1.Automaton;
+import model.fsa.ver2_1.Automaton;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
@@ -31,6 +32,7 @@ import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
+import presentation.ModelWrap;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
@@ -62,7 +64,7 @@ public class FileCommands {
 			if(md.getPreferredModelInterface().equals(FSAModel.class))
 			{
 				FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName")+"-"+automatonCount++);
-				Hub.getWorkspace().addFSAModel(fsa);
+				Hub.getWorkspace().addModel(fsa);
 				Hub.getWorkspace().setActiveModel(fsa.getName());
 			}
 		}	
@@ -87,7 +89,7 @@ public class FileCommands {
 	    	if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
 				Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-				if(Hub.getWorkspace().getFSAModel(ParsingToolbox.removeFileType(fc.getSelectedFile().getName()))!=null)
+				if(Hub.getWorkspace().getModel(ParsingToolbox.removeFileType(fc.getSelectedFile().getName()))!=null)
 				{
 					Hub.displayAlert(Hub.string("modelAlreadyOpen"));
 				}
@@ -95,7 +97,7 @@ public class FileCommands {
 				{
 					FSAModel fsa = FileOperations.openAutomaton(fc.getSelectedFile());
 					if(fsa != null){
-						Hub.getWorkspace().addFSAModel(fsa);
+						Hub.getWorkspace().addModel(fsa);
 						Hub.getWorkspace().setActiveModel(fsa.getName());
 					}
 	    		}
@@ -116,11 +118,11 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 
 			// TODO This should be a while loop
-			for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();) {
-				FSAGraph gm=i.next();
-				FSAModel fsa=gm.getModel();
-				if( fsa != null )
-					if(FileOperations.saveAutomaton(fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{					
+			for(Iterator<ModelWrap> i=Hub.getWorkspace().getModelWraps();i.hasNext();) {
+				ModelWrap gm=i.next();
+				DESModel fsa=gm.getModel();
+				if( fsa != null && fsa instanceof FSAModel)
+					if(FileOperations.saveAutomaton((FSAModel)fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{					
 						Hub.getWorkspace().fireRepaintRequired();
 					}
 			}
@@ -136,12 +138,12 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			FSAModel fsa = Hub.getWorkspace().getActiveModel();
+			DESModel fsa = Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			
-			if( fsa != null ) {
-				if(FileOperations.saveAutomaton(fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{
+			if( fsa != null && fsa instanceof FSAModel) {
+				if(FileOperations.saveAutomaton((FSAModel)fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 			}
@@ -158,13 +160,13 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			FSAModel fsa = Hub.getWorkspace().getActiveModel();			
+			DESModel fsa = Hub.getWorkspace().getActiveModel();			
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
-			if(fsa!=null)
-				if(FileOperations.saveAutomatonAs(fsa))
+			if(fsa!=null&&fsa instanceof FSAModel)
+				if(FileOperations.saveAutomatonAs((FSAModel)fsa))
 				{
-					Hub.getWorkspace().getActiveGraphModel().setNeedsRefresh(false);					
+					((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).setNeedsRefresh(false);					
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 			Hub.getMainWindow().setCursor(cursor);
@@ -180,7 +182,7 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			Hub.getWorkspace().removeFSAModel(Hub.getWorkspace().getActiveModelName());
+			Hub.getWorkspace().removeModel(Hub.getWorkspace().getActiveModelName());
 		}	
 	}
 		
@@ -427,7 +429,8 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
-			if(Hub.getWorkspace().getActiveModel()==null)
+			if(Hub.getWorkspace().getActiveModel()==null ||
+					!(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
 				return;
 			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
 			fc.setDialogTitle(Hub.string("exportGrailTitle"));
@@ -460,7 +463,7 @@ public class FileCommands {
 	    	
 	    	String fileContents = "";
 	    	
-	    	model.fsa.FSAModel a=Hub.getWorkspace().getActiveModel();
+	    	FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
 	    	for(Iterator<model.fsa.FSAState> i=a.getStateIterator();i.hasNext();)
 	    	{
 	    		model.fsa.FSAState s=i.next();
@@ -551,10 +554,10 @@ public class FileCommands {
 	    			if(parts[0].startsWith("("))
 	    			{
 	    				long sId=Long.parseLong(parts[2]);
-	    				model.fsa.ver1.State s=(model.fsa.ver1.State)a.getState(sId);
+	    				model.fsa.ver2_1.State s=(model.fsa.ver2_1.State)a.getState(sId);
 	    				if(s==null)
 	    				{
-	    					s=new model.fsa.ver1.State(sId);
+	    					s=new model.fsa.ver2_1.State(sId);
 	    					a.add(s);
 	    				}
 	    				s.setInitial(true);
@@ -562,10 +565,10 @@ public class FileCommands {
 	    			else if(parts[2].startsWith("("))
 	    			{	    				
 	    				long sId=Long.parseLong(parts[0]);
-	    				model.fsa.ver1.State s=(model.fsa.ver1.State)a.getState(sId);
+	    				model.fsa.ver2_1.State s=(model.fsa.ver2_1.State)a.getState(sId);
 	    				if(s==null)
 	    				{
-	    					s=new model.fsa.ver1.State(sId);
+	    					s=new model.fsa.ver2_1.State(sId);
 	    					a.add(s);
 	    				}
 	    				s.setMarked(true);
@@ -573,24 +576,24 @@ public class FileCommands {
 	    			else
 	    			{
 	    				long sId1=Long.parseLong(parts[0]);
-	    				model.fsa.ver1.State s1=(model.fsa.ver1.State)a.getState(sId1);
+	    				model.fsa.ver2_1.State s1=(model.fsa.ver2_1.State)a.getState(sId1);
 	    				if(s1==null)
 	    				{
-	    					s1=new model.fsa.ver1.State(sId1);
+	    					s1=new model.fsa.ver2_1.State(sId1);
 	    					a.add(s1);
 	    				}
 	    				long sId2=Long.parseLong(parts[2]);
-	    				model.fsa.ver1.State s2=(model.fsa.ver1.State)a.getState(sId2);
+	    				model.fsa.ver2_1.State s2=(model.fsa.ver2_1.State)a.getState(sId2);
 	    				if(s2==null)
 	    				{
-	    					s2=new model.fsa.ver1.State(sId2);
+	    					s2=new model.fsa.ver2_1.State(sId2);
 	    					a.add(s2);
 	    				}
-	    				model.fsa.ver1.Event e=null;
+	    				model.fsa.ver2_1.Event e=null;
 	    				Long eId=events.get(parts[1]);
 	    				if(eId==null)
 	    				{
-	    					e=new model.fsa.ver1.Event(eCount);
+	    					e=new model.fsa.ver2_1.Event(eCount);
 	    					e.setSymbol(parts[1]);
 	    					e.setObservable(true);
 	    					e.setControllable(true);
@@ -599,14 +602,14 @@ public class FileCommands {
 	    					events.put(parts[1], new Long(e.getId()));
 	    				}
 	    				else
-	    					e=(model.fsa.ver1.Event)a.getEvent(eId.longValue());
-	    				model.fsa.ver1.Transition t=new model.fsa.ver1.Transition(tCount,s1,s2,e);
+	    					e=(model.fsa.ver2_1.Event)a.getEvent(eId.longValue());
+	    				model.fsa.ver2_1.Transition t=new model.fsa.ver2_1.Transition(tCount,s1,s2,e);
 	    				a.add(t);
 	    				tCount++;
 	    			}
 	    		}
 	    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
-	    		Hub.getWorkspace().addFSAGraph(g);
+	    		Hub.getWorkspace().addModelWrap(g);
 	    	}catch(java.io.IOException e)
 	    	{
 	    		Hub.displayAlert(Hub.string("cantParseImport")+file);

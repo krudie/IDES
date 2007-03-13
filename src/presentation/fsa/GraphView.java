@@ -14,6 +14,8 @@ import observer.FSAGraphMessage;
 import observer.FSAGraphSubscriber;
 
 import presentation.GraphicalLayout;
+import presentation.ModelWrap;
+import presentation.Presentation;
 
 import main.Hub;
 
@@ -21,13 +23,14 @@ import main.Hub;
  * The visual display of an FSAGraph.  Subscribes and response to change
  * notifications from the underlying Publisher portion of the underlying graph
  * layout model.  Canvas can be scaled to display the graph at any size from full 
- * to thumbnail representation. 
+ * to thumbnail representation.
+ * @see Presentation
  * 
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
-public class GraphView extends JComponent implements FSAGraphSubscriber {
+public class GraphView extends JComponent implements FSAGraphSubscriber,Presentation {
 
 	protected static final int GRAPH_BORDER_THICKNESS=10;
 	
@@ -53,6 +56,21 @@ public class GraphView extends JComponent implements FSAGraphSubscriber {
 		setGraphModel(graphModel);
 	}
 
+	public JComponent getGUI()
+	{
+		return this;
+	}
+	
+	public ModelWrap getModelWrap()
+	{
+		return getGraphModel();
+	}
+	
+	public void setTrackModel(boolean b)
+	{
+		//TODO implement this. now it always tracks changes
+		//in the ModelWrap.
+	}
 
 	public void paint(Graphics g) {
 		paint(g,true);

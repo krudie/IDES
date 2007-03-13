@@ -13,7 +13,7 @@ import java.util.Set;
 
 import model.fsa.FSAEvent;
 import model.fsa.FSATransition;
-import model.fsa.ver1.Transition;
+import model.fsa.ver2_1.Transition;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;

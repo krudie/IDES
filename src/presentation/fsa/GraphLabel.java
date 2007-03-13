@@ -76,7 +76,7 @@ public class GraphLabel extends GraphElement {
 	 * @param parent glyph in which this label is displayed
 	 * @param location the x,y coordinates of the top left corner of this label
 	 */
-	public GraphLabel(String text, PresentationElement parent, Point2D location) {	
+	public GraphLabel(String text, GraphElement parent, Point2D location) {	
 		this(text, location);		
 		setParent(parent);
 	}

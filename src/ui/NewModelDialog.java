@@ -34,6 +34,12 @@ import model.ModelManager;
 
 import util.EscapeDialog;
 
+/**
+ * The dialog box that lets the user choose what type of
+ * DES model they want to create.
+ * 
+ * @author Lenko Grigorov
+ */
 public class NewModelDialog extends EscapeDialog {
 
 	protected JList modelList;
@@ -41,6 +47,12 @@ public class NewModelDialog extends EscapeDialog {
 	private ModelDescriptor selectedMD=null;
 	private static int lastIdx=0;
 	
+	
+	/**
+	 * Creates a new "New model type" dialog box and
+	 * fills it with all the registered model types.
+	 * @see ModelManager#registerModel(ModelDescriptor)   
+	 */
 	public NewModelDialog() throws HeadlessException {
 		super(Hub.getMainWindow(),Hub.string("newModelTitle"),true);
 		addWindowListener(new WindowAdapter() {
@@ -122,8 +134,16 @@ public class NewModelDialog extends EscapeDialog {
 		cancelButton.invalidate();
 	}
 
+	/**
+	 * Opens the dialog box and returns the selection made by
+	 * the user.
+	 * @return the type of DES model selected by the user;
+	 * <code>null</code> if no model was selected (e.g., the
+	 * user cancelled the dialog box)
+	 */
 	public ModelDescriptor selectModel()
 	{
+		selectedMD=null;
 		setVisible(true);
 		return selectedMD;
 	}
@@ -145,6 +165,7 @@ public class NewModelDialog extends EscapeDialog {
 			Component selected = (Component)modelList.getSelectedValue();
 			if(selected != null){
 				selectedMD=modelDescriptors[modelList.getSelectedIndex()];
+				lastIdx=modelList.getSelectedIndex();
 				onEscapeEvent();
 			}
 		}

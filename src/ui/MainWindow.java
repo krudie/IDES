@@ -3,7 +3,7 @@
  */
 package ui;
 
-import io.fsa.ver1.FileOperations;
+import io.fsa.ver2_1.FileOperations;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,7 +24,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
 import main.Hub;
-import main.IDESWorkspace;
+import main.Workspace;
 import main.Main;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
@@ -70,7 +70,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		});
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif")).getImage());
-		IDESWorkspace.instance().addSubscriber(this);  // subscribe to notifications from the workspace
+		Workspace.instance().addSubscriber(this);  // subscribe to notifications from the workspace
 				
 		FileOperations.loadCommandManager("commands.xml");
 
@@ -261,7 +261,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	private void configureTools() {
 		CommandManager commandManager = CommandManager.defaultInstance();
 		
-		if(IDESWorkspace.instance().getActiveModel() == null){
+		if(Workspace.instance().getActiveModel() == null){
 			drawingBoard.setEnabled(false);
 			zoom.setEnabled(false);
 			toolbar.setEnabled(false);

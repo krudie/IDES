@@ -25,7 +25,7 @@ public class General {
 		String data=new Double(Math.random()).toString()+
 			new Long(System.currentTimeMillis()).toString()+
 			Hub.getWorkspace().size()+System.getProperty("user.name");
-		for(Iterator<FSAModel> i=Hub.getWorkspace().getAutomata();i.hasNext();)
+		for(Iterator<FSAModel> i=Hub.getWorkspace().getModelsOfType(FSAModel.class).iterator();i.hasNext();)
 		{
 			FSAModel a=i.next();
 			data+=a.getEventCount();

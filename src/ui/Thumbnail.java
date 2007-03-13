@@ -27,7 +27,7 @@ public class Thumbnail extends JPanel {
 	{
 		public void actionPerformed(ActionEvent event) {
 			Thumbnail parent = (Thumbnail) ( (JButton) event.getSource() ).getParent();
-			Hub.getWorkspace().removeFSAModel(parent.getGraphModelName());
+			Hub.getWorkspace().removeModel(parent.getGraphModelName());
 		}
 	};
 	

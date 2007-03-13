@@ -14,7 +14,7 @@ public class SelectionGroup extends GraphElement {
 		SelectionGroup copy = new SelectionGroup();
 		Iterator children = children();
 		while(children.hasNext()){
-			copy.insert((PresentationElement)children.next());
+			copy.insert((GraphElement)children.next());
 		}
 		return copy;
 	}
@@ -57,8 +57,8 @@ public class SelectionGroup extends GraphElement {
 	/**
 	 * Override so don't break link to e's parent in graph structure.
 	 */
-	public void insert(PresentationElement e) {
-		PresentationElement p = e.getParent();
+	public void insert(GraphElement e) {
+		GraphElement p = e.getParent();
 		super.insert(e);
 		e.setParent(p);
 	}	

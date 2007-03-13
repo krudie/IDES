@@ -30,6 +30,7 @@ import javax.swing.table.AbstractTableModel;
 import observer.Subscriber;
 import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
+import presentation.fsa.FSAGraph;
 
 import main.Hub;
 import model.fsa.FSAEvent;
@@ -38,8 +39,8 @@ import model.fsa.FSAModel;
 import model.fsa.FSAPublisher;
 import model.fsa.FSAPublisherAdaptor;
 import model.fsa.FSASubscriber;
-import model.fsa.ver1.Automaton;
-import model.fsa.ver1.Event;
+import model.fsa.ver2_1.Automaton;
+import model.fsa.ver2_1.Event;
 
 /**
  * TODO Comment
@@ -231,7 +232,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
 			}
 			// FIXME Issue a command that goes to automaton.
-			FSAModel a=Hub.getWorkspace().getActiveModel();
+			FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
 			for(int i=0;i<delEvents.length;++i)
 			{
 				//Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
@@ -254,12 +255,12 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				createButton.doClick();
 				return;
 			}
-			FSAModel a=Hub.getWorkspace().getActiveModel();
+			FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
 			if(a==null||"".equals(eventNameField.getText()))
 				return;
 			
 			// FIXME issue a command to the Automaton and let messaging notify the graph model. 
-			Event event=Hub.getWorkspace().getActiveGraphModel().createAndAddEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
+			Event event=((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).createAndAddEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
 //			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
 //			event.setSymbol(eventNameField.getText());
 //			event.setControllable(controllableCBox.isSelected());
@@ -399,13 +400,12 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	
 	private void refreshEventTable()
 	{
-		FSAModel model=Hub.getWorkspace().getActiveModel();
 		eventNameField.setText("");
-		
 		// CLM: these controls should be disabled whenever eventNameField
 		// is empty
 		createButton.setEnabled(false);
-		if(model==null)
+		if(Hub.getWorkspace().getActiveModel()==null ||
+				!(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
 		{
 			table.setModel(new EventTableModel());
 			deleteButton.setEnabled(false);
@@ -419,6 +419,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 		}
 		else
 		{
+			FSAModel model=(FSAModel)Hub.getWorkspace().getActiveModel();
 			table.setModel(new EventTableModel(model));
 			//CLM: these should be enabled iff eventNameField is nonempty
 			//createButton.setEnabled(true);

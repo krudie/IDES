@@ -1,27 +1,13 @@
 package model.fsa;
 
-import model.DESElement;
+import model.DESEvent;
 
 /**
  * Defines an event in a finite state automaton.
  * 
  * @author Helen Bretzke
  */
-public interface FSAEvent extends DESElement {
-	
-	/**
-     * Returns the symbol that represents this event in the (local?) alphabet.
-     *      
-     * @return the symbol that represents this event
-     */
-	public abstract String getSymbol();
-	
-	/**
-	 * Sets the symbol for this event to <code>symbol</code>.
-	 * 
-	 * @param symbol the symbol to set
-	 */
-	public abstract void setSymbol(String symbol);
+public interface FSAEvent extends DESEvent {
 	
 	/**
 	 * Returns true iff this event's controllable property

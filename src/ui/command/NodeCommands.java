@@ -5,9 +5,9 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
-import main.IDESWorkspace;
+import main.Workspace;
 import model.DESElement;
-import model.fsa.ver1.State;
+import model.fsa.ver2_1.State;
 
 import org.pietschy.command.ToggleVetoException;
 import org.pietschy.command.undo.UndoableActionCommand;
@@ -39,7 +39,7 @@ public class NodeCommands {
 		@Override
 		protected void handleSelection(boolean arg0) throws ToggleVetoException {			
 			previousValue = !arg0;
-			IDESWorkspace.instance().getActiveGraphModel().setMarked(node, arg0); 			
+			node.getGraph().setMarked(node, arg0); 			
 		}		
 		
 		public void setNode(CircleNode node){
@@ -62,7 +62,7 @@ public class NodeCommands {
 		@Override
 		protected void handleSelection(boolean arg0) throws ToggleVetoException {
 			previousValue = !arg0;
-			IDESWorkspace.instance().getActiveGraphModel().setInitial(node, arg0);
+			node.getGraph().setInitial(node, arg0);
 		}
 				
 		public void setNode(CircleNode node){
@@ -84,7 +84,7 @@ public class NodeCommands {
 		@Override
 		protected UndoableEdit performEdit() {
 			
-			IDESWorkspace.instance().getActiveGraphModel().createEdge(node, node);
+			node.getGraph().createEdge(node, node);
 			return null;
 		}
 	

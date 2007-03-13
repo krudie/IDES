@@ -2,7 +2,7 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
-import main.IDESWorkspace;
+import main.Workspace;
 import model.DESElement;
 
 import org.pietschy.command.ActionCommand;

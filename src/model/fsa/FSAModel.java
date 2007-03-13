@@ -1,6 +1,6 @@
 package model.fsa;
 
-import io.fsa.ver1.SubElement;
+import io.fsa.ver2_1.SubElement;
 
 import java.util.ListIterator;
 

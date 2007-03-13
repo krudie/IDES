@@ -33,12 +33,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 
 import main.Hub;
-import main.IDESWorkspace;
+import main.Workspace;
 import model.fsa.FSAEvent;
 import model.fsa.FSAEventsModel;
+import model.fsa.FSAModel;
 import model.fsa.FSATransition;
-import model.fsa.ver1.Event;
-import model.fsa.ver1.EventsModel;
+import model.fsa.ver2_1.Event;
+import model.fsa.ver2_1.EventsModel;
+
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -109,7 +111,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			}
 			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
-				newEvent = IDESWorkspace.instance().getActiveGraphModel().createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
+				newEvent = ((FSAGraph)Workspace.instance().getActiveModelWrap()).createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
 				updateOnlyAvailable();			
 				listAvailableEvents.setSelectedValue(newEvent, true);
 			}
@@ -179,7 +181,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 					buttonCreate.setText(Hub.string("assign"));
 					checkControllable.setEnabled(false);
 					checkControllable.setSelected(cbCState);
-					for (Iterator<FSAEvent> i=Hub.getWorkspace().getActiveModel().getEventIterator();i.hasNext();)
+					for (Iterator<FSAEvent> i=((FSAModel)Hub.getWorkspace().getActiveModel()).getEventIterator();i.hasNext();)
 					{
 						FSAEvent event=i.next();
 						if(event.getSymbol().equals(symbol))
@@ -190,7 +192,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 					}
 					checkObservable.setEnabled(false);
 					checkObservable.setSelected(cbOState);
-					for (Iterator<FSAEvent> i=Hub.getWorkspace().getActiveModel().getEventIterator();i.hasNext();)
+					for (Iterator<FSAEvent> i=((FSAModel)Hub.getWorkspace().getActiveModel()).getEventIterator();i.hasNext();)
 					{
 						FSAEvent event=i.next();
 						if(event.getSymbol().equals(symbol))
@@ -391,7 +393,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 	// For now just refresh list model with local event set from the active FSA	
 	public void updateOnlyAvailable() {
 		listAvailableEvents.removeAll();
-		Iterator<FSAEvent> events = IDESWorkspace.instance().getActiveModel().getEventIterator();
+		Iterator<FSAEvent> events = ((FSAModel)Workspace.instance().getActiveModel()).getEventIterator();
 
 		while(events.hasNext()){
 			FSAEvent e = events.next();
@@ -613,7 +615,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			for(int i = 0; i < contents.length; i++){
 				events[i] = (Event)contents[i];
 			}				
-			IDESWorkspace.instance().getActiveGraphModel().replaceEventsOnEdge(events, edge);
+			((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).replaceEventsOnEdge(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
 		        textField.requestFocus();

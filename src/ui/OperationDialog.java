@@ -3,7 +3,7 @@
  */
 package ui;
 
-import io.fsa.ver1.FileOperations;
+import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -34,7 +34,7 @@ import presentation.fsa.FSAGraph;
 import main.Hub;
 import model.DESModel;
 import model.fsa.FSAModel;
-import model.fsa.ver1.Automaton;
+import model.fsa.ver2_1.Automaton;
 import util.EscapeDialog;
 
 /**
@@ -135,7 +135,7 @@ public class OperationDialog extends EscapeDialog {
 					Operation op=OperationManager.getOperation(opList.getSelectedValue().toString());
 					Object[] inputModels=new Object[inputs.size()];
 					for(int i=0;i<inputs.size();++i)
-						inputModels[i]=Hub.getWorkspace().getFSAModel(inputs.elementAt(i).getSelectedItem().toString());
+						inputModels[i]=Hub.getWorkspace().getModel(inputs.elementAt(i).getSelectedItem().toString());
 					Object[] outputs=op.perform(inputModels);
 					boolean closeWindow = true;
 					for(int i=0;i<outputs.length;++i)
@@ -145,7 +145,7 @@ public class OperationDialog extends EscapeDialog {
 							((FSAModel)outputs[i]).setName(outputNames.elementAt(i).getText());
 							FSAGraph g=new FSAGraph((FSAModel)outputs[i]);
 							g.labelCompositeNodes();
-							Hub.getWorkspace().addFSAGraph(g);
+							Hub.getWorkspace().addModelWrap(g);
 							closeWindow = true;
 						}
 						else if(outputs[i] instanceof Boolean)

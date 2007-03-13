@@ -49,8 +49,9 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 			a.removeSubscriber(this);
 		}
 			
-		if ( Hub.getWorkspace().getActiveModel()!= null ) {		
-			a=Hub.getWorkspace().getActiveModel();
+		if ( Hub.getWorkspace().getActiveModel()!= null &&
+				Hub.getWorkspace().getActiveModel() instanceof FSAModel) {		
+			a=(FSAModel)Hub.getWorkspace().getActiveModel();
 			a.addSubscriber(this);			
 		}
 	
@@ -61,14 +62,7 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 	private void refreshStatusLabel() {
 		if ( a != null ) {
 			String name;
-			FSAGraph graph = Hub.getWorkspace().getActiveGraphModel();
-			
-			if ( graph != null ) {
-				name = graph.getName();
-			} else {
-				name = a.getName();
-			}
-			
+			name = a.getName();
 			statsLabel.setText( name + ":  " +					
 					+ a.getStateCount() + " states,  " +
 					+ a.getTransitionCount() + " transitions" );

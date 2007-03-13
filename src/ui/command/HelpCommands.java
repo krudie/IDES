@@ -4,8 +4,8 @@
 package ui.command;
 
 import main.Hub;
-import main.IDESWorkspace;
-import model.fsa.ver1.Automaton;
+import main.Workspace;
+import model.fsa.ver2_1.Automaton;
 
 import org.pietschy.command.ActionCommand;
 

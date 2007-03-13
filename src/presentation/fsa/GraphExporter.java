@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import pluggable.ui.OptionsPane;
 import util.BentoBox;
 
-import main.IDESWorkspace;
+import main.Workspace;
 import main.Hub;
 
 
@@ -142,7 +142,7 @@ public class GraphExporter
 	public static String createPSTricksFileContents()
 	{
 		String contentsString = STR_PSTRICKS_BEGIN_FIGURE;
-		IDESWorkspace workspace = null;
+		Workspace workspace = null;
 		FSAGraph graphModel = null;
 		
 		Rectangle exportBounds = null;
@@ -152,12 +152,13 @@ public class GraphExporter
 			STR_EXPORT_PROP_USE_FRAME);
 		
 		// Step #1 - Get the GraphModel
-		workspace = IDESWorkspace.instance();
-		graphModel = workspace.getActiveGraphModel();
-		if (graphModel == null)
+		workspace = Workspace.instance();
+		if(workspace.getActiveModelWrap() == null ||
+				!(workspace.getActiveModelWrap() instanceof FSAGraph))
 		{
 			return null;
 		}
+		graphModel = (FSAGraph)workspace.getActiveModelWrap();
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 
@@ -226,7 +227,7 @@ public class GraphExporter
 	 */
 	public static String createPSPicture(Rectangle exportBounds, boolean useFrame)
 	{
-		IDESWorkspace workspace = null;
+		Workspace workspace = null;
 		FSAGraph graphModel = null;
 		
 		CircleNode[] nodeArray = null;
@@ -234,12 +235,13 @@ public class GraphExporter
 		GraphLabel[] freelabelArray = null;
 
 		// Step #1 - Get the GraphModel
-		workspace = IDESWorkspace.instance();
-		graphModel = workspace.getActiveGraphModel();
-		if (graphModel == null)
+		workspace = Workspace.instance();
+		if(workspace.getActiveModelWrap() == null ||
+				!(workspace.getActiveModelWrap() instanceof FSAGraph))
 		{
 			return null;
 		}
+		graphModel = (FSAGraph)workspace.getActiveModelWrap();
 
 		// Step #2 - Get the Nodes, Edges and Labels
 		nodeArray = (CircleNode[]) graphModel.getNodes().toArray(new CircleNode[0]);
@@ -298,7 +300,7 @@ public class GraphExporter
 	public static String createEPSFileContents()
 	{
 		String contentsString = STR_EPS_BEGIN_DOC;
-		IDESWorkspace workspace = null;
+		Workspace workspace = null;
 		FSAGraph graphModel = null;
 		
 		Rectangle exportBounds = null;
@@ -307,12 +309,13 @@ public class GraphExporter
 			STR_EXPORT_PROP_USE_FRAME);
 		
 		// Step #1 - Get the GraphModel
-		workspace = IDESWorkspace.instance();
-		graphModel = workspace.getActiveGraphModel();
-		if (graphModel == null)
+		workspace = Workspace.instance();
+		if(workspace.getActiveModelWrap() == null ||
+				!(workspace.getActiveModelWrap() instanceof FSAGraph))
 		{
 			return null;
 		}
+		graphModel = (FSAGraph)workspace.getActiveModelWrap();
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 

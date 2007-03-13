@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -24,8 +25,11 @@ import observer.WorkspaceMessage;
 import observer.WorkspaceSubscriber;
 
 import main.Hub;
+import presentation.ModelWrap;
+import presentation.Presentation;
+import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
-import presentation.fsa.GraphView;
+//import presentation.fsa.GraphView;
 
 /**
  * A panel of graph thumbnail views to navigate among multiple automata 
@@ -36,9 +40,9 @@ import presentation.fsa.GraphView;
  */
 @SuppressWarnings("serial")
 public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSubscriber, MouseListener, MouseMotionListener {
-
-	private HashMap<FSAGraph, Thumbnail> graphPanels = new HashMap<FSAGraph, Thumbnail>();
-	private Vector<GraphView> graphViews=new Vector<GraphView>();
+	
+	private HashMap<ModelWrap, Thumbnail> graphPanels = new HashMap<ModelWrap, Thumbnail>();
+	private Vector<Presentation> graphViews=new Vector<Presentation>();
 	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 3);
 	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 1);
 	
@@ -57,28 +61,40 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 		addMouseMotionListener(this);
 	}
 	
+	protected String getDecoratedName(ModelWrap mw)
+	{
+		if(mw.needsSave())
+		{
+			return "* "+mw.getModel().getName();
+		}
+		else
+		{
+			return mw.getModel().getName();
+		}
+	}
+	
 	/**
 	 * Packs each graph view into it's own panel with titled border.
 	 * The current graph model is rendered with a highlighted border.
 	 * Dirty models are shown with name decorated by an asterisk. 
 	 */
 	private void buildThumbnailBox() {
-		FSAGraph activeModel=Hub.getWorkspace().getActiveGraphModel();
 		thumbnailBox.removeAll();
 		graphPanels.clear();
-		for( GraphView gv : graphViews ) {
+		for( int i=0;i<graphViews.size();++i ) {
+			JComponent gv=graphViews.get(i).getGUI();
 			Thumbnail p=new Thumbnail(new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
 			
-			if(gv.getGraphModel().equals(activeModel)) {
-				p.setBorder(new TitledBorder(SELECTED_BORDER," "+gv.getGraphModel().getDecoratedName()));				
+			if(graphViews.get(i).getModelWrap().getModel().equals(Hub.getWorkspace().getActiveModel())) {
+				p.setBorder(new TitledBorder(SELECTED_BORDER," "+getDecoratedName(graphViews.get(i).getModelWrap())));
 			} else {
-				p.setBorder(new TitledBorder(PLAIN_BORDER," "+gv.getGraphModel().getDecoratedName()));
+				p.setBorder(new TitledBorder(PLAIN_BORDER," "+getDecoratedName(graphViews.get(i).getModelWrap())));
 			}
-			graphPanels.put(gv.getGraphModel(), p);
+			graphPanels.put(graphViews.get(i).getModelWrap(), p);
 			thumbnailBox.add(p);
 			thumbnailBox.add(Box.createRigidArea(new Dimension(SPACER_SIZE,0)));		
 		}
@@ -89,32 +105,32 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * each in its own view. 
 	 */
 	private void refreshGraphViews() {
-		Vector<FSAGraph> currentModels = new Vector<FSAGraph>();
-		Iterator<FSAGraph> iter = Hub.getWorkspace().getGraphModels();
+		Vector<ModelWrap> currentModels = new Vector<ModelWrap>();
+		Iterator<ModelWrap> iter = Hub.getWorkspace().getModelWraps();
 		while( iter.hasNext() ) {
-			FSAGraph gm = iter.next();
+			ModelWrap gm = iter.next();
 			currentModels.add(gm);
 		}		
 
-		HashSet<GraphView> toRemove=new HashSet<GraphView>();
-		for( GraphView gv : graphViews ) {
-			if(!currentModels.contains(gv.getGraphModel())) {
+		HashSet<Presentation> toRemove=new HashSet<Presentation>();
+		for( Presentation gv : graphViews ) {
+			if(!currentModels.contains(gv.getModelWrap())) {
 				toRemove.add(gv);
 			}
 		}
 		
-		for( GraphView gv : toRemove ) {
-			gv.getGraphModel().removeSubscriber(gv);
+		for( Presentation gv : toRemove ) {
+			((FSAGraph)gv.getModelWrap()).removeSubscriber((FSAGraphSubscriber)gv.getGUI());
 			graphViews.remove(gv);
 		}
 		
 		for( int i=0; i < currentModels.size(); ++i ) {
-			FSAGraph gm = currentModels.elementAt(i);
-			if( graphViews.size() <=i || !graphViews.elementAt(i).getGraphModel().equals(gm) ) {
-				GraphView gv = new GraphView(gm);				
-				gm.addSubscriber(this);
-				gv.addMouseListener(this);
-				gv.addMouseMotionListener(this);
+			ModelWrap gm = currentModels.elementAt(i);
+			if( graphViews.size() <=i || !graphViews.elementAt(i).getModelWrap().equals(gm) ) {
+				Presentation gv = PresentationManager.getToolset(gm.getModelInterface()).getModelThumbnail(gm,10,10);				
+				((FSAGraph)gm).addSubscriber(this);
+				gv.getGUI().addMouseListener(this);
+				gv.getGUI().addMouseMotionListener(this);
 				graphViews.insertElementAt(gv,i);
 			}
 		}
@@ -127,11 +143,11 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * @param arg0
 	 */
 	public void mouseClicked(MouseEvent arg0) {
-		if( !(arg0.getSource() instanceof GraphView) ) {
+		if( !(arg0.getSource() instanceof Presentation) ) {
 			return;
 		}
-		GraphView gv=(GraphView)arg0.getSource();
-		Hub.getWorkspace().setActiveModel(gv.getGraphModel().getName());		
+		Presentation gv=(Presentation)arg0.getSource();
+		Hub.getWorkspace().setActiveModel(gv.getModelWrap().getModel().getName());		
 	}
 
 	public void mousePressed(MouseEvent arg0) {}
@@ -165,11 +181,11 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	public void mouseMoved(MouseEvent arg0) {
 		Thumbnail current = null;
 		if (arg0.getSource() != this) {
-			current = graphPanels.get(( (GraphView)arg0.getSource() ).getGraphModel());
+			current = graphPanels.get(( (Presentation)arg0.getSource() ).getModelWrap());
 		} else {
 			int thumbnailIndex = arg0.getPoint().x / (THUMBNAIL_SIZE+SPACER_SIZE);
 			arg0.getPoint().x -= (THUMBNAIL_SIZE+SPACER_SIZE) * thumbnailIndex;
-			current = graphPanels.get(graphViews.elementAt(thumbnailIndex).getGraphModel());
+			current = graphPanels.get(graphViews.elementAt(thumbnailIndex).getModelWrap());
 		}
 		current.handleMouseEntered(arg0);
 		if (!(current.equals(underMouse))) {
@@ -211,8 +227,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, FSAGraphSu
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
 	public void repaintRequired(WorkspaceMessage message) {		
-		for(GraphView gv : graphViews) {
-			gv.repaint();
+		for(Presentation gv : graphViews) {
+			gv.getGUI().repaint();
 		}
 	}
 

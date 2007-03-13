@@ -52,7 +52,7 @@ public class BezierEdgePlacer {
 			}	
 
 			straightEdge.computeEdge();
-			Hub.getWorkspace().getActiveGraphModel().commitMovement(straightEdge);
+			straightEdge.getGraph().commitMovement(straightEdge);
 
 		}/*else{	// No straight edge
 			if(n % 2 != 0) // Odd # of neighbours			

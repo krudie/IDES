@@ -12,7 +12,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 import main.Hub;
-import main.IDESWorkspace;
+import main.Workspace;
 
 /**
  * @author lenko

@@ -23,20 +23,20 @@ public class GraphElement implements PresentationElement {
 	protected boolean highlighted = false;
 	protected boolean selected = false;
 	protected boolean needsRefresh = false;
-		
+
 	private GraphicalLayout layout;
 	
 	/** Collection of child elements */
-	private HashMap<Long, PresentationElement> children;
-	private PresentationElement parent;
+	private HashMap<Long, GraphElement> children;
+	private GraphElement parent;
 	
 	public GraphElement() {		
 		this(null);		
 	}
 		
-	public GraphElement(PresentationElement parent) {		
+	public GraphElement(GraphElement parent) {		
 		this.parent = parent;
-		children = new HashMap<Long, PresentationElement>();
+		children = new HashMap<Long, GraphElement>();
 		layout = new GraphicalLayout();
 	}
 	
@@ -83,7 +83,7 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @param child the child to be inserted
 	 */
-	public void insert(PresentationElement child) {
+	public void insert(GraphElement child) {
 		children.put((long)child.hashCode(), child);	
 		child.setParent(this);
 	}
@@ -130,7 +130,7 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 *  @return an iterator of all child elements
 	 */
-	public Iterator<PresentationElement> children() { 
+	public Iterator<GraphElement> children() { 
 		return children.values().iterator();
 	}
 
@@ -139,7 +139,7 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @param children the map of child elements to set
 	 */
-	public void setChildren(HashMap<Long, PresentationElement> children) {
+	public void setChildren(HashMap<Long, GraphElement> children) {
 		this.children = children;
 	}
 
@@ -148,8 +148,18 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @return the parent element
 	 */
-	public PresentationElement getParent() {
+	public GraphElement getParent() {
 		return parent;
+	}
+	
+	/**
+	 * Gets the graph to which this element belongs.
+	 * @return the graph to which this element belongs;
+	 * <code>null</code> if it doesn't belong to a graph.
+	 */
+	public FSAGraph getGraph()
+	{
+		return parent.getGraph();
 	}
 
 	/**
@@ -157,7 +167,7 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @param parent the parent element to set
 	 */
-	public void setParent(PresentationElement parent) {
+	public void setParent(GraphElement parent) {
 		this.parent = parent;
 	}
 

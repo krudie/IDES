@@ -1,6 +1,6 @@
 package main;
 
-import io.fsa.ver1.CommonTasks;
+import io.fsa.ver2_1.CommonTasks;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -9,26 +9,32 @@ import java.util.ResourceBundle;
 
 import javax.swing.UIManager;
 
-import operations.fsa.ver1.Accessible;
-import operations.fsa.ver1.Coaccessible;
-import operations.fsa.ver1.Conflicting;
-import operations.fsa.ver1.Containment;
-import operations.fsa.ver1.ControlMap;
-import operations.fsa.ver1.Controllable;
-import operations.fsa.ver1.Meet;
-import operations.fsa.ver1.PrefixClosure;
-import operations.fsa.ver1.Projection;
-import operations.fsa.ver1.SupCon;
-import operations.fsa.ver1.SynchronousProduct;
-import operations.fsa.ver1.Trim;
+import operations.fsa.ver2_1.Accessible;
+import operations.fsa.ver2_1.Coaccessible;
+import operations.fsa.ver2_1.Conflicting;
+import operations.fsa.ver2_1.Containment;
+import operations.fsa.ver2_1.ControlMap;
+import operations.fsa.ver2_1.Controllable;
+import operations.fsa.ver2_1.Meet;
+import operations.fsa.ver2_1.PrefixClosure;
+import operations.fsa.ver2_1.Projection;
+import operations.fsa.ver2_1.SupCon;
+import operations.fsa.ver2_1.SynchronousProduct;
+import operations.fsa.ver2_1.Trim;
 
 import pluggable.operation.OperationManager;
+import presentation.ModelWrap;
+import presentation.PresentationManager;
+import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
+import presentation.template.TemplateToolset;
 
 import model.ModelManager;
 import model.fsa.FSAModel;
-import model.fsa.ver1.Automaton;
+import model.fsa.ver2_1.Automaton;
+import model.template.TemplateModel;
+import model.template.ver2_1.TemplateDesign;
 
 import services.General;
 import services.cache.Cache;
@@ -84,6 +90,9 @@ public class Main {
 		Cache.init();
 		// TODO: move operation inits to the plugin manager eventually
 		ModelManager.registerModel(Automaton.myDescriptor);
+		ModelManager.registerModel(TemplateDesign.myDescriptor);
+		PresentationManager.registerToolset(FSAModel.class, new FSAToolset());
+		PresentationManager.registerToolset(TemplateModel.class, new TemplateToolset());
 		OperationManager.register(new Meet());
 		OperationManager.register(new SynchronousProduct());
 		OperationManager.register(new Projection());
@@ -116,7 +125,7 @@ public class Main {
 		LatexManager.init(); 
 		
 		FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName"));
-		Hub.getWorkspace().addFSAModel(fsa);
+		Hub.getWorkspace().addModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
@@ -137,9 +146,9 @@ public class Main {
 		if(Hub.getWorkspace().isDirty())
 			if(!CommonTasks.handleUnsavedWorkspace())
 				return;
-		for(Iterator<FSAGraph> i=Hub.getWorkspace().getGraphModels();i.hasNext();)
+		for(Iterator<ModelWrap> i=Hub.getWorkspace().getModelWraps();i.hasNext();)
 		{
-			FSAGraph gm=i.next();
+			ModelWrap gm=i.next();
 			if( gm.needsSave() )
 				if(!CommonTasks.handleUnsavedModel(gm))
 					return;

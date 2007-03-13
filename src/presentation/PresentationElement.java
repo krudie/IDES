@@ -38,49 +38,49 @@ public interface PresentationElement {
 	 */
 	public boolean intersects(Point2D p);
 	
-	/**
-	 * Inserts the given child element.
-	 * 
-	 * @param child the element to be inserted
-	 */
-	public void insert(PresentationElement child);
-	
-	/**
-	 * Removes the first occurrence of the given child from my list of children.
-	 * 
-	 * @param child the child to be removed.
-	 */
-	public void remove(PresentationElement child);
-	
-	/**
-	 * Returns the child at the given key, null if does not exist.
-	 *  
-	 * @param key the key mapping to the desired child element
-	 * @return the child at the given key, null if no such element
-	 */
-	public PresentationElement child(long key);
-	
-	/**
-	 * Returns the parent of this element, null if this element
-	 * has no parent.  
-	 *  
-	 * @return the parent of this element, null if does not exist
-	 */
-	public PresentationElement getParent();
-	
-	/**
-	 * Sets the parent element of this element to <code>parent</code>. 
-	 * 
-	 * @param parent the element to be set
-	 */
-	public void setParent(PresentationElement parent);
-	
-	/**
-	 * Returns an iterator of all child elements. 
-	 * 
-	 * @return an iterator of child elements
-	 */
-	public Iterator children();
+//	/**
+//	 * Inserts the given child element.
+//	 * 
+//	 * @param child the element to be inserted
+//	 */
+//	public void insert(PresentationElement child);
+//	
+//	/**
+//	 * Removes the first occurrence of the given child from my list of children.
+//	 * 
+//	 * @param child the child to be removed.
+//	 */
+//	public void remove(PresentationElement child);
+//	
+//	/**
+//	 * Returns the child at the given key, null if does not exist.
+//	 *  
+//	 * @param key the key mapping to the desired child element
+//	 * @return the child at the given key, null if no such element
+//	 */
+//	public PresentationElement child(long key);
+//	
+//	/**
+//	 * Returns the parent of this element, null if this element
+//	 * has no parent.  
+//	 *  
+//	 * @return the parent of this element, null if does not exist
+//	 */
+//	public PresentationElement getParent();
+//	
+//	/**
+//	 * Sets the parent element of this element to <code>parent</code>. 
+//	 * 
+//	 * @param parent the element to be set
+//	 */
+//	public void setParent(PresentationElement parent);
+//	
+//	/**
+//	 * Returns an iterator of all child elements. 
+//	 * 
+//	 * @return an iterator of child elements
+//	 */
+//	public Iterator children();
 	
 	/**
 	 * Returns whether this element is to appear highlighted when rendered. 

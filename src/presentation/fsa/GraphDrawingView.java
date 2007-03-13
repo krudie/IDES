@@ -526,7 +526,7 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 //			setShowGrid(false);
 //		
 //		// get the active graph model and update the graph view part of me		
-//		graphModel = IDESWorkspace.instance().getActiveGraphModel();		
+//		graphModel = Workspace.instance().getActiveGraphModel();		
 //		super.update();
 //		Hub.getMainWindow().validate();
 //	}
@@ -547,7 +547,10 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message) {
 		// get the active graph model and update the graph view  part of me
-		setGraphModel(Hub.getWorkspace().getActiveGraphModel());		
+		if(Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph)
+			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveModelWrap());
+		else
+			setGraphModel(null);
 		Hub.getMainWindow().validate();
 	}
 
@@ -568,7 +571,10 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	 */
 	public void modelSwitched(WorkspaceMessage message) {
 		// get the active graph model and update the graph view  part of me
-		setGraphModel(Hub.getWorkspace().getActiveGraphModel());		
+		if(Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph)
+			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveModelWrap());
+		else
+			setGraphModel(null);
 		Hub.getMainWindow().validate();
 		//repaint();
 	}	

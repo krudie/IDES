@@ -2,7 +2,7 @@ package ui.command;
 
 import javax.swing.undo.UndoableEdit;
 
-import main.IDESWorkspace;
+import main.Workspace;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
@@ -88,7 +88,7 @@ public class EdgeCommands {
 		protected UndoableEdit performEdit() {
 			SelectionGroup sg = new SelectionGroup();
 			sg.insert(edge);
-			IDESWorkspace.instance().getActiveGraphModel().commitMovement(sg);
+			edge.getGraph().commitMovement(sg);
 			// TODO UndoableEdit containing the Edge id and a clone of the previous layout OR
 			// just of the curve.
 			return null;
