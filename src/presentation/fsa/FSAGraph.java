@@ -24,11 +24,12 @@ import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.MetaData;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
-import observer.FSAGraphMessage;
-import observer.FSAGraphSubscriber;
 import pluggable.layout.LayoutManager;
 import presentation.GraphicalLayout;
-import presentation.ModelWrap;
+import presentation.LayoutShell;
+import presentation.LayoutShellMessage;
+import presentation.LayoutShellPublisher;
+import presentation.LayoutShellSubscriber;
 import presentation.PresentationElement;
 import presentation.Geometry;
 
@@ -43,7 +44,7 @@ import presentation.Geometry;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
+public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell, LayoutShellPublisher {
 	
 	protected UniformRadius uniformR=new UniformRadius();
 
@@ -164,6 +165,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 	{
 		return this;
 	}
+	
+	public void release()
+	{
+		//TODO add more things necessary to release memory
+		fsa.removeSubscriber(this);
+	}
 
 	/**
 	 * Builds the data structure used to compute the intersection of a point 
@@ -233,14 +240,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 		super.setNeedsRefresh(b);
 	}
 
-	/**
-	 * Tells the graph that it needs to be saved to file. 
-	 *  
-	 * @param b 
-	 */
-	public void setNeedsSave( boolean b ) {			
-		needsSave = b;
-	}
+//	/**
+//	 * Tells the graph that it needs to be saved to file. 
+//	 *  
+//	 * @param b 
+//	 */
+//	public void setNeedsSave( boolean b ) {			
+//		needsSave = b;
+//	}
 	
 	/**
 	 * Returns true iff this graph needs to be saved to file. 
@@ -1377,11 +1384,17 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 
 	
 	//////////////////////////////////////////////////////////////////////// 
-	/* FSMGraphPublisher part which maintains a collection of, and 
+	/** FSAGraphPublisher part which maintains a collection of, and 
 	 * sends change notifications to, all interested observers (subscribers). 
-	 **/
+	 */
 	private ArrayList<FSAGraphSubscriber> subscribers = new ArrayList<FSAGraphSubscriber>();
 		
+	//////////////////////////////////////////////////////////////////////// 
+	/** LayoutShellPublisher part which maintains a collection of, and 
+	 * sends change notifications to, all interested observers (subscribers). 
+	 */
+	private ArrayList<LayoutShellSubscriber> mwsubscribers = new ArrayList<LayoutShellSubscriber>();
+
 	/**
 	 * Attaches the given subscriber to this publisher.
 	 * The given subscriber will receive notifications of changes from this publisher.
@@ -1389,9 +1402,19 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 	 * @param subscriber
 	 */
 	public void addSubscriber(FSAGraphSubscriber subscriber) {
-		subscribers.add(subscriber);		
+		subscribers.add(subscriber);
 	}
 	
+	/**
+	 * Attaches the given subscriber to this publisher.
+	 * The given subscriber will receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void addSubscriber(LayoutShellSubscriber subscriber) {
+		mwsubscribers.add(subscriber);
+	}
+
 	/**
 	 * Removes the given subscriber to this publisher.
 	 * The given subscriber will no longer receive notifications of changes from this publisher.
@@ -1402,7 +1425,47 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 		subscribers.remove(subscriber);
 	}
 	
+	/**
+	 * Removes the given subscriber to this publisher.
+	 * The given subscriber will no longer receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void removeSubscriber(LayoutShellSubscriber subscriber) {
+		mwsubscribers.remove(subscriber);
+	}
+
+	/**
+	 * Returns all current subscribers to this publisher.
+	 * @return all current subscribers to this publisher
+	 */
+	public FSAGraphSubscriber[] getFSAGraphSubscribers()
+	{
+		return subscribers.toArray(new FSAGraphSubscriber[]{});
+	}
 	
+	/**
+	 * Returns all current subscribers to this publisher.
+	 * @return all current subscribers to this publisher
+	 */
+	public LayoutShellSubscriber[] getLayoutShellSubscribers()
+	{
+		return mwsubscribers.toArray(new LayoutShellSubscriber[]{});
+	}
+	
+	/**
+	 * Notifies all subscribers that there has been a change to an element of 
+	 * the save status of the graph.
+	 */
+	private void fireSaveStatusChanged() {
+		LayoutShellMessage message=new LayoutShellMessage(
+				needsSave?LayoutShellMessage.DIRTY:LayoutShellMessage.CLEAN,
+						this);
+		for(LayoutShellSubscriber s : mwsubscribers)	{
+			s.saveStatusChanged(message);
+		}		
+	}
+
 	/**
 	 * Notifies all subscribers that there has been a change to an element of 
 	 * this graph publisher.
@@ -1411,11 +1474,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 	 */
 	private void fireFSAGraphChanged(FSAGraphMessage message) {
 		if( message.getEventType() != FSAGraphMessage.SAVE ) {
-			needsSave = true;
+			if(!needsSave)
+			{
+				needsSave = true;
+				fireSaveStatusChanged();
+			}
 		}
 		
 		for(FSAGraphSubscriber s : subscribers)	{
-			s.fsmGraphChanged(message);
+			s.fsaGraphChanged(message);
 		}		
 	}
 
@@ -1427,7 +1494,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 	 */
 	protected void fireFSAGraphSelectionChanged(FSAGraphMessage message) {
 		for(FSAGraphSubscriber s : subscribers) {
-			s.fsmGraphSelectionChanged(message);
+			s.fsaGraphSelectionChanged(message);
 		}
 	}
 	
@@ -1447,6 +1514,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 				this.getId(), 
 				this.bounds(),
 				this, ""));
+		fireSaveStatusChanged();
 	}
 	
 	/* (non-Javadoc)
@@ -1571,12 +1639,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 	 */
 	public void labelCompositeNodes()
 	{
+		if(fsa.getAnnotation(Annotable.COMPOSED_OF)==null)
+			return;
 		if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length>1)
 		{
 			FSAGraph[] gs=new FSAGraph[((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length];
 			for(int i=0;i<gs.length;++i)
 			{
-				FSAGraph g=(FSAGraph)Hub.getWorkspace().getModelWrapById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
+				FSAGraph g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
 				if(g==null)
 					return;
 				gs[i]=g;
@@ -1613,7 +1683,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, ModelWrap {
 		}
 		else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
 		{
-			FSAGraph g=(FSAGraph)Hub.getWorkspace().getModelWrapById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
+			FSAGraph g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
 			if(g==null)
 				return;
 			for(Node n:nodes.values())

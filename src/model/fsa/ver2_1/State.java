@@ -3,6 +3,7 @@ package model.fsa.ver2_1;
 import io.fsa.ver2_1.SubElement;
 import io.fsa.ver2_1.SubElementContainer;
 
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -30,10 +31,8 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
     //  TODO move to meta info
     protected long[] composedOf=new long[0];
     
-    // a set with disable events at this state
-    //  TODO move to meta info
-    protected java.util.Set<model.fsa.FSAEvent> disabledEvents=null;
-    
+    //TODO make the state use a common annotation repository
+    protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
     
 
     /**
@@ -201,27 +200,42 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		composedOf=list;
 	}
 	
-	/**
-	 * Get the events disabled at the state (if any).
-	 * @return set of disabled events
-	 */
-	public java.util.Set<model.fsa.FSAEvent> getDisabledEvents() //TODO move to meta info
-	{
-		if(disabledEvents==null)
-			return new java.util.HashSet<model.fsa.FSAEvent>();
-		else
-			return disabledEvents;
-	}
-	
-	/**
-	 * Set the events disable at the state. The new set will replace the existing set.
-	 * @param de set of disabled events
-	 */
-	public void setDisabledEvents(java.util.Set<model.fsa.FSAEvent> de) //	TODO move to meta info
-	{
-		disabledEvents=de;
-	}
-	
 	public static final String ATTR_MARKED = "marked";
 	public static final String ATTR_INITIAL = "initial";
+	
+	/**
+	 * Returns the annotation for the given key.
+	 * @param key key for the annotation
+	 * @return if there is no annotation for the given key,
+	 * returns <code>null</code>, otherwise returns the annotation
+	 * for the key
+	 */
+	public Object getAnnotation(String key)
+	{
+		return annotations.get(key);
+	}
+
+	/**
+	 * Sets an annotation for a given key. If there is already
+	 * an annotation for the key, it is replaced. 
+	 * @param key the key for the annotation
+	 * @param annotation the annotation
+	 */
+	public void setAnnotation(String key, Object annotation)
+	{
+		annotations.put(key, annotation);
+	}
+	
+	/**
+	 * Returns <code>true</code> if there is an annotation
+	 * for the given key. Otherwise returns <code>false</code>.
+	 * @param key key for the annotation
+	 * @return <code>true</code> if there is an annotation
+	 * for the given key, <code>false</code> otherwise
+	 */
+	public boolean hasAnnotation(String key)
+	{
+		return annotations.containsKey(key);
+	}
+
  }

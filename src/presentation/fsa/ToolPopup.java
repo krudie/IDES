@@ -41,7 +41,7 @@ public class ToolPopup extends JPopupMenu {
 	protected ToolPopup() {
 		super("Graph Operations");
 		
-		alignCmd = new AlignCommand(view);
+		alignCmd = new AlignCommand();
 		showGridCmd = new ShowGridCommand();
 		
 		miSelect = new JMenuItem("Select nodes", new ImageIcon(Hub.getResource("images/icons/graphic_modify.gif")));

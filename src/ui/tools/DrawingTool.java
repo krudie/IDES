@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JOptionPane;
 
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.SelectionGroup;
@@ -22,7 +23,7 @@ import presentation.fsa.ToolPopup;
  */
 public abstract class DrawingTool {
 
-	protected GraphDrawingView context;
+//	protected GraphDrawingView context;
 	protected Cursor cursor;
 	
 // Dragging flag -- set to true when user presses mouse button
@@ -32,42 +33,42 @@ public abstract class DrawingTool {
 	public Cursor getCursor() { return cursor; }
 	
 	public void handleRightClick(MouseEvent m){
-		if(context!=null)
-			context.requestFocus();
+		if(ContextAdaptorHack.context!=null)
+			ContextAdaptorHack.context.requestFocus();
 		
 		// get intersected element and display appropriate popup menu
-		context.clearCurrentSelection();
-		if(context.updateCurrentSelection(m.getPoint())){
-			context.getSelectedElement().showPopup(context);			
+		ContextAdaptorHack.context.clearCurrentSelection();
+		if(ContextAdaptorHack.context.updateCurrentSelection(m.getPoint())){
+			ContextAdaptorHack.context.getSelectedElement().showPopup(ContextAdaptorHack.context);			
 		}else{
-			ToolPopup.showPopup(context, m);
+			ToolPopup.showPopup(ContextAdaptorHack.context, m);
 		}
 	}
 	
 	public void handleMouseClicked(MouseEvent m)
 	{
-		if(context!=null)
-			context.requestFocus();
+		if(ContextAdaptorHack.context!=null)
+			ContextAdaptorHack.context.requestFocus();
 	}
 	
 	public void handleMouseDragged(MouseEvent m)
 	{
-		if(context!=null)
-			context.requestFocus();
+		if(ContextAdaptorHack.context!=null)
+			ContextAdaptorHack.context.requestFocus();
 	}
 	
 	public void handleMouseMoved(MouseEvent m){}
 	
 	public void handleMousePressed(MouseEvent m)	
 	{
-		if(context!=null)
-			context.requestFocus();
+		if(ContextAdaptorHack.context!=null)
+			ContextAdaptorHack.context.requestFocus();
 	}
 	
 	public void handleMouseReleased(MouseEvent m)
 	{
-		if(context!=null)
-			context.requestFocus();
+		if(ContextAdaptorHack.context!=null)
+			ContextAdaptorHack.context.requestFocus();
 	}
 	
 	public void handleKeyTyped(KeyEvent ke){}	

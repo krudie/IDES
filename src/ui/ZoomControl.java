@@ -11,6 +11,9 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
+import presentation.fsa.FSAToolset;
+import presentation.fsa.GraphDrawingView;
+
 import main.Hub;
 import main.Workspace;
 
@@ -93,7 +96,12 @@ public class ZoomControl extends JComboBox implements ActionListener {
 	{
 		if(z!=zoomValue)
 		{
-			zoomValue=z;			
+			zoomValue=z;
+			GraphDrawingView gdv=FSAToolset.getCurrentBoard();
+			if(gdv!=null)
+			{
+				gdv.setScaleFactor(getZoom());
+			}
 			//((MainWindow)Hub.getMainWindow()).getDrawingBoard().update();
 			Hub.getWorkspace().fireRepaintRequired();
 		}

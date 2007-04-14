@@ -4,6 +4,7 @@ import io.fsa.ver2_1.CommonTasks;
 import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
@@ -12,10 +13,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
 
-import observer.WorkspaceMessage;
-import observer.WorkspacePublisherAdaptor;
+import javax.swing.JTabbedPane;
 
-import presentation.ModelWrap;
+
+import pluggable.ui.Toolset;
+import pluggable.ui.UIDescriptor;
+import presentation.LayoutShell;
+import presentation.Presentation;
 import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
@@ -51,10 +55,12 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	// maps name of each model to the abstract FSA model, 
 	// graph representation and metadata respectively.
 	private Vector<DESModel> systems;
-	private Vector<ModelWrap> graphs;
+	private Vector<LayoutShell> graphs;
 	private Vector<MetaData> metadata;
-
+	
 	static Workspace me;
+	
+	protected Presentation[] activePresentations=new Presentation[0];
 	
 	public static Workspace instance(){
 		if(me == null){
@@ -66,17 +72,17 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	protected Workspace(){
 		activeModelIdx=-1;
 		systems=new Vector<DESModel>();
-		graphs=new Vector<ModelWrap>();
+		graphs=new Vector<LayoutShell>();
 		metadata=new Vector<MetaData>();
 		name=Hub.string("newAutomatonName");
 //		eventsModel = new EventsModel();
 	}
 
-	public void addModelWrap(ModelWrap g)
+	public void addLayoutShell(LayoutShell g)
 	{	
-		// Remove Untitled graph if it has not been modified
-		if(countAdd==1 && getActiveModelWrap()!=null && !getActiveModelWrap().needsSave()){
-			removeModel(getActiveModelWrap().getModel().getName());
+		// Remove initial Untitled graph if it has not been modified
+		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveLayoutShell().needsSave()){
+			removeModel(getActiveLayoutShell().getModel().getName());
 		}
 		
 		if(getModel(g.getModel().getName())!=null)
@@ -95,20 +101,20 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		else
 			metadata.add(new FSAGraph(ModelManager.createModel(FSAModel.class)).getMeta());
 		graphs.add(g);
-		activeModelIdx=systems.size()-1;
-		
-		//eventsModel.addLocalEvents(fsa);
 		
 		if(LatexManager.isLatexEnabled())
 		{
-			if(getActiveModelWrap() instanceof FSAGraph)
-				new LatexPrerenderer((FSAGraph)getActiveModelWrap());
+			if(getActiveLayoutShell() instanceof FSAGraph)
+				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());
 		}
 
-		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 									g.getModel().getId(), 
 									WorkspaceMessage.ADD, 
 									this));		
+		
+//		setActiveModel(systems.elementAt(systems.size()-1).getName());
+
 		if(countAdd!=0){
 			dirty = true;
 		}
@@ -121,9 +127,9 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 */
 	public void addModel(DESModel fsa) {
 		
-		// Remove Untitled model if it is empty
-		if(countAdd==1 && getActiveModelWrap()!=null && !getActiveModelWrap().needsSave()){
-			removeModel(getActiveModelWrap().getModel().getName());		
+		// Remove initial Untitled model if it is empty
+		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveLayoutShell().needsSave()){
+			removeModel(getActiveLayoutShell().getModel().getName());		
 		}
 		
 		if(getModel(fsa.getName())!=null){
@@ -135,26 +141,33 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		}
 
 		systems.add(fsa);
-		metadata.add(new MetaData((Automaton)fsa));
 		if(fsa instanceof FSAModel)
+		{
+			metadata.add(new MetaData((Automaton)fsa));
 			fsa.setAnnotation("metadata", metadata.lastElement());
+		}
+		else
+		{
+			metadata.add(new MetaData((Automaton)ModelManager.createModel(FSAModel.class)));
+		}
 		graphs.add(PresentationManager.getToolset(fsa.getModelDescriptor().getPreferredModelInterface()).wrapModel(fsa));
-		activeModelIdx=systems.size()-1;
-		
-		//eventsModel.addLocalEvents(fsa);
-		
+
 		if(LatexManager.isLatexEnabled()){
-			if(getActiveModelWrap() instanceof FSAGraph)
-				new LatexPrerenderer((FSAGraph)getActiveModelWrap());
+			if(getActiveLayoutShell() instanceof FSAGraph)
+				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());
 		}
 		
-		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 									fsa.getId(), 
 									WorkspaceMessage.ADD, 
-									this));		
+									this));
+		
+//		setActiveModel(systems.elementAt(systems.size()-1).getName());
+		
 		if(countAdd!=0){
 			dirty = true;
 		}
+		
 		countAdd++;
 	}
 
@@ -181,7 +194,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		return null;
 	}
 
-	public ModelWrap getModelWrapById(String id)
+	public LayoutShell getLayoutShellById(String id)
 	{
 		for(int i=0;i<systems.size();++i)
 			if(systems.elementAt(i).getId().equals(id))
@@ -189,7 +202,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		return null;
 	}
 
-	public ModelWrap getModelWrap(String name) {	
+	public LayoutShell getLayoutShell(String name) {	
 		int idx=getModelIndex(name);
 		if(idx<0)
 			return null;
@@ -201,7 +214,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	}
 	
 	public void removeModel(String name) {
-		ModelWrap gm=getModelWrap(name);
+		LayoutShell gm=getLayoutShell(name);
 		
 		if(gm==null){
 			return;
@@ -218,21 +231,35 @@ public class Workspace extends WorkspacePublisherAdaptor {
 //		{
 //			((Automaton)getActiveModel()).removeSubscriber(getDrawingBoard());
 //		}
+
 		int idx=getModelIndex(name);
+		if(activeModelIdx==idx){
+			if(activeModelIdx+1<systems.size())
+				setActiveModel(systems.elementAt(activeModelIdx+1).getName());
+			else if(activeModelIdx-1>=0)
+				setActiveModel(systems.elementAt(activeModelIdx-1).getName());
+			else
+				setActiveModel(null);
+////			 TODO change name to fsa.id for consistency with add and remove
+//			fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.MODEL, 
+//								name, 
+//								WorkspaceMessage.REMOVE,
+//								this));
+		}
+		
 		DESModel fsa = systems.get(idx);
+		
+		graphs.elementAt(idx).release();
 		systems.removeElementAt(idx);	
 		metadata.removeElementAt(idx);
 		graphs.removeElementAt(idx);
-		if(activeModelIdx>=systems.size()){
-			activeModelIdx--;
-//			 TODO change name to fsa.id for consistency with add and remove
-			fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.FSM, 
-								name, 
-								WorkspaceMessage.REMOVE,
-								this));
-		}		
 		
-		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
+		if(activeModelIdx>idx)
+		{
+			activeModelIdx--;
+		}
+		
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 				fsa.getId(), 
 				WorkspaceMessage.REMOVE, 
 				this));
@@ -264,16 +291,51 @@ public class Workspace extends WorkspacePublisherAdaptor {
 //	}
 
 	/**
+	 * Remove all tabs from the main pane of IDES.
+	 * Release the currently active {@link LayoutShell}
+	 * from all presentations displayed in the tabs.
+	 * Dispose of the presentations.
+	 */
+	protected void releaseEditPanes()
+	{
+		// FIXME the obtainment of the tabbed pane is ugly
+		JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
+		tabs.removeAll();
+		for(int i=0;i<activePresentations.length;++i)
+		{
+			activePresentations[i].release();
+		}
+		activePresentations=new Presentation[0];
+	}
+	
+	/**
 	 * Sets the active model to the FSAModel with the given name. 
 	 * FIXME Should be using unique ID. 
 	 * 	 
 	 * @param name
 	 */
 	public void setActiveModel(String name) {
-		activeModelIdx=getModelIndex(name);
-		
+		releaseEditPanes();
+		if(name==null)
+		{
+			activeModelIdx=-1;
+		}
+		else
+		{
+			activeModelIdx=getModelIndex(name);			
+			// FIXME the obtainment of the tabbed pane is ugly
+			JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
+			Toolset ts=PresentationManager.getToolset(systems.elementAt(activeModelIdx).getModelDescriptor().getPreferredModelInterface());
+			UIDescriptor uid=ts.getUIElements(getActiveLayoutShell());
+			activePresentations=uid.getMainPanePresentations();
+			for(int i=0;i<activePresentations.length;++i)
+			{
+				tabs.add(activePresentations[i].getName(),activePresentations[i].getGUI());
+			}
+		}
+
 		// TODO change name to fsa.id for consistency with add and remove
-		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.FSM, 
+		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 							name, 
 							WorkspaceMessage.MODIFY,
 							this));		
@@ -283,9 +345,9 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 * 
 	 * @return an iterator of all graph models in this workspace
 	 */
-	public Iterator<ModelWrap> getModelWraps(){
-		ArrayList<ModelWrap> g = new ArrayList<ModelWrap>();
-		Iterator<ModelWrap> iter = graphs.iterator();
+	public Iterator<LayoutShell> getLayoutShells(){
+		ArrayList<LayoutShell> g = new ArrayList<LayoutShell>();
+		Iterator<LayoutShell> iter = graphs.iterator();
 		while(iter.hasNext()){
 			g.add(iter.next());
 		}
@@ -321,7 +383,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		return systems.isEmpty();
 	}
 
-	public ModelWrap getActiveModelWrap() {	
+	public LayoutShell getActiveLayoutShell() {	
 		if(activeModelIdx < 0) {
 			return null;
 		}
@@ -334,6 +396,9 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 */
 	public void replaceWorkspace(WorkspaceDescriptor wd)
 	{
+		//deactivate all models
+		setActiveModel(null);
+		
 		Iterator<DESModel> iter=getModels();
 		while(iter.hasNext())
 		{
@@ -359,16 +424,14 @@ public class Workspace extends WorkspacePublisherAdaptor {
 					selectedModel=fsa.getName();
 			}
 		}
-		if(selectedModel!=null)
-		{
-			setActiveModel(selectedModel);
-			// Hey LENKO! what is the nature of this change?  Everything appears to have changed...
-			fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.FSM, 
-									"everything changed?", 
-									WorkspaceMessage.MODIFY, 
-									this));
-			//notifyAllSubscribers();
-		}
+		// Hey LENKO! what is the nature of this change?  Everything appears to have changed...
+		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
+								"everything changed?", 
+								WorkspaceMessage.MODIFY, 
+								this));
+		
+		setActiveModel(selectedModel);
+		//notifyAllSubscribers();
 		setDirty(false);
 	}
 
@@ -421,29 +484,29 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		myFile=f;
 	}
 	
-	/**
-	 * TODO: fix this
-	 * @return the top-left corner of the drawing area
-	 */
-	public Point getDrawingBoardDisplacement()
-	{
-		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardDisplacement();
-	}
-
-	/**
-	 * TODO: fix this
-	 * @return the background color of the drawing area
-	 */
-	public Color getDrawingBoardBGColor()
-	{
-		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardBGColor();
-	}
-	
-	//TODO this should return an interface, not GDV
-	public presentation.fsa.GraphDrawingView getDrawingBoard()
-	{
-		return ((MainWindow)Hub.getMainWindow()).getDrawingBoard();
-	}
+//	/**
+//	 * TODO: fix this
+//	 * @return the top-left corner of the drawing area
+//	 */
+//	public Point getDrawingBoardDisplacement()
+//	{
+//		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardDisplacement();
+//	}
+//
+//	/**
+//	 * TODO: fix this
+//	 * @return the background color of the drawing area
+//	 */
+//	public Color getDrawingBoardBGColor()
+//	{
+//		return ((MainWindow)Hub.getMainWindow()).getDrawingBoardBGColor();
+//	}
+//	
+//	//TODO this should return an interface, not GDV
+//	public presentation.fsa.GraphDrawingView getDrawingBoard()
+//	{
+//		return ((MainWindow)Hub.getMainWindow()).getDrawingBoard();
+//	}
 	
 	/**
 	 * Get the number of models in the workspace
@@ -472,10 +535,10 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		return models;
 	}
 	
-	public <T> Collection<T> getModelWrapsOfType(Class<T> type)
+	public <T> Collection<T> getLayoutShellsOfType(Class<T> type)
 	{
 		Vector<T> wraps=new Vector<T>();
-		for(ModelWrap m:graphs)
+		for(LayoutShell m:graphs)
 		{
 			if(m.getClass().equals(type))
 			{
@@ -484,5 +547,28 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			}
 		}
 		return wraps;
+	}
+	
+	public Presentation[] getPresentations()
+	{
+		return activePresentations;
+	}
+	
+	public Presentation[] getPresentationsOfType(Class type)
+	{
+		Vector<Presentation> ps=new Vector<Presentation>();
+		for(int i=0;i<activePresentations.length;++i)
+		{
+			if(activePresentations[i].getClass().equals(type))
+			{
+				ps.add(activePresentations[i]);
+			}
+		}
+		return ps.toArray(new Presentation[0]);
+	}
+	
+	public void fireRepaintRequired() {
+		super.fireRepaintRequired();
+//		((MainWindow)Hub.getMainWindow()).getMainPane().validate();
 	}
 }

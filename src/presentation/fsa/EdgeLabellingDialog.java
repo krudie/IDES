@@ -111,7 +111,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			}
 			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
-				newEvent = ((FSAGraph)Workspace.instance().getActiveModelWrap()).createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
+				newEvent = ((FSAGraph)Workspace.instance().getActiveLayoutShell()).createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
 				updateOnlyAvailable();			
 				listAvailableEvents.setSelectedValue(newEvent, true);
 			}
@@ -615,7 +615,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			for(int i = 0; i < contents.length; i++){
 				events[i] = (Event)contents[i];
 			}				
-			((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).replaceEventsOnEdge(events, edge);
+			((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).replaceEventsOnEdge(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
 		        textField.requestFocus();

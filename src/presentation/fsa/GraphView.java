@@ -10,11 +10,9 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
-import observer.FSAGraphMessage;
-import observer.FSAGraphSubscriber;
 
 import presentation.GraphicalLayout;
-import presentation.ModelWrap;
+import presentation.LayoutShell;
 import presentation.Presentation;
 
 import main.Hub;
@@ -61,15 +59,39 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 		return this;
 	}
 	
-	public ModelWrap getModelWrap()
+	public LayoutShell getLayoutShell()
 	{
-		return getGraphModel();
+		return graphModel;
 	}
 	
 	public void setTrackModel(boolean b)
 	{
-		//TODO implement this. now it always tracks changes
-		//in the ModelWrap.
+		if(b)
+		{
+			FSAGraphSubscriber[] listeners=graphModel.getFSAGraphSubscribers();
+			boolean found=false;
+			for(int i=0;i<listeners.length;++i)
+			{
+				if(listeners[i]==this)
+				{
+					found=true;
+					break;
+				}
+			}
+			if(!found)
+			{
+				graphModel.addSubscriber(this);
+			}
+		}
+		else
+		{
+			graphModel.removeSubscriber(this);
+		}
+	}
+	
+	public void release()
+	{
+		setTrackModel(false);
 	}
 
 	public void paint(Graphics g) {
@@ -127,9 +149,9 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 	/**
 	 * Respond to change notification from underlying graph model.
 	 *  
-	 * @see observer.FSAGraphSubscriber#fsmGraphChanged(observer.FSAGraphMessage)
+	 * @see presentation.fsa.FSAGraphSubscriber#fsaGraphChanged(presentation.fsa.FSAGraphMessage)
 	 */
-	public void fsmGraphChanged(FSAGraphMessage message) {
+	public void fsaGraphChanged(FSAGraphMessage message) {
 		// TODO check contents of message to determine minimal response required
 		refreshView();			
 	}
@@ -162,5 +184,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 	 * (non-Javadoc)
 	 * @see observer.FSMGraphSubscriber#fsmGraphSelectionChanged(observer.FSMGraphMessage)
 	 */
-	public void fsmGraphSelectionChanged(FSAGraphMessage message) {	}
+	public void fsaGraphSelectionChanged(FSAGraphMessage message) {	}
+	
+	public void fsaGraphSaveStatusChanged(FSAGraphMessage message) { }
 }

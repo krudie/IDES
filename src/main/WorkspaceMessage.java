@@ -1,7 +1,7 @@
 /**
  * 
  */
-package observer;
+package main;
 
 /**
  * Message sent by <code>WorkspacePublisher<code>s to classes that implement 
@@ -20,12 +20,10 @@ public class WorkspaceMessage {
 	public static final int MODIFY = 2;
 	
 	/**
-	 * Possible model types
-	 * Other types will be required for those who write plugins for different
-	 * model types e.g. hierarchical, petri etc.
+	 * If changes occurred in the display or an opened model.
 	 */
 	public static final int DISPLAY = 0;
-	public static final int FSM = 1;
+	public static final int MODEL = 1;
 	 
 	
 	/**
@@ -50,7 +48,7 @@ public class WorkspaceMessage {
 	 * Creates a change notification message for the given model type, model id, event type, 
 	 * source and descriptive text. 
 	 * 
-	 * @param type FSM or DISPLAY
+	 * @param type MODEL or DISPLAY
 	 * @param id the model's id, ignored if display changed
 	 * @param eventType ADD, REMOVE or MODIFY
 	 * @param source sender of notification
@@ -69,7 +67,7 @@ public class WorkspaceMessage {
 	 * Creates a change notification message for the given model type, model id, event type, 
 	 * and source.  Descriptive text is blank. 
 	 *  
-	 * @param type FSM or DISPLAY
+	 * @param type MODEL or DISPLAY
 	 * @param id the model's id, ignored if display changed
 	 * @param eventType ADD, REMOVE or MODIFY
 	 * @param source sender of notification

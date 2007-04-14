@@ -23,7 +23,7 @@ import operations.fsa.ver2_1.SynchronousProduct;
 import operations.fsa.ver2_1.Trim;
 
 import pluggable.operation.OperationManager;
-import presentation.ModelWrap;
+import presentation.LayoutShell;
 import presentation.PresentationManager;
 import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphExporter;
@@ -146,9 +146,9 @@ public class Main {
 		if(Hub.getWorkspace().isDirty())
 			if(!CommonTasks.handleUnsavedWorkspace())
 				return;
-		for(Iterator<ModelWrap> i=Hub.getWorkspace().getModelWraps();i.hasNext();)
+		for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();)
 		{
-			ModelWrap gm=i.next();
+			LayoutShell gm=i.next();
 			if( gm.needsSave() )
 				if(!CommonTasks.handleUnsavedModel(gm))
 					return;

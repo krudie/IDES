@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import main.Hub;
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
 import presentation.fsa.GraphDrawingView;
 
@@ -25,20 +26,21 @@ public class SelectionTool extends DrawingTool {
 	private Point startPoint, endPoint; 
 	Dimension d;
 	Point topLeftPt;
-	Rectangle box;
+//	Rectangle box;
 	
 	// TODO more cursors for resizing the bounding box
 	
 	private boolean resizing = false;
 	private boolean moving = false;
 	
-	public SelectionTool(GraphDrawingView board){
-		context = board;
+	public SelectionTool(){
+//		context = board;
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/modify_.gif")), new Point(0,0), "SELECT_NODES_OR_EDGES");		
 		d = new Dimension();
 		topLeftPt = new Point();
-		box = context.getSelectionArea();
+//		if(ContextAdaptorHack.context!=null)
+//			box = ContextAdaptorHack.context.getSelectionArea();
 	}	
 
 	@Override
@@ -51,7 +53,7 @@ public class SelectionTool extends DrawingTool {
 		if(moving){ return; }
 		
 		if(!dragging) {
-			context.clearCurrentSelection();
+			ContextAdaptorHack.context.clearCurrentSelection();
 			dragging = true;
 		}
 
@@ -69,11 +71,11 @@ public class SelectionTool extends DrawingTool {
 							  Math.min(startPoint.y, endPoint.y));
 				d.setSize(Math.abs(endPoint.x - startPoint.x), 
 						  Math.abs(endPoint.y - startPoint.y));											
-				box.setLocation(topLeftPt);
-				box.setSize(d);
-				context.updateCurrentSelection(box);
-				context.highlightCurrentSelection(true);
-				context.repaint();	
+				ContextAdaptorHack.context.getSelectionArea().setLocation(topLeftPt);
+				ContextAdaptorHack.context.getSelectionArea().setSize(d);
+				ContextAdaptorHack.context.updateCurrentSelection(ContextAdaptorHack.context.getSelectionArea());
+				ContextAdaptorHack.context.highlightCurrentSelection(true);
+				ContextAdaptorHack.context.repaint();	
 			}
 		//context.getGraphModel().notifyAllSubscribers();		
 }
@@ -98,30 +100,30 @@ public class SelectionTool extends DrawingTool {
 		
 		// Prepare to move a group of multiple selected elements on drag event
 		// only if I have intersected the group.		
-		if(context.getSelectedGroup().size()>1 && context.getSelectedGroup().intersects(me.getPoint())) { 			
-			context.highlightCurrentSelection(true);
-			context.setTool(GraphDrawingView.MOVE);	
+		if(ContextAdaptorHack.context.getSelectedGroup().size()>1 && ContextAdaptorHack.context.getSelectedGroup().intersects(me.getPoint())) { 			
+			ContextAdaptorHack.context.highlightCurrentSelection(true);
+			ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);	
 			moving = true;
 			return;
 		}
 		
 		// If an edge is selected and i have hit a control point handle
 		// start modifying the edge		
-		if(context.hasCurrentSelection() && context.getSelectedElement() instanceof Edge) { // KLUGE instanceof is evidence of poor design
-			context.setTool(GraphDrawingView.MODIFY);
-			context.getCurrentTool().handleMousePressed(me);
+		if(ContextAdaptorHack.context.hasCurrentSelection() && ContextAdaptorHack.context.getSelectedElement() instanceof Edge) { // KLUGE instanceof is evidence of poor design
+			ContextAdaptorHack.context.setTool(GraphDrawingView.MODIFY);
+			ContextAdaptorHack.context.getCurrentTool().handleMousePressed(me);
 			return;
 		}
 		
-		context.clearCurrentSelection();
-		context.updateCurrentSelection(me.getPoint());				
+		ContextAdaptorHack.context.clearCurrentSelection();
+		ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());				
 
 		
 		// if i have pressed the mouse on the current selection		
-		if(context.hasCurrentSelection()){
+		if(ContextAdaptorHack.context.hasCurrentSelection()){
 			//prepare to move the selection on drag event
-			context.highlightCurrentSelection(true);			
-			context.setTool(GraphDrawingView.MOVE);	
+			ContextAdaptorHack.context.highlightCurrentSelection(true);			
+			ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);	
 			moving = true;
 		}else{
 			// store starting point for selection rectangle.
@@ -131,7 +133,7 @@ public class SelectionTool extends DrawingTool {
 		}
 		
 		//context.getGraphModel().notifyAllSubscribers();
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 	}
 
 	@Override
@@ -144,15 +146,15 @@ public class SelectionTool extends DrawingTool {
 		
 		if(dragging){
 			// compute the set of graph elements hit by rectangle
-			context.updateCurrentSelection(box);
-			context.highlightCurrentSelection(true);						
+			ContextAdaptorHack.context.updateCurrentSelection(ContextAdaptorHack.context.getSelectionArea());
+			ContextAdaptorHack.context.highlightCurrentSelection(true);						
 			// reset
-			box.setSize(0,0);
+			ContextAdaptorHack.context.getSelectionArea().setSize(0,0);
 			startPoint = null;
 			endPoint = null;			
 			dragging = false;
 		}		
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 	}
 
 	@Override
@@ -166,8 +168,8 @@ public class SelectionTool extends DrawingTool {
 	public void handleKeyTyped(KeyEvent ke) {
 		//	escape key, clear the rectangle
 		if(ke.getKeyChar() == KeyEvent.VK_ESCAPE){
-			context.clearCurrentSelection();
-			context.repaint();
+			ContextAdaptorHack.context.clearCurrentSelection();
+			ContextAdaptorHack.context.repaint();
 		}	
 	}
 

@@ -9,7 +9,7 @@ import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import presentation.ModelWrap;
+import presentation.LayoutShell;
 import presentation.fsa.FSAGraph;
 
 import main.Annotable;
@@ -64,9 +64,9 @@ public class CommonTasks {
 	 * @param gm the GraphModel that needs to be saved
 	 * @return false if the process was cancelled
 	 */
-	public static boolean handleUnsavedModel(ModelWrap gm)
+	public static boolean handleUnsavedModel(LayoutShell gm)
 	{
-		//TODO make this work with any ModelWrap
+		//TODO make this work with any LayoutShell
 		if(!(gm instanceof FSAGraph))
 			return true;
 		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),

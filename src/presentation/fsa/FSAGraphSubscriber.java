@@ -1,4 +1,4 @@
-package observer;
+package presentation.fsa;
 
 /**
  * Implemented by Subscribers that wish to receive change notifications 
@@ -8,8 +8,8 @@ package observer;
  */
 public interface FSAGraphSubscriber {
 
-	public void fsmGraphChanged(FSAGraphMessage message);	
+	public void fsaGraphChanged(FSAGraphMessage message);	
 
-	public void fsmGraphSelectionChanged(FSAGraphMessage message);
+	public void fsaGraphSelectionChanged(FSAGraphMessage message);
 	
 }

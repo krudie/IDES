@@ -2,6 +2,7 @@ package model.fsa;
 
 import java.util.ListIterator;
 
+import main.Annotable;
 import model.DESElement;
 
 /**
@@ -10,7 +11,7 @@ import model.DESElement;
  * 
  * @author Helen Bretzke
  */
-public interface FSAState extends DESElement {
+public interface FSAState extends DESElement,Annotable {
 
 	/**
 	 * Adds a transition that originates from this state. 

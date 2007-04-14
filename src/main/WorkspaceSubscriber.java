@@ -1,7 +1,7 @@
 /**
  * 
  */
-package observer;
+package main;
 
 /**
  * Implemented by classes that wish to receive change notifications from 

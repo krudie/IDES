@@ -39,6 +39,16 @@ public class FSAPublisherAdaptor implements FSAPublisher {
 		subscribers.remove(subscriber);
 	}
 	
+	/**
+	 * Returns all current subscribers to this publisher.
+	 * @return all current subscribers to this publisher
+	 */
+	public FSASubscriber[] getFSASubscribers()
+	{
+		return subscribers.toArray(new FSASubscriber[]{});
+	}
+
+	
 	public void fireFSAStructureChanged(FSAMessage message){
 		for(FSASubscriber s : subscribers)
 		{

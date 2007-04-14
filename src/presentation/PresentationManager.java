@@ -15,7 +15,7 @@ import pluggable.ui.Toolset;
  * 
  * <p>IDES will also use the {@link Toolset} registered
  * for a specific {@link DESModel} type to obtain
- * {@link ModelWrap}s of {@link DESModel}s of this type.
+ * {@link LayoutShell}s of {@link DESModel}s of this type.
  * 
  * @see Toolset
  * @see #registerToolset(Class, Toolset)

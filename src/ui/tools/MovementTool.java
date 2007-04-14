@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 
 import main.Hub;
 
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
 
 import ui.command.GraphCommands.MoveCommand;
@@ -16,8 +17,8 @@ public class MovementTool extends DrawingTool {
 
 	private Point start, end, prev, next;
 
-	public MovementTool(GraphDrawingView context){
-		this.context = context;
+	public MovementTool(){
+//		this.context = context;
 		//this.cursor = new Cursor(Cursor.MOVE_CURSOR);
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/move.gif")), new Point(12,12), "MOVE_NODES_OR_LABELS");		
@@ -32,19 +33,19 @@ public class MovementTool extends DrawingTool {
 		prev = start;
 		
 		// a group has been selected, move the whole thing
-		if(context.hasCurrentSelection() && context.getSelectedGroup().size()>1){
+		if(ContextAdaptorHack.context.hasCurrentSelection() && ContextAdaptorHack.context.getSelectedGroup().size()>1){
 			// FIXME What if user clicks outside the selection group?
 			dragging = true;
 		}else{ // otherwise update the currently selected element
-			context.clearCurrentSelection();
-			context.updateCurrentSelection(start);			
+			ContextAdaptorHack.context.clearCurrentSelection();
+			ContextAdaptorHack.context.updateCurrentSelection(start);			
 					
-			if(context.hasCurrentSelection()){
+			if(ContextAdaptorHack.context.hasCurrentSelection()){
 				dragging = true;
 			}
 			
 		}
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 	}
 	
 	public void handleMouseDragged(MouseEvent me) {
@@ -57,9 +58,9 @@ public class MovementTool extends DrawingTool {
 			return;
 		}		
 		next = me.getPoint();
-		context.getSelectedGroup().translate(next.x - prev.x, next.y - prev.y);		
+		ContextAdaptorHack.context.getSelectedGroup().translate(next.x - prev.x, next.y - prev.y);		
 		prev = next;
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 	}	
 
 	@Override
@@ -77,8 +78,8 @@ public class MovementTool extends DrawingTool {
 				// and the total translation
 				// save the set of selected objects for undo purposes
 				// NOTE: must make COPIES of all references in the selection group		
-				MoveCommand moveCmd = new MoveCommand(context, 
-													context.getSelectedGroup(), 
+				MoveCommand moveCmd = new MoveCommand( 
+						ContextAdaptorHack.context.getSelectedGroup(), 
 													displacement);		
 				moveCmd.execute();
 			}			
@@ -91,13 +92,13 @@ public class MovementTool extends DrawingTool {
 		end = null;
 		
 		// don't deselect groups of multiple elements since user may wish to revise movement
-		if( ! (context.getSelectedGroup().size()>1) ){
-			context.clearCurrentSelection();			
-			context.updateCurrentSelection(me.getPoint());
+		if( ! (ContextAdaptorHack.context.getSelectedGroup().size()>1) ){
+			ContextAdaptorHack.context.clearCurrentSelection();			
+			ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());
 		}
 		
-		context.setTool(GraphDrawingView.SELECT);
-		context.repaint();		
+		ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+		ContextAdaptorHack.context.repaint();		
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public class MovementTool extends DrawingTool {
 		// if user types escape, switch to selection tool
 		int code = ke.getKeyCode();
         if(code == KeyEvent.VK_ESCAPE){
-        	context.setTool(GraphDrawingView.SELECT);
+        	ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
         }
 	}
 	

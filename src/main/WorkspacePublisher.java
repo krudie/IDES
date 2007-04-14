@@ -1,4 +1,4 @@
-package observer;
+package main;
 
 /**
  * Publisher of Workspace messages.

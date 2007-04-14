@@ -1,28 +1,16 @@
-/**
- * 
- */
-package observer;
+package presentation.template;
 
 import java.awt.geom.Rectangle2D;
 
-import presentation.fsa.FSAGraph;
-
-/**
- * Message sent from FSAGraph to classes that implement 
- * FSAGraphSubscriber i.e. that subscribe to change notifications
- * from FSAGraph. 
- * 
- * @author Helen Bretzke
- */
-public class FSAGraphMessage {
+public class TemplateGraphMessage {
 	
 	/* the possible graph elements that were changed by the event */
-	/** Indicates element of type Node was affected by event */	
-	public static final int NODE = 0;
-	/** Indicates element of type Edge was affected by event */	
-	public static final int EDGE = 1;
-	/** Indicates element of type Label was affected by event */
-	public static final int LABEL = 2;	
+	/** Indicates element of type Module was affected by event */	
+	public static final int MODULE = 0;
+	/** Indicates element of type Channel was affected by event */	
+	public static final int CHANNEL = 1;
+	/** Indicates element of type Link was affected by event */
+	public static final int LINK = 2;	
 	/** Indicates element of type SelectionGroup was affected by event */
 	public static final int SELECTION = 3;
 	/** Indicates that the whole graph was affected by the event */
@@ -37,14 +25,12 @@ public class FSAGraphMessage {
 	public static final int REMOVE = 1;
 	/** A modification occurred */
 	public static final int MODIFY = 2;	
-	/** A save occurred */
-	public static final int SAVE = 3;
 	/** Default id for a group of elements or when id is unknown. */
 	public static final long UNKNOWN_ID = -1;	
 	
 	
 	/** the publisher that sent this message */
-	private FSAGraph source;
+	private TemplateGraph source;
 	
 	/** type of graph element that was changed by the event */
 	private int elementType;	
@@ -62,31 +48,31 @@ public class FSAGraphMessage {
 	private String messageText;
 	
 	/**
-	 * Creates a change notification message for FSMGraph to pass
-	 * to FSMGraphSubscribers. 
+	 * Creates a change notification message for TemplateGraph to pass
+	 * to TemplateGraphSubscribers. 
 	 * 
 	 * @param eventType ADD, REMOVE, or MODIFY
-	 * @param elementType NODE, EDGE, LABEL or SELECTION
+	 * @param elementType MODULE, CHANNEL, LINK or SELECTION
 	 * @param elementId the unique id (by type) of the element
 	 * @param location area in the display where the event occurred
 	 * @param source message sender
 	 */
-	public FSAGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSAGraph source) {
+	public TemplateGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, TemplateGraph source) {
 		this(eventType, elementType, elementId, location, source, "");		
 	}
 
 	/**
-	 * Creates a change notification message for FSMGraph to pass
-	 * to FSMGraphSubscribers. 
+	 * Creates a change notification message for TemplateGraph to pass
+	 * to TemplateGraphSubscribers. 
 	 * 
 	 * @param eventType ADD, REMOVE, or MODIFY
-	 * @param elementType NODE, EDGE, LABEL or SELECTION
+	 * @param elementType MODULE, CHANNEL, LINK or SELECTION
 	 * @param elementId the unique id (by type) of the element
 	 * @param location area in the display where the event occurred
 	 * @param source message sender
 	 * @param message a description of the event fired
 	 */
-	public FSAGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, FSAGraph source, String message) {
+	public TemplateGraphMessage(int eventType, int elementType, long elementId, Rectangle2D location, TemplateGraph source, String message) {
 		super();		
 		this.source = source;
 		this.elementType = elementType;
@@ -128,7 +114,7 @@ public class FSAGraphMessage {
 	 * 
 	 * @return the graph that sent this message
 	 */
-	public FSAGraph getSource() {
+	public TemplateGraph getSource() {
 		return source;
 	}
 
@@ -151,5 +137,5 @@ public class FSAGraphMessage {
 	public String getMessage() {
 		return messageText;
 	}
-
+	
 }

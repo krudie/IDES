@@ -153,12 +153,12 @@ public class GraphExporter
 		
 		// Step #1 - Get the GraphModel
 		workspace = Workspace.instance();
-		if(workspace.getActiveModelWrap() == null ||
-				!(workspace.getActiveModelWrap() instanceof FSAGraph))
+		if(workspace.getActiveLayoutShell() == null ||
+				!(workspace.getActiveLayoutShell() instanceof FSAGraph))
 		{
 			return null;
 		}
-		graphModel = (FSAGraph)workspace.getActiveModelWrap();
+		graphModel = (FSAGraph)workspace.getActiveLayoutShell();
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 
@@ -236,12 +236,12 @@ public class GraphExporter
 
 		// Step #1 - Get the GraphModel
 		workspace = Workspace.instance();
-		if(workspace.getActiveModelWrap() == null ||
-				!(workspace.getActiveModelWrap() instanceof FSAGraph))
+		if(workspace.getActiveLayoutShell() == null ||
+				!(workspace.getActiveLayoutShell() instanceof FSAGraph))
 		{
 			return null;
 		}
-		graphModel = (FSAGraph)workspace.getActiveModelWrap();
+		graphModel = (FSAGraph)workspace.getActiveLayoutShell();
 
 		// Step #2 - Get the Nodes, Edges and Labels
 		nodeArray = (CircleNode[]) graphModel.getNodes().toArray(new CircleNode[0]);
@@ -310,12 +310,12 @@ public class GraphExporter
 		
 		// Step #1 - Get the GraphModel
 		workspace = Workspace.instance();
-		if(workspace.getActiveModelWrap() == null ||
-				!(workspace.getActiveModelWrap() instanceof FSAGraph))
+		if(workspace.getActiveLayoutShell() == null ||
+				!(workspace.getActiveLayoutShell() instanceof FSAGraph))
 		{
 			return null;
 		}
-		graphModel = (FSAGraph)workspace.getActiveModelWrap();
+		graphModel = (FSAGraph)workspace.getActiveLayoutShell();
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 

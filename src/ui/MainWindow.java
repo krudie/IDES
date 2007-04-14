@@ -26,11 +26,14 @@ import javax.swing.JToolBar;
 import main.Hub;
 import main.Workspace;
 import main.Main;
-import observer.WorkspaceMessage;
-import observer.WorkspaceSubscriber;
+import main.WorkspaceMessage;
+import main.WorkspaceSubscriber;
 
 import org.pietschy.command.CommandManager;
 
+import presentation.fsa.ContextAdaptorHack;
+import presentation.fsa.EventView;
+import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
 import ui.command.EditCommands;
 import ui.command.FileCommands;
@@ -74,7 +77,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 				
 		FileOperations.loadCommandManager("commands.xml");
 
-		drawingBoard = new GraphDrawingView();		
+//		drawingBoard = new GraphDrawingView();
+		Hub.getWorkspace().addSubscriber(new ContextAdaptorHack());
 
 		createAndAddMainPane();				
 		
@@ -114,15 +118,15 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 private void createAndAddMainPane() {
 		JPanel mainPane=new JPanel(new BorderLayout());
 		tabbedViews = new JTabbedPane();
-		drawingBoard.setName("No graph");
-		JScrollPane sp = new JScrollPane(drawingBoard, 
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		sp.setName(drawingBoard.getName());
-		
-		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
-		tabbedViews.addTab("Graph",sp);
-		tabbedViews.addTab("Events", new EventView());
+//		drawingBoard.setName("No graph");
+//		JScrollPane sp = new JScrollPane(drawingBoard, 
+//				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+//				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+//		sp.setName(drawingBoard.getName());
+//		
+//		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
+//		tabbedViews.addTab("Graph",sp);
+//		tabbedViews.addTab("Events", new EventView());
 		mainPane.add(tabbedViews,BorderLayout.CENTER);
 
 		Box fsBox=Box.createHorizontalBox();
@@ -159,12 +163,12 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 // Lenko: moved to constructor: needs to load for drawing board
 //		FileOperations.loadCommandManager("commands.xml");
 		
-		new CreateCommand(drawingBoard).export();
-		new SelectCommand(drawingBoard).export();
-		new MoveCommand(drawingBoard).export();
-		new TextCommand(drawingBoard).export();
-		new DeleteCommand(drawingBoard).export();
-		new AlignCommand(drawingBoard).export();
+		new CreateCommand().export();
+		new SelectCommand().export();
+		new MoveCommand().export();
+		new TextCommand().export();
+		new DeleteCommand().export();
+		new AlignCommand().export();
 		
 		new EditCommands.CutCommand().export();
 		new EditCommands.CopyCommand().export();
@@ -201,7 +205,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 * The views.
 	 */
 	private JTabbedPane tabbedViews;
-	private GraphDrawingView drawingBoard;
+//	private GraphDrawingView drawingBoard;
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
 	private JToolBar toolbar;
 	
@@ -211,26 +215,26 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	}
 
 
-	/**
-	 * TODO: fix this
-	 * @return the top-left corner fo the drawing area
-	 */
-	public Point getDrawingBoardDisplacement() {
-		return drawingBoard.getLocationOnScreen();
-	}
-	
-	/**
-	 * TODO: fix this
-	 * @return background color of drawing board
-	 */
-	public Color getDrawingBoardBGColor() {
-		return drawingBoard.getBackground();
-	}
-	
-	//TODO: fix this
-	public GraphDrawingView getDrawingBoard() {
-		return drawingBoard;
-	}
+//	/**
+//	 * TODO: fix this
+//	 * @return the top-left corner fo the drawing area
+//	 */
+//	public Point getDrawingBoardDisplacement() {
+//		return drawingBoard.getLocationOnScreen();
+//	}
+//	
+//	/**
+//	 * TODO: fix this
+//	 * @return background color of drawing board
+//	 */
+//	public Color getDrawingBoardBGColor() {
+//		return drawingBoard.getBackground();
+//	}
+//	
+//	//TODO: fix this
+//	public GraphDrawingView getDrawingBoard() {
+//		return drawingBoard;
+//	}
 	
 	public ZoomControl getZoomControl() {
 		return zoom;
@@ -239,7 +243,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
-	public void modelCollectionChanged(WorkspaceMessage message) { 
+	public void modelCollectionChanged(WorkspaceMessage message) {
 		configureTools();
 	}
 
@@ -261,8 +265,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	private void configureTools() {
 		CommandManager commandManager = CommandManager.defaultInstance();
 		
-		if(Workspace.instance().getActiveModel() == null){
-			drawingBoard.setEnabled(false);
+		if(Hub.getWorkspace().size()<1){
+//			drawingBoard.setEnabled(false);
 			zoom.setEnabled(false);
 			toolbar.setEnabled(false);
 			commandManager.getGroup("graph.group").setEnabled(false);
@@ -276,7 +280,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 			// FIXME this doesn't work
 			commandManager.getGroup("file.save.group").setEnabled(false);
 		}else{
-			drawingBoard.setEnabled(true);
+//			drawingBoard.setEnabled(true);
 			zoom.setEnabled(true);
 			// enable all commands except save commands which depend on the dirty bit for the workspace and the acive automaton
 			//commandManager.getGroup("ides.toolbar.group").setEnabled(true);
@@ -301,5 +305,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		Hub.persistentData.setInt("mainWindowPosX", r.x);
 		Hub.persistentData.setInt("mainWindowPosY", r.y);
 		super.dispose();
+	}
+	
+	public JTabbedPane getMainPane()
+	{
+		return tabbedViews;
 	}
 }

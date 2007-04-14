@@ -28,9 +28,9 @@ public class UniformNodesCommand extends ToggleCommand {
 		// so when repaint happens, graph will recompute its layout.
 		// NOTE depends on FSMGraph extending GraphElement
 		// ??? will FSMGraph fire any notifications ?
-		if(Hub.getWorkspace().getActiveModelWrap()!= null &&
-				Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph){
-			((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).setNeedsRefresh(true);
+		if(Hub.getWorkspace().getActiveLayoutShell()!= null &&
+				Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph){
+			((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(true);
 		// gm.setDirty(true);
 			Hub.getWorkspace().fireRepaintRequired();
 		}

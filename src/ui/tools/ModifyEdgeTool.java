@@ -14,6 +14,7 @@ import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierHandler;
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeHandler;
 import presentation.fsa.GraphDrawingView;
@@ -32,8 +33,8 @@ public class ModifyEdgeTool extends DrawingTool {
 	private GraphicalLayout previousLayout;  // TODO clone for undo
 	private int pointType = BezierHandler.NO_INTERSECTION;  // types CTRL1 or CTRL2 are moveable	
 	
-	public ModifyEdgeTool(GraphDrawingView context){
-		this.context = context;
+	public ModifyEdgeTool(){
+//		this.context = context;
 		this.cursor =Toolkit.getDefaultToolkit().createCustomCursor(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/cursors/move.gif")), new Point(12,12), "MOVE_EDGE_CONTROLS");
 	}
 	
@@ -48,8 +49,8 @@ public class ModifyEdgeTool extends DrawingTool {
 			
 		// FIXME If an edge was just selected by SelectionTool,
 		// use it, don't lose it.
-		if(context.hasCurrentSelection()){
-			Edge temp = getEdge(context.getSelectedElement());
+		if(ContextAdaptorHack.context.hasCurrentSelection()){
+			Edge temp = getEdge(ContextAdaptorHack.context.getSelectedElement());
 			if( temp != null )
 			{
 				edge = temp;		
@@ -63,22 +64,22 @@ public class ModifyEdgeTool extends DrawingTool {
 			if(dragging) return;
 		}
 		
-		context.clearCurrentSelection();
-		context.updateCurrentSelection(m.getPoint());
-		if(context.hasCurrentSelection()){
-			Edge temp = getEdge(context.getSelectedElement());
+		ContextAdaptorHack.context.clearCurrentSelection();
+		ContextAdaptorHack.context.updateCurrentSelection(m.getPoint());
+		if(ContextAdaptorHack.context.hasCurrentSelection()){
+			Edge temp = getEdge(ContextAdaptorHack.context.getSelectedElement());
 			if( temp != null )
 			{
 				edge = temp;				
 			}else{				
 				switchTool();
-				context.getCurrentTool().handleMousePressed(m);
+				ContextAdaptorHack.context.getCurrentTool().handleMousePressed(m);
 			}
 		}else{
 			switchTool();
-			context.getCurrentTool().handleMousePressed(m);
+			ContextAdaptorHack.context.getCurrentTool().handleMousePressed(m);
 		}
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 	}
 		
 	private Edge getEdge(GraphElement selection){
@@ -91,7 +92,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	}
 	
 	private void switchTool(){
-		context.setTool(GraphDrawingView.SELECT);
+		ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
 		dragging = false;
 		edge = null;
 	}
@@ -120,8 +121,8 @@ public class ModifyEdgeTool extends DrawingTool {
 		super.handleMouseDragged(m);
 		
 		// came from selection tool
-		if(edge == null && context.hasCurrentSelection()){
-			edge = getEdge(context.getSelectedElement());
+		if(edge == null && ContextAdaptorHack.context.hasCurrentSelection()){
+			edge = getEdge(ContextAdaptorHack.context.getSelectedElement());
 			if(edge != null){
 				prepareToDrag(m.getPoint());
 			}else{
@@ -132,7 +133,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		if(dragging){
 			// set the selected control point to the current location			
 			edge.setPoint(new Point2D.Float(m.getPoint().x, m.getPoint().y), pointType);			
-			context.repaint();			
+			ContextAdaptorHack.context.repaint();			
 		}
 	}
 
@@ -147,7 +148,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		if(dragging){ // TODO check to see if edge has been changed
 			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
 			cmd.execute();		
-			context.repaint();						
+			ContextAdaptorHack.context.repaint();						
 			dragging = false;			
 		}
 	}

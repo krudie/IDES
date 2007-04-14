@@ -22,6 +22,13 @@ public interface FSAPublisher {
 	 * @param subscriber
 	 */
 	public void removeSubscriber(FSASubscriber subscriber);
+	
+	/**
+	 * Returns all current subscribers to this publisher.
+	 * @return all current subscribers to this publisher
+	 */
+	public FSASubscriber[] getFSASubscribers();
+
 
 	/**
 	 * Triggers a notification to all subscribers that the structure

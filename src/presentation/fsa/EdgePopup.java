@@ -13,6 +13,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import presentation.Presentation;
+
 import main.Hub;
 import ui.command.GraphCommands.DeleteCommand;
 
@@ -65,7 +67,7 @@ public class EdgePopup extends JPopupMenu {
 
 		add(new JPopupMenu.Separator());
 		
-		deleteCmd = new DeleteCommand(view);
+		deleteCmd = new DeleteCommand();
 		miDeleteEdge = deleteCmd.createMenuItem();
 		add(miDeleteEdge);
 		
@@ -81,9 +83,14 @@ public class EdgePopup extends JPopupMenu {
 			popup.setEdge(e);
 		}
 		Float p = e.getLayout().getLocation();
-		p=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard().localToScreen(p);
-		popup.show(context, (int)p.x,
+		// FIXME rework to eliminate call to getcurrentboard
+		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
+		if(gdv!=null)
+		{
+			p=gdv.localToScreen(p);
+			popup.show(context, (int)p.x,
 				(int)p.y);
+		}
 	}
 			
 	/**

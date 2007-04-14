@@ -131,9 +131,9 @@ public class LatexManager {
 		{
 			Hub.persistentData.setBoolean("useLatexLabels",setting);
 			if(setting)
-				new LatexPrerenderer(Hub.getWorkspace().getModelWrapsOfType(FSAGraph.class).iterator());
-			if(Hub.getWorkspace().getActiveModelWrap()!=null&&Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph)
-				((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).setNeedsRefresh(true);
+				new LatexPrerenderer(Hub.getWorkspace().getLayoutShellsOfType(FSAGraph.class).iterator());
+			if(Hub.getWorkspace().getActiveLayoutShell()!=null&&Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
+				((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();	
 		}
 	}

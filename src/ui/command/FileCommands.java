@@ -32,9 +32,10 @@ import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
-import presentation.ModelWrap;
+import presentation.LayoutShell;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
+import services.General;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import services.latex.LatexRenderException;
@@ -61,12 +62,15 @@ public class FileCommands {
 			ModelDescriptor md=new NewModelDialog().selectModel();
 			if(md==null)
 				return;
-			if(md.getPreferredModelInterface().equals(FSAModel.class))
-			{
-				FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName")+"-"+automatonCount++);
-				Hub.getWorkspace().addModel(fsa);
-				Hub.getWorkspace().setActiveModel(fsa.getName());
-			}
+//			if(md.getPreferredModelInterface().equals(FSAModel.class))
+//			{
+//				FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName")+"-"+automatonCount++);
+//				Hub.getWorkspace().addModel(fsa);
+//				Hub.getWorkspace().setActiveModel(fsa.getName());
+//			}
+			DESModel des=md.createModel(General.getRandomId(),Hub.string("newAutomatonName")+"-"+automatonCount++);
+			Hub.getWorkspace().addModel(des);
+			Hub.getWorkspace().setActiveModel(des.getName());
 		}	
 	}
 	
@@ -118,8 +122,8 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 
 			// TODO This should be a while loop
-			for(Iterator<ModelWrap> i=Hub.getWorkspace().getModelWraps();i.hasNext();) {
-				ModelWrap gm=i.next();
+			for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();) {
+				LayoutShell gm=i.next();
 				DESModel fsa=gm.getModel();
 				if( fsa != null && fsa instanceof FSAModel)
 					if(FileOperations.saveAutomaton((FSAModel)fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{					
@@ -166,7 +170,7 @@ public class FileCommands {
 			if(fsa!=null&&fsa instanceof FSAModel)
 				if(FileOperations.saveAutomatonAs((FSAModel)fsa))
 				{
-					((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).setNeedsRefresh(false);					
+					((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(false);					
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 			Hub.getMainWindow().setCursor(cursor);
@@ -609,7 +613,7 @@ public class FileCommands {
 	    			}
 	    		}
 	    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
-	    		Hub.getWorkspace().addModelWrap(g);
+	    		Hub.getWorkspace().addLayoutShell(g);
 	    	}catch(java.io.IOException e)
 	    	{
 	    		Hub.displayAlert(Hub.string("cantParseImport")+file);

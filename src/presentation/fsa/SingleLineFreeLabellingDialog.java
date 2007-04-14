@@ -22,6 +22,8 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import presentation.Presentation;
+
 import main.Hub;
 import util.EscapeDialog;
 
@@ -128,10 +130,15 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 		if(!hasOurListener)
 			area.addFocusListener(commitOnFocusLost);
 		area.setText(label.getText());
-		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
+		// FIXME rework to eliminate call to getcurrentboard
+		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
+		if(gdv==null)
+		{
+			return;
+		}
 		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
-		p.x=(int)r.x+Hub.getWorkspace().getDrawingBoardDisplacement().x;
-		p.y=(int)r.y+Hub.getWorkspace().getDrawingBoardDisplacement().y;
+		p.x=(int)r.x+gdv.getLocationOnScreen().x;
+		p.y=(int)r.y+gdv.getLocationOnScreen().y;
 		if(p.x+me.getWidth()>Toolkit.getDefaultToolkit().getScreenSize().getWidth())
 			p.x=p.x-me.getWidth();
 		if(p.y+me.getHeight()>Toolkit.getDefaultToolkit().getScreenSize().getHeight())
@@ -157,10 +164,15 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 		if(!hasOurListener)
 			area.addFocusListener(commitOnFocusLost);
 		area.setText("");
-		GraphDrawingView gdv=((ui.MainWindow)Hub.getMainWindow()).getDrawingBoard();
+		// FIXME rework to eliminate call to getcurrentboard
+		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
+		if(gdv==null)
+		{
+			return;
+		}
 		Point2D.Float r=gdv.localToScreen(new Point2D.Float(p.x,p.y));
-		p.x=(int)r.x+Hub.getWorkspace().getDrawingBoardDisplacement().x;
-		p.y=(int)r.y+Hub.getWorkspace().getDrawingBoardDisplacement().y;
+		p.x=(int)r.x+gdv.getLocationOnScreen().x;
+		p.y=(int)r.y+gdv.getLocationOnScreen().y;
 		if(p.x+me.getWidth()>Toolkit.getDefaultToolkit().getScreenSize().getWidth())
 			p.x=p.x-me.getWidth();
 		if(p.y+me.getHeight()>Toolkit.getDefaultToolkit().getScreenSize().getHeight())

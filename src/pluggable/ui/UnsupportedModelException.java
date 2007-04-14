@@ -2,7 +2,7 @@ package pluggable.ui;
 
 /**
  * Exception thrown when a {@link Toolset} does not
- * support the type of {@link DESModel} or {@link ModelWrap}
+ * support the type of {@link DESModel} or {@link LayoutShell}
  * which is passed as an argument to a method of the toolset.
  * 
  * @author Lenko Grigorov

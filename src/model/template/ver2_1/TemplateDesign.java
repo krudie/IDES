@@ -2,12 +2,16 @@ package model.template.ver2_1;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 import main.Hub;
 import model.DESModel;
 import model.ModelDescriptor;
 import model.fsa.FSAModel;
+import model.fsa.FSAState;
 import model.template.TemplateChannel;
 import model.template.TemplateLink;
 import model.template.TemplateModel;
@@ -27,10 +31,11 @@ public class TemplateDesign implements TemplateModel {
 		}
 		public String getTypeDescription()
 		{
-			return "DES Template Design";
+			return "Template Design";
 		}
 		public Image getIcon()
 		{
+			//TODO change the icon
 			return Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/model_template.gif"));
 		}
 		public DESModel createModel(String id)
@@ -48,126 +53,136 @@ public class TemplateDesign implements TemplateModel {
 	}
 	public static final ModelDescriptor myDescriptor=new DesignDescriptor();
 	
+	protected String id="";
 	protected String name="";
+	
+	protected LinkedList<TemplateModule> modules;
+	protected LinkedList<TemplateChannel> channels;
+	protected LinkedList<TemplateLink> links;
+	
+    protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
 
 	protected TemplateDesign(String name)
 	{
 		this.name=name;
+		modules=new LinkedList<TemplateModule>();
+		channels=new LinkedList<TemplateChannel>();
+		links=new LinkedList<TemplateLink>();
 	}
 	
 	public void add(TemplateModule module) {
-		// TODO Auto-generated method stub
-
+		modules.add(module);
 	}
 
 	public void add(TemplateChannel channel) {
-		// TODO Auto-generated method stub
-
+		channels.add(channel);
 	}
 
 	public void add(TemplateLink link) {
-		// TODO Auto-generated method stub
-
+		links.add(link);
+		link.getBlockLeft().addLink(link);
+		link.getBlockRight().addLink(link);
 	}
 
 	public TemplateChannel getChannel(long id) {
-		// TODO Auto-generated method stub
+        Iterator<TemplateChannel> ci = channels.iterator();
+        while(ci.hasNext()){
+            TemplateChannel c = ci.next();
+            if(c.getId() == id) return c;
+        }
 		return null;
 	}
 
 	public int getChannelCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return channels.size();
 	}
 
 	public Iterator<TemplateChannel> getChannelIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return channels.iterator();
 	}
 
 	public TemplateLink getLink(long id) {
-		// TODO Auto-generated method stub
+        Iterator<TemplateLink> li = links.iterator();
+        while(li.hasNext()){
+            TemplateLink l = li.next();
+            if(l.getId() == id) return l;
+        }
 		return null;
 	}
 
 	public int getLinkCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return links.size();
 	}
 
 	public Iterator<TemplateLink> getLinkIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return links.iterator();
 	}
 
 	public TemplateModule getModule(long id) {
-		// TODO Auto-generated method stub
+        Iterator<TemplateModule> mi = modules.iterator();
+        while(mi.hasNext()){
+            TemplateModule m = mi.next();
+            if(m.getId() == id) return m;
+        }
 		return null;
 	}
 
 	public int getModuleCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return modules.size();
 	}
 
 	public Iterator<TemplateModule> getModuleIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return modules.iterator();
 	}
 
 	public void remove(TemplateModule module) {
-		// TODO Auto-generated method stub
-
+		modules.remove(module);
+		for(TemplateLink l:module.getLinks())
+			remove(l);
 	}
 
 	public void remove(TemplateChannel channel) {
-		// TODO Auto-generated method stub
-
+		channels.remove(channel);
+		for(TemplateLink l:channel.getLinks())
+			remove(l);
 	}
 
 	public void remove(TemplateLink connection) {
-		// TODO Auto-generated method stub
-
+		links.remove(connection);
+		connection.getBlockLeft().removeLink(connection);
+		connection.getBlockRight().removeLink(connection);
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return id;
 	}
 
 	public ModelDescriptor getModelDescriptor() {
-		// TODO Auto-generated method stub
-		return null;
+		return myDescriptor;
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	public void setId(String id) {
-		// TODO Auto-generated method stub
-
+		this.id=id;
 	}
 
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-
+		this.name=name;
 	}
 
 	public Object getAnnotation(String key) {
-		// TODO Auto-generated method stub
-		return null;
+		return annotations.get(key);
 	}
 
 	public boolean hasAnnotation(String key) {
-		// TODO Auto-generated method stub
-		return false;
+		return annotations.containsKey(key);
 	}
 
 	public void setAnnotation(String key, Object annotation) {
-		// TODO Auto-generated method stub
-
+		annotations.put(key, annotation);
 	}
 
 }

@@ -7,6 +7,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import main.Hub;
+import presentation.Presentation;
+
 import ui.command.GraphCommands.DeleteCommand;
 import ui.command.GraphCommands.TextCommand;
 import ui.command.NodeCommands.SelfLoopCommand;
@@ -44,8 +47,14 @@ public class NodePopup extends JPopupMenu {
 		// TODO change sign of x or y as required
 		Float p = n.getLayout().getLocation();
 		//float r = n.getLayout().getRadius();
-		p=((ui.MainWindow)main.Hub.getMainWindow()).getDrawingBoard().localToScreen(p);
-		popup.show(context, (int)p.x, (int)p.y);
+		
+		// FIXME rework to eliminate call to getcurrentboard
+		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
+		if(gdv!=null)
+		{
+			p=gdv.localToScreen(p);
+			popup.show(context, (int)p.x, (int)p.y);
+		}
 	}
 		
 	protected NodePopup(CircleNode n) {
@@ -53,8 +62,8 @@ public class NodePopup extends JPopupMenu {
 		markedCmd = new SetMarkedCommand();
 		initialCmd = new SetInitialCommand();
 		selfLoopCmd = new SelfLoopCommand();
-		textCmd = new TextCommand(view);
-		deleteCmd = new DeleteCommand(view);
+		textCmd = new TextCommand();
+		deleteCmd = new DeleteCommand();
 				
 		miSetMarked = markedCmd.createMenuItem();
 		miSetInitial = initialCmd.createMenuItem();

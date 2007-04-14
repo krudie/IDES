@@ -8,15 +8,15 @@ import model.DESModel;
  * shell is passed onto a {@link Presentation} to render it on
  * the screen.
  * 
- * <p>The may be a different {@link ModelWrap} implementation for each
+ * <p>The may be a different {@link LayoutShell} implementation for each
  * type of {@link DESModel}. As well, there may be many
- * {@link ModelWrap} implementations for the same {@link DESModel}.
+ * {@link LayoutShell} implementations for the same {@link DESModel}.
  * 
  * TODO extend as needed.
  * 
  * @author Lenko Grigorov
  */
-public interface ModelWrap {
+public interface LayoutShell {
 	
 	/**
 	 * Returns the {@link DESModel} wrapped by this shell.
@@ -50,4 +50,13 @@ public interface ModelWrap {
 	 * needs to be saved; <code>false</code> otherwise
 	 */
 	public boolean needsSave();
+	
+	/**
+	 * Releases any resources used to wrap the model.
+	 * For example, the shell should unsubscribe from
+	 * listening to changes in the model.
+	 * <p>Once this method is called, the behavior of the
+	 * shell should no longer be considered deterministic.
+	 */
+	public void release();
 }

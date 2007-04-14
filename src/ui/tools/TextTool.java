@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import main.Hub;
 
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
@@ -18,10 +19,10 @@ import ui.command.GraphCommands;
 
 public class TextTool extends DrawingTool {
 		
-	private GraphDrawingView context;
+//	private GraphDrawingView context;
 	
-	public TextTool(GraphDrawingView context){
-		this.context = context;		
+	public TextTool(){
+//		this.context = context;		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/text.gif")), new Point(0,0), "MAKE_LABELS");		
 	}
@@ -31,20 +32,20 @@ public class TextTool extends DrawingTool {
 		super.handleMouseClicked(me);
 		
 		if(me.getClickCount() != 2){
-			context.setTool(GraphDrawingView.SELECT);
-			context.getCurrentTool().handleMouseClicked(me);
+			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+			ContextAdaptorHack.context.getCurrentTool().handleMouseClicked(me);
 			return;
 		}
 		// get current selection
-		if(context.updateCurrentSelection(me.getPoint())){			
-			new GraphCommands.TextCommand(context, context.getSelectedElement()).execute();			
+		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){			
+			new GraphCommands.TextCommand(ContextAdaptorHack.context.getSelectedElement()).execute();			
 		}else{
 			// if nothing selected
 			// create a free label
-			new GraphCommands.TextCommand(context, me.getPoint()).execute();			
+			new GraphCommands.TextCommand(me.getPoint()).execute();			
 		}
-		context.clearCurrentSelection();
-		context.setTool(GraphDrawingView.DEFAULT);
+		ContextAdaptorHack.context.clearCurrentSelection();
+		ContextAdaptorHack.context.setTool(GraphDrawingView.DEFAULT);
 	}
 
 //	@Override

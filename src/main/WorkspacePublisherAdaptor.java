@@ -1,7 +1,7 @@
 /**
  * 
  */
-package observer;
+package main;
 
 import java.util.ArrayList;
 
@@ -82,8 +82,7 @@ public class WorkspacePublisherAdaptor implements WorkspacePublisher {
 	}	
 	
 	/**
-	 * Sends notification to subscribers of changes to the type of active model
-	 * e.g. from FSM to petri net.
+	 * Sends notification to subscribers of changes the workspace.
 	 * Intended to facilitate changes to the current set of interface tools (a.k.a. work bench) 
 	 * needed to view and manipulate different kinds of DES models.
 	 * 

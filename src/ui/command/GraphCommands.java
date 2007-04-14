@@ -14,6 +14,7 @@ import org.pietschy.command.ActionCommand;
 import org.pietschy.command.undo.UndoableActionCommand;
 
 import presentation.fsa.BezierEdge;
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
@@ -35,16 +36,16 @@ public class GraphCommands {
 	 */
 	public static class SelectCommand extends ActionCommand {
 
-		private GraphDrawingView context;
+//		private GraphDrawingView context;
 		
-		public SelectCommand(GraphDrawingView context){
+		public SelectCommand(){
 			super("select.command");
-			this.context = context;
+//			this.context = context;
 		}
 		@Override
 		protected void handleExecute() {			
 			// TODO set the tool in the *currently active* drawing view
-			context.setTool(GraphDrawingView.SELECT);
+			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
 		}
 	}
 	
@@ -55,7 +56,7 @@ public class GraphCommands {
 	 */
 	public static class CreateCommand extends UndoableActionCommand {
 
-		private GraphDrawingView context;
+//		private GraphDrawingView context;
 		private int elementType;
 		private CircleNode source, target;
 		private BezierEdge edge;
@@ -78,22 +79,22 @@ public class GraphCommands {
 			elementType = UNKNOWN;
 		}
 		
-		public CreateCommand(GraphDrawingView context){
-			super("create.command");
-			setContext(context, UNKNOWN, null);
-		}
+//		public CreateCommand(GraphDrawingView context){
+//			super("create.command");
+//			setContext(context, UNKNOWN, null);
+//		}
 		
 		/**
 		 * @param context
 		 * @param elementType
 		 * @param location
 		 */
-		public CreateCommand(GraphDrawingView context, int elementType, Point location){
-			setContext(context, elementType, location);
+		public CreateCommand(int elementType, Point location){
+			setContext(elementType, location);
 		}	
 		
-		public CreateCommand(GraphDrawingView context, int elementType, BezierEdge edge, Point location){
-			setContext(context, elementType, location);
+		public CreateCommand(int elementType, BezierEdge edge, Point location){
+			setContext(elementType, location);
 			this.edge = edge;
 		}	
 
@@ -103,8 +104,8 @@ public class GraphCommands {
 		 * @param elementType
 		 * @param n
 		 */
-		public CreateCommand(GraphDrawingView context, int elementType, CircleNode n) {
-			this.context = context;			
+		public CreateCommand(int elementType, CircleNode n) {
+//			this.context = context;			
 			this.elementType = elementType;
 			source = n;
 		}
@@ -115,15 +116,15 @@ public class GraphCommands {
 		 * @param edge
 		 * @param target
 		 */
-		public CreateCommand(GraphDrawingView context, int elementType, BezierEdge edge, CircleNode target) {
-			this.context = context;
+		public CreateCommand(int elementType, BezierEdge edge, CircleNode target) {
+//			this.context = context;
 			this.elementType = elementType;
 			this.edge = edge;
 			this.target = target;
 		}
 
-		public void setContext(GraphDrawingView context,  int elementType, Point location){
-			this.context = context;
+		public void setContext(int elementType, Point location){
+//			this.context = context;
 			this.elementType = elementType;
 			this.location = location;
 		}
@@ -146,19 +147,19 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			switch(elementType){
 			case NODE:				
-				context.getGraphModel().createNode(new Float(location.x, location.y));
+				ContextAdaptorHack.context.getGraphModel().createNode(new Float(location.x, location.y));
 				break;
 			case NODE_AND_EDGE:				
-				context.getGraphModel().finishEdgeAndCreateTargetNode(edge, new Float(location.x, location.y));				
+				ContextAdaptorHack.context.getGraphModel().finishEdgeAndCreateTargetNode(edge, new Float(location.x, location.y));				
 				break;
 			case EDGE:
-				context.getGraphModel().finishEdge(edge, target);				
+				ContextAdaptorHack.context.getGraphModel().finishEdge(edge, target);				
 				break;
 			case SELF_LOOP:
-				context.getGraphModel().createEdge(source, source);
+				ContextAdaptorHack.context.getGraphModel().createEdge(source, source);
 				break;				
 			default:
-				 context.setTool(GraphDrawingView.CREATE);
+				ContextAdaptorHack.context.setTool(GraphDrawingView.CREATE);
 			}		
 			 
 			// TODO create and return an UndoableEdit object
@@ -169,13 +170,13 @@ public class GraphCommands {
 	
 	public static class MoveCommand extends UndoableActionCommand {
 
-		GraphDrawingView context;
+//		GraphDrawingView context;
 		SelectionGroup selection = null;		
 		Point displacement;
 		
-		public MoveCommand(GraphDrawingView context) {
+		public MoveCommand() {
 			super("move.command");
-			this.context = context;
+//			this.context = context;
 		}
 
 		/**
@@ -184,20 +185,20 @@ public class GraphCommands {
 		 * @param currentSelection
 		 * @param displacement
 		 */
-		public MoveCommand(GraphDrawingView context, SelectionGroup currentSelection, Point displacement) {
+		public MoveCommand(SelectionGroup currentSelection, Point displacement) {
 			this.selection = currentSelection.copy();
-			this.context = context;
+//			this.context = context;
 			this.displacement = displacement;
 		}
 
 		@Override
 		protected UndoableEdit performEdit() {
 			if(selection == null){
-				context.setTool(GraphDrawingView.MOVE);
+				ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
 				return null;
 			}else{
 				// finalize movement of current selection in graph model
-				context.getGraphModel().commitMovement(context.getSelectedGroup());
+				ContextAdaptorHack.context.getGraphModel().commitMovement(ContextAdaptorHack.context.getSelectedGroup());
 				// TODO create an UndoableEdit object using displacement and 
 				// copy of currentSelection and return undoableEdit object
 				return null;
@@ -209,36 +210,36 @@ public class GraphCommands {
 	
 	public static class TextCommand extends UndoableActionCommand {
 		
-		GraphDrawingView context;		
+//		GraphDrawingView context;		
 		String text;
 		GraphElement element = null;
 		Point2D.Float location = null;
 		
-		public TextCommand(GraphDrawingView context){
+		public TextCommand(){
 			super("text.command");
-			this.context = context;
+//			this.context = context;
 		}
 		
-		public TextCommand(GraphDrawingView context, 
+		public TextCommand( 
 							GraphElement currentSelection, String text) {
 			super("text.command");
 			this.element = currentSelection;
-			this.context = context;
+//			this.context = context;
 			this.text = text;
 		}
 	
-		public TextCommand(GraphDrawingView context, GraphElement currentSelection) {
+		public TextCommand(GraphElement currentSelection) {
 			super("text.command");
 			this.element = currentSelection;
-			this.context = context;
+//			this.context = context;
 		}
 
 		/**
 		 * @param context
 		 * @param location
 		 */
-		public TextCommand(GraphDrawingView context, Point location) {
-			this.context = context;
+		public TextCommand(Point location) {
+//			this.context = context;
 			this.location = new Point2D.Float(location.x, location.y);
 		}
 
@@ -260,16 +261,16 @@ public class GraphCommands {
 					Node node = (Node)element;
 					// if selection is a node				
 					presentation.fsa.SingleLineNodeLabellingDialog.showAndLabel(
-							context.getGraphModel(),node);
+							ContextAdaptorHack.context.getGraphModel(),node);
 				}else if(element instanceof BezierEdge){
 					BezierEdge edge = (BezierEdge)element;			
-					EdgeLabellingDialog.showDialog(context, edge);					
+					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context, edge);					
 					// TODO accumulate set of edits that were performed in the edge 
 					// labelling dialog
 				}else if(element instanceof GraphLabel 
 						&& element.getParent() instanceof Edge){
 					Edge edge = (Edge)element.getParent();
-					EdgeLabellingDialog.showDialog(context, edge);
+					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context, edge);
 				}else{
 					// TODO uncomment the following statement when finished implementing
 					// saving and loading free labels to file.
@@ -277,7 +278,7 @@ public class GraphCommands {
 							context.getGraphModel(), 
 							(GraphLabel)element);*/									
 				}
-				context.repaint();
+				ContextAdaptorHack.context.repaint();
 			}
 			element = null;
 			text = null;
@@ -289,31 +290,31 @@ public class GraphCommands {
 	
 	public static class ZoomInCommand extends ActionCommand {
 
-		private GraphDrawingView context;
+//		private GraphDrawingView context;
 		
-		public ZoomInCommand(GraphDrawingView context){
+		public ZoomInCommand(){
 			super("zoomin.command");
-			this.context = context;
+//			this.context = context;
 		}
 		@Override
 		protected void handleExecute() {			
 			// TODO set the tool in the *currently active* drawing view
-			context.setTool(GraphDrawingView.ZOOM_IN);
+			ContextAdaptorHack.context.setTool(GraphDrawingView.ZOOM_IN);
 		}
 	}
 	
 	public static class ZoomOutCommand extends ActionCommand {
 
-		private GraphDrawingView context;
+//		private GraphDrawingView context;
 		
-		public ZoomOutCommand(GraphDrawingView context){
+		public ZoomOutCommand(){
 			super("zoomout.command");
-			this.context = context;
+//			this.context = context;
 		}
 		@Override
 		protected void handleExecute() {			
 			// TODO set the tool in the *currently active* drawing view
-			context.setTool(GraphDrawingView.ZOOM_OUT);
+			ContextAdaptorHack.context.setTool(GraphDrawingView.ZOOM_OUT);
 		}
 	}
 
@@ -327,7 +328,7 @@ public class GraphCommands {
 	public static class DeleteCommand extends UndoableActionCommand {
 		
 		private GraphElement element;	 // TODO decide on type, GraphElement composite type?
-		private GraphDrawingView context;  // Does this need to be stored?
+//		private GraphDrawingView context;  // Does this need to be stored?
 		
 		/**
 		 * Default constructor; handy for exporting this command for group setup.
@@ -337,9 +338,9 @@ public class GraphCommands {
 			super("delete.command");
 		}
 		
-		public DeleteCommand(GraphDrawingView context){
-			this(null, context);
-		}
+//		public DeleteCommand(GraphDrawingView context){
+//			this(null, context);
+//		}
 		
 		/**
 		 * Creates a command that, when executed, will cut 
@@ -348,10 +349,10 @@ public class GraphCommands {
 		 * @param element
 		 * @param context
 		 */
-		public DeleteCommand(GraphElement element, GraphDrawingView context) {
+		public DeleteCommand(GraphElement element) {
 			this();
 			this.element = element;
-			this.context = context;
+//			this.context = context;
 		}		
 
 		public void setElement(GraphElement element){
@@ -362,8 +363,8 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			// TODO return Undoable edit containing removed element and where it should be restored to
 			// the view is not enough since view changes models; need to know the model...
-			context.getGraphModel().delete(element);
-			context.repaint();
+			ContextAdaptorHack.context.getGraphModel().delete(element);
+			ContextAdaptorHack.context.repaint();
 			return null;
 		}
 		
@@ -379,21 +380,21 @@ public class GraphCommands {
 
 		//TODO: redo all of this so there's an independent grid going
 		
-		private GraphDrawingView context;
+//		private GraphDrawingView context;
 		
-		public AlignCommand(GraphDrawingView context){
+		public AlignCommand(){
 			super("align.command");
-			this.context = context;
+//			this.context = context;
 		}
 		@Override
 		protected void handleExecute() {
 			if(Hub.getWorkspace().getActiveModel()==null)
 				return;
 			Iterator i;
-			if(context.getSelectedGroup().size()>0)
-				i=context.getSelectedGroup().children();
+			if(ContextAdaptorHack.context.getSelectedGroup().size()>0)
+				i=ContextAdaptorHack.context.getSelectedGroup().children();
 			else
-				i=context.getGraphModel().children();
+				i=ContextAdaptorHack.context.getGraphModel().children();
 			while(i.hasNext())
 			{
 				GraphElement ge=(GraphElement)i.next();
@@ -401,7 +402,7 @@ public class GraphCommands {
 				ge.refresh();
 			}
 		
-			context.getGraphModel().setNeedsRefresh(true);
+			ContextAdaptorHack.context.getGraphModel().setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}

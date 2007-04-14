@@ -1,5 +1,6 @@
 package operations.fsa.ver2_1;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -9,11 +10,14 @@ import java.util.TreeMap;
 
 import model.ModelManager;
 import model.fsa.FSAEvent;
+import model.fsa.FSAEventSet;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
+import model.fsa.FSASupervisor;
 import model.fsa.FSATransition;
 import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Event;
+import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.operation.FilterOperation;
@@ -28,7 +32,7 @@ public class ControlMap implements FilterOperation {
 	protected static Map<String,Long> pairIds=new TreeMap<String,Long>(); 
 
 	public Object[] filter(Object[] inputs) {
-		FSAModel supervisor=(FSAModel)inputs[0];
+		FSASupervisor supervisor=(FSASupervisor)inputs[0];
 //		Unary.buildStateCompositionOfClone((Automaton)supervisor);
 		FSAModel plant=(FSAModel)inputs[1];
 		
@@ -88,21 +92,28 @@ public class ControlMap implements FilterOperation {
                         notMatched=null;
                     }
                 }
+                if(supervisor.getDisabledEvents(sa[1])==null)
+                {
+                	//TODO EventSet should not be created directly, use modelmanager
+                	supervisor.setDisabledEvents(sa[1], new EventSet());
+                }
                 if(notMatched!=null)
                 {
-                    Set<FSAEvent> de=((State)sa[1]).getDisabledEvents();
+                	FSAEventSet de=supervisor.getDisabledEvents(sa[1]);
                 	de.add(notMatched);
-                	((State)sa[1]).setDisabledEvents(de);
+                	supervisor.setDisabledEvents(sa[1], de);
                 }
             }
         }
 
         pairIds.clear();
 		
+        //TODO the block below is only for debugging
 		for(Iterator<FSAState> i=supervisor.getStateIterator();i.hasNext();)
 		{
-			System.out.println(((State)i.next()).getDisabledEvents().toString());
+			System.out.println(supervisor.getDisabledEvents(i.next()).toString());
 		}
+		
 		return new Object[]{supervisor};
 	}
 	
@@ -179,7 +190,7 @@ public class ControlMap implements FilterOperation {
 	}
 
 	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class,FSAModel.class};
+		return new Class[]{FSASupervisor.class,FSAModel.class};
 	}
 
 	public Class[] getTypeOfOutputs() {

@@ -1,4 +1,4 @@
-package ui;
+package presentation.fsa;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -28,11 +28,12 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 
 import observer.Subscriber;
-import observer.WorkspaceMessage;
-import observer.WorkspaceSubscriber;
-import presentation.fsa.FSAGraph;
+import presentation.LayoutShell;
+import presentation.Presentation;
 
 import main.Hub;
+import main.WorkspaceMessage;
+import main.WorkspaceSubscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
@@ -47,7 +48,7 @@ import model.fsa.ver2_1.Event;
  * 
  * @author Lenko Grigorov
  */
-public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscriber, ActionListener {
+public class EventView extends JPanel implements Presentation, FSASubscriber, ActionListener {
 
 	protected class EventTableModel extends AbstractTableModel
 	{
@@ -260,7 +261,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				return;
 			
 			// FIXME issue a command to the Automaton and let messaging notify the graph model. 
-			Event event=((FSAGraph)Hub.getWorkspace().getActiveModelWrap()).createAndAddEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
+			Event event=((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).createAndAddEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
 //			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
 //			event.setSymbol(eventNameField.getText());
 //			event.setControllable(controllableCBox.isSelected());
@@ -289,11 +290,13 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	protected JCheckBox observableCBox;
 	protected JButton createButton;
 	protected JButton deleteButton;
-	private FSAModel lastModel=null;
+//	private FSAModel lastModel=null;
+	protected FSAGraph graph;
 	
-	public EventView()
+	public EventView(FSAGraph g)
 	{
 		super();
+		graph=g;
 		Box mainBox=Box.createVerticalBox();
 		Box createBox=Box.createHorizontalBox();
 		
@@ -395,7 +398,7 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 
 		add(mainBox);
 		refreshEventTable();
-		Hub.getWorkspace().addSubscriber(this);
+		setTrackModel(true);
 	}
 	
 	private void refreshEventTable()
@@ -404,23 +407,23 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 		// CLM: these controls should be disabled whenever eventNameField
 		// is empty
 		createButton.setEnabled(false);
-		if(Hub.getWorkspace().getActiveModel()==null ||
-				!(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
-		{
-			table.setModel(new EventTableModel());
-			deleteButton.setEnabled(false);
-			eventNameField.setEnabled(false);
-			table.setEnabled(false);
-			if(lastModel!=null)
-			{
-				lastModel.removeSubscriber(this);
-				lastModel=null;
-			}
-		}
-		else
-		{
-			FSAModel model=(FSAModel)Hub.getWorkspace().getActiveModel();
-			table.setModel(new EventTableModel(model));
+//		if(Hub.getWorkspace().getActiveModel()==null ||
+//				!(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
+//		{
+//			table.setModel(new EventTableModel());
+//			deleteButton.setEnabled(false);
+//			eventNameField.setEnabled(false);
+//			table.setEnabled(false);
+//			if(lastModel!=null)
+//			{
+//				lastModel.removeSubscriber(this);
+//				lastModel=null;
+//			}
+//		}
+//		else
+//		{
+//			FSAModel model=(FSAModel)Hub.getWorkspace().getActiveModel();
+			table.setModel(new EventTableModel(graph.getModel()));
 			//CLM: these should be enabled iff eventNameField is nonempty
 			//createButton.setEnabled(true);
 			//controllableCBox.setEnabled(true);
@@ -432,14 +435,14 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 				deleteButton.setEnabled(true);
 			eventNameField.setEnabled(true);
 			table.setEnabled(true);
-			if(!model.equals(lastModel))
-			{
-				if(lastModel!=null)
-					lastModel.removeSubscriber(this);
-				lastModel=model;
-				lastModel.addSubscriber(this);
-			}
-		}	
+//			if(!model.equals(lastModel))
+//			{
+//				if(lastModel!=null)
+//					lastModel.removeSubscriber(this);
+//				lastModel=model;
+//				lastModel.addSubscriber(this);
+//			}
+//		}	
 	}
 //	
 //	/**
@@ -455,15 +458,15 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
-	public void modelCollectionChanged(WorkspaceMessage message) {
-		// ??? Can I ignore the notification if the model was modified (e.g. renamed)?
-		refreshEventTable();		
-	}
+//	public void modelCollectionChanged(WorkspaceMessage message) {
+//		// ??? Can I ignore the notification if the model was modified (e.g. renamed)?
+//		refreshEventTable();		
+//	}
 
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message) {}
+//	public void repaintRequired(WorkspaceMessage message) {}
 	
 	/**
 	 * Makes the Event tab visible or invisible
@@ -479,9 +482,9 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	/* (non-Javadoc)
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
-	public void modelSwitched(WorkspaceMessage message) {
-		refreshEventTable();		
-	}
+//	public void modelSwitched(WorkspaceMessage message) {
+//		refreshEventTable();		
+//	}
 
 	/* (non-Javadoc)
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
@@ -501,5 +504,82 @@ public class EventView extends JPanel implements WorkspaceSubscriber, FSASubscri
 	public void fsaSaved() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Returns the {@link JComponent} in which the
+	 * {@link LayoutShell} is rendered. This method
+	 * can be called by IDES directly or through a
+	 * {@link Toolset}. 
+	 * @return the {@link JComponent} in which the
+	 * {@link LayoutShell} is rendered
+	 */
+	public JComponent getGUI()
+	{
+		return this;
+	}
+	
+	/**
+	 * Returns the {@link LayoutShell} which is rendered
+	 * by this presentation.
+	 * @return the {@link LayoutShell} which is rendered
+	 * by this presentation
+	 */
+	public LayoutShell getLayoutShell()
+	{
+		return graph;
+	}
+	
+	/**
+	 * Sets if changes in the {@link LayoutShell} have to be
+	 * tracked by this presentation or not.
+	 * <p> The implementation of this method is optional.
+	 * Some presentations may always track changes
+	 * (especially if the presentations allows modifications
+	 * to the underlying {@link LayoutShell}). Some
+	 * presentations may always ignore changes. 
+	 * @param b if <code>true</code>, the presentation
+	 * should register with the underlying {@link LayoutShell}
+	 * to track changes and update itself dynamically. If
+	 * <code>false</code>, the presentation should unregister
+	 * itself with the underlying {@link LayoutShell} and
+	 * ignore any changes to it.
+	 */
+	public void setTrackModel(boolean b)
+	{
+		if(b)
+		{
+			FSASubscriber[] listeners=graph.getModel().getFSASubscribers();
+			boolean found=false;
+			for(int i=0;i<listeners.length;++i)
+			{
+				if(listeners[i]==this)
+				{
+					found=true;
+					break;
+				}
+			}
+			if(!found)
+			{
+				graph.getModel().addSubscriber(this);
+			}
+		}
+		else
+		{
+			graph.getModel().removeSubscriber(this);
+		}		
+	}
+	
+	/**
+	 * Detach from the underlying {@link LayoutShell} and
+	 * releases any resources used to present it.
+	 * For example, the presentation should unsubscribe from
+	 * listening to changes in the {@link LayoutShell}.
+	 * <p>Once this method is called, the behavior of the
+	 * presentation should no longer be considered deterministic.
+	 */
+	public void release()
+	{
+		setTrackModel(false);
 	}
 }

@@ -12,12 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import observer.Subscriber;
-import observer.WorkspaceMessage;
-import observer.WorkspaceSubscriber;
 
 import presentation.fsa.FSAGraph;
 
 import main.Hub;
+import main.WorkspaceMessage;
+import main.WorkspaceSubscriber;
 import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
 import model.fsa.FSASubscriber;
@@ -75,7 +75,7 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
 	public void modelCollectionChanged( WorkspaceMessage message ) {
-		refreshActiveModel();
+//		refreshActiveModel();
 	}
 
 	/* (non-Javadoc)

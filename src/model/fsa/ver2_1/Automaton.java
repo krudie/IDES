@@ -13,6 +13,7 @@ import java.util.ListIterator;
 
 import services.General;
 
+import main.Annotable;
 import main.Hub;
 import model.DESModel;
 import model.ModelDescriptor;
@@ -23,6 +24,7 @@ import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
 import model.fsa.FSAPublisherAdaptor;
 import model.fsa.FSAState;
+import model.fsa.FSASupervisor;
 import model.fsa.FSATransition;
 
 
@@ -35,13 +37,13 @@ import model.fsa.FSATransition;
  * @author Kristian Edlund
  * @author Lenko Grigorov
  */
-public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAModel {	
+public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupervisor {	
 	
 	protected static class AutomatonDescriptor implements ModelDescriptor
 	{
 		public Class[] getModelInterfaces()
 		{
-			return new Class[]{FSAModel.class};
+			return new Class[]{FSAModel.class,FSASupervisor.class};
 		}
 		public Class getPreferredModelInterface()
 		{
@@ -737,5 +739,35 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSAMode
 	public boolean hasAnnotation(String key)
 	{
 		return annotations.containsKey(key);
+	}
+	
+	/**
+	 * Returns the events disabled at a given state.
+	 * If the control map is undefined (e.g., not
+	 * computed yet or out of synch with the rest of
+	 * the models), this method will return <code>null</code>.
+	 * @param state state of the supervisor
+	 * @return the events disabled at a given state; or
+	 * <code>null</code> if the control map is undefined
+	 */
+	public FSAEventSet getDisabledEvents(FSAState state)
+	{
+		if(!states.contains(state))
+			return null;
+		else
+			return (FSAEventSet)state.getAnnotation(Annotable.CONTROL_MAP);
+	}
+	
+	/**
+	 * Sets the events disabled at a given state.
+	 * @param state state of the supervisor
+	 * @param set set of disabled events for this state 
+	 */
+	public void setDisabledEvents(FSAState state, FSAEventSet set)
+	{
+		if(!states.contains(state))
+			return;
+		else
+			state.setAnnotation(Annotable.CONTROL_MAP,set);
 	}
 }

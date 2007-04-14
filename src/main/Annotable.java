@@ -21,6 +21,16 @@ public interface Annotable {
 	public static final String COMPOSED_OF="composedOf";
 	
 	/**
+	 * Annotation key for the set of events diabled at a state.
+	 */
+	public static final String CONTROL_MAP="controlMap";
+
+	/**
+	 * Annotation key for the layout information of an element.
+	 */
+	public static final String LAYOUT="layout";
+
+	/**
 	 * Returns the annotation for the given key.
 	 * @param key key for the annotation
 	 * @return if there is no annotation for the given key,

@@ -5,6 +5,10 @@ import main.Hub;
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.ToggleCommand;
 
+import presentation.Presentation;
+import presentation.fsa.FSAToolset;
+import presentation.fsa.GraphDrawingView;
+
 import services.latex.LatexManager;
 import ui.MainWindow;
 import ui.OptionsWindow;
@@ -87,7 +91,9 @@ public class OptionsCommands {
 			{
 				mw.getZoomControl().setZoom(1);
 			}
-			mw.getDrawingBoard().setShowGrid(!isSelected());
+			for(Presentation p:Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class))
+				((GraphDrawingView)p).setShowGrid(!isSelected());
+			FSAToolset.gridState=!isSelected();
 		}
 
 	}

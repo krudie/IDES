@@ -20,11 +20,12 @@ import java.util.Iterator;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import main.Hub;
-import observer.WorkspaceMessage;
-import observer.WorkspaceSubscriber;
+import main.WorkspaceMessage;
+import main.WorkspaceSubscriber;
 
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
@@ -48,7 +49,7 @@ import ui.tools.TextTool;
  * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
-public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, MouseMotionListener, MouseListener, KeyListener {
+public class GraphDrawingView extends GraphView implements MouseMotionListener, MouseListener, KeyListener {
 
 	protected static ToggleCommand nodesControl;
 	public static boolean isUniformNodes()
@@ -136,7 +137,7 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	
 	public GraphDrawingView() {
 		super();
-		Hub.getWorkspace().addSubscriber(this);		
+//		Hub.getWorkspace().addSubscriber(this);		
 		
 		scaleFactor = 1f;
 		scaleToFit=false;
@@ -149,12 +150,12 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 		hoverElement = null;
 		
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
-		drawingTools[DEFAULT] = new SelectionTool(this);
+		drawingTools[DEFAULT] = new SelectionTool();
 		drawingTools[SELECT] = drawingTools[DEFAULT];
-		drawingTools[CREATE] = new CreationTool(this);
-		drawingTools[TEXT] = new TextTool(this);
-		drawingTools[MOVE] = new MovementTool(this);
-		drawingTools[MODIFY] = new ModifyEdgeTool(this);		
+		drawingTools[CREATE] = new CreationTool();
+		drawingTools[TEXT] = new TextTool();
+		drawingTools[MOVE] = new MovementTool();
+		drawingTools[MODIFY] = new ModifyEdgeTool();		
 		currentTool = DEFAULT;		
 	    		
 		addMouseMotionListener(this);
@@ -218,6 +219,10 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 	 * TODO If no model open, set BG colour to some inactive looking grey.
 	 */
 	public void paint(Graphics g){
+		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
+		if(scaleFactor!=1)
+			setShowGrid(false);
+
 		Graphics2D g2D = (Graphics2D)g;
 		if(gridBG == null)
 		{
@@ -520,6 +525,14 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 		this.tempEdge = tempEdge;
 	}
 	
+	public JComponent getGUI()
+	{
+		JScrollPane sp = new JScrollPane(this, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		return sp;
+	}
+	
 //	public void update(){
 //		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
 //		if(scaleFactor!=1)
@@ -542,40 +555,37 @@ public class GraphDrawingView extends GraphView implements WorkspaceSubscriber, 
 //		// Or is this event always going to be fired from within this class ?
 //	}
 	
-	/* (non-Javadoc)
-	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
-	 */
-	public void modelCollectionChanged(WorkspaceMessage message) {
-		// get the active graph model and update the graph view  part of me
-		if(Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph)
-			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveModelWrap());
-		else
-			setGraphModel(null);
-		Hub.getMainWindow().validate();
-	}
-
-	/* (non-Javadoc)
-	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
-	 */
-	public void repaintRequired(WorkspaceMessage message) {
-		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
-		if(scaleFactor!=1)
-			setShowGrid(false);
-		
-		Hub.getMainWindow().validate();
-		repaint();
-	}
-
-	/* (non-Javadoc)
-	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
-	 */
-	public void modelSwitched(WorkspaceMessage message) {
-		// get the active graph model and update the graph view  part of me
-		if(Hub.getWorkspace().getActiveModelWrap() instanceof FSAGraph)
-			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveModelWrap());
-		else
-			setGraphModel(null);
-		Hub.getMainWindow().validate();
-		//repaint();
-	}	
+//	/* (non-Javadoc)
+//	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+//	 */
+//	public void modelCollectionChanged(WorkspaceMessage message) {
+//		// get the active graph model and update the graph view  part of me
+//		if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
+//			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
+//		else
+//			setGraphModel(null);
+//		Hub.getMainWindow().validate();
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+//	 */
+//	public void repaintRequired(WorkspaceMessage message) {
+//		
+//		Hub.getMainWindow().validate();
+//		repaint();
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+//	 */
+//	public void modelSwitched(WorkspaceMessage message) {
+//		// get the active graph model and update the graph view  part of me
+//		if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
+//			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
+//		else
+//			setGraphModel(null);
+//		Hub.getMainWindow().validate();
+//		//repaint();
+//	}	
 }

@@ -11,6 +11,7 @@ import main.Hub;
 
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
+import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
@@ -34,8 +35,8 @@ public class CreationTool extends DrawingTool {
 	private boolean aborted;
 	private boolean firstClick;
 	
-	public CreationTool(GraphDrawingView board){
-		context = board;		
+	public CreationTool(){
+//		context = board;		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		
 		// JAVA BUG: for any preferred dimension, always 32 X 32 on Windows (works on MAC, what about Linux?)!!
@@ -72,8 +73,8 @@ public class CreationTool extends DrawingTool {
 				finishSelfLoop();				
 			}else{ // double click should activate text (labelling) tool
 				abortEdge();
-				context.setTool(GraphDrawingView.TEXT);
-				context.getCurrentTool().handleMouseClicked(me);
+				ContextAdaptorHack.context.setTool(GraphDrawingView.TEXT);
+				ContextAdaptorHack.context.getCurrentTool().handleMouseClicked(me);
 			}	
 		}
 	}
@@ -82,13 +83,13 @@ public class CreationTool extends DrawingTool {
 	public void handleMousePressed(MouseEvent me) {
 		super.handleMousePressed(me);
 		
-		context.clearCurrentSelection();
+		ContextAdaptorHack.context.clearCurrentSelection();
 		startNode = null;
 		cmd = null;
 
-		if(context.updateCurrentSelection(me.getPoint())){
+		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
 			try{		
-				startNode = (CircleNode)context.getSelectedElement();
+				startNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
 				if(!drawingEdge){
 					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
 					dragging = true; // assume we're dragging until mouse released decides otherwise.
@@ -105,11 +106,11 @@ public class CreationTool extends DrawingTool {
 		public void handleMouseReleased(MouseEvent me) {
 			super.handleMouseReleased(me);
 			    
-			context.clearCurrentSelection();			
+			ContextAdaptorHack.context.clearCurrentSelection();			
 			endNode = null;
-			if(context.updateCurrentSelection(me.getPoint())){
+			if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
 				try{		
-					endNode = (CircleNode)context.getSelectedElement();
+					endNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
 				}catch(ClassCastException e){}
 			}				
 			
@@ -140,7 +141,7 @@ public class CreationTool extends DrawingTool {
 			}
 						
 			endNode = null;
-			context.repaint();
+			ContextAdaptorHack.context.repaint();
 		}
 
 	private boolean drawingSelfLoop(){
@@ -153,18 +154,18 @@ public class CreationTool extends DrawingTool {
 	private void finishSelfLoop() {
 		targetNode = endNode;
 		abortEdge();
-		cmd = new CreateCommand(context, CreateCommand.SELF_LOOP, targetNode);
+		cmd = new CreateCommand(CreateCommand.SELF_LOOP, targetNode);
 		cmd.execute();
 		sourceNode = null;
 		targetNode = null;
-		context.clearCurrentSelection();
+		ContextAdaptorHack.context.clearCurrentSelection();
 	}
 
 	/**
 	 * @param point
 	 */
 	private void createNode(Point point) {
-		cmd = new CreateCommand(context, CreateCommand.NODE, point);
+		cmd = new CreateCommand(CreateCommand.NODE, point);
 		cmd.execute();
 		abortEdge();
 		//dragging = false;		
@@ -177,18 +178,18 @@ public class CreationTool extends DrawingTool {
 	 * @param point
 	 */
 	private void finishEdgeAndCreateTarget(Point point) {		
-		cmd = new CreateCommand(context,
+		cmd = new CreateCommand(
 				CreateCommand.NODE_AND_EDGE, edge, point);				
 		cmd.execute();
 		// IDEA Don't keep a copy of the temp edge in this class, just use the get and set in context.
 		// TODO call abortEdge here and have it do all the work (duplicate code here and in finishEdge).
 		edge = null;
-		context.setTempEdge(null);
+		ContextAdaptorHack.context.setTempEdge(null);
 		drawingEdge = false;
 		dragging = false;
 		sourceNode = null;
 		targetNode = null;	
-		context.clearCurrentSelection();			
+		ContextAdaptorHack.context.clearCurrentSelection();			
 	}
 
 	/**
@@ -212,7 +213,7 @@ public class CreationTool extends DrawingTool {
 		BezierLayout layout = new BezierLayout();
 		BezierEdge e = new BezierEdge(layout, n1);
 		layout.computeCurve((CircleNodeLayout)n1.getLayout(), n1.getLayout().getLocation());
-		context.setTempEdge(e);
+		ContextAdaptorHack.context.setTempEdge(e);
 		return e;
 	}
 	
@@ -240,22 +241,22 @@ public class CreationTool extends DrawingTool {
 		// DEBUG there are some circumstances where we make it to this method with edge==null
 		// ... don't know what they are yet ...
 		if (edge != null) {
-			cmd = new CreateCommand(context, CreateCommand.EDGE, edge, targetNode);
+			cmd = new CreateCommand(CreateCommand.EDGE, edge, targetNode);
 			cmd.execute();
 		}
 		edge = null;
-		context.setTempEdge(null);
+		ContextAdaptorHack.context.setTempEdge(null);
 		drawingEdge = false;
 		dragging = false;		
 		sourceNode = null;
 		targetNode = null;
-		context.clearCurrentSelection();
+		ContextAdaptorHack.context.clearCurrentSelection();
 	}	
 
 	public void handleRightClick(MouseEvent me){
 		super.handleRightClick(me);
 		abortEdge();
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 		//super.handleRightClick(me);		
 	}
 	
@@ -268,11 +269,11 @@ public class CreationTool extends DrawingTool {
 		if(drawingEdge){			
 			// context.getGraphModel().abortEdge(edge);
 			// TODO garbage collect edge
-			context.setTempEdge(null);
+			ContextAdaptorHack.context.setTempEdge(null);
 			drawingEdge = false;			
 		}
 		aborted = true;
-		context.repaint();
+		ContextAdaptorHack.context.repaint();
 	}
 
 	@Override
@@ -283,7 +284,7 @@ public class CreationTool extends DrawingTool {
 		if(dragging && drawingEdge){
 			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			//context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
-			context.repaint();
+			ContextAdaptorHack.context.repaint();
 		}
 	}
 
@@ -293,7 +294,7 @@ public class CreationTool extends DrawingTool {
 		if(!dragging && drawingEdge){
 			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			//context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));			
-			context.repaint();
+			ContextAdaptorHack.context.repaint();
 		}
 	}
 
