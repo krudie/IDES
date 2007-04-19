@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * 
  * @author Helen Bretzke
  */
-public class FSAPublisherAdaptor implements FSAPublisher {
+public abstract class FSAPublisherAdaptor implements FSAPublisher {
 
 	private ArrayList<FSASubscriber> subscribers;
 		
@@ -68,4 +68,6 @@ public class FSAPublisherAdaptor implements FSAPublisher {
 			s.fsaSaved();
 		}	
 	}
+	
+	public abstract FSAModel getFSAModel();
 }

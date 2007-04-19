@@ -1,10 +1,14 @@
 package presentation.template;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 
 import main.Annotable;
@@ -13,20 +17,22 @@ import model.fsa.FSAState;
 import model.template.TemplateBlock;
 import model.template.TemplateChannel;
 import model.template.TemplateLink;
+import model.template.TemplateMessage;
 import model.template.TemplateModel;
 import model.template.TemplateModule;
+import model.template.TemplateSubscriber;
+import model.template.ver2_1.Channel;
+import model.template.ver2_1.Module;
 import presentation.LayoutShell;
 import presentation.LayoutShellMessage;
 import presentation.LayoutShellPublisher;
 import presentation.LayoutShellSubscriber;
-import presentation.fsa.BezierEdge;
-import presentation.fsa.CircleNode;
-import presentation.fsa.Edge;
-import presentation.fsa.FSAGraphMessage;
-import presentation.fsa.FSAGraphSubscriber;
-import presentation.fsa.GraphLabel;
 
-public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
+public class TemplateGraph implements LayoutShell, LayoutShellPublisher, TemplateSubscriber {
+	
+	public static final Color COLOR_NORM=Color.BLACK;
+	public static final Color COLOR_SELECT=Color.RED;
+	public static final Color COLOR_HILIGHT=Color.BLUE;
 	
 	protected TemplateModel model;
 	protected boolean needsSave=false;
@@ -40,9 +46,13 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 	 */
 	protected ArrayList<TemplateGraphSubscriber> subscribers = new ArrayList<TemplateGraphSubscriber>();
 	
+	private Collection<GraphBlock> blocks;
+	
 	public TemplateGraph(TemplateModel model)
 	{
 		this.model=model;
+		updateLists();
+		model.addSubscriber(this);
 	}
 
 	public DESModel getModel() {
@@ -56,16 +66,37 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 	public boolean needsSave() {
 		return needsSave;
 	}
+	
+	public void modelSaved() {
+		needsSave = false;
+		fireSaveStatusChanged();
+	}
 
 	public void release()
 	{
-		
+		model.removeSubscriber(this);
 	}
-	
-	public void add(TemplateModule m, Point2D.Float location)
+
+	public void templateStructureChanged(TemplateMessage message)
 	{
+		fireTemplateGraphChanged(new TemplateGraphMessage(
+				TemplateGraphMessage.MODIFY,
+				TemplateGraphMessage.GRAPH,
+				0,
+				this.getBounds(false),
+				this)
+				);
+	}
+
+	public void createModule(Point2D.Float location)
+	{
+		TemplateModule m=new Module(null,null);
+		m.setId(model.getFreeModuleId());
+		model.removeSubscriber(this);
 		model.add(m);
+		model.addSubscriber(this);
 		m.setAnnotation(Annotable.LAYOUT, new BlockLayout(location));
+		blocks.add(new GraphBlock(m));
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(location);
 		fireTemplateGraphChanged(new TemplateGraphMessage(
@@ -79,7 +110,19 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 	
 	public void remove(TemplateModule m)
 	{
+		if(model.getModule(m.getId())!=m)
+			return;
+		model.removeSubscriber(this);
 		model.remove(m);
+		model.addSubscriber(this);
+		for(Iterator<GraphBlock> i=blocks.iterator();i.hasNext();)
+		{
+			if(i.next().getBlock()==m)
+			{
+				i.remove();
+				break;
+			}
+		}
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(getLayout(m).getLocation());
 		fireTemplateGraphChanged(new TemplateGraphMessage(
@@ -91,12 +134,17 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 				));
 	}
 
-	public void add(TemplateChannel c, Point2D.Float location)
+	public void createChannel(Point2D.Float location)
 	{
+		TemplateChannel c=new Channel(null,null);
+		c.setId(model.getFreeChannelId());
+		model.removeSubscriber(this);
 		model.add(c);
+		model.addSubscriber(this);
 		c.setAnnotation(Annotable.LAYOUT, new BlockLayout(location));
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(location);
+		blocks.add(new GraphBlock(c));
 		fireTemplateGraphChanged(new TemplateGraphMessage(
 				TemplateGraphMessage.ADD,
 				TemplateGraphMessage.CHANNEL,
@@ -108,7 +156,19 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 	
 	public void remove(TemplateChannel c)
 	{
+		if(model.getChannel(c.getId())!=c)
+			return;
+		model.removeSubscriber(this);
 		model.remove(c);
+		model.addSubscriber(this);
+		for(Iterator<GraphBlock> i=blocks.iterator();i.hasNext();)
+		{
+			if(i.next().getBlock()==c)
+			{
+				i.remove();
+				break;
+			}
+		}
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(getLayout(c).getLocation());
 		fireTemplateGraphChanged(new TemplateGraphMessage(
@@ -147,6 +207,11 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 	{
 		BlockLayout layout=getLayout(b);
 		return layout.getText();
+	}
+	
+	public Collection<GraphBlock> getBlocks()
+	{
+		return blocks;
 	}
 	
 	public void relocate(TemplateBlock b, Point2D.Float location)
@@ -333,6 +398,12 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 	 * @param message
 	 */
 	private void fireTemplateGraphChanged(TemplateGraphMessage message) {
+		if(message.getEventType()==TemplateGraphMessage.ADD||
+				message.getEventType()==TemplateGraphMessage.REMOVE||
+				message.getElementType()==TemplateGraphMessage.GRAPH)
+		{
+			updateLists();
+		}
 		if(!needsSave)
 		{
 			needsSave = true;
@@ -340,6 +411,27 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher {
 		}
 		for(TemplateGraphSubscriber s : subscribers)	{
 			s.templateGraphChanged(message);
-		}		
+		}
+	}
+	
+	private void updateLists()
+	{
+		blocks=new LinkedList<GraphBlock>();
+		for (Iterator<TemplateModule> i=model.getModuleIterator();i.hasNext();)
+		{
+			blocks.add(new GraphBlock(i.next()));
+		}
+		for (Iterator<TemplateChannel> i=model.getChannelIterator();i.hasNext();)
+		{
+			blocks.add(new GraphBlock(i.next()));
+		}
+	}
+	
+	public void draw(Graphics2D g)
+	{
+		for(GraphBlock b:blocks)
+		{
+			b.draw(g);
+		}
 	}
 }

@@ -1509,11 +1509,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	public void fsaSaved() {
 		needsSave = false;
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.SAVE, 
-				FSAGraphMessage.GRAPH,
-				this.getId(), 
-				this.bounds(),
-				this, ""));
+//		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.SAVE, 
+//				FSAGraphMessage.GRAPH,
+//				this.getId(), 
+//				this.bounds(),
+//				this, ""));
 		fireSaveStatusChanged();
 	}
 	

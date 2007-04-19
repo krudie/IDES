@@ -1,19 +1,18 @@
-package model.fsa;
+package model.template;
 
 /**
- * A publisher of FSA messages.
+ * A publisher of Template Model messages.
  * 
  * @author Lenko Grigorov
  */
-public interface FSAPublisher {
-
+public interface TemplatePublisher {
 	/**
 	 * Attaches the given subscriber to this publisher.
 	 * The given subscriber will receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(FSASubscriber subscriber);
+	public void addSubscriber(TemplateSubscriber subscriber);
 	
 	/**
 	 * Removes the given subscriber to this publisher.
@@ -21,40 +20,32 @@ public interface FSAPublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(FSASubscriber subscriber);
+	public void removeSubscriber(TemplateSubscriber subscriber);
 	
 	/**
 	 * Returns all current subscribers to this publisher.
 	 * @return all current subscribers to this publisher
 	 */
-	public FSASubscriber[] getFSASubscribers();
+	public TemplateSubscriber[] getTemplateSubscribers();
 
 
 	/**
 	 * Triggers a notification to all subscribers that the structure
-	 * of the FSA model has changed.
+	 * of the Template model has changed.
 	 * @param message message with additional info about the change
-	 * @see FSAMessage
+	 * @see TemplateMessage
 	 */
-	public void fireFSAStructureChanged(FSAMessage message);
-	
-	/**
-	 * Triggers a notification to all subscribers that the event set
-	 * of the FSA model has changed.
-	 * @param message message with additional info about the change
-	 * @see FSAMessage
-	 */
-	public void fireFSAEventSetChanged(FSAMessage message);
+	public void fireTemplateStructureChanged(TemplateMessage message);
 	
 	/**
 	 * Triggers a notification to all subscribers that the
-	 * FSA model was saved to disk.
+	 * template model was saved to disk.
 	 */
-	public void fireFSASaved();
-
+	public void fireTemplateSaved();
+	
 	/**
 	 * Returns the model for which events are published.
 	 * @return the model for which events are published
 	 */
-	public FSAModel getFSAModel();
+	public TemplateModel getTemplateModel();
 }

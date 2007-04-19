@@ -47,7 +47,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	private HashMap<LayoutShell, Thumbnail> graphPanels = new HashMap<LayoutShell, Thumbnail>();
 	private Vector<Presentation> graphViews=new Vector<Presentation>();
 	private static final Border SELECTED_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 3);
-	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.inactiveBorderColor"), 1);
+	private static final Border PLAIN_BORDER = BorderFactory.createLineBorder(UIManager.getColor("InternalFrame.borderDarkShadow"), 1);
 	
 	private static Thumbnail underMouse; // the last Thumbnail that we had a mouseMove event above
 	public static final int THUMBNAIL_SIZE = 100;

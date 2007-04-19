@@ -17,10 +17,13 @@ import presentation.fsa.FSAGraph;
 
 public class TemplateToolset implements Toolset {
 
+	protected TemplateLibrary library=null;
+	
 	protected class TemplateUIDescriptor implements UIDescriptor
 	{
 		protected TemplateGraph shell;
 		protected Presentation[] views;
+		protected Presentation[] right;
 		
 		public TemplateUIDescriptor(TemplateGraph ls)
 		{
@@ -28,6 +31,12 @@ public class TemplateToolset implements Toolset {
 			views=new Presentation[1];
 			views[0]=new DesignDrawingView(shell);
 			((DesignDrawingView)views[0]).setName(Hub.string("design"));
+			right=new Presentation[1];
+			if(library==null)
+			{
+				library=new TemplateLibrary();
+			}
+			right[0]=library;
 		}
 		
 		public Presentation[] getMainPanePresentations()
@@ -37,11 +46,11 @@ public class TemplateToolset implements Toolset {
 		
 		public Presentation[] getLeftPanePresentations()
 		{
-			return null;
+			return new Presentation[0];
 		}
 		public Presentation[] getRightPanePresentations()
 		{
-			return null;
+			return right;
 		}
 
 		public JMenu[] getMenus()

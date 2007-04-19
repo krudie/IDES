@@ -2,6 +2,7 @@ package model.template.ver2_1;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,12 +11,17 @@ import java.util.ListIterator;
 import main.Hub;
 import model.DESModel;
 import model.ModelDescriptor;
+import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
+import model.fsa.FSASubscriber;
 import model.template.TemplateChannel;
 import model.template.TemplateLink;
+import model.template.TemplateMessage;
 import model.template.TemplateModel;
 import model.template.TemplateModule;
+import model.template.TemplatePublisher;
+import model.template.TemplateSubscriber;
 
 public class TemplateDesign implements TemplateModel {
 
@@ -60,28 +66,88 @@ public class TemplateDesign implements TemplateModel {
 	protected LinkedList<TemplateChannel> channels;
 	protected LinkedList<TemplateLink> links;
 	
+	private long maxModuleId=0;
+	private long maxChannelId=0;
+	private long maxLinkId=0;
+	
     protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
 
+	private ArrayList<TemplateSubscriber> subscribers;
+	
 	protected TemplateDesign(String name)
 	{
+		subscribers = new ArrayList<TemplateSubscriber>();
 		this.name=name;
 		modules=new LinkedList<TemplateModule>();
 		channels=new LinkedList<TemplateChannel>();
 		links=new LinkedList<TemplateLink>();
 	}
 	
+	public void addSubscriber(TemplateSubscriber subscriber)
+	{
+		subscribers.add(subscriber);
+	}
+	
+	public void removeSubscriber(TemplateSubscriber subscriber)
+	{
+		subscribers.remove(subscriber);
+	}
+	
+	public TemplateSubscriber[] getTemplateSubscribers()
+	{
+		return subscribers.toArray(new TemplateSubscriber[]{});
+	}
+
+	public void fireTemplateStructureChanged(TemplateMessage message)
+	{
+		for(TemplateSubscriber s : subscribers)
+		{
+			s.templateStructureChanged(message);
+		}
+	}
+	
+	public void fireTemplateSaved()
+	{
+		for(TemplateSubscriber s : subscribers) {
+			s.modelSaved();
+		}	
+	}
+	
+	public TemplateModel getTemplateModel()
+	{
+		return this;
+	}
+
 	public void add(TemplateModule module) {
 		modules.add(module);
+		if(module.getId()>maxModuleId)
+		{
+			maxModuleId=module.getId();
+		}
+    	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.ADD,
+    			TemplateMessage.MODULE, module.getId(), this));
 	}
 
 	public void add(TemplateChannel channel) {
 		channels.add(channel);
+		if(channel.getId()>maxChannelId)
+		{
+			maxChannelId=channel.getId();
+		}
+    	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.ADD,
+    			TemplateMessage.CHANNEL, channel.getId(), this));
 	}
 
 	public void add(TemplateLink link) {
 		links.add(link);
+		if(link.getId()>maxLinkId)
+		{
+			maxLinkId=link.getId();
+		}
 		link.getBlockLeft().addLink(link);
 		link.getBlockRight().addLink(link);
+    	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.ADD,
+    			TemplateMessage.LINK, link.getId(), this));
 	}
 
 	public TemplateChannel getChannel(long id) {
@@ -139,18 +205,39 @@ public class TemplateDesign implements TemplateModel {
 		modules.remove(module);
 		for(TemplateLink l:module.getLinks())
 			remove(l);
+    	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.REMOVE,
+    			TemplateMessage.MODULE, module.getId(), this));
 	}
 
 	public void remove(TemplateChannel channel) {
 		channels.remove(channel);
 		for(TemplateLink l:channel.getLinks())
 			remove(l);
+    	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.REMOVE,
+    			TemplateMessage.CHANNEL, channel.getId(), this));
 	}
 
 	public void remove(TemplateLink connection) {
 		links.remove(connection);
 		connection.getBlockLeft().removeLink(connection);
 		connection.getBlockRight().removeLink(connection);
+    	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.REMOVE,
+    			TemplateMessage.LINK, connection.getId(), this));
+	}
+	
+	public long getFreeModuleId()
+	{
+		return maxModuleId;
+	}
+	
+	public long getFreeChannelId()
+	{
+		return maxChannelId;
+	}
+	
+	public long getFreeLinkId()
+	{
+		return maxLinkId;
 	}
 
 	public String getId() {

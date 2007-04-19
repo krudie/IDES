@@ -1,5 +1,7 @@
 package presentation.fsa;
 
+import java.util.Collection;
+
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JScrollPane;
@@ -62,11 +64,11 @@ public class FSAToolset implements Toolset {
 		
 		public Presentation[] getLeftPanePresentations()
 		{
-			return null;
+			return new Presentation[0];
 		}
 		public Presentation[] getRightPanePresentations()
 		{
-			return null;
+			return new Presentation[0];
 		}
 
 		public JMenu[] getMenus()
@@ -135,11 +137,11 @@ public class FSAToolset implements Toolset {
 	 */
 	public static GraphDrawingView getCurrentBoard()
 	{
-		Presentation ps[]=Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class);
-		if(ps.length<1)
+		Collection<Presentation> ps=Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class);
+		if(ps.size()<1)
 			return null;
 		else
-			return (GraphDrawingView)ps[0];
+			return (GraphDrawingView)ps.iterator().next();
 	}
 	
 //	/**

@@ -18,6 +18,7 @@ import model.template.TemplateModule;
 import presentation.GraphicalLayout;
 import presentation.LayoutShell;
 import presentation.Presentation;
+import presentation.fsa.FSAGraphSubscriber;
 
 public class DesignView extends JComponent implements Presentation, TemplateGraphSubscriber {
 
@@ -36,23 +37,47 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 	public DesignView(TemplateGraph graph)
 	{
 		this.graph=graph;
+		graph.addSubscriber(this);
 	}
 	
 	public Dimension getPreferredSize()	{
-		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
+		return Hub.getMainWindow().getSize();
+//		return new Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
 	}
 	
 	public JComponent getGUI()
 	{
 		return this;
 	}
+	
 	public LayoutShell getLayoutShell()
 	{
 		return graph;
 	}
+	
 	public void setTrackModel(boolean b)
 	{
-		
+		if(b)
+		{
+			TemplateGraphSubscriber[] listeners=graph.getTemplateGraphSubscribers();
+			boolean found=false;
+			for(int i=0;i<listeners.length;++i)
+			{
+				if(listeners[i]==this)
+				{
+					found=true;
+					break;
+				}
+			}
+			if(!found)
+			{
+				graph.addSubscriber(this);
+			}
+		}
+		else
+		{
+			graph.removeSubscriber(this);
+		}
 	}
 	
 	public void paint(Graphics g)
@@ -69,13 +94,10 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 	    	g2D.fillRect(0,0,r.width,r.height);
 	    }
 	    
-//	    g2D.scale(scaleFactor, scaleFactor);
-//	    if(graphModel != null)	graphModel.draw(g2D);	    
-    	g2D.setColor(Color.BLACK);
-	    for(Iterator<TemplateModule> i=((TemplateModel)graph.getModel()).getModuleIterator(); i.hasNext();)
+	    g2D.scale(scaleFactor, scaleFactor);
+	    if(graph != null)
 	    {
-	    	BlockLayout l=graph.getLayout(i.next());
-	    	g2D.drawRect((int)l.getLocation().x-10, (int)l.getLocation().y-10, 10, 10);
+	    	graph.draw(g2D);
 	    }
 	}
 	
@@ -100,8 +122,10 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_THICKNESS);
 				setScaleFactor(Math.min(xScale,yScale));
 			}
-			invalidate();
-			Hub.getWorkspace().fireRepaintRequired();
+			repaint();
+			revalidate();
+//			invalidate();
+//			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}
 
@@ -111,11 +135,11 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 
 	public void templateGraphChanged(TemplateGraphMessage message)
 	{
-		
+		refreshView();
 	}
 
 	public void templateGraphSelectionChanged(TemplateGraphMessage message)
 	{
-		
+		refreshView();
 	}
 }

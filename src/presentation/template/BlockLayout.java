@@ -7,11 +7,17 @@ import java.awt.geom.Point2D;
 import presentation.GraphicalLayout;
 
 public class BlockLayout extends GraphicalLayout {
+	
+	public static final float DEFAULT_HEIGHT=20;
+	public static final float DEFAULT_WIDTH=40;
+	
 	protected float width;
 	protected float height;
 	
 	public BlockLayout(){
 		super();		
+		width=DEFAULT_WIDTH;
+		height=DEFAULT_HEIGHT;
 	}
 	
 	/** 
@@ -22,6 +28,8 @@ public class BlockLayout extends GraphicalLayout {
 	 */	
 	public BlockLayout(String text)	{
 		super(text);
+		width=DEFAULT_WIDTH;
+		height=DEFAULT_HEIGHT;
 	}
 	
 	/** 
@@ -32,6 +40,8 @@ public class BlockLayout extends GraphicalLayout {
 	 */
 	public BlockLayout(Point2D.Float location) {
 		super(location);
+		width=DEFAULT_WIDTH;
+		height=DEFAULT_HEIGHT;
 	}
 
 	/**
@@ -43,6 +53,8 @@ public class BlockLayout extends GraphicalLayout {
 	 */
 	public BlockLayout(Point2D.Float location, String text) {
 		super(location,text);
+		width=DEFAULT_WIDTH;
+		height=DEFAULT_HEIGHT;
 	}
 
 	/**
@@ -56,6 +68,8 @@ public class BlockLayout extends GraphicalLayout {
 	 */
 	public BlockLayout(Point2D.Float location, String text, Color color, Color highlightColor) {
 		super(location,text,color,highlightColor);
+		width=DEFAULT_WIDTH;
+		height=DEFAULT_HEIGHT;
 	}
 	
 	public float getWidth()
@@ -63,9 +77,19 @@ public class BlockLayout extends GraphicalLayout {
 		return width;
 	}
 	
+	public void setWidth(float width)
+	{
+		this.width=width;
+	}
+	
 	public float getHeight()
 	{
 		return height;
+	}
+	
+	public void setHeight(float height)
+	{
+		this.height=height;
 	}
 	
 	public Rectangle getBounds()

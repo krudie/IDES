@@ -15,6 +15,7 @@ import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.UIManager;
 
 import main.Hub;
+import presentation.Presentation;
 import presentation.fsa.GraphView;
 
 /**
@@ -31,7 +32,7 @@ public class Thumbnail extends JPanel {
 		}
 	};
 	
-	private GraphView graphView;
+	private Presentation view;
 	private static final int DEFAULT_ICON_SIZE = 16;
 	private static int cbWidth = DEFAULT_ICON_SIZE;
 	private static int cbHeight = DEFAULT_ICON_SIZE;
@@ -74,13 +75,13 @@ public class Thumbnail extends JPanel {
 	}
 
 	public Component add(Component gv) {
-		if (gv instanceof GraphView) {
-			graphView = (GraphView) gv;
+		if (gv instanceof Presentation) {
+			view = (Presentation) gv;
 		}
 		return super.add(gv);
 	}
 	
 	public String getGraphModelName() {
-		return graphView.getGraphModel().getName();
+		return view.getLayoutShell().getModel().getName();
 	}
 }

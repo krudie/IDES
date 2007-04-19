@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
@@ -118,6 +119,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 private void createAndAddMainPane() {
 		JPanel mainPane=new JPanel(new BorderLayout());
 		tabbedViews = new JTabbedPane();
+		rightView = new JTabbedPane();
 //		drawingBoard.setName("No graph");
 //		JScrollPane sp = new JScrollPane(drawingBoard, 
 //				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
@@ -127,7 +129,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 //		// TODO attach a listener to the tabbedPane that sets the active view in the UIStateModel
 //		tabbedViews.addTab("Graph",sp);
 //		tabbedViews.addTab("Events", new EventView());
-		mainPane.add(tabbedViews,BorderLayout.CENTER);
+		tabsAndRight=new JSplitPane();
+		tabsAndRight.setLeftComponent(tabbedViews);
+		tabsAndRight.setRightComponent(rightView);
+		mainPane.add(tabsAndRight,BorderLayout.CENTER);
 
 		Box fsBox=Box.createHorizontalBox();
 		filmStrip = new FilmStrip();
@@ -205,6 +210,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 * The views.
 	 */
 	private JTabbedPane tabbedViews;
+	private JTabbedPane rightView;
+	private JSplitPane tabsAndRight;
 //	private GraphDrawingView drawingBoard;
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
 	private JToolBar toolbar;
@@ -310,5 +317,19 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	public JTabbedPane getMainPane()
 	{
 		return tabbedViews;
+	}
+	
+	public JTabbedPane getRightPane()
+	{
+		return rightView;
+	}
+	
+	public void revalidateViews()
+	{
+		tabsAndRight.resetToPreferredSizes();
+		if(rightView.getComponentCount()==0)
+		{
+			tabsAndRight.setDividerLocation(1d);
+		}
 	}
 }

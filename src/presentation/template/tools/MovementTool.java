@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 
 import main.Hub;
 import model.template.TemplateModule;
@@ -14,6 +15,7 @@ import model.template.ver2_1.Module;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.ToolPopup;
 import presentation.template.DesignDrawingView;
+import presentation.template.GraphBlock;
 import presentation.template.TemplateGraph;
 
 public class MovementTool extends DrawingTool {
@@ -32,7 +34,24 @@ public class MovementTool extends DrawingTool {
 	public void handleMouseClicked(MouseEvent m)
 	{
 		super.handleMouseClicked(m);
-		((TemplateGraph)context.getLayoutShell()).add(
-				new Module(null,null), new Point2D.Float(m.getX(),m.getY()));
-	}	
+		((TemplateGraph)context.getLayoutShell()).createModule(new Point2D.Float(m.getX(),m.getY()));
+	}
+	
+	public void handleMouseMoved(MouseEvent m)
+	{
+		super.handleMouseMoved(m);
+		Collection<GraphBlock> blocks=((TemplateGraph)context.getLayoutShell()).getBlocks();
+		for(GraphBlock b:blocks)
+		{
+			if(b.intersects(m.getPoint()))
+			{
+				b.setHighlighted(true);
+			}
+			else
+			{
+				b.setHighlighted(false);
+			}
+		}
+		context.repaint();
+	}
 }

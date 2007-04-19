@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import javax.swing.JTabbedPane;
@@ -60,7 +61,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	
 	static Workspace me;
 	
-	protected Presentation[] activePresentations=new Presentation[0];
+	protected LinkedList<Presentation> activePresentations=new LinkedList<Presentation>();
 	
 	public static Workspace instance(){
 		if(me == null){
@@ -301,11 +302,12 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		// FIXME the obtainment of the tabbed pane is ugly
 		JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
 		tabs.removeAll();
-		for(int i=0;i<activePresentations.length;++i)
+		((MainWindow)Hub.getMainWindow()).getRightPane().removeAll();
+		for(Presentation p:activePresentations)
 		{
-			activePresentations[i].release();
+			p.release();
 		}
-		activePresentations=new Presentation[0];
+		activePresentations=new LinkedList<Presentation>();
 	}
 	
 	/**
@@ -325,15 +327,27 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			activeModelIdx=getModelIndex(name);			
 			// FIXME the obtainment of the tabbed pane is ugly
 			JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
+			JTabbedPane right=((MainWindow)Hub.getMainWindow()).getRightPane();
 			Toolset ts=PresentationManager.getToolset(systems.elementAt(activeModelIdx).getModelDescriptor().getPreferredModelInterface());
 			UIDescriptor uid=ts.getUIElements(getActiveLayoutShell());
-			activePresentations=uid.getMainPanePresentations();
-			for(int i=0;i<activePresentations.length;++i)
+			activePresentations=new LinkedList<Presentation>();
+			Presentation[] ps=uid.getMainPanePresentations();
+			for(int i=0;i<ps.length;++i)
 			{
-				tabs.add(activePresentations[i].getName(),activePresentations[i].getGUI());
+				activePresentations.add(ps[i]);
+			}
+			for(Presentation p:activePresentations)
+			{
+				tabs.add(p.getName(),p.getGUI());
+			}
+			ps=uid.getRightPanePresentations();
+			for(int i=0;i<ps.length;++i)
+			{
+				right.add(ps[i].getName(),ps[i].getGUI());
+				activePresentations.add(ps[i]);
 			}
 		}
-
+		((MainWindow)Hub.getMainWindow()).revalidateViews();
 		// TODO change name to fsa.id for consistency with add and remove
 		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 							name, 
@@ -549,22 +563,22 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		return wraps;
 	}
 	
-	public Presentation[] getPresentations()
+	public Collection<Presentation> getPresentations()
 	{
 		return activePresentations;
 	}
 	
-	public Presentation[] getPresentationsOfType(Class type)
+	public Collection<Presentation> getPresentationsOfType(Class type)
 	{
 		Vector<Presentation> ps=new Vector<Presentation>();
-		for(int i=0;i<activePresentations.length;++i)
+		for(Presentation p:activePresentations)
 		{
-			if(activePresentations[i].getClass().equals(type))
+			if(p.getClass().equals(type))
 			{
-				ps.add(activePresentations[i]);
+				ps.add(p);
 			}
 		}
-		return ps.toArray(new Presentation[0]);
+		return ps;
 	}
 	
 	public void fireRepaintRequired() {

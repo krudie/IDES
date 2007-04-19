@@ -5,13 +5,16 @@ import java.util.Set;
 
 import model.DESModel;
 
-public interface TemplateModel extends DESModel {
+public interface TemplateModel extends DESModel, TemplatePublisher {
 	public void add(TemplateModule module);
 	public void add(TemplateChannel channel);
 	public void add(TemplateLink link);
 	public void remove(TemplateModule module);
 	public void remove(TemplateChannel channel);
 	public void remove(TemplateLink connection);
+	public long getFreeModuleId();
+	public long getFreeChannelId();
+	public long getFreeLinkId();
 	public TemplateModule getModule(long id);
 	public Iterator<TemplateModule> getModuleIterator();
 	public int getModuleCount();

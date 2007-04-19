@@ -162,6 +162,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
         return name;
     }
 
+    public FSAModel getFSAModel()
+    {
+    	return this;
+    }
+    
     public ModelDescriptor getModelDescriptor()
     {
     	return myDescriptor;
