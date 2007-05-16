@@ -15,10 +15,12 @@ import operations.fsa.ver2_1.Conflicting;
 import operations.fsa.ver2_1.Containment;
 import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
+import operations.fsa.ver2_1.LocalModular;
 import operations.fsa.ver2_1.Meet;
 import operations.fsa.ver2_1.PrefixClosure;
 import operations.fsa.ver2_1.Projection;
 import operations.fsa.ver2_1.SupCon;
+import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
 import operations.fsa.ver2_1.Trim;
 
@@ -105,7 +107,9 @@ public class Main {
 		OperationManager.register(new Containment());
 		OperationManager.register(new Conflicting());
 		OperationManager.register(new ControlMap());
-
+		OperationManager.register(new LocalModular());
+		OperationManager.register(new SupRed());
+		
 		try {
 			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.metal.MetalLookAndFeel");

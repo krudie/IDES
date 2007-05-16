@@ -20,38 +20,37 @@ import presentation.template.TemplateGraph;
 
 public class MovementTool extends DrawingTool {
 	
-	
-// Dragging flag -- set to true when user presses mouse button
-// and cleared to false when user releases mouse button.
-	protected boolean dragging = false;
+	protected Point origin=new Point();
 	
 	public MovementTool()
 	{
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/modify_.gif")), new Point(0,0), "MOVE");		
+		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/move.gif")), new Point(0,0), "MOVE");		
 	}
 	
-	public void handleMouseClicked(MouseEvent m)
+	public void handleMouseDragged(MouseEvent m)
 	{
-		super.handleMouseClicked(m);
-		((TemplateGraph)context.getLayoutShell()).createModule(new Point2D.Float(m.getX(),m.getY()));
-	}
-	
-	public void handleMouseMoved(MouseEvent m)
-	{
-		super.handleMouseMoved(m);
-		Collection<GraphBlock> blocks=((TemplateGraph)context.getLayoutShell()).getBlocks();
-		for(GraphBlock b:blocks)
+		super.handleMouseDragged(m);
+		int offX=m.getX()-origin.x;
+		int offY=m.getY()-origin.y;
+		origin=m.getPoint();
+		for(GraphBlock b:context.getSelection())
 		{
-			if(b.intersects(m.getPoint()))
-			{
-				b.setHighlighted(true);
-			}
-			else
-			{
-				b.setHighlighted(false);
-			}
+//			((TemplateGraph)context.getLayoutShell()).
+			b.translate(offX, offY);
 		}
 		context.repaint();
+	}
+	
+	public void handleMousePressed(MouseEvent m)	
+	{
+		super.handleMousePressed(m);
+		origin=m.getPoint();
+	}
+	
+	public void handleMouseReleased(MouseEvent m)
+	{
+		((TemplateGraph)context.getLayoutShell()).commitRelocate(context.getSelection());
+		context.setTool(DesignDrawingView.SELECTION_TOOL);
 	}
 }

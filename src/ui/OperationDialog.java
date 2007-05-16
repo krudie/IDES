@@ -216,6 +216,16 @@ public class OperationDialog extends EscapeDialog {
 		inputs=new Vector<JComboBox>();
 		String[] descs=o.getDescriptionOfInputs();
 		Class[] types=o.getTypeOfInputs();
+		//FIXME this is a temporary patch for infinite inputs
+		if(o.getNumberOfInputs()==-1)
+		{
+			descs=new String[o.getDescriptionOfInputs().length+1];
+			System.arraycopy(o.getDescriptionOfInputs(),0,descs,0,descs.length-1);
+			descs[descs.length-1]=descs[descs.length-2];
+			types=new Class[o.getTypeOfInputs().length+1];
+			System.arraycopy(o.getTypeOfInputs(),0,types,0,types.length-1);
+			types[types.length-1]=types[types.length-2];
+		}
 		for(int i=0;i<descs.length;++i)
 		{
 			Vector v=new Vector(Hub.getWorkspace().getModelsOfType(types[i]));

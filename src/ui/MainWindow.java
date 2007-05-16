@@ -324,12 +324,30 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		return rightView;
 	}
 	
-	public void revalidateViews()
+	public void aboutToRearrangeViews()
 	{
-		tabsAndRight.resetToPreferredSizes();
+		if(rightView.getComponentCount()!=0)
+		{
+			//apply Math.ceil to avoid "creeping" of the divider
+			Hub.persistentData.setInt("rightViewExt",
+				(int)Math.ceil(1000*(float)(tabsAndRight.getDividerLocation()-tabsAndRight.getMinimumDividerLocation())/
+				(tabsAndRight.getMaximumDividerLocation()-tabsAndRight.getMinimumDividerLocation()))
+				);
+		}
+	}
+	
+	public void arrangeViews()
+	{
 		if(rightView.getComponentCount()==0)
 		{
 			tabsAndRight.setDividerLocation(1d);
+		}
+		else
+		{
+			float ext=Hub.persistentData.getInt("rightViewExt", 750)/1000f;
+			tabsAndRight.setDividerLocation(
+			(int)(tabsAndRight.getMinimumDividerLocation()+ext*(tabsAndRight.getMaximumDividerLocation()-tabsAndRight.getMinimumDividerLocation()))
+			);
 		}
 	}
 }

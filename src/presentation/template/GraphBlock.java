@@ -1,5 +1,6 @@
 package presentation.template;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -11,6 +12,7 @@ import presentation.PresentationElement;
 
 import main.Annotable;
 import model.template.TemplateBlock;
+import model.template.TemplateModule;
 
 public class GraphBlock implements PresentationElement {
 
@@ -54,14 +56,42 @@ public class GraphBlock implements PresentationElement {
 	}
 
 	public void draw(Graphics g) {
-    	BlockLayout l=getLayout();
-    	if(isSelected())
+		BlockLayout l=getLayout();
+		g.setColor(Color.WHITE);
+    	if(block instanceof TemplateModule)
+    	{
+    		g.fillRect((int)(l.getLocation().x-l.getWidth()/2), (int)(l.getLocation().y-l.getHeight()/2), (int)l.getWidth(), (int)l.getHeight());
+    	}
+    	else
+    	{
+    		int max=Math.max((int)l.height, (int)l.width);
+    		g.fillOval((int)(l.getLocation().x-max/2),
+    				(int)(l.getLocation().y-max/2),
+    				max,max);
+    	}
+		if(isSelected())
     		g.setColor(TemplateGraph.COLOR_SELECT);
     	else if(isHighlighted())
     		g.setColor(TemplateGraph.COLOR_HILIGHT);
     	else
     		g.setColor(TemplateGraph.COLOR_NORM);
-    	g.drawRect((int)(l.getLocation().x-l.getWidth()/2), (int)(l.getLocation().y-l.getHeight()/2), (int)l.getWidth(), (int)l.getHeight());
+    	if(block instanceof TemplateModule)
+    	{
+    		g.drawRect((int)(l.getLocation().x-l.getWidth()/2), (int)(l.getLocation().y-l.getHeight()/2), (int)l.getWidth(), (int)l.getHeight());
+    	}
+    	else
+    	{
+    		int max=Math.max((int)l.height, (int)l.width);
+    		g.drawOval((int)(l.getLocation().x-max/2),
+    				(int)(l.getLocation().y-max/2),
+    				max,max);
+    	}
+    	if(!"".equals(l.getText()))
+    	{
+    		g.setFont(l.getFont());
+    		Point2D labelLocation=l.getLabelLocation();
+    		g.drawString(l.getText(),(int)labelLocation.getX(),(int)labelLocation.getY());
+    	}
 	}
 
 	public boolean isSelected()
@@ -96,12 +126,16 @@ public class GraphBlock implements PresentationElement {
 	
 	public void translate(float x, float y)
 	{
-		getLayout().translate(x, y);
+		BlockLayout layout=getLayout();
+		layout.translate(x, y);
+		setLayout(layout);
 	}
 	
 	public void setLocation(Point2D.Float p)
 	{
-		getLayout().setLocation(p.x, p.y);
+		BlockLayout layout=getLayout();
+		layout.setLocation(p.x, p.y);
+		setLayout(layout);
 	}
 
 	public Point2D.Float getLocation()
@@ -127,5 +161,10 @@ public class GraphBlock implements PresentationElement {
 	public Long getId()
 	{
 		return (long)hashCode();
+	}
+	
+	public String getName()
+	{
+		return getLayout().getText();
 	}
 }

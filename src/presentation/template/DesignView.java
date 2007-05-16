@@ -5,8 +5,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -15,6 +18,7 @@ import main.Hub;
 import model.template.TemplateModel;
 import model.template.TemplateModule;
 
+import presentation.Geometry;
 import presentation.GraphicalLayout;
 import presentation.LayoutShell;
 import presentation.Presentation;
@@ -103,7 +107,7 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 	
 	public void release()
 	{
-		
+		setTrackModel(false);
 	}
 	
 	protected void refreshView()
@@ -141,5 +145,59 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 	public void templateGraphSelectionChanged(TemplateGraphMessage message)
 	{
 		refreshView();
+	}
+	
+	public GraphBlock getBlockAt(Point2D p)
+	{
+		GraphBlock ret=null;
+		for(GraphBlock b:graph.getBlocks())
+		{
+			if(b.bounds().contains(p))
+			{
+				ret=b;
+				break;
+			}
+		}
+		return ret;
+	}
+
+	public GraphLink getLinkAt(Point2D p)
+	{
+		GraphLink ret=null;
+		Rectangle2D.Float r=new Rectangle2D.Float((float)p.getX()-3,
+				(float)p.getY()-3,(float)p.getX()+3,(float)p.getY()+3);
+		for(GraphLink l:graph.getLinks())
+		{
+			Point2D loc1=graph.getLayout(l.getLink().getBlockLeft()).getLocation();
+			Point2D loc2=graph.getLayout(l.getLink().getBlockRight()).getLocation();
+			float slope=(float)(loc1.getX()<loc2.getX()?Geometry.slope(loc1,loc2):Geometry.slope(loc2,loc1));
+			float disp=(float)(loc1.getY()-slope*loc1.getX());
+//			System.out.println(slope);
+//			System.out.println(disp);
+//			System.out.println(r);
+//			System.out.println(graph.getLayout(l.getLink().getBlockLeft()).getLocation());
+//			System.out.println(graph.getLayout(l.getLink().getBlockRight()).getLocation());
+//			System.out.println(
+//				""+r.getMinX()+","+r.getMinX()*slope+"||"+
+//				r.getMaxX()+","+r.getMaxX()*slope+"||"+
+//				r.getMinY()/slope+","+r.getMinY()+"||"+
+//				r.getMaxY()/slope+","+r.getMaxY()
+//					);
+//			System.out.println(
+//					""+r.getMinX()+","+(r.getMinX()*slope+disp)+"||"+
+//					r.getMaxX()+","+(r.getMaxX()*slope+disp)+"||"+
+//					((r.getMinY()-disp)/slope)+","+r.getMinY()+"||"+
+//					((r.getMaxY()-disp)/slope)+","+r.getMaxY()
+//						);
+			if(r.contains(r.getMinX(),r.getMinX()*slope+disp)||
+					r.contains(r.getMaxX(),r.getMaxX()*slope+disp)||
+					r.contains((r.getMinY()-disp)/slope,r.getMinY())||
+					r.contains((r.getMaxY()-disp)/slope,r.getMaxY()))
+			{
+				ret=l;
+				break;
+			}
+		}
+		return ret;
 	}
 }

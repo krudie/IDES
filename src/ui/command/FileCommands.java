@@ -25,6 +25,7 @@ import model.ModelDescriptor;
 import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
+import model.template.TemplateModel;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
@@ -35,6 +36,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 import presentation.LayoutShell;
 import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
+import presentation.template.TemplateGraph;
 import services.General;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
@@ -99,10 +101,21 @@ public class FileCommands {
 				}
 				else
 				{
-					FSAModel fsa = FileOperations.openAutomaton(fc.getSelectedFile());
-					if(fsa != null){
-						Hub.getWorkspace().addModel(fsa);
-						Hub.getWorkspace().setActiveModel(fsa.getName());
+					if(fc.getSelectedFile().getName().equals("TemplateDesign.xmd"))
+					{
+						TemplateGraph graph=io.template.ver2_1.FileOperations.openAutomaton(fc.getSelectedFile());
+						if(graph != null){
+							Hub.getWorkspace().addLayoutShell(graph);
+							Hub.getWorkspace().setActiveModel(graph.getName());
+						}						
+					}
+					else
+					{
+						FSAModel fsa = FileOperations.openAutomaton(fc.getSelectedFile());
+						if(fsa != null){
+							Hub.getWorkspace().addModel(fsa);
+							Hub.getWorkspace().setActiveModel(fsa.getName());
+						}
 					}
 	    		}
 				Hub.getMainWindow().setCursor(cursor);
@@ -164,7 +177,7 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-			DESModel fsa = Hub.getWorkspace().getActiveModel();			
+			DESModel fsa = Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
 			if(fsa!=null&&fsa instanceof FSAModel)
@@ -173,6 +186,15 @@ public class FileCommands {
 					((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(false);					
 					Hub.getWorkspace().fireRepaintRequired();
 				}
+			LayoutShell graph=Hub.getWorkspace().getActiveLayoutShell();
+			if(graph!=null&&graph instanceof TemplateGraph)
+			{
+				if(io.template.ver2_1.FileOperations.saveAs((TemplateGraph)graph))
+				{
+					((TemplateGraph)Hub.getWorkspace().getActiveLayoutShell()).modelSaved();					
+					Hub.getWorkspace().fireRepaintRequired();					
+				}
+			}
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}

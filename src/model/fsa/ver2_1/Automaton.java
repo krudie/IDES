@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import services.General;
+import util.StupidSetWrapper;
 
 import main.Annotable;
 import main.Hub;
@@ -367,7 +369,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
      * TODO Comment!
      */
     public FSAEventSet getEventSet() {
-    	return (FSAEventSet)new HashSet<FSAEvent>( events );
+    	return new StupidSetWrapper( events );
     }
     
     /* (non-Javadoc)

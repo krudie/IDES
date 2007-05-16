@@ -7,12 +7,18 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 import main.Annotable;
 import model.DESModel;
+import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.template.TemplateBlock;
 import model.template.TemplateChannel;
@@ -22,13 +28,14 @@ import model.template.TemplateModel;
 import model.template.TemplateModule;
 import model.template.TemplateSubscriber;
 import model.template.ver2_1.Channel;
+import model.template.ver2_1.Link;
 import model.template.ver2_1.Module;
 import presentation.LayoutShell;
 import presentation.LayoutShellMessage;
 import presentation.LayoutShellPublisher;
 import presentation.LayoutShellSubscriber;
 
-public class TemplateGraph implements LayoutShell, LayoutShellPublisher, TemplateSubscriber {
+public class TemplateGraph implements LayoutShell, LayoutShellPublisher, TemplateSubscriber, Annotable {
 	
 	public static final Color COLOR_NORM=Color.BLACK;
 	public static final Color COLOR_SELECT=Color.RED;
@@ -47,20 +54,67 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	protected ArrayList<TemplateGraphSubscriber> subscribers = new ArrayList<TemplateGraphSubscriber>();
 	
 	private Collection<GraphBlock> blocks;
+	private Collection<GraphLink> links;
 	
-	public TemplateGraph(TemplateModel model)
+	protected TemplateLibrary library;
+	
+    //TODO make the state use a common annotation repository
+    protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
+    
+	/**
+	 * Returns the annotation for the given key.
+	 * @param key key for the annotation
+	 * @return if there is no annotation for the given key,
+	 * returns <code>null</code>, otherwise returns the annotation
+	 * for the key
+	 */
+	public Object getAnnotation(String key)
 	{
+		return annotations.get(key);
+	}
+
+	/**
+	 * Sets an annotation for a given key. If there is already
+	 * an annotation for the key, it is replaced. 
+	 * @param key the key for the annotation
+	 * @param annotation the annotation
+	 */
+	public void setAnnotation(String key, Object annotation)
+	{
+		annotations.put(key, annotation);
+	}
+	
+	/**
+	 * Returns <code>true</code> if there is an annotation
+	 * for the given key. Otherwise returns <code>false</code>.
+	 * @param key key for the annotation
+	 * @return <code>true</code> if there is an annotation
+	 * for the given key, <code>false</code> otherwise
+	 */
+	public boolean hasAnnotation(String key)
+	{
+		return annotations.containsKey(key);
+	}
+	
+	public TemplateGraph(TemplateModel model, TemplateLibrary lib)
+	{
+		library=lib;
 		this.model=model;
 		updateLists();
 		model.addSubscriber(this);
 	}
 
-	public DESModel getModel() {
+	public TemplateModel getModel() {
 		return model;
 	}
 
 	public Class getModelInterface() {
 		return TemplateModel.class;
+	}
+	
+	public String getName()
+	{
+		return model.getName();
 	}
 
 	public boolean needsSave() {
@@ -79,6 +133,7 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 
 	public void templateStructureChanged(TemplateMessage message)
 	{
+		updateLists();
 		fireTemplateGraphChanged(new TemplateGraphMessage(
 				TemplateGraphMessage.MODIFY,
 				TemplateGraphMessage.GRAPH,
@@ -88,15 +143,24 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 				);
 	}
 
-	public void createModule(Point2D.Float location)
+	public void createModule(String templateName,Point2D.Float location)
 	{
-		TemplateModule m=new Module(null,null);
+		TemplateModule m=library.instantiateModule(templateName);
 		m.setId(model.getFreeModuleId());
+		Set<String> allNames=new TreeSet<String>();
+		for(GraphBlock b:blocks)
+		{
+			allNames.add(b.getName());
+		}
+		int idx=0;
+		while(allNames.contains(templateName+" "+idx)) ++idx;
+		m.setAnnotation(Annotable.LAYOUT, new BlockLayout(location,templateName+" "+idx));
 		model.removeSubscriber(this);
 		model.add(m);
 		model.addSubscriber(this);
-		m.setAnnotation(Annotable.LAYOUT, new BlockLayout(location));
-		blocks.add(new GraphBlock(m));
+		GraphBlock gb=new GraphBlock(m);
+		blocks.add(gb);
+		changeName(gb,templateName+" "+idx);
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(location);
 		fireTemplateGraphChanged(new TemplateGraphMessage(
@@ -108,43 +172,77 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 				));
 	}
 	
-	public void remove(TemplateModule m)
+	public void remove(GraphBlock b)
 	{
-		if(model.getModule(m.getId())!=m)
+		if(!blocks.contains(b))
 			return;
 		model.removeSubscriber(this);
-		model.remove(m);
-		model.addSubscriber(this);
-		for(Iterator<GraphBlock> i=blocks.iterator();i.hasNext();)
+		if(b.getBlock() instanceof TemplateModule)
 		{
-			if(i.next().getBlock()==m)
-			{
-				i.remove();
-				break;
-			}
+			model.remove((TemplateModule)b.getBlock());
 		}
+		else
+		{
+			model.remove((TemplateChannel)b.getBlock());
+		}
+		model.addSubscriber(this);
+		blocks.remove(b);
+		updateLists();
 		Rectangle2D l=new Rectangle2D.Float();
-		l.add(getLayout(m).getLocation());
+		l.add(b.getLayout().getLocation());
+		int type;
+		if(b instanceof TemplateModule)
+			type=TemplateGraphMessage.MODULE;
+		else
+			type=TemplateGraphMessage.CHANNEL;
 		fireTemplateGraphChanged(new TemplateGraphMessage(
 				TemplateGraphMessage.REMOVE,
-				TemplateGraphMessage.MODULE,
-				m.getId(),
+				type,
+				b.getId(),
 				l,
 				this
 				));
 	}
 
-	public void createChannel(Point2D.Float location)
+	public void remove(GraphLink link)
 	{
-		TemplateChannel c=new Channel(null,null);
+		if(!links.contains(link))
+			return;
+		model.removeSubscriber(this);
+		model.remove(link.getLink());
+		model.addSubscriber(this);
+		links.remove(link);
+		Rectangle2D l=new Rectangle2D.Float();
+		l.add(link.bounds());
+		fireTemplateGraphChanged(new TemplateGraphMessage(
+				TemplateGraphMessage.REMOVE,
+				TemplateGraphMessage.LINK,
+				link.getId(),
+				l,
+				this
+				));
+	}
+	
+	public void createChannel(String templateName,Point2D.Float location)
+	{
+		TemplateChannel c=library.instantiateChannel(templateName);
 		c.setId(model.getFreeChannelId());
+		Set<String> allNames=new TreeSet<String>();
+		for(GraphBlock b:blocks)
+		{
+			allNames.add(b.getName());
+		}
+		int idx=0;
+		while(allNames.contains(templateName+" "+idx)) ++idx;
+		c.setAnnotation(Annotable.LAYOUT, new BlockLayout(location,templateName+" "+idx));
 		model.removeSubscriber(this);
 		model.add(c);
 		model.addSubscriber(this);
-		c.setAnnotation(Annotable.LAYOUT, new BlockLayout(location));
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(location);
-		blocks.add(new GraphBlock(c));
+		GraphBlock gb=new GraphBlock(c);
+		blocks.add(gb);
+		changeName(gb,templateName+" "+idx);
 		fireTemplateGraphChanged(new TemplateGraphMessage(
 				TemplateGraphMessage.ADD,
 				TemplateGraphMessage.CHANNEL,
@@ -154,39 +252,59 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 				));
 	}
 	
-	public void remove(TemplateChannel c)
+	public void createLink(GraphBlock left, FSAEvent leftEvent,
+			GraphBlock right, FSAEvent rightEvent)
 	{
-		if(model.getChannel(c.getId())!=c)
-			return;
+		TemplateLink link=new Link(model.getFreeLinkId(),
+				left.getBlock(),leftEvent,
+				right.getBlock(),rightEvent);
+		link.setAnnotation(Annotable.LAYOUT, new LinkLayout());
 		model.removeSubscriber(this);
-		model.remove(c);
+		model.add(link);
 		model.addSubscriber(this);
-		for(Iterator<GraphBlock> i=blocks.iterator();i.hasNext();)
-		{
-			if(i.next().getBlock()==c)
-			{
-				i.remove();
-				break;
-			}
-		}
 		Rectangle2D l=new Rectangle2D.Float();
-		l.add(getLayout(c).getLocation());
+		l.add(left.getLocation());
+		l.add(right.getLocation());
+		GraphLink gl=new GraphLink(link,left,right);
+		links.add(gl);
 		fireTemplateGraphChanged(new TemplateGraphMessage(
-				TemplateGraphMessage.REMOVE,
-				TemplateGraphMessage.CHANNEL,
-				c.getId(),
+				TemplateGraphMessage.ADD,
+				TemplateGraphMessage.LINK,
+				link.getId(),
 				l,
 				this
-				));
+				));		
 	}
-
-	public void label(TemplateBlock b, String text)
+	
+	protected void changeName(GraphBlock b, String text)
 	{
-		BlockLayout layout=getLayout(b);
+		b.getBlock().getFSA().setName(text);
+		for(FSAEvent e:b.getBlock().getFSA().getEventSet())
+		{
+			String name=e.getSymbol();
+			String code=model.getPLCCode(name);
+			model.setPLCCode(name,null);
+			if(name.contains(":"))
+			{
+				name=name.split(":", 2)[1];
+			}
+			name=text+":"+name;
+			e.setSymbol(name);
+			if(code!=null)
+			{
+				model.setPLCCode(name,code);
+			}
+		}
+		BlockLayout layout=b.getLayout();
 		layout.setText(text);
-		b.setAnnotation(Annotable.LAYOUT, layout);
+		b.setLayout(layout);
+	}
+	
+	public void label(GraphBlock b, String text)
+	{
+		changeName(b,text);
 		Rectangle2D l=new Rectangle2D.Float();
-		l.add(getLayout(b).getLocation());
+		l.add(b.getLayout().getLocation());
 		int type;
 		if(b instanceof TemplateModule)
 			type=TemplateGraphMessage.MODULE;
@@ -203,25 +321,29 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 				));
 	}
 	
-	public String getLabel(TemplateBlock b)
+	public String getLabel(GraphBlock b)
 	{
-		BlockLayout layout=getLayout(b);
-		return layout.getText();
+		return b.getLayout().getText();
 	}
 	
 	public Collection<GraphBlock> getBlocks()
 	{
 		return blocks;
 	}
-	
-	public void relocate(TemplateBlock b, Point2D.Float location)
+
+	public Collection<GraphLink> getLinks()
 	{
-		BlockLayout layout=getLayout(b);
+		return links;
+	}
+	
+	public void relocate(GraphBlock b, Point2D.Float location)
+	{
+		BlockLayout layout=b.getLayout();
 		Rectangle2D l=new Rectangle2D.Float();
 		l.add(layout.getLocation());
 		l.add(location);
 		layout.setLocation(location.x, location.y);
-		b.setAnnotation(Annotable.LAYOUT, layout);
+		b.setLayout(layout);
 		int type;
 		if(b instanceof TemplateModule)
 			type=TemplateGraphMessage.MODULE;
@@ -234,6 +356,17 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 				type,
 				b.getId(),
 				l,
+				this
+				));
+	}
+	
+	public void commitRelocate(Collection<GraphBlock> items)
+	{
+		fireTemplateGraphChanged(new TemplateGraphMessage(
+				TemplateGraphMessage.MODIFY,
+				TemplateGraphMessage.GRAPH,
+				0,
+				getBounds(false),
 				this
 				));
 	}
@@ -398,12 +531,6 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	 * @param message
 	 */
 	private void fireTemplateGraphChanged(TemplateGraphMessage message) {
-		if(message.getEventType()==TemplateGraphMessage.ADD||
-				message.getEventType()==TemplateGraphMessage.REMOVE||
-				message.getElementType()==TemplateGraphMessage.GRAPH)
-		{
-			updateLists();
-		}
 		if(!needsSave)
 		{
 			needsSave = true;
@@ -416,19 +543,35 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	
 	private void updateLists()
 	{
+		HashMap<TemplateBlock,GraphBlock> backMap=new HashMap<TemplateBlock, GraphBlock>();
 		blocks=new LinkedList<GraphBlock>();
 		for (Iterator<TemplateModule> i=model.getModuleIterator();i.hasNext();)
 		{
-			blocks.add(new GraphBlock(i.next()));
+			GraphBlock b=new GraphBlock(i.next());
+			blocks.add(b);
+			backMap.put(b.getBlock(),b);
 		}
 		for (Iterator<TemplateChannel> i=model.getChannelIterator();i.hasNext();)
 		{
-			blocks.add(new GraphBlock(i.next()));
+			GraphBlock b=new GraphBlock(i.next());
+			blocks.add(b);
+			backMap.put(b.getBlock(),b);
+		}
+		links=new LinkedList<GraphLink>();
+		for (Iterator<TemplateLink> i=model.getLinkIterator();i.hasNext();)
+		{
+			TemplateLink tl=i.next();
+			links.add(new GraphLink(tl,backMap.get(tl.getBlockLeft()),
+					backMap.get(tl.getBlockRight())));
 		}
 	}
 	
 	public void draw(Graphics2D g)
 	{
+		for(GraphLink l:links)
+		{
+			l.draw(g);
+		}
 		for(GraphBlock b:blocks)
 		{
 			b.draw(g);

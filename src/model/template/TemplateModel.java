@@ -1,6 +1,7 @@
 package model.template;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import model.DESModel;
@@ -24,4 +25,7 @@ public interface TemplateModel extends DESModel, TemplatePublisher {
 	public TemplateLink getLink(long id);
 	public Iterator<TemplateLink> getLinkIterator();
 	public int getLinkCount();
+	public String getPLCCode(String event);
+	public void setPLCCode(String event,String code);
+	public Map<String,String> getPLCCodeMap();
 }

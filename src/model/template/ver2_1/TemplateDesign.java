@@ -3,14 +3,20 @@ package model.template.ver2_1;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import main.Hub;
 import model.DESModel;
 import model.ModelDescriptor;
+import model.fsa.FSAEvent;
 import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
@@ -24,6 +30,8 @@ import model.template.TemplatePublisher;
 import model.template.TemplateSubscriber;
 
 public class TemplateDesign implements TemplateModel {
+
+	protected Map<String,String> plcCode=new HashMap<String,String>();
 
 	protected static class DesignDescriptor implements ModelDescriptor
 	{
@@ -66,9 +74,9 @@ public class TemplateDesign implements TemplateModel {
 	protected LinkedList<TemplateChannel> channels;
 	protected LinkedList<TemplateLink> links;
 	
-	private long maxModuleId=0;
-	private long maxChannelId=0;
-	private long maxLinkId=0;
+	private long maxModuleId=-1;
+	private long maxChannelId=-1;
+	private long maxLinkId=-1;
 	
     protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
 
@@ -124,6 +132,7 @@ public class TemplateDesign implements TemplateModel {
 		{
 			maxModuleId=module.getId();
 		}
+		updatePLCMap();
     	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.ADD,
     			TemplateMessage.MODULE, module.getId(), this));
 	}
@@ -134,6 +143,7 @@ public class TemplateDesign implements TemplateModel {
 		{
 			maxChannelId=channel.getId();
 		}
+		updatePLCMap();
     	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.ADD,
     			TemplateMessage.CHANNEL, channel.getId(), this));
 	}
@@ -203,16 +213,24 @@ public class TemplateDesign implements TemplateModel {
 
 	public void remove(TemplateModule module) {
 		modules.remove(module);
+		HashSet<TemplateLink> linksToRemove=new HashSet<TemplateLink>();
 		for(TemplateLink l:module.getLinks())
+			linksToRemove.add(l);
+		for(TemplateLink l:linksToRemove)
 			remove(l);
+		updatePLCMap();
     	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.REMOVE,
     			TemplateMessage.MODULE, module.getId(), this));
 	}
 
 	public void remove(TemplateChannel channel) {
 		channels.remove(channel);
+		HashSet<TemplateLink> linksToRemove=new HashSet<TemplateLink>();
 		for(TemplateLink l:channel.getLinks())
+			linksToRemove.add(l);
+		for(TemplateLink l:linksToRemove)
 			remove(l);
+		updatePLCMap();
     	fireTemplateStructureChanged(new TemplateMessage(TemplateMessage.REMOVE,
     			TemplateMessage.CHANNEL, channel.getId(), this));
 	}
@@ -227,17 +245,17 @@ public class TemplateDesign implements TemplateModel {
 	
 	public long getFreeModuleId()
 	{
-		return maxModuleId;
+		return maxModuleId+1;
 	}
 	
 	public long getFreeChannelId()
 	{
-		return maxChannelId;
+		return maxChannelId+1;
 	}
 	
 	public long getFreeLinkId()
 	{
-		return maxLinkId;
+		return maxLinkId+1;
 	}
 
 	public String getId() {
@@ -272,4 +290,42 @@ public class TemplateDesign implements TemplateModel {
 		annotations.put(key, annotation);
 	}
 
+	public String getPLCCode(String event)
+	{
+		return plcCode.get(event);
+	}
+	
+	public void setPLCCode(String event,String code)
+	{
+		if(code==null)
+		{
+			plcCode.remove(event);
+		}
+		else
+		{
+			plcCode.put(event,code);
+		}
+	}
+	
+	public Map<String,String> getPLCCodeMap()
+	{
+		return plcCode;
+	}
+	
+	private void updatePLCMap()
+	{
+		Set<String> checkedEvents=new TreeSet<String>();
+		for(Iterator<TemplateModule> i=getModuleIterator();i.hasNext();)
+		{
+			for(FSAEvent e:i.next().getFSA().getEventSet())
+			{
+				if(!plcCode.containsKey(e.getSymbol()))
+				{
+					plcCode.put(e.getSymbol(),"");
+				}
+				checkedEvents.add(e.getSymbol());
+			}
+		}
+		plcCode.keySet().retainAll(checkedEvents);
+	}
 }

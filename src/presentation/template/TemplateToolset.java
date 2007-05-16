@@ -27,15 +27,17 @@ public class TemplateToolset implements Toolset {
 		
 		public TemplateUIDescriptor(TemplateGraph ls)
 		{
-			shell=ls;
-			views=new Presentation[1];
-			views[0]=new DesignDrawingView(shell);
-			((DesignDrawingView)views[0]).setName(Hub.string("design"));
-			right=new Presentation[1];
 			if(library==null)
 			{
 				library=new TemplateLibrary();
-			}
+			}		
+			shell=ls;
+			views=new Presentation[2];
+			views[0]=new DesignDrawingView(shell);
+			((DesignDrawingView)views[0]).setName(Hub.string("design"));
+			views[1]=new CodeChooser(shell);
+			((CodeChooser)views[1]).setName(Hub.string("plcSettings"));
+			right=new Presentation[1];
 			right[0]=library;
 		}
 		
@@ -92,7 +94,11 @@ public class TemplateToolset implements Toolset {
 	{
 		if(!(model instanceof TemplateModel))
 			throw new UnsupportedModelException();
-		return new TemplateGraph((TemplateModel)model);
+		if(library==null)
+		{
+			library=new TemplateLibrary();
+		}		
+		return new TemplateGraph((TemplateModel)model,library);
 	}
 
 }

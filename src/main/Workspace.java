@@ -317,6 +317,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 * @param name
 	 */
 	public void setActiveModel(String name) {
+		((MainWindow)Hub.getMainWindow()).aboutToRearrangeViews();
 		releaseEditPanes();
 		if(name==null)
 		{
@@ -347,7 +348,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 				activePresentations.add(ps[i]);
 			}
 		}
-		((MainWindow)Hub.getMainWindow()).revalidateViews();
+		((MainWindow)Hub.getMainWindow()).arrangeViews();
 		// TODO change name to fsa.id for consistency with add and remove
 		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 							name, 
