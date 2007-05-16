@@ -33,6 +33,11 @@ import presentation.GraphicalLayout;
  * @author Helen Bretzke
  */
 public class ReflexiveEdge extends BezierEdge {	 
+	/**
+	 * Old size of the correspondent edge. When this variable changes the value, the refresh method
+	 * call routines to recompute the curve paramethers.
+	 */
+	float lastNodeRadius;
 	
 	/**
 	 * Index of midpoint used as handle to modify the curve position.
@@ -48,6 +53,10 @@ public class ReflexiveEdge extends BezierEdge {
 	public ReflexiveEdge(BezierLayout layout, Node node, FSATransition t)
 	{
 		super(node, node);
+
+		//CHRISTIAN
+		lastNodeRadius = ((CircleNodeLayout)node.getLayout()).getRadius();
+		//CHRISTIAN
 		addTransition(t);		
 		setLayout(new ReflexiveLayout(node, this, layout));
 		setHandler(new ReflexiveHandler(this));
@@ -61,6 +70,9 @@ public class ReflexiveEdge extends BezierEdge {
 	 */
 	public ReflexiveEdge(Node node, FSATransition t) {
 		super(node, node);
+		//CHRISTIAN
+		lastNodeRadius = ((CircleNodeLayout)node.getLayout()).getRadius();
+		//CHRISTIAN
 		addTransition(t);				
 		setLayout(new ReflexiveLayout(node, this));
 		setHandler(new ReflexiveHandler(this));
@@ -333,7 +345,7 @@ public class ReflexiveEdge extends BezierEdge {
 		 * FIXME the axis doesn't reach the *computed* midpoint.		 
 		 */
 		private float minAxisLength;
-		
+
 		// NOTE no need to store either of these variables here.		
 		// vector from centre of source/target node to this point 
 		// is the axis around which a symmetrical arc is drawn.		
@@ -362,6 +374,7 @@ public class ReflexiveEdge extends BezierEdge {
 			setEventNames(bLayout.getEventNames());
 			setLabelOffset(bLayout.getLabelOffset());
 			initializeShape();
+
 		}
 
 		/**
@@ -371,7 +384,8 @@ public class ReflexiveEdge extends BezierEdge {
 		public ReflexiveLayout(Node source, ReflexiveEdge edge) {
 			minAxisLength = source.bounds().height;
 			setEdge(edge);
-			initializeShape();					
+			initializeShape();
+
 		}
 				
 		/**
@@ -424,25 +438,47 @@ public class ReflexiveEdge extends BezierEdge {
 		 * 
 		 */
 		public void computeCurve()
-		{			
+		{	
 			if(getEdge() == null){
 				return;
 			}
-			
-			// FIXME compute curve from centre and midpoint such that midpoint is fixed
-			// and curve has same shape as default.
-			
-			setPoint(getEdge().getSourceNode().getLocation(), P1);
-			setPoint(getEdge().getSourceNode().getLocation(), P2);
-
+			//CHRISTIAN<<patch>
+			//Info: I've rewritten this  function to correct the reflexive edge
+			//when the size of the node is changed. (May, 10, 2007)
+			Node sourceNode = getSourceNode();
+	    	float currentNodeRadius = ((CircleNodeLayout)sourceNode.getLayout()).getRadius();
+	    	//If there was a change on the node radius
+	    	if(currentNodeRadius != lastNodeRadius)
+	    	{
+	    			Point2D.Float location = this.getEdge().getTargetNode().getLocation();
+	    			float handlerDistancePar = (float)2*currentNodeRadius;
+	    			((ReflexiveLayout)getLayout()).minAxisLength = 0.7f*handlerDistancePar;
+	    			Point2D midpoint = ((ReflexiveLayout)getLayout()).midpoint;
+	    			Point2D direction = Geometry.unit(Geometry.subtract(midpoint, sourceNode.getLocation()));
+	    			Point2D.Float newMidPoint = Geometry.add(location, Geometry.scale(direction, handlerDistancePar));
+	    			if(currentNodeRadius > lastNodeRadius)
+	    			{
+	    				//Refresh the handler anchor position just if the new anchor needs to be
+	    				//more far than the current value.
+	    				if(location.distance(newMidPoint) > location.distance(midpoint))
+	    				{
+		    				setPoint(newMidPoint, MIDPOINT);
+	    				}
+	    			}
+	    	    	lastNodeRadius = currentNodeRadius;
+	    	}
+	    	//CHRISTIAN <<end of patch>>
+	    	//Calculating the parameters of the reflexive edge
+			//From here the code is almost the same as Helen's
 			//axis = Geometry.subtract(midpoint, curve.getP1());
-			
 			Point2D.Float v1 = Geometry.rotate(axis, angle1);
 			Point2D.Float v2 = Geometry.rotate(axis, angle2);
-							
+
+			setPoint(getEdge().getSourceNode().getLocation(), P1);
+			setPoint(getEdge().getSourceNode().getLocation(), P2);
 			setPoint(Geometry.add(getEdge().getSourceNode().getLocation(), Geometry.scale(v1, (float)s1)), CTRL1);
 			setPoint(Geometry.add(getEdge().getSourceNode().getLocation(), Geometry.scale(v2, (float)s2)), CTRL2);
-						
+			
 			setDirty(true);
 		}	
 		
@@ -473,7 +509,8 @@ public class ReflexiveEdge extends BezierEdge {
 					}															
 					computeCurve();
 					// TODO set midpoint after computing curve...
-					// midpoint = Geometry.midpoint(getCurve());
+					//CHRISTIAN: Done in May, 15, 2007 
+					midpoint = Geometry.midpoint(getCurve());
 					setLocation((float)midpoint.getX(), (float)midpoint.getY());
 //					setDirty(true);
 					break;

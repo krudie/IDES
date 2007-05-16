@@ -32,7 +32,6 @@ public class BezierEdgePlacer {
 	public static void insertEdgeAmong(BezierEdge edge, Set<Edge> otherEdges) {
 		// compute default straight edge
 		edge.computeEdge();
-		
 		//int n = edges.size();
 		
 		Edge straightEdge = containsStraightEdge(otherEdges);
@@ -144,7 +143,7 @@ public class BezierEdgePlacer {
 	}
 	
 	/**
-	 * Returns true iff the one or more endpoints of <code>edge1</code> is within a 
+	 * Returns true if the one or more endpoints of <code>edge1</code> is within a 
 	 * distance threshold of any of the endpoints of an edge in <code>edges</code>
 	 * 
 	 * TODO find a nice-looking minimum comfortable distance 

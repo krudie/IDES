@@ -25,7 +25,9 @@ import presentation.GraphicalLayout;
  *
  */
 public class InitialArrow extends Edge {
-
+	/** size of the target node at the moment of last edge computations (or at construction time)*/
+	private float lastRadius;
+	
 	/** direction vector from tail of arrow shaft to centre of node */
 	private Point2D.Float direction;  // redundant since stored in target node's layout
 	
@@ -54,12 +56,13 @@ public class InitialArrow extends Edge {
 	 */
 	public InitialArrow(Node target) {
 		super(null, target);
-				
+		lastRadius = ((CircleNodeLayout)target.getLayout()).getRadius();
 		setLocation(target.getLocation());
 		
 		// TODO move this into computeEdge ///////////////////////////////////////////
 		// will need to check the length and direction of the arrow
 		// each time node is e.g. resized, loaded
+		//Christian: completed. (May, 14, 2007)
 		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
 		if(layout != null){
 			direction = layout.getArrow();
@@ -67,8 +70,10 @@ public class InitialArrow extends Edge {
 		
 		// check the magnitude of the arrow shaft
 		// make sure it is long enough
-		maxShaftLength = target.getShape().getBounds2D().getHeight();
-		minShaftLength = maxShaftLength;
+		maxShaftLength = 2*(target.getShape().getBounds2D().getHeight());
+		float currentRadius = ((CircleNodeLayout)getTargetNode().getLayout()).getRadius();
+		float minimumDistance = currentRadius + CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN;
+		minShaftLength = minimumDistance;
 		if(direction != null) {
 			double norm = Geometry.norm(direction);
 			if(norm < minShaftLength){
@@ -165,6 +170,25 @@ public class InitialArrow extends Edge {
 	@Override
 	public void computeEdge() {
 		setLocation(getTargetNode().getLocation());
+		
+		//CHRISTIAN <<patch>>
+		//This is to correct the initial arrows behavior when the size of the node is changed
+		float currentRadius = ((CircleNodeLayout)getTargetNode().getLayout()).getRadius();
+		if(currentRadius != lastRadius)
+		{
+			//The minimum distance between the center of the node, and the edge anchor.
+			float minimumDistance =currentRadius + CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN;
+			direction = Geometry.unit(direction);
+			direction = Geometry.scale(direction, minimumDistance);
+			minShaftLength = minimumDistance;
+			//The maximumShaft will be the same as the minimumShaft for "small" radius. 
+			
+			maxShaftLength = (2 * (currentRadius) > minShaftLength ? 2 * (currentRadius) : 4 * (currentRadius));
+			lastRadius = currentRadius;
+			
+		}
+		//CHRISTIAN <<end of patch>>
+		
 		Point2D.Float sourcePt = Geometry.subtract(getLocation(), direction);
 		line.x1 = sourcePt.x;
 		line.y1 = sourcePt.y;

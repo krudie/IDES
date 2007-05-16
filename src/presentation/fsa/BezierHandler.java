@@ -18,6 +18,7 @@ import presentation.GraphicalLayout;
  * 
  * @author Helen Bretzke
  */
+
 public class BezierHandler extends EdgeHandler {
 
 	/* Circles indicating movable (draggable) control points */
@@ -101,7 +102,7 @@ public class BezierHandler extends EdgeHandler {
 	}
 	
 	/**
-	 * Returns true iff p intersects one of the control point circles
+	 * Returns true if p intersects one of the control point circles
 	 * and stores the index of the last intersected point; if false the next call to
 	 * getLastIntersected will return NO_INTERSECTION.
 	 * 

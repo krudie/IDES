@@ -101,7 +101,7 @@ public abstract class Node extends GraphElement {
 		Iterator<Edge> adjacent = adjacentEdges();
 		while(adjacent.hasNext()){
 			Edge e = adjacent.next();
-				e.computeEdge();			
+				e.computeEdge();
 		}
 	}
 	

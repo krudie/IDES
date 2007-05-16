@@ -248,9 +248,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 	 * The listener for the user decides to add a new event.
 	 */
 	protected Action createListener = new AbstractAction()
-	{
+	{	
 		public void actionPerformed(ActionEvent actionEvent)
-		{
+		{		
 			if(!(actionEvent.getSource() instanceof JButton))
 			{
 				createButton.doClick();

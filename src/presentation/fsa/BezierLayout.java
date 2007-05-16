@@ -26,6 +26,7 @@ public class BezierLayout extends GraphicalLayout {
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
 	
+	
 	/* default displacement vector for the label from the midpoint of the edge */
 	public final Point2D.Float DEFAULT_LABEL_OFFSET = new Point2D.Float(5,5);
 	
@@ -43,7 +44,7 @@ public class BezierLayout extends GraphicalLayout {
 	/* 	Compact representation of data required to maintain shape of edge while moving
 	 	one or both of its nodes.
 	 */
-	private static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
+	protected static final Float UNIT_VERTICAL = new Point2D.Float(0, -1);
 	private static final double DEFAULT_CONTROL_HANDLE_SCALAR = 1.0/3.0f;
 	private static final double DEFAULT_CONTROL_HANDLE_ANGLE = Math.PI/6;
 	protected double s1 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL1 - P1)|/|(P2-P1)|
@@ -194,19 +195,18 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param t layout for target node, t != null 
 	 */
 	public void computeCurve(CircleNodeLayout s, CircleNodeLayout t){
-
 		Point2D.Float centre1 = s.getLocation();
 		Point2D.Float centre2 = t.getLocation();		
-		
 		Point2D.Float[] ctrls = new Point2D.Float[4]; 
 		
 		// TODO remove self-loop case once ReflexiveEdge class is fully debugged
-		if(s.equals(t)) {  
-			// endpoints are at intersections of circle with rotations from vertical vector			
-			ctrls[P1] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle1));
-			ctrls[P2] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, s.getRadius()), angle2));
-			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s1), angle1));
-			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, (float)s2), angle2));			
+		if(s.equals(t)) { 
+			// endpoints are at intersections of circle with rotations from vertical vector	
+			float targetRadius = s.getRadius();
+			ctrls[P1] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, targetRadius), angle1));
+			ctrls[P2] = Geometry.add(centre1, Geometry.rotate(Geometry.scale(UNIT_VERTICAL, targetRadius), angle2));
+			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, targetRadius), angle1));
+			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, targetRadius), angle2));			
 		} else {
 			
 			Point2D.Float base = Geometry.subtract(centre2, centre1);
@@ -237,9 +237,11 @@ public class BezierLayout extends GraphicalLayout {
 
 			}
 		}		
+		
 		curve.setCurve(ctrls, 0);		
 		Point2D midpoint = Geometry.midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
+
 		setDirty(true);
 	}	
 
@@ -267,7 +269,6 @@ public class BezierLayout extends GraphicalLayout {
 		Point2D.Float centre1 = s.getLocation();
 		ctrls[P1] = centre1;
 		ctrls[P2] = endPoint;
-		
 		if(s.getLocation().distance(endPoint) < 0.00001 ){ 
 			// set control points to node's centre
 			ctrls[CTRL1] = centre1;
@@ -282,11 +283,10 @@ public class BezierLayout extends GraphicalLayout {
 			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unit, (float)(norm * s1)));
 			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(unit, (float)(-norm * s2)));
 		}		
-			
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
 	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
-		setDirty(true);		
+	    setDirty(true);		
 	}
 	
 	
@@ -308,7 +308,6 @@ public class BezierLayout extends GraphicalLayout {
 		
 		// IDEA should there be constraints on the angle to control point 
 		// e.g. abs(angle between base line and tangent) <= PI/2?
-		
 		Point2D.Float p1p2 = Geometry.subtract(curve.getP2(), curve.getP1());	
 		Point2D.Float p2p1 = Geometry.subtract(curve.getP1(), curve.getP2());
 		Point2D.Float p1c1 = Geometry.subtract(curve.getCtrlP1(), curve.getP1());
@@ -331,7 +330,7 @@ public class BezierLayout extends GraphicalLayout {
 				// FIXME do what? set to defaults?
 			}
 		//}
-		
+
 		// DEBUG
 		assert(!Double.isNaN(angle1));
 		assert(!Double.isNaN(angle2));
@@ -369,7 +368,6 @@ public class BezierLayout extends GraphicalLayout {
 				break;
 			default: throw new IllegalArgumentException("Invalid control point index: " + index);
 		}
-		
 		updateAnglesAndScalars();				
 		setDirty(true);
 	}
