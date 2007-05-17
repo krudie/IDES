@@ -40,7 +40,7 @@ public class BezierEdge extends Edge {
 	public static final int CTRL2 = 2;
 	/** Index of second end point */
 	public static final int P2 = 3;
-		
+			
 	/** the arrow head to be rendered at the second end point */
 	private ArrowHead arrowHead;	
 	
@@ -153,15 +153,13 @@ public class BezierEdge extends Edge {
 	    // Make certain that it points the right direction when nodes are touching or overlapping.
 	    Point2D.Float unitArrowDir = computeArrowDirection(); 
 	    	   
-	    //arrowHead.reset();
+	    arrowHead.reset();
 		
 	    // If available, use point of intersection with target node boundary		
 	    Point2D basePt;
 	    Point2D.Float tEndPt = getTargetEndPoint();
 	    if(tEndPt != null) {
-	    	//CHRISTIAN IS WORKING HERE
 	    	basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
-	    	//CHRISTIAN
 	    }else{
 	    	basePt = Geometry.add(getBezierLayout().getCurve().getP2(), Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));	
 	    }
@@ -189,14 +187,17 @@ public class BezierEdge extends Edge {
 	 * from underlying data.
 	 */
 	public void refresh() {
-		CubicCurve2D.Float curve = getBezierLayout().getCurve();	
-	    super.refresh(); // refresh all children		
-	    // DEBUG //////////////////////////////
+		
+		super.refresh(); // refresh all children
+		
+		CubicCurve2D.Float curve = getBezierLayout().getCurve();
+		
+		// DEBUG //////////////////////////////
 		assertAllPointsNumbers(curve);		
 		///////////////////////////////////////
+		
 		// Compute points where curve intersects boundaries of source and target nodes		
 		Point2D.Float sourceEndPt = getSourceEndPoint();
-		
 		if(sourceEndPt == null) {
 			sourceEndPt = new Point2D.Float();
 		}
@@ -229,7 +230,8 @@ public class BezierEdge extends Edge {
 	    this.setLocation(midpoint);
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), getBezierLayout().getLabelOffset());	    
 	    getLabel().setLocation(location);	
-        getBezierLayout().setDirty(false);
+	    
+	    getBezierLayout().setDirty(false);
 	    setNeedsRefresh(false);
 	}
 		
@@ -282,61 +284,11 @@ public class BezierEdge extends Edge {
 					(int)(box.y - delta/2), 
 					(int)(box.width + delta), 
 					(int)(box.height + delta) );
-
-			Point2D.Float p = new Point2D.Float();
-			float t = this.intersectionWithBoundary(fat, p, TARGET_NODE);
+			Point2D.Float p = new Point2D.Float();			
+			double t = this.intersectionWithBoundary(fat, p, TARGET_NODE);
 			
-	/*		//CHRISTIAN <<patch>> <<in work>>
-			//The arrow direction is the directrion between the intersection point
-			//between the edge and the node, and a point in the Bezier curve at a distance
-			//of arrowHead.getBounds().y pixels.
-			//P2 should be the point of maximum derivation in the bezier curve at the interval
-			//t' [0.5,t]
-			CubicParamCurve2D bezierCurve = this.getBezierLayout().getCurve();
-			Point2D.Float p2 = new Point2D.Float();
-			float startingT = (t - 0.0001f*t > 0.5f ? t - 0.1f*t: 0.5f);
-			float lastT = startingT;
-			float epsilon = (t-startingT)/200f;
-			float auxT = lastT + epsilon;
-			//System.out.print("Interval: [" + startingT + "," + t +"]. Epsilon: " + epsilon + "\n");
-			int sizeOfArray = (int)((t-startingT)*1/epsilon);
-			float derivations[] = new float[sizeOfArray];
-			int index = 0;
-
-			//Filling an array with the module of the slopes of the curve in the range
-			//[startingT,t]
-			while(auxT < t)
-			{
-				derivations[index] = Math.abs(Geometry.slope(bezierCurve.getPointAt(auxT), bezierCurve.getPointAt(lastT)));
-				lastT = auxT;
-				auxT += epsilon;
-				index++;
-			}
-			
-			//Getting the index inside the array, correspondent to the point of maximum
-			//derivation in the bezier curve inside the range [0.5,t]
-			float maximum = -1;
-			int maxIndex = 0;
-			for(int i = 0; i < sizeOfArray; i++)
-			{
-
-				if(derivations[i] > maximum)
-				{
-					maximum = derivations[i];
-					maxIndex = i;
-				}
-			}
-			
-			auxT = startingT + epsilon*maxIndex;
-			p2.setLocation(bezierCurve.getPointAt(auxT));
-			Point2D.Float arrowDirection = new Point2D.Float();
-			//Usable distances: p2->p, p2->center, p->center
-			//Now we just use p2->center, but variations may be used based on the distance
-			//between the points in a way that the visual results are better.*/
-			Point2D.Float arrowDirection = new Point2D.Float();
-			arrowDirection = Geometry.unitDirectionVector(p,getTargetNode().getLocation());  
-		    //CHRISTIAN <<end of patch>> <<in work>>
-			return arrowDirection;
+			// TODO use t; store as new endpoint in layout
+			return Geometry.unitDirectionVector(p, getTargetEndPoint());
 		}
 	}
 
@@ -402,7 +354,7 @@ public class BezierEdge extends Edge {
 				getLabel().intersects(p) || 
 				getHandler().intersects(p) ;
 		}else{
-			//expand the intersection point to an 8 by 8 rectangle
+			// expand the intersection point to an 8 by 8 rectangle
 			//boolean r = getLayout().getCubicCurve().intersects(p.getX() - 4, p.getY() - 4, 8, 8);			
 			boolean a = arrowHead.contains(p);
 			boolean l = getLabel().intersects(p);			
@@ -736,99 +688,68 @@ public class BezierEdge extends Edge {
 	 * @return the parameter t in [0,1] at which the bezier curve intersects <code>node</code>
 	 */
 	protected float intersectionWithBoundary(Shape nodeShape, Point2D.Float intersection, int type) {
+		
 		// setup curves for iterative subdivision
 		CubicParamCurve2D curve = this.getBezierLayout().getCurve();
+		
 		// if endpoints are both inside node (self-loop or overlapping target and source)
+		// FIXME		
 		if(nodeShape.contains(curve.getP1()) && nodeShape.contains(curve.getP2()) ) {
 			return 0.5f;		
 		}
 	
+		CubicParamCurve2D left = new CubicParamCurve2D();
+		CubicParamCurve2D right = new CubicParamCurve2D();
+		
+		CubicParamCurve2D temp = new CubicParamCurve2D();
+		
 		// if target, then this algorithm needs to be reversed since
 		// it searches curve assuming t=0 is inside the node.		
-		boolean intersectWithTarget = (type == TARGET_NODE);
+		boolean intersectWithTarget = (type == this.TARGET_NODE);
 		
-		//CHRISTIAN <<patch>>
-		if(intersectWithTarget)
-		{
-			float t = 0.5f;//the medium point of t
-			float step = 0.001f;
-			if(this.getTargetNode() != null)
-			{	
-				//find the first t "inside" the target node
-				while(!nodeShape.contains(intersection))
-				{
-					t+= step;
-					intersection.setLocation(curve.getPointAt(t));
-				}
-				//correct the value of t so it stay more "out" than "in"
-				//the target node
-				while(nodeShape.contains(intersection))
-				{
-					t-=step/2;
-					intersection.setLocation(curve.getPointAt(t));
-				}
-			}
-			//At this point the value of t represents the first intersection
-			//between the edge and the node.
-			//Now we find a t2 meaning the intersection with the node seeking from
-			//the decrescent values of t2
-			float t2 = 1.0f;
-			intersection.setLocation(curve.getPointAt(t2));
-			if(this.getTargetNode() != null)
-			{		
-				while(nodeShape.contains(intersection))
-				{
-					t2-= step;
-					intersection.setLocation(curve.getPointAt(t2));
-				}
-			}
-			//At this point we have t2, a value that could represent the second
-			//intersection point between the edge and the node. If it doesnt repre-
-			//sents the second intersection point, it will represent the first one,
-			// like the value of t previously calculated.
-			t = (t2 > t? t2:t);
-			intersection.setLocation(curve.getPointAt(t));
-			return t;
-			//CHRISTIAN <<end of patch>>
-		}else
-		{
-			//Helen code to calculate a t meaning the intersection with the
-			//source node
-			float epsilon = 0.0001f;		
-			float tPrevious = 0f;
-			float t = 0.5f;
-
-			CubicParamCurve2D left = new CubicParamCurve2D();
-			CubicParamCurve2D right = new CubicParamCurve2D();
-			CubicParamCurve2D temp = new CubicParamCurve2D();
+		if( intersectWithTarget ) {
+			// swap endpoints and control points		
+			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());			
+		}else{
 			temp.setCurve(curve);
-			float step = 0.1f;
-			temp.subdivide(left, right, t);		
-			// the point on curve at param t
-			Point2D c_t = left.getP2();
-		
-			while(Math.abs(t - tPrevious) > epsilon)
-			{			
-				step =  Math.abs(t - tPrevious);
-				tPrevious = t;
-				if(nodeShape.contains(c_t)){  // inside boundary
-					// search right segment
-					t += step/2;
-				}else{
-					// search left segment
-					t -= step/2;
-				}
-				temp.subdivide(left, right, t);					
-				c_t = left.getP2();
-			}		
-
-			intersection.x = (float)c_t.getX();
-			intersection.y = (float)c_t.getY();
-			
-			return t;
-
 		}
-
+		
+		float epsilon = 0.00001f;		
+		float tPrevious = 0f;
+		float t = 0.5f;		
+		float step = 0.5f;
+		
+		temp.subdivide(left, right, t);		
+		// the point on curve at param t
+		Point2D c_t = left.getP2();
+	
+		while(Math.abs(t - tPrevious) > epsilon){			
+			step =  Math.abs(t - tPrevious);
+			tPrevious = t;
+			if(nodeShape.contains(c_t)){  // inside boundary
+				// search right segment
+				t += step/2;
+			}else{
+				// search left segment
+				t -= step/2;
+			}
+			temp.subdivide(left, right, t);					
+			c_t = left.getP2();
+		}		
+		
+		// TODO keep searching from c_t towards t=0 until we're sure we've found the first intersection.
+		// Start again with step size at t.
+		
+		if( intersectWithTarget ) 
+		{
+			t = 1-t;
+			assert(0 <= t && t <=1);			
+		}
+	
+		intersection.x = (float)c_t.getX();
+		intersection.y = (float)c_t.getY();
+			
+		return t;		
 	}
 
 	/**
