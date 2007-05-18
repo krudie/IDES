@@ -304,7 +304,7 @@ public class BezierLayout extends GraphicalLayout {
 	 *  In case of self-loop stores angles from UNIT_VERTICAL to (CTRL2 - P2) and (CTRL1 - P1)
 	 *  and scalars are simply the lengths of (CTRL2 - P2) and (CTRL1 - P1).
 	 */
-	private void updateAnglesAndScalars(){
+	protected void updateAnglesAndScalars(){
 		
 		// IDEA should there be constraints on the angle to control point 
 		// e.g. abs(angle between base line and tangent) <= PI/2?
