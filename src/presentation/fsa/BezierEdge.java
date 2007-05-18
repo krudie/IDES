@@ -651,14 +651,15 @@ public class BezierEdge extends Edge {
 	 * Increases the arc of this curve.
 	 */
 	public void arcMore() {
-		((BezierLayout)getLayout()).arcMore();		
+		getBezierLayout().arcMore();
+		//this.computeCurve((CircleNodeLayout)this.getSourceNode().getLayout(), (CircleNodeLayout)this.getTargetNode().getLayout());
 	}
 
 	/**
 	 * Decreases the arc of this curve. 
 	 */
 	public void arcLess() {
-		((BezierLayout)getLayout()).arcLess();		
+		getBezierLayout().arcLess();
 	}
 	
 	/**

@@ -1150,6 +1150,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	public void arcMore(Edge edge) {
 		((BezierEdge)edge).arcMore();
+		//Christian <<commiting changes to metadata to solve the bug #48>>
+		commitMovement(edge);
+		//
+	
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
@@ -1164,7 +1168,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	public void arcLess(Edge edge) {
 		((BezierEdge)edge).arcLess();
-		setNeedsRefresh(true);
+		//Christian <<commiting changes to metadata to solve the bug #48>>
+		commitMovement(edge);
+		//
+		//setNeedsRefresh(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
@@ -1174,8 +1181,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 	public void symmetrize(Edge edge){
 		BezierLayout el=(BezierLayout)edge.getLayout();
-		el.symmetrize();	
-		setNeedsRefresh(true);
+		el.symmetrize();
+		//Christian <<commiting changes to metadata to solve the bug #48>>
+		commitMovement(edge);
+		//
+		//setNeedsRefresh(true);
 		// TODO include edge label in bounds (dirty spot)
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
@@ -1193,7 +1203,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void straighten(Edge edge) {
 		if(!edge.isStraight() && edge.canBeStraightened()){
 			edge.straighten();
-			setNeedsRefresh(true);
+			//Christian <<commiting changes to metadata to solve the bug #48>>
+			commitMovement(edge);
+			//
+			//setNeedsRefresh(true);
 			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 					FSAGraphMessage.EDGE,
 					edge.getId(), 

@@ -431,7 +431,8 @@ public class BezierLayout extends GraphicalLayout {
 	 * @param clockwise
 	 */
 	protected void arcMore(boolean clockwise) {
-			
+
+		
 		if(clockwise) { // swap angles
 			double temp = angle1;
 			angle1 = angle2;
@@ -467,7 +468,7 @@ public class BezierLayout extends GraphicalLayout {
 			angle1 = angle2;
 			angle2 = temp;
 		}
-		this.computeCurve();
+		computeCurve();
 	}
 	
 	/**
@@ -501,6 +502,7 @@ public class BezierLayout extends GraphicalLayout {
 			}
 			s2 *= 0.8;
 		}
+		computeCurve();
 	}
 		
 	/**
@@ -511,7 +513,8 @@ public class BezierLayout extends GraphicalLayout {
 		angle1 = 0;
 		s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
 		angle2 = 0;
-		s2 = DEFAULT_CONTROL_HANDLE_SCALAR;		
+		s2 = DEFAULT_CONTROL_HANDLE_SCALAR;	
+		computeCurve();
 	}
 	
 	/**
