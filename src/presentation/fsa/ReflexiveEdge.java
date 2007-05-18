@@ -38,7 +38,6 @@ public class ReflexiveEdge extends BezierEdge {
 	 * call routines to recompute the curve paramethers.
 	 */
 	float lastNodeRadius;
-	
 	/**
 	 * Index of midpoint used as handle to modify the curve position.
 	 */
@@ -238,13 +237,15 @@ public class ReflexiveEdge extends BezierEdge {
 	
 	public void translate(float x, float y){
 		super.translate(x, y);
-		Point2D midpoint = ((ReflexiveLayout)getLayout()).midpoint;
-		midpoint.setLocation(midpoint.getX() + x, midpoint.getY() + y);		
+		//Christian(May, 17, 2007)
+		//Manual midpoint translation commented.
+		//Point2D midpoint = ((ReflexiveLayout)getLayout()).midpoint;
+		//midpoint.setLocation(midpoint.getX() + x, midpoint.getY() + y);		
 	}
 	
 	public void computeEdge() {
-		((ReflexiveLayout)getLayout()).computeCurve();
 		refresh();
+		((ReflexiveLayout)getLayout()).computeCurve();
 	}
 	
 	/**
@@ -442,44 +443,35 @@ public class ReflexiveEdge extends BezierEdge {
 			if(getEdge() == null){
 				return;
 			}
-			//CHRISTIAN<<patch>
-			//Info: I've rewritten this  function to correct the reflexive edge
-			//when the size of the node is changed. (May, 10, 2007)
+
 			Node sourceNode = getSourceNode();
 	    	float currentNodeRadius = ((CircleNodeLayout)sourceNode.getLayout()).getRadius();
-	    	//If there was a change on the node radius
-	    	if(currentNodeRadius != lastNodeRadius)
-	    	{
-	    			Point2D.Float location = this.getEdge().getTargetNode().getLocation();
-	    			float handlerDistancePar = (float)2*currentNodeRadius;
-	    			((ReflexiveLayout)getLayout()).minAxisLength = 0.7f*handlerDistancePar;
-	    			Point2D midpoint = ((ReflexiveLayout)getLayout()).midpoint;
-	    			Point2D direction = Geometry.unit(Geometry.subtract(midpoint, sourceNode.getLocation()));
-	    			Point2D.Float newMidPoint = Geometry.add(location, Geometry.scale(direction, handlerDistancePar));
-	    			if(currentNodeRadius > lastNodeRadius)
-	    			{
-	    				//Refresh the handler anchor position just if the new anchor needs to be
-	    				//more far than the current value.
-	    				if(location.distance(newMidPoint) > location.distance(midpoint))
-	    				{
-		    				setPoint(newMidPoint, MIDPOINT);
-	    				}
-	    			}
-	    	    	lastNodeRadius = currentNodeRadius;
-	    	}
-	    	//CHRISTIAN <<end of patch>>
-	    	//Calculating the parameters of the reflexive edge
-			//From here the code is almost the same as Helen's
-			//axis = Geometry.subtract(midpoint, curve.getP1());
-			Point2D.Float v1 = Geometry.rotate(axis, angle1);
+			midpoint = Geometry.midpoint(curve);
+			//In case the node change its size, recalculate the midpoint position
+			//by increasing value of the minAxisLength.
+			float factor = currentNodeRadius / lastNodeRadius;
+			if(factor != 1)
+			{
+				minAxisLength *= factor;
+				//Geometry.scale(midpoint, factor);
+				Point2D nodeLocation = getTargetNode().getLocation();
+				float norm = (float)Geometry.norm(Geometry.subtract(midpoint, nodeLocation));
+				Point2D direction = Geometry.unit(Geometry.subtract(midpoint, nodeLocation));
+				setPoint(Geometry.subtract(midpoint,Geometry.scale(direction,norm-norm*factor)), MIDPOINT);
+			}
+			lastNodeRadius = currentNodeRadius;
+			
+	    	Point2D location = getEdge().getSourceNode().getLocation();
+	    	Point2D.Float v1 = Geometry.rotate(axis, angle1);
 			Point2D.Float v2 = Geometry.rotate(axis, angle2);
-
+			//Setting center of the edge
 			setPoint(getEdge().getSourceNode().getLocation(), P1);
 			setPoint(getEdge().getSourceNode().getLocation(), P2);
-			setPoint(Geometry.add(getEdge().getSourceNode().getLocation(), Geometry.scale(v1, (float)s1)), CTRL1);
-			setPoint(Geometry.add(getEdge().getSourceNode().getLocation(), Geometry.scale(v2, (float)s2)), CTRL2);
-			
+			//Setting the control points
+			setPoint(Geometry.add(location, Geometry.scale(v1, s1)), CTRL1);
+			setPoint(Geometry.add(location, Geometry.scale(v2, s2)), CTRL2);
 			setDirty(true);
+
 		}	
 		
 		/**
@@ -495,7 +487,7 @@ public class ReflexiveEdge extends BezierEdge {
 			
 			switch(index)
 			{			
-				case MIDPOINT:	
+				case MIDPOINT:
 					Float centrePoint;
 					centrePoint = getEdge().getSourceNode().getLocation();
 					axis = Geometry.subtract(point, centrePoint);
@@ -507,9 +499,8 @@ public class ReflexiveEdge extends BezierEdge {
 					}else{					
 						midpoint = new Point2D.Float(x, y);
 					}															
-					computeCurve();
+					//computeCurve();
 					// TODO set midpoint after computing curve...
-					//CHRISTIAN: Done in May, 15, 2007 
 					midpoint = Geometry.midpoint(getCurve());
 					setLocation((float)midpoint.getX(), (float)midpoint.getY());
 //					setDirty(true);
