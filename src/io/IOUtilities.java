@@ -34,6 +34,10 @@ public class IOUtilities {
 	 * Extension for Grail+ files.
 	 */
 	public static final String FM_FILE_EXT="fm";
+	/**
+	 * Extension for TCT files.
+	 */
+	public static final String TCT_FILE_EXT="des";
 	
 	/**
      * Method for getting a UTF-8 printstream wrapped around a file

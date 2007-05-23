@@ -2,6 +2,9 @@ package ui.command;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
+import io.ctct.CTCTException;
+import io.ctct.EventsMap;
+import io.ctct.LL_CTCT_Command;
 import io.fsa.ver2_1.CommonTasks;
 import io.fsa.ver2_1.FileOperations;
 
@@ -653,6 +656,121 @@ public class FileCommands {
 	    		}catch(java.io.IOException e){}
 	    	}
 	    	
+		}
+	}
+
+	/**
+	 * FIXME: the whole import/export business should be moved to plugins
+	 * @author grigorov
+	 *
+	 */
+	public static class ExportToTCTCommand extends ActionCommand {
+
+		public ExportToTCTCommand() {
+			super(CommandManager.defaultInstance(), "export.tct.command");
+		}
+
+		@Override
+		protected void handleExecute() {
+			if(Hub.getWorkspace().getActiveModel()==null ||
+					!(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
+				return;
+			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
+			fc.setDialogTitle(Hub.string("exportTCTTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.TCT_FILE_EXT, Hub.string("tctFileDescription")));
+			fc.setSelectedFile(new File(Hub.getWorkspace().getActiveModelName()));
+			int retVal;
+			boolean fcDone=true;
+			File file=null;
+			do
+			{
+				retVal = fc.showSaveDialog(Hub.getMainWindow());
+				if(retVal != JFileChooser.APPROVE_OPTION)
+					break;
+				file=fc.getSelectedFile();
+	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.TCT_FILE_EXT))
+	    			file=new File(file.getPath()+"."+IOUtilities.TCT_FILE_EXT);
+				if(file.exists())
+				{
+					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+						Hub.string("exportTCTTitle"),
+						JOptionPane.YES_NO_CANCEL_OPTION);
+					fcDone=choice!=JOptionPane.NO_OPTION;
+					if(choice!=JOptionPane.YES_OPTION)
+						retVal=JFileChooser.CANCEL_OPTION;
+				}
+			} while(!fcDone);
+	    	if(retVal != JFileChooser.APPROVE_OPTION)
+	    		return;
+	    	
+	    	FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
+	    	
+			try
+			{
+		    	LL_CTCT_Command.GiddesToCTCT(file.getAbsolutePath(),a,LL_CTCT_Command.em);
+		    	LL_CTCT_Command.em.saveGlobalMap(new File(file.getParentFile().getAbsolutePath()+File.separator+"global.map"));
+			}
+			catch (CTCTException fileException)
+			{
+				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+			}
+		}
+	}
+
+	/**
+	 * FIXME: the whole import/export business should be moved to plugins
+	 * @author grigorov
+	 *
+	 */
+	public static class ImportFromTCTCommand extends ActionCommand {
+
+		public ImportFromTCTCommand() {
+			super(CommandManager.defaultInstance(), "import.tct.command");
+		}
+
+		@Override
+		protected void handleExecute() {
+			JFileChooser fc=new JFileChooser(Hub.persistentData.getProperty("lastUsedPath"));
+			fc.setDialogTitle(Hub.string("importTCTTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.TCT_FILE_EXT, Hub.string("tctFileDescription")));
+			//fc.setSelectedFile(new File(Hub.getWorkspace().getActiveModelName()));
+			int retVal;
+			boolean fcDone=false;
+			File file=null;
+			do
+			{
+				retVal = fc.showOpenDialog(Hub.getMainWindow());
+				if(retVal != JFileChooser.APPROVE_OPTION)
+					break;
+				file=fc.getSelectedFile();
+				if(!file.exists())
+				{
+					Hub.displayAlert(
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileNotExistAsk2"));
+				}
+				else
+					fcDone=true;
+			} while(!fcDone);
+	    	if(retVal != JFileChooser.APPROVE_OPTION)
+	    		return;
+	    	
+	    	try
+	    	{
+	    		FSAModel a=LL_CTCT_Command.CTCTtoGiddes(file.getAbsolutePath(),file.getName().substring(0,file.getName().lastIndexOf(".")));
+	    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
+	    		Hub.getWorkspace().addLayoutShell(g);
+	    	}catch(CTCTException e)
+	    	{
+	    		e.printStackTrace();
+	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
+	    	}
+	    	catch(RuntimeException e)
+	    	{
+	    		e.printStackTrace();
+	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
+	    	}
+
 		}
 	}
 

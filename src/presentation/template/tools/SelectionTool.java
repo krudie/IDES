@@ -1,5 +1,8 @@
 package presentation.template.tools;
 
+import io.IOUtilities;
+import io.fsa.ver2_1.AutomatonParser;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -8,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.Collection;
 
 import javax.swing.JMenuItem;
@@ -16,6 +20,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
+import model.fsa.FSAModel;
 import presentation.template.DesignDrawingView;
 import presentation.template.GraphBlock;
 import presentation.template.GraphLink;
@@ -154,6 +159,21 @@ public class SelectionTool extends DrawingTool {
 					{ }
 				});
 				delMenu.add(delItem);
+				JMenuItem openItem=new JMenuItem(Hub.string("open"));
+				openItem.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent e)
+					{
+						if(delBlock!=null)
+						{
+							Hub.getWorkspace().addModel(delBlock.getBlock().getFSA());
+							Hub.getWorkspace().setActiveModel(delBlock.getBlock().getFSA().getName());
+							delBlock=null;
+							promptOn=false;
+						}
+					}
+				});
+				delMenu.add(openItem);
 				delMenu.show(context, p.x, p.y);
 			}
 			else if(selectedL!=null)

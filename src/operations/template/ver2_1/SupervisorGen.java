@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -63,6 +64,7 @@ public class SupervisorGen implements Operation {
 	}
 
 	public Object[] perform(Object[] inputs) {
+		Map<FSAEvent,String> oldNames=new HashMap<FSAEvent,String>();
 		TemplateModel model=(TemplateModel)inputs[0];
 		HashMap<TemplateChannel,Set<TemplateBlock>> clusters=new HashMap<TemplateChannel, Set<TemplateBlock>>();
 		for(Iterator<TemplateChannel> i=model.getChannelIterator();i.hasNext();)
@@ -117,6 +119,7 @@ public class SupervisorGen implements Operation {
 				commonName=commonName.substring(0,commonName.length()-1);
 			for(FSAEvent e:events)
 			{
+				oldNames.put(e,e.getSymbol());
 				e.setSymbol(commonName);
 			}
 		}
@@ -137,7 +140,6 @@ public class SupervisorGen implements Operation {
 			}
 			FSAGraph g=new FSAGraph(product);
 			g.setName("sync "+c.getFSA().getName());
-//			g.labelCompositeNodes();
 			Hub.getWorkspace().addLayoutShell(g);
 			//TreeSets are used so that the events are compared
 			//according to their labels (symbols)
@@ -161,6 +163,10 @@ public class SupervisorGen implements Operation {
 			sup.setName("supcon "+c.getFSA().getName());
 			ret.add((FSASupervisor)sup);
 			retS.add(product);
+		}
+		for(FSAEvent e:oldNames.keySet())
+		{
+			e.setSymbol(oldNames.get(e));
 		}
 		return new Object[]{ret,retS};
 	}

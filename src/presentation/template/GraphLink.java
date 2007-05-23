@@ -53,8 +53,8 @@ public class GraphLink implements PresentationElement {
 				(int)leftBlock.getLocation().y,
 				(int)rightBlock.getLocation().x,
 				(int)rightBlock.getLocation().y);
-		String text=""+link.getEventLeft().getSymbol()+" = "+link.getEventRight().getSymbol();
-		g.drawString(text,(int)getLocation().x,(int)getLocation().y);
+//		String text=""+link.getEventLeft().getSymbol()+" = "+link.getEventRight().getSymbol();
+//		g.drawString(text,(int)getLocation().x,(int)getLocation().y);
 	}
 
 	public Long getId() {

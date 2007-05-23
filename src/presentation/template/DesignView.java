@@ -165,7 +165,7 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 	{
 		GraphLink ret=null;
 		Rectangle2D.Float r=new Rectangle2D.Float((float)p.getX()-3,
-				(float)p.getY()-3,(float)p.getX()+3,(float)p.getY()+3);
+				(float)p.getY()-3,6,6);
 		for(GraphLink l:graph.getLinks())
 		{
 			Point2D loc1=graph.getLayout(l.getLink().getBlockLeft()).getLocation();
@@ -177,12 +177,6 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 //			System.out.println(r);
 //			System.out.println(graph.getLayout(l.getLink().getBlockLeft()).getLocation());
 //			System.out.println(graph.getLayout(l.getLink().getBlockRight()).getLocation());
-//			System.out.println(
-//				""+r.getMinX()+","+r.getMinX()*slope+"||"+
-//				r.getMaxX()+","+r.getMaxX()*slope+"||"+
-//				r.getMinY()/slope+","+r.getMinY()+"||"+
-//				r.getMaxY()/slope+","+r.getMaxY()
-//					);
 //			System.out.println(
 //					""+r.getMinX()+","+(r.getMinX()*slope+disp)+"||"+
 //					r.getMaxX()+","+(r.getMaxX()*slope+disp)+"||"+

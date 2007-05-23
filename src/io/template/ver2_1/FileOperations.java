@@ -66,10 +66,15 @@ public class FileOperations {
 		} while(!fcDone);
     	
 		//MacOS fix
+		if(file==null)
+		{
+			Hub.displayAlert(Hub.string("cantSaveTemplate"));
+		}
 		if(file.isFile())
 		{
 			file=file.getParentFile();
 		}
+		//end MacOS fix
 		
 		if(retVal == JFileChooser.APPROVE_OPTION){
     		XMLExporter.graph2XML(g,file);

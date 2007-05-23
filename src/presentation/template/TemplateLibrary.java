@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -63,6 +64,7 @@ import model.fsa.FSAEvent;
 import model.fsa.FSAEventSet;
 import model.fsa.FSAModel;
 import model.fsa.FSASupervisor;
+import model.fsa.ver2_1.Automaton;
 import model.template.TemplateChannel;
 import model.template.TemplateModel;
 import model.template.TemplateModule;
@@ -126,16 +128,67 @@ public class TemplateLibrary implements Presentation, KeyListener {
 		});
 		main.add(addButton);
 		
+		MouseListener mel=new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent me)
+			{
+				if(me.getClickCount()>1)
+				{
+					JList list=(JList)me.getSource();
+					if(list==moduleList)
+					{
+						int idx=moduleList.locationToIndex(me.getPoint());
+						String name=moduleList.getModel().getElementAt(idx).toString();
+						Template selected=null;
+						for(Template t:moduleTemplates)
+						{
+							if(t.getName().equals(name))
+							{
+								selected=t;
+								break;
+							}
+						}
+						if(selected==null)
+						{
+							return;
+						}
+						Hub.getWorkspace().addModel(loadFSA(selected.getFSAName()));
+					}
+					else
+					{
+						int idx=channelList.locationToIndex(me.getPoint());
+						String name=channelList.getModel().getElementAt(idx).toString();
+						Template selected=null;
+						for(Template t:channelTemplates)
+						{
+							if(t.getName().equals(name))
+							{
+								selected=t;
+								break;
+							}
+						}
+						if(selected==null)
+						{
+							return;
+						}
+						Hub.getWorkspace().addModel(loadFSA(selected.getFSAName()));
+					}
+					
+				}
+			}
+		};
 		TransferHandler th=new TemplateTransferHandler();
 		moduleList=new JList();
 		moduleList.addKeyListener(this);
 		moduleList.setDragEnabled(true);
 		moduleList.setTransferHandler(th);
+		moduleList.addMouseListener(mel);
 		channelList=new JList();
 		channelList.addKeyListener(this);
 		channelList.setDragEnabled(true);
 		channelList.setTransferHandler(th);
-
+		channelList.addMouseListener(mel);
+		
 		main.add(new JLabel(Hub.string("modules")));
 		JScrollPane sp=new JScrollPane(moduleList);
 		main.add(sp);
@@ -195,12 +248,12 @@ public class TemplateLibrary implements Presentation, KeyListener {
 		Object[] ret=new SupervisorGen().perform(new Object[]{model});
 		List<FSASupervisor> sups=(List<FSASupervisor>)ret[0];
 		List<FSAModel> syncs=(List<FSAModel>)ret[1];
-		Collection<FSASupervisor> rsups=new Vector<FSASupervisor>();
-		Iterator<FSAModel> j=syncs.iterator();
-		for(Iterator<FSASupervisor> i=sups.iterator();i.hasNext();)
-		{
-			rsups.add(((FSASupervisor)new SupRed().perform(new Object[]{j.next(),i.next()})[0]));
-		}
+//		Collection<FSASupervisor> rsups=new Vector<FSASupervisor>();
+//		Iterator<FSAModel> j=syncs.iterator();
+//		for(Iterator<FSASupervisor> i=sups.iterator();i.hasNext();)
+//		{
+//			rsups.add(((FSASupervisor)new SupRed().perform(new Object[]{j.next(),i.next()})[0]));
+//		}
 		if(!((Boolean)new LocalModular().perform(sups.toArray())[0]).booleanValue())
 		{
 			Hub.displayAlert("Supervisors aren't locally modular.");
@@ -241,17 +294,17 @@ public class TemplateLibrary implements Presentation, KeyListener {
 		{
 			return null;
 		}
-    	AutomatonParser ap = new AutomatonParser();
-		FSAModel fsa;
-    	String errors="";
-    	try
-    	{
-    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities.MODEL_FILE_EXT));
-    		errors=ap.getParsingErrors();
-    	}catch(Exception e)
-    	{
-    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
-    	}
+//    	AutomatonParser ap = new AutomatonParser();
+		FSAModel fsa=loadFSA(selected.getFSAName());
+//    	String errors="";
+//    	try
+//    	{
+//    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities.MODEL_FILE_EXT));
+//    		errors=ap.getParsingErrors();
+//    	}catch(Exception e)
+//    	{
+//    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
+//    	}
     	fsa.setId(General.getRandomId());
     	FSAEventSet iface=new StupidSetWrapper();
     	for(Long id:selected.getInterfaceEventIds())
@@ -276,17 +329,17 @@ public class TemplateLibrary implements Presentation, KeyListener {
 		{
 			return null;
 		}
-    	AutomatonParser ap = new AutomatonParser();
-		FSAModel fsa;
-    	String errors="";
-    	try
-    	{
-    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities.MODEL_FILE_EXT));
-    		errors=ap.getParsingErrors();
-    	}catch(Exception e)
-    	{
-    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
-    	}
+//    	AutomatonParser ap = new AutomatonParser();
+		FSAModel fsa=loadFSA(selected.getFSAName());
+//    	String errors="";
+//    	try
+//    	{
+//    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities.MODEL_FILE_EXT));
+//    		errors=ap.getParsingErrors();
+//    	}catch(Exception e)
+//    	{
+//    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
+//    	}
     	fsa.setId(General.getRandomId());
     	FSAEventSet iface=new StupidSetWrapper();
     	for(Long id:selected.getInterfaceEventIds())
@@ -294,6 +347,22 @@ public class TemplateLibrary implements Presentation, KeyListener {
     		iface.add(fsa.getEvent(id.longValue()));
     	}
 		return new Channel(fsa,iface);		
+	}
+	
+	protected FSAModel loadFSA(String name)
+	{
+    	AutomatonParser ap = new AutomatonParser();
+		FSAModel fsa;
+    	String errors="";
+    	try
+    	{
+    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+name+"."+IOUtilities.MODEL_FILE_EXT));
+    		errors=ap.getParsingErrors();
+    	}catch(Exception e)
+    	{
+    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
+    	}
+		return fsa;
 	}
 	
 	protected void addTemplate()

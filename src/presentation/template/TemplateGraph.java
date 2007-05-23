@@ -568,9 +568,45 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	
 	public void draw(Graphics2D g)
 	{
+		Map<String,String> labels=new HashMap<String,String>();
 		for(GraphLink l:links)
 		{
+			String key="";
+			if(l.getLink().getBlockLeft().getId()<l.getLink().getBlockRight().getId())
+			{
+				key=l.getLink().getBlockLeft().getId()+"."+l.getLink().getBlockRight().getId();
+			}
+			else
+			{
+				key=l.getLink().getBlockRight().getId()+"."+l.getLink().getBlockLeft().getId();
+			}
+			String label=labels.get(key);
+			if(label==null)
+			{
+				label="";
+			}
+			label+=l.getLink().getEventLeft().getSymbol()+" = "+l.getLink().getEventRight().getSymbol()+";";
+			labels.put(key,label);
 			l.draw(g);
+		}
+		g.setColor(Color.BLACK);
+		for(GraphLink l:links)
+		{
+			String key="";
+			if(l.getLink().getBlockLeft().getId()<l.getLink().getBlockRight().getId())
+			{
+				key=l.getLink().getBlockLeft().getId()+"."+l.getLink().getBlockRight().getId();
+			}
+			else
+			{
+				key=l.getLink().getBlockRight().getId()+"."+l.getLink().getBlockLeft().getId();
+			}
+			String label=labels.get(key);
+			String[] parts=label.split(";");
+			for(int i=0;i<parts.length;++i)
+			{
+				g.drawString(parts[i],(int)l.getLocation().x,(int)l.getLocation().y+i*g.getFontMetrics().getHeight());
+			}
 		}
 		for(GraphBlock b:blocks)
 		{
