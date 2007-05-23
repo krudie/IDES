@@ -69,15 +69,11 @@ public class ReflexiveEdge extends BezierEdge {
 	 */
 	public ReflexiveEdge(Node node, FSATransition t) {
 		super(node, node);
-		//CHRISTIAN
 		lastNodeRadius = ((CircleNodeLayout)node.getLayout()).getRadius();
-		//CHRISTIAN
 		addTransition(t);				
 		setLayout(new ReflexiveLayout(node, this));
 		setHandler(new ReflexiveHandler(this));
-		
-		computeEdge();
-		
+
 		// place me among any other edges adjacent to node
 		Iterator<Edge> neighbours = node.adjacentEdges();
 		if(neighbours.hasNext()){
@@ -87,6 +83,7 @@ public class ReflexiveEdge extends BezierEdge {
 			}
 			insertAmong(n);
 		}		
+		computeEdge();
 	}
 
 	/**

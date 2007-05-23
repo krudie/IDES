@@ -10,10 +10,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import presentation.Geometry;
 import presentation.GraphicalLayout;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A visual representation of the arrow on a node indicating the initial 
@@ -56,42 +60,12 @@ public class InitialArrow extends Edge {
 	 */
 	public InitialArrow(Node target) {
 		super(null, target);
-		lastRadius = ((CircleNodeLayout)target.getLayout()).getRadius();
-		setLocation(target.getLocation());
-		
 		// TODO move this into computeEdge ///////////////////////////////////////////
 		// will need to check the length and direction of the arrow
 		// each time node is e.g. resized, loaded
 		//Christian: completed. (May, 14, 2007)
-		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
-		if(layout != null){
-			direction = layout.getArrow();
-		}
-		
-		// check the magnitude of the arrow shaft
-		// make sure it is long enough
-		maxShaftLength = 2*(target.getShape().getBounds2D().getHeight());
-		float currentRadius = ((CircleNodeLayout)getTargetNode().getLayout()).getRadius();
-		float minimumDistance = currentRadius + CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN;
-		minShaftLength = minimumDistance;
-		if(direction != null) {
-			double norm = Geometry.norm(direction);
-			if(norm < minShaftLength){
-				direction = Geometry.unit(direction);			
-				direction = Geometry.scale( direction, (float)minShaftLength);
-			}
-		}
-
-		if(layout == null || direction == null){	
-			// compute default direction and magnitude for this edge
-			direction = new Point2D.Float( (float)(minShaftLength), 0f );
-			// TODO do something about the missing node layout info?
-		}
-				
-		layout.setArrow(direction);
-		line = new Line2D.Float();			
-		arrowHead = new ArrowHead();
-		setHandler(new Handler(this));
+		//(there were lots of code here before, now everything is inside computeEdge())
+		lastRadius = ((CircleNodeLayout)(target.getLayout())).getRadius();
 		computeEdge();		
 	}
 	
@@ -169,26 +143,67 @@ public class InitialArrow extends Edge {
 	 */
 	@Override
 	public void computeEdge() {
-		setLocation(getTargetNode().getLocation());
-		
-		//CHRISTIAN <<patch>>
-		//This is to correct the initial arrows behavior when the size of the node is changed
-		float currentRadius = ((CircleNodeLayout)getTargetNode().getLayout()).getRadius();
-		if(currentRadius != lastRadius)
+		Node target = this.getTargetNode();
+		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
+		float currentRadius = layout.getRadius();
+		float smallestArrowSize = CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN;
+		float minimumDistance =currentRadius + smallestArrowSize;
+		setLocation(target.getLocation());
+
+		if(layout != null)
 		{
-			//The minimum distance between the center of the node, and the edge anchor.
-			float minimumDistance =currentRadius + CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN;
-			direction = Geometry.unit(direction);
-			direction = Geometry.scale(direction, minimumDistance);
-			minShaftLength = minimumDistance;
-			//The maximumShaft will be the same as the minimumShaft for "small" radius. 
-			
-			maxShaftLength = (2 * (currentRadius) > minShaftLength ? 2 * (currentRadius) : 4 * (currentRadius));
-			lastRadius = currentRadius;
-			
+			if(direction != null)
+			{
+				//Keep the layout:
+				direction = layout.getArrow();
+			}else
+			{
+				//Compute the first direction of the arrow, based on positions
+				//of the other edges in the node.
+				direction = computeBestDirection(target); 
+			}
 		}
-		//CHRISTIAN <<end of patch>>
 		
+		// check the magnitude of the arrow shaft
+		// make sure it is long enough
+		minShaftLength = minimumDistance;
+		maxShaftLength = minShaftLength;
+		//Case desired, the maxShaftLength can be set to a desired value (or proportion)
+		//maxShaftLength = 2*(target.getShape().getBounds2D().getHeight());
+		float scaleFactor = 1f;
+		//If the radius of the node was decreased, calculate a scalefactor to keep 
+		//the size in the same proportion in relation to the node.
+		//The proportion wont be kept in case of increasing of the node radius because
+		//it could generate too big sizes for the direction vector.
+		if(currentRadius < lastRadius)
+		{
+			scaleFactor = currentRadius/lastRadius;
+		}
+		lastRadius = currentRadius;
+		direction = Geometry.scale(direction, scaleFactor);
+		double norm = Geometry.norm(direction);
+		//Scale the direction vector case it is too small
+		if(norm < minShaftLength)
+		{
+			direction = Geometry.unit(direction);			
+			direction = Geometry.scale( direction, (float)minShaftLength);
+		}
+		//Scale the direction vector case it is too big
+		if(norm > maxShaftLength)
+		{
+			direction = Geometry.unit(direction);			
+			direction = Geometry.scale( direction, (float)maxShaftLength);
+		}
+		
+				
+		//Calculating the edge parameters according to the direction vector previously 
+		//defined.
+		//The vector (direction) has informations about the size and direction of the 
+		//initial arrow.
+		layout.setArrow(direction);
+		line = new Line2D.Float();			
+		arrowHead = new ArrowHead();
+		setHandler(new Handler(this));
 		Point2D.Float sourcePt = Geometry.subtract(getLocation(), direction);
 		line.x1 = sourcePt.x;
 		line.y1 = sourcePt.y;
@@ -441,4 +456,68 @@ public class InitialArrow extends Edge {
 		}
 	} // end Handler
 	
+	private Point2D.Float computeBestDirection(Node target){
+	
+		Iterator<Edge> adjEdges = target.adjacentEdges();
+		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
+		//Check the angles of the existent edges
+		ArrayList<Float> angles = new ArrayList<Float>();
+		ArrayList<Point2D.Float> vectors = new ArrayList<Point2D.Float>(); 
+		Point2D.Float currentDirVector = new Point2D.Float();
+		int number = 0;
+		if(adjEdges.hasNext() == false)
+		{
+			return layout.getArrow();
+		}
+
+
+		while(adjEdges.hasNext()){
+				currentDirVector = Geometry.subtract(target.getLocation(),adjEdges.next().getTargetEndPoint());
+				float currentAngle = (float)Geometry.angleFrom(currentDirVector,new Point2D.Float(-1,0));
+				vectors.add(currentDirVector);
+				angles.add(currentAngle);
+				number++;
+		}
+		for(int i = 0; i < angles.size();i++)
+		{
+			if(angles.get(i) < 0)
+			{
+				angles.set(i, (float)(2*3.14) + angles.get(i));
+			}
+		}
+		Collections.sort(angles);
+		
+		//Look for prefered positions:
+		//Look for a good space at the angle 180 degrees:
+		boolean canFit = true; 
+		float limMin = (float)(2*3.14*160/360);//160 degrees
+		float limMax = (float)(2*3.14*200/360);//205 degrees
+		for(int i = 0; i < angles.size();i++)
+		{	
+			float angle = angles.get(i);
+			if( angle >= limMin & angle <=limMax)
+				canFit = false;
+		}
+		if(canFit)
+			return (new Point2D.Float(1,0));
+
+
+		
+		//If the preferes positions are not available, look for the most confortable
+		//position.
+		angles.add((float)(angles.get(0)+2*3.14));
+		float maxAngle = -1;
+		int bestIndex=0;
+		for(int i = 0; i < angles.size()-1;i++)
+		{	
+			float currentAngle = angles.get(i+1)-angles.get(i);
+			if(currentAngle > maxAngle)
+			{
+				maxAngle = currentAngle;
+				bestIndex = i;
+			}
+		}
+		float rotAngle = maxAngle/2 +angles.get(bestIndex); 
+		return Geometry.rotate(new Point2D.Float(-1,0),-rotAngle);
+	}
 } // end InitialArrow
