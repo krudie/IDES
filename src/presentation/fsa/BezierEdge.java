@@ -159,7 +159,7 @@ public class BezierEdge extends Edge {
 	    Point2D basePt;
 	    Point2D.Float tEndPt = getTargetEndPoint();
 	    if(tEndPt != null) {
-	    	basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
+	    	basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH+1)));
 	    }else{
 	    	basePt = Geometry.add(getBezierLayout().getCurve().getP2(), Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));	
 	    }
@@ -170,7 +170,8 @@ public class BezierEdge extends Edge {
 	    double rho = Geometry.angleFrom(ArrowHead.axis, unitArrowDir);
 		at.setToRotation(rho);		
 		g2d.transform(at);
-		
+		g2d.setStroke(GraphicalLayout.FINE_STROKE);
+		g2d.draw(arrowHead);
 		g2d.fill(arrowHead);
 		
 		at.setToRotation(-rho);

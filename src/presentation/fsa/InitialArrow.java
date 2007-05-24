@@ -112,7 +112,7 @@ public class InitialArrow extends Edge {
 	    
 	    // NOTE point movement will be constrained to be outside of node boundary so targetPt should never be null.
 	    Point2D.Float basePt;	    
-	    basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH)));
+	    basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH+1)));
 	   	    
 		at.setToTranslation(basePt.x, basePt.y);
 		g2d.transform(at);
@@ -161,6 +161,7 @@ public class InitialArrow extends Edge {
 				//Compute the first direction of the arrow, based on positions
 				//of the other edges in the node.
 				direction = computeBestDirection(target); 
+				arrowHead = new ArrowHead();
 			}
 		}
 		
@@ -202,7 +203,6 @@ public class InitialArrow extends Edge {
 		//initial arrow.
 		layout.setArrow(direction);
 		line = new Line2D.Float();			
-		arrowHead = new ArrowHead();
 		setHandler(new Handler(this));
 		Point2D.Float sourcePt = Geometry.subtract(getLocation(), direction);
 		line.x1 = sourcePt.x;
@@ -488,8 +488,13 @@ public class InitialArrow extends Edge {
 		Collections.sort(angles);
 		
 		//Look for prefered positions:
-		//Look for a good space at the angle 180 degrees:
+		//1 - Look for a good space at the angle 180 degrees
+		//2 - Look for a good space at the angle 150 degrees
+		//3 - Look for a good space at the angle 210 degrees
+		//4 - If any of the preferes positions are available look for the most confort position
 		boolean canFit = true; 
+		//Looks from limMin->limMax and check whether all this spaces are avaliables.
+		//180 degrees
 		float limMin = (float)(2*3.14*160/360);//160 degrees
 		float limMax = (float)(2*3.14*200/360);//205 degrees
 		for(int i = 0; i < angles.size();i++)
@@ -501,9 +506,37 @@ public class InitialArrow extends Edge {
 		if(canFit)
 			return (new Point2D.Float(1,0));
 
+		//150 degrees
+		canFit = true; 
+		//Looks from limMin->limMax and check whether all this spaces are avaliables.
+		limMin = (float)(2*3.14*130/360);//130 degrees
+		limMax = (float)(2*3.14*170/360);//170 degrees
+		for(int i = 0; i < angles.size();i++)
+		{	
+			float angle = angles.get(i);
+			if( angle >= limMin & angle <=limMax)
+				canFit = false;
+		}
+		if(canFit)
+			return (Geometry.rotate(new Point2D.Float(-1,0),-(float)(2*3.14*150/360)));
+
+		//210 degrees
+		canFit = true; 
+		//Looks from limMin->limMax and check whether all this spaces are avaliables.
+		limMin = (float)(2*3.14*190/360);//190 degrees
+		limMax = (float)(2*3.14*230/360);//230 degrees
+		for(int i = 0; i < angles.size();i++)
+		{	
+			float angle = angles.get(i);
+			if( angle >= limMin & angle <=limMax)
+				canFit = false;
+		}
+		if(canFit)
+			return (Geometry.rotate(new Point2D.Float(-1,0),-(float)(2*3.14*210/360)));
+
 
 		
-		//If the preferes positions are not available, look for the most confortable
+		//If the prefered positions are not available, look for the most confortable
 		//position.
 		angles.add((float)(angles.get(0)+2*3.14));
 		float maxAngle = -1;

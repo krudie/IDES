@@ -5,6 +5,7 @@ package pluggable.layout.jung;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
@@ -15,6 +16,7 @@ import pluggable.layout.FSALayouter;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.Node;
+import presentation.fsa.CircleNode;
 
 /**
  *
@@ -62,6 +64,39 @@ public class JUNGLayouter implements FSALayouter {
 			n.setLocation(new Point2D.Float((float)l.getLocation(v).getX(),(float)l.getLocation(v).getY()));
 		}
 		graph.commitMovement(graph);
+		formatGraph(graph);
 	}
+	protected void formatGraph(FSAGraph graph)
+	{
+		for(Edge edge:graph.getEdges())
+		{
+			//For each edge, get the target and source nodes
+			Node targetNode = edge.getTargetNode();
+			Node sourceNode = edge.getSourceNode();
+			//For each edge beginning on the target node, check if its target
+			//is the same as the sourceNode
+			Iterator<Edge> adjEdges = targetNode.adjacentEdges();
+			while(adjEdges.hasNext())
+			{
+				Edge secondEdge = adjEdges.next();
+				Node destination = secondEdge.getTargetNode();
+				//If the target node has an edge pointing to the sourceNode
+				//then arcMore the edge.
+				if(destination.equals(sourceNode) & !(targetNode.equals(sourceNode)))
+				{
+					graph.arcMore(edge);
+				}
+			}
+			
+		}
+		//Iterate all the nodes to recompute the positions for initial arrows
+		for(Node node:graph.getNodes())
+		{
+			if(node.getState().isInitial())
+			{
+				node.resetInitialArrow();
+			}
+		}
 
+	}
 }

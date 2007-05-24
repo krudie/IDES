@@ -139,6 +139,17 @@ public abstract class Node extends GraphElement {
 		}
 		this.insert(initialArrow);
 		this.initialArrow = initialArrow;
-	}		
+	}
+
+	/**
+	 * Finds the best position for the initial arrow and recompute it
+	 * at the best position.
+	 * @author christian
+	 */
+	public void resetInitialArrow()
+	{
+		this.initialArrow = null;
+		this.setInitial(true);
+	}
 }		
 

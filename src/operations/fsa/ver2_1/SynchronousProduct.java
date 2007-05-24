@@ -74,4 +74,5 @@ public class SynchronousProduct implements Operation {
 		return new Object[]{a};
 	}
 
+	
 }

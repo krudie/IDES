@@ -1071,11 +1071,23 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
 		/////////////////////////////////////////////////////
 		setNeedsRefresh(true);		
+		Iterator<Edge> adjEdges = n.adjacentEdges();
+
+		//Updating the self-loops since its handler is changed when the label
+		//makes the node change its size.
+		while(adjEdges.hasNext()){
+			Edge itsEdge = adjEdges.next();
+			if(itsEdge.getTargetNode().equals(itsEdge.getSourceNode()))
+			{
+				this.commitMovement(itsEdge);
+			}
+		}
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.NODE,
 				n.getId(), 
 				n.bounds(),
 				this, ""));
+	
 	}
 
 	/**
