@@ -12,6 +12,8 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -52,7 +54,6 @@ public class ReflexiveEdge extends BezierEdge {
 	public ReflexiveEdge(BezierLayout layout, Node node, FSATransition t)
 	{
 		super(node, node);
-
 		//CHRISTIAN
 		lastNodeRadius = ((CircleNodeLayout)node.getLayout()).getRadius();
 		//CHRISTIAN
@@ -74,16 +75,25 @@ public class ReflexiveEdge extends BezierEdge {
 		setLayout(new ReflexiveLayout(node, this));
 		setHandler(new ReflexiveHandler(this));
 
-		// place me among any other edges adjacent to node
-		Iterator<Edge> neighbours = node.adjacentEdges();
-		if(neighbours.hasNext()){
-			Set<Edge> n = new HashSet<Edge>();
-			while(neighbours.hasNext()) {
-				n.add(neighbours.next());
-			}
-			insertAmong(n);
-		}		
+//		// place me among any other edges adjacent to node
+//		Iterator<Edge> neighbours = node.adjacentEdges();
+//		if(neighbours.hasNext()){
+//			Set<Edge> n = new HashSet<Edge>();
+//			while(neighbours.hasNext()) {
+//				n.add(neighbours.next());
+//			}
+//			insertAmong(n);
+//		}
+		((ReflexiveLayout)getLayout()).axis = ((ReflexiveLayout)getLayout()).computeBestDirection(this.getSourceNode());
 		computeEdge();
+	}
+	/**
+	 * Auto-format: Change the angle of the axis to make the initial arrow go to the
+	 * most confortable position
+	 */
+	public void resetPosition()
+	{
+		((ReflexiveLayout)getLayout()).resetPosition(this.getTargetNode());
 	}
 
 	/**
@@ -326,7 +336,7 @@ public class ReflexiveEdge extends BezierEdge {
 		return t;		
 	}
 
-	
+
 	/**
 	 * Same data as BezierLayout (control points and label offset vector)
 	 * but different algorithms and handlers specific to rendering a self-loop. 
@@ -442,31 +452,31 @@ public class ReflexiveEdge extends BezierEdge {
 			}
 
 			Node sourceNode = getSourceNode();
-	    	float currentNodeRadius = ((CircleNodeLayout)sourceNode.getLayout()).getRadius();
-			midpoint = Geometry.midpoint(curve);
+			Point2D nodeLocation = sourceNode.getLocation();
+
 			//In case the node change its size, recalculate the midpoint position
 			//by increasing value of the minAxisLength.
+			float currentNodeRadius = ((CircleNodeLayout)sourceNode.getLayout()).getRadius();
 			float factor = currentNodeRadius / lastNodeRadius;
 			if(factor != 1)
 			{
 				minAxisLength *= factor;
-				//Geometry.scale(midpoint, factor);
-				Point2D nodeLocation = getTargetNode().getLocation();
-				float norm = (float)Geometry.norm(Geometry.subtract(midpoint, nodeLocation));
-				Point2D direction = Geometry.unit(Geometry.subtract(midpoint, nodeLocation));
-				setPoint(Geometry.subtract(midpoint,Geometry.scale(direction,norm-norm*factor)), MIDPOINT);
+				axis = Geometry.scale(axis, factor);
 			}
 			lastNodeRadius = currentNodeRadius;
-			
-	    	Point2D location = getEdge().getSourceNode().getLocation();
+
+			//Setting midpoint according to the axis:
+			midpoint.setLocation(nodeLocation.getX()+axis.getX(), nodeLocation.getY() + axis.getY());
+			setPoint(midpoint,MIDPOINT);
+			//Setting the Bezier control points based on the axis:
 	    	Point2D.Float v1 = Geometry.rotate(axis, angle1);
 			Point2D.Float v2 = Geometry.rotate(axis, angle2);
 			//Setting center of the edge
-			setPoint(getEdge().getSourceNode().getLocation(), P1);
-			setPoint(getEdge().getSourceNode().getLocation(), P2);
+			setPoint(nodeLocation, P1);
+			setPoint(nodeLocation, P2);
 			//Setting the control points
-			setPoint(Geometry.add(location, Geometry.scale(v1, s1)), CTRL1);
-			setPoint(Geometry.add(location, Geometry.scale(v2, s2)), CTRL2);
+			setPoint(Geometry.add(nodeLocation, Geometry.scale(v1, s1)), CTRL1);
+			setPoint(Geometry.add(nodeLocation, Geometry.scale(v2, s2)), CTRL2);
 			setDirty(true);
 
 		}	
@@ -519,8 +529,87 @@ public class ReflexiveEdge extends BezierEdge {
 					curve.ctrly2 = y;
 					break;
 				default: throw new IllegalArgumentException("Invalid control point index: " + index);				
-			}			
+			}
 			
+		}
+		/**
+		 *@author Christian 
+		 */
+		private Point2D.Float computeBestDirection(Node target){
+			
+			Iterator<Edge> adjEdges = target.adjacentEdges();
+			
+			//Check the angles of the existent edges
+			ArrayList<java.lang.Float> angles = new ArrayList<java.lang.Float>();
+			Point2D.Float currentDirVector = new Point2D.Float();
+			int number = 0;
+
+
+			while(adjEdges.hasNext()){
+				Edge edge = adjEdges.next();
+				if(edge.getTargetNode().equals(edge.getSourceNode()))
+				{
+					currentDirVector = Geometry.subtract(target.getLocation(),((ReflexiveEdge)edge).getMidpoint());
+					float currentAngle = (float)Geometry.angleFrom(currentDirVector,new Point2D.Float(-1,0));
+					angles.add(currentAngle);
+					angles.add(currentAngle+0.5f*(float)angle1);
+					angles.add(currentAngle+0.5f*(float)angle2);
+				}
+				else
+				{
+					currentDirVector = Geometry.subtract(target.getLocation(),edge.getTargetEndPoint());				
+					float currentAngle = (float)Geometry.angleFrom(currentDirVector,new Point2D.Float(-1,0));
+					angles.add(currentAngle);
+				}					
+
+				
+					
+					number++;
+			}
+			for(int i = 0; i < angles.size();i++)
+			{
+				if(angles.get(i) < 0)
+				{
+					angles.set(i, (float)(2*Math.PI) + angles.get(i));
+				}
+			}
+			Collections.sort(angles);
+			
+			//Try to fit the selfloop at its "favorite" position: 90 degrees
+			boolean canFit = true; 
+			//Scan from limMin->limMax and check whether all this spaces are avaliables.
+			float limMin = (float)Math.toRadians(50);
+			float limMax = (float)Math.toRadians(130);
+			for(int i = 0; i < angles.size();i++)
+			{	
+				float angle = angles.get(i);
+				if( angle >= limMin & angle <=limMax)
+					canFit = false;
+			}
+			if(canFit)
+				return Geometry.rotate(new Point2D.Float(1,0),Math.toRadians(-90));
+			
+			//If the prefered positions are not available, look for the most confortable
+			//position.
+			angles.add((float)(angles.get(0)+2*Math.PI));
+			float maxAngle = -1;
+			int bestIndex=0;
+			for(int i = 0; i < angles.size()-1;i++)
+			{	
+				float currentAngle = angles.get(i+1)-angles.get(i);
+				if(currentAngle > maxAngle)
+				{
+					maxAngle = currentAngle;
+					bestIndex = i;
+				}
+			}
+			float rotAngle = maxAngle/2 +angles.get(bestIndex);
+			return Geometry.rotate(new Point2D.Float(1,0),-rotAngle); 
+		}
+		
+		private void resetPosition(Node node)
+		{
+			 axis = computeBestDirection(node);
 		}
 		
 		/**
@@ -544,6 +633,7 @@ public class ReflexiveEdge extends BezierEdge {
 				return false;
 			}
 		}*/
+	
 	} // end Layout
 	
 	

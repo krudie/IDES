@@ -92,7 +92,9 @@ public class CircleNodeLayout extends GraphicalLayout {
 		this.radius = radius;
 		setDirty(true);
 		if(uniformR!=null)
+		{
 			uniformR.updateUniformRadius(this,radius);
+		}
 	}
 
 	/**

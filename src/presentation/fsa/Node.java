@@ -148,8 +148,24 @@ public abstract class Node extends GraphElement {
 	 */
 	public void resetInitialArrow()
 	{
-		this.initialArrow = null;
-		this.setInitial(true);
+		this.remove(initialArrow);
+		this.initialArrow.resetPosition();
+		this.insert(initialArrow);
+	}
+	public void resetReflexiveEdges()
+	{
+		Iterator<Edge> adjEdges = adjacentEdges();
+		while(adjEdges.hasNext())
+		{
+			Edge edge = adjEdges.next();
+			if(edge.getTargetNode().equals(edge.getSourceNode()))
+			{
+				this.remove(edge);
+				((ReflexiveEdge)edge).resetPosition();
+				this.insert(edge);
+			}
+		
+		}
 	}
 }		
 

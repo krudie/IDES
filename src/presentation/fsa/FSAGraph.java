@@ -1073,6 +1073,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		setNeedsRefresh(true);		
 		Iterator<Edge> adjEdges = n.adjacentEdges();
 
+		
+		//Christian <<move it>> 
+		// /TODO locate this piece of code in a place which will be called
+		//every time a node have its size changed.
 		//Updating the self-loops since its handler is changed when the label
 		//makes the node change its size.
 		while(adjEdges.hasNext()){
@@ -1082,6 +1086,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				this.commitMovement(itsEdge);
 			}
 		}
+		//<<move it>>
+		
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.NODE,
 				n.getId(), 

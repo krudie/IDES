@@ -13,7 +13,6 @@ import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 import java.util.ArrayList;
@@ -152,11 +151,7 @@ public class InitialArrow extends Edge {
 
 		if(layout != null)
 		{
-			if(direction != null)
-			{
-				//Keep the layout:
-				direction = layout.getArrow();
-			}else
+			if(direction == null)
 			{
 				//Compute the first direction of the arrow, based on positions
 				//of the other edges in the node.
@@ -399,7 +394,126 @@ public class InitialArrow extends Edge {
 	public Rectangle bounds() {
 		return line.getBounds();
 	}
-	
+	/**
+	 * 
+	 * @param target
+	 * @return
+	 * @author Christian
+	 */
+	private Point2D.Float computeBestDirection(Node target){
+		Iterator<Edge> adjEdges = target.adjacentEdges();
+		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
+		//Check the angles of the existent edges
+		ArrayList<Float> angles = new ArrayList<Float>();
+ 
+		Point2D.Float currentDirVector = new Point2D.Float();
+		if(adjEdges.hasNext() == false)
+		{
+			return layout.getArrow();
+		}
+
+
+		while(adjEdges.hasNext()){
+			Edge edge = adjEdges.next();
+			if(edge.getTargetNode().equals(edge.getSourceNode()))
+			{
+				currentDirVector = Geometry.subtract(target.getLocation(),((ReflexiveEdge)edge).getMidpoint());
+				float currentAngle = (float)Geometry.angleFrom(currentDirVector,new Point2D.Float(-1,0));
+				angles.add(currentAngle);
+				angles.add(currentAngle+0.5f*(float)Math.PI/4);
+				angles.add(currentAngle+0.5f*(float)Math.PI/4);
+
+			}
+			else
+			{
+				currentDirVector = Geometry.subtract(target.getLocation(),edge.getTargetEndPoint());				
+				float currentAngle = (float)Geometry.angleFrom(currentDirVector,new Point2D.Float(-1,0));
+				angles.add(currentAngle);
+			}
+		for(int i = 0; i < angles.size();i++)
+		{
+			if(angles.get(i) < 0)
+			{
+				angles.set(i, (float)(2*Math.PI) + angles.get(i));
+			}
+		}
+		}
+		Collections.sort(angles);
+		
+		//Look for prefered positions:
+		//1 - Look for a good space at the angle 180 degrees
+		//2 - Look for a good space at the angle 150 degrees
+		//3 - Look for a good space at the angle 210 degrees
+		//4 - If any of the preferes positions are available look for the most confort position
+		boolean canFit = true; 
+		//Looks from limMin->limMax and check whether all this spaces are avaliables.
+		//180 degrees
+		float limMin = (float)Math.toRadians(160);
+		float limMax = (float)Math.toRadians(200);
+		for(int i = 0; i < angles.size();i++)
+		{	
+			float angle = angles.get(i);
+			if( angle >= limMin & angle <=limMax)
+				canFit = false;
+		}
+		if(canFit)
+			return (new Point2D.Float(1,0));
+
+		//150 degrees
+		canFit = true; 
+		//Looks from limMin->limMax and check whether all this spaces are avaliables.
+		limMin = (float)Math.toRadians(130);
+		limMax = (float)Math.toRadians(170);
+		for(int i = 0; i < angles.size();i++)
+		{	
+			float angle = angles.get(i);
+			if( angle >= limMin & angle <=limMax)
+				canFit = false;
+		}
+		if(canFit)
+			return (Geometry.rotate(new Point2D.Float(-1,0),-(float)(2*Math.PI*150/360)));
+
+		//210 degrees
+		canFit = true; 
+		//Looks from limMin->limMax and check whether all this spaces are avaliables.
+		limMin = (float)Math.toRadians(190);
+		limMax = (float)Math.toRadians(230);
+		for(int i = 0; i < angles.size();i++)
+		{	
+			float angle = angles.get(i);
+			if( angle >= limMin & angle <=limMax)
+				canFit = false;
+		}
+		if(canFit)
+			return (Geometry.rotate(new Point2D.Float(-1,0),-(float)(2*Math.PI*210/360)));
+
+
+		
+		//If the prefered positions are not available, look for the most confortable
+		//position.
+		angles.add((float)(angles.get(0)+2*Math.PI));
+		float maxAngle = -1;
+		int bestIndex=0;
+		for(int i = 0; i < angles.size()-1;i++)
+		{	
+			float currentAngle = angles.get(i+1)-angles.get(i);
+			if(currentAngle > maxAngle)
+			{
+				maxAngle = currentAngle;
+				bestIndex = i;
+			}
+		}
+		float rotAngle = maxAngle/2 +angles.get(bestIndex); 
+		return Geometry.rotate(new Point2D.Float(-1,0),-rotAngle);
+	}
+	/**
+	 * Auto-format: Change the angle of the axis to make the initial arrow go to the
+	 * most confortable position
+	 */
+	void resetPosition()
+	{
+		direction = this.computeBestDirection(this.getTargetNode());
+	}
 	/**
 	 * Edge handler for modifying the position and length of
 	 * the initial arrow.
@@ -456,101 +570,5 @@ public class InitialArrow extends Edge {
 		}
 	} // end Handler
 	
-	private Point2D.Float computeBestDirection(Node target){
-	
-		Iterator<Edge> adjEdges = target.adjacentEdges();
-		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
-		//Check the angles of the existent edges
-		ArrayList<Float> angles = new ArrayList<Float>();
-		ArrayList<Point2D.Float> vectors = new ArrayList<Point2D.Float>(); 
-		Point2D.Float currentDirVector = new Point2D.Float();
-		int number = 0;
-		if(adjEdges.hasNext() == false)
-		{
-			return layout.getArrow();
-		}
 
-
-		while(adjEdges.hasNext()){
-				currentDirVector = Geometry.subtract(target.getLocation(),adjEdges.next().getTargetEndPoint());
-				float currentAngle = (float)Geometry.angleFrom(currentDirVector,new Point2D.Float(-1,0));
-				vectors.add(currentDirVector);
-				angles.add(currentAngle);
-				number++;
-		}
-		for(int i = 0; i < angles.size();i++)
-		{
-			if(angles.get(i) < 0)
-			{
-				angles.set(i, (float)(2*3.14) + angles.get(i));
-			}
-		}
-		Collections.sort(angles);
-		
-		//Look for prefered positions:
-		//1 - Look for a good space at the angle 180 degrees
-		//2 - Look for a good space at the angle 150 degrees
-		//3 - Look for a good space at the angle 210 degrees
-		//4 - If any of the preferes positions are available look for the most confort position
-		boolean canFit = true; 
-		//Looks from limMin->limMax and check whether all this spaces are avaliables.
-		//180 degrees
-		float limMin = (float)(2*3.14*160/360);//160 degrees
-		float limMax = (float)(2*3.14*200/360);//205 degrees
-		for(int i = 0; i < angles.size();i++)
-		{	
-			float angle = angles.get(i);
-			if( angle >= limMin & angle <=limMax)
-				canFit = false;
-		}
-		if(canFit)
-			return (new Point2D.Float(1,0));
-
-		//150 degrees
-		canFit = true; 
-		//Looks from limMin->limMax and check whether all this spaces are avaliables.
-		limMin = (float)(2*3.14*130/360);//130 degrees
-		limMax = (float)(2*3.14*170/360);//170 degrees
-		for(int i = 0; i < angles.size();i++)
-		{	
-			float angle = angles.get(i);
-			if( angle >= limMin & angle <=limMax)
-				canFit = false;
-		}
-		if(canFit)
-			return (Geometry.rotate(new Point2D.Float(-1,0),-(float)(2*3.14*150/360)));
-
-		//210 degrees
-		canFit = true; 
-		//Looks from limMin->limMax and check whether all this spaces are avaliables.
-		limMin = (float)(2*3.14*190/360);//190 degrees
-		limMax = (float)(2*3.14*230/360);//230 degrees
-		for(int i = 0; i < angles.size();i++)
-		{	
-			float angle = angles.get(i);
-			if( angle >= limMin & angle <=limMax)
-				canFit = false;
-		}
-		if(canFit)
-			return (Geometry.rotate(new Point2D.Float(-1,0),-(float)(2*3.14*210/360)));
-
-
-		
-		//If the prefered positions are not available, look for the most confortable
-		//position.
-		angles.add((float)(angles.get(0)+2*3.14));
-		float maxAngle = -1;
-		int bestIndex=0;
-		for(int i = 0; i < angles.size()-1;i++)
-		{	
-			float currentAngle = angles.get(i+1)-angles.get(i);
-			if(currentAngle > maxAngle)
-			{
-				maxAngle = currentAngle;
-				bestIndex = i;
-			}
-		}
-		float rotAngle = maxAngle/2 +angles.get(bestIndex); 
-		return Geometry.rotate(new Point2D.Float(-1,0),-rotAngle);
-	}
 } // end InitialArrow

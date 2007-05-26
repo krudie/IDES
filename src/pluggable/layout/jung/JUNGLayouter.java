@@ -13,7 +13,9 @@ import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.impl.SimpleDirectedSparseVertex;
 import edu.uci.ics.jung.visualization.contrib.KKLayout;
 import pluggable.layout.FSALayouter;
+import presentation.Geometry;
 import presentation.fsa.Edge;
+import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.Node;
 import presentation.fsa.CircleNode;
@@ -89,9 +91,15 @@ public class JUNGLayouter implements FSALayouter {
 			}
 			
 		}
-		//Iterate all the nodes to recompute the positions for initial arrows
+		//Iterate all the nodes to recompute the positions for its children:
+		//initial arrows and self-loops
 		for(Node node:graph.getNodes())
 		{
+			//change this methods to a "auto-format" method on the node??
+			
+			//Resetting the position for the self-arrows
+			node.resetReflexiveEdges();
+			//Resetting the position for the initial arrows
 			if(node.getState().isInitial())
 			{
 				node.resetInitialArrow();
