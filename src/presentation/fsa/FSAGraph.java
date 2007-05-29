@@ -1275,7 +1275,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		
 		for (GraphLabel edgeLabel : edgeLabels.values())
 		{
-			graphBounds = graphBounds.union(edgeLabel.bounds());
+			if(edgeLabel != null)
+			{
+				graphBounds = graphBounds.union(edgeLabel.bounds());
+			}
 		}
 	
 		for (GraphLabel freeLabel : freeLabels.values())
@@ -1370,9 +1373,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		int type = FSAGraphMessage.UNKNOWN_TYPE;
 		
 		for(GraphLabel gLabel : edgeLabels.values()){
-			if(gLabel.intersects(p)){
-				type = FSAGraphMessage.LABEL;
-				el = gLabel;				
+			//Initial arrows can have null label
+			if(gLabel != null)
+			{
+				if(gLabel.intersects(p))
+				{
+					type = FSAGraphMessage.LABEL;
+					el = gLabel;				
+				}
 			}
 		}
 		

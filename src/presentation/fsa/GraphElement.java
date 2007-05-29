@@ -103,8 +103,11 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @param child
 	 */
-	public void remove(PresentationElement child) {		
-		children.remove((long)child.hashCode());		
+	public void remove(PresentationElement child) {	
+		if(child != null)
+		{
+			children.remove((long)child.hashCode());			
+		}
 	}
 
 	/**

@@ -59,13 +59,14 @@ public class InitialArrow extends Edge {
 	 */
 	public InitialArrow(Node target) {
 		super(null, target);
-		// TODO move this into computeEdge ///////////////////////////////////////////
-		// will need to check the length and direction of the arrow
-		// each time node is e.g. resized, loaded
-		//Christian: completed. (May, 14, 2007)
-		//(there were lots of code here before, now everything is inside computeEdge())
+		//Removing the children label, it is not necessary for initial arrows
+		this.remove(this.getLabel());
 		lastRadius = ((CircleNodeLayout)(target.getLayout())).getRadius();
 		computeEdge();		
+	}
+	
+	public GraphLabel getLabel() {
+		return null;
 	}
 	
 	/**
