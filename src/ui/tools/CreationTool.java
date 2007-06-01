@@ -192,7 +192,9 @@ public class CreationTool extends DrawingTool {
 			}else if(drawingEdge && dragging && endNode != null){  // Assumption: sourceNode != null						
 				finishEdge();			
 			}else{
-				finishEdge();
+				try{
+					finishEdge();
+					}catch(Exception e){};
 			}
 						
 			endNode = null;

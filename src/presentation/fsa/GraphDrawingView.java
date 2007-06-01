@@ -143,7 +143,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	/**
 	 * The listener for the user pressing the <code>Delete</code> key.
 	 */
-	protected Action deleteListener = new AbstractAction()
+	protected Action deleteListener = new AbstractAction("delete")
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
@@ -156,12 +156,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 					GraphElement ge=(GraphElement)i.next();
 					graphModel.delete(ge);
 				}
-				//refreshView();
+				setAvoidNextDraw(false);
 			}
 		}
 	};
 	
-	protected Action escapeListener = new AbstractAction()
+	protected Action escapeListener = new AbstractAction("escape")
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
@@ -170,6 +170,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			} else {
 				setTool(GraphDrawingView.DEFAULT);
 			}
+			setAvoidNextDraw(false);
 		}
 	};
 	
@@ -202,10 +203,16 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		this.setFocusable(true);
 		this.requestFocus();
 
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),this);
-		getActionMap().put(this,deleteListener);
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),this);
-		getActionMap().put(this, escapeListener);
+
+
+		String deleteActionName = "delete";
+		String escActionName = "esc";
+		//Associating key strokes with action names:
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),deleteActionName);
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),escActionName);
+		//Associating the action names with operations:
+		getActionMap().put(deleteActionName,deleteListener);
+		getActionMap().put(escActionName,escapeListener);
 		
 	    setVisible(true);
 	}	
