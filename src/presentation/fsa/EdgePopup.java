@@ -153,13 +153,30 @@ public class EdgePopup extends JPopupMenu {
 	
 	class PopupListener implements PopupMenuListener {
 
+		boolean wasCanceled = false;
+		boolean becomeInvisible = false;
 		/* (non-Javadoc)
 		 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
 		 */
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
 			view.repaint();
+			if(wasCanceled == true)
+			{
+				wasCanceled = false;
+			}else
+			{
+				view.setInterfaceInterruptionStatus(false);
+				view.setAvoidNextDraw(false);
+			}
+			
 		}
-		public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {}
-		public void popupMenuCanceled(PopupMenuEvent arg0) {}
-	  }	  
+		public void popupMenuWillBecomeVisible(PopupMenuEvent arg0)
+		{
+			view.setInterfaceInterruptionStatus(true);
+		}
+		public void popupMenuCanceled(PopupMenuEvent arg0)
+		{
+			wasCanceled = true;
+		}
+	  }	 
 }

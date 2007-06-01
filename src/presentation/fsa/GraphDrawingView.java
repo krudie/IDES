@@ -51,6 +51,44 @@ import ui.tools.TextTool;
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements MouseMotionListener, MouseListener, KeyListener {
 
+	private boolean avoidNextDraw;
+	
+	public void setAvoidNextDraw(boolean b)
+	{
+		avoidNextDraw = b;
+	}
+	
+	public boolean getAvoidNextDraw()
+	{
+		return avoidNextDraw;
+	}
+	
+	private boolean interfaceInterruptionStatus = false;
+	
+	public boolean getInterfaceInterruptionStatus()
+	{
+		return interfaceInterruptionStatus;
+	}
+	
+	public void setInterfaceInterruptionStatus(boolean b)
+	{
+		interfaceInterruptionStatus = b;
+	}
+	
+	
+	//The tool to be automatically returned to after the MODIFY tool is used
+	private int PreferredTool;
+	public int getPreferredTool()
+	{
+		return  PreferredTool;
+	}
+	public void setPreferredTool(int pt)
+	{
+		interfaceInterruptionStatus = false;
+		avoidNextDraw = false;
+		PreferredTool = pt;
+	}
+	
 	protected static ToggleCommand nodesControl;
 	public static boolean isUniformNodes()
 	{

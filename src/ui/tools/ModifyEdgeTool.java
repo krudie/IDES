@@ -92,7 +92,7 @@ public class ModifyEdgeTool extends DrawingTool {
 	}
 	
 	private void switchTool(){
-		ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+		ContextAdaptorHack.context.setTool(ContextAdaptorHack.context.getPreferredTool());
 		dragging = false;
 		edge = null;
 	}
@@ -149,7 +149,9 @@ public class ModifyEdgeTool extends DrawingTool {
 			ModifyEdgeCommand cmd = new ModifyEdgeCommand(edge, previousLayout);		
 			cmd.execute();		
 			ContextAdaptorHack.context.repaint();						
-			dragging = false;			
+			dragging = false;	
+			
+			switchTool();
 		}
 	}
 	

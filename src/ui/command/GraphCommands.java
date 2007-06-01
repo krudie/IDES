@@ -46,6 +46,7 @@ public class GraphCommands {
 		protected void handleExecute() {			
 			// TODO set the tool in the *currently active* drawing view
 			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+			ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.SELECT);
 		}
 	}
 	
@@ -160,6 +161,7 @@ public class GraphCommands {
 				break;				
 			default:
 				ContextAdaptorHack.context.setTool(GraphDrawingView.CREATE);
+				ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.CREATE);
 			}		
 			 
 			// TODO create and return an UndoableEdit object
@@ -195,6 +197,7 @@ public class GraphCommands {
 		protected UndoableEdit performEdit() {
 			if(selection == null){
 				ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
+				ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.MOVE);
 				return null;
 			}else{
 				// finalize movement of current selection in graph model

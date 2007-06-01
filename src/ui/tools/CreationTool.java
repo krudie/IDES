@@ -12,11 +12,15 @@ import main.Hub;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.ContextAdaptorHack;
+import presentation.fsa.Edge;
+import presentation.fsa.Node;
+import presentation.fsa.InitialArrow;
+import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
 import ui.command.GraphCommands.CreateCommand;
-
+import presentation.fsa.GraphElement;
 /**
  * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.
  * 
@@ -82,31 +86,80 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMousePressed(MouseEvent me) {
 		super.handleMousePressed(me);
-		
-		ContextAdaptorHack.context.clearCurrentSelection();
+
 		startNode = null;
 		cmd = null;
 
-		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
-			try{		
+	
+		//Do not clear the selection if the selected element is a BezierEdge
+		//Reason: let the user modify the control points of the bezier curve without
+		//need to change the curve.
+		if(!(ContextAdaptorHack.context.getSelectedElement() instanceof BezierEdge))
+		{
+			ContextAdaptorHack.context.clearCurrentSelection();
+		}
+		//Refresh the selection
+		ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());
+		ContextAdaptorHack.context.repaint();
+		GraphElement selectedElement = ContextAdaptorHack.context.getSelectedElement(); 
+		if(selectedElement instanceof CircleNode || ContextAdaptorHack.context.getSelectedElement() == null)
+			{	//If a node or an empty space is clicked
 				startNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
-				if(!drawingEdge){
-					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
-					dragging = true; // assume we're dragging until mouse released decides otherwise.
-					return;
+				if(!drawingEdge)
+				{
+					if(startNode != null)
+					{
+						startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
+						dragging = true; // assume we're dragging until mouse released decides otherwise.
+						return;
+					}
 				}
-			}catch(ClassCastException e){
-				//Hub.displayAlert(e.getMessage());
-				startNode = null;
 			}
+			else{//If an edge or label is selected:
+				startNode = null;
+				ContextAdaptorHack.context.setAvoidNextDraw(true);
+				//Let the SELECTION tool work on the edge or label modification
+				ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+				ContextAdaptorHack.context.getCurrentTool().handleMousePressed(me);
+				return;
+			}
+
 		}		
-	}
+
 
 	@Override
 		public void handleMouseReleased(MouseEvent me) {
 			super.handleMouseReleased(me);
-			    
-			ContextAdaptorHack.context.clearCurrentSelection();			
+			if(!(me.getButton() == MouseEvent.BUTTON1))
+			{
+				return;
+			}
+			//Cleaning the selection
+			ContextAdaptorHack.context.clearCurrentSelection();
+			ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());
+			ContextAdaptorHack.context.repaint();
+
+			//Avoiding a new node to be created based in some of the context flags.
+			//These flags may be initially set by interface elements which can interrupt the
+			//"normal" interaction with the software.
+			//Example: 1 - the user open a popup. 
+			//         2 - the user click at a point in the canvas to cancel the popup. 
+			//		A new node should not be created in this case because the user just
+			//      wanted to destroy the popup.
+			boolean interruptionStatus = ContextAdaptorHack.context.getInterfaceInterruptionStatus(); 
+			if(interruptionStatus == true)
+			{
+				ContextAdaptorHack.context.setAvoidNextDraw(true);
+				ContextAdaptorHack.context.setInterfaceInterruptionStatus(false);
+				return;
+			}
+			if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
+			{
+				ContextAdaptorHack.context.setAvoidNextDraw(false);
+				return;
+			}
+
+			//Creating a new node:
 			endNode = null;
 			if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
 				try{		
@@ -138,6 +191,8 @@ public class CreationTool extends DrawingTool {
 				firstClick = false;
 			}else if(drawingEdge && dragging && endNode != null){  // Assumption: sourceNode != null						
 				finishEdge();			
+			}else{
+				finishEdge();
 			}
 						
 			endNode = null;

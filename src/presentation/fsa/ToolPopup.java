@@ -8,6 +8,10 @@ import java.awt.Point;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+
+import presentation.fsa.NodePopup.PopupListener;
 
 import main.Hub;
 import ui.command.GraphCommands.AlignCommand;
@@ -48,18 +52,21 @@ public class ToolPopup extends JPopupMenu {
 		miSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				view.setTool(GraphDrawingView.SELECT);
+				view.setPreferredTool(GraphDrawingView.SELECT);
 			}
 		});
 		miCreate = new JMenuItem("Create nodes and edges", new ImageIcon(Hub.getResource("images/icons/graphic_create.gif")));
 		miCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				view.setTool(GraphDrawingView.CREATE);
+				view.setPreferredTool(GraphDrawingView.CREATE);
 			}
 		});
 		miMove = new JMenuItem("Move nodes and edges", new ImageIcon(Hub.getResource("images/icons/graphic_move.gif")));
 		miMove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				view.setTool(GraphDrawingView.MOVE);
+				view.setPreferredTool(GraphDrawingView.SELECT);
 			}
 		});
 		
@@ -72,5 +79,34 @@ public class ToolPopup extends JPopupMenu {
 		add(new JPopupMenu.Separator());
 		add(miAlign);
 		add(miShowGrid);
+		addPopupMenuListener(new PopupListener());
 	}
+	class PopupListener implements PopupMenuListener {
+
+		boolean wasCanceled = false;
+		boolean becomeInvisible = false;
+		/* (non-Javadoc)
+		 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
+		 */
+		public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
+			view.repaint();
+			if(wasCanceled == true)
+			{
+				wasCanceled = false;
+			}else
+			{
+				view.setInterfaceInterruptionStatus(false);
+				view.setAvoidNextDraw(false);
+			}
+			
+		}
+		public void popupMenuWillBecomeVisible(PopupMenuEvent arg0)
+		{
+			view.setInterfaceInterruptionStatus(true);
+		}
+		public void popupMenuCanceled(PopupMenuEvent arg0)
+		{
+			wasCanceled = true;
+		}
+	  }	
 }

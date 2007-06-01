@@ -155,6 +155,7 @@ public class SelectionTool extends DrawingTool {
 			dragging = false;
 		}		
 		ContextAdaptorHack.context.repaint();
+		ContextAdaptorHack.context.setTool(ContextAdaptorHack.context.getPreferredTool());
 	}
 
 	@Override
