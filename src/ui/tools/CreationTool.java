@@ -146,13 +146,6 @@ public class CreationTool extends DrawingTool {
 			//         2 - the user click at a point in the canvas to cancel the popup. 
 			//		A new node should not be created in this case because the user just
 			//      wanted to destroy the popup.
-			boolean interruptionStatus = ContextAdaptorHack.context.getInterfaceInterruptionStatus(); 
-			if(interruptionStatus == true)
-			{
-				ContextAdaptorHack.context.setAvoidNextDraw(true);
-				ContextAdaptorHack.context.setInterfaceInterruptionStatus(false);
-				return;
-			}
 			if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
 			{
 				ContextAdaptorHack.context.setAvoidNextDraw(false);

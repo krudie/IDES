@@ -63,19 +63,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		return avoidNextDraw;
 	}
 	
-	private boolean interfaceInterruptionStatus = false;
-	
-	public boolean getInterfaceInterruptionStatus()
-	{
-		return interfaceInterruptionStatus;
-	}
-	
-	public void setInterfaceInterruptionStatus(boolean b)
-	{
-		interfaceInterruptionStatus = b;
-	}
-	
-	
 	//The tool to be automatically returned to after the MODIFY tool is used
 	private int PreferredTool;
 	public int getPreferredTool()
@@ -84,7 +71,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	}
 	public void setPreferredTool(int pt)
 	{
-		interfaceInterruptionStatus = false;
 		avoidNextDraw = false;
 		PreferredTool = pt;
 	}

@@ -95,14 +95,13 @@ public class ToolPopup extends JPopupMenu {
 				wasCanceled = false;
 			}else
 			{
-				view.setInterfaceInterruptionStatus(false);
 				view.setAvoidNextDraw(false);
 			}
 			
 		}
 		public void popupMenuWillBecomeVisible(PopupMenuEvent arg0)
 		{
-			view.setInterfaceInterruptionStatus(true);
+			view.setAvoidNextDraw(true);
 		}
 		public void popupMenuCanceled(PopupMenuEvent arg0)
 		{

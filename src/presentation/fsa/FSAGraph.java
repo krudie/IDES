@@ -46,6 +46,10 @@ import presentation.Geometry;
  */
 public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell, LayoutShellPublisher {
 	
+	//This flag is set to true when the FSAGraph is a result of an automatic
+	//DES operation and this result has more than 100 states
+	boolean avoidLayoutDrawing;
+	
 	protected UniformRadius uniformR=new UniformRadius();
 
 	/** Flag indicating whether this graph needs to be saved to file */
@@ -99,7 +103,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
 		
-		initializeGraph();	
+		initializeGraph();
 	}
 	
 	/**
@@ -117,12 +121,20 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		this.fsa = (Automaton)fsa;
 		metaData = new MetaData(this.fsa);
 		fsa.addSubscriber(this);
-		
 		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
-		 
+
+		int statesCounter = fsa.getStateCount();
+
+		avoidLayoutDrawing = (statesCounter > 100 ? true: false);
+		//if(avoidLayoutDrawing)
+		//{
+		//	return;
+		//}
+			
+		
 		// Prepare elements for automatic layout
 		Set<Set<FSATransition>> groups = new HashSet<Set<FSATransition>>();
 		HashMap<FSAState,Set<FSATransition>> stateGroups = new HashMap<FSAState,Set<FSATransition>>();
@@ -152,7 +164,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while( groupsIter.hasNext() ) {
 			wrapTransitions( groupsIter.next() );
 		}
-		
+
 		LayoutManager.getDefaultFSMLayouter().layout(this);
 		buildIntersectionDS();
 	}
