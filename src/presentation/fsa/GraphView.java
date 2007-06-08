@@ -107,7 +107,15 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 	    Rectangle r=getBounds();
 	    if(doFill)
 	    {
-	    	g2D.setColor(Color.WHITE);
+	    	//FIXME remove the condition on avoid layout
+	    	if(graphModel.isAvoidLayoutDrawing())
+	    	{
+		    	g2D.setColor(Color.ORANGE);
+	    	}
+	    	else
+	    	{
+	    		g2D.setColor(Color.WHITE);
+	    	}
 	    	g2D.fillRect(0,0,r.width,r.height);
 	    }
 	    

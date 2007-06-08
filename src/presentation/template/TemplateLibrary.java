@@ -227,6 +227,26 @@ public class TemplateLibrary implements Presentation, KeyListener {
 			}
 		});
 		extraBox.add(plcBut);
+		JButton customBut=new JButton("PLC Select");
+		customBut.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				TemplateModel model=(TemplateModel)Hub.getWorkspace().getActiveModel();
+				Collection<FSASupervisor> sups=new SupervisorSelectDialog().getSupervisors(model.getChannelCount());
+				if(sups==null)
+				{
+					return;
+				}
+				Collection<FSAModel> modules=new HashSet<FSAModel>();
+				for(Iterator<TemplateModule> i=model.getModuleIterator();i.hasNext();)
+				{
+					modules.add(i.next().getFSA());
+				}
+				PLCExporter.export(modules, sups, model.getPLCCodeMap());
+			}
+		});
+		extraBox.add(customBut);
 		main.add(extraBox);
 		
 		gui=new JPanel();
