@@ -5,6 +5,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -67,6 +68,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 			events=new Vector<FSAEvent>();
 			controllable=new Vector<Boolean>();
 			observable=new Vector<Boolean>();
+
 		}
 		
 		public EventTableModel(FSAModel a)
@@ -399,10 +401,27 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 		add(mainBox);
 		refreshEventTable();
 		setTrackModel(true);
+		
+		if(graph.isAvoidLayoutDrawing())
+		{
+			this.setEnabled(false);
+		}
+	}
+	
+	//Allow or disallow the user to add new events on the model
+	public void setEnabled(boolean b)
+	{
+		super.setEnabled(b);
+		deleteButton.setEnabled(b);
+		createButton.setEnabled(b);
+		controllableCBox.setEnabled(b);
+		observableCBox.setEnabled(b);
+		eventNameField.setEnabled(b);
 	}
 	
 	private void refreshEventTable()
 	{
+		
 		eventNameField.setText("");
 		// CLM: these controls should be disabled whenever eventNameField
 		// is empty
@@ -430,11 +449,16 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 			//observableCBox.setEnabled(true);
 			
 			if (table.getRowCount() == 0)
-				deleteButton.setEnabled(false);
+				{
+					deleteButton.setEnabled(false);
+				}
 			else
-				deleteButton.setEnabled(true);
+				{
+					deleteButton.setEnabled(true);
+				}
 			eventNameField.setEnabled(true);
 			table.setEnabled(true);
+			
 //			if(!model.equals(lastModel))
 //			{
 //				if(lastModel!=null)
@@ -443,6 +467,10 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 //				lastModel.addSubscriber(this);
 //			}
 //		}	
+
+
+			
+		
 	}
 //	
 //	/**

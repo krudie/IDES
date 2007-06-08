@@ -42,7 +42,6 @@ public class MetaData implements FSAMetaData {
 	 */
 	public CircleNodeLayout getLayoutData(FSAState state) {
 		State s = (State)state;
-		
 		// radius, centre point, label text and arrow vector (if initial)
 		SubElement layout = s.getSubElement("graphic").getSubElement("circle");
 		int radius = Integer.parseInt(layout.getAttribute("r"));
@@ -60,7 +59,6 @@ public class MetaData implements FSAMetaData {
         	SubElement a = s.getSubElement("graphic").getSubElement("arrow");
         	Point2D.Float arrow = new Point2D.Float(Float.parseFloat(a.getAttribute("x")),
 								 					Float.parseFloat(a.getAttribute("y")));
-        	
         	
         	return new CircleNodeLayout(centre, radius, name, arrow);
         } else {

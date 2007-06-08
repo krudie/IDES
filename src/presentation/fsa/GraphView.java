@@ -174,6 +174,8 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 				setScaleFactor(Math.min(xScale,yScale));
 			}
 			invalidate();
+				
+			
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 //		repaint();

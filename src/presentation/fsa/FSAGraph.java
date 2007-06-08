@@ -48,7 +48,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	
 	//This flag is set to true when the FSAGraph is a result of an automatic
 	//DES operation and this result has more than 100 states
-	boolean avoidLayoutDrawing;
+	private boolean avoidLayoutDrawing;
+	public boolean isAvoidLayoutDrawing()
+	{
+		return avoidLayoutDrawing;
+	}
 	
 	protected UniformRadius uniformR=new UniformRadius();
 
@@ -103,7 +107,29 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
 		
-		initializeGraph();
+
+		//Try whether the layout exists (if a big system with more than 100 states was generated
+		//as a result of an automatic DES operation, this model will not have a layout)
+		Iterator iter = fsa.getStateIterator();
+		State s;
+		int i = 0;		
+		while( iter.hasNext() ) {
+			s = (State)iter.next();
+			try{
+				s.getSubElement("graphic").getSubElement("circle");
+			}catch(NullPointerException npe)
+			{
+				avoidLayoutDrawing = true;
+			}
+
+		}
+		//
+			
+		if(!avoidLayoutDrawing)
+		{
+			initializeGraph();
+		}
+		
 	}
 	
 	/**
@@ -129,10 +155,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		int statesCounter = fsa.getStateCount();
 
 		avoidLayoutDrawing = (statesCounter > 100 ? true: false);
-		//if(avoidLayoutDrawing)
-		//{
-		//	return;
-		//}
+	    if(avoidLayoutDrawing)
+		{
+			return;
+		}
 			
 		
 		// Prepare elements for automatic layout

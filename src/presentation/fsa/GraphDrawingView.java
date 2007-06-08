@@ -366,6 +366,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 
 	public void keyPressed(KeyEvent arg0) {
 		drawingTools[currentTool].handleKeyPressed(arg0);	
+		
+		
 	}
 
 
@@ -619,4 +621,15 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 //		Hub.getMainWindow().validate();
 //		//repaint();
 //	}	
+	
+	public void setGraphModel(FSAGraph graphModel)
+	{
+		super.setGraphModel(graphModel);
+		
+		if(graphModel != null && graphModel.isAvoidLayoutDrawing())
+		{
+			this.setEnabled(false);
+		}
+	}
+	
 }

@@ -139,9 +139,13 @@ public class FSAToolset implements Toolset {
 	{
 		Collection<Presentation> ps=Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class);
 		if(ps.size()<1)
-			return null;
+			{
+			 return null;
+			}
 		else
+			{
 			return (GraphDrawingView)ps.iterator().next();
+			}
 	}
 	
 //	/**
