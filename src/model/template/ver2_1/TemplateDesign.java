@@ -35,6 +35,12 @@ public class TemplateDesign implements TemplateModel {
 
 	protected static class DesignDescriptor implements ModelDescriptor
 	{
+		
+		public String getIOTypeDescription()
+		{
+			return "TemplateDesign";
+		}
+		
 		public Class[] getModelInterfaces()
 		{
 			return new Class[]{TemplateModel.class};

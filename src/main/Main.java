@@ -2,6 +2,9 @@ package main;
 
 import io.fsa.ver2_1.CommonTasks;
 
+import io.fsa.ver2_1.FSAFileIOPlugin;
+import io.template.ver2_1.TemplateFileIOPlugin;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.MissingResourceException;
@@ -42,7 +45,7 @@ import services.General;
 import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
-
+import pluggable.io.*;
 /**
  * 
  * @author Lenko Grigorov
@@ -91,6 +94,10 @@ public class Main {
 		
 		Cache.init();
 		// TODO: move operation inits to the plugin manager eventually
+		
+		FSAFileIOPlugin.getInstance().initializeFileIO();
+		TemplateFileIOPlugin.getInstance().initializeFileIO();
+		
 		ModelManager.registerModel(Automaton.myDescriptor);
 		ModelManager.registerModel(TemplateDesign.myDescriptor);
 		PresentationManager.registerToolset(FSAModel.class, new FSAToolset());

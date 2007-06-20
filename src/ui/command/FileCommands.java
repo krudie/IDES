@@ -45,6 +45,8 @@ import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import services.latex.LatexRenderException;
 import ui.NewModelDialog;
+import pluggable.io.IOCoordinator;
+
 
 /**
  * @author Lenko Grigorov
@@ -97,34 +99,27 @@ public class FileCommands {
 	    	int retVal = fc.showOpenDialog(Hub.getMainWindow());
 	    	if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
-				Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+
+				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				if(Hub.getWorkspace().getModel(ParsingToolbox.removeFileType(fc.getSelectedFile().getName()))!=null)
 				{
 					Hub.displayAlert(Hub.string("modelAlreadyOpen"));
 				}
-				else
+				//CHRISTIAN
+				//calling IOCoordinator to handle the open command (it will make the correct plugins
+				//load the file):
+				DESModel model = IOCoordinator.getInstance().load(fc.getSelectedFile());
+				if(model != null)
 				{
-					if(fc.getSelectedFile().getName().equals("TemplateDesign.xmd"))
-					{
-						TemplateGraph graph=io.template.ver2_1.FileOperations.openAutomaton(fc.getSelectedFile());
-						if(graph != null){
-							Hub.getWorkspace().addLayoutShell(graph);
-							Hub.getWorkspace().setActiveModel(graph.getName());
-						}						
-					}
-					else
-					{
-						FSAModel fsa = FileOperations.openAutomaton(fc.getSelectedFile());
-						if(fsa != null){
-							Hub.getWorkspace().addModel(fsa);
-							Hub.getWorkspace().setActiveModel(fsa.getName());
-						}
-					}
-	    		}
+					Hub.getWorkspace().addModel(model);
+					Hub.getWorkspace().setActiveModel(model.getName());
+				}
+				//CHRISTIAN
 				Hub.getMainWindow().setCursor(cursor);
 			}
 		}
-	}	
+	}
+
 	
 	public static class SaveAllAutomataCommand extends ActionCommand {
 		
@@ -135,7 +130,7 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			// TODO This should be a while loop
 			for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();) {
@@ -160,7 +155,7 @@ public class FileCommands {
 		protected void handleExecute() {
 			DESModel fsa = Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
 			if( fsa != null && fsa instanceof FSAModel) {
 				if(FileOperations.saveAutomaton((FSAModel)fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{
@@ -182,7 +177,7 @@ public class FileCommands {
 		protected void handleExecute() {
 			DESModel fsa = Hub.getWorkspace().getActiveModel();
 			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			if(fsa!=null&&fsa instanceof FSAModel)
 				if(FileOperations.saveAutomatonAs((FSAModel)fsa))
 				{
@@ -247,7 +242,7 @@ public class FileCommands {
 	    	int retVal = fc.showOpenDialog(Hub.getMainWindow());
 	    	if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
-				Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	    		WorkspaceDescriptor wd = FileOperations.openWorkspace(fc.getSelectedFile());
 	    		if(wd != null){
 	    			Hub.getWorkspace().replaceWorkspace(wd);
@@ -265,7 +260,7 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
@@ -284,7 +279,7 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.WAIT_CURSOR);
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();

@@ -51,6 +51,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		{
 			return FSAModel.class;
 		}
+		
+		public String getIOTypeDescription()
+		{
+			return "FSA";
+		}
+		
 		public String getTypeDescription()
 		{
 			return "Finite State Automaton";

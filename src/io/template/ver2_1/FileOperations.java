@@ -83,33 +83,33 @@ public class FileOperations {
     	return false;
 	}
 	
-	public static TemplateGraph openAutomaton(File f) {
-        TemplateGraph graph = null;
-        if(!f.canRead())
-        {
-        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
-        	return graph;
-        }
-        String errors="";
-        try
-        {
-        	graph = TemplateParser.parse(f);
-        }catch(Exception e)
-        {
-        	graph=null;
-        	errors+=e.getMessage();
-//        	e.printStackTrace();
-        }
-        if(!"".equals(errors))
-        {
-        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
-        			"\n"+Hub.string("errorsParsingXMLFileL2"));
-        }
-        if(graph!=null)
-        {
-        	graph.setAnnotation(Annotable.FILE,f);
-        }
-        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
-        return graph;
-	}
+//	public static TemplateGraph openAutomaton(File f) {
+//        TemplateGraph graph = null;
+//        if(!f.canRead())
+//        {
+//        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
+//        	return graph;
+//        }
+//        String errors="";
+//        try
+//        {
+//        	graph = TemplateParser.parse(f);
+//        }catch(Exception e)
+//        {
+//        	graph=null;
+//        	errors+=e.getMessage();
+////        	e.printStackTrace();
+//        }
+//        if(!"".equals(errors))
+//        {
+//        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
+//        			"\n"+Hub.string("errorsParsingXMLFileL2"));
+//        }
+//        if(graph!=null)
+//        {
+//        	graph.setAnnotation(Annotable.FILE,f);
+//        }
+//        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
+//        return graph;
+//	}
 }

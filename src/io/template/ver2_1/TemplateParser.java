@@ -41,7 +41,7 @@ import util.StupidSetWrapper;
 
 public class TemplateParser {
 
-	public static TemplateGraph parse(File f) throws IOException
+	public static TemplateModel parse(File f) throws IOException
 	{
 		TemplateModel model=ModelManager.createModel(TemplateModel.class,ParsingToolbox.removeFileType(f.getName()));
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -75,6 +75,7 @@ public class TemplateParser {
 			{
 				throw new RuntimeException(Hub.string("dataFormatError"));
 			}
+
 			for(int i=1;i<elements.getLength();++i)
 			{ //read "data" section
 				Node tag=elements.item(i);
@@ -99,6 +100,7 @@ public class TemplateParser {
 					}
 					String code=tag.getChildNodes().item(0).getTextContent().trim().replaceAll("\\{event\\}","<event>");
 					model.setPLCCode(name,code);
+
 				}
 				else if("link".equals(tag.getNodeName()))
 				{ //read Links
@@ -223,7 +225,7 @@ public class TemplateParser {
 						model.add(c);
 					}
 				}
-			}
+			}		
 			elements=document.getDocumentElement().getChildNodes();
 			if(elements==null||elements.getLength()<1)
 			{
@@ -240,6 +242,7 @@ public class TemplateParser {
 					break;
 				}
 			}
+			
 			if(elements==null||elements.getLength()<1)
 			{
 				throw new RuntimeException(Hub.string("dataFormatError"));
@@ -295,6 +298,7 @@ public class TemplateParser {
 		}catch(Exception e){
 			throw new IOException(Hub.string("loadTemplateLibFail")+" "+e.getMessage());
 		}
-		return (TemplateGraph)PresentationManager.getToolset(TemplateModel.class).wrapModel(model);
+
+		return model;//(TemplateGraph)PresentationManager.getToolset(TemplateModel.class).wrapModel(model);
 	}
 }
