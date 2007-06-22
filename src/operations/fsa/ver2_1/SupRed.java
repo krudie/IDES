@@ -21,12 +21,20 @@ import pluggable.operation.Operation;
 public class SupRed implements Operation {
 
 	public final static String NAME="supervisor reduction (Grail)";
+	public final static String DESCRIPTION="temp";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */
 	public String getName() {
 		return NAME;
+	}
+	
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
 	}
 
 	/* (non-Javadoc)

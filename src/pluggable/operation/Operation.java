@@ -7,6 +7,7 @@ package pluggable.operation;
  * Interface for DES operations.
  * 
  * @author Lenko Grigorov
+ * @author Chris Dragert
  */
 public interface Operation {
 
@@ -16,6 +17,15 @@ public interface Operation {
 	 * @return the name of the operation
 	 */
 	public abstract String getName();
+	
+	/**
+	 * Description of the operation. This should be approximately one
+	 * sentence (i.e. 10-20 words in length) that describes the 
+	 * operation
+	 * @return the description of the operation
+	 */
+	public abstract String getDescription();
+	
 	
 	/**
 	 * Nuber of inputs for the operation. If it can handle an unbounded

@@ -11,16 +11,26 @@ import pluggable.operation.Operation;
 /**
  *
  * @author Lenko Grigorov
+ * @author Chris Dragert
  */
 public class Trim implements FilterOperation {
 
 	public final static String NAME="trim";
-
+	public final static String DESCRIPTION="Returns the" +
+	" automaton with only the states that are both reachable" +
+	" and co-reachable.";
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */
 	public String getName() {
 		return NAME;
+	}
+	
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
 	}
 
 	/* (non-Javadoc)

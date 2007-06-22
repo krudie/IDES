@@ -9,10 +9,12 @@ import pluggable.operation.Operation;
 /**
  *
  * @author Lenko Grigorov
+ * @author Chris Dragert
  */
 public class Controllable implements Operation {
 
 	public final static String NAME="controllable";
+	public final static String DESCRIPTION="temp";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
@@ -21,6 +23,13 @@ public class Controllable implements Operation {
 		return NAME;
 	}
 
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getNumberOfInputs()
 	 */

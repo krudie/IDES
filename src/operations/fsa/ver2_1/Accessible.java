@@ -10,10 +10,14 @@ import pluggable.operation.FilterOperation;
 /**
  *
  * @author Lenko Grigorov
+ * @author Chris Dragert
  */
 public class Accessible implements FilterOperation {
 
-	public final static String NAME="accessible";
+	public final static String NAME="Accessible";
+	public final static String DESCRIPTION="Returns the" +
+		" automaton with only the states that are reachable" +
+		" from the initial state.";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
@@ -22,6 +26,13 @@ public class Accessible implements FilterOperation {
 		return NAME;
 	}
 
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getNumberOfInputs()
 	 */

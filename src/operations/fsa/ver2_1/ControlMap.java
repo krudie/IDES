@@ -25,6 +25,14 @@ import pluggable.operation.FilterOperation;
 public class ControlMap implements FilterOperation {
 
 	public final static String NAME="control map";
+	public final static String DESCRIPTION="temp";
+	
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
+	}
 
 	/**
 	 * To be used to store the ids of pairs of states

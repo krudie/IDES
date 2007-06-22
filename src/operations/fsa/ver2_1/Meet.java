@@ -10,17 +10,26 @@ import pluggable.operation.Operation;
 
 /**
  * @author Lenko Grigorov
+ * @author Chris Dragert
  *
  */
 public class Meet implements Operation {
 
 	public final static String NAME="meet";
+	public final static String DESCRIPTION="temp";
 	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */
 	public String getName() {
 		return NAME;
+	}
+	
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
 	}
 
 	/* (non-Javadoc)

@@ -15,18 +15,26 @@ import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
 
 /**
- *
  * @author Lenko Grigorov
+ * @author Chris Dragert
  */
 public class SupCon implements Operation {
 
 	public final static String NAME="supremal controllable sublanguage";
+	public final static String DESCRIPTION="temp";
 	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */
 	public String getName() {
 		return NAME;
+	}
+	
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
 	}
 
 	/* (non-Javadoc)

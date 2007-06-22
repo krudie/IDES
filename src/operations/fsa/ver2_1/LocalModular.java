@@ -9,12 +9,20 @@ import pluggable.operation.OperationManager;
 public class LocalModular implements Operation {
 
 	public final static String NAME="local modular";
+	public final static String DESCRIPTION="temp";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */
 	public String getName() {
 		return NAME;
+	}
+	
+	/* (non-Javadoc)
+	 * @see pluggable.operation.Operation#getDescription()
+	 */
+	public String getDescription() {
+		return DESCRIPTION;
 	}
 
 	/* (non-Javadoc)

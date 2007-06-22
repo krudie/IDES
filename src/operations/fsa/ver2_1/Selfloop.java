@@ -38,6 +38,10 @@ public class Selfloop implements FilterOperation {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String getDescription() {
+		return null;
+	}
 
 	public int getNumberOfInputs() {
 		// TODO Auto-generated method stub
