@@ -3,7 +3,6 @@ package ui.command;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ctct.CTCTException;
-import io.ctct.EventsMap;
 import io.ctct.LL_CTCT_Command;
 import io.fsa.ver2_1.CommonTasks;
 import io.fsa.ver2_1.FileOperations;
@@ -19,7 +18,6 @@ import javax.swing.JOptionPane;
 
 import main.Annotable;
 import main.Hub;
-import main.Workspace;
 import main.IncompleteWorkspaceDescriptorException;
 import main.Main;
 import main.WorkspaceDescriptor;
@@ -27,41 +25,36 @@ import model.DESModel;
 import model.ModelDescriptor;
 import model.ModelManager;
 import model.fsa.FSAModel;
-import model.fsa.ver2_1.Automaton;
-import model.template.TemplateModel;
 
 import org.pietschy.command.ActionCommand;
 import org.pietschy.command.CommandManager;
-import org.pietschy.command.file.AbstractFileOpenCommand;
 import org.pietschy.command.file.AbstractSaveAsCommand;
 import org.pietschy.command.file.ExtensionFileFilter;
 
 import presentation.LayoutShell;
 import presentation.fsa.GraphExporter;
-import presentation.fsa.FSAGraph;
-import presentation.template.TemplateGraph;
 import services.General;
 import services.latex.LatexManager;
-import services.latex.LatexPrerenderer;
 import services.latex.LatexRenderException;
 import ui.NewModelDialog;
+import ui.OperationDialog;
 import pluggable.io.IOCoordinator;
-
+import ui.ImportExportDialog;
 
 /**
  * @author Lenko Grigorov
  */
 public class FileCommands {	
 	
-	public static class NewAutomatonCommand extends ActionCommand {
+	public static class NewCommand extends ActionCommand {
 		
 		/**
-		 * used to create unique automaton names in a session
+		 * used to create unique  names in a session
 		 */
-		private static int automatonCount=0;
+		private static int Count=0;
 		
-		public NewAutomatonCommand(){
-			super("new.automaton.command");
+		public NewCommand(){
+			super("new.command");
 		}
 		
 		@Override
@@ -69,22 +62,16 @@ public class FileCommands {
 			ModelDescriptor md=new NewModelDialog().selectModel();
 			if(md==null)
 				return;
-//			if(md.getPreferredModelInterface().equals(FSAModel.class))
-//			{
-//				FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName")+"-"+automatonCount++);
-//				Hub.getWorkspace().addModel(fsa);
-//				Hub.getWorkspace().setActiveModel(fsa.getName());
-//			}
-			DESModel des=md.createModel(General.getRandomId(),Hub.string("newAutomatonName")+"-"+automatonCount++);
+			DESModel des=md.createModel(General.getRandomId(),Hub.string("newModelName")+"-"+Count++);
 			Hub.getWorkspace().addModel(des);
 			Hub.getWorkspace().setActiveModel(des.getName());
 		}	
 	}
 	
-	public static class OpenAutomatonCommand extends ActionCommand {
+	public static class OpenCommand extends ActionCommand {
 		
-		public OpenAutomatonCommand() {
-			super("open.automaton.command");			
+		public OpenCommand() {
+			super("open.command");			
 		}
 
 		@Override
@@ -92,6 +79,7 @@ public class FileCommands {
 		 * FIXME Don't add workspace files as if they were automata...
 		 */
 		protected void handleExecute() {
+			//Open a window for the user to choose the file to open:
 			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
 			fc.setDialogTitle(Hub.string("openModelTitle"));
 			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
@@ -105,26 +93,27 @@ public class FileCommands {
 				{
 					Hub.displayAlert(Hub.string("modelAlreadyOpen"));
 				}
-				//CHRISTIAN
-				//calling IOCoordinator to handle the open command (it will make the correct plugins
-				//load the file):
+				
+				//calling IOCoordinator to handle the selected file
+				//It will make the correct plugins load the file):
 				DESModel model = IOCoordinator.getInstance().load(fc.getSelectedFile());
+
 				if(model != null)
 				{
 					Hub.getWorkspace().addModel(model);
 					Hub.getWorkspace().setActiveModel(model.getName());
 				}
-				//CHRISTIAN
+
 				Hub.getMainWindow().setCursor(cursor);
 			}
 		}
 	}
 
 	
-	public static class SaveAllAutomataCommand extends ActionCommand {
+	public static class SaveAllCommand extends ActionCommand {
 		
-		public SaveAllAutomataCommand(){
-			super("saveall.automaton.command");
+		public SaveAllCommand(){
+			super("saveall.command");
 		}
 		
 		@Override
@@ -132,76 +121,173 @@ public class FileCommands {
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-			// TODO This should be a while loop
-			for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();) {
-				LayoutShell gm=i.next();
-				DESModel fsa=gm.getModel();
-				if( fsa != null && fsa instanceof FSAModel)
-					if(FileOperations.saveAutomaton((FSAModel)fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{					
+			Iterator<LayoutShell> iterator = Hub.getWorkspace().getLayoutShells();			
+			while(iterator.hasNext())
+			{
+				LayoutShell gm=iterator.next();
+				DESModel model=gm.getModel();
+				if( model != null)
+				{
+					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+					Hub.getWorkspace().fireRepaintRequired();
+				}
+			}
+			Hub.getMainWindow().setCursor(cursor);
+		}	
+	}
+	
+	public static class SaveCommand extends ActionCommand {
+		
+		public SaveCommand() {
+			super("save.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			//Make the model be saved by the IOCoordinator.
+			//IOCoordinator will select the plugins which saves data and metadata information for model.
+			DESModel model = Hub.getWorkspace().getActiveModel();
+			
+			if( model != null)
+			{
+				if(model.getAnnotation(Annotable.FILE) == null)
+				{
+					JFileChooser fc;
+					String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
+					if(path == null)
+					{
+						fc=new JFileChooser();
+					}else
+					{
+						fc=new JFileChooser(path);	
+					}
+			        fc.setDialogTitle(Hub.string("saveModelTitle"));
+					fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+							Hub.string("modelFileDescription")));
+					
+					if((File)model.getAnnotation(Annotable.FILE)!=null){
+						fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
+					}else{
+						fc.setSelectedFile(new File(model.getName()));
+					}
+					
+					int retVal;
+					boolean fcDone=true;
+					File file=null;
+					do
+					{
+						retVal = fc.showSaveDialog(Hub.getMainWindow());
+						if(retVal != JFileChooser.APPROVE_OPTION)
+							break;
+						file=fc.getSelectedFile();
+			    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
+			    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+						if(file.exists())
+						{
+							int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+								Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+								Hub.string("saveModelTitle"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
+							fcDone=choice!=JOptionPane.NO_OPTION;
+							if(choice!=JOptionPane.YES_OPTION)
+								retVal=JFileChooser.CANCEL_OPTION;
+						}
+					} while(!fcDone);					
+				
+					if(retVal != JFileChooser.CANCEL_OPTION)
+					{
+						model.setAnnotation(Annotable.FILE, file);
+						IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
 						Hub.getWorkspace().fireRepaintRequired();
 					}
-			}
-			Hub.getMainWindow().setCursor(cursor);
-		}	
-	}
-	
-	public static class SaveAutomatonCommand extends ActionCommand {
-		
-		public SaveAutomatonCommand() {
-			super("save.automaton.command");
-		}
-		
-		@Override
-		protected void handleExecute() {
-			DESModel fsa = Hub.getWorkspace().getActiveModel();
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			
-			if( fsa != null && fsa instanceof FSAModel) {
-				if(FileOperations.saveAutomaton((FSAModel)fsa,(File)fsa.getAnnotation(Annotable.FILE)))	{
-					Hub.getWorkspace().fireRepaintRequired();
-				}
-			}
-			
-			Hub.getMainWindow().setCursor(cursor);
-		}	
-	}
-	
-	public static class SaveAutomatonAsCommand extends ActionCommand {
-		
-		public SaveAutomatonAsCommand(){
-			super("saveas.automaton.command");
-		}
-		
-		@Override
-		protected void handleExecute() {
-			DESModel fsa = Hub.getWorkspace().getActiveModel();
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			if(fsa!=null&&fsa instanceof FSAModel)
-				if(FileOperations.saveAutomatonAs((FSAModel)fsa))
+				}else
 				{
-					((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(false);					
+					model.setAnnotation(Annotable.FILE, model.getAnnotation(Annotable.FILE));
+					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
 					Hub.getWorkspace().fireRepaintRequired();
 				}
-			LayoutShell graph=Hub.getWorkspace().getActiveLayoutShell();
-			if(graph!=null&&graph instanceof TemplateGraph)
+			}
+			Hub.getMainWindow().setCursor(cursor);
+		}	
+	}
+	
+	public static class SaveAsCommand extends ActionCommand {
+		
+		public SaveAsCommand(){
+			super("saveas.command");
+		}
+		
+		@Override
+		protected void handleExecute() {
+
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			//Make the model be saved by the IOCoordinator.
+			//IOCoordinator will select the plugins which saves data and metadata information for model.
+			DESModel model = Hub.getWorkspace().getActiveModel();
+			if( model != null)
 			{
-				if(io.template.ver2_1.FileOperations.saveAs((TemplateGraph)graph))
+					JFileChooser fc;
+					String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
+					if(path == null)
+					{
+						fc=new JFileChooser();
+					}else
+					{
+						fc=new JFileChooser(path);	
+					}
+			        fc.setDialogTitle(Hub.string("saveModelTitle"));
+					fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+							Hub.string("modelFileDescription")));
+					
+					if((File)model.getAnnotation(Annotable.FILE)!=null){
+						fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
+					}else{
+						fc.setSelectedFile(new File(model.getName()));
+					}
+					
+					int retVal;
+					boolean fcDone=true;
+					File file=null;
+					do
+					{
+						retVal = fc.showSaveDialog(Hub.getMainWindow());
+						if(retVal != JFileChooser.APPROVE_OPTION)
+							break;
+						file=fc.getSelectedFile();
+			    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
+			    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+						if(file.exists())
+						{
+							int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+								Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+								Hub.string("saveModelTitle"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
+							fcDone=choice!=JOptionPane.NO_OPTION;
+							if(choice!=JOptionPane.YES_OPTION)
+								retVal=JFileChooser.CANCEL_OPTION;
+						}
+					} while(!fcDone);					
+				
+				if(retVal != JFileChooser.CANCEL_OPTION)
 				{
-					((TemplateGraph)Hub.getWorkspace().getActiveLayoutShell()).modelSaved();					
-					Hub.getWorkspace().fireRepaintRequired();					
+					model.setAnnotation(Annotable.FILE, file);
+					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
 				}
-			}
+				}
+			
 			Hub.getMainWindow().setCursor(cursor);
 		}	
+			
 	}
 	
 	
-	public static class CloseAutomatonCommand extends ActionCommand {
+	public static class CloseCommand extends ActionCommand {
 		
-		public CloseAutomatonCommand(){
-			super("close.automaton.command");
+		public CloseCommand(){
+			super("close.command");
 		}
 		
 		@Override
@@ -235,7 +321,7 @@ public class FileCommands {
 			if(Hub.getWorkspace().isDirty())
 				if(!CommonTasks.handleUnsavedWorkspace())
 					return;
-			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME")));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -352,7 +438,7 @@ public class FileCommands {
 			// Modifier: Sarah-Jane Whittaker
 			String fileContents = GraphExporter.createEPSFileContents();
 			FileWriter latexWriter = null;
-					
+			
 			if (fileContents == null)
 			{
 				return;
@@ -360,18 +446,34 @@ public class FileCommands {
 			
 			try
 			{
-				LatexManager.getRenderer().latex2EPS(fileContents,file);
+				latexWriter = new FileWriter(file);
+				latexWriter.write(fileContents);
+				latexWriter.close();
 			}
 			catch (IOException fileException)
 			{
 				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
 			}
-			catch (LatexRenderException e)
-			{
-				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
-			}
-		}
-		
+//			FileWriter latexWriter = null;
+//					
+//			if (fileContents == null)
+//			{
+//				return;
+//			}
+//			
+//			try
+//			{
+//				LatexManager.getRenderer().latex2EPS(fileContents,file);
+//			}
+//			catch (IOException fileException)
+//			{
+//				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+//			}
+//			catch (LatexRenderException e)
+//			{
+//				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+//			}
+		}	
 	}
 	
 	public static class ExportToLatexCommand extends ActionCommand {
@@ -780,6 +882,21 @@ public class FileCommands {
 		protected void performSave(File arg0) {
 			// TODO Auto-generated method stub
 			System.out.println("TODO: Save as PNG");
+		}
+		
+	}
+	
+	
+	public static class ImportExportCommand extends ActionCommand {
+
+		public ImportExportCommand() {
+			super("import.export.command");			
+		}
+
+		@Override
+		protected void handleExecute() {
+			ImportExportDialog ieDialog=new ImportExportDialog();
+			
 		}
 		
 	}

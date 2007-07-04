@@ -22,5 +22,14 @@ public class ParsingToolbox{
         }
         return r;
     }
+    
+    public static String getFileType(String s){
+    	if(s ==null) return null;
+    	String sa = s.substring(s.length() - (s.compareTo(removeFileType(s))));
+    	sa = sa.replace(".", "");
+//    	System.out.println(sa);
+    	return sa;
+    }
+    
 
 }

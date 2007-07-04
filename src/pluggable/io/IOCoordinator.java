@@ -6,17 +6,16 @@ import main.Annotable;
 import main.Hub;
 import model.DESModel;
 import model.fsa.FSAModel;
-import io.ParsingToolbox;
-import io.fsa.ver2_1.AutomatonParser;
-import io.fsa.ver2_1.AutomatonParser20;
 import io.fsa.ver2_1.FileOperations;
+import io.fsa.ver2_1.XMLexporter;
+import io.IOUtilities;
+import io.ParsingToolbox;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,8 +29,6 @@ import org.xml.sax.SAXException;
 
 import pluggable.io.IOPluginManager;
 import pluggable.io.FileIOPlugin;
-import presentation.template.TemplateGraph;
-import main.Hub;
 import io.AbstractParser;
 /**
  * @author christiansilvano
@@ -79,27 +76,66 @@ public final class IOCoordinator extends AbstractParser{
 		
 	public boolean save(DESModel model, File file)
 	{
+	
+		Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
 		//Read the dataType from the plugin modelDescriptor
 		String type = model.getModelDescriptor().getIOTypeDescription();
 
 		//Get the plugin capable of saving a model of the type "type"
 		//Currently there must be just one data saver for a model type.
 		FileIOPlugin dataSaver = IOPluginManager.getInstance().getDataSaver(type);
-		//Get all the plugins capable of saving the metaTags addressed for
-		//type and tag. There can be several different meta savers for a specific
-		//data type.
+
+		//Get all the plugins capable of saving the metaTags for ""type""
+		//There can be several different meta savers for a specific data type.
 		Set<FileIOPlugin> metaSavers = IOPluginManager.getInstance().getMetaSavers(type);
- 
-		//1 - Open the file.
-		//2 - Make the dataSaver plugin save the data information on the file
-		//3 - Make the metaSavers one by one save the meta information on the file
-		//4 - close the file.
+ 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
+
+		//Open  ""file"" and start writing the header of the IDES file format
+		PrintStream ps = IOUtilities.getPrintStream(file);
+
+        ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        ps.println("<model version=\"2.1\" type=\"FSA\" id=\""+model.getId()+"\">");
+        ps.println("<data>");
+		
+        //Make the dataSaver plugin save the data information on the file (protect the original content)
+		dataSaver.saveData(ps, model, file.getParentFile());
+        //The data information is stored: 
+		ps.println("</data>");
+        //3 - Make the metaSavers one by one save the meta information on the file
+		while(metaIt.hasNext())
+		{
+			FileIOPlugin plugin = metaIt.next();
+			Iterator<String> tags = plugin.getMetaTags(type).iterator();
+			while(tags.hasNext())
+			{
+				String tag = tags.next();
+				ps.println("<meta tag=\""+ tag +"\" version=\"2.1\">");
+				plugin.saveMeta(ps, model, type, tag);
+				ps.println("</meta>");
+			}
+		}
+        ps.println("</model>");
+		
+        //4 - close the file.
 		//5 - Return true if the operation was a success, otherwise return false.
 
+        String newName=ParsingToolbox.removeFileType(file.getName());
+        if(!newName.equals(model.getName())
+        		&&Hub.getWorkspace().getModel(newName)!=null)
+        	Hub.getWorkspace().removeModel(newName);
+        	
+        model.setName(newName);
+        model.setAnnotation(Annotable.FILE,file);
+        //model.FireFSASaved();
+		//debug tests:
+//		System.out.println(file);
+//		System.out.println(model.getModelDescriptor().getTypeDescription());
+//		System.out.println(dataSaver.getIOTypeDescriptor());
 		
-		
-		System.out.println(model.getModelDescriptor().getTypeDescription());
-		return (FileOperations.saveAutomaton((FSAModel)model,(File)model.getAnnotation(Annotable.FILE)));	
+//		if(model instanceof FSAModel)//temporary
+//			return (FileOperations.saveAutomaton((FSAModel)model,(File)model.getAnnotation(Annotable.FILE)));
+//		else
+			return false;
 	}
 	
 	//Get the "type" of the model in file and ask the plugin that manage this

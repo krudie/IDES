@@ -6,10 +6,10 @@
 			<text>IDES 2.1</text>
 		</face>
 		<members>
-         <member command-id="new.automaton.command"/>
-         <member command-id="open.automaton.command"/>
-         <member command-id="save.automaton.command"/>
-         <member command-id="saveall.automaton.command"/>
+         <member command-id="new.command"/>
+         <member command-id="open.command"/>
+         <member command-id="save.command"/>
+         <member command-id="saveall.command"/>
          <separator/>
          <member command-id="open.workspace.command"/>         
          <member command-id="save.workspace.command"/>
@@ -54,12 +54,12 @@
          <text>_File</text>         
       </face>
       <members>  
-         <member command-id="new.automaton.command"/>
-         <member command-id="open.automaton.command"/>
-         <member command-id="save.automaton.command"/>
-         <member command-id="saveas.automaton.command"/>
-         <member command-id="saveall.automaton.command"/>
-         <member command-id="close.automaton.command"/>
+         <member command-id="new.command"/>
+         <member command-id="open.command"/>
+         <member command-id="save.command"/>
+         <member command-id="saveas.command"/>
+         <member command-id="saveall.command"/>
+         <member command-id="close.command"/>
          <separator/>
          <member command-id="open.workspace.command"/>         
          <member command-id="save.workspace.command"/>
@@ -79,10 +79,10 @@
          <text>File operations</text>         
       </face>
       <members>  
-         <member command-id="new.automaton.command"/>
-         <member command-id="open.automaton.command"/>
-         <member command-id="save.automaton.command"/>
-         <member command-id="saveall.automaton.command"/>
+         <member command-id="new.command"/>
+         <member command-id="open.command"/>
+         <member command-id="save.command"/>
+         <member command-id="saveall.command"/>
          <separator/>
          <member command-id="open.workspace.command"/>         
          <member command-id="save.workspace.command"/>
@@ -102,12 +102,12 @@
       <members>  
          <member command-id="save.workspace.command"/>
          <member command-id="saveas.workspace.command"/>
-         <member command-id="save.automaton.command"/>
-         <member command-id="saveas.automaton.command"/>
+         <member command-id="save.command"/>
+         <member command-id="saveas.command"/>
       </members>   
    </group>
 
-   <command id="new.automaton.command">
+   <command id="new.command">
       <face>
          <text>_New model</text>
          <icon type="classpath">images/icons/file_new_automaton.gif</icon>
@@ -134,7 +134,7 @@
          <text/>
       </face>      
     </command>       
-   <command id="open.automaton.command">
+   <command id="open.command">
       <face>
          <text>_Open model</text>
          <icon type="classpath">images/icons/file_open_automaton.gif</icon>
@@ -161,7 +161,7 @@
          <text/>
       </face>
     </command>
-   <command id="save.automaton.command">
+   <command id="save.command">
       <face>
          <text>_Save model</text>
          <icon type="classpath">images/icons/file_save_automaton.gif</icon>
@@ -174,7 +174,7 @@
          <text/>
       </face>
     </command>
-        <command id="saveas.automaton.command">
+        <command id="saveas.command">
       <face>
          <text>Save _model as...</text>
          <icon type="classpath">images/icons/file_saveas_automaton.gif</icon>
@@ -184,7 +184,7 @@
          <text/>
       </face>
     </command>    
-    <command id="saveall.automaton.command">
+    <command id="saveall.command">
       <face>
          <text>Save _all models</text>
          <icon type="classpath">images/icons/file_saveall_automata.gif</icon>
@@ -223,7 +223,7 @@
          <text/>
       </face>
     </command>    
-    <command id="close.automaton.command">
+    <command id="close.command">
       <face>
          <text>_Close model</text>
          <icon type="classpath">images/icons/file_close_automaton.gif</icon>
@@ -243,13 +243,25 @@
          <text>_Export</text>
          <description>Export model</description>
       </face>
-      <members>  
+      <members>
+      	 <member command-id="import.export.command"/>
          <member command-id="export.latex.command"/>         
          <member command-id="export.eps.command"/>
          <member command-id="export.grail.command"/>
          <member command-id="export.tct.command"/>
       </members>  
     </group>
+    <command id="import.export.command">
+    	<face>
+    		<text>Import/Export</text>
+    		<icon type ="classpath">images/icons/file_export_gif.gif</icon>
+    		<description>Import Export Manager</description>
+    	</face>
+    	<face name="toolbar" extends="[default]">
+    		<text/>
+    	</face>
+    </command>
+     /
     <command id="export.gif.command">    
       <face>
          <text>Export to GIF</text>

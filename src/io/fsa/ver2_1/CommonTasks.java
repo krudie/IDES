@@ -3,11 +3,17 @@
  */
 package io.fsa.ver2_1;
 
+import model.DESModel;
+import io.IOUtilities;
+
 import java.awt.Toolkit;
 import java.io.File;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
+import org.pietschy.command.file.ExtensionFileFilter;
 
 import presentation.LayoutShell;
 import presentation.fsa.FSAGraph;
@@ -18,6 +24,7 @@ import main.IncompleteWorkspaceDescriptorException;
 import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 
+import pluggable.io.IOCoordinator;
 /**
  *
  * @author Lenko Grigorov
@@ -77,13 +84,63 @@ public class CommonTasks {
 			return false;
 		if(choice==JOptionPane.YES_OPTION)
 		{
-			if(FileOperations.saveAutomaton((FSAModel)gm.getModel(),(File)gm.getModel().getAnnotation(Annotable.FILE)))
+			if((File)gm.getModel().getAnnotation(Annotable.FILE) != null)
 			{
-//				gm.setNeedsRefresh(false);
-				//gm.notifyAllSubscribers();
+				return IOCoordinator.getInstance().save(gm.getModel(), (File)gm.getModel().getAnnotation(Annotable.FILE));
 			}
-			else
+			else{
+				DESModel model = gm.getModel();
+				JFileChooser fc;
+				String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
+				if(path == null)
+				{
+					fc=new JFileChooser();
+				}else
+				{
+					fc=new JFileChooser(path);	
+				}
+		        fc.setDialogTitle(Hub.string("saveModelTitle"));
+				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+						Hub.string("modelFileDescription")));
+				
+				if((File)model.getAnnotation(Annotable.FILE)!=null){
+					fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
+				}else{
+					fc.setSelectedFile(new File(model.getName()));
+				}
+				
+				int retVal;
+				boolean fcDone=true;
+				File file=null;
+				do
+				{
+					retVal = fc.showSaveDialog(Hub.getMainWindow());
+					if(retVal != JFileChooser.APPROVE_OPTION)
+						break;
+					file=fc.getSelectedFile();
+		    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
+		    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+					if(file.exists())
+					{
+						int _choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+							Hub.string("saveModelTitle"),
+							JOptionPane.YES_NO_CANCEL_OPTION);
+						fcDone=_choice!=JOptionPane.NO_OPTION;
+						if(_choice!=JOptionPane.YES_OPTION)
+							retVal=JFileChooser.CANCEL_OPTION;
+					}
+				} while(!fcDone);					
+			
+				if(retVal != JFileChooser.CANCEL_OPTION)
+				{
+					model.setAnnotation(Annotable.FILE, file);
+					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+					Hub.getWorkspace().fireRepaintRequired();
+				}
 				return false;
+			}
+
 		}
 		return true;
 	}

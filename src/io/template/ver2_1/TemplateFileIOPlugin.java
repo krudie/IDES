@@ -3,8 +3,16 @@
  */
 package io.template.ver2_1;
 
+import model.fsa.FSAEvent;
+import model.fsa.FSAModel;
 import model.template.TemplateModel;
+import model.template.TemplateModule;
+
+import java.io.PrintStream;
+
+import io.IOUtilities;
 import io.ParsingToolbox;
+import io.fsa.ver2_1.XMLexporter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,8 +23,11 @@ import main.Hub;
 import model.DESModel;
 import pluggable.io.FileIOPlugin;
 import pluggable.io.IOPluginManager;
+import presentation.template.GraphBlock;
+import presentation.template.GraphLink;
 import presentation.template.TemplateGraph;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,11 +38,15 @@ import java.util.Iterator;
  */
 public class TemplateFileIOPlugin implements FileIOPlugin{
 	
-	public Set<String> getMetaTags()
+	public Set<String> getMetaTags(String type)
 	{
-		Set<String> returnSet = new HashSet<String>();
-		returnSet.add("layout");
-		return returnSet;
+		if(type.equals("TemplateDesign"))
+		{
+			Set<String> returnSet = new HashSet<String>();
+			returnSet.add("layout");
+			return returnSet;	
+		}
+		return null;
 	}
 	
 	public String getIOTypeDescriptor()
@@ -64,10 +79,10 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	public void initializeFileIO()
 	{
 		//The FSA model is capable of saving metaData
-		IOPluginManager.getInstance().registerDataLoader(this);
-		IOPluginManager.getInstance().registerDataSaver(this);
-		IOPluginManager.getInstance().registerMetaSaver(this);
-		IOPluginManager.getInstance().registerMetaLoader(this);
+		IOPluginManager.getInstance().registerDataLoader(this ,"TemplateDesign");
+		IOPluginManager.getInstance().registerDataSaver(this, "TemplateDesign");
+		IOPluginManager.getInstance().registerMetaSaver(this, "TemplateDesign", "layout");
+		IOPluginManager.getInstance().registerMetaLoader(this, "TemplateDesign", "layout");
 	}
 	
 	
@@ -77,8 +92,56 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	 * @param model the model to be saved in the file.
 	 * @param fileDirectory path to the file, so auxiliar files can be created.
 	 */
-	public boolean saveData(File file, DESModel model, File fileDirectory)
+	public boolean saveData(PrintStream stream, DESModel model, File fileDirectory)
 	{
+		
+		//TODO make the code to save the templateDesign model.
+		//The following commented code is the code written by Lenko which saves the
+		//model having a given a TemplateGraph...
+		//Make it save the code given a DESModel
+//		TemplateGraph graph = null;
+//		for(GraphBlock b:graph.getBlocks())
+//        {
+//        	if(b.getBlock() instanceof TemplateModule)
+//        	{
+//            	stream.println("\t<module fsa=\""+b.getBlock().getFSA().getName()+
+//            			"\" id=\""+b.getBlock().getId()+"\">");
+//            	for(FSAEvent event:b.getBlock().getInterfaceEvents())
+//            	{
+//            		stream.println("\t\t<event id=\""+event.getId()+"\"/>");
+//            	}
+//            	stream.println("\t</module>");
+//        	}
+//        	else //Template Channel
+//        	{
+//            	stream.println("\t<channel fsa=\""+b.getBlock().getFSA().getName()+
+//            			"\" id=\""+b.getBlock().getId()+"\">");
+//            	for(FSAEvent event:b.getBlock().getInterfaceEvents())
+//            	{
+//            		stream.println("\t\t<event id=\""+event.getId()+"\"/>");
+//            	}
+//            	stream.println("\t</channel>");        		
+//        	}
+//        }
+//        for(GraphLink l:graph.getLinks())
+//        {
+//        	stream.println("\t<link lefttype=\""+(l.getLink().getBlockLeft() instanceof TemplateModule?"m":"c")+
+//        			"\" leftblock=\""+l.getLink().getBlockLeft().getId()+
+//        			"\" leftevent=\""+l.getLink().getEventLeft().getId()+
+//        			"\" righttype=\""+(l.getLink().getBlockRight() instanceof TemplateModule?"m":"c")+
+//        			"\" rightblock=\""+l.getLink().getBlockRight().getId()+
+//        			"\" rightevent=\""+l.getLink().getEventRight().getId()+
+//        			"\" id=\""+l.getLink().getId()+"\"/>");        	
+//        }
+//        Map<String,String> codeMap=graph.getModel().getPLCCodeMap();
+//        for(String event:codeMap.keySet())
+//        {
+//        	stream.println("\t<routine event=\""+event+"\">");
+//        	stream.println(codeMap.get(event).replaceAll("<event>","{event}"));
+//        	stream.println("\t</routine>");
+//        }
+//		
+		
 		return false;
 	}
 	
@@ -140,7 +203,7 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	 * @param file
 	 * @param model
 	 */
-	public boolean saveMeta(File file, DESModel model)
+	public boolean saveMeta(PrintStream stream, DESModel model, String type, String tag)
 	{
 		return false;
 	}
@@ -153,4 +216,138 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	{
 		
 	}
+	
+	public static class XMLExporter {
+
+		public static void graph2XML(TemplateGraph graph, File dir)
+		{
+			if(!dir.exists())
+			{
+				dir.mkdir();
+			}
+			else
+			{
+				for(File f:dir.listFiles())
+				{
+					f.delete();
+				}
+			}
+	        for(GraphBlock b:graph.getBlocks())
+	        {
+		        PrintStream ps = null;
+				try
+				{
+					FSAModel fsa=b.getBlock().getFSA();
+					if(fsa==null)
+					{
+						throw new RuntimeException();
+					}
+			        ps = IOUtilities.getPrintStream(
+			        		new File(dir.getCanonicalPath()+File.separator+fsa.getName()+"."+IOUtilities.MODEL_FILE_EXT));
+			        if(ps==null)
+			        {
+			        	throw new RuntimeException(Hub.string("checkInvalidChars"));
+			        }
+					XMLexporter.automatonToXML(fsa, ps);
+					ps.close();
+		        } catch(Exception e)
+		        {
+		        	try
+		        	{
+		        		ps.close();
+		        	}catch(Exception ex){}
+		        	Hub.displayAlert(Hub.string("cantSaveTemplate")+" "+e.getMessage());
+		        }
+	        }
+	        PrintStream ps = null;
+			try
+			{
+		        ps = IOUtilities.getPrintStream(
+		        		new File(dir.getCanonicalPath()+File.separator+"TemplateDesign."+IOUtilities.MODEL_FILE_EXT));
+		        if(ps==null)
+		        {
+		        	throw new RuntimeException(Hub.string("checkInvalidChars"));
+		        }
+				export(graph, ps);
+				ps.close();
+	        } catch(Exception e)
+	        {
+	        	try
+	        	{
+	        		ps.close();
+	        	}catch(Exception ex){}
+	        	Hub.displayAlert(Hub.string("cantSaveTemplate")+" "+e.getMessage());
+	        }
+
+		}
+		
+		public static void export(TemplateGraph graph,PrintStream ps)
+		{
+	        ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+	        ps.println("<model version=\"2.1\" type=\"TemplateDesign\">");
+	        ps.println("<data>");
+	        for(GraphBlock b:graph.getBlocks())
+	        {
+	        	if(b.getBlock() instanceof TemplateModule)
+	        	{
+	            	ps.println("\t<module fsa=\""+b.getBlock().getFSA().getName()+
+	            			"\" id=\""+b.getBlock().getId()+"\">");
+	            	for(FSAEvent event:b.getBlock().getInterfaceEvents())
+	            	{
+	            		ps.println("\t\t<event id=\""+event.getId()+"\"/>");
+	            	}
+	            	ps.println("\t</module>");
+	        	}
+	        	else //Template Channel
+	        	{
+	            	ps.println("\t<channel fsa=\""+b.getBlock().getFSA().getName()+
+	            			"\" id=\""+b.getBlock().getId()+"\">");
+	            	for(FSAEvent event:b.getBlock().getInterfaceEvents())
+	            	{
+	            		ps.println("\t\t<event id=\""+event.getId()+"\"/>");
+	            	}
+	            	ps.println("\t</channel>");        		
+	        	}
+	        }
+	        for(GraphLink l:graph.getLinks())
+	        {
+	        	ps.println("\t<link lefttype=\""+(l.getLink().getBlockLeft() instanceof TemplateModule?"m":"c")+
+	        			"\" leftblock=\""+l.getLink().getBlockLeft().getId()+
+	        			"\" leftevent=\""+l.getLink().getEventLeft().getId()+
+	        			"\" righttype=\""+(l.getLink().getBlockRight() instanceof TemplateModule?"m":"c")+
+	        			"\" rightblock=\""+l.getLink().getBlockRight().getId()+
+	        			"\" rightevent=\""+l.getLink().getEventRight().getId()+
+	        			"\" id=\""+l.getLink().getId()+"\"/>");        	
+	        }
+	        Map<String,String> codeMap=graph.getModel().getPLCCodeMap();
+	        for(String event:codeMap.keySet())
+	        {
+	        	ps.println("\t<routine event=\""+event+"\">");
+	        	ps.println(codeMap.get(event).replaceAll("<event>","{event}"));
+	        	ps.println("\t</routine>");
+	        }
+	        ps.println("</data>");
+	        ps.println("<meta tag=\"layout\" version=\"2.1\">");
+	        for(GraphBlock b:graph.getBlocks())
+	        {
+	        	if(b.getBlock() instanceof TemplateModule)
+	        	{
+	            	ps.println("\t<module x=\""+b.getLocation().x+
+	            			"\" y=\""+b.getLocation().y+
+	            			"\" name=\""+b.getName()+
+	            			"\" id=\""+b.getBlock().getId()+"\"/>");
+	        	}
+	        	else //Template Channel
+	        	{
+	            	ps.println("\t<channel x=\""+b.getLocation().x+
+	            			"\" y=\""+b.getLocation().y+
+	            			"\" name=\""+b.getName()+
+	            			"\" id=\""+b.getBlock().getId()+"\"/>");
+	        	}
+	        }
+	        ps.println("</meta>");
+	        ps.println("</model>");
+		}
+	}
+
 }

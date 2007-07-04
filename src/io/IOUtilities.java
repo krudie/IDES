@@ -15,6 +15,21 @@ import main.Hub;
  */
 public class IOUtilities {
 	/**
+	 * Descriptors for DES file types
+	 */
+	public static final String GRAIL_DESCRIPTOR="GRAIL";
+	public static final String TCT_DESCRIPTOR="TCT";
+	public static final String EPS_DESCRIPTOR="EPS";
+	
+	
+	
+	/**
+	 * Descriptor for DES models
+	 */
+	public static final String FSA_DESCRIPTOR="FSA";
+	public static final String TEMPLATE_DESIGN_DESCRIPTOR="TemplateDesign";
+	
+	/**
 	 * Extension for workspace files.
 	 */
 	public static final String WORKSPACE_FILE_EXT="xws";

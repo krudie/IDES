@@ -1,7 +1,9 @@
 package presentation.fsa;
 
 import java.awt.Rectangle;
-
+import java.io.File;
+import model.fsa.FSAModel;
+import pluggable.io.IOCoordinator;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -10,6 +12,7 @@ import util.BentoBox;
 
 import main.Workspace;
 import main.Hub;
+import model.fsa.ver2_1.MetaData;
 
 
 /**
@@ -360,6 +363,81 @@ public class GraphExporter
 	
 		return contentsString;
 	}
+	
+	
+	
+	/**
+	 * Creates the LaTeX document which will be rendered into an EPS
+	 * @return LaTeX document containing a PSTricks description of the current model
+	 */
+	public static String createEPSFileContentsFromFile(File file)
+	{
+		String contentsString = STR_EPS_BEGIN_DOC;
+		FSAGraph graphModel = null;
+		
+		Rectangle exportBounds = null;
+		int border = 0;
+		boolean useFrame = Hub.persistentData.getBoolean(
+			STR_EXPORT_PROP_USE_FRAME);
+		
+		// Step #1 - Get the GraphModel
+		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(file);
+		MetaData metadata = (MetaData)model.getAnnotation("metadata");
+		if(metadata == null)
+		{
+			System.out.print("METADATA NULA!!!");
+			graphModel = new presentation.fsa.FSAGraph(model);
+			return null;
+		}else
+		{
+			graphModel = new presentation.fsa.FSAGraph(model, (MetaData)model.getAnnotation("metadata"));
+		}
+			
+		
+		// Step #3 - Figure out the dimensions
+		// If there's a selection box, then use that, otherwise make 
+		// a box that holds eveything
+		// if (there is a selection)
+		// {
+		//		exportBounds = selection;
+		// }		
+		// else
+		// {
+		exportBounds = graphModel.getBounds(false);
+		// }
+		
+		// Step #3.5 - Add a border to the export bounds
+		/*
+		exportBounds.width -= exportBounds.x;
+		exportBounds.height -= exportBounds.y;
+		*/
+		border = (exportBounds.x > INT_PSTRICKS_BORDER_SIZE) ?
+			INT_PSTRICKS_BORDER_SIZE : exportBounds.x;
+		exportBounds.x -= border;
+		exportBounds.width += (border * 2);
+
+		border = (exportBounds.y > INT_PSTRICKS_BORDER_SIZE) ?
+				INT_PSTRICKS_BORDER_SIZE : exportBounds.y;
+		exportBounds.y -= border;
+		exportBounds.height += (border * 2);
+
+		// Step #4 - Begin with the basic sclaing, picture boundary
+		// and frame information
+		contentsString += "\\special{papersize=" + (exportBounds.width + 10) + "pt," + (exportBounds.height + 10) + "pt}\n"
+			+ "\\begin{document}\n"	
+			+ "\\psset{unit=1pt}\n";
+		
+		// Step #5 - Get the PSTricks figure
+		contentsString+=createPSPicture(exportBounds,useFrame);
+
+		// Step #6 - End the pciture and add the commented LaTeX
+		// document declaration
+		contentsString += STR_EPS_END_DOC +
+			STR_EPS_COMMENTED_DOC_DECLARATION;
+	
+		return contentsString;
+	}
+	
 	
 	/**
 	 * This method is reponsible for calculcating the size of the 

@@ -1,9 +1,15 @@
 package main;
 
+import ie.fsa.ver2_1.GrailPlugin;
+import ie.fsa.ver2_1.TCTPlugin;
+import ie.fsa.ver2_1.EPSPlugin;
 import io.fsa.ver2_1.CommonTasks;
 
 import io.fsa.ver2_1.FSAFileIOPlugin;
+
+
 import io.template.ver2_1.TemplateFileIOPlugin;
+
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -56,6 +62,17 @@ public class Main {
 	{
 	}
 
+	private static void initializePlugins()
+	{
+		//Input/Output plugins:
+		FSAFileIOPlugin.getInstance().initializeFileIO();
+		TemplateFileIOPlugin.getInstance().initializeFileIO();
+		
+		//Import/Export plugins:
+		GrailPlugin.getInstance().initializeImportExport();
+		TCTPlugin.getInstance().initializeImportExport();
+		EPSPlugin.getInstance().initializeImportExport();
+	}
 	
 	/**
 	 * @param args
@@ -94,9 +111,8 @@ public class Main {
 		
 		Cache.init();
 		// TODO: move operation inits to the plugin manager eventually
-		
-		FSAFileIOPlugin.getInstance().initializeFileIO();
-		TemplateFileIOPlugin.getInstance().initializeFileIO();
+		///TODO: move the initialization of the plugins to the plugin manager
+		initializePlugins();
 		
 		ModelManager.registerModel(Automaton.myDescriptor);
 		ModelManager.registerModel(TemplateDesign.myDescriptor);
@@ -135,7 +151,7 @@ public class Main {
 		//setup stuff that needs the main window
 		LatexManager.init(); 
 		
-		FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newAutomatonName"));
+		FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newModelName"));
 		Hub.getWorkspace().addModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
@@ -154,9 +170,10 @@ public class Main {
 	 */
 	public static void onExit()
 	{
-		if(Hub.getWorkspace().isDirty())
-			if(!CommonTasks.handleUnsavedWorkspace())
-				return;
+//This cannot be handled by the io.fsa.ver2_1.handleUnsavedWorkspace
+//		if(Hub.getWorkspace().isDirty())
+//			if(!CommonTasks.handleUnsavedWorkspace())
+//				return;
 		for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();)
 		{
 			LayoutShell gm=i.next();
@@ -169,4 +186,5 @@ public class Main {
 		Hub.getMainWindow().dispose();
 		Hub.storePersistentData();
 	}
+	
 }

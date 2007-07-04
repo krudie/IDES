@@ -1,7 +1,6 @@
 package main;
 
 import io.fsa.ver2_1.CommonTasks;
-import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -26,6 +25,7 @@ import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import ui.MainWindow;
+import ui.command.FileCommands;
 
 import model.DESModel;
 import model.ModelManager;
@@ -33,7 +33,7 @@ import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.MetaData;
-
+import pluggable.io.IOCoordinator;
 /**
  * The main manager of the open DESModels.
  * 
@@ -47,13 +47,13 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	private String name;
 	private File myFile = null;
 	
-	// index of the currently active FSAModel
+	// index of the currently active DESModel
 	private int activeModelIdx;
 		
 	// TODO A model of global events set (alphabet) and all local alphabets
 	//private FSAEventsModel eventsModel;
 	
-	// maps name of each model to the abstract FSA model, 
+	// maps name of each model to the abstract DES model, 
 	// graph representation and metadata respectively.
 	private Vector<DESModel> systems;
 	private Vector<LayoutShell> graphs;
@@ -75,7 +75,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		systems=new Vector<DESModel>();
 		graphs=new Vector<LayoutShell>();
 		metadata=new Vector<MetaData>();
-		name=Hub.string("newAutomatonName");
+		name=Hub.string("newModelName");
 //		eventsModel = new EventsModel();
 	}
 
@@ -126,32 +126,32 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 * Adds the given DESModel to the set of models in the workspace.
 	 *  @param fsa the model to be added
 	 */
-	public void addModel(DESModel fsa) {
+	public void addModel(DESModel model) {
 		
 		// Remove initial Untitled model if it is empty
 		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveLayoutShell().needsSave()){
-			removeModel(getActiveLayoutShell().getModel().getName());		
+			removeModel(getActiveLayoutShell().getModel().getName());	
 		}
 		
-		if(getModel(fsa.getName())!=null){
+		if(getModel(model.getName())!=null){
 			int i=1;
-			while(getModel(fsa.getName()+" ("+i+")")!=null){
+			while(getModel(model.getName()+" ("+i+")")!=null){
 				++i;
 			}
-			fsa.setName(fsa.getName()+" ("+i+")");
+			model.setName(model.getName()+" ("+i+")");
 		}
-
-		systems.add(fsa);
-		if(fsa instanceof FSAModel)
+		systems.add(model);
+		
+		if(model instanceof FSAModel)
 		{
-			metadata.add(new MetaData((Automaton)fsa));
-			fsa.setAnnotation("metadata", metadata.lastElement());
+			metadata.add(new MetaData((Automaton)model));
+			model.setAnnotation("metadata", metadata.lastElement());
 		}
 		else
 		{
 			metadata.add(new MetaData((Automaton)ModelManager.createModel(FSAModel.class)));
 		}
-		graphs.add(PresentationManager.getToolset(fsa.getModelDescriptor().getPreferredModelInterface()).wrapModel(fsa));
+		graphs.add(PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface()).wrapModel(model));
 
 		if(LatexManager.isLatexEnabled()){
 			if(getActiveLayoutShell() instanceof FSAGraph)
@@ -159,7 +159,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		}
 		
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
-									fsa.getId(), 
+									model.getId(), 
 									WorkspaceMessage.ADD, 
 									this));
 		
@@ -430,13 +430,13 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		String selectedModel=null;
 		for(int i=0;i<files.size();++i)
 		{
-			FSAModel fsa = FileOperations.openAutomaton(
+			DESModel model = IOCoordinator.getInstance().load(
 					new java.io.File(files.elementAt(i)));
-			if(fsa != null)
+			if(model != null)
 			{
-				Hub.getWorkspace().addModel(fsa);
+				Hub.getWorkspace().addModel(model);
 				if(i==idx)
-					selectedModel=fsa.getName();
+					selectedModel=model.getName();
 			}
 		}
 		// Hey LENKO! what is the nature of this change?  Everything appears to have changed...
@@ -459,20 +459,22 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	{
 		WorkspaceDescriptor wd=new WorkspaceDescriptor(myFile);
 		HashSet<DESModel> unsavedModels=new HashSet<DESModel>();
-		for(Iterator<DESModel> i=getModels();i.hasNext();)
+		Iterator<DESModel> i = getModels();
+		while(i.hasNext())
 		{
 			DESModel a=i.next();
 			if((File)a.getAnnotation(Annotable.FILE)==null)
 				unsavedModels.add(a);
 		}
+		
 		if(!unsavedModels.isEmpty())
 		{
 			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
 			for(DESModel a:unsavedModels)
 			{
-				if(!(a instanceof FSAModel))
+				if(!(a instanceof DESModel))
 					continue;
-				if(!FileOperations.saveAutomatonAs((FSAModel)a))
+				if(!IOCoordinator.getInstance().save(a, (File)a.getAnnotation(Annotable.FILE)))
 					throw new IncompleteWorkspaceDescriptorException();
 //				getGraphModel(a.getName()).setDirty(false);
 //				getGraphModel(a.getName()).notifyAllSubscribers();

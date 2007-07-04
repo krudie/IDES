@@ -3,6 +3,7 @@
  */
 package pluggable.io;
 import model.DESModel;
+import java.io.PrintStream;
 import java.io.File;
 import java.util.Set;
  
@@ -20,7 +21,12 @@ public interface FileIOPlugin {
 	
 	public String getIOTypeDescriptor();
 	
-	public Set<String> getMetaTags();
+	/**
+	 * Returns a list of meta data "tags" for a given data "type"
+	 * @param type, a string with the data "type" e.g.: "FSA", "TemplateDesign"
+	 * @return a set of "tags"
+	 */
+	public Set<String> getMetaTags(String type);
 	
 	/**
 	 * Saves its data in <code>file</code> according to a <code>model</code>.
@@ -28,7 +34,7 @@ public interface FileIOPlugin {
 	 * @param model the model to be saved in the file.
 	 * @param fileDirectory path to the file, so auxiliar files can be created.
 	 */
-	public boolean saveData(File file, DESModel model, File fileDirectory);
+	public boolean saveData(PrintStream stream, DESModel model, File fileDirectory);
 	
 	/**
 	 * Loads data from the file.
@@ -49,7 +55,7 @@ public interface FileIOPlugin {
 	 * @param file
 	 * @param model
 	 */
-	public boolean saveMeta(File file, DESModel model);	
+	public boolean saveMeta(PrintStream stream, DESModel model, String type, String tag);	
 	
 	/**
 	 * Unsubscribe itself from the IOIE_PluginManager

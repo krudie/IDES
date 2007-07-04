@@ -240,7 +240,7 @@ public class FileOperations {
 		if(wd.getFile()!=null)
 			fc.setSelectedFile(wd.getFile());
 		else
-			fc.setSelectedFile(new File(Hub.string("newAutomatonName")));
+			fc.setSelectedFile(new File(Hub.string("newModelName")));
 		
 		int retVal;
 		boolean fcDone=true;
