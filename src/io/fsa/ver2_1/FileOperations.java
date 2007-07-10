@@ -32,50 +32,50 @@ public class FileOperations {
 	
 	public static final String LAST_PATH_SETTING_NAME="lastUsedPath";
 	
-	public static FSAModel openAutomaton(File f) {
-        FSAModel a = null;
-        if(!f.canRead())
-        {
-        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
-        	return a;
-        }
-        String errors="";
-        try
-        {
-        	BufferedReader head=new BufferedReader(new FileReader(f));
-        	head.readLine();
-        	String line=head.readLine();
-        	head.close();
-        	if(line.trim().startsWith("<automaton"))
-        	{
-            	AutomatonParser20 ap = new AutomatonParser20();
-                a = ap.parse(f);
-                errors=ap.getParsingErrors();
-        	}
-        	else
-        	{
-            	AutomatonParser ap = new AutomatonParser();
-                a = ap.parse(f);
-                errors=ap.getParsingErrors();
-        	}
-        }catch(Exception e)
-        {
-        	a=null;
-        	errors+=e.getMessage();
-        }
-        if(!"".equals(errors))
-        {
-        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
-        			"\n"+Hub.string("errorsParsingXMLFileL2"));
-        }
-        if(a!=null)
-        {
-        	a.setName(ParsingToolbox.removeFileType(f.getName()));
-        	a.setAnnotation(Annotable.FILE,f);
-        }
-        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
-        return a;
-	}
+//	public static FSAModel openAutomaton(File f) {
+//        FSAModel a = null;
+//        if(!f.canRead())
+//        {
+//        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
+//        	return a;
+//        }
+//        String errors="";
+//        try
+//        {
+//        	BufferedReader head=new BufferedReader(new FileReader(f));
+//        	head.readLine();
+//        	String line=head.readLine();
+//        	head.close();
+//        	if(line.trim().startsWith("<automaton"))
+//        	{
+//            	AutomatonParser20 ap = new AutomatonParser20();
+//                a = ap.parse(f);
+//                errors=ap.getParsingErrors();
+//        	}
+//        	else
+//        	{
+//            	AutomatonParser ap = new AutomatonParser();
+//                a = ap.parse(f);
+//                errors=ap.getParsingErrors();
+//        	}
+//        }catch(Exception e)
+//        {
+//        	a=null;
+//        	errors+=e.getMessage();
+//        }
+//        if(!"".equals(errors))
+//        {
+//        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
+//        			"\n"+Hub.string("errorsParsingXMLFileL2"));
+//        }
+//        if(a!=null)
+//        {
+//        	a.setName(ParsingToolbox.removeFileType(f.getName()));
+//        	a.setAnnotation(Annotable.FILE,f);
+//        }
+//        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
+//        return a;
+//	}
 		
 	/**
      * Saves the given automaton to <code>file</code> and

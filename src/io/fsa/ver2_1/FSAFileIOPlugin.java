@@ -51,7 +51,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		return "FSA";
 	}
 	
-	public static final String LAST_PATH_SETTING_NAME="lastUsedPath";
 	//Singleton instance:
 	private static FSAFileIOPlugin instance = null;
 	private FSAFileIOPlugin()
@@ -75,7 +74,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	 */
 	public void initializeFileIO()
 	{
-		//correct way:
 		IOPluginManager.getInstance().registerDataLoader(this ,"FSA");
 		IOPluginManager.getInstance().registerDataSaver(this, "FSA");
 		IOPluginManager.getInstance().registerMetaSaver(this, "FSA", "layout");
@@ -144,7 +142,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	        	else
 	        	{
 	            	AutomatonParser ap = new AutomatonParser();
-	                a = ap.parse(f);
+	                //
+	            	a = ap.parse(f);
 	                errors=ap.getParsingErrors();
 	        	}
 	        }catch(Exception e)
@@ -157,12 +156,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
 	        			"\n"+Hub.string("errorsParsingXMLFileL2"));
 	        }
-	        if(a!=null)
-	        {
-	        	a.setName(ParsingToolbox.removeFileType(f.getName()));
-	        	a.setAnnotation(Annotable.FILE,f);
-	        }
-	        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
 	        return (DESModel)a;
 	}
 	
@@ -182,6 +175,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	 */
 	public boolean saveMeta(PrintStream stream, DESModel model, String type, String tag)
 	{
+		//stream will be an OutputStream.
+		//it will need to be converted to PrintStream(UTF-8).
 		if(type.equals("FSA") & tag.equals("layout"))
 		{
 			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();

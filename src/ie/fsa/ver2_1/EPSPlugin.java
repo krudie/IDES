@@ -82,9 +82,9 @@ public class EPSPlugin implements ImportExportPlugin{
 		}
 		// Modified: June 16, 2006
 		// Modifier: Sarah-Jane Whittaker
-//		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(src);
-		String fileContents = GraphExporter.createEPSFileContentsFromFile(src); 
-//		System.out.println(fileContents);
+		//		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(src);
+		String fileContents = GraphExporter.createEPSFileContents();
+		//		System.out.println(fileContents);
 		FileWriter latexWriter = null;
 		
 		if (fileContents == null)

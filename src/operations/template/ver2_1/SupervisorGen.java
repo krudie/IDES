@@ -31,6 +31,11 @@ import util.StupidSetWrapper;
 
 public class SupervisorGen implements Operation {
 
+	
+	public String getDescription()
+	{
+		return null;
+	}
 	public String[] getDescriptionOfInputs() {
 		// TODO Auto-generated method stub
 		return null;

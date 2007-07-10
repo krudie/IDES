@@ -119,6 +119,13 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 					close();
 					return;
 				}
+				//Christian, I put this catch because of some bugs I got in the MacOS.
+				//\TODO Learn what is happening wrong in the MacOS
+//				catch(NullPointerException e)
+//				{
+//					close();
+//					return;
+//				}
 				current++;
 				progressBar.setValue(current);
 			}

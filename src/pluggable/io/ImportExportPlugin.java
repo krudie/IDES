@@ -45,7 +45,8 @@ public interface ImportExportPlugin {
 		public String getDescription();
 		
 		/**
-		 * 
+		 * Return a string with the file extension of the exported files. eg.: "png"
+		 * if the plugin exports to png.
 		 */
 		public String getExportExtension();
 }

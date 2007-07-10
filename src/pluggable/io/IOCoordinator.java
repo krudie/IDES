@@ -75,9 +75,7 @@ public final class IOCoordinator extends AbstractParser{
 	}
 		
 	public boolean save(DESModel model, File file)
-	{
-	
-		Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
+	{	
 		//Read the dataType from the plugin modelDescriptor
 		String type = model.getModelDescriptor().getIOTypeDescription();
 
@@ -91,13 +89,16 @@ public final class IOCoordinator extends AbstractParser{
  		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 
 		//Open  ""file"" and start writing the header of the IDES file format
-		PrintStream ps = IOUtilities.getPrintStream(file);
+		//TODO: IMPLEMENT A WRAPPER TO THE PRINTSTREAM< OVERRIDING close()
+ 		//TODO: MAKE ps AN OUTPUT STREAM
+ 		PrintStream ps = IOUtilities.getPrintStream(file);
 
         ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        ps.println("<model version=\"2.1\" type=\"FSA\" id=\""+model.getId()+"\">");
+        ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
         ps.println("<data>");
 		
-        //Make the dataSaver plugin save the data information on the file (protect the original content)
+        //Make the dataSaver plugin save the data information on the 
+        //file (protect the original content)
 		dataSaver.saveData(ps, model, file.getParentFile());
         //The data information is stored: 
 		ps.println("</data>");
@@ -118,36 +119,25 @@ public final class IOCoordinator extends AbstractParser{
 		
         //4 - close the file.
 		//5 - Return true if the operation was a success, otherwise return false.
-
-        String newName=ParsingToolbox.removeFileType(file.getName());
-        if(!newName.equals(model.getName())
-        		&&Hub.getWorkspace().getModel(newName)!=null)
-        	Hub.getWorkspace().removeModel(newName);
-        	
-        model.setName(newName);
-        model.setAnnotation(Annotable.FILE,file);
-        //model.FireFSASaved();
-		//debug tests:
-//		System.out.println(file);
-//		System.out.println(model.getModelDescriptor().getTypeDescription());
-//		System.out.println(dataSaver.getIOTypeDescriptor());
-		
-//		if(model instanceof FSAModel)//temporary
-//			return (FileOperations.saveAutomaton((FSAModel)model,(File)model.getAnnotation(Annotable.FILE)));
-//		else
-			return false;
+        //TODO THROW IO EXCEPTION OR PLUGIN EXCEPTIONS IF SOMETHING HAPPENS
+        //TODO SHOULD NOT RETURN ANYTHING
+        return true;
 	}
 	
 	//Get the "type" of the model in file and ask the plugin that manage this
 	//kind of "type" to load the DES.
 	public DESModel load(File file)
 	{
+		
+		//TODO: Make the next line innerParser.getType(file)
 		String type = getType(file);
+		
 		//System.out.println(type);
 		if(type == null)
 		{
 			//File error, maybe the file is not an IDES file
 			//THROW ERROR
+			//TODO THROW AN IO EXCEPTION
 			return null;
 		}
 		
@@ -158,11 +148,12 @@ public final class IOCoordinator extends AbstractParser{
 		FileIOPlugin plugin = IOPluginManager.getInstance().getDataLoader(type);
 		if(plugin == null)
 		{
-			//error (see IOPluginManager.getDataLoader(String)
+			//TODO THROW AN PLUGIN EXCEPTION
 			return null;
 		}
+		//TODO make "file" be a wrapped file just with <data></data> 
 		returnModel = plugin.loadData(file, file.getParentFile());
-		
+		//TODO: plugin.loadMeta(returnModel, wrapped file <meta></meta>);
 		//Return the model loaded by the plugin
 		return returnModel;
 	}

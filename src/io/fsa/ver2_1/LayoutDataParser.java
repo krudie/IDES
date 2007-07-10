@@ -99,7 +99,7 @@ public class LayoutDataParser extends AbstractParser {
                 
                 // TODO don't store layout data in the Automaton
                 s.addSubElement(graphic); 
-                
+                //CHRISTIAN: //TODO set ANNOTATION for s
 //                NodeLayout nL=getLayoutData(s);
 //    			// TODO nL.setUniformRadius(graph.uniformR);    			
 //                Node node = new Node(s, nL);

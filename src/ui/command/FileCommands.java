@@ -40,8 +40,7 @@ import ui.NewModelDialog;
 import ui.OperationDialog;
 import pluggable.io.IOCoordinator;
 import ui.ImportExportDialog;
-
-/**
+;/**
  * @author Lenko Grigorov
  */
 public class FileCommands {	
@@ -73,42 +72,15 @@ public class FileCommands {
 		public OpenCommand() {
 			super("open.command");			
 		}
-
 		@Override
 		/**
 		 * FIXME Don't add workspace files as if they were automata...
 		 */
 		protected void handleExecute() {
 			//Open a window for the user to choose the file to open:
-			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
-			fc.setDialogTitle(Hub.string("openModelTitle"));
-			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
-			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-	    	int retVal = fc.showOpenDialog(Hub.getMainWindow());
-	    	if(retVal == JFileChooser.APPROVE_OPTION){
-				Cursor cursor = Hub.getMainWindow().getCursor();
-
-				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				if(Hub.getWorkspace().getModel(ParsingToolbox.removeFileType(fc.getSelectedFile().getName()))!=null)
-				{
-					Hub.displayAlert(Hub.string("modelAlreadyOpen"));
-				}
-				
-				//calling IOCoordinator to handle the selected file
-				//It will make the correct plugins load the file):
-				DESModel model = IOCoordinator.getInstance().load(fc.getSelectedFile());
-
-				if(model != null)
-				{
-					Hub.getWorkspace().addModel(model);
-					Hub.getWorkspace().setActiveModel(model.getName());
-				}
-
-				Hub.getMainWindow().setCursor(cursor);
+			io.CommonActions.load();
 			}
-		}
 	}
-
 	
 	public static class SaveAllCommand extends ActionCommand {
 		
@@ -146,71 +118,9 @@ public class FileCommands {
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			//Make the model be saved by the IOCoordinator.
-			//IOCoordinator will select the plugins which saves data and metadata information for model.
-			DESModel model = Hub.getWorkspace().getActiveModel();
-			
-			if( model != null)
-			{
-				if(model.getAnnotation(Annotable.FILE) == null)
-				{
-					JFileChooser fc;
-					String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
-					if(path == null)
-					{
-						fc=new JFileChooser();
-					}else
-					{
-						fc=new JFileChooser(path);	
-					}
-			        fc.setDialogTitle(Hub.string("saveModelTitle"));
-					fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
-							Hub.string("modelFileDescription")));
-					
-					if((File)model.getAnnotation(Annotable.FILE)!=null){
-						fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
-					}else{
-						fc.setSelectedFile(new File(model.getName()));
-					}
-					
-					int retVal;
-					boolean fcDone=true;
-					File file=null;
-					do
-					{
-						retVal = fc.showSaveDialog(Hub.getMainWindow());
-						if(retVal != JFileChooser.APPROVE_OPTION)
-							break;
-						file=fc.getSelectedFile();
-			    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
-			    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
-						if(file.exists())
-						{
-							int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-								Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-								Hub.string("saveModelTitle"),
-								JOptionPane.YES_NO_CANCEL_OPTION);
-							fcDone=choice!=JOptionPane.NO_OPTION;
-							if(choice!=JOptionPane.YES_OPTION)
-								retVal=JFileChooser.CANCEL_OPTION;
-						}
-					} while(!fcDone);					
-				
-					if(retVal != JFileChooser.CANCEL_OPTION)
-					{
-						model.setAnnotation(Annotable.FILE, file);
-						IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
-						Hub.getWorkspace().fireRepaintRequired();
-					}
-				}else
-				{
-					model.setAnnotation(Annotable.FILE, model.getAnnotation(Annotable.FILE));
-					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
-					Hub.getWorkspace().fireRepaintRequired();
-				}
-			}
+			io.CommonActions.save();
 			Hub.getMainWindow().setCursor(cursor);
-		}	
+		}
 	}
 	
 	public static class SaveAsCommand extends ActionCommand {
@@ -221,67 +131,14 @@ public class FileCommands {
 		
 		@Override
 		protected void handleExecute() {
-
 			Cursor cursor = Hub.getMainWindow().getCursor();
 			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			//Make the model be saved by the IOCoordinator.
-			//IOCoordinator will select the plugins which saves data and metadata information for model.
-			DESModel model = Hub.getWorkspace().getActiveModel();
-			if( model != null)
-			{
-					JFileChooser fc;
-					String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
-					if(path == null)
-					{
-						fc=new JFileChooser();
-					}else
-					{
-						fc=new JFileChooser(path);	
-					}
-			        fc.setDialogTitle(Hub.string("saveModelTitle"));
-					fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
-							Hub.string("modelFileDescription")));
-					
-					if((File)model.getAnnotation(Annotable.FILE)!=null){
-						fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
-					}else{
-						fc.setSelectedFile(new File(model.getName()));
-					}
-					
-					int retVal;
-					boolean fcDone=true;
-					File file=null;
-					do
-					{
-						retVal = fc.showSaveDialog(Hub.getMainWindow());
-						if(retVal != JFileChooser.APPROVE_OPTION)
-							break;
-						file=fc.getSelectedFile();
-			    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
-			    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
-						if(file.exists())
-						{
-							int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-								Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-								Hub.string("saveModelTitle"),
-								JOptionPane.YES_NO_CANCEL_OPTION);
-							fcDone=choice!=JOptionPane.NO_OPTION;
-							if(choice!=JOptionPane.YES_OPTION)
-								retVal=JFileChooser.CANCEL_OPTION;
-						}
-					} while(!fcDone);					
-				
-				if(retVal != JFileChooser.CANCEL_OPTION)
-				{
-					model.setAnnotation(Annotable.FILE, file);
-					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
-				}
-				}
-			
+			io.CommonActions.saveAs();
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 			
 	}
+
 	
 	
 	public static class CloseCommand extends ActionCommand {
@@ -321,7 +178,7 @@ public class FileCommands {
 			if(Hub.getWorkspace().isDirty())
 				if(!CommonTasks.handleUnsavedWorkspace())
 					return;
-			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME")));
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);

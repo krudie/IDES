@@ -168,7 +168,7 @@ public class ImportExportDialog extends EscapeDialog{
 		buttonSelectSrc.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				//Open a window for the user to choose the file to open:
-				JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
+				JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 				fc.setDialogTitle(Hub.string("openModelTitle"));
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int retVal = fc.showOpenDialog(Hub.getMainWindow());
@@ -270,7 +270,7 @@ public class ImportExportDialog extends EscapeDialog{
 		buttonSelectSrc.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				//Open a window for the user to choose the file to open:
-				JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(FileOperations.LAST_PATH_SETTING_NAME));
+				JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 				fc.setDialogTitle(Hub.string("openModelTitle"));
 				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
