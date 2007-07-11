@@ -91,6 +91,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 			Collection<CircleNode> nodes=model.getNodes();
 			for(CircleNode n: nodes)
 			{
+			
 				labels.add(n.getLabel());
 			}
 			Collection<Edge> edges=model.getEdges();
@@ -112,20 +113,18 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 				GraphLabel l=i.next();
 				try
 				{
-					l.renderIfNeeded();
+					//The initialArrows are amongst the normal edges, so sometimes l is null for being
+					//a result for trying to get a GraphLabel from an initial edge. 
+					if(l != null)
+					{
+						l.renderIfNeeded();
+					}
 				}catch(LatexRenderException e)
 				{
 					LatexManager.handleRenderingProblem();
 					close();
 					return;
 				}
-				//Christian, I put this catch because of some bugs I got in the MacOS.
-				//\TODO Learn what is happening wrong in the MacOS
-//				catch(NullPointerException e)
-//				{
-//					close();
-//					return;
-//				}
 				current++;
 				progressBar.setValue(current);
 			}

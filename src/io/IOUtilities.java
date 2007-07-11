@@ -2,9 +2,11 @@ package io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-
+import java.io.DataOutputStream;
+import java.io.OutputStream;
 import org.apache.commons.codec.binary.Base64;
 
 import main.Hub;
@@ -107,7 +109,7 @@ public class IOUtilities {
         return ps;
     }
     
-    public static byte[] decodeBase64(byte[] data)
+     public static byte[] decodeBase64(byte[] data)
     {
     	return Base64.decodeBase64(data);
     }
@@ -142,5 +144,5 @@ public class IOUtilities {
     	         buffer.append(c);
     	   }
     	   return buffer.toString();
-    }
+    }    
 }

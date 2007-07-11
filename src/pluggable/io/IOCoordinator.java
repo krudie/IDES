@@ -9,8 +9,10 @@ import model.fsa.FSAModel;
 import io.fsa.ver2_1.FileOperations;
 import io.fsa.ver2_1.XMLexporter;
 import io.IOUtilities;
+import java.io.FileOutputStream;
 import io.ParsingToolbox;
 
+import io.WrappedPrintStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,35 +36,12 @@ import io.AbstractParser;
  * @author christiansilvano
  * \TODO make it thread-safe
  */
-public final class IOCoordinator extends AbstractParser{
+public final class IOCoordinator{
 	//Singleton instance:
 	private static IOCoordinator instance = null;
-	Set<String> metaData = new HashSet<String>();	
-	protected static final String ATTRIBUTE_TYPE = "type", ATTRIBUTE_TAG = "tag";
-	protected static final String NOTHING = "nothing";
-	
-	private String dataType = new String();
-	private Set<String> metaTags = new HashSet<String>();
-	
+	XmlParser xmlParser = null;
 	private IOCoordinator()
-	{
-		dataType = NOTHING;
-
-		//Initialize parser:
-		try {
-            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            xmlReader.setContentHandler(this);
-        } catch (ParserConfigurationException pce) {
-            System.err
-                    .println("AbstractParser: could not configure parser, message: "
-                            + pce.getMessage());
-        } catch (SAXException se) {
-            System.err
-                    .println("AbstractParser: could not do something, message: "
-                            + se.getMessage());
-        }
-        
-        
+	{    
 	}
 	
 	public static IOCoordinator getInstance()
@@ -91,13 +70,15 @@ public final class IOCoordinator extends AbstractParser{
 		//Open  ""file"" and start writing the header of the IDES file format
 		//TODO: IMPLEMENT A WRAPPER TO THE PRINTSTREAM< OVERRIDING close()
  		//TODO: MAKE ps AN OUTPUT STREAM
- 		PrintStream ps = IOUtilities.getPrintStream(file);
+ 		WrappedPrintStream ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
 
+ 		
+ 	
         ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
         ps.println("<data>");
-		
-        //Make the dataSaver plugin save the data information on the 
+	
+       //Make the dataSaver plugin save the data information on the 
         //file (protect the original content)
 		dataSaver.saveData(ps, model, file.getParentFile());
         //The data information is stored: 
@@ -116,7 +97,7 @@ public final class IOCoordinator extends AbstractParser{
 			}
 		}
         ps.println("</model>");
-		
+		ps.closeWrappedPrintStream();
         //4 - close the file.
 		//5 - Return true if the operation was a success, otherwise return false.
         //TODO THROW IO EXCEPTION OR PLUGIN EXCEPTIONS IF SOMETHING HAPPENS
@@ -128,9 +109,15 @@ public final class IOCoordinator extends AbstractParser{
 	//kind of "type" to load the DES.
 	public DESModel load(File file)
 	{
-		
+		if(xmlParser == null)
+		{	
+			xmlParser = new XmlParser();
+		}else
+		{
+			return null;
+		}
 		//TODO: Make the next line innerParser.getType(file)
-		String type = getType(file);
+		String type = xmlParser.getType(file);
 		
 		//System.out.println(type);
 		if(type == null)
@@ -151,6 +138,7 @@ public final class IOCoordinator extends AbstractParser{
 			//TODO THROW AN PLUGIN EXCEPTION
 			return null;
 		}
+		xmlParser = null;
 		//TODO make "file" be a wrapped file just with <data></data> 
 		returnModel = plugin.loadData(file, file.getParentFile());
 		//TODO: plugin.loadMeta(returnModel, wrapped file <meta></meta>);
@@ -158,7 +146,33 @@ public final class IOCoordinator extends AbstractParser{
 		return returnModel;
 	}
 	
-	  
+
+	private class XmlParser extends AbstractParser{
+		Set<String> metaData = new HashSet<String>();	
+		protected static final String ATTRIBUTE_TYPE = "type", ATTRIBUTE_TAG = "tag";
+		protected static final String NOTHING = "nothing";		
+		private String dataType = new String();
+		private Set<String> metaTags = new HashSet<String>();
+
+		public XmlParser()
+		{
+			dataType = NOTHING;
+
+			//Initialize parser:
+			try {
+	            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+	            xmlReader.setContentHandler(this);
+	        } catch (ParserConfigurationException pce) {
+	            System.err
+	                    .println("AbstractParser: could not configure parser, message: "
+	                            + pce.getMessage());
+	        } catch (SAXException se) {
+	            System.err
+	                    .println("AbstractParser: could not do something, message: "
+	                            + se.getMessage());
+	        }
+
+		}
 	private void parse(File file){
 	        parsingErrors = "";
 	        try{
@@ -187,13 +201,7 @@ public final class IOCoordinator extends AbstractParser{
 	    	{
 	    		metaTags.add(atts.getValue(ATTRIBUTE_TAG));
 	    	}
-	    }
-	    
-	
-	    
-	    
-	    
-	    
+	    }	    
 	    //PARSE METHODS:
 	    
 	    private String getType(File file)
@@ -221,7 +229,7 @@ public final class IOCoordinator extends AbstractParser{
 	    	}
 	    	return returnSet;
 	    }
-
+	}
 	    
 	    
  }	

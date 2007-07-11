@@ -103,11 +103,9 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	        while(ti.hasNext()){
 	            XMLExporter.transitionToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
 	        }
-	       
 	        //TODO make IOCoordinator call a "fireModelSaved", it should be a generic call for any
 	        //kind of DES Model.
 	       ((FSAModel)model).fireFSASaved();
-	       
 	       return true;
 	}
 	

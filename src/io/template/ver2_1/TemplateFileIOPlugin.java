@@ -94,7 +94,6 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	 */
 	public boolean saveData(PrintStream stream, DESModel model, File fileDirectory)
 	{
-		
 		//TODO make the code to save the templateDesign model.
 		//The following commented code is the code written by Lenko which saves the
 		//model having a given a TemplateGraph...
