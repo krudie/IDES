@@ -150,12 +150,12 @@ public class OperationDialog extends EscapeDialog {
 						}
 						else if(outputs[i] instanceof Boolean)
 						{
-							Hub.displayAlert(op.getDescriptionOfOutputs()[i]+": "+(Boolean)outputs[i]);
+							Hub.displayAlert(op.getDescriptionOfOutputs()[i]+"? \r\n - "+(Boolean)outputs[i]);
 							closeWindow = false;
 						}
 						else
 						{
-							Hub.displayAlert(Hub.string("cantInterpretOutput"));
+							Hub.displayAlert(Hub.string("Error: Can't interpret output!"));
 							closeWindow = true;
 						}
 					}
