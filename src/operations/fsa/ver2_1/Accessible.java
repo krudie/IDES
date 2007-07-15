@@ -15,9 +15,8 @@ import pluggable.operation.FilterOperation;
 public class Accessible implements FilterOperation {
 
 	public final static String NAME="Accessible";
-	public final static String DESCRIPTION="Returns the" +
-		" automaton with only the states that are reachable" +
-		" from the initial state.";
+	public final static String DESCRIPTION="Removes all states" +
+			" that are not reachable from the initial state.";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()

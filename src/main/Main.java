@@ -20,7 +20,7 @@ import javax.swing.UIManager;
 
 import operations.fsa.ver2_1.Accessible;
 import operations.fsa.ver2_1.Coaccessible;
-import operations.fsa.ver2_1.Conflicting;
+import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.Containment;
 import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
@@ -128,7 +128,7 @@ public class Main {
 		OperationManager.register(new Controllable());
 		OperationManager.register(new SupCon());
 		OperationManager.register(new Containment());
-		OperationManager.register(new Conflicting());
+		OperationManager.register(new Nonconflicting());
 		OperationManager.register(new ControlMap());
 		OperationManager.register(new LocalModular());
 		OperationManager.register(new SupRed());

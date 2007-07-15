@@ -11,10 +11,12 @@ import pluggable.operation.OperationManager;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Conflicting implements Operation {
+public class Nonconflicting implements Operation {
 
-	public final static String NAME="conflicting";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="Nonconflicting";
+	public final static String DESCRIPTION="Determines if" +
+			" the two supplied automata are nonconflicting.";
+		
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
@@ -69,7 +71,7 @@ public class Conflicting implements Operation {
 	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
 	 */
 	public String[] getDescriptionOfOutputs() {
-		return new String[]{"are the two languages conflicting"};
+		return new String[]{"Are the two languages nonconflicting"};
 	}
 
 	/* (non-Javadoc)
@@ -79,15 +81,15 @@ public class Conflicting implements Operation {
 		FSAModel a=(FSAModel)inputs[0];
 		FSAModel b=(FSAModel)inputs[1];
 
-		FSAModel l=(FSAModel)OperationManager.getOperation("meet").perform(new Object[]{
-			OperationManager.getOperation("prefix closure").perform(new Object[]{a})[0],
-			OperationManager.getOperation("prefix closure").perform(new Object[]{b})[0]
+		FSAModel l=(FSAModel)OperationManager.getOperation("Meet").perform(new Object[]{
+			OperationManager.getOperation("Prefix Closure").perform(new Object[]{a})[0],
+			OperationManager.getOperation("Prefix Closure").perform(new Object[]{b})[0]
 		})[0];
-		FSAModel r=(FSAModel)OperationManager.getOperation("prefix closure").perform(new Object[]{
-				OperationManager.getOperation("meet").perform(new Object[]{a,b})[0]})[0];
+		FSAModel r=(FSAModel)OperationManager.getOperation("Prefix Closure").perform(new Object[]{
+				OperationManager.getOperation("Meet").perform(new Object[]{a,b})[0]})[0];
 		boolean equal=((Boolean)OperationManager.getOperation("containment").perform(new Object[]{
 				l,r})[0]).booleanValue();
-		return new Object[]{new Boolean(!equal)};
+		return new Object[]{new Boolean(equal)};
 	}
 
 }

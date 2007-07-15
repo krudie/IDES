@@ -15,10 +15,10 @@ import pluggable.operation.FilterOperation;
 public class Coaccessible implements FilterOperation {
 
 	public final static String NAME="Coaccessible";
-	public final static String DESCRIPTION="Returns the" +
-	" automaton with only the states that can reach" +
-	" a final state.";
-
+	public final static String DESCRIPTION="Removes all states from which" +
+			" a marked state cannot be reached.";
+			
+	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import main.Annotable;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
@@ -32,6 +33,9 @@ public class Unary{
     public static void accessible(FSAModel automaton){
     	HashSet<FSAState> accessible=new HashSet<FSAState>();
 
+    	//set Annotation for labelling purposes
+    	automaton.setAnnotation(Annotable.COMPOSED_OF, new String[]{automaton.getId()});
+    	
         LinkedList<FSAState> searchList = new LinkedList<FSAState>();
         // find initial states, mark them as reached and add them to the que
         Iterator<FSAState> stateIterator = automaton.getStateIterator();
@@ -42,6 +46,7 @@ public class Unary{
                 accessible.add(state);
             }
         }
+        
         // for all accesible states
         while(!searchList.isEmpty()){
             FSAState state = searchList.removeFirst();
@@ -71,7 +76,7 @@ public class Unary{
      * make sure to copy it first.
      * @param automaton The automaton which to find the coaccessible part of
      */  
-    public static  void coaccessible(FSAModel automaton){
+    public static void coaccessible(FSAModel automaton){
     	HashSet<FSAState> coaccessible=new HashSet<FSAState>();
 
     	LinkedList<FSAState> searchList = new LinkedList<FSAState>();

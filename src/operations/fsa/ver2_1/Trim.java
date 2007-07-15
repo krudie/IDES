@@ -15,10 +15,10 @@ import pluggable.operation.Operation;
  */
 public class Trim implements FilterOperation {
 
-	public final static String NAME="trim";
-	public final static String DESCRIPTION="Returns the" +
-	" automaton with only the states that are both reachable" +
-	" and co-reachable.";
+	public final static String NAME="Trim";
+	public final static String DESCRIPTION="Removes all states that are not" +
+			"both reachable and coreachable.";
+	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
 	 */

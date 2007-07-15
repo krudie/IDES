@@ -86,8 +86,8 @@ public class Containment implements Operation {
 		FSAModel a=(FSAModel)inputs[0];
 		FSAModel b=(FSAModel)inputs[1];
 		
-		a=(FSAModel)OperationManager.getOperation("trim").perform(new Object[]{a})[0];
-		b=(FSAModel)OperationManager.getOperation("trim").perform(new Object[]{b})[0];
+		a=(FSAModel)OperationManager.getOperation("Trim").perform(new Object[]{a})[0];
+		b=(FSAModel)OperationManager.getOperation("Trim").perform(new Object[]{b})[0];
 		
         LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
     	Set<String> pairs=new HashSet<String>(); 

@@ -15,8 +15,10 @@ import pluggable.operation.Operation;
  */
 public class SynchronousProduct implements Operation {
 
-	public final static String NAME="synchronous product";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="Synchronous Product";
+	public final static String DESCRIPTION="Resultant automaton forces " +
+			"shared events to occur simultaneously, and allows unshared events" +
+			" to interleave.";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()

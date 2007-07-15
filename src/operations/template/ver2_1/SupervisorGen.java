@@ -31,11 +31,6 @@ import util.StupidSetWrapper;
 
 public class SupervisorGen implements Operation {
 
-	
-	public String getDescription()
-	{
-		return null;
-	}
 	public String[] getDescriptionOfInputs() {
 		// TODO Auto-generated method stub
 		return null;
@@ -48,6 +43,10 @@ public class SupervisorGen implements Operation {
 
 	public String getName() {
 		return "Supervisor Generator";
+	}
+	
+	public String getDescription() {
+		return "placeholder description";
 	}
 
 	public int getNumberOfInputs() {

@@ -15,8 +15,10 @@ import pluggable.operation.Operation;
  */
 public class Meet implements Operation {
 
-	public final static String NAME="meet";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="Meet";
+	public final static String DESCRIPTION="Also known as parallel" +
+			"composition, meet produces an automaton that accepts the" +
+			" intersection of the languages produced by the given automata.";
 	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()

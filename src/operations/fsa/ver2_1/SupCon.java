@@ -20,8 +20,10 @@ import pluggable.operation.OperationManager;
  */
 public class SupCon implements Operation {
 
-	public final static String NAME="supremal controllable sublanguage";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="SupCon";
+	public final static String DESCRIPTION="Returns the supremal" +
+			" controllable sublanguage of the plant with respect to the" +
+			" given specification.";
 	
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()

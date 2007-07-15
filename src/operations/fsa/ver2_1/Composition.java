@@ -63,6 +63,47 @@ public class Composition{
     }
 
     /**
+     * Computes the shuffle product of the two automata a and b.
+     * 
+     * @param a an automaton
+     * @param b an automaton
+     * @param shuffle the accesible product of a and b.
+     */
+    public static void shuffle(FSAModel a, FSAModel b, FSAModel shuffle){
+    	shuffle.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId(), b.getId()});
+    
+    	//the event set for the shuffle is the union of the two event sets
+    	//get all the events from 'a' first.
+    	ListIterator<FSAEvent> eventIterator = a.getEventIterator();
+    	while(eventIterator.hasNext()){
+    		//add the current event from 'a' to shuffle
+    		shuffle.add(new Event(eventIterator.next()));
+    	}
+    	
+    	//now get the events from b
+    	eventIterator = b.getEventIterator();
+    	while(eventIterator.hasNext()){
+    		//need to test each event to prevent duplications
+    		FSAEvent testEvent = eventIterator.next();
+    		//add the event if it isn't already in the event list
+    		if (!shuffle.getEventSet().contains(testEvent)) {
+    			shuffle.add(new Event(testEvent));
+    		}
+    	}
+    	
+    	//any 
+    	
+    	
+    	
+    
+    	
+    	//garbage line included as a breakpoint	
+    	int x = 1;
+    }
+    
+    
+    
+    /**
      * Computes the accessible product of the two automata a and b.
      * 
      * @param a an automaton

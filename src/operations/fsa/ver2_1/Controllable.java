@@ -13,8 +13,9 @@ import pluggable.operation.Operation;
  */
 public class Controllable implements Operation {
 
-	public final static String NAME="controllable";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="Controllable";
+	public final static String DESCRIPTION="Determines if the plant" +
+			"is controllable with respect to the specification.";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()

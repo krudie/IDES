@@ -14,8 +14,10 @@ import pluggable.operation.FilterOperation;
  */
 public class PrefixClosure implements FilterOperation {
 
-	public final static String NAME="prefix closure";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="Prefix Closure";
+	public final static String DESCRIPTION="Creates an automaton that" +
+			"generates the prefix closure of the language accepted by the" +
+			"given automaton.";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()

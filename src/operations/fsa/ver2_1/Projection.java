@@ -15,8 +15,10 @@ import pluggable.operation.Operation;
  */
 public class Projection implements Operation {
 
-	public final static String NAME="projection";
-	public final static String DESCRIPTION="temp";
+	public final static String NAME="Projection";
+	public final static String DESCRIPTION="Returns a projection" +
+			" of the given automaton such that all unobservable events" +
+			" have been removed.";
 
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#getName()
