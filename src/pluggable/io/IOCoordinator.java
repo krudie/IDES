@@ -6,18 +6,21 @@ import main.Annotable;
 import main.Hub;
 import model.DESModel;
 import model.fsa.FSAModel;
-import io.fsa.ver2_1.FileOperations;
-import io.fsa.ver2_1.XMLexporter;
+import model.fsa.FSAState;
+import model.fsa.FSATransition;
 import io.IOUtilities;
-import java.io.FileOutputStream;
-import io.ParsingToolbox;
 
 import io.WrappedPrintStream;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,6 +34,7 @@ import org.xml.sax.SAXException;
 
 import pluggable.io.IOPluginManager;
 import pluggable.io.FileIOPlugin;
+import presentation.fsa.BezierLayout;
 import io.AbstractParser;
 /**
  * @author christiansilvano
@@ -39,7 +43,6 @@ import io.AbstractParser;
 public final class IOCoordinator{
 	//Singleton instance:
 	private static IOCoordinator instance = null;
-	XmlParser xmlParser = null;
 	private IOCoordinator()
 	{    
 	}
@@ -68,11 +71,7 @@ public final class IOCoordinator{
  		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 
 		//Open  ""file"" and start writing the header of the IDES file format
-		//TODO: IMPLEMENT A WRAPPER TO THE PRINTSTREAM< OVERRIDING close()
- 		//TODO: MAKE ps AN OUTPUT STREAM
  		WrappedPrintStream ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
-
- 		
  	
         ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
@@ -107,46 +106,141 @@ public final class IOCoordinator{
 	
 	//Get the "type" of the model in file and ask the plugin that manage this
 	//kind of "type" to load the DES.
-	public DESModel load(File file)
+	public DESModel load(File file) throws IOException
 	{
-		if(xmlParser == null)
-		{	
-			xmlParser = new XmlParser();
-		}else
+		if(!file.exists())
 		{
-			return null;
-		}
-		//TODO: Make the next line innerParser.getType(file)
-		String type = xmlParser.getType(file);
-		
-		//System.out.println(type);
-		if(type == null)
-		{
-			//File error, maybe the file is not an IDES file
-			//THROW ERROR
-			//TODO THROW AN IO EXCEPTION
-			return null;
+			//TODO Show an error msg.
 		}
 		
 		DESModel returnModel = null;
-		//Ask the plugin manager for the correct plugin to handle file loading
-		//The variable dataType is equivalent of the IOTypeDescription of the model to 
-		//be loaded.			
+		XmlParser xmlParser = new XmlParser();
+		String type = xmlParser.getType(file);
+		Set<String> metaTags = xmlParser.getMetaTags(file);
+		//System.out.println(type);
+		if(type == null)
+		{
+			throw new IOException(Hub.string("errorsParsingXMLFileL1"));
+		}
+		
+		//Create a FileInputStream with "file"
+		FileInputStream fis = new FileInputStream(file);
+		//Create a BufferedHeader (to "remember" the last read position in the FileInputStream)
+		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+		//LOADING DATA TO THE MODEL
 		FileIOPlugin plugin = IOPluginManager.getInstance().getDataLoader(type);
 		if(plugin == null)
 		{
-			//TODO THROW AN PLUGIN EXCEPTION
+			//TODO THROW A PLUGIN EXCEPTION
 			return null;
 		}
-		xmlParser = null;
-		//TODO make "file" be a wrapped file just with <data></data> 
-		returnModel = plugin.loadData(file, file.getParentFile());
-		//TODO: plugin.loadMeta(returnModel, wrapped file <meta></meta>);
-		//Return the model loaded by the plugin
+		InputStream dataStream = DataProtector.getXmlContent(br, "data");
+		if(dataStream == null)
+		{
+			//TODO TROW IO EXCEPTION
+		}	
+		returnModel = plugin.loadData(dataStream, file.getParentFile());
+
+
+		//LOADING METADATA TO THE MODEL:
+		Iterator<String> mIt = metaTags.iterator();
+		while(mIt.hasNext())//For each metaTag in the file
+		{
+			//Get a stream countaining the metaInformation
+			InputStream metaStream = DataProtector.getXmlContent(br,"meta");
+			String meta = mIt.next();
+			//Get all the plugins which loads metadata from the pair: (type, meta)
+			Set<FileIOPlugin>plugins = IOPluginManager.getInstance().getMetLoaders(type, meta);
+			if(plugins == null)
+			{
+				//TODO Show a message to the user saying that there are no plugins capable of loading the information
+				// for the metadata: meta
+			}
+			//Make every plugins load the metadata
+			Iterator<FileIOPlugin> pIt = plugins.iterator();
+			while(pIt.hasNext())
+			{
+				FileIOPlugin p = pIt.next();
+				p.loadMeta(metaStream, returnModel);
+			}
+		}
+
+
+		br.close();
+		fis.close();
+
+//TESTING MODEL:
+//		Iterator<FSATransition> t = ((FSAModel)returnModel).getTransitionIterator();
+//		while(t.hasNext())
+//		{
+//			System.out.println(t.next().getSource());
+//		}
+//		
+//		Iterator<FSAState> s = ((FSAModel)returnModel).getStateIterator();
+//		while(s.hasNext())
+//		{
+//			System.out.println(s.next().getAnnotation(Annotable.LAYOUT));
+//		}
 		return returnModel;
 	}
 	
 
+	 private static class DataProtector{
+	    	public static InputStream getXmlContent(BufferedReader head, String tag){
+	        	Boolean tagStarted = false, parseFinished = false, avoidLine = false;
+	        	String body = "";
+	        	String line = "";
+	        	while(parseFinished == false)
+	        	{
+	        	try{
+	        			line = head.readLine();
+	        		//	System.out.println(line);
+	        			if(line == null)
+	        			{
+	        				parseFinished = false;
+	        				break;
+	        			}
+	        		}catch(IOException e){
+	        				//TODO treat exception
+	        		}
+	        		if(tagStarted == false & line.contains("<" + tag))
+	        		{
+	        			tagStarted = true;
+	        			avoidLine = true;
+	        		}
+	        		if(line.contains("</" + tag))
+	        		{
+	        			parseFinished = true;
+	        			avoidLine = true;
+	        		}
+	        		if(tagStarted == true & avoidLine == false)
+	        		{
+	        			body = addLine(body,line);
+	        		}
+	        		avoidLine = false;
+	        	}
+	        	//System.out.println(body);
+	        	//Use getBytes UTF-8 ? Probably not since binary data can be present:
+	        	if(body == ""){
+	        		return null;
+	        	}	try{
+	        		InputStream retStream = new ByteArrayInputStream(body.getBytes("UTF-8"));
+	        		return retStream;
+	        	}catch(UnsupportedEncodingException e){
+	        		return null;
+	        	}
+	        	
+	    	}
+	     
+	    	private static String addLine(String string, String text)
+	    	{
+	    		return string + text + System.getProperty("line.separator");
+	    	}
+	 }
+	
+	
+	
 	private class XmlParser extends AbstractParser{
 		Set<String> metaData = new HashSet<String>();	
 		protected static final String ATTRIBUTE_TYPE = "type", ATTRIBUTE_TAG = "tag";
@@ -221,7 +315,6 @@ public final class IOCoordinator{
 	    {
 	    	parse(file);
 	    	Set<String> returnSet = metaTags;
-	    	metaTags.clear();
 	    	dataType = NOTHING;
 	    	if(metaTags.size() == 0)
 	    	{
@@ -230,7 +323,6 @@ public final class IOCoordinator{
 	    	return returnSet;
 	    }
 	}
+}
 	    
-	    
- }	
 

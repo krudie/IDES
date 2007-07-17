@@ -17,6 +17,7 @@ import io.fsa.ver2_1.XMLexporter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 
 import main.Annotable;
 import main.Hub;
@@ -150,49 +151,50 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(File f, File fileDir)
+	public DESModel loadData(InputStream f, File fileDir)
 	{	  
 		//load file
 		//go fsatoolset.wrap()
 		//templatetoolset.wrap()
-		
-	      TemplateGraph graph = null;
-	      TemplateModel model = null;
-	        if(!f.canRead())
-	        {
-	        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
-	        	return (DESModel)model;
-	        }
-	        String errors="";
-	        try
-	        {	
-	        	model = TemplateParser.parse(f);
-	        }catch(Exception e)
-	        {
-	        	graph=null;
-	        	errors+=e.getMessage();
-//	        	e.printStackTrace();
-	        }
-	        
-	        if(!"".equals(errors))
-	        {
-	        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
-	        			"\n"+Hub.string("errorsParsingXMLFileL2"));
-	        }
-	        if(graph!=null)
-	        {
-	        	graph.setAnnotation(Annotable.FILE,f);
-	        }
-	        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
-
-	        return (DESModel)model;
+//		
+//	      TemplateGraph graph = null;
+//	      TemplateModel model = null;
+//	        if(!f.canRead())
+//	        {
+//	        	Hub.displayAlert(Hub.string("fileCantRead")+f.getPath());
+//	        	return (DESModel)model;
+//	        }
+//	        String errors="";
+//	        try
+//	        {	
+//	        	model = TemplateParser.parse(f);
+//	        }catch(Exception e)
+//	        {
+//	        	graph=null;
+//	        	errors+=e.getMessage();
+////	        	e.printStackTrace();
+//	        }
+//	        
+//	        if(!"".equals(errors))
+//	        {
+//	        	Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+f.getPath()+
+//	        			"\n"+Hub.string("errorsParsingXMLFileL2"));
+//	        }
+//	        if(graph!=null)
+//	        {
+//	        	graph.setAnnotation(Annotable.FILE,f);
+//	        }
+//	        Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,f.getParent());
+//
+//	        return (DESModel)model;
+		return null;
 	}
 	
 	/**
 	 * Loads metadata from the file
 	 * @param file
 	 */
-	public void loadMeta(File file)
+	public void loadMeta(InputStream stream, DESModel model)
 	{
 		
 	}

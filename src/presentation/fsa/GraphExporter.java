@@ -2,6 +2,8 @@ package presentation.fsa;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.IOException;
+
 import model.fsa.FSAModel;
 import pluggable.io.IOCoordinator;
 import javax.swing.JCheckBox;
@@ -381,7 +383,13 @@ public class GraphExporter
 			STR_EXPORT_PROP_USE_FRAME);
 		
 		// Step #1 - Get the GraphModel
-		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(file);
+		FSAModel model = null;
+		try{
+			model = (FSAModel)IOCoordinator.getInstance().load(file);
+		}catch(IOException e){
+			Hub.displayAlert(e.getMessage());
+		}
+		
 		MetaData metadata = (MetaData)model.getAnnotation("metadata");
 		if(metadata == null)
 		{

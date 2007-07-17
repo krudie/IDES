@@ -32,49 +32,13 @@ public class HeadTailInputStream extends FilterInputStream {
 		}
 	}
 
-	public void mark()
-	{
-	}
+	public void mark(){}
 	
-	public void reset()
-	{
-	}
+	public void reset(){}
 	
 	public boolean markSupported()
 	{
 		return false;
-	}
-	
-	public int read() throws IOException
-	{
-		if(headLeft>0) //still reading header
-		{
-			headLeft--;
-			return head[head.length-headLeft+1];
-		}
-		else if(!hitEOF) //header finished, reading input stream
-		{
-			int r=super.read();
-			if(r<0) //input stream finished
-			{
-				hitEOF=true;
-				tailLeft--;
-				return tail[0];
-			}
-			else
-			{
-				return r;
-			}
-		}
-		else if(tailLeft>0) //still reading tail
-		{
-			tailLeft--;
-			return tail[tail.length-tailLeft+1];
-		}
-		else //tail finished
-		{
-			return -1;
-		}
 	}
 	
 	public long skip(long n) throws IOException
@@ -93,4 +57,62 @@ public class HeadTailInputStream extends FilterInputStream {
 		}
 		return skipped;
 	}
+	
+	public int read() throws IOException
+	{
+		if(headLeft>0) //still reading header
+		{
+			headLeft--;
+			return head[head.length-headLeft-1];
+		}
+		else if(!hitEOF) //header finished, reading input stream
+		{
+			int r=super.read();
+			if(r<0) //input stream finished
+			{
+				hitEOF=true;
+				tailLeft--;
+				return tail[0];
+			}
+			else
+			{
+				return r;
+			}
+		}
+		else if(tailLeft>0) //still reading tail
+		{
+			tailLeft--;
+			return tail[tail.length-tailLeft-1];
+		}
+		else //tail finished
+		{
+			return -1;
+		}
+	}
+	
+	public int read(byte[] b, int off, int len) throws IOException
+	{
+		int bytesRead=0;
+		while(bytesRead<len)
+		{
+			int r=read();
+			if(r<0)
+			{
+				break;
+			}
+			b[off+bytesRead]=(byte)r;
+			bytesRead++;
+		}
+		if(bytesRead == 0)
+		{
+			return -1;
+		}
+		return bytesRead;
+	}	
+	
+	public int read(byte[] b) throws IOException
+	{
+		return read(b,0,b.length);
+	}
 }
+

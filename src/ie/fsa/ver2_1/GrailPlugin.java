@@ -80,7 +80,13 @@ public class GrailPlugin implements ImportExportPlugin{
 	public void exportFile(File src, File dst)
 	{    	
     	//Loading the model from the file:
-    	FSAModel a=(FSAModel)IOCoordinator.getInstance().load(src);
+    	FSAModel a= null;
+    	try{
+    		a = (FSAModel)IOCoordinator.getInstance().load(src);
+    	}catch(IOException e){
+    		Hub.displayAlert(e.getMessage());
+    		return;
+    	}
 
     	//Container for the grail model:
     	String fileContents = "";

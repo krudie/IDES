@@ -107,6 +107,7 @@ public class IOPluginManager {
 	 */
 	public Set<FileIOPlugin> getMetLoaders(String type, String meta)
 	{
+		System.out.println("Getting plugins for: " + type + ", " + meta);
 		Iterator it = metaLoaders.iterator();
 		Set<FileIOPlugin> returnSet = new HashSet<FileIOPlugin>();
 		while(it.hasNext())

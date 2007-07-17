@@ -1,5 +1,7 @@
 package model.fsa.ver2_1;
 
+import java.util.Hashtable;
+
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 
@@ -18,6 +20,44 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
     private FSAEvent e = null;
 
     private long id;
+    
+	//TODO make the state use a common annotation repository
+	protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
+	
+    /**
+	 * Sets an annotation for a given key. If there is already
+	 * an annotation for the key, it is replaced. 
+	 * @param key the key for the annotation
+	 * @param annotation the annotation
+	 */
+	public void setAnnotation(String key, Object annotation)
+	{
+		annotations.put(key, annotation);
+	}
+	
+	/**
+	 * Returns the annotation for the given key.
+	 * @param key key for the annotation
+	 * @return if there is no annotation for the given key,
+	 * returns <code>null</code>, otherwise returns the annotation
+	 * for the key
+	 */
+	public Object getAnnotation(String key)
+	{
+		return annotations.get(key);
+	}
+	
+	/**
+	 * Returns <code>true</code> if there is an annotation
+	 * for the given key. Otherwise returns <code>false</code>.
+	 * @param key key for the annotation
+	 * @return <code>true</code> if there is an annotation
+	 * for the given key, <code>false</code> otherwise
+	 */
+	public boolean hasAnnotation(String key)
+	{
+		return annotations.containsKey(key);
+	}
     
     /**
      * Constructs a new transition originating in state source and ending in

@@ -7,6 +7,7 @@ import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Cursor;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -43,9 +44,15 @@ public class CommonActions {
 			
 			//calling IOCoordinator to handle the selected file
 			//It will make the correct plugins load the file):
+			DESModel model = null;
 			File file = fc.getSelectedFile();
-			DESModel model = IOCoordinator.getInstance().load(file);
-
+			try{
+				model = IOCoordinator.getInstance().load(file);
+			}catch(IOException e)
+			{
+				Hub.displayAlert(e.getMessage());
+				return;
+			}
 			if(model != null)
 			{
 			   	model.setName(ParsingToolbox.removeFileType(file.getName()));

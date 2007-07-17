@@ -80,7 +80,12 @@ public class TCTPlugin implements ImportExportPlugin{
 	 */
 	public void exportFile(File src, File dst)
 	{    	
-		FSAModel a= (FSAModel)IOCoordinator.getInstance().load(src);
+		FSAModel a= null;
+		try{
+			a = (FSAModel)IOCoordinator.getInstance().load(src);
+		}catch(IOException e){
+			Hub.displayAlert(e.getMessage());
+		}
     	
 		try
 		{

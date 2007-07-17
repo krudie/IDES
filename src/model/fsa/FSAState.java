@@ -12,7 +12,19 @@ import model.DESElement;
  * @author Helen Bretzke
  */
 public interface FSAState extends DESElement,Annotable {
-
+	
+	/**
+	 * Gets the name of the state
+	 * @return a String countaining the name of the state
+	 */
+	public abstract String getName();
+	
+	/**
+	 * Sets an annotation for the name of the state
+	 * @param name, the name for the String
+	 */
+	public abstract void setName(String name);
+	
 	/**
 	 * Adds a transition that originates from this state. 
 	 * 

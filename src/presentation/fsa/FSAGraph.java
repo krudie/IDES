@@ -161,6 +161,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 			
 		
+	    
 		// Prepare elements for automatic layout
 		Set<Set<FSATransition>> groups = new HashSet<Set<FSATransition>>();
 		HashMap<FSAState,Set<FSATransition>> stateGroups = new HashMap<FSAState,Set<FSATransition>>();

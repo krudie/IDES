@@ -3,6 +3,8 @@
  */
 package pluggable.io;
 import model.DESModel;
+
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.File;
 import java.util.Set;
@@ -11,6 +13,7 @@ import java.util.Set;
  * @author christiansilvano
  *
  */
+//TODO Change the File in the saving methods by InputStreams
 public interface FileIOPlugin {
 	
 	/**
@@ -42,13 +45,13 @@ public interface FileIOPlugin {
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(File file, File fileDir);
+	public DESModel loadData(InputStream stream, File fileDir);
 	
 	/**
 	 * Loads metadata from the file
 	 * @param file
 	 */
-	void loadMeta(File file);
+	void loadMeta(InputStream stream, DESModel model);
 	
 	/**
 	 * Save metaData to the file according to model.

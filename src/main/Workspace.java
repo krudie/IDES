@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -430,8 +431,15 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		String selectedModel=null;
 		for(int i=0;i<files.size();++i)
 		{
-			DESModel model = IOCoordinator.getInstance().load(
-					new java.io.File(files.elementAt(i)));
+			DESModel model = null;
+			try{
+				IOCoordinator.getInstance().load(new java.io.File(files.elementAt(i)));
+			}catch(IOException e)
+			{
+				Hub.displayAlert(e.getMessage());
+				return;
+			}
+					
 			if(model != null)
 			{
 				Hub.getWorkspace().addModel(model);

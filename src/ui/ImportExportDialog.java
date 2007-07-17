@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 import java.io.File;
+import java.io.IOException;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -277,7 +279,12 @@ public class ImportExportDialog extends EscapeDialog{
 				int retVal = fc.showOpenDialog(Hub.getMainWindow());
 				if(retVal == JFileChooser.APPROVE_OPTION){
 					srcFileExport.setText(fc.getSelectedFile().getPath());
-					currentModel = IOCoordinator.getInstance().load(fc.getSelectedFile());
+					try{
+						currentModel = IOCoordinator.getInstance().load(fc.getSelectedFile());
+					}catch(IOException e){
+						Hub.displayAlert(e.getMessage());
+						return;
+					}
 					if(currentModel == null)
 					{
 						currentModel = Hub.getWorkspace().getActiveModel();
