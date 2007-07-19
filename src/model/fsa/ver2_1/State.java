@@ -21,7 +21,7 @@ import model.fsa.FSATransition;
  *
  */
 public class State extends SubElementContainer implements model.fsa.FSAState {
-	private final String NAME="name";
+	private static final String NAME="name";
 	/* transitions originating from this state and ending in this state respectively. */
 	private LinkedList<FSATransition> sourceT, targetT;
 
@@ -227,6 +227,15 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		annotations.put(key, annotation);
 	}
 
+	/**
+	 * Removes the annotation for the given key.
+	 * @param key key for the annotation
+	 */
+	public void removeAnnotation(String key)
+	{
+		annotations.remove(key);
+	}
+	
 	/**
 	 * Returns <code>true</code> if there is an annotation
 	 * for the given key. Otherwise returns <code>false</code>.

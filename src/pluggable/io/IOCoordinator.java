@@ -174,13 +174,13 @@ public final class IOCoordinator{
 //		Iterator<FSATransition> t = ((FSAModel)returnModel).getTransitionIterator();
 //		while(t.hasNext())
 //		{
-//			System.out.println(t.next().getSource());
+//			System.out.println("Transition: " + t.next().getAnnotation(Annotable.LAYOUT));
 //		}
 //		
 //		Iterator<FSAState> s = ((FSAModel)returnModel).getStateIterator();
 //		while(s.hasNext())
 //		{
-//			System.out.println(s.next().getAnnotation(Annotable.LAYOUT));
+//			System.out.println("State: " + s.next().getAnnotation(Annotable.LAYOUT));
 //		}
 		return returnModel;
 	}

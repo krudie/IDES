@@ -14,7 +14,6 @@ import main.WorkspaceSubscriber;
 import model.DESModel;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
-import model.fsa.ver2_1.MetaData;
 
 import pluggable.ui.Toolset;
 import pluggable.ui.UIDescriptor;
@@ -121,11 +120,12 @@ public class FSAToolset implements Toolset {
 			throw new UnsupportedModelException();
 		LayoutShell w;
 		//TODO - remove this MetaData bullshit
-		if(model.hasAnnotation("metadata"))
-			w=new FSAGraph((FSAModel)model,(MetaData)model.getAnnotation("metadata"));
-		else
-			w=new FSAGraph((FSAModel)model);
-		return w;
+//		if(model.hasAnnotation("metadata"))
+//			w=new FSAGraph((FSAModel)model,(MetaData)model.getAnnotation("metadata"));
+//		else
+//			w=new FSAGraph((FSAModel)model);
+		//Christian - Trying to remove this MetaData:
+		return new FSAGraph((FSAModel)model);
 	}
 
 	/**

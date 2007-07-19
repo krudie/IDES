@@ -749,6 +749,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		annotations.put(key, annotation);
 	}
 	
+	public void removeAnnotation(String key)
+	{
+		annotations.remove(key);
+	}
+	
 	public boolean hasAnnotation(String key)
 	{
 		return annotations.containsKey(key);

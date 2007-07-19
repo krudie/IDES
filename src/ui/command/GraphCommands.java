@@ -201,7 +201,8 @@ public class GraphCommands {
 				return null;
 			}else{
 				// finalize movement of current selection in graph model
-				ContextAdaptorHack.context.getGraphModel().commitMovement(ContextAdaptorHack.context.getSelectedGroup());
+				//Christian - commitMovement removed
+//				ContextAdaptorHack.context.getGraphModel().commitMovement(ContextAdaptorHack.context.getSelectedGroup());
 				// TODO create an UndoableEdit object using displacement and 
 				// copy of currentSelection and return undoableEdit object
 				return null;

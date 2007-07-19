@@ -36,6 +36,15 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
 	}
 	
 	/**
+	 * Removes the annotation for the given key.
+	 * @param key key for the annotation
+	 */
+	public void removeAnnotation(String key)
+	{
+		annotations.remove(key);
+	}
+	
+	/**
 	 * Returns the annotation for the given key.
 	 * @param key key for the annotation
 	 * @return if there is no annotation for the given key,

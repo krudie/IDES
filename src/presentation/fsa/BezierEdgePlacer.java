@@ -51,7 +51,8 @@ public class BezierEdgePlacer {
 			}	
 
 			straightEdge.computeEdge();
-			straightEdge.getGraph().commitMovement(straightEdge);
+			//Christian - commitMovement removed!
+//			straightEdge.getGraph().commitMovement(straightEdge);
 
 		}/*else{	// No straight edge
 			if(n % 2 != 0) // Odd # of neighbours			

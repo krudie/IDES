@@ -48,6 +48,11 @@ public interface Annotable {
 	public void setAnnotation(String key, Object annotation);
 	
 	/**
+	 * Removes the annotation for the given key.
+	 * @param key key for the annotation
+	 */
+	public void removeAnnotation(String key);
+	/**
 	 * Returns <code>true</code> if there is an annotation
 	 * for the given key. Otherwise returns <code>false</code>.
 	 * @param key key for the annotation

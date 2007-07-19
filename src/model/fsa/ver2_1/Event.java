@@ -173,6 +173,12 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 		
 	}
 	
+	
+	public void removeAnnotation(String key)
+	{
+		
+	}
+	
 	/**
 	 * Returns <code>true</code> if there is an annotation
 	 * for the given key. Otherwise returns <code>false</code>.

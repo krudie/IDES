@@ -14,7 +14,6 @@ import util.BentoBox;
 
 import main.Workspace;
 import main.Hub;
-import model.fsa.ver2_1.MetaData;
 
 
 /**
@@ -390,16 +389,9 @@ public class GraphExporter
 			Hub.displayAlert(e.getMessage());
 		}
 		
-		MetaData metadata = (MetaData)model.getAnnotation("metadata");
-		if(metadata == null)
-		{
-			System.out.print("METADATA NULA!!!");
-			graphModel = new presentation.fsa.FSAGraph(model);
-			return null;
-		}else
-		{
-			graphModel = new presentation.fsa.FSAGraph(model, (MetaData)model.getAnnotation("metadata"));
-		}
+
+		graphModel = new presentation.fsa.FSAGraph(model);
+	
 			
 		
 		// Step #3 - Figure out the dimensions

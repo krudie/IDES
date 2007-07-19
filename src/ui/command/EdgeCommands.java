@@ -88,7 +88,8 @@ public class EdgeCommands {
 		protected UndoableEdit performEdit() {
 			SelectionGroup sg = new SelectionGroup();
 			sg.insert(edge);
-			edge.getGraph().commitMovement(sg);
+			//Christian - commitMovement removed
+//			edge.getGraph().commitMovement(sg);
 			// TODO UndoableEdit containing the Edge id and a clone of the previous layout OR
 			// just of the curve.
 			return null;

@@ -295,6 +295,15 @@ public class TemplateDesign implements TemplateModel {
 	public void setAnnotation(String key, Object annotation) {
 		annotations.put(key, annotation);
 	}
+	
+	/**
+	 * Removes the annotation for the given key.
+	 * @param key key for the annotation
+	 */
+	public void removeAnnotation(String key)
+	{
+		annotations.remove(key);
+	}
 
 	public String getPLCCode(String event)
 	{

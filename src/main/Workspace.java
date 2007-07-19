@@ -33,7 +33,6 @@ import model.ModelManager;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
-import model.fsa.ver2_1.MetaData;
 import pluggable.io.IOCoordinator;
 /**
  * The main manager of the open DESModels.
@@ -58,7 +57,6 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	// graph representation and metadata respectively.
 	private Vector<DESModel> systems;
 	private Vector<LayoutShell> graphs;
-	private Vector<MetaData> metadata;
 	
 	static Workspace me;
 	
@@ -75,7 +73,6 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		activeModelIdx=-1;
 		systems=new Vector<DESModel>();
 		graphs=new Vector<LayoutShell>();
-		metadata=new Vector<MetaData>();
 		name=Hub.string("newModelName");
 //		eventsModel = new EventsModel();
 	}
@@ -98,10 +95,11 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		
 		systems.add(g.getModel());
 		
-		if(g instanceof FSAGraph)
-			metadata.add(((FSAGraph)g).getMeta());
-		else
-			metadata.add(new FSAGraph(ModelManager.createModel(FSAModel.class)).getMeta());
+		//CHRISTIAN - the following code was commented for being metadata related
+//		if(g instanceof FSAGraph)
+//			metadata.add(((FSAGraph)g).getMeta());
+//		else
+//			metadata.add(new FSAGraph(ModelManager.createModel(FSAModel.class)).getMeta());
 		graphs.add(g);
 		
 		if(LatexManager.isLatexEnabled())
@@ -127,8 +125,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 * Adds the given DESModel to the set of models in the workspace.
 	 *  @param fsa the model to be added
 	 */
-	public void addModel(DESModel model) {
-		
+	public void addModel(DESModel model) {		
 		// Remove initial Untitled model if it is empty
 		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveLayoutShell().needsSave()){
 			removeModel(getActiveLayoutShell().getModel().getName());	
@@ -142,18 +139,8 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			model.setName(model.getName()+" ("+i+")");
 		}
 		systems.add(model);
-		
-		if(model instanceof FSAModel)
-		{
-			metadata.add(new MetaData((Automaton)model));
-			model.setAnnotation("metadata", metadata.lastElement());
-		}
-		else
-		{
-			metadata.add(new MetaData((Automaton)ModelManager.createModel(FSAModel.class)));
-		}
 		graphs.add(PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface()).wrapModel(model));
-
+	
 		if(LatexManager.isLatexEnabled()){
 			if(getActiveLayoutShell() instanceof FSAGraph)
 				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());
@@ -162,10 +149,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 									model.getId(), 
 									WorkspaceMessage.ADD, 
-									this));
-		
-//		setActiveModel(systems.elementAt(systems.size()-1).getName());
-		
+									this));	
 		if(countAdd!=0){
 			dirty = true;
 		}
@@ -253,7 +237,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		
 		graphs.elementAt(idx).release();
 		systems.removeElementAt(idx);	
-		metadata.removeElementAt(idx);
+//		metadata.removeElementAt(idx);
 		graphs.removeElementAt(idx);
 		
 		if(activeModelIdx>idx)

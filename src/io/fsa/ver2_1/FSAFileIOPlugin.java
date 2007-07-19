@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+
+import presentation.CubicParamCurve2D;
 import presentation.fsa.CircleNodeLayout;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+
+import edu.uci.ics.jung.visualization.contrib.CircleLayout;
 
 /**
  * @author christiansilvano
@@ -135,6 +139,37 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	}
 
 	/**
+	 * Save metaData to the file, according to model.
+	 * @param file
+	 * @param model
+	 */
+	public boolean saveMeta(PrintStream stream, DESModel model, String type, String tag)
+	{
+		//stream will be an OutputStream.
+		//it will need to be converted to PrintStream(UTF-8).
+		if(type.equals("FSA") & tag.equals("layout"))
+		{
+			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
+			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
+			stream.println("\t<font size=\""+(((FSAModel)model).getMeta()==null?12:((FSAModel)model).getMeta().getAttribute("size"))+"\"/>");
+			si = ((FSAModel)model).getStateIterator();
+	
+			while(si.hasNext())
+			{
+				XMLExporter.stateLayoutToXML((State)si.next(), stream, XMLExporter.INDENT);            
+			}
+	
+			ti = ((FSAModel)model).getTransitionIterator();
+			while(ti.hasNext())
+			{
+				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Loads data from the file.
 	 * @param file
 	 * @param fileDir
@@ -177,39 +212,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		
 		AutomatonParser parser = new AutomatonParser();
 		parser.parseMeta(metaField, model);
-//		FSAGraph graph = new FSAGraph((FSAModel)model);
-		
-	}
-
-	/**
-	 * Save metaData to the file, according to model.
-	 * @param file
-	 * @param model
-	 */
-	public boolean saveMeta(PrintStream stream, DESModel model, String type, String tag)
-	{
-		//stream will be an OutputStream.
-		//it will need to be converted to PrintStream(UTF-8).
-		if(type.equals("FSA") & tag.equals("layout"))
-		{
-			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
-			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
-			stream.println("\t<font size=\""+(((FSAModel)model).getMeta()==null?12:((FSAModel)model).getMeta().getAttribute("size"))+"\"/>");
-			si = ((FSAModel)model).getStateIterator();
-
-			while(si.hasNext())
-			{
-				XMLExporter.stateLayoutToXML((State)si.next(), stream, XMLExporter.INDENT);            
-			}
-
-			ti = ((FSAModel)model).getTransitionIterator();
-			while(ti.hasNext())
-			{
-				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -235,7 +237,30 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			if(s.isEmpty()) ps.println(indent + "<state" + " id=\"" + s.getId() + "\" />");
 			else{
 				ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-				subElementContainerToXML(s, ps, indent + INDENT);            
+				
+				if(!(s.isInitial() | s.isMarked()))
+				{
+					ps.println(indent + indent + "<properties/>");
+				}else{
+					ps.println(indent + indent + "<properties>");
+					if(s.isInitial())
+					{
+						ps.println(indent + indent + indent + "<initial />");
+					}
+					if(s.isMarked())
+					{
+						ps.println(indent + indent + indent + "<marked />");
+					}
+					ps.println(indent + indent + "</properties>");
+				}
+				
+				if(s.getName() != null)
+				{
+					ps.println(indent + indent + "<name>" + s.getName() + "</name>");
+				}else{
+					ps.println(indent + indent + "<name />");
+				}
+				
 				ps.println(indent + "</state>");
 			}
 		}
@@ -246,12 +271,32 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void eventToXML(Event e, PrintStream ps, String indent){
-			if(e.isEmpty()){
+			if(e.getSymbol() == "" & !(e.isObservable() | e.isControllable())){
 				ps.println(indent + "<event" + " id=\"" + e.getId() + "\" />");
 			}
 			else{
 				ps.println(indent + "<event" + " id=\"" + e.getId() + "\">");
-				subElementContainerToXML(e, ps, indent + INDENT);
+				if(!(e.isControllable() | e.isObservable()))
+				{
+					ps.println(indent + indent + "<properties />");
+				}else{
+					ps.println(indent + indent + "<properties>");
+					if(e.isControllable())
+					{
+						ps.println(indent + indent + indent + "<controllable />");
+					}
+					if(e.isObservable())
+					{
+						ps.println(indent + indent + indent + "<observable />");
+					}
+					ps.println(indent + indent + "</properties>");
+				}
+				if(e.getSymbol() != null)
+				{
+					ps.println(indent + indent + "<name>" + e.getSymbol() + "</name>");
+				}else{
+					ps.println(indent + indent + "<name />");
+				}
 				ps.println(indent + "</event>");
 			}
 		}
@@ -262,73 +307,13 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void transitionToXML(Transition t, PrintStream ps, String indent){
-			if(t.isEmpty()){
-				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
-						+ t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
-						+ ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + " />");
-			}
-			else{
 				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
 						+ t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
 
 						+ ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
-				subElementContainerToXML(t, ps, indent + INDENT);
-				ps.println(indent + "</transition>");
-			}
+				ps.println(indent + "</transition>");			
 		}
-
-		/**
-		 * Prints this the subelementcontainer and all subelements of this objects to the
-		 * printsstream as XML.
-		 * @param sec the subelementcontainer ro export to xml
-		 * @param ps the printstream this object should be printet to.
-		 * @param indent the indentation this object should have.
-		 */
-		private static void subElementContainerToXML(SubElementContainer sec, PrintStream ps, String indent){
-			Enumeration<SubElement> see = sec.getSubElements();        
-			if(see == null) return;
-			while(see.hasMoreElements())
-			{
-				SubElement se=see.nextElement();
-				if(!"graphic".equals(se.getName()))
-					subElementToXML(se,ps, indent);
-			}
-		}
-
-		/**
-		 * prints a subelement in xml
-		 * @param se the subelement to convert 
-		 * @param ps the printstream to print to 
-		 * @param indent the indentation to be used in the file
-		 */    
-		private static void subElementToXML(SubElement se, PrintStream ps, String indent){
-			ps.print(indent + "<" + se.getName());
-
-			Enumeration<String> av = se.getAttributeValues();
-			Enumeration<String> an = se.getAttributeNames();
-
-			while(an.hasMoreElements()){
-				ps.print(" " + an.nextElement() + "=\"" + av.nextElement() + "\"");
-			}
-
-			if(se.isEmpty() && (se.getChars() == null || se.getChars().trim().equals(""))){
-				ps.println(" />");
-				return;
-			}
-			ps.print(">");
-
-			if(!se.isEmpty()){
-				ps.println();
-				subElementContainerToXML(se, ps, indent + INDENT);
-				if(se.getChars() != null && !se.getChars().trim().equals(""))
-					ps.println(indent + INDENT +IOUtilities.encodeForXML(se.getChars()));
-				ps.println(indent + "</" + se.getName() + ">");
-				return;
-			}
-			if(se.getChars() != null && !se.getChars().trim().equals(""))
-				ps.print(IOUtilities.encodeForXML(se.getChars()));
-			ps.println("</" + se.getName() + ">");    
-		}
+	
 		/**
 		 * prints a state in xml
 		 * @param s the state to convert 
@@ -336,30 +321,15 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void stateLayoutToXML(State s, PrintStream ps,String indent){
-			SubElement ge=s.getSubElement("graphic");
-			if(ge==null)
-				return;
-			ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-			layoutContainerToXML(ge, ps, indent + INDENT);            
-			ps.println(indent + "</state>");
-		}
-
-		/**
-		 * Prints this the subelementcontainer and all subelements of this objects to the
-		 * printsstream as XML.
-		 * @param sec the subelementcontainer ro export to xml
-		 * @param ps the printstream this object should be printed to.
-		 * @param indent the indentation this object should have.
-		 */
-		private static void layoutContainerToXML(SubElementContainer sec, PrintStream ps, String indent){
-			Enumeration<SubElement> see = sec.getSubElements();        
-			if(see == null) return;
-			while(see.hasMoreElements())
+			CircleNodeLayout c = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
+			if(c != null)
 			{
-				SubElement se=see.nextElement();
-				subElementToXML(se,ps, indent);
+				ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
+				ps.println(indent + indent + "<circle r=\"" + String.valueOf(c.getRadius()) + "\" x=\"" + String.valueOf(c.getLocation().x) + "\" y=\"" + String.valueOf(c.getLocation().y) + "\" />");
+				ps.println(indent + indent + "<arrow x=\"" + String.valueOf(c.getArrow().x) + "\" y=\"" + String.valueOf(c.getArrow().y) + "\" />");
+				ps.println(indent + "</state>");
 			}
-		}    
+		}  
 
 		/**
 		 * prints a transition in xml
@@ -368,12 +338,17 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
-			SubElement ge=t.getSubElement("graphic");
-			if(ge==null)
-				return;
-			ps.println(indent + "<transition" + " id=\"" + t.getId() + "\">");
-			layoutContainerToXML(ge, ps, indent + INDENT);
-			ps.println(indent + "</transition>");
+			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+			if(l!= null)
+			{
+				CubicParamCurve2D curve = l.getCurve();
+				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\">");
+				ps.println(indent + indent + "<bezier x1=\"" + curve.getX1() +"\" y1=\"" + curve.getY1() + "\" x2=\"" + 
+						curve.getX2() + "\" y2=\"" + curve.getY2() + "\" ctrlx1=\"" + curve.getCtrlX1() + "\" ctrly1=\"" + curve.getCtrlY1() + "\" ctrlx2=\"" + 
+						curve.getCtrlX2() + "\" ctrly2=\"" + curve.getCtrlY2() + "\" />");
+				ps.println(indent + indent + "<label x=\"" + l.getLabelOffset().x + "\" y=\"" + l.getLabelOffset().y +"\" />");
+				ps.println(indent + "</transition>");
+			}
 		}
 
 	}
