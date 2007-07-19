@@ -191,7 +191,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				edges.put(t.getId(), edge);
 			}catch (Exception e)
 			{
-				System.out.println("Erro: " + e.getMessage());
 				hasLayout = false;
 			}
 		}
@@ -345,9 +344,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		return FSAModel.class;
 	}
 	
-//	public MetaData getMeta() {
-//		return metaData;
-//	}
 
 	/**
 	 * Returns the set of all nodes in the graph.
@@ -412,8 +408,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while( iter.hasNext() ) {
 			s = (State)iter.next();
 			CircleNodeLayout nL = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
-			//TODO Remove the following line as soon as the metaData is totaly eliminated
-//			nL = metaData.getLayoutData(s);
 			nL.setUniformRadius(uniformR);
 			n1 = new CircleNode(s, nL);			
 			insert(n1);
@@ -442,8 +436,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			e = existingEdge(t);
 			// = directedEdgeBetween(n1, n2); 
 			BezierLayout layout = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
-			//TODO Remove the following line as soon as the metaData is totaly eliminated
-//			layout = metaData.getLayoutData(t);
 			if( e != null ) {		
 				e.addTransition(t);	
 				
@@ -501,8 +493,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	private Edge existingEdge(Transition t) {		
 		BezierLayout layout = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
-		//TODO Remove the following line as soon as the metaData is totaly eliminated
-//		layout = metaData.getLayoutData(t);
 		for( Edge e : edges.values() ) {			
 			if( e.getSourceNode() != null && e.getSourceNode().getState().equals(t.getSource()) 
 					&& e.getTargetNode() != null && e.getTargetNode().getState().equals(t.getTarget())
@@ -680,6 +670,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				dirtySpot,
 				this, ""));
 		
+		labelNode(n, String.valueOf(s.getId()));
 		return n;
 	}
 	
@@ -1175,9 +1166,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		State s = (State)fsa.getState(n.getId());
 		n.getLayout().setText(text);
 		n.getLabel().setText(text);
-		// KLUGE ///////////////////////////////////////////
-//		metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
-//		Christian - The following line is to supress the use of metadata, the above line should be erased as soon as possible.
+		////////////////////////////////////////////////////
 		s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
 		s.setName(text);
 		/////////////////////////////////////////////////////
@@ -1278,12 +1267,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param edge
 	 */
 	public void arcMore(Edge edge) {
-		((BezierEdge)edge).arcMore();
-		//CHRISTIAN: Commented! Code is not necessary anymore
-		//Christian <<commiting changes to metadata to solve the bug #48>>
-//		commitMovement(edge);
-		//
-	
+		((BezierEdge)edge).arcMore();	
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
@@ -1298,10 +1282,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	public void arcLess(Edge edge) {
 		((BezierEdge)edge).arcLess();
-		//Christian <<commiting changes to metadata to solve the bug #48>>
-//		commitMovement(edge);
-		//
-		//setNeedsRefresh(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
 				edge.getId(), 
@@ -1312,12 +1292,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void symmetrize(Edge edge){
 		BezierLayout el=(BezierLayout)edge.getLayout();
 		el.symmetrize();
-		
-		//Christian - Code commented! Not necessary anymore!
-		//Christian <<commiting changes to metadata to solve the bug #48>>
-//		commitMovement(edge);
-		//
-		//setNeedsRefresh(true);
 		// TODO include edge label in bounds (dirty spot)
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
@@ -1335,9 +1309,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void straighten(Edge edge) {
 		if(!edge.isStraight() && edge.canBeStraightened()){
 			edge.straighten();
-			//Christian <<commiting changes to metadata to solve the bug #48>>
-			//commitMovement(edge);
-			//setNeedsRefresh(true);
 			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 					FSAGraphMessage.EDGE,
 					edge.getId(), 
@@ -1820,8 +1791,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				{
 					n.getLayout().setText(label);
 					n.getLabel().softSetText(label);
-					// KLUGE ///////////////////////////////////////////
-//					metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
+					////////////////////////////////////////////////////
 					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
 					/////////////////////////////////////////////////////
 					setNeedsRefresh(true);		
@@ -1854,8 +1824,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				{
 					n.getLayout().setText(label);
 					n.getLabel().softSetText(label);
-					// KLUGE ///////////////////////////////////////////
-//					metaData.setLayoutData(s, (CircleNodeLayout)n.getLayout());
+					////////////////////////////////////////////////////
 					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
 					/////////////////////////////////////////////////////
 					setNeedsRefresh(true);		

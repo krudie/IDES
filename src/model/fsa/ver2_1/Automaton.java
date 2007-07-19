@@ -118,9 +118,10 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
         transitions = new LinkedList<FSATransition>();
         events = new LinkedList<FSAEvent>();
         this.name = name;
-        maxStateId = -1;
-		maxTransitionId = -1;
-		maxEventId = -1;
+        //The first ID for model elements will be (maxId + 1);
+        maxStateId = 0;
+		maxTransitionId = 0;
+		maxEventId = 0;
 		id=General.getRandomId();
     }
     
