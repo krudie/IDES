@@ -13,7 +13,7 @@ import io.fsa.ver2_1.SubElementContainer;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Transition extends SubElementContainer implements model.fsa.FSATransition {
+public class Transition implements model.fsa.FSATransition {
     
 	private FSAState sourceS, targetS;
 
@@ -107,7 +107,6 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
      * @param e the event this transition fires uppon receival of.
      */
     public Transition(Transition t, FSAState source, FSAState target, Event e){
-        super(t);
         this.id = t.id;
         this.sourceS = source;
         this.targetS = target;
@@ -125,7 +124,6 @@ public class Transition extends SubElementContainer implements model.fsa.FSATran
      * @param targetS the target state.
      */
     public Transition(Transition t, FSAState sourceS, FSAState targetS){
-        super(t);
         this.id = t.id;
         this.sourceS = sourceS;
         this.targetS = targetS;        

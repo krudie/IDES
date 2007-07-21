@@ -94,85 +94,85 @@ public class AutomatonParser20 extends AbstractFileParser{
      * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
      */
     public void startElement(String uri, String localName, String qName, Attributes atts){
-        switch(state){
-        case (STATE_IDLE):
-            parsingErrors += file.getName() + ": in state idle at start of element.\n";
-            break;
-        case (STATE_DOCUMENT):
-            if(!qName.equals(ELEMENT_AUTOMATON)){
-                parsingErrors += file.getName()
-                        + ": encountered wrong start of element in state document.\n";
-                break;
-            }
-            a = ModelManager.createModel(FSAModel.class,ParsingToolbox.removeFileType(file.getName()));
-            state = STATE_AUTOMATON;
-            break;
-        case (STATE_AUTOMATON):
-            if(qName.equals(ELEMENT_STATE)){
-                if(atts.getValue(ATTRIBUTE_ID) == null){
-                    parsingErrors += file.getName() + " Unable to parse state with no id.\n";
-                    break;
-                }
-                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
-                sec = new State(id);
-                a.add((FSAState) sec);
-                state = STATE_STATE;
-            }
-            else if(qName.equals(ELEMENT_EVENT)){
-                if(atts.getValue(ATTRIBUTE_ID) == null){
-                    parsingErrors += file.getName() + " Unable to parse event with no id.\n";
-                    break;
-                }
-                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
-                sec = new Event(id);
-                a.add((FSAEvent) sec);
-                state = STATE_EVENT;
-            }
-            else if(qName.equals(ELEMENT_TRANSITION)){
-                FSAState s = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)));
-                FSAState t = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)));
-                FSAEvent e = atts.getValue(ATTRIBUTE_EVENT) != null ? a.getEvent(Integer.parseInt(atts
-                        .getValue(ATTRIBUTE_EVENT))) : null;
-
-                if(atts.getValue(ATTRIBUTE_ID) == null){
-                    parsingErrors += file.getName() + " Unable to parse transition with no id.\n";
-                    break;
-                }
-                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
-
-                if(s == null || t == null){
-                    parsingErrors += file.getName() + " Unable to parse transition " + id + ".\n";
-                    parsingErrors += "\tstate "
-                            + Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)) + " or "
-                            + a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)))
-                            + "does not exist, or have not been parsed yet.";
-                }
-                else if(e == null){
-                    sec = new Transition(id, s, t);
-                    a.add((FSATransition) sec);
-                }
-                else{
-                    sec = new Transition(id, s, t, e);
-                    a.add((FSATransition) sec);
-                }
-                state = STATE_TRANSITION;
-            }
-            break;
-        case (STATE_STATE):
-        case (STATE_TRANSITION):
-        case (STATE_EVENT):
-            SubElement nse = new SubElement(qName);
-            for(int i = 0; i < atts.getLength(); i++){
-                nse.setAttribute(atts.getQName(i), atts.getValue(i));
-            }
-            sec.addSubElement(nse);
-            SubElementParser sep = new SubElementParser();
-            sep.fill(nse, xmlReader, parsingErrors);
-            break;
-        default:
-            parsingErrors += file.getName() + ": encountered wrong beginning of element.\n";
-            break;
-        }
+//        switch(state){
+//        case (STATE_IDLE):
+//            parsingErrors += file.getName() + ": in state idle at start of element.\n";
+//            break;
+//        case (STATE_DOCUMENT):
+//            if(!qName.equals(ELEMENT_AUTOMATON)){
+//                parsingErrors += file.getName()
+//                        + ": encountered wrong start of element in state document.\n";
+//                break;
+//            }
+//            a = ModelManager.createModel(FSAModel.class,ParsingToolbox.removeFileType(file.getName()));
+//            state = STATE_AUTOMATON;
+//            break;
+//        case (STATE_AUTOMATON):
+//            if(qName.equals(ELEMENT_STATE)){
+//                if(atts.getValue(ATTRIBUTE_ID) == null){
+//                    parsingErrors += file.getName() + " Unable to parse state with no id.\n";
+//                    break;
+//                }
+//                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
+////                sec = new State(id);
+//                a.add((FSAState) sec);
+//                state = STATE_STATE;
+//            }
+//            else if(qName.equals(ELEMENT_EVENT)){
+//                if(atts.getValue(ATTRIBUTE_ID) == null){
+//                    parsingErrors += file.getName() + " Unable to parse event with no id.\n";
+//                    break;
+//                }
+//                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
+//                sec = new Event(id);
+//                a.add((FSAEvent) sec);
+//                state = STATE_EVENT;
+//            }
+//            else if(qName.equals(ELEMENT_TRANSITION)){
+//                FSAState s = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)));
+//                FSAState t = a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)));
+//                FSAEvent e = atts.getValue(ATTRIBUTE_EVENT) != null ? a.getEvent(Integer.parseInt(atts
+//                        .getValue(ATTRIBUTE_EVENT))) : null;
+//
+//                if(atts.getValue(ATTRIBUTE_ID) == null){
+//                    parsingErrors += file.getName() + " Unable to parse transition with no id.\n";
+//                    break;
+//                }
+//                int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
+//
+//                if(s == null || t == null){
+//                    parsingErrors += file.getName() + " Unable to parse transition " + id + ".\n";
+//                    parsingErrors += "\tstate "
+//                            + Integer.parseInt(atts.getValue(ATTRIBUTE_SOURCE_ID)) + " or "
+//                            + a.getState(Integer.parseInt(atts.getValue(ATTRIBUTE_TARGET_ID)))
+//                            + "does not exist, or have not been parsed yet.";
+//                }
+//                else if(e == null){
+//                    sec = new Transition(id, s, t);
+//                    a.add((FSATransition) sec);
+//                }
+//                else{
+//                    sec = new Transition(id, s, t, e);
+//                    a.add((FSATransition) sec);
+//                }
+//                state = STATE_TRANSITION;
+//            }
+//            break;
+//        case (STATE_STATE):
+//        case (STATE_TRANSITION):
+//        case (STATE_EVENT):
+//            SubElement nse = new SubElement(qName);
+//            for(int i = 0; i < atts.getLength(); i++){
+//                nse.setAttribute(atts.getQName(i), atts.getValue(i));
+//            }
+//            sec.addSubElement(nse);
+//            SubElementParser sep = new SubElementParser();
+//            sep.fill(nse, xmlReader, parsingErrors);
+//            break;
+//        default:
+//            parsingErrors += file.getName() + ": encountered wrong beginning of element.\n";
+//            break;
+//        }
     }
 
     /**

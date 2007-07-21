@@ -20,8 +20,8 @@ import model.fsa.FSATransition;
  * @author Lenko Grigorov
  *
  */
-public class State extends SubElementContainer implements model.fsa.FSAState {
-	private static final String NAME="name";
+public class State implements model.fsa.FSAState {
+	private static final String NAME="name", INITIAL="initial", MARKED="marked";
 	/* transitions originating from this state and ending in this state respectively. */
 	private LinkedList<FSATransition> sourceT, targetT;
 
@@ -44,7 +44,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 		this.id = id;
 		sourceT = new LinkedList<FSATransition>();
 		targetT = new LinkedList<FSATransition>();
-		addSubElement(new SubElement("properties"));
+//		addSubElement(new SubElement("properties"));
 //		addSubElement(new SubElement("name"));
 	}
 
@@ -54,11 +54,11 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * @param s a state.
 	 */
 	public State(State s){
-		super(s);
+//		super(s);
 		this.id = s.id;
 		sourceT = new LinkedList<FSATransition>();
 		targetT = new LinkedList<FSATransition>();
-		addSubElement(new SubElement("properties"));
+//		addSubElement(new SubElement("properties"));
 //		addSubElement(new SubElement("name"));
 		setInitial(s.isInitial());
 		setMarked(s.isMarked());
@@ -131,16 +131,14 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * @return true iff this is an initial state
 	 */	
 	public boolean isInitial() {
-		SubElement props = getSubElement("properties");
-		return props.getSubElement("initial") != null;
+		return (this.getAnnotation(INITIAL)==null?false:((Boolean)this.getAnnotation(INITIAL)).booleanValue());
 	}
 
 	/**
 	 * @return true iff this is marked (final) state
 	 */
 	public boolean isMarked() {
-		SubElement props = getSubElement("properties");
-		return props.getSubElement("marked") != null;		
+		return (this.getAnnotation(MARKED)==null?false:((Boolean)this.getAnnotation(MARKED)).booleanValue());		
 	}	
 
 	/**
@@ -149,13 +147,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * @param initial the initial property to set
 	 */
 	public void setInitial(boolean initial){
-		SubElement props = getSubElement("properties");
-		if(initial && !isInitial()){			
-			props.addSubElement(new SubElement("initial"));			
-		}
-		if(!initial && isInitial()){
-			props.removeSubElement("initial");
-		}
+		this.setAnnotation(INITIAL, initial);
 	}
 
 	/**
@@ -165,13 +157,7 @@ public class State extends SubElementContainer implements model.fsa.FSAState {
 	 * @param mark the marked property to set
 	 */
 	public void setMarked(boolean mark){
-		SubElement props = getSubElement("properties");
-		if(mark && !isMarked()){					
-			props.addSubElement(new SubElement("marked"));				
-		}
-		if(!mark && isMarked()){
-			props.removeSubElement("marked");
-		}
+		this.setAnnotation(MARKED, mark);
 	}
 
 	public void setId(long id) {

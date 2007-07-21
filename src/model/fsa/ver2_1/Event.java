@@ -1,5 +1,7 @@
 package model.fsa.ver2_1;
 
+import java.util.Hashtable;
+
 import model.fsa.FSAEvent;
 import io.fsa.ver2_1.SubElement;
 import io.fsa.ver2_1.SubElementContainer;
@@ -10,17 +12,18 @@ import io.fsa.ver2_1.SubElementContainer;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event extends SubElementContainer implements model.fsa.FSAEvent, Comparable {
+public class Event implements model.fsa.FSAEvent, Comparable {
     private long id;
-
+    private static final String NAME="name", CONTROLLABLE="controlable", OBSERVABLE="observable";
+	protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
     /**
      * Constructs an event with the given id.
      * @param id the id of the event.
      */
     public Event(long id){
         this.id = id;
-        addSubElement(new SubElement("properties"));
-        addSubElement(new SubElement("name"));
+//        addSubElement(new SubElement("properties"));
+//        addSubElement(new SubElement("name"));
     }
 
     
@@ -29,10 +32,10 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
      * @param e the event the new event must equal.
      */
     public Event(Event e){
-        super(e);
+//        super(e);
         this.id = e.id;
-        addSubElement(new SubElement("properties"));
-        addSubElement(new SubElement("name"));
+//        addSubElement(new SubElement("properties"));
+//        addSubElement(new SubElement("name"));
         this.setSymbol(e.getSymbol());
         this.setControllable(e.isControllable());
         this.setObservable(e.isObservable());
@@ -45,8 +48,8 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
      */
     public Event(FSAEvent e){
         this.id = e.getId();
-        addSubElement(new SubElement("properties"));
-        addSubElement(new SubElement("name"));
+//        addSubElement(new SubElement("properties"));
+//        addSubElement(new SubElement("name"));
         this.setSymbol(e.getSymbol());
         this.setControllable(e.isControllable());
         this.setObservable(e.isObservable());
@@ -59,8 +62,8 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
      * @return the symbol that represents this event
      */
 	public String getSymbol() {
-		SubElement eventSymbol = getSubElement("name");
-		return eventSymbol != null ? eventSymbol.getChars() : "";
+		String s = (String)this.getAnnotation(NAME);
+		return (s==null?"":s);
 	}
 
 	/**
@@ -69,11 +72,7 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 	 * @param symbol the symbol to set
 	 */
 	public void setSymbol(String symbol){		
-		SubElement eventSymbol = getSubElement("name");
-		if(eventSymbol == null){
-			eventSymbol = new SubElement("name");					
-		}
-		eventSymbol.setChars(symbol);	
+		this.setAnnotation(NAME, symbol);
 	}
 
 	/**
@@ -104,35 +103,20 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 	}
 	
 	public void setControllable(boolean b){
-		SubElement props = getSubElement("properties");
-		if(b && !isControllable()){			
-			props.addSubElement(new SubElement("controllable"));			
-		}
-		if(!b && isControllable()){
-			props.removeSubElement("controllable");
-		}		
+		this.setAnnotation(CONTROLLABLE, b); 
 	}
 	
 	public void setObservable(boolean b){
-		SubElement props = getSubElement("properties");
-		if(b && !isObservable()){			
-			props.addSubElement(new SubElement("observable"));			
-		}
-		if(!b && isObservable()){
-			props.removeSubElement("observable");
-		}
-		
+		this.setAnnotation(OBSERVABLE, b);
 	}
 	
 	public boolean isControllable() {
-		SubElement properties = this.getSubElement("properties");
-		return properties.getSubElement("controllable") != null;
+		return (this.getAnnotation(CONTROLLABLE) == null?false:((Boolean)this.getAnnotation(CONTROLLABLE)).booleanValue());
 	}
 
 
 	public boolean isObservable() {
-		SubElement properties = this.getSubElement("properties");
-		return properties.getSubElement("observable") != null;
+		return (this.getAnnotation(OBSERVABLE) == null?false:((Boolean)this.getAnnotation(OBSERVABLE)).booleanValue());
 	}
 
 	/* (non-Javadoc)
@@ -158,25 +142,28 @@ public class Event extends SubElementContainer implements model.fsa.FSAEvent, Co
 	 */
 	public Object getAnnotation(String key)
 	{
-		return null;
+		return annotations.get(key);
 	}
 	
 	/**
 	 * Sets an annotation for a given key. If there is already
-	 * an annotation for the key, it is replaced. <p>
-	 * FIXME: in this implementation annotations aren't saved 
+	 * an annotation for the key, it is replaced. 
 	 * @param key the key for the annotation
 	 * @param annotation the annotation
 	 */
 	public void setAnnotation(String key, Object annotation)
 	{
-		
+		annotations.put(key, annotation);
 	}
 	
 	
+	/**
+	 * Removes the annotation for the given key.
+	 * @param key key for the annotation
+	 */
 	public void removeAnnotation(String key)
 	{
-		
+		annotations.remove(key);
 	}
 	
 	/**

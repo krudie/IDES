@@ -20,7 +20,7 @@ import model.fsa.ver2_1.Transition;
 /**
  * Class for exporting workspaces and automata to xml format and 
  * for saving them to file.
- * 
+ * @deprecated NEVER USE THIS CLASS! IT IS BEING REMOVED FROM THE CODE
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  * @author Helen Bretzke 2006
@@ -168,12 +168,12 @@ public class XMLexporter{
      * @param indent the indentation to be used in the file
      */ 
     private static void stateToXML(State s, PrintStream ps,String indent){
-        if(s.isEmpty()) ps.println(indent + "<state" + " id=\"" + s.getId() + "\" />");
-        else{
-            ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-            subElementContainerToXML(s, ps, indent + INDENT);            
-            ps.println(indent + "</state>");
-        }
+//        if(s.isEmpty()) ps.println(indent + "<state" + " id=\"" + s.getId() + "\" />");
+//        else{
+//            ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
+//            subElementContainerToXML(s, ps, indent + INDENT);            
+//            ps.println(indent + "</state>");
+//        }
     }
     /**
      * prints an event in xml
@@ -182,14 +182,14 @@ public class XMLexporter{
      * @param indent the indentation to be used in the file
      */ 
     private static void eventToXML(Event e, PrintStream ps, String indent){
-        if(e.isEmpty()){
-            ps.println(indent + "<event" + " id=\"" + e.getId() + "\" />");
-        }
-        else{
-            ps.println(indent + "<event" + " id=\"" + e.getId() + "\">");
-            subElementContainerToXML(e, ps, indent + INDENT);
-            ps.println(indent + "</event>");
-        }
+//        if(e.isEmpty()){
+//            ps.println(indent + "<event" + " id=\"" + e.getId() + "\" />");
+//        }
+//        else{
+//            ps.println(indent + "<event" + " id=\"" + e.getId() + "\">");
+//            subElementContainerToXML(e, ps, indent + INDENT);
+//            ps.println(indent + "</event>");
+//        }
     }
     /**
      * prints a transition in xml
@@ -198,19 +198,19 @@ public class XMLexporter{
      * @param indent the indentation to be used in the file
      */ 
     private static void transitionToXML(Transition t, PrintStream ps, String indent){
-        if(t.isEmpty()){
-            ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
-                    + t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
-                    + ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + " />");
-        }
-        else{
-            ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
-                    + t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
-                    
-                    + ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
-            subElementContainerToXML(t, ps, indent + INDENT);
-            ps.println(indent + "</transition>");
-        }
+//        if(t.isEmpty()){
+//            ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
+//                    + t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
+//                    + ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + " />");
+//        }
+//        else{
+//            ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
+//                    + t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
+//                    
+//                    + ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
+//            subElementContainerToXML(t, ps, indent + INDENT);
+//            ps.println(indent + "</transition>");
+//        }
     }
 
     /**
@@ -220,12 +220,12 @@ public class XMLexporter{
      * @param indent the indentation to be used in the file
      */ 
     private static void stateLayoutToXML(State s, PrintStream ps,String indent){
-    	SubElement ge=s.getSubElement("graphic");
-    	if(ge==null)
-    		return;
-        ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-        layoutContainerToXML(ge, ps, indent + INDENT);            
-        ps.println(indent + "</state>");
+//    	SubElement ge=s.getSubElement("graphic");
+//    	if(ge==null)
+//    		return;
+//        ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
+//        layoutContainerToXML(ge, ps, indent + INDENT);            
+//        ps.println(indent + "</state>");
     }
     /**
      * prints a transition in xml
@@ -234,12 +234,12 @@ public class XMLexporter{
      * @param indent the indentation to be used in the file
      */ 
     private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
-    	SubElement ge=t.getSubElement("graphic");
-    	if(ge==null)
-    		return;
-        ps.println(indent + "<transition" + " id=\"" + t.getId() + "\">");
-        layoutContainerToXML(ge, ps, indent + INDENT);
-        ps.println(indent + "</transition>");
+//    	SubElement ge=t.getSubElement("graphic");
+//    	if(ge==null)
+//    		return;
+//        ps.println(indent + "<transition" + " id=\"" + t.getId() + "\">");
+//        layoutContainerToXML(ge, ps, indent + INDENT);
+//        ps.println(indent + "</transition>");
     }
     /**
      * Prints this the subelementcontainer and all subelements of this objects to the

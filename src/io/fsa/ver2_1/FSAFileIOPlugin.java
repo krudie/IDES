@@ -234,8 +234,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void stateToXML(State s, PrintStream ps,String indent){
-			if(s.isEmpty()) ps.println(indent + "<state" + " id=\"" + s.getId() + "\" />");
-			else{
 				ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
 				
 				if(!(s.isInitial() | s.isMarked()))
@@ -262,7 +260,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				}
 				
 				ps.println(indent + "</state>");
-			}
 		}
 		/**
 		 * prints an event in xml
