@@ -42,8 +42,6 @@ public class AutomatonParser extends AbstractFileParser{
     private File file;
 
     private FSAModel a;
-
-    private SubElementContainer sec;
     
     private boolean layoutRead=false;
 

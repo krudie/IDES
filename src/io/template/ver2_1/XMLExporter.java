@@ -1,7 +1,7 @@
 package io.template.ver2_1;
 
 import io.IOUtilities;
-import io.fsa.ver2_1.XMLexporter;
+//import io.fsa.ver2_1.XMLexporter;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -17,6 +17,12 @@ import presentation.template.GraphLink;
 import presentation.template.Template;
 import presentation.template.TemplateGraph;
 
+/**
+ * @deprecated Do not use htis class, it is being eliminated from IDES, the xmlExporters must be implemented
+ * by ioplugins.
+ * @author christiansilvano
+ *
+ */
 public class XMLExporter {
 
 	public static void graph2XML(TemplateGraph graph, File dir)
@@ -48,7 +54,7 @@ public class XMLExporter {
 		        {
 		        	throw new RuntimeException(Hub.string("checkInvalidChars"));
 		        }
-				XMLexporter.automatonToXML(fsa, ps);
+//				XMLexporter.automatonToXML(fsa, ps);
 				ps.close();
 	        } catch(Exception e)
 	        {

@@ -12,7 +12,7 @@ import java.io.PrintStream;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
-import io.fsa.ver2_1.XMLexporter;
+//import io.fsa.ver2_1.XMLexporter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -249,7 +249,8 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 			        {
 			        	throw new RuntimeException(Hub.string("checkInvalidChars"));
 			        }
-					XMLexporter.automatonToXML(fsa, ps);
+			        //TODO: MAKE THE XML, EXPORTER BE AN INNER CLASS, LIKE IT IS DONE IN THE FSAFileIOPlugin
+//					XMLexporter.automatonToXML(fsa, ps);
 					ps.close();
 		        } catch(Exception e)
 		        {

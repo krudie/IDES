@@ -39,7 +39,7 @@ public class AutomatonParser20 extends AbstractFileParser{
 
     private FSAModel a;
 
-    private SubElementContainer sec;
+//    private SubElementContainer sec;
 
     /**
      * creates an automatonParser.

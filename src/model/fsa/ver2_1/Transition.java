@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 
-import io.fsa.ver2_1.SubElementContainer;
+//import io.fsa.ver2_1.SubElementContainer;
 
 /**
  * Represents a transition in an automaton.

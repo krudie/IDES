@@ -3,8 +3,8 @@ package model.fsa.ver2_1;
 import java.util.Hashtable;
 
 import model.fsa.FSAEvent;
-import io.fsa.ver2_1.SubElement;
-import io.fsa.ver2_1.SubElementContainer;
+//import io.fsa.ver2_1.SubElement;
+//import io.fsa.ver2_1.SubElementContainer;
 
 /**
  * Represents an event in an automaton.

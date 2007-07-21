@@ -2,9 +2,9 @@ package presentation.template;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
-import io.fsa.ver2_1.AutomatonParser;
+//import io.fsa.ver2_1.AutomatonParser;
 import io.fsa.ver2_1.FileOperations;
-import io.fsa.ver2_1.XMLexporter;
+//import io.fsa.ver2_1.XMLexporter;
 import io.template.ver2_1.PLCExporter;
 
 import java.awt.Component;
@@ -371,18 +371,18 @@ public class TemplateLibrary implements Presentation, KeyListener {
 	
 	protected FSAModel loadFSA(String name)
 	{
-    	AutomatonParser ap = new AutomatonParser();
-		FSAModel fsa;
-    	String errors="";
-    	try
-    	{
-    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+name+"."+IOUtilities.MODEL_FILE_EXT));
-    		errors=ap.getParsingErrors();
-    	}catch(Exception e)
-    	{
-    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
-    	}
-		return fsa;
+//    	AutomatonParser ap = new AutomatonParser();
+//		FSAModel fsa;
+//    	String errors="";
+//    	try
+//    	{
+//    		fsa = ap.parse(new File(TEMPLATES_DIR+File.separator+name+"."+IOUtilities.MODEL_FILE_EXT));
+//    		errors=ap.getParsingErrors();
+//    	}catch(Exception e)
+//    	{
+//    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
+//    	}
+		return null;
 	}
 	
 	protected void addTemplate()
@@ -412,7 +412,8 @@ public class TemplateLibrary implements Presentation, KeyListener {
 		        {
 		        	throw new RuntimeException(Hub.string("checkInvalidChars"));
 		        }
-				XMLexporter.automatonToXML(fsa, ps);
+		        //TODO make the exporter be an inner class, like it is done in the FSAFileIOPlugin
+//				XMLexporter.automatonToXML(fsa, ps);
 				ps.close();
 				if(template.getType()==Template.TYPE_MODULE)
 					moduleTemplates.add(template);

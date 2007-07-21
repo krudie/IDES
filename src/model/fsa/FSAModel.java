@@ -1,6 +1,6 @@
 package model.fsa;
 
-import io.fsa.ver2_1.SubElement;
+//import io.fsa.ver2_1.SubElement;
 
 import java.util.ListIterator;
 
@@ -102,12 +102,6 @@ public interface FSAModel extends DESModel,FSAPublisher{
 	 * @return the event, null if it doesn't exist
 	 */
 	public abstract FSAEvent getEvent(long id);
-
-	//TODO: change to use FSAMetaData
-    public SubElement getMeta();
-
-	//TODO: change to use FSAMetaData
-    public void setMeta(SubElement m);
 
     /**
      * Creates and returns a copy of this FSAModel. 

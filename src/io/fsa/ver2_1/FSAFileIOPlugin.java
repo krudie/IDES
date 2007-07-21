@@ -151,7 +151,10 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		{
 			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
-			stream.println("\t<font size=\""+(((FSAModel)model).getMeta()==null?12:((FSAModel)model).getMeta().getAttribute("size"))+"\"/>");
+			//TODO: get font size from somewhere! The size was a metaData inside model, for now it will be constant: 12
+			//CONSULT LENKO ABOUT, WHERE TO STORE THE FONT SIZE!
+//			stream.println("\t<font size=\""+(((FSAModel)model).metan()==null?12:((FSAModel)model).getMeta().getAttribute("size"))+"\"/>");
+			stream.println("\t<font size=\""+ 12+"\"/>");
 			si = ((FSAModel)model).getStateIterator();
 	
 			while(si.hasNext())

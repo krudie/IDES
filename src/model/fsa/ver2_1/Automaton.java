@@ -1,5 +1,5 @@
 package model.fsa.ver2_1;
-import io.fsa.ver2_1.SubElement;
+//import io.fsa.ver2_1.SubElement;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -100,7 +100,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 //     */ 
 //    protected String[] composedOf = new String[0];
     
-    private SubElement meta = null;
+//    private SubElement meta = null;
 
 	private long maxStateId;
 	private long maxEventId;
@@ -730,15 +730,16 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 //		composedOf=list;
 //	}
 
-    public SubElement getMeta()
-    {
-    	return meta;
-    }
+//    public SubElement getMeta()
+//    {
+////    	return meta;
+//    	return null
+//    }
     
-    public void setMeta(SubElement m)
-    {
-    	meta=m;
-    }
+//    public void setMeta(SubElement m)
+//    {
+//    	meta=m;
+//    }
     
 	public Object getAnnotation(String key)
 	{

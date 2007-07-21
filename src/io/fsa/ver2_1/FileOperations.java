@@ -86,28 +86,28 @@ public class FileOperations {
      * @return if file was saved
      */      
     public static boolean saveAutomaton(FSAModel a, File file){    	
-        PrintStream ps = IOUtilities.getPrintStream(file);
-        if(ps == null){
-        	
-        	return saveAutomatonAs(a);
-        
-        }else{
-        	// write the automaton to file
-        	XMLexporter.automatonToXML(a, ps);
-        	
-        	String newName=ParsingToolbox.removeFileType(file.getName());
-        	if(!newName.equals(a.getName())
-        			&&Hub.getWorkspace().getModel(newName)!=null)
-        		Hub.getWorkspace().removeModel(newName);
-        	
-        	a.setName(newName);
-        	a.setAnnotation(Annotable.FILE,file);
-        	a.fireFSASaved(); 
-        	
-            Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
-            
+//        PrintStream ps = IOUtilities.getPrintStream(file);
+//        if(ps == null){
+//        	
+//        	return saveAutomatonAs(a);
+//        
+//        }else{
+//        	// write the automaton to file
+//        	XMLexporter.automatonToXML(a, ps);
+//        	
+//        	String newName=ParsingToolbox.removeFileType(file.getName());
+//        	if(!newName.equals(a.getName())
+//        			&&Hub.getWorkspace().getModel(newName)!=null)
+//        		Hub.getWorkspace().removeModel(newName);
+//        	
+//        	a.setName(newName);
+//        	a.setAnnotation(Annotable.FILE,file);
+//        	a.fireFSASaved(); 
+//        	
+//            Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
+//            
             return true;
-        }
+        
     }  
     
 	/**
@@ -208,16 +208,17 @@ public class FileOperations {
 	 * @return true if file was saved
 	 */
     public static boolean saveWorkspace(WorkspaceDescriptor wd, File file){
-        PrintStream ps = IOUtilities.getPrintStream(file);
-        if(ps == null)
-        	return saveWorkspaceAs(wd);
-        else
-        {
-        	XMLexporter.workspaceToXML(wd, ps);
-        	Hub.getWorkspace().setFile(file);
-            Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
-            return true;
-        }
+//        PrintStream ps = IOUtilities.getPrintStream(file);
+//        if(ps == null)
+//        	return saveWorkspaceAs(wd);
+//        else
+//        {
+//        	XMLexporter.workspaceToXML(wd, ps);
+//        	Hub.getWorkspace().setFile(file);
+//            Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME,file.getParent());
+//            return true;
+//        }
+    	return false;
     }
 
     /**
