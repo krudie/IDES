@@ -1,7 +1,5 @@
 package io;
 
-import java.io.File;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -31,11 +29,14 @@ public abstract class AbstractFileParser extends AbstractParser {
                             + se.getMessage());
         }
     }
-
-    /**
-     * Parses a file. Returns the coresponding object.
-     * @param file the file that needs parsing
-     * @return the corresponding object.
-     */
-    public abstract Object parse(File file);
+    
+    
+//CHRISTIAN: I have removed this function from the interface, since loaders cannot have access to files. They have to 
+    //have access over InputStreams.
+//    /**
+//     * Parses a file. Returns the coresponding object.
+//     * @param file the file that needs parsing
+//     * @return the corresponding object.
+//     */
+////    public abstract Object parse(File file);
 }

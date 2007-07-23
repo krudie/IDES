@@ -4,16 +4,13 @@
 package io.fsa.ver2_1;
 
 import io.AbstractFileParser;
-import io.IOUtilities;
-import io.ParsingToolbox;
 import io.HeadTailInputStream;
 
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 
 import presentation.CubicParamCurve2D;
 import presentation.fsa.CircleNodeLayout;
@@ -21,9 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.PushbackInputStream;
-import java.io.PushbackReader;
-import org.xml.sax.ContentHandler;
 import main.Annotable;
 import main.Hub;
 import model.DESModel;
@@ -37,27 +31,16 @@ import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.io.FileIOPlugin;
 import pluggable.io.IOPluginManager;
-import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
-import presentation.fsa.CircleNode;
-import presentation.fsa.CircleNodeLayout;
-import presentation.fsa.FSAGraph;
-import presentation.fsa.InitialArrow;
-import presentation.fsa.Node;
-import presentation.fsa.ReflexiveEdge;
-
-import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-import edu.uci.ics.jung.visualization.contrib.CircleLayout;
 
 /**
  * @author christiansilvano
@@ -354,45 +337,44 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	}
 
 	public class AutomatonParser extends AbstractFileParser{  
-		Set<String> mainXmlDataTags = new HashSet<String>();
-		Set<String> mainXmlMetaTags = new HashSet<String>();
 		boolean settingName = false;
 		String tmpName = "";
+
+		//Sometimes a model element needs to be stored so it can receive different informations at different
+		//times during the parse.
 		private FSAModel model;
 		private State tmpState;
 		private Transition tmpTransition;
 		private Event tmpEvent;
-		protected final String STATE = "state", EVENT = "event", TRANSITION="transition", NONE="none";
-		protected final String FONT = "font", BEZIER="bezier", LABEL="label";
+		
+		//Constants representing names of xml tags and subtags
+		protected final String INITIAL="initial", MARKED="marked",OBSERVABLE="observable", 
+		CONTROLLABLE="controllable",NAME="name", ID="id", CIRCLE="circle",RADIUS="r", COORD_X="x", 
+		COORD_Y="y", BEZIER="bezier", X1="x1", Y1="y1", X2="x2", Y2="y2", CTRLX1="ctrlx1", CTRLY1="ctrly1",
+		CTRLX2="ctrlx2", CTRLY2="ctrly2", SOURCE="source", TARGET="target",STATE = "state", 
+		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label";
 		
 		//Auxiliar attributes: "Actions" to be developed by the parser
 		//Tells some parseDataElements and parseMetaElements whether they are
 		//parsing main tags or subtags
-		protected final String PARSE_MAIN_TAGS="maintag", PARSE_SUB_TAGS="subtag";
-		private String CURRENT_PARSING_ELEMENT=NONE;
-		boolean parsingState = false;
+		protected final int MAINTAG = 2, SUBTAG = 3; //,,, 
+		private String CURRENT_PARSING_ELEMENT="";
+		
 		boolean parsingData = false;
 		boolean parsingMeta = false;
+		
+		//Chain to store the strings meaning all the xml tags being processed.
+		//The order is from the most important xml tag, to the less importants (MAINTAG->SUBTAG->SUBSUBTAG...)
+		public Vector<String> tags = new Vector<String>();
+		
 		
 		/**
 		 * creates an automatonParser.
 		 */
 		public AutomatonParser(){
-			super();
-			mainXmlDataTags.add(STATE);
-			mainXmlDataTags.add(EVENT);
-			mainXmlDataTags.add(TRANSITION);
-			
-			mainXmlMetaTags.add(STATE);
-			mainXmlMetaTags.add(FONT);
-			mainXmlMetaTags.add(TRANSITION);
-			
+			super();			
 		}
-		//TODO Eliminate this function from the Interface
-		public FSAModel parse(File file)
-		{
-			return null;
-		}
+
 		public FSAModel parseData(InputStream stream){
 			parsingData = true;
 			parsingErrors = "";
@@ -418,31 +400,39 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 		 */
 		public void startElement(String uri, String localName, String qName, Attributes atts){
+
+			try{
+				tags.add(qName);
+				CURRENT_PARSING_ELEMENT = tags.get(1);
+			}
+			catch(Exception e)
+			{
+				
+			}
+			
 			if(parsingData)
 			{
-				if(mainXmlDataTags.contains(qName))
-				{
-					parseDataElements(qName,atts, PARSE_MAIN_TAGS);
-				}else{
-					parseDataElements(qName, null, PARSE_SUB_TAGS);
-				}
+					parseDataElements(qName,atts);
 			}
 			
 			if(parsingMeta)
 			{
-				if(mainXmlMetaTags.contains(qName))
-				{
-					parseMetaElements(qName,atts,PARSE_MAIN_TAGS);
-				}else{
-					parseMetaElements(qName,atts,PARSE_SUB_TAGS);
-				}
+					parseMetaElements(qName,atts);
 			}
 		}
 		/**
 		 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void endElement(String uri, String localName, String qName){	
-
+		public void endElement(String uri, String localName, String qName){			
+			if(!qName.equals(tags.get(tags.size() -1)))
+			{
+				System.out.println("ERROR: Closing an non-oppened tag.");
+				//Closing an unnopen tag.
+				//TODO show error: "The tag: tags.get(tags.size() -1) was not closed."
+			}else{
+				tags.remove(tags.remove(tags.size()-1));
+				CURRENT_PARSING_ELEMENT="";
+			}
 		} 
 		/**
 		 * @see org.xml.sax.ContentHandler#startDocument()
@@ -459,7 +449,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * Debug function. Prints the content of the stream.
 		 * @param dataSection
 		 */
-		public void printStream(InputStream stream)
+		public void printInputStream(InputStream stream)
 		{
 			String body = "";
 			try
@@ -486,45 +476,37 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param atts the attributes of the XML tag, ex: <tag at1="value1" at2="value2" />, where at1 and at2 are the attributes 
 		 * @param action, tells witch parsing action needs to be performed. Currently supports: "start" and "end"
 		 */
-		public void parseDataElements(String qName, Attributes atts, String action)
+		public void parseDataElements(String qName, Attributes atts)
 		{
-			if(action.equals(PARSE_MAIN_TAGS))//Parsing one of the main data tags
+			switch(tags.size())
 			{
-				if(qName.equals(STATE))
+			case MAINTAG:
+				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
-					CURRENT_PARSING_ELEMENT = STATE;
 					tmpState = (State)getModelElement(atts, CURRENT_PARSING_ELEMENT);
 					model.add(tmpState);
 				}
 
-				if(qName.equals(TRANSITION))
+				if(CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
-					CURRENT_PARSING_ELEMENT = TRANSITION;
 					tmpTransition = (Transition)getModelElement(atts, CURRENT_PARSING_ELEMENT);
 					model.add(tmpTransition);
 				}
 
-				if(qName.equals(EVENT))
+				if(CURRENT_PARSING_ELEMENT == EVENT)
 				{
-					CURRENT_PARSING_ELEMENT = EVENT;
 					tmpEvent = (Event)getModelElement(atts, CURRENT_PARSING_ELEMENT);
-					//Obs:
-						//Note that the event is not added here.
-						//That happens because an event needs to have a name to identify it.
-					//The name is generated by the function characters(), which adds the name to the event and
-					//the event to the model.
+					model.add(tmpEvent);
 				}
-			}
-			if(action.equals(PARSE_SUB_TAGS))//Parsing a sub tag of one of the main data tags.
-			{	
+			case SUBTAG:
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
-					if(qName.equals("initial"))
+					if(qName.equals(INITIAL))
 					{
 						tmpState.setInitial(true);
 					}
 
-					if(qName.equals("marked"))
+					if(qName.equals(MARKED))
 					{
 						tmpState.setMarked(true);
 					}
@@ -532,152 +514,139 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 				if(CURRENT_PARSING_ELEMENT == EVENT)
 				{
-					if(qName.equals("observable"))
+					if(qName.equals(OBSERVABLE))
 					{
 						tmpEvent.setObservable(true);
 					}
-					if(qName.equals("controllable"))
+					if(qName.equals(CONTROLLABLE))
 					{
 						tmpEvent.setControllable(true);
 					}
 				}
 				
-				if(qName.equals("name"))
+				if(qName.equals(NAME))
 				{    	
 					settingName = true;
 				}else{
 					settingName = false;
 				}
 			}
+		}
+		
+		public void parseMetaElements(String qName, Attributes atts)
+		{
+			//THIS STRUCTURE CAN BE USED TO PARSE A XML TAG IN ANY SUB-LEVEL
+			//The sublevel is identified by the class constants: MAINTAG, SUBTAG, SUBSUBTAG, etc, 
+			//which are integers with value meaning the sublevel of the tag.
+			switch(tags.size())
+			{
+			case MAINTAG:
+				if(CURRENT_PARSING_ELEMENT == STATE)
+				{
+					long id = Long.parseLong(atts.getValue(ID));
+					FSAState s = null;
+					//Select the state referred by <code>id</code>
+					Iterator<FSAState> sIt = model.getStateIterator();
+					while(sIt.hasNext())
+					{
+						FSAState tmpS = sIt.next();
+						if(tmpS.getId() == id)
+						{
+							s = tmpS;
+							break;
+						}
+					}
+					CircleNodeLayout tmpCircleNodeLayout = new CircleNodeLayout();
+					s.setAnnotation(Annotable.LAYOUT, tmpCircleNodeLayout);
+					tmpState = (State)s;
+				}
 
-		}
-		public void parseMetaMainTags(String qName, Attributes atts)
-		{
-			if(qName.equals(STATE))
-			{
-				CURRENT_PARSING_ELEMENT = STATE;
-//				System.out.println("NODE");
-				long id = Long.parseLong(atts.getValue("id"));
-				FSAState s = null;
-				//Select the state referred by <code>id</code>
-				Iterator<FSAState> sIt = model.getStateIterator();
-				while(sIt.hasNext())
+				if(CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
-					FSAState tmpS = sIt.next();
-					if(tmpS.getId() == id)
+					long id = Long.parseLong(atts.getValue(ID));
+					FSATransition transition = null;
+					//Select the transition referred by <code>id</code>
+					Iterator<FSATransition> tIt = model.getTransitionIterator();
+					while(tIt.hasNext())
 					{
-						s = tmpS;
-						break;
-					}
+						FSATransition t = tIt.next();
+						if(t.getId() == id)
+						{
+							transition = t;
+							break;
+						}
+					}	
+					transition.setAnnotation(Annotable.LAYOUT, new BezierLayout());
+					tmpTransition = (Transition)transition;
 				}
-				CircleNodeLayout tmpCircleNodeLayout = new CircleNodeLayout();
-				s.setAnnotation(Annotable.LAYOUT, tmpCircleNodeLayout);
-				tmpState = (State)s;
-			}
-			
-			if(qName.equals(TRANSITION))
-			{
-//				System.out.println("TRANSITION");
-				CURRENT_PARSING_ELEMENT = TRANSITION;
-				long id = Long.parseLong(atts.getValue("id"));
-				FSATransition transition = null;
-				//Select the transition referred by <code>id</code>
-				Iterator<FSATransition> tIt = model.getTransitionIterator();
-				while(tIt.hasNext())
+
+				if(CURRENT_PARSING_ELEMENT == FONT)
 				{
-					FSATransition t = tIt.next();
-					if(t.getId() == id)
+
+				}
+			case SUBTAG: //SECOND LEVEL AFTER THE MAIN TAG
+				if(CURRENT_PARSING_ELEMENT == STATE)
+				{
+					if(qName.equals(CIRCLE))
 					{
-						transition = t;
-						break;
+						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
+						layout.setRadius(Float.parseFloat(atts.getValue(RADIUS)));
+						layout.setLocation(Float.parseFloat(atts.getValue(COORD_X)),Float.parseFloat(atts.getValue(COORD_Y)));				
 					}
-				}	
-				//transition.setAnnotation(Annotable.LAYOUT, new BezierLayout());
-				tmpTransition = (Transition)transition;
-			}
-			
-			if(qName.equals(FONT))
-			{
-				CURRENT_PARSING_ELEMENT = FONT;
-			}
-		}
-		public void parseMetaSubTags(String qName, Attributes atts)
-		{
-			if(CURRENT_PARSING_ELEMENT == STATE)
-			{
-				if(qName.equals("circle"))
-				{
-					CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
-					layout.setRadius(Float.parseFloat(atts.getValue("r")));
-					layout.setLocation(Float.parseFloat(atts.getValue("x")),Float.parseFloat(atts.getValue("y")));
-						
-				}
-				
-				if(qName.equals("arrow"))
-				{
-					CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
-					layout.setArrow(new Point2D.Float(Float.parseFloat(atts.getValue("x"))  , Float.parseFloat(atts.getValue("y"))));
-				}
-			}
-			
-			if(CURRENT_PARSING_ELEMENT == TRANSITION)
-			{
-				//Setting the layout for the edge:
-				if(qName.equals("bezier"))
-				{   
-					float x1 = Float.parseFloat(atts.getValue("x1"));
-					float x2 = Float.parseFloat(atts.getValue("x2"));
-					float y1 = Float.parseFloat(atts.getValue("y1"));
-					float y2 = Float.parseFloat(atts.getValue("y2"));
-					float ctrlx1 = Float.parseFloat(atts.getValue("ctrlx1"));
-					float ctrly1 = Float.parseFloat(atts.getValue("ctrly1"));
-					float ctrlx2;
-					float ctrly2;
-					try{
-						ctrlx2 = Float.parseFloat(atts.getValue("ctrlx2"));
-						ctrly2 = Float.parseFloat(atts.getValue("ctrly2"));
-					}catch(Exception e){
-						ctrlx2 = ctrlx1;
-						ctrly2 = ctrly1;
+
+					if(qName.equals("arrow"))
+					{
+						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
+						layout.setArrow(new Point2D.Float(Float.parseFloat(atts.getValue(COORD_X))  , Float.parseFloat(atts.getValue(COORD_Y))));
 					}
+				}
+
+				if(CURRENT_PARSING_ELEMENT == TRANSITION)
+				{
+					
 
 					
-					Point2D.Float[] controls = new Point2D.Float[4];
-					controls[BezierLayout.P1] = new Point2D.Float(x1,y1);
-					controls[BezierLayout.P2] = new Point2D.Float(x2, y2);
-					controls[BezierLayout.CTRL1] = new Point2D.Float(ctrlx1,ctrly1);
-					controls[BezierLayout.CTRL2] = new Point2D.Float(ctrlx2,ctrly2);
-					tmpTransition.setAnnotation(Annotable.LAYOUT, new BezierLayout(controls));
-				}
-
-				//Setting the label for the edge:
-				if(qName.equals("label"))
-				{	
-					FSAEvent e = tmpTransition.getEvent();
-					if(e!=null)
-					{
-						BezierLayout layout = (BezierLayout)tmpTransition.getAnnotation(Annotable.LAYOUT);
-						layout.addEventName(e.getSymbol());		
-						Point2D.Float offset = new Point2D.Float();
-						offset.setLocation(Float.parseFloat(atts.getValue("x")), Float.parseFloat(atts.getValue("y")));
-						layout.setLabelOffset(offset);		
+					//Setting the layout for the edge:
+					if(qName.equals(BEZIER))
+					{   
+						float x1 = Float.parseFloat(atts.getValue(X1));
+						float x2 = Float.parseFloat(atts.getValue(X2));
+						float y1 = Float.parseFloat(atts.getValue(Y1));
+						float y2 = Float.parseFloat(atts.getValue(Y2));
+						float ctrlx1 = Float.parseFloat(atts.getValue(CTRLX1));
+						float ctrly1 = Float.parseFloat(atts.getValue(CTRLY1));
+						float ctrlx2;
+						float ctrly2;
+						try{
+							ctrlx2 = Float.parseFloat(atts.getValue(CTRLX2));
+							ctrly2 = Float.parseFloat(atts.getValue(CTRLY2));
+						}catch(Exception e){
+							ctrlx2 = ctrlx1;
+							ctrly2 = ctrly1;
+						}			
+						//Get the annotation BezierLayout, and set the curve paramethers 
+						BezierLayout l = (BezierLayout)tmpTransition.getAnnotation(Annotable.LAYOUT);
+						l.setCurve(new CubicCurve2D.Float(x1,y1,ctrlx1,ctrly1,ctrlx2,ctrly2,x2,y2));							
 					}
-					
+
+					//Setting the label for the edge:
+					if(qName.equals(LABEL))
+					{	
+						FSAEvent e = tmpTransition.getEvent();
+						if(e!=null)
+						{
+							BezierLayout layout = (BezierLayout)tmpTransition.getAnnotation(Annotable.LAYOUT);
+							layout.addEventName(e.getSymbol());		
+							Point2D.Float offset = new Point2D.Float();
+							offset.setLocation(Float.parseFloat(atts.getValue(COORD_X)), Float.parseFloat(atts.getValue(COORD_Y)));
+							layout.setLabelOffset(offset);		
+						}
+
+					}
 				}
 			}
 		}
-		public void parseMetaElements(String qName, Attributes atts, String action)
-		{
-			if(action.equals(PARSE_MAIN_TAGS))//Parsing one of the main data tags
-			{	
-				parseMetaMainTags(qName, atts);
-			}
-			
-			if(action.equals(PARSE_SUB_TAGS))
-			{
-				parseMetaSubTags(qName,atts);
-			}
-		}
+	
 		/**
 		 * Sets annotations for all the model elements in <code>model</code> based on the informations
 		 * countained in <code>stream</code>
@@ -715,25 +684,25 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		{
 			if(parsingElement == STATE)
 			{
-				long id = Long.parseLong(atts.getValue("id"));
+				long id = Long.parseLong(atts.getValue(ID));
 				State s =  new State(id);
 				return s;
 			}
 
 			if(parsingElement == EVENT)
 			{
-				long id = Long.parseLong(atts.getValue("id")); 	
+				long id = Long.parseLong(atts.getValue(ID)); 	
 				return new Event(id);
 			}
 
 			if(parsingElement == TRANSITION)
 			{
-				long id = Long.parseLong(atts.getValue("id")); 
-				long sourceN = Long.parseLong(atts.getValue("source"));
-				long targetN = Long.parseLong(atts.getValue("target"));
+				long id = Long.parseLong(atts.getValue(ID)); 
+				long sourceN = Long.parseLong(atts.getValue(SOURCE));
+				long targetN = Long.parseLong(atts.getValue(TARGET));
 				long eventN;
 				try{
-					eventN = Long.parseLong(atts.getValue("event"));
+					eventN = Long.parseLong(atts.getValue(EVENT));
 				}catch(NumberFormatException e)
 				{
 					eventN = -1;
@@ -794,7 +763,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					if(CURRENT_PARSING_ELEMENT == EVENT)
 					{
 						tmpEvent.setSymbol(tmpName);
-						model.add(tmpEvent);
 					}
 				}
 				settingName = false;

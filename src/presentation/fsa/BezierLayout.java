@@ -391,6 +391,22 @@ public class BezierLayout extends GraphicalLayout {
 		updateAnglesAndScalars();
 	}	
 	
+	/**
+	 * Sets the curve representing the edge.
+	 * 
+	 * @param cubicCurve the curve to be set
+	 */
+	public void setCurve(CubicCurve2D.Float cubicCurve) {
+
+		this.curve = new CubicParamCurve2D(
+				cubicCurve.x1, cubicCurve.y1, 
+				cubicCurve.ctrlx1, cubicCurve.ctrly1,
+				cubicCurve.ctrlx2, cubicCurve.ctrly2,
+				cubicCurve.x2, cubicCurve.y2
+				);
+		updateAnglesAndScalars();
+	}	
+	
 	/** 
 	 * Returns the visible portion of the curve i.e. the part that is 
 	 * outside the boundaries of both source and target nodes; 
