@@ -78,7 +78,7 @@ public class BezierEdge extends Edge {
 		super(source, target, t);
 		setLayout(layout);	
 		setHandler(new BezierHandler(this));		
-		arrowHead = new ArrowHead();		
+		arrowHead = new ArrowHead();
 		setNeedsRefresh(true);
 	}
 

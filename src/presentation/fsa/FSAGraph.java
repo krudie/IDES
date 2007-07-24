@@ -139,7 +139,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				hasLayout = false;
 			}
 		}
-
+		
+		
 		//Add the edges to the FSAGraph
 		Iterator <FSATransition> tIt = fsa.getTransitionIterator();
 		while(tIt.hasNext())
@@ -169,14 +170,61 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 						hasDst = true;
 					}
 				}
-				BezierEdge edge = null;
-				if(!src.equals(dst)){
-					edge = new BezierEdge(l, src,dst, t);
-				}else{
-					//Create a reflexive edge
-					edge = new ReflexiveEdge(l, src, t);
-				}
+				Edge edge = null;
+				boolean groupExists = false;
+				if(l.getEventNames().size() > 1)
+				{
+					//The edge must have a group of transitions.
+					//Check if there is already an edge with a layout which equals "l".
+					Set<Long> keys = edges.keySet();
 
+					Iterator<Long> kIt = keys.iterator();
+					while(kIt.hasNext())
+					{
+						boolean alreadyInserted = false;
+						Edge tmpEdge = edges.get(kIt.next());
+						BezierLayout tmpLayout = (BezierLayout)tmpEdge.getLayout();
+						//If one of the edges countain the same laout, then there is no need to create a new
+						//edge.
+						if(tmpLayout == l)
+						{
+							//Add the transition to the edge in case it is not there yet.
+							edge =  (Edge)tmpEdge;
+							Iterator<FSATransition> it = edge.getTransitions();
+							while(it.hasNext())
+							{
+								if(t == it.next())
+								{
+									//The transition is already in the edge.
+									alreadyInserted = true;
+								}
+							}
+							if(!alreadyInserted)
+							{
+								edge.addTransition(t);
+							}
+							groupExists = true;
+						}
+					}
+					if(!groupExists)
+					{
+						if(!src.equals(dst)){
+							edge = new BezierEdge(l, src,dst, t);
+						}else{
+							//Create a reflexive edge
+							edge = new ReflexiveEdge(l, src, t);
+						}
+					}
+					//If the edge already exists, assign the transition t to this edge.
+					//Otherwise, create a new edge!
+				}else{
+					if(!src.equals(dst)){
+						edge = new BezierEdge(l, src,dst, t);
+					}else{
+						//Create a reflexive edge
+						edge = new ReflexiveEdge(l, src, t);
+					}
+				}			
 				//add this edge among the childs of its source and target
 				src.insert(edge);
 				dst.insert(edge);
@@ -186,7 +234,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					//Add the edge label to the set of edge labels in the graph
 					edgeLabels.put(edge.getId(), edge.getLabel());
 				}
-				
 				//Put the edge in the set of edges
 				edges.put(t.getId(), edge);
 			}catch (Exception e)

@@ -32,6 +32,9 @@ import model.fsa.ver2_1.Transition;
 import pluggable.io.FileIOPlugin;
 import pluggable.io.IOPluginManager;
 import presentation.fsa.BezierLayout;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.HashSet;
@@ -145,10 +148,13 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				XMLExporter.stateLayoutToXML((State)si.next(), stream, XMLExporter.INDENT);            
 			}
 	
+			//Save the transitions
 			ti = ((FSAModel)model).getTransitionIterator();
+			//Create a hashmap to store the transition layouts, this information is used for the "groups" creation.
+			HashMap<Integer,BezierLayout> bezierCurves = new HashMap<Integer,BezierLayout>();
 			while(ti.hasNext())
 			{
-				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
+				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT, bezierCurves);
 			}
 			return true;
 		}
@@ -290,7 +296,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void transitionToXML(Transition t, PrintStream ps, String indent){
-				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
+			ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
 						+ t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
 
 						+ ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
@@ -320,12 +326,53 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param ps the printstream to print to 
 		 * @param indent the indentation to be used in the file
 		 */ 
-		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
+		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent, HashMap<Integer,BezierLayout> bezierCurves){
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+			int groupid = -1;
+			if(bezierCurves == null)
+			{
+				bezierCurves = new HashMap<Integer,BezierLayout>();
+			}
+			
+//			System.out.println(l.getEventNames() + ", number of stored layouts: " + bezierCurves.size());
+			
+			if(l.getEventNames().size() > 1)
+			{
+				boolean foundLayout = false;
+				//Transition with more than one event, create a group for this transition.
+				//Put the layout and the groupId inside a hashmap, if it is not in the map yet.
+				Set<Integer> kSet = bezierCurves.keySet();
+				Iterator<Integer> iIt = kSet.iterator();
+				while(iIt.hasNext())
+				{
+					int tmpID = iIt.next();
+					BezierLayout tmpLayout = bezierCurves.get(tmpID);
+					if(tmpLayout == l)
+					{
+						foundLayout = true;
+						groupid = tmpID;
+//						System.out.println("Adding transition to group " + groupid);
+					}
+					
+				}
+	
+				if(!foundLayout)
+				{
+					//If the group was not created yet, created it, giving an id which is the next "slot"
+					//in the hashmap, put the layout in the hashmap!
+					groupid = (bezierCurves.size()+1);
+//					System.out.println("Creating group: " + groupid);
+					bezierCurves.put(groupid, l);
+				}
+			}
+			else{
+				//System.out.println("This transition is not a groupped one.");
+			}
+			
 			if(l!= null)
 			{
 				CubicParamCurve2D curve = l.getCurve();
-				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\">");
+				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + (groupid != -1?" group=\"" + groupid + "\"":"")+ ">");
 				ps.println(indent + indent + "<bezier x1=\"" + curve.getX1() +"\" y1=\"" + curve.getY1() + "\" x2=\"" + 
 						curve.getX2() + "\" y2=\"" + curve.getY2() + "\" ctrlx1=\"" + curve.getCtrlX1() + "\" ctrly1=\"" + curve.getCtrlY1() + "\" ctrlx2=\"" + 
 						curve.getCtrlX2() + "\" ctrly2=\"" + curve.getCtrlY2() + "\" />");
@@ -346,18 +393,18 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		private State tmpState;
 		private Transition tmpTransition;
 		private Event tmpEvent;
-		
+		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long,BezierLayout>();
 		//Constants representing names of xml tags and subtags
 		protected final String INITIAL="initial", MARKED="marked",OBSERVABLE="observable", 
 		CONTROLLABLE="controllable",NAME="name", ID="id", CIRCLE="circle",RADIUS="r", COORD_X="x", 
 		COORD_Y="y", BEZIER="bezier", X1="x1", Y1="y1", X2="x2", Y2="y2", CTRLX1="ctrlx1", CTRLY1="ctrly1",
 		CTRLX2="ctrlx2", CTRLY2="ctrly2", SOURCE="source", TARGET="target",STATE = "state", 
-		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label";
+		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label", ARROW="arrow", GROUP_ID="group";
 		
 		//Auxiliar attributes: "Actions" to be developed by the parser
 		//Tells some parseDataElements and parseMetaElements whether they are
 		//parsing main tags or subtags
-		protected final int MAINTAG = 2, SUBTAG = 3; //,,, 
+		protected final int MAINTAG = 2, SUBTAG = 3, SUBSUBTAG=4, SUBSUBSUBTAG=5; //,,, 
 		private String CURRENT_PARSING_ELEMENT="";
 		
 		boolean parsingData = false;
@@ -498,7 +545,17 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					tmpEvent = (Event)getModelElement(atts, CURRENT_PARSING_ELEMENT);
 					model.add(tmpEvent);
 				}
-			case SUBTAG:
+			
+			//////////////////////////////////////////////
+			case SUBTAG:			
+				if(qName.equals(NAME))
+				{    	
+					settingName = true;
+				}else{
+					settingName = false;
+				}
+			//////////////////////////////////////////////
+			case SUBSUBTAG:
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
 					if(qName.equals(INITIAL))
@@ -511,7 +568,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						tmpState.setMarked(true);
 					}
 				}
-
 				if(CURRENT_PARSING_ELEMENT == EVENT)
 				{
 					if(qName.equals(OBSERVABLE))
@@ -523,14 +579,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						tmpEvent.setControllable(true);
 					}
 				}
-				
-				if(qName.equals(NAME))
-				{    	
-					settingName = true;
-				}else{
-					settingName = false;
-				}
 			}
+				
 		}
 		
 		public void parseMetaElements(String qName, Attributes atts)
@@ -540,7 +590,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			//which are integers with value meaning the sublevel of the tag.
 			switch(tags.size())
 			{
-			case MAINTAG:
+			case MAINTAG://MAINTAG
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
 					long id = Long.parseLong(atts.getValue(ID));
@@ -564,8 +614,17 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				if(CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
 					long id = Long.parseLong(atts.getValue(ID));
+					long groupId = -1;
+					try{
+						groupId = Long.parseLong(atts.getValue(GROUP_ID));
+					}catch(Exception e)
+					{
+						//The transition is ungrouped.
+						//It will have its own layout.
+					}
+
 					FSATransition transition = null;
-					//Select the transition referred by <code>id</code>
+					//Select the transition referred by id
 					Iterator<FSATransition> tIt = model.getTransitionIterator();
 					while(tIt.hasNext())
 					{
@@ -575,8 +634,27 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 							transition = t;
 							break;
 						}
+					}
+					
+					BezierLayout l = null;
+					if(groupId == -1)//The transition has no group
+					{
+						//If the transition has no group, create a layout to represent it:
+						l = new BezierLayout();
+					}else
+					{
+						//The transition have a group.
+						//Use the groupLayout stored in "bezierCurves"
+						//Create a layout it if it still does not exist.
+						l  = bezierCurves.get(groupId);
+						if(l == null)
+						{
+							//Create the layout:
+							l = new BezierLayout();
+							bezierCurves.put(groupId, l);
+						}
 					}	
-					transition.setAnnotation(Annotable.LAYOUT, new BezierLayout());
+					transition.setAnnotation(Annotable.LAYOUT, l);
 					tmpTransition = (Transition)transition;
 				}
 
@@ -584,7 +662,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				{
 
 				}
-			case SUBTAG: //SECOND LEVEL AFTER THE MAIN TAG
+			case SUBTAG: //FIRST LEVEL AFTER THE MAIN TAG
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
 					if(qName.equals(CIRCLE))
@@ -594,7 +672,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						layout.setLocation(Float.parseFloat(atts.getValue(COORD_X)),Float.parseFloat(atts.getValue(COORD_Y)));				
 					}
 
-					if(qName.equals("arrow"))
+					if(qName.equals(ARROW))
 					{
 						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
 						layout.setArrow(new Point2D.Float(Float.parseFloat(atts.getValue(COORD_X))  , Float.parseFloat(atts.getValue(COORD_Y))));
@@ -602,10 +680,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				}
 
 				if(CURRENT_PARSING_ELEMENT == TRANSITION)
-				{
-					
-
-					
+				{	
 					//Setting the layout for the edge:
 					if(qName.equals(BEZIER))
 					{   
@@ -636,12 +711,17 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						if(e!=null)
 						{
 							BezierLayout layout = (BezierLayout)tmpTransition.getAnnotation(Annotable.LAYOUT);
-							layout.addEventName(e.getSymbol());		
-							Point2D.Float offset = new Point2D.Float();
-							offset.setLocation(Float.parseFloat(atts.getValue(COORD_X)), Float.parseFloat(atts.getValue(COORD_Y)));
-							layout.setLabelOffset(offset);		
+							if(e.getSymbol()!="")
+							{
+//								System.out.println("Adding " + e.getSymbol() + " to " + layout);
+								//Add eventName to the edgeLayout:
+								Point2D.Float offset = new Point2D.Float();
+								offset.setLocation(Float.parseFloat(atts.getValue(COORD_X)), Float.parseFloat(atts.getValue(COORD_Y)));
+								layout.setLabelOffset(offset);	
+								layout.addEventName(e.getSymbol());
+//								System.out.println(layout.getEventNames());
+							}
 						}
-
 					}
 				}
 			}
