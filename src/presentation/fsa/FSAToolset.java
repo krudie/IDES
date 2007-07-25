@@ -118,13 +118,6 @@ public class FSAToolset implements Toolset {
 	public LayoutShell wrapModel(DESModel model) throws UnsupportedModelException {
 		if(!(model instanceof FSAModel))
 			throw new UnsupportedModelException();
-		LayoutShell w;
-		//TODO - remove this MetaData bullshit
-//		if(model.hasAnnotation("metadata"))
-//			w=new FSAGraph((FSAModel)model,(MetaData)model.getAnnotation("metadata"));
-//		else
-//			w=new FSAGraph((FSAModel)model);
-		//Christian - Trying to remove this MetaData:
 		return new FSAGraph((FSAModel)model);
 	}
 
