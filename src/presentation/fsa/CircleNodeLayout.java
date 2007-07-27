@@ -1,6 +1,11 @@
 package presentation.fsa;
 
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
+import java.io.Serializable;
 
 import presentation.GraphicalLayout;
 
@@ -9,20 +14,19 @@ import presentation.GraphicalLayout;
  * 
  * @author Helen Bretzke
  */
-public class CircleNodeLayout extends GraphicalLayout {
-	
+public class CircleNodeLayout extends GraphicalLayout implements Serializable{
 	/** the radius of the circle */
 	private float radius;		
-	
+
 	/** the direction vector for arrow if the state is initial */
 	private Point2D.Float arrow = new Point2D.Float(1, 0);
-	
+
 	/** the node that is laid out */
 	private CircleNode node;
-	
+
 	/**
-     * The default radius of the circle which represents this Node.
-     */    
+	 * The default radius of the circle which represents this Node.
+	 */    
 	public static final float DEFAULT_RADIUS = 15;
 	/**
 	 * The fixed margin between outer and inner circles for marked Nodes.
@@ -33,21 +37,21 @@ public class CircleNodeLayout extends GraphicalLayout {
 	 * Keeps track of the maximum radius over all nodes in the graph. 
 	 */
 	protected FSAGraph.UniformRadius uniformR=null;
-	
-	
+
+
 	public CircleNodeLayout(FSAGraph.UniformRadius u){
 		this(u,new Point2D.Float(), DEFAULT_RADIUS, "");
 	}
-	
+
 	public CircleNodeLayout(FSAGraph.UniformRadius u,Point2D.Float centre){
 		this(u,centre, DEFAULT_RADIUS, "");
 	}
-	
+
 	public CircleNodeLayout(FSAGraph.UniformRadius u,Point2D.Float centre, float radius, String name, Point2D.Float arrow) {
 		this(u,centre, radius, name);
 		this.arrow = arrow;		
 	}
-	
+
 	public CircleNodeLayout(FSAGraph.UniformRadius u,Point2D.Float centre, float radius, String name) {
 		super(centre, name);
 		this.radius = radius;		
@@ -58,16 +62,16 @@ public class CircleNodeLayout extends GraphicalLayout {
 	public CircleNodeLayout(){
 		this(new Point2D.Float(), DEFAULT_RADIUS, "");
 	}
-	
+
 	public CircleNodeLayout(Point2D.Float centre){
 		this(centre, DEFAULT_RADIUS, "");
 	}
-	
+
 	public CircleNodeLayout(Point2D.Float centre, float radius, String name, Point2D.Float arrow) {
 		this(centre, radius, name);
 		this.arrow = arrow;		
 	}
-	
+
 	public CircleNodeLayout(Point2D.Float centre, float radius, String name) {
 		super(centre, name);
 		this.radius = radius;		
@@ -78,7 +82,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 			return uniformR.getRadius();
 		return radius;
 	}	
-	
+
 	public Point2D.Float getArrow(){		
 		return arrow;
 	}
@@ -87,7 +91,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 		this.arrow = arrow;
 		setDirty(true);
 	}
-		
+
 	public void setRadius(float radius) {
 		this.radius = radius;
 		setDirty(true);
@@ -103,7 +107,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 	public void setNode(CircleNode node) {
 		this.node = node;		
 	}	
-	
+
 	public void setDirty(boolean d){
 		// KLUGE all accesss to NodeLayout should go through the Node interface.
 		super.setDirty(d);
@@ -111,7 +115,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 			node.setNeedsRefresh(d);
 		}
 	}
-	
+
 	public void dispose()
 	{
 		if(uniformR!=null) {
@@ -119,7 +123,7 @@ public class CircleNodeLayout extends GraphicalLayout {
 			uniformR.updateUniformRadius();
 		}
 	}
-	
+
 	public void setUniformRadius(FSAGraph.UniformRadius ur)
 	{
 		if(uniformR != null) {
@@ -128,4 +132,26 @@ public class CircleNodeLayout extends GraphicalLayout {
 		uniformR = ur;
 		uniformR.updateUniformRadius(this,radius);
 	}
+
+	/**
+	 * Explicitly saves its own fields
+	 * 
+	 * @serialData Store own serializable fields
+	 */
+	private void writeObject(ObjectOutputStream out)  throws IOException {    
+		out.writeFloat(this.getRadius());
+		out.writeFloat(this.arrow.x);
+		out.writeFloat(this.arrow.y);
+	}
+
+	/**
+	 * Restores its own fields by calling defaultReadObject and then explicitly
+	 * restores the fields of its supertype. 
+	 */
+	private void readObject(ObjectInputStream in) 
+	throws IOException, ClassNotFoundException {
+		radius = in.readFloat();
+		arrow = new Point2D.Float(in.readFloat(), in.readFloat());
+	}
 }
+

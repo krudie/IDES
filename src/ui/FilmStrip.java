@@ -172,7 +172,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 
 	public void mouseExited(MouseEvent arg0) {
 		if (!this.getBounds().contains(arg0.getPoint())) {
-			underMouse.handleMouseExited(arg0);
+			if(underMouse !=null)
+				underMouse.handleMouseExited(arg0);
 		}
 	}
 	

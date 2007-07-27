@@ -91,7 +91,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param fsa the mathematical model	
 	 */
 	public FSAGraph(FSAModel fsa) {
-		// FIXME: make FSAGraph be able to handle FSAModels
 		if(!(fsa instanceof Automaton))
 		{
 			throw new RuntimeException("FSAGraph can only layout Automatons");
@@ -124,6 +123,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			try{
 				FSAState s = sIt.next();
 				CircleNodeLayout l = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
+				
+				//Avoid give the name "" to the state!
+				if(l.getText() != "")
+				{
+					s.setName(l.getText());
+				}
+				//Create a new node
 				CircleNode node = new CircleNode(s, l);
 				long id = s.getId();
 				nodes.put(id, node);
@@ -159,8 +165,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			boolean hasSrc = false, hasDst = false;
 
 			//Find the source and target nodes for this edge:
-			while(nIt.hasNext() | !(hasSrc & hasDst))
+			while(nIt.hasNext() || !(hasSrc & hasDst))
 			{
+				//TODO- review this stop criteria
 				CircleNode n = (CircleNode)nIt.next();
 				//Find source
 				if(n.getId().equals(t.getSource().getId()))
@@ -294,6 +301,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			LayoutManager.getDefaultFSMLayouter().layout(this);
 			buildIntersectionDS();
 		}
+//		System.out.println("Graph created!");
 		this.refresh();
 	}
 
@@ -1900,7 +1908,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			}
 		}
 	}
-
+	
 	/**
 	 * TODO comment and format
 	 * 

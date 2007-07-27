@@ -4,6 +4,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.Stroke;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
+import java.io.Serializable;
 
 /**
  * Encapsulates the basic position and appearance characteristics of 
@@ -17,8 +22,7 @@ import java.awt.Stroke;
  * 
  * @author Helen Bretzke
  */
-public class GraphicalLayout {
-
+public class GraphicalLayout implements Serializable{
 	/* whether the element needs to be repainted due to changes in the layout */
 	private boolean dirty = false;
 
@@ -27,22 +31,22 @@ public class GraphicalLayout {
 	public static final Color DEFAULT_HIGHLIGHT_COLOR = Color.RED;
 	public static final Color DEFAULT_SELECTION_COLOR = Color.BLUE;
 	public static final Color DEFAULT_BG_COLOR = Color.WHITE;
-	
+
 	public static final Stroke FINE_STROKE = new BasicStroke(1);
 	public static final Stroke WIDE_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
 	public static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT,
-																BasicStroke.JOIN_MITER,         
-																50, new float[] {5, 2}, 0);	
+			BasicStroke.JOIN_MITER,         
+			50, new float[] {5, 2}, 0);	
 	public static final Stroke WIDE_DASHED_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT,
-																BasicStroke.JOIN_MITER,       									
-																50, new float[] {5, 2}, 0);	
-	
+			BasicStroke.JOIN_MITER,       									
+			50, new float[] {5, 2}, 0);	
+
 	/** x and y coordinates of the associated element on the graph canvas */
 	private Point2D.Float location;
 
 	/** x and y displacement of the label from the location of the element */
 	private Point2D.Float labelOffset;
-	
+
 	/** 
 	 * the text to be displayed on the associated graph element 
 	 * Note: this is redundant, since a label is a graph element and will have it's own
@@ -52,23 +56,23 @@ public class GraphicalLayout {
 
 	/** colour of the element */
 	private Color color = DEFAULT_COLOR;
-	
+
 	/** colour of the element when it is highlighted */	
 	private Color highlightColor = DEFAULT_HIGHLIGHT_COLOR;
-	
+
 	/** colour of the element when it is selected */
 	private Color selectionColor = DEFAULT_SELECTION_COLOR;
-	
+
 	/** background colour (??? is this the solid fill colour of the element i.e. behind the text) */
 	private Color backgroundColor = DEFAULT_BG_COLOR;	
-	
+
 	/** 
 	 * Creates a graphical layout instance with empty string as text. 
 	 */
 	public GraphicalLayout(){
 		this("");		
 	}
-	
+
 	/** 
 	 * Creates a graphical layout instance with the given 
 	 * string as label text.
@@ -80,8 +84,8 @@ public class GraphicalLayout {
 		location = new Point2D.Float(0,0);	
 		labelOffset = new Point2D.Float(0,0);
 	}
-	
-	
+
+
 	/** 
 	 * Creates a graphical layout instance at the given location
 	 * with empty string as text.
@@ -93,9 +97,9 @@ public class GraphicalLayout {
 	}
 
 	/**
- 	 * Creates a graphical layout instance at the given location
- 	 * and the given string as label text.
- 	 * 
+	 * Creates a graphical layout instance at the given location
+	 * and the given string as label text.
+	 * 
 	 * @param location
 	 * @param text
 	 */
@@ -107,7 +111,7 @@ public class GraphicalLayout {
 
 	/**
 	 * Creates a graphical layout instance at the given location,
- 	 * with the given label text, colour and highlight colour. 
+	 * with the given label text, colour and highlight colour. 
 	 * 
 	 * @param location
 	 * @param text
@@ -188,7 +192,7 @@ public class GraphicalLayout {
 	public void setHighlightColor(Color highlightColor) {
 		this.highlightColor = highlightColor;
 	}
-	
+
 	/**
 	 * Returns the background colour. 
 	 * 
@@ -216,7 +220,7 @@ public class GraphicalLayout {
 		this.text = text;
 		dirty = true;
 	}
-	
+
 	/**
 	 * Returns the selection colour. 
 	 * 
@@ -273,7 +277,7 @@ public class GraphicalLayout {
 		this.labelOffset = labelOffset;
 		setDirty(true);
 	}
-	
+
 	/**
 	 * Lenko
 	 *
@@ -297,5 +301,36 @@ public class GraphicalLayout {
 		location.x=x;
 		location.y=y;
 		setDirty(true);
+	}
+	/**
+	 * Explicitly saves its own fields
+	 * 
+	 * @serialData Store own serializable fields
+	 */
+	private void writeObject(ObjectOutputStream out)  throws IOException {
+		out.writeBoolean(this.dirty);
+		out.writeFloat(location.x);
+		out.writeFloat(location.y);
+		out.writeFloat(this.labelOffset.x);
+		out.writeFloat(this.labelOffset.y);
+		out.writeObject(this.backgroundColor);
+		out.writeObject(this.color);
+		out.writeObject(this.highlightColor);
+		out.writeObject(this.text);
+	}
+
+	/**
+	 * Restores its own fields by calling defaultReadObject and then explicitly
+	 * restores the fields of its supertype. 
+	 */
+	private void readObject(ObjectInputStream in) 
+	throws IOException, ClassNotFoundException {
+		dirty = in.readBoolean();
+		location = new Point2D.Float(in.readFloat(), in.readFloat());
+		labelOffset = new Point2D.Float(in.readFloat(), in.readFloat());
+		backgroundColor = (Color)in.readObject();
+		color = (Color)in.readObject();
+		highlightColor = (Color)in.readObject();
+		text = (String)in.readObject();
 	}
 }

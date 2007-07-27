@@ -1,8 +1,13 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,7 +20,7 @@ import presentation.GraphicalLayout;
  * 
  * @author Helen Bretzke
  */		
-public class BezierLayout extends GraphicalLayout {
+public class BezierLayout extends GraphicalLayout implements Serializable{
 
 	/* the edge to be laid out */
 	private BezierEdge edge;
@@ -758,5 +763,43 @@ public class BezierLayout extends GraphicalLayout {
 	    setText(s);
 	}		
 	///////////////////////////////////////////////////////////////////////////
-	
+	/**
+	 * Explicitly saves its own fields
+	 * 
+	 * @serialData Store own serializable fields
+	 */
+	private void writeObject(ObjectOutputStream out)  throws IOException {
+		out.writeBoolean(rigidTranslation);
+		out.writeFloat(curve.x1);
+		out.writeFloat(curve.y1);
+		out.writeFloat(curve.ctrlx1);
+		out.writeFloat(curve.ctrly1);
+		out.writeFloat(curve.ctrlx2);
+		out.writeFloat(curve.ctrly2);
+		out.writeFloat(curve.x2);
+		out.writeFloat(curve.y2);
+		out.writeFloat(sourceT);
+		out.writeFloat(targetT);
+		out.writeDouble(angle1);
+		out.writeDouble(angle2);
+		out.writeDouble(s1);
+		out.writeDouble(s2);
+		out.writeObject(eventNames);
+	}
+	/**
+	 * Restores its own fields by calling defaultReadObject and then explicitly
+	 * restores the fields of its supertype. 
+	 */
+	private void readObject(ObjectInputStream in) 
+	throws IOException, ClassNotFoundException {
+		rigidTranslation = in.readBoolean();
+		curve = new CubicParamCurve2D(in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat());
+		sourceT = in.readFloat();
+		targetT = in.readFloat();
+		angle1 = in.readDouble();
+		angle2 = in.readDouble();
+		s1 = in.readDouble();
+		s2 = in.readDouble();
+		eventNames = (ArrayList<String>)in.readObject();
+	}
 }

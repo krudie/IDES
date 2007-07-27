@@ -4,6 +4,7 @@ import io.fsa.ver2_1.CommonTasks;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import ui.MainWindow;
 import ui.command.FileCommands;
 
 import model.DESModel;
+import model.ModelDescriptor;
 import model.ModelManager;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
@@ -138,9 +140,17 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			}
 			model.setName(model.getName()+" ("+i+")");
 		}
+		Cursor cursor = Hub.getMainWindow().getCursor();
+		Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		systems.add(model);
-		graphs.add(PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface()).wrapModel(model));
-	
+//		System.out.println("WILL GRAB THE TOOLSET!");
+		Toolset ts = PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface());
+//		System.out.println("WILL WRAP THE MODEL!");
+		//TODO Check the efficiency od the wrapModel function
+		LayoutShell ls = ts.wrapModel(model);
+//		System.out.println("WILL ADD THE GRAPH");
+		graphs.add(ls);
+//		System.out.println("THE GRAPH WAS ADDED!");
 		if(LatexManager.isLatexEnabled()){
 			if(getActiveLayoutShell() instanceof FSAGraph)
 				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());
@@ -153,7 +163,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		if(countAdd!=0){
 			dirty = true;
 		}
-		
+		Hub.getMainWindow().setCursor(cursor);
 		countAdd++;
 	}
 

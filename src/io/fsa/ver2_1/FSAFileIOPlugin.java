@@ -670,6 +670,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
 						layout.setRadius(Float.parseFloat(atts.getValue(RADIUS)));
 						layout.setLocation(Float.parseFloat(atts.getValue(COORD_X)),Float.parseFloat(atts.getValue(COORD_Y)));				
+						layout.setText(tmpState.getName());
 					}
 
 					if(qName.equals(ARROW))
