@@ -328,51 +328,10 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 */ 
 		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent, HashMap<Integer,BezierLayout> bezierCurves){
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
-			int groupid = -1;
-			if(bezierCurves == null)
-			{
-				bezierCurves = new HashMap<Integer,BezierLayout>();
-			}
-			
-//			System.out.println(l.getEventNames() + ", number of stored layouts: " + bezierCurves.size());
-			
-			if(l.getEventNames().size() > 1)
-			{
-				boolean foundLayout = false;
-				//Transition with more than one event, create a group for this transition.
-				//Put the layout and the groupId inside a hashmap, if it is not in the map yet.
-				Set<Integer> kSet = bezierCurves.keySet();
-				Iterator<Integer> iIt = kSet.iterator();
-				while(iIt.hasNext())
-				{
-					int tmpID = iIt.next();
-					BezierLayout tmpLayout = bezierCurves.get(tmpID);
-					if(tmpLayout == l)
-					{
-						foundLayout = true;
-						groupid = tmpID;
-//						System.out.println("Adding transition to group " + groupid);
-					}
-					
-				}
-	
-				if(!foundLayout)
-				{
-					//If the group was not created yet, created it, giving an id which is the next "slot"
-					//in the hashmap, put the layout in the hashmap!
-					groupid = (bezierCurves.size()+1);
-//					System.out.println("Creating group: " + groupid);
-					bezierCurves.put(groupid, l);
-				}
-			}
-			else{
-				//System.out.println("This transition is not a groupped one.");
-			}
-			
 			if(l!= null)
 			{
 				CubicParamCurve2D curve = l.getCurve();
-				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + (groupid != -1?" group=\"" + groupid + "\"":"")+ ">");
+				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + (l.getGroup() != BezierLayout.UNGROUPPED?" group=\"" + l.getGroup() + "\"":"")+ ">");
 				ps.println(indent + indent + "<bezier x1=\"" + curve.getX1() +"\" y1=\"" + curve.getY1() + "\" x2=\"" + 
 						curve.getX2() + "\" y2=\"" + curve.getY2() + "\" ctrlx1=\"" + curve.getCtrlX1() + "\" ctrly1=\"" + curve.getCtrlY1() + "\" ctrlx2=\"" + 
 						curve.getCtrlX2() + "\" ctrly2=\"" + curve.getCtrlY2() + "\" />");
@@ -654,6 +613,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 							bezierCurves.put(groupId, l);
 						}
 					}	
+					l.setGroup(groupId);
 					transition.setAnnotation(Annotable.LAYOUT, l);
 					tmpTransition = (Transition)transition;
 				}

@@ -112,7 +112,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
 				newEvent = ((FSAGraph)Workspace.instance().getActiveLayoutShell()).createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
-				updateOnlyAvailable();			
+				updateOnlyAvailable();	
 				listAvailableEvents.setSelectedValue(newEvent, true);
 			}
 			else

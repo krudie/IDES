@@ -181,7 +181,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 				t.setAnnotation(Annotable.LAYOUT, layout);	
 				clone.add(t);
 				if(oldt.getEvent() != null){
-					Event event = (Event)clone.getEvent(oldt.getEvent().getId());
+					Event event = new Event((Event)clone.getEvent(oldt.getEvent().getId()));
 					t.setEvent(event);
 				}
 			}catch(Exception e)

@@ -24,13 +24,22 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 
 	/* the edge to be laid out */
 	private BezierEdge edge;
-	
+	public static final long UNGROUPPED = -1;
 	/* Indices of bezier curve control points. */
 	public static final int P1 = 0;	
 	public static final int CTRL1 = 1;
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
 	
+	protected long group = UNGROUPPED;
+	public void setGroup(long i)
+	{
+		group = i;
+	}
+	public long getGroup()
+	{
+		return group;
+	}
 	
 	/* default displacement vector for the label from the midpoint of the edge */
 	public final Point2D.Float DEFAULT_LABEL_OFFSET = new Point2D.Float(5,5);
@@ -770,6 +779,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 */
 	private void writeObject(ObjectOutputStream out)  throws IOException {
 		out.writeBoolean(rigidTranslation);
+		out.writeLong(group);
 		out.writeFloat(curve.x1);
 		out.writeFloat(curve.y1);
 		out.writeFloat(curve.ctrlx1);
@@ -793,6 +803,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	private void readObject(ObjectInputStream in) 
 	throws IOException, ClassNotFoundException {
 		rigidTranslation = in.readBoolean();
+		group = in.readLong();
 		curve = new CubicParamCurve2D(in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat(),in.readFloat());
 		sourceT = in.readFloat();
 		targetT = in.readFloat();

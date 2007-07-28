@@ -46,6 +46,7 @@ import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
  */
 public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell, LayoutShellPublisher {
 
+	private long bezierLayoutFreeGroup = 0;
 	//This flag is set to true when the FSAGraph is a result of an automatic
 	//DES operation and this result has more than 100 states
 	private boolean avoidLayoutDrawing;
@@ -167,8 +168,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			//Find the source and target nodes for this edge:
 			while(nIt.hasNext() || !(hasSrc & hasDst))
 			{
-				//TODO- review this stop criteria
-				CircleNode n = (CircleNode)nIt.next();
+				CircleNode n = null;
+				try{
+					n =(CircleNode)nIt.next();
+				}catch(Exception e)
+				{
+					break;
+				}
 				//Find source
 				if(n.getId().equals(t.getSource().getId()))
 				{
@@ -182,9 +188,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					hasDst = true;
 				}
 			}
-			Edge edge = null;
+			Edge edge = null;	
 			boolean groupExists = false;
-			if(l.getEventNames().size() > 1)
+			if(l.getGroup() != BezierLayout.UNGROUPPED)
 			{
 				//The edge must have a group of transitions.
 				//Check if there is already an edge with the same layout addressed by: "l".
@@ -199,6 +205,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					BezierLayout tmpLayout = null;
 					try{
 						tmpLayout = (BezierLayout)tmpEdge.getLayout();
+						//CHRISTIAN- WORK FROM HERE
+						if((tmpEdge.getSourceNode().getLayout() == tmpEdge.getTargetNode().getLayout()))
+						{
+							//WHY IS THE GROUP ID -1 EVEN THOUGHT IN THE FILE IT IS DESCRIPTED AS GROUPED?
+							//							System.out.println(((ReflexiveEdge.ReflexiveLayout)(t.getAnnotation(Annotable.LAYOUT)) + ", " + tmpEdge.getLayout()));
+						}
+					
 					}catch(ClassCastException e)
 					{
 						//The edge is an initial edge, there is no meaning in processing it.
@@ -207,10 +220,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					}
 					if(!skipIteration)
 					{
-						//If one of the edges countain the same layout, then there is no need to create a new
-						//edge, just add the transition to it.
-						if(tmpLayout == l)
+//						System.out.println("ENTROU");
+						//If there is already an Edge with BezierEdges from the same group, then there 
+						//is no need to create a new Edge, just add the transition to the existent one.
+						if((tmpLayout.getGroup() == l.getGroup()) && tmpLayout.getGroup() != BezierLayout.UNGROUPPED)
 						{
+//							System.out.println("Should group transition");
 							//Add the transition to the edge in case it is not there yet.
 							edge =  (Edge)tmpEdge;
 							Iterator<FSATransition> it = edge.getTransitions();
@@ -232,19 +247,22 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					}		
 				}
 			
-				if(!groupExists)//If a "group" of edges still doesn't exist, create it for this transition.
+				if(!groupExists)//If an Edge still does noe exist for this group, create one.
 				{
-					if(!src.equals(dst)){
+					if(src != dst){
 						edge = new BezierEdge(l, src,dst, t);
 					}else{
 						//Create a reflexive edge
 						edge = new ReflexiveEdge(l, src, t);
+//						System.out.println("A first reflexive edge was created for a group. It is " + edge + ", first event " + t.getEvent().getSymbol());
+						//The first reflexiveEdge is being created, but not the others.
 					}
+					
 				}
 				//If the edge already exists, assign the transition t to this edge.
 				//Otherwise, create a new edge!
 			}else{
-				if(!src.equals(dst)){
+				if(src != dst){
 					edge = new BezierEdge(l, src,dst, t);
 				}else{
 					//Create a reflexive edge
@@ -263,7 +281,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			//Put the edge in the set of edges
 			edges.put(t.getId(), edge);
 		}
-
+		
+		
 		/////////////////////
 		if(!hasLayout)//Generate automatic layout:
 		{
@@ -302,6 +321,18 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			buildIntersectionDS();
 		}
 //		System.out.println("Graph created!");
+		//Update the bezierLayoutFreeGroup
+		Set<Long> setEdges = edges.keySet();
+		Iterator<Long> it = setEdges.iterator();
+		while(it.hasNext())
+		{
+			try{
+			Long groupid = ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
+			bezierLayoutFreeGroup = (groupid > bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
+			}catch(ClassCastException e){
+				//No problem... that happened because we can have initial edges amongst the edges
+			}
+		}
 		this.refresh();
 	}
 
@@ -1057,7 +1088,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param edge the edge to which the edges will be assigned
 	 */
 	protected void replaceEventsOnEdge(Event[] events, Edge edge){
-
+		BezierLayout layout = (BezierLayout)edge.getLayout();
 		// get the transitions for edge
 		Iterator<FSATransition> trans = edge.getTransitions();
 		FSATransition t;			
@@ -1109,7 +1140,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			edge.removeTransition((Transition)t);			
 			fsa.remove(t);			
 		}	
-
+		
+		//replace in the layout the field EventNames:
+		layout.getEventNames().clear();
+		for(int i = 0; i < events.length; i++)
+		{
+			layout.getEventNames().add(events[i].getSymbol());
+		}
 		// add transitions to accommodate added events
 		iter = toAdd.iterator();
 		while(iter.hasNext()){
@@ -1127,13 +1164,21 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while(trans.hasNext()){
 			t = trans.next();
 			// add the transition data to the layout
-			addToLayout(t, edge);	
+//			addToLayout(t, edge);	
 			// set the layout data for the transition in metadata model
 //			metaData.setLayoutData(t, (BezierLayout)edge.getLayout());
 //			Christian - The following line is to supress the use of metadata, the above line should be erased as soon as possible.
-			t.setAnnotation(Annotable.LAYOUT,(BezierLayout)edge.getLayout());
+			t.setAnnotation(Annotable.LAYOUT,layout);
 		}		
+		if(layout.getEventNames().size() > 1 && layout.getGroup() == BezierLayout.UNGROUPPED)
+		{
+			layout.setGroup(this.getFreeBezierLayoutGroup());
+		}else if(layout.getEventNames().size() <= 1 && layout.getGroup() != BezierLayout.UNGROUPPED)
+		{
+			layout.setGroup(BezierLayout.UNGROUPPED);
+		}
 
+//		System.out.println(layout.getEventNames() + ", GroupID: " + layout.getGroup());
 		setNeedsRefresh(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
@@ -1141,7 +1186,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				edge.bounds(),
 				this, "replaced events on edge label"));
 	}
-
+	
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
@@ -1939,6 +1984,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		{
 			return r;
 		}
+		
+	}
+	private long getFreeBezierLayoutGroup()
+	{
+		return ++bezierLayoutFreeGroup;
 	}
 }
 

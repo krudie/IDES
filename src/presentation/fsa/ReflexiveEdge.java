@@ -12,6 +12,10 @@ import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,7 +48,7 @@ public class ReflexiveEdge extends BezierEdge {
 	 * Index of midpoint used as handle to modify the curve position.
 	 */
 	public static final int MIDPOINT = 4;
-				
+
 	/**
 	 * Creates a reflexive edge on <code>node</code> with the given layout and transition.
 	 * @param layout
@@ -60,8 +64,9 @@ public class ReflexiveEdge extends BezierEdge {
 		addTransition(t);		
 		setLayout(new ReflexiveLayout(node, this, layout));
 		setHandler(new ReflexiveHandler(this));
+		((ReflexiveLayout)this.getLayout()).setGroup(layout.getGroup());
 	}
-	
+
 	/**
 	 * Creates a reflexive edge on <code>node</code> representing the given transition.
 	 * 
@@ -78,11 +83,11 @@ public class ReflexiveEdge extends BezierEdge {
 //		// place me among any other edges adjacent to node
 //		Iterator<Edge> neighbours = node.adjacentEdges();
 //		if(neighbours.hasNext()){
-//			Set<Edge> n = new HashSet<Edge>();
-//			while(neighbours.hasNext()) {
-//				n.add(neighbours.next());
-//			}
-//			insertAmong(n);
+//		Set<Edge> n = new HashSet<Edge>();
+//		while(neighbours.hasNext()) {
+//		n.add(neighbours.next());
+//		}
+//		insertAmong(n);
 //		}
 		((ReflexiveLayout)getLayout()).axis = ((ReflexiveLayout)getLayout()).computeBestDirection(this.getSourceNode());
 		computeEdge();
@@ -105,11 +110,11 @@ public class ReflexiveEdge extends BezierEdge {
 	public void insertAmong(Set<Edge> neighbours) {	
 		double delta = Math.toRadians(2.0);
 		double alpha = 0.0; 
-		
+
 		if(!BezierEdgePlacer.tooClose(this, neighbours)) {
 			return;
 		}
-		
+
 		/**
 		 * Search for a free space using brute force and ignorance.
 		 */
@@ -119,14 +124,14 @@ public class ReflexiveEdge extends BezierEdge {
 			computeEdge();
 			alpha ++;
 		}
-		
+
 		if(alpha == 360) {
 			// TODO find a spot that doesn't mask another reflexive edge
-			
+
 		}
 	}
-	
-	
+
+
 	/**
 	 * Set the midpoint of the curve to <code>point</code>. 
 	 * 
@@ -136,7 +141,7 @@ public class ReflexiveEdge extends BezierEdge {
 		((ReflexiveLayout)getLayout()).setPoint(point, MIDPOINT);
 		setNeedsRefresh(true);
 	}
-		
+
 	/**
 	 * Returns the midpoint of the curve representing this edge. 
 	 * 
@@ -155,7 +160,7 @@ public class ReflexiveEdge extends BezierEdge {
 	public boolean isMovable(int pointType) {
 		return pointType == MIDPOINT;	
 	}
-		
+
 	/**
 	 * FIXME customize so that intersection with boundary is computed properly;
 	 * parameters (sourceT and targetT) are currently being reverse.
@@ -163,7 +168,7 @@ public class ReflexiveEdge extends BezierEdge {
 	public void refresh() {		
 		super.refresh();
 	}
-	
+
 	/**
 	 * This method is responsible for creating a string that contains
 	 * an appropriate (depending on the type) representation of this
@@ -182,26 +187,26 @@ public class ReflexiveEdge extends BezierEdge {
 	public String createExportString(Rectangle selectionBox, int exportType) {
 
 		String exportString = "";
-		
+
 		Point2D.Float edgeP1 = getSourceEndPoint();
 		Point2D.Float edgeP2 = getTargetEndPoint();
 		Point2D.Float edgeCTRL1 = getCTRL1();
 		Point2D.Float edgeCTRL2 = getCTRL2();
-				
+
 		// Make sure this node is contained within the selection box
 		if (! (selectionBox.contains(edgeP1) && selectionBox.contains(edgeP2)
-			&& selectionBox.contains(edgeCTRL1) && selectionBox.contains(edgeCTRL2)))
+				&& selectionBox.contains(edgeCTRL1) && selectionBox.contains(edgeCTRL2)))
 		{
 			System.out.println("Self-loop " + edgeP1 + " "
-				+ edgeP2 + " "
-				+ edgeCTRL1 + " "
-				+ edgeCTRL2 + " "
-				+ " outside bounds " + selectionBox);
+					+ edgeP2 + " "
+					+ edgeCTRL1 + " "
+					+ edgeCTRL2 + " "
+					+ " outside bounds " + selectionBox);
 			return exportString;
 		}
-		
+
 		// Adjust the y value for the CTRL points based on the midpoint
-		
+
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
 			// Draw the curve				
@@ -217,7 +222,7 @@ public class ReflexiveEdge extends BezierEdge {
 				+ (selectionBox.y + selectionBox.height -edgeCTRL2.y) + ")(" 
 				+ (edgeP2.x - selectionBox.x) + "," 
 				+ (selectionBox.y + selectionBox.height - edgeP2.y) + ")\n";
-			
+
 			// Now for the label
 			if ((getBezierLayout().getText() != null) && (getLabel().getText().length() > 0))
 			{
@@ -232,7 +237,7 @@ public class ReflexiveEdge extends BezierEdge {
 
 		return exportString;
 	}
-	
+
 	/**
 	 * This method returns the bounding box for the edge and its label.
 	 * 
@@ -241,7 +246,7 @@ public class ReflexiveEdge extends BezierEdge {
 	public Rectangle bounds() {
 		return ((ReflexiveLayout)getLayout()).getCurve().getBounds().union(getLabel().bounds());		
 	}
-	
+
 	public void translate(float x, float y){
 		super.translate(x, y);
 		//Christian(May, 17, 2007)
@@ -249,26 +254,26 @@ public class ReflexiveEdge extends BezierEdge {
 		//Point2D midpoint = ((ReflexiveLayout)getLayout()).midpoint;
 		//midpoint.setLocation(midpoint.getX() + x, midpoint.getY() + y);		
 	}
-	
+
 	public void computeEdge() {
 		refresh();
 		((ReflexiveLayout)getLayout()).computeCurve();
 	}
-	
+
 	/**
 	 * Returns false since a self-loop cannot be straight. 
 	 */
 	public boolean isStraight()	{
 		return false;
 	}
-		
+
 	/**
 	 * Returns false since cannot straighten a self-loop. 
 	 */
 	public boolean canBeStraightened() {
 		return false;
 	}
-	
+
 	/** 
 	 * Sets the coordinates of <code>intersection</code> to the location where
 	 * my bezier curve intersects the boundary of <code>node</code>. 
@@ -278,17 +283,17 @@ public class ReflexiveEdge extends BezierEdge {
 	 * @precondition node != null and intersection != null
 	 */
 	protected float intersectionWithBoundary(Shape nodeShape, Point2D.Float intersection, int type) {
-		
+
 		// setup curves for iterative subdivision
 		CubicParamCurve2D curve = this.getBezierLayout().getCurve();
-			
+
 		CubicParamCurve2D left = new CubicParamCurve2D();
 		CubicParamCurve2D right = new CubicParamCurve2D();
-		
+
 		CubicParamCurve2D temp = new CubicParamCurve2D();
 		// if target, then this algorithm needs to be reversed since
 		// it searches curve assuming t=0 is inside the node.		
-				
+
 		if( type == TARGET_NODE ) {
 			// swap endpoints and control points		
 			temp.setCurve(curve.getP2(), curve.getCtrlP2(), curve.getCtrlP1(), curve.getP1());			
@@ -297,16 +302,16 @@ public class ReflexiveEdge extends BezierEdge {
 		}else{
 			return 0f;
 		}
-		
+
 		float epsilon = 0.00001f;		
 		float tPrevious = 0f;
 		float t = 0.5f - 0.01f; //1f;		
 		float step = t; //1f;
-		
+
 		temp.subdivide(left, right, t);		
 		// the point on curve at param t
 		Point2D c_t = left.getP2();
-	
+
 		while(Math.abs(t - tPrevious) > epsilon){			
 			step =  Math.abs(t - tPrevious);
 			tPrevious = t;
@@ -320,19 +325,19 @@ public class ReflexiveEdge extends BezierEdge {
 			temp.subdivide(left, right, t);					
 			c_t = left.getP2();
 		}		
-		
+
 		// TODO keep searching from c_t towards t=0 until we're sure we've found the first intersection.
 		// Start again with step size at t.
-		
+
 		if( type == TARGET_NODE  ) 
 		{
 			t = 1-t;
 			assert(0 <= t && t <=1);			
 		}
-	
+
 		intersection.x = (float)c_t.getX();
 		intersection.y = (float)c_t.getY();
-			
+
 		return t;		
 	}
 
@@ -344,8 +349,40 @@ public class ReflexiveEdge extends BezierEdge {
 	 * @author Helen Bretzke
 	 *
 	 */
-	public class ReflexiveLayout extends BezierLayout
+	public class ReflexiveLayout extends BezierLayout implements Serializable
 	{
+
+
+		///////////////////////////////////////////////////////////////////////////
+		/**
+		 * Explicitly saves its own fields
+		 * 
+		 * @serialData Store own serializable fields
+		 */
+		private void writeObject(ObjectOutputStream out)  throws IOException {
+			out.writeDouble(axis.getX());
+			out.writeDouble(axis.getY());
+			
+			out.writeDouble(midpoint.getX());
+			out.writeDouble(midpoint.getY());
+			
+			out.writeFloat(minAxisLength);
+		}
+		/**
+		 * Restores its own fields by calling defaultReadObject and then explicitly
+		 * restores the fields of its supertype. 
+		 */
+		private void readObject(ObjectInputStream in) 
+		throws IOException, ClassNotFoundException {
+			axis = new Point2D.Double(in.readDouble(), in.readDouble());
+			midpoint = new Point2D.Double(in.readDouble(), in.readDouble());
+			minAxisLength = in.readFloat();
+		}
+
+
+
+
+
 		/**
 		 * The minimum length of the axis vector from the centre of the node
 		 * to the midpoint of this edge.
@@ -360,7 +397,7 @@ public class ReflexiveEdge extends BezierEdge {
 		private Point2D axis;		
 		private Point2D midpoint;
 		////////////////////////////////////////////////////////
-		
+
 		/** 
 		 * Default angle from centre axis vector to the tangents of the bezier curve 
 		 * NOTE this looks ugly but minimizes the problem of control (mid)point drift 
@@ -368,7 +405,7 @@ public class ReflexiveEdge extends BezierEdge {
 		public static final double DEFAULT_ANGLE = Math.PI / 4; 
 		/** Default value to scale the centre axis vector to the length of the tangents of the bezier curve */ 
 		public static final float DEFAULT_SCALAR = 2f;
-		
+
 		/**
 		 * Layout for a reflexive edge with vertical axis vector from centre of
 		 * node to midpoint of bezier curve given by <code>bLayout</code>.
@@ -382,7 +419,6 @@ public class ReflexiveEdge extends BezierEdge {
 			setEventNames(bLayout.getEventNames());
 			setLabelOffset(bLayout.getLabelOffset());
 			initializeShape();
-
 		}
 
 		/**
@@ -393,9 +429,8 @@ public class ReflexiveEdge extends BezierEdge {
 			minAxisLength = source.bounds().height;
 			setEdge(edge);
 			initializeShape();
-
 		}
-				
+
 		/**
 		 * @return the midpoint of the curve.
 		 */
@@ -403,7 +438,7 @@ public class ReflexiveEdge extends BezierEdge {
 			return midpoint;
 		}
 
-		
+
 		/**
 		 * FIXME 
 		 * Problem: using fixed scalars and angles causes midpoint 
@@ -419,7 +454,7 @@ public class ReflexiveEdge extends BezierEdge {
 			angle2 = DEFAULT_ANGLE;
 			s1 = DEFAULT_SCALAR;
 			s2 = s1;	
-			
+
 			Float centrePoint = getEdge().getSourceNode().getLocation();
 			setPoint(centrePoint, P1);
 			setPoint(centrePoint, P2);
@@ -427,9 +462,9 @@ public class ReflexiveEdge extends BezierEdge {
 				setPoint(Geometry.add(centrePoint, 
 						Geometry.scale(new Point2D.Float(0, -1), 
 								minAxisLength)), MIDPOINT);
-			}		
+			}
 		}
-		
+
 		/** 
 		 * @return the portion of the curve that is external to the node,
 		 * null if no such segment exists
@@ -439,7 +474,7 @@ public class ReflexiveEdge extends BezierEdge {
 			// FIXME check for NaN here or in CubicCurve2Dex class
 			return curve.getSegment(sourceT, targetT);		
 		}
-		
+
 		/**		 
 		 * Computes a symmetric reflexive bezier curve based on location of node,
 		 * and angle of tangent vectors (to bezier curve) from centre axis vector.
@@ -469,7 +504,7 @@ public class ReflexiveEdge extends BezierEdge {
 			midpoint.setLocation(nodeLocation.getX()+axis.getX(), nodeLocation.getY() + axis.getY());
 			setPoint(midpoint,MIDPOINT);
 			//Setting the Bezier control points based on the axis:
-	    	Point2D.Float v1 = Geometry.rotate(axis, angle1);
+			Point2D.Float v1 = Geometry.rotate(axis, angle1);
 			Point2D.Float v2 = Geometry.rotate(axis, angle2);
 			//Setting center of the edge
 			setPoint(nodeLocation, P1);
@@ -480,7 +515,7 @@ public class ReflexiveEdge extends BezierEdge {
 			setDirty(true);
 
 		}	
-		
+
 		/**
 		 * Set the midpoint for a symmetric, reflexive bezier edge.
 		 * Constraint: if midpoint is inside node, set to minimum distance from node border. 
@@ -491,54 +526,54 @@ public class ReflexiveEdge extends BezierEdge {
 		public void setPoint(Point2D point, int index){
 			float x = (float)point.getX();
 			float y = (float)point.getY();		
-			
+
 			switch(index)
 			{			
-				case MIDPOINT:
-					Float centrePoint;
-					centrePoint = getEdge().getSourceNode().getLocation();
-					axis = Geometry.subtract(point, centrePoint);
-					double norm = Geometry.norm(axis);
-					if(norm < minAxisLength){						
-						// snap to arc minimum distance from border of node
-						axis = Geometry.scale(axis, minAxisLength/norm);
-						midpoint = Geometry.add(centrePoint, axis);
-					}else{					
-						midpoint = new Point2D.Float(x, y);
-					}															
-					//computeCurve();
-					// TODO set midpoint after computing curve...
-					midpoint = Geometry.midpoint(getCurve());
-					setLocation((float)midpoint.getX(), (float)midpoint.getY());
-//					setDirty(true);
-					break;
-				case P1:
-					curve.x1 = x;
-					curve.y1 = y;
-					break;
-				case P2:
-					curve.x2 = x;
-					curve.y2 = y;
-					break;				
-				case CTRL1:
-					curve.ctrlx1 = x;
-					curve.ctrly1 = y;
-					break;
-				case CTRL2:
-					curve.ctrlx2 = x;
-					curve.ctrly2 = y;
-					break;
-				default: throw new IllegalArgumentException("Invalid control point index: " + index);				
+			case MIDPOINT:
+				Float centrePoint;
+				centrePoint = getEdge().getSourceNode().getLocation();
+				axis = Geometry.subtract(point, centrePoint);
+				double norm = Geometry.norm(axis);
+				if(norm < minAxisLength){						
+					// snap to arc minimum distance from border of node
+					axis = Geometry.scale(axis, minAxisLength/norm);
+					midpoint = Geometry.add(centrePoint, axis);
+				}else{					
+					midpoint = new Point2D.Float(x, y);
+				}															
+				//computeCurve();
+				// TODO set midpoint after computing curve...
+				midpoint = Geometry.midpoint(getCurve());
+				setLocation((float)midpoint.getX(), (float)midpoint.getY());
+//				setDirty(true);
+				break;
+			case P1:
+				curve.x1 = x;
+				curve.y1 = y;
+				break;
+			case P2:
+				curve.x2 = x;
+				curve.y2 = y;
+				break;				
+			case CTRL1:
+				curve.ctrlx1 = x;
+				curve.ctrly1 = y;
+				break;
+			case CTRL2:
+				curve.ctrlx2 = x;
+				curve.ctrly2 = y;
+				break;
+			default: throw new IllegalArgumentException("Invalid control point index: " + index);				
 			}
-			
+
 		}
 		/**
 		 *@author Christian 
 		 */
 		private Point2D.Float computeBestDirection(Node target){
-			
+
 			Iterator<Edge> adjEdges = target.adjacentEdges();
-			
+
 			//Check the angles of the existent edges
 			ArrayList<java.lang.Float> angles = new ArrayList<java.lang.Float>();
 			Point2D.Float currentDirVector = new Point2D.Float();
@@ -562,9 +597,9 @@ public class ReflexiveEdge extends BezierEdge {
 					angles.add(currentAngle);
 				}					
 
-				
-					
-					number++;
+
+
+				number++;
 			}
 			for(int i = 0; i < angles.size();i++)
 			{
@@ -574,7 +609,7 @@ public class ReflexiveEdge extends BezierEdge {
 				}
 			}
 			Collections.sort(angles);
-			
+
 			//Try to fit the selfloop at its "favorite" position: 90 degrees
 			boolean canFit = true; 
 			//Scan from limMin->limMax and check whether all this spaces are avaliables.
@@ -588,7 +623,7 @@ public class ReflexiveEdge extends BezierEdge {
 			}
 			if(canFit)
 				return Geometry.rotate(new Point2D.Float(1,0),Math.toRadians(-90));
-			
+
 			//If the prefered positions are not available, look for the most confortable
 			//position.
 			angles.add((float)(angles.get(0)+2*Math.PI));
@@ -606,12 +641,12 @@ public class ReflexiveEdge extends BezierEdge {
 			float rotAngle = maxAngle/2 +angles.get(bestIndex);
 			return Geometry.rotate(new Point2D.Float(1,0),-rotAngle); 
 		}
-		
+
 		private void resetPosition(Node node)
 		{
-			 axis = computeBestDirection(node);
+			axis = computeBestDirection(node);
 		}
-		
+
 		/**
 		 * Returns true iff <code>o</code> is an instance of ReflexiveLayout and this layout has the same
 		 * curve and label offset as <code>o</code>. 
@@ -624,7 +659,7 @@ public class ReflexiveEdge extends BezierEdge {
 		{
 	Won't work since need to use this to compare BezierLayout instances read from file
 	with ReflexiveLayouts in memory.
-		
+
 			try{
 				ReflexiveLayout other = (ReflexiveLayout)o;
 				return other.curve.equals(this.curve) &&
@@ -633,10 +668,10 @@ public class ReflexiveEdge extends BezierEdge {
 				return false;
 			}
 		}*/
-	
+
 	} // end Layout
-	
-	
+
+
 	/**
 	 * Visual representation of the single control point at the midpoint
 	 * of a reflexive edge.  Used to modify the size and orientation a reflexive edge.
@@ -644,13 +679,13 @@ public class ReflexiveEdge extends BezierEdge {
 	 * @author helen bretzke
 	 */
 	public class ReflexiveHandler extends EdgeHandler {
-		
+
 		/* Circle representing the handle to drag with the mouse */
 		private Ellipse2D.Double anchor;	
-		
+
 		/* Radius of the anchor */
 		private static final int RADIUS = 5;
-		
+
 		/**
 		 * Creates a handler for the given edge. 
 		 * 
@@ -669,7 +704,7 @@ public class ReflexiveEdge extends BezierEdge {
 			anchor = new Ellipse2D.Double(((ReflexiveEdge)getEdge()).getMidpoint().getX() - RADIUS, ((ReflexiveEdge)getEdge()).getMidpoint().getY() - d, d, d);
 			setNeedsRefresh(false);
 		}
-		
+
 		/**		 
 		 * Returns true iff p intersects the midpoint anchor.
 		 * 
@@ -683,7 +718,7 @@ public class ReflexiveEdge extends BezierEdge {
 			lastIntersected = NO_INTERSECTION;
 			return false;		
 		}
-		
+
 		/**
 		 * Renders this handler in the given graphics context.
 		 * 
@@ -691,14 +726,16 @@ public class ReflexiveEdge extends BezierEdge {
 		 */
 		public void draw(Graphics g){
 			if(needsRefresh()) refresh();
-					
+
 			if(!visible) return;
-			
+
 			Graphics2D g2d = (Graphics2D)g;
-					
+
 			g2d.setColor(Color.BLUE);
 			g2d.setStroke(GraphicalLayout.FINE_STROKE);
 			g2d.draw(anchor);
 		}
+
 	} // end Handler
+
 }
