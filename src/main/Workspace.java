@@ -143,14 +143,10 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		Cursor cursor = Hub.getMainWindow().getCursor();
 		Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		systems.add(model);
-//		System.out.println("WILL GRAB THE TOOLSET!");
 		Toolset ts = PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface());
-//		System.out.println("WILL WRAP THE MODEL!");
 		//TODO Check the efficiency od the wrapModel function
 		LayoutShell ls = ts.wrapModel(model);
-//		System.out.println("WILL ADD THE GRAPH");
 		graphs.add(ls);
-//		System.out.println("THE GRAPH WAS ADDED!");
 		if(LatexManager.isLatexEnabled()){
 			if(getActiveLayoutShell() instanceof FSAGraph)
 				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());

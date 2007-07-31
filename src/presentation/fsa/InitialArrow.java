@@ -29,7 +29,7 @@ import java.util.Collections;
  */
 public class InitialArrow extends Edge {
 	/** size of the target node at the moment of last edge computations (or at construction time)*/
-	private float lastRadius;
+	private float lastNodeRadius;
 	
 	/** direction vector from tail of arrow shaft to centre of node */
 	private Point2D.Float direction;  // redundant since stored in target node's layout
@@ -61,7 +61,7 @@ public class InitialArrow extends Edge {
 		super(null, target);
 		//Removing the children label, it is not necessary for initial arrows
 		this.remove(this.getLabel());
-		lastRadius = ((CircleNodeLayout)(target.getLayout())).getRadius();
+		lastNodeRadius = ((CircleNodeLayout)(target.getLayout())).getRadius();
 		computeEdge();		
 	}
 	
@@ -145,9 +145,9 @@ public class InitialArrow extends Edge {
 	public void computeEdge() {
 		Node target = this.getTargetNode();
 		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
-		float currentRadius = layout.getRadius();
+		float currentNodeRadius = layout.getRadius();
 		float smallestArrowSize = CircleNodeLayout.DEFAULT_RADIUS + 2 * CircleNodeLayout.RADIUS_MARGIN;
-		float minimumDistance =currentRadius + smallestArrowSize;
+		float minimumDistance =currentNodeRadius + smallestArrowSize;
 		setLocation(target.getLocation());
 
 		if(layout != null)
@@ -172,11 +172,11 @@ public class InitialArrow extends Edge {
 		//the size in the same proportion in relation to the node.
 		//The proportion wont be kept in case of increasing of the node radius because
 		//it could generate too big sizes for the direction vector.
-		if(currentRadius < lastRadius)
+		if(currentNodeRadius < lastNodeRadius)
 		{
-			scaleFactor = currentRadius/lastRadius;
+			scaleFactor = currentNodeRadius/lastNodeRadius;
 		}
-		lastRadius = currentRadius;
+		lastNodeRadius = currentNodeRadius;
 		direction = Geometry.scale(direction, scaleFactor);
 		double norm = Geometry.norm(direction);
 		//Scale the direction vector case it is too small

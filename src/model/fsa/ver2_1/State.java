@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import main.Annotable;
+import model.fsa.FSAState;
 import model.fsa.FSATransition;
 
 
@@ -53,15 +54,14 @@ public class State implements model.fsa.FSAState {
 	 * new state doesn't have any transitions.
 	 * @param s a state.
 	 */
-	public State(State s){
-//		super(s);
-		this.id = s.id;
-		sourceT = new LinkedList<FSATransition>();
-		targetT = new LinkedList<FSATransition>();
-//		addSubElement(new SubElement("properties"));
-//		addSubElement(new SubElement("name"));
+	public State(FSAState s){
+		super();
+		setId(s.getId());
 		setInitial(s.isInitial());
 		setMarked(s.isMarked());
+		setName(s.getName());	
+		sourceT = new LinkedList<FSATransition>();
+		targetT = new LinkedList<FSATransition>();
 	}
 
 	/**
@@ -186,9 +186,6 @@ public class State implements model.fsa.FSAState {
 	{
 		composedOf=list;
 	}
-
-	public static final String ATTR_MARKED = "marked";
-	public static final String ATTR_INITIAL = "initial";
 
 	/**
 	 * Returns the annotation for the given key.

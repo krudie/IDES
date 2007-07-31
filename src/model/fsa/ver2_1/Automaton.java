@@ -138,25 +138,30 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 */
 	public FSAModel clone(){
 		Automaton clone = new Automaton(this.name);
-//		clone.setAutomataCompositionList(new String[]{id});
 		clone.setId(General.getRandomId());
+		//Cloning the events:
 		ListIterator<FSAEvent> ei = getEventIterator();
 		while(ei.hasNext()){
 			clone.add(new Event((Event)ei.next()));
 		}
+		//Cloning the states:
 		ListIterator<FSAState> si = getStateIterator();
 		while(si.hasNext()){
 			FSAState tmpState = si.next();
-//			serialize the layout
 			try {
 				ByteArrayOutputStream fo = new ByteArrayOutputStream();
 				ObjectOutputStream so = new ObjectOutputStream(fo);
 				so.writeObject(tmpState.getAnnotation(Annotable.LAYOUT));
 				so.flush();
+				so.close();
 				ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
 				ObjectInputStream objectIS = new ObjectInputStream(is);
 				Object layout = objectIS.readObject();
 				State s = new State((State)tmpState);
+				s.setId(tmpState.getId());
+				s.setMarked(tmpState.isMarked());
+				s.setInitial(tmpState.isInitial());
+				s.setName(tmpState.getName());
 				s.setAnnotation(Annotable.LAYOUT, layout);
 				clone.add(s);
 			} catch (Exception e) {
@@ -164,12 +169,14 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 				System.exit(1);
 			}		
 		}
+
+		//Cloning the transitions
 		ListIterator<FSATransition> ti = getTransitionIterator();
 		while(ti.hasNext()){
 			Transition oldt = (Transition)ti.next();
 			try{
 				State source = (State)clone.getState(oldt.getSource().getId());
-				State target = (State)clone.getState(oldt.getTarget().getId());            
+				State target = (State)clone.getState(oldt.getTarget().getId());            					
 				ByteArrayOutputStream fo = new ByteArrayOutputStream();
 				ObjectOutputStream so = new ObjectOutputStream(fo);
 				so.writeObject(oldt.getAnnotation(Annotable.LAYOUT));
@@ -517,7 +524,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 			sli.remove();
 		}
 
-		public void set(FSAState s){            
+		public void set(FSAState s){ 
 			ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
 			while(sources.hasNext()){
 				FSATransition t = sources.next();

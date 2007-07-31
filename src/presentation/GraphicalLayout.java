@@ -316,6 +316,7 @@ public class GraphicalLayout implements Serializable{
 		out.writeObject(this.backgroundColor);
 		out.writeObject(this.color);
 		out.writeObject(this.highlightColor);
+		out.writeObject(this.selectionColor);
 		out.writeObject(this.text);
 	}
 
@@ -331,6 +332,7 @@ public class GraphicalLayout implements Serializable{
 		backgroundColor = (Color)in.readObject();
 		color = (Color)in.readObject();
 		highlightColor = (Color)in.readObject();
+		selectionColor = (Color)in.readObject();
 		text = (String)in.readObject();
 	}
 }

@@ -45,7 +45,6 @@ import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
  * @author Lenko Grigorov
  */
 public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell, LayoutShellPublisher {
-
 	private long bezierLayoutFreeGroup = 0;
 	//This flag is set to true when the FSAGraph is a result of an automatic
 	//DES operation and this result has more than 100 states
@@ -176,13 +175,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					break;
 				}
 				//Find source
-				if(n.getId().equals(t.getSource().getId()))
+				if(n.getId() == t.getSource().getId())
 				{
 					src = n;
 					hasSrc = true;
 				}
 				//Find target
-				if(n.getId().equals(t.getTarget().getId()))
+				if(n.getId()  == t.getTarget().getId())
 				{
 					dst = n;
 					hasDst = true;
@@ -205,13 +204,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					BezierLayout tmpLayout = null;
 					try{
 						tmpLayout = (BezierLayout)tmpEdge.getLayout();
-						//CHRISTIAN- WORK FROM HERE
-						if((tmpEdge.getSourceNode().getLayout() == tmpEdge.getTargetNode().getLayout()))
-						{
-							//WHY IS THE GROUP ID -1 EVEN THOUGHT IN THE FILE IT IS DESCRIPTED AS GROUPED?
-							//							System.out.println(((ReflexiveEdge.ReflexiveLayout)(t.getAnnotation(Annotable.LAYOUT)) + ", " + tmpEdge.getLayout()));
-						}
-					
 					}catch(ClassCastException e)
 					{
 						//The edge is an initial edge, there is no meaning in processing it.
@@ -220,7 +212,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 					}
 					if(!skipIteration)
 					{
-//						System.out.println("ENTROU");
 						//If there is already an Edge with BezierEdges from the same group, then there 
 						//is no need to create a new Edge, just add the transition to the existent one.
 						if((tmpLayout.getGroup() == l.getGroup()) && tmpLayout.getGroup() != BezierLayout.UNGROUPPED)
@@ -281,8 +272,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			//Put the edge in the set of edges
 			edges.put(t.getId(), edge);
 		}
-		
-		
+
 		/////////////////////
 		if(!hasLayout)//Generate automatic layout:
 		{
@@ -550,7 +540,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 				// get the graphic data for the transition and all associated events
 				// construct the edge
-				if(n1.equals(n2)) {
+				if(n1 == n2) {
 					e = new ReflexiveEdge(layout, n1, t);
 				}else{
 					e = new BezierEdge(layout, n1, n2, t);
