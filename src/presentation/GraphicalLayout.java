@@ -208,7 +208,7 @@ public class GraphicalLayout implements Serializable{
 	 * @return the text
 	 */
 	public String getText() {
-		return text;
+		return (text!=null?text:"");
 	}
 
 	/**

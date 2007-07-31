@@ -116,14 +116,21 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		//////
 		//Testing annotations:
 		boolean hasLayout = true;
-
 		Iterator <FSAState> sIt = fsa.getStateIterator();
+		while(sIt.hasNext())
+		{
+			if(sIt.next() == null)
+			{
+				System.out.println("NULL!!!!!!");
+			}
+		}
+
+		sIt = fsa.getStateIterator();
 		while(sIt.hasNext())
 		{
 			try{
 				FSAState s = sIt.next();
 				CircleNodeLayout l = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
-				
 				//Avoid give the name "" to the state!
 				if(l.getText() != "")
 				{
@@ -136,14 +143,17 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				if(s.isInitial())
 				{
 					//Insert the initial arrow among the egdes
-					edges.put( node.getInitialArrow().getId(), node.getInitialArrow() );
+					edges.put(node.getInitialArrow().getId(), node.getInitialArrow() );
 				}
 				l.setText(s.getName());
 				//Insert the node in the graph
 				insert(node);
 			}catch(Exception e)
 			{
+				e.printStackTrace();
+				System.out.println(e.getMessage());
 				hasLayout = false;
+				return;
 			}
 		}
 
@@ -237,7 +247,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 						}
 					}		
 				}
-			
+
 				if(!groupExists)//If an Edge still does noe exist for this group, create one.
 				{
 					if(src != dst){
@@ -248,7 +258,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 //						System.out.println("A first reflexive edge was created for a group. It is " + edge + ", first event " + t.getEvent().getSymbol());
 						//The first reflexiveEdge is being created, but not the others.
 					}
-					
+
 				}
 				//If the edge already exists, assign the transition t to this edge.
 				//Otherwise, create a new edge!
@@ -317,8 +327,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while(it.hasNext())
 		{
 			try{
-			Long groupid = ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
-			bezierLayoutFreeGroup = (groupid > bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
+				Long groupid = ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
+				bezierLayoutFreeGroup = (groupid > bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
 			}catch(ClassCastException e){
 				//No problem... that happened because we can have initial edges amongst the edges
 			}
@@ -1130,7 +1140,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			edge.removeTransition((Transition)t);			
 			fsa.remove(t);			
 		}	
-		
+
 		//replace in the layout the field EventNames:
 		layout.getEventNames().clear();
 		for(int i = 0; i < events.length; i++)
@@ -1176,7 +1186,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				edge.bounds(),
 				this, "replaced events on edge label"));
 	}
-	
+
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		if(nodes.containsValue(el)){			
@@ -1943,7 +1953,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			}
 		}
 	}
-	
+
 	/**
 	 * TODO comment and format
 	 * 
@@ -1974,7 +1984,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		{
 			return r;
 		}
-		
+
 	}
 	private long getFreeBezierLayoutGroup()
 	{

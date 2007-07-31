@@ -9,7 +9,7 @@ import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import io.IOUtilities;
-
+import io.ProtectedInputStream;
 import io.WrappedPrintStream;
 
 import java.io.BufferedReader;
@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -76,10 +77,9 @@ public final class IOCoordinator{
 		//There can be several different meta savers for a specific data type.
 		Set<FileIOPlugin> metaSavers = IOPluginManager.getInstance().getMetaSavers(type);
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
-
+		
 		//Open  ""file"" and start writing the header of the IDES file format
 		WrappedPrintStream ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
-
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
 		ps.println("<data>");
@@ -142,7 +142,7 @@ public final class IOCoordinator{
 			//TODO THROW A PLUGIN EXCEPTION
 			return null;
 		}
-		DataProtector dp = new DataProtector(br, fis);
+		DataProtector dp = new DataProtector(br, file);
 		InputStream dataStream = dp.getXmlContent("data");
 
 		if(dataStream == null)
@@ -199,18 +199,18 @@ public final class IOCoordinator{
 	private class DataProtector{
 		private int offset;
 		BufferedReader head = null;
-		FileChannel fc = null;
-		public DataProtector(BufferedReader bh, FileInputStream fs)
+		File file = null;
+		public DataProtector(BufferedReader bh, File f)
 		{
 			offset = 0;
 			head = bh;
-			fc = fs.getChannel();
+			file = f;
 		}
 		public InputStream getXmlContent(String tag){
 			int startOfTag = 0, endOfTag = 0;
 			Boolean tagStarted = false, parseFinished = false, foundFirst=false;
 			ArrayList<Character> buffer = new ArrayList<Character>(1 + tag.length()); 
-			
+
 			try{
 				//Set the head cursor to the position it was at the last time it was parsed by this class
 				head.reset();
@@ -311,27 +311,21 @@ public final class IOCoordinator{
 							buffer.clear();
 							if(readTag.equals("</" + tag))
 							{
-//								System.out.println(readTag + ", </" + tag);
 								buffer.clear();
 								parseFinished= true;
 							}
 						}
 					}
 				}
-			}
-			MappedByteBuffer b = null;
+			}  
 			try{
-				b = fc.map(FileChannel.MapMode.READ_ONLY, startOfTag, endOfTag-startOfTag);
-			}catch(IOException e)
+				return new ProtectedInputStream(file, startOfTag, endOfTag-startOfTag);
+			}catch(FileNotFoundException e)
 			{
-				e.printStackTrace();
+				//This error should not happen, since file is the descriptor for a file selected by the user,
+				//so it can't not exist.
 				return null;
 			}
-			
-			//DEBUGGING MAPPEDBYTEBUFFER:
-			byte[] ba = new byte[b.capacity()];
-			b.get(ba);
-			return new ByteArrayInputStream(ba);
 		}
 	}
 

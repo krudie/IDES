@@ -198,7 +198,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	 * @param file
 	 */
 	public void loadMeta(InputStream stream, DESModel model)
-	{
+	{		
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<meta>" + System.getProperty("line.separator")).getBytes();
 		HeadTailInputStream metaField = new HeadTailInputStream(stream,FILE_HEADER,"</meta>".getBytes());
 		
