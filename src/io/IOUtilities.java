@@ -92,7 +92,7 @@ public class IOUtilities {
 	        	throw new RuntimeException();
 	        }
 	        try{
-	            ps = new PrintStream(file,"UTF-8");	            
+	            ps = new PrintStream(file,"UTF-8");
 	        }
 	        catch(FileNotFoundException fnfe){
 	        	errorMsg=Hub.string("fileNotFound");

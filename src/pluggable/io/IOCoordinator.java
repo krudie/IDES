@@ -2,51 +2,33 @@
  * 
  */
 package pluggable.io;
-import main.Annotable;
 import main.Hub;
 import model.DESModel;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import io.IOUtilities;
 import io.ProtectedInputStream;
 import io.WrappedPrintStream;
-
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import com.sun.tools.javac.code.Attribute.Array;
-
 import pluggable.io.IOPluginManager;
 import pluggable.io.FileIOPlugin;
-import presentation.fsa.BezierLayout;
 import io.AbstractParser;
 /**
  * @author christiansilvano
- * \TODO make it thread-safe
  */
 public final class IOCoordinator{
 	//Singleton instance:
@@ -79,7 +61,8 @@ public final class IOCoordinator{
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 		
 		//Open  ""file"" and start writing the header of the IDES file format
-		WrappedPrintStream ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
+		WrappedPrintStream ps = null;
+		try{ps=new WrappedPrintStream(IOUtilities.getPrintStream(file));}catch(Exception e){e.printStackTrace();}
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
 		ps.println("<data>");
@@ -106,8 +89,7 @@ public final class IOCoordinator{
 		ps.closeWrappedPrintStream();
 		//4 - close the file.
 		//5 - Return true if the operation was a success, otherwise return false.
-		//TODO THROW IO EXCEPTION OR PLUGIN EXCEPTIONS IF SOMETHING HAPPENS
-		//TODO SHOULD NOT RETURN ANYTHING
+		//TODO THROW IO EXCEPTION OR PLUGIN EXCEPTIONS IF SOMETHING HAPPENS and return false
 		return true;
 	}
 
@@ -142,12 +124,12 @@ public final class IOCoordinator{
 			//TODO THROW A PLUGIN EXCEPTION
 			return null;
 		}
-		DataProtector dp = new DataProtector(br, file);
-		InputStream dataStream = dp.getXmlContent("data");
+		DataProtector dp = new DataProtector(br);
+		InputStream dataStream = dp.getXmlContent("data", file);
 
 		if(dataStream == null)
 		{
-			//TODO TROW IO EXCEPTION
+			//TODO THROW IO EXCEPTION
 		}	
 
 		returnModel = plugin.loadData(dataStream, file.getParentFile());
@@ -157,7 +139,7 @@ public final class IOCoordinator{
 		while(mIt.hasNext())//For each metaTag in the file
 		{
 			//Get a stream countaining the metaInformation
-			InputStream metaStream = dp.getXmlContent("meta");
+			InputStream metaStream = dp.getXmlContent("meta", file);
 			//Get a string with the "tag" for the current meta section 
 			String meta = mIt.next();
 			//Get all the plugins which loads metadata from the pair: (type, meta)
@@ -178,20 +160,6 @@ public final class IOCoordinator{
 		}
 		br.close();
 		fis.close();
-
-//		TESTING MODEL:
-//		Iterator<FSATransition> t = ((FSAModel)returnModel).getTransitionIterator();
-//		while(t.hasNext())
-//		{
-//		System.out.println("Transition: " + t.next().getAnnotation(Annotable.LAYOUT));
-//		}
-
-//		Iterator<FSAState> s = ((FSAModel)returnModel).getStateIterator();
-//		while(s.hasNext())
-//		{
-//		System.out.println("State: " + s.next().getAnnotation(Annotable.LAYOUT));
-//		}
-//		System.out.println("META LOADED");
 		return returnModel;
 	}
 
@@ -199,18 +167,23 @@ public final class IOCoordinator{
 	private class DataProtector{
 		private int offset;
 		BufferedReader head = null;
-		File file = null;
-		public DataProtector(BufferedReader bh, File f)
+		public DataProtector(BufferedReader bh)
 		{
 			offset = 0;
 			head = bh;
-			file = f;
 		}
-		public InputStream getXmlContent(String tag){
+
+		/**
+		 * Finds the positions of the first and last byte between a "tag" in the file, and returns an InputStream
+		 * created using these positions.
+		 * E.g.: "INFORMATION<tag>CONTENT</tag>INFORMATION", would return an InputStream with the content "INFORMATION" inside <code>file</code>.
+		 * @param tag , the tag from which the information will be got from.
+		 * @param f , a File countaining the information. 
+		 */
+		public InputStream getXmlContent(String tag, File file){
 			int startOfTag = 0, endOfTag = 0;
 			Boolean tagStarted = false, parseFinished = false, foundFirst=false;
 			ArrayList<Character> buffer = new ArrayList<Character>(1 + tag.length()); 
-
 			try{
 				//Set the head cursor to the position it was at the last time it was parsed by this class
 				head.reset();
@@ -319,6 +292,9 @@ public final class IOCoordinator{
 				}
 			}  
 			try{
+				//Wrapped FileInputStream with limited access to the file content.
+				//This InputStream will limit the access to the stream, so the plugins will just "see" what
+				//regards to them.
 				return new ProtectedInputStream(file, startOfTag, endOfTag-startOfTag);
 			}catch(FileNotFoundException e)
 			{
