@@ -150,10 +150,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				insert(node);
 			}catch(Exception e)
 			{
-				e.printStackTrace();
-				System.out.println(e.getMessage());
 				hasLayout = false;
-				return;
 			}
 		}
 

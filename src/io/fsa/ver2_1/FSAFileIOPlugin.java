@@ -246,15 +246,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				
 				if(s.getName() != null)
 				{
-					System.out.println(s.getName());
-					try{
-					for(byte b : s.getName().getBytes("UTF-8"))
-					
-					System.out.println(b);
-					}catch(Exception e)
-					{
-						
-					}
 					ps.println(indent + indent + "<name>" + s.getName() + "</name>");
 				}else{
 					ps.println(indent + indent + "<name />");
