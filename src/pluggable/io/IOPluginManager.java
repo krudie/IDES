@@ -254,14 +254,14 @@ public class IOPluginManager {
 	 * @param type
 	 * @return
 	 */
-	public Set<ImportExportPlugin> getExporters(String type)
+	public Set<ImportExportPlugin> getExporters(String description)
 	{
 		Set<ImportExportPlugin> returnSet= new HashSet<ImportExportPlugin>();
 		Iterator<PluginDescription> it = exporters.iterator();
 		
 		while(it.hasNext())
 		{
-			ImportExportPlugin plugin = it.next().exportFromType(type);
+			ImportExportPlugin plugin = it.next().exportToType(description);
 			if( plugin != null)
 			{
 				returnSet.add(plugin);
@@ -282,6 +282,17 @@ public class IOPluginManager {
 		
 		return returnSet;
 	}
+	
+	public Set<ImportExportPlugin> getExporters()
+	{
+		Set<ImportExportPlugin> returnSet = new HashSet<ImportExportPlugin>();
+		Iterator<PluginDescription> it = exporters.iterator();
+		while(it.hasNext())
+		{
+			returnSet.add((ImportExportPlugin)it.next().plugin);
+		}
+		return returnSet;
+	}	
 	
 	/**
 	 * Returns a set of plugins which imports from model described by <code>type</code> to the IDES 
@@ -352,9 +363,9 @@ public class IOPluginManager {
 			return null;
 		}
 
-		public ImportExportPlugin exportFromType(String description)
+		public ImportExportPlugin exportToType(String description)
 		{
-			if(tag.equals(description))
+			if(((ImportExportPlugin)plugin).getDescription().equals(description))
 			{
 				return (ImportExportPlugin)plugin;
 			}

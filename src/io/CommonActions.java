@@ -168,7 +168,6 @@ public class CommonActions {
 	{
 		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 		fc.setDialogTitle(Hub.string("importTitle"));
-
 		Vector<String> ext = new Vector<String>();
 		Vector<String> desc = new Vector<String>();
 		Iterator<ImportExportPlugin> it = IOPluginManager.getInstance().getImporters().iterator();
@@ -197,8 +196,6 @@ public class CommonActions {
 			fc.addChoosableFileFilter(new ExtensionFileFilter(extIt.next(), descIt.next()));
 			//fc.setFileFilter();
 		}
-
-
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int retVal = fc.showOpenDialog(Hub.getMainWindow());
 		if(retVal == JFileChooser.APPROVE_OPTION){
@@ -218,19 +215,18 @@ public class CommonActions {
 				String prefix = io.ParsingToolbox.removeFileType(file.getName());
 				//The suffix will be the IDES file format (obviously)
 				String suffix = IOUtilities.MODEL_FILE_EXT;
-				File dst = File.createTempFile(prefix, suffix);
+				File dst = File.createTempFile("tmp" + prefix, suffix);
 				IOCoordinator.getInstance().importFile(file, dst, fc.getFileFilter().getDescription());
 				model = IOCoordinator.getInstance().load(dst);
 				if(model != null)
 				{
 					model.setName(ParsingToolbox.removeFileType(Hub.string("newModelName")));
-					model.setAnnotation(Annotable.FILE,null);
 					Hub.getWorkspace().addModel(model);
 					Hub.getWorkspace().setActiveModel(model.getName());
 				}
 			}catch(IOException e)
 			{
-				//TODO show that an IO error has occurred
+				Hub.displayAlert(Hub.string("cantParseImport"));
 			}
 
 
@@ -238,4 +234,90 @@ public class CommonActions {
 		}
 	}
 
+	public static void exportModel()
+	{
+		//Make the model be saved by the IOCoordinator.
+		//IOCoordinator will select the plugins which saves data and metadata information for model.
+		DESModel model = Hub.getWorkspace().getActiveModel();
+		//Src is the file that will be used by the exporter.
+		File src = null;
+		if(model != null)
+		{
+			src = (File)model.getAnnotation(Annotable.FILE);
+			if(src == null)
+			{
+				try{
+					src = File.createTempFile("export", IOUtilities.MODEL_FILE_EXT);
+					IOCoordinator.getInstance().save(model, src);
+				}catch(IOException e)
+				{
+					//TODO display an error to the user
+					return;
+				}
+			}	
+		}else{
+			//The model can't be null
+			//TODO display an error to the user
+			return;
+		}
+
+		JFileChooser fc;
+		String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
+		if(path == null)
+		{
+			fc=new JFileChooser();
+		}else
+		{
+			fc=new JFileChooser(path);	
+		}
+		fc.setDialogTitle(Hub.string("exportTitle"));
+
+		//TODO add export filters
+		Iterator<ImportExportPlugin> pluginIt = IOPluginManager.getInstance().getExporters().iterator();
+		while(pluginIt.hasNext())
+		{
+			ImportExportPlugin p = pluginIt.next();
+			fc.addChoosableFileFilter(new ExtensionFileFilter(p.getExportExtension(), p.getDescription()));
+		}
+		int retVal;
+		boolean fcDone=true;
+		File file=null;
+		do
+		{
+			retVal = fc.showSaveDialog(Hub.getMainWindow());
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				break;
+			file=fc.getSelectedFile();
+			if(file.exists())
+			{
+				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+						Hub.string("saveModelTitle"),
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				fcDone=choice!=JOptionPane.NO_OPTION;
+				if(choice!=JOptionPane.YES_OPTION)
+					retVal=JFileChooser.CANCEL_OPTION;
+			}
+		} while(!fcDone);					
+
+		if(retVal != JFileChooser.CANCEL_OPTION)
+		{
+			//TODO EXPORT THE FILE: file
+			try{
+				IOCoordinator.getInstance().exportFile(src, file, fc.getFileFilter().getDescription());
+			}
+			catch(Exception e)
+			{
+				//TODO show an error
+			}
+		}
+		try
+		{
+			Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
+		}catch(NullPointerException e)
+		{
+			//cancel button pressed... that's OK.
+		}
+
+	}
 }

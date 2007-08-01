@@ -5,6 +5,7 @@ package pluggable.io;
 import main.Hub;
 import model.DESModel;
 import io.IOUtilities;
+import io.ParsingToolbox;
 import io.ProtectedInputStream;
 import io.WrappedPrintStream;
 import java.io.BufferedReader;
@@ -404,15 +405,25 @@ public final class IOCoordinator{
 		case 1:
 			plugins.iterator().next().importFile(src, dst);
 		default:
-			//TODO throw an error	
-		}
-		
-		if(dst != null)
-		{
-
+			//TODO throw an error: more than one plugin with the same description
 		}
 	}
 
+	public void exportFile(File src, File dst, String description) throws IOException
+	{
+		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getExporters(description);
+		switch(plugins.size())
+		{
+		case 0:
+			//TODO: Show a message that no plugin was registered to import
+		case 1:
+			ImportExportPlugin plugin = plugins.iterator().next();
+			dst = new File(ParsingToolbox.removeFileType(dst.getAbsolutePath()) + "." + plugin.getExportExtension());
+			plugin.exportFile(src, dst);
+		default:
+			//TODO throw an error: more than one plugin with the same description
+		}
+	}
 }
 
 

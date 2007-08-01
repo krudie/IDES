@@ -44,18 +44,18 @@ import ui.ImportExportDialog;
  * @author Lenko Grigorov
  */
 public class FileCommands {	
-	
+
 	public static class NewCommand extends ActionCommand {
-		
+
 		/**
 		 * used to create unique  names in a session
 		 */
 		private static int Count=0;
-		
+
 		public NewCommand(){
 			super("new.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {
 			ModelDescriptor md=new NewModelDialog().selectModel();
@@ -66,9 +66,9 @@ public class FileCommands {
 			Hub.getWorkspace().setActiveModel(des.getName());
 		}	
 	}
-	
+
 	public static class OpenCommand extends ActionCommand {
-		
+
 		public OpenCommand() {
 			super("open.command");			
 		}
@@ -79,15 +79,15 @@ public class FileCommands {
 		protected void handleExecute() {
 			//Open a window for the user to choose the file to open:
 			io.CommonActions.load();
-			}
+		}
 	}
-	
+
 	public static class SaveAllCommand extends ActionCommand {
-		
+
 		public SaveAllCommand(){
 			super("saveall.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
@@ -107,13 +107,13 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(cursor);
 		}	
 	}
-	
+
 	public static class SaveCommand extends ActionCommand {
-		
+
 		public SaveCommand() {
 			super("save.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
@@ -122,13 +122,13 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(cursor);
 		}
 	}
-	
+
 	public static class SaveAsCommand extends ActionCommand {
-		
+
 		public SaveAsCommand(){
 			super("saveas.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {
 			Cursor cursor = Hub.getMainWindow().getCursor();
@@ -136,43 +136,43 @@ public class FileCommands {
 			io.CommonActions.saveAs();
 			Hub.getMainWindow().setCursor(cursor);
 		}	
-			
+
 	}
 
-	
-	
+
+
 	public static class CloseCommand extends ActionCommand {
-		
+
 		public CloseCommand(){
 			super("close.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {
 			Hub.getWorkspace().removeModel(Hub.getWorkspace().getActiveModelName());
 		}	
 	}
-		
-	
+
+
 	public static class NewWorkspaceCommand extends ActionCommand {
-			
-			public NewWorkspaceCommand(){
-				super("new.workspace.command");
-			}
-			
-			@Override
-			protected void handleExecute() {
-				// TODO
-				JOptionPane.showMessageDialog(null, "Create new workspace");
-			}	
+
+		public NewWorkspaceCommand(){
+			super("new.workspace.command");
+		}
+
+		@Override
+		protected void handleExecute() {
+			// TODO
+			JOptionPane.showMessageDialog(null, "Create new workspace");
+		}	
 	}
-	
+
 	public static class OpenWorkspaceCommand extends ActionCommand {
-		
+
 		public OpenWorkspaceCommand(){
 			super("open.workspace.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {
 			if(Hub.getWorkspace().isDirty())
@@ -182,19 +182,19 @@ public class FileCommands {
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-	    	int retVal = fc.showOpenDialog(Hub.getMainWindow());
-	    	if(retVal == JFileChooser.APPROVE_OPTION){
+			int retVal = fc.showOpenDialog(Hub.getMainWindow());
+			if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
 				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	    		WorkspaceDescriptor wd = FileOperations.openWorkspace(fc.getSelectedFile());
-	    		if(wd != null){
-	    			Hub.getWorkspace().replaceWorkspace(wd);
-	    		}
+				WorkspaceDescriptor wd = FileOperations.openWorkspace(fc.getSelectedFile());
+				if(wd != null){
+					Hub.getWorkspace().replaceWorkspace(wd);
+				}
 				Hub.getMainWindow().setCursor(cursor);
-	    	}
+			}
 		}	
 	}
-	
+
 	public static class SaveWorkspaceCommand extends ActionCommand {
 
 		public SaveWorkspaceCommand(){
@@ -213,7 +213,7 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(cursor);
 		}
 	}
-	
+
 	public static class SaveWorkspaceAsCommand extends ActionCommand {
 
 		public SaveWorkspaceAsCommand(){
@@ -232,7 +232,7 @@ public class FileCommands {
 			Hub.getMainWindow().setCursor(cursor);
 		}
 	}
-	
+
 	public static class ExportToGIFCommand extends AbstractSaveAsCommand {
 
 		public ExportToGIFCommand() {
@@ -245,9 +245,9 @@ public class FileCommands {
 			// TODO Auto-generated method stub
 			System.out.println("TODO: Save as GIF");
 		}
-		
+
 	}
-	
+
 	public static class ExportToEPSCommand extends ActionCommand {
 
 		public ExportToEPSCommand() {
@@ -276,31 +276,31 @@ public class FileCommands {
 				if(retVal != JFileChooser.APPROVE_OPTION)
 					break;
 				file=fc.getSelectedFile();
-	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.EPS_FILE_EXT))
-	    			file=new File(file.getPath()+"."+IOUtilities.EPS_FILE_EXT);
+				if(!file.getName().toLowerCase().endsWith("."+IOUtilities.EPS_FILE_EXT))
+					file=new File(file.getPath()+"."+IOUtilities.EPS_FILE_EXT);
 				if(file.exists())
 				{
 					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-						Hub.string("exportEPSTitle"),
-						JOptionPane.YES_NO_CANCEL_OPTION);
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+							Hub.string("exportEPSTitle"),
+							JOptionPane.YES_NO_CANCEL_OPTION);
 					fcDone=choice!=JOptionPane.NO_OPTION;
 					if(choice!=JOptionPane.YES_OPTION)
 						retVal=JFileChooser.CANCEL_OPTION;
 				}
 			} while(!fcDone);
-	    	if(retVal != JFileChooser.APPROVE_OPTION)
-	    		return;
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				return;
 			// Modified: June 16, 2006
 			// Modifier: Sarah-Jane Whittaker
 			String fileContents = GraphExporter.createEPSFileContents();
 			FileWriter latexWriter = null;
-			
+
 			if (fileContents == null)
 			{
 				return;
 			}
-			
+
 			try
 			{
 				latexWriter = new FileWriter(file);
@@ -312,27 +312,27 @@ public class FileCommands {
 				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
 			}
 //			FileWriter latexWriter = null;
-//					
+
 //			if (fileContents == null)
 //			{
-//				return;
+//			return;
 //			}
-//			
+
 //			try
 //			{
-//				LatexManager.getRenderer().latex2EPS(fileContents,file);
+//			LatexManager.getRenderer().latex2EPS(fileContents,file);
 //			}
 //			catch (IOException fileException)
 //			{
-//				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+//			Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
 //			}
 //			catch (LatexRenderException e)
 //			{
-//				Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
+//			Hub.displayAlert(Hub.string("problemLatexExport")+file.getPath());
 //			}
 		}	
 	}
-	
+
 	public static class ExportToLatexCommand extends ActionCommand {
 
 		public ExportToLatexCommand() {
@@ -361,31 +361,31 @@ public class FileCommands {
 				if(retVal != JFileChooser.APPROVE_OPTION)
 					break;
 				file=fc.getSelectedFile();
-	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.LATEX_FILE_EXT))
-	    			file=new File(file.getPath()+"."+IOUtilities.LATEX_FILE_EXT);
+				if(!file.getName().toLowerCase().endsWith("."+IOUtilities.LATEX_FILE_EXT))
+					file=new File(file.getPath()+"."+IOUtilities.LATEX_FILE_EXT);
 				if(file.exists())
 				{
 					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-						Hub.string("exportLatexTitle"),
-						JOptionPane.YES_NO_CANCEL_OPTION);
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+							Hub.string("exportLatexTitle"),
+							JOptionPane.YES_NO_CANCEL_OPTION);
 					fcDone=choice!=JOptionPane.NO_OPTION;
 					if(choice!=JOptionPane.YES_OPTION)
 						retVal=JFileChooser.CANCEL_OPTION;
 				}
 			} while(!fcDone);
-	    	if(retVal != JFileChooser.APPROVE_OPTION)
-	    		return;
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				return;
 			// Modified: June 16, 2006
 			// Modifier: Sarah-Jane Whittaker
 			String fileContents = GraphExporter.createPSTricksFileContents();
 			FileWriter latexWriter = null;
-					
+
 			if (fileContents == null)
 			{
 				return;
 			}
-			
+
 			try
 			{
 				latexWriter = new FileWriter(file);
@@ -428,50 +428,50 @@ public class FileCommands {
 				if(retVal != JFileChooser.APPROVE_OPTION)
 					break;
 				file=fc.getSelectedFile();
-	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.FM_FILE_EXT))
-	    			file=new File(file.getPath()+"."+IOUtilities.FM_FILE_EXT);
+				if(!file.getName().toLowerCase().endsWith("."+IOUtilities.FM_FILE_EXT))
+					file=new File(file.getPath()+"."+IOUtilities.FM_FILE_EXT);
 				if(file.exists())
 				{
 					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-						Hub.string("exportGrailTitle"),
-						JOptionPane.YES_NO_CANCEL_OPTION);
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+							Hub.string("exportGrailTitle"),
+							JOptionPane.YES_NO_CANCEL_OPTION);
 					fcDone=choice!=JOptionPane.NO_OPTION;
 					if(choice!=JOptionPane.YES_OPTION)
 						retVal=JFileChooser.CANCEL_OPTION;
 				}
 			} while(!fcDone);
-	    	if(retVal != JFileChooser.APPROVE_OPTION)
-	    		return;
-	    	
-	    	String fileContents = "";
-	    	
-	    	FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
-	    	for(Iterator<model.fsa.FSAState> i=a.getStateIterator();i.hasNext();)
-	    	{
-	    		model.fsa.FSAState s=i.next();
-	    		if(s.isInitial())
-	    		{
-	    			fileContents+="(START) |- "+s.getId()+"\n";
-	    		}
-	    		if(s.isMarked())
-	    		{
-	    			fileContents+=""+s.getId()+" -| (FINAL)\n";
-	    		}
-	    		for(Iterator<model.fsa.FSATransition> j=s.getSourceTransitionsListIterator();j.hasNext();)
-	    		{
-	    			model.fsa.FSATransition t=j.next();
-	    			fileContents+=""+s.getId()+" "+(t.getEvent()==null?"NULL":t.getEvent().getSymbol())+" "+t.getTarget().getId()+"\n";
-	    		}
-	    	}
-	    	
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				return;
+
+			String fileContents = "";
+
+			FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
+			for(Iterator<model.fsa.FSAState> i=a.getStateIterator();i.hasNext();)
+			{
+				model.fsa.FSAState s=i.next();
+				if(s.isInitial())
+				{
+					fileContents+="(START) |- "+s.getId()+"\n";
+				}
+				if(s.isMarked())
+				{
+					fileContents+=""+s.getId()+" -| (FINAL)\n";
+				}
+				for(Iterator<model.fsa.FSATransition> j=s.getSourceTransitionsListIterator();j.hasNext();)
+				{
+					model.fsa.FSATransition t=j.next();
+					fileContents+=""+s.getId()+" "+(t.getEvent()==null?"NULL":t.getEvent().getSymbol())+" "+t.getTarget().getId()+"\n";
+				}
+			}
+
 			FileWriter latexWriter = null;
-					
+
 			if (fileContents == null)
 			{
 				return;
 			}
-			
+
 			try
 			{
 				latexWriter = new FileWriter(file);
@@ -514,102 +514,102 @@ public class FileCommands {
 				if(!file.exists())
 				{
 					Hub.displayAlert(
-						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileNotExistAsk2"));
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileNotExistAsk2"));
 				}
 				else
 					fcDone=true;
 			} while(!fcDone);
-	    	if(retVal != JFileChooser.APPROVE_OPTION)
-	    		return;
-	    	
-	    	java.io.BufferedReader in=null;
-	    	try
-	    	{
-	    		in=new java.io.BufferedReader(new java.io.FileReader(file));
-	    		FSAModel a=ModelManager.createModel(FSAModel.class,file.getName());
-	    		long tCount=0;
-	    		long eCount=0;
-	    		java.util.Hashtable<String,Long> events=new java.util.Hashtable<String, Long>();
-	    		String line;
-	    		while((line=in.readLine())!=null)
-	    		{
-	    			String[] parts=line.split(" ");
-	    			if(parts[0].startsWith("("))
-	    			{
-	    				long sId=Long.parseLong(parts[2]);
-	    				model.fsa.ver2_1.State s=(model.fsa.ver2_1.State)a.getState(sId);
-	    				if(s==null)
-	    				{
-	    					s=new model.fsa.ver2_1.State(sId);
-	    					a.add(s);
-	    				}
-	    				s.setInitial(true);
-	    			}
-	    			else if(parts[2].startsWith("("))
-	    			{	    				
-	    				long sId=Long.parseLong(parts[0]);
-	    				model.fsa.ver2_1.State s=(model.fsa.ver2_1.State)a.getState(sId);
-	    				if(s==null)
-	    				{
-	    					s=new model.fsa.ver2_1.State(sId);
-	    					a.add(s);
-	    				}
-	    				s.setMarked(true);
-	    			}
-	    			else
-	    			{
-	    				long sId1=Long.parseLong(parts[0]);
-	    				model.fsa.ver2_1.State s1=(model.fsa.ver2_1.State)a.getState(sId1);
-	    				if(s1==null)
-	    				{
-	    					s1=new model.fsa.ver2_1.State(sId1);
-	    					a.add(s1);
-	    				}
-	    				long sId2=Long.parseLong(parts[2]);
-	    				model.fsa.ver2_1.State s2=(model.fsa.ver2_1.State)a.getState(sId2);
-	    				if(s2==null)
-	    				{
-	    					s2=new model.fsa.ver2_1.State(sId2);
-	    					a.add(s2);
-	    				}
-	    				model.fsa.ver2_1.Event e=null;
-	    				Long eId=events.get(parts[1]);
-	    				if(eId==null)
-	    				{
-	    					e=new model.fsa.ver2_1.Event(eCount);
-	    					e.setSymbol(parts[1]);
-	    					e.setObservable(true);
-	    					e.setControllable(true);
-	    					eCount++;
-	    					a.add(e);
-	    					events.put(parts[1], new Long(e.getId()));
-	    				}
-	    				else
-	    					e=(model.fsa.ver2_1.Event)a.getEvent(eId.longValue());
-	    				model.fsa.ver2_1.Transition t=new model.fsa.ver2_1.Transition(tCount,s1,s2,e);
-	    				a.add(t);
-	    				tCount++;
-	    			}
-	    		}
-	    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
-	    		Hub.getWorkspace().addLayoutShell(g);
-	    	}catch(java.io.IOException e)
-	    	{
-	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
-	    	}
-	    	catch(RuntimeException e)
-	    	{
-	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
-	    	}
-	    	finally
-	    	{
-	    		try
-	    		{
-	    			if(in!=null)
-	    				in.close();
-	    		}catch(java.io.IOException e){}
-	    	}
-	    	
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				return;
+
+			java.io.BufferedReader in=null;
+			try
+			{
+				in=new java.io.BufferedReader(new java.io.FileReader(file));
+				FSAModel a=ModelManager.createModel(FSAModel.class,file.getName());
+				long tCount=0;
+				long eCount=0;
+				java.util.Hashtable<String,Long> events=new java.util.Hashtable<String, Long>();
+				String line;
+				while((line=in.readLine())!=null)
+				{
+					String[] parts=line.split(" ");
+					if(parts[0].startsWith("("))
+					{
+						long sId=Long.parseLong(parts[2]);
+						model.fsa.ver2_1.State s=(model.fsa.ver2_1.State)a.getState(sId);
+						if(s==null)
+						{
+							s=new model.fsa.ver2_1.State(sId);
+							a.add(s);
+						}
+						s.setInitial(true);
+					}
+					else if(parts[2].startsWith("("))
+					{	    				
+						long sId=Long.parseLong(parts[0]);
+						model.fsa.ver2_1.State s=(model.fsa.ver2_1.State)a.getState(sId);
+						if(s==null)
+						{
+							s=new model.fsa.ver2_1.State(sId);
+							a.add(s);
+						}
+						s.setMarked(true);
+					}
+					else
+					{
+						long sId1=Long.parseLong(parts[0]);
+						model.fsa.ver2_1.State s1=(model.fsa.ver2_1.State)a.getState(sId1);
+						if(s1==null)
+						{
+							s1=new model.fsa.ver2_1.State(sId1);
+							a.add(s1);
+						}
+						long sId2=Long.parseLong(parts[2]);
+						model.fsa.ver2_1.State s2=(model.fsa.ver2_1.State)a.getState(sId2);
+						if(s2==null)
+						{
+							s2=new model.fsa.ver2_1.State(sId2);
+							a.add(s2);
+						}
+						model.fsa.ver2_1.Event e=null;
+						Long eId=events.get(parts[1]);
+						if(eId==null)
+						{
+							e=new model.fsa.ver2_1.Event(eCount);
+							e.setSymbol(parts[1]);
+							e.setObservable(true);
+							e.setControllable(true);
+							eCount++;
+							a.add(e);
+							events.put(parts[1], new Long(e.getId()));
+						}
+						else
+							e=(model.fsa.ver2_1.Event)a.getEvent(eId.longValue());
+						model.fsa.ver2_1.Transition t=new model.fsa.ver2_1.Transition(tCount,s1,s2,e);
+						a.add(t);
+						tCount++;
+					}
+				}
+				presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
+				Hub.getWorkspace().addLayoutShell(g);
+			}catch(java.io.IOException e)
+			{
+				Hub.displayAlert(Hub.string("cantParseImport")+file);
+			}
+			catch(RuntimeException e)
+			{
+				Hub.displayAlert(Hub.string("cantParseImport")+file);
+			}
+			finally
+			{
+				try
+				{
+					if(in!=null)
+						in.close();
+				}catch(java.io.IOException e){}
+			}
+
 		}
 	}
 
@@ -642,28 +642,28 @@ public class FileCommands {
 				if(retVal != JFileChooser.APPROVE_OPTION)
 					break;
 				file=fc.getSelectedFile();
-	    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.TCT_FILE_EXT))
-	    			file=new File(file.getPath()+"."+IOUtilities.TCT_FILE_EXT);
+				if(!file.getName().toLowerCase().endsWith("."+IOUtilities.TCT_FILE_EXT))
+					file=new File(file.getPath()+"."+IOUtilities.TCT_FILE_EXT);
 				if(file.exists())
 				{
 					int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-						Hub.string("exportTCTTitle"),
-						JOptionPane.YES_NO_CANCEL_OPTION);
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+							Hub.string("exportTCTTitle"),
+							JOptionPane.YES_NO_CANCEL_OPTION);
 					fcDone=choice!=JOptionPane.NO_OPTION;
 					if(choice!=JOptionPane.YES_OPTION)
 						retVal=JFileChooser.CANCEL_OPTION;
 				}
 			} while(!fcDone);
-	    	if(retVal != JFileChooser.APPROVE_OPTION)
-	    		return;
-	    	
-	    	FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
-	    	
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				return;
+
+			FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
+
 			try
 			{
-		    	LL_CTCT_Command.GiddesToCTCT(file.getAbsolutePath(),a,LL_CTCT_Command.em);
-		    	LL_CTCT_Command.em.saveGlobalMap(new File(file.getParentFile().getAbsolutePath()+File.separator+"global.map"));
+				LL_CTCT_Command.GiddesToCTCT(file.getAbsolutePath(),a,LL_CTCT_Command.em);
+				LL_CTCT_Command.em.saveGlobalMap(new File(file.getParentFile().getAbsolutePath()+File.separator+"global.map"));
 			}
 			catch (CTCTException fileException)
 			{
@@ -701,29 +701,29 @@ public class FileCommands {
 				if(!file.exists())
 				{
 					Hub.displayAlert(
-						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileNotExistAsk2"));
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileNotExistAsk2"));
 				}
 				else
 					fcDone=true;
 			} while(!fcDone);
-	    	if(retVal != JFileChooser.APPROVE_OPTION)
-	    		return;
-	    	
-	    	try
-	    	{
-	    		FSAModel a=LL_CTCT_Command.CTCTtoGiddes(file.getAbsolutePath(),file.getName().substring(0,file.getName().lastIndexOf(".")));
-	    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
-	    		Hub.getWorkspace().addLayoutShell(g);
-	    	}catch(CTCTException e)
-	    	{
-	    		e.printStackTrace();
-	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
-	    	}
-	    	catch(RuntimeException e)
-	    	{
-	    		e.printStackTrace();
-	    		Hub.displayAlert(Hub.string("cantParseImport")+file);
-	    	}
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				return;
+
+			try
+			{
+				FSAModel a=LL_CTCT_Command.CTCTtoGiddes(file.getAbsolutePath(),file.getName().substring(0,file.getName().lastIndexOf(".")));
+				presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
+				Hub.getWorkspace().addLayoutShell(g);
+			}catch(CTCTException e)
+			{
+				e.printStackTrace();
+				Hub.displayAlert(Hub.string("cantParseImport")+file);
+			}
+			catch(RuntimeException e)
+			{
+				e.printStackTrace();
+				Hub.displayAlert(Hub.string("cantParseImport")+file);
+			}
 
 		}
 	}
@@ -740,10 +740,10 @@ public class FileCommands {
 			// TODO Auto-generated method stub
 			System.out.println("TODO: Save as PNG");
 		}
-		
+
 	}
-	
-	
+
+
 	public static class ImportCommand extends ActionCommand {
 
 		public ImportCommand() {
@@ -754,9 +754,9 @@ public class FileCommands {
 		protected void handleExecute() {
 			io.CommonActions.importModel();
 		}
-		
+
 	}
-	
+
 	public static class ExportCommand extends ActionCommand {
 
 		public ExportCommand() {
@@ -765,21 +765,19 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
-			System.out.println("export");
-//			ImportExportDialog ieDialog=new ImportExportDialog();
-			
+			io.CommonActions.exportModel();			
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 	public static class ExitCommand extends ActionCommand {
-		
+
 		public ExitCommand(){
 			super("exit.command");
 		}
-		
+
 		@Override
 		protected void handleExecute() {			
 			Main.onExit();
