@@ -59,10 +59,16 @@ public final class IOCoordinator{
 		//There can be several different meta savers for a specific data type.
 		Set<FileIOPlugin> metaSavers = IOPluginManager.getInstance().getMetaSavers(type);
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
-		
+
 		//Open  ""file"" and start writing the header of the IDES file format
 		WrappedPrintStream ps = null;
-		try{ps=new WrappedPrintStream(IOUtilities.getPrintStream(file));}catch(Exception e){e.printStackTrace();}
+		try{
+			ps=new WrappedPrintStream(IOUtilities.getPrintStream(file));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
 		ps.println("<data>");
@@ -387,6 +393,26 @@ public final class IOCoordinator{
 			return returnSet;
 		}
 	}
+
+	public void importFile(File src, File dst, String description) throws IOException
+	{
+		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getImporters(description);
+		switch(plugins.size())
+		{
+		case 0:
+			//TODO: Show a message that no plugin was registered to import
+		case 1:
+			plugins.iterator().next().importFile(src, dst);
+		default:
+			//TODO throw an error	
+		}
+		
+		if(dst != null)
+		{
+
+		}
+	}
+
 }
 
 

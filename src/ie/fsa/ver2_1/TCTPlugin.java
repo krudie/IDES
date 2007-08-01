@@ -111,12 +111,12 @@ public class TCTPlugin implements ImportExportPlugin{
     	try
     	{
     		FSAModel a=LL_CTCT_Command.CTCTtoGiddes(src.getAbsolutePath(),src.getName().substring(0,src.getName().lastIndexOf(".")));
-    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
+//    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
     		//saving the imported model to dst
     		IOCoordinator.getInstance().save(a, dst);
        		//Add the new layout to the workspace
-    		Hub.getWorkspace().addModel(a);
-			Hub.getWorkspace().setActiveModel(a.getName());
+//    		Hub.getWorkspace().addModel(a);
+//			Hub.getWorkspace().setActiveModel(a.getName());
     	}catch(CTCTException e)
     	{
     		e.printStackTrace();

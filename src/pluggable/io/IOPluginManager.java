@@ -19,7 +19,6 @@ public class IOPluginManager {
 	private Set<PluginDescription> dataSavers = null;
 	private Set<PluginDescription> dataLoaders = null;
 	private Set <PluginDescription> metaLoaders = null;
-	
 	private Set <PluginDescription> exporters = null;
 	private Set <PluginDescription> importers = null;
 	
@@ -272,6 +271,18 @@ public class IOPluginManager {
 	}
 	
 	
+	public Set<ImportExportPlugin> getImporters()
+	{
+		Set<ImportExportPlugin> returnSet = new HashSet<ImportExportPlugin>();
+		Iterator<PluginDescription> it = importers.iterator();
+		while(it.hasNext())
+		{
+			returnSet.add((ImportExportPlugin)it.next().plugin);
+		}
+		
+		return returnSet;
+	}
+	
 	/**
 	 * Returns a set of plugins which imports from model described by <code>type</code> to the IDES 
 	 * format. Example of utilization: <code>getImporters(".fm")</code> returns a set with references 
@@ -279,14 +290,14 @@ public class IOPluginManager {
 	 * @param type
 	 * @return
 	 */
-	public Set<ImportExportPlugin> getImporters(String type)
+	public Set<ImportExportPlugin> getImporters(String descriptor)
 	{
 		Set<ImportExportPlugin> returnSet= new HashSet<ImportExportPlugin>();
 		Iterator<PluginDescription> it = importers.iterator();
 		
 		while(it.hasNext())
 		{
-			ImportExportPlugin plugin = it.next().importFromExtension(type);
+			ImportExportPlugin plugin = it.next().importFromType(descriptor);
 			if( plugin != null)
 			{
 				returnSet.add(plugin);
@@ -352,9 +363,9 @@ public class IOPluginManager {
 		
 		//return the plugin case the "exportExtension" is the same as the one given as paramether
 		//return null, otherwise
-		public ImportExportPlugin importFromExtension(String description)
+		public ImportExportPlugin importFromType(String description)
 		{
-			if(((ImportExportPlugin)plugin).getExportExtension().equals(description))
+			if(((ImportExportPlugin)plugin).getDescription().equals(description))
 			{
 				return (ImportExportPlugin)plugin;
 			}

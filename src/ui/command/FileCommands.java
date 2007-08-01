@@ -744,19 +744,35 @@ public class FileCommands {
 	}
 	
 	
-	public static class ImportExportCommand extends ActionCommand {
+	public static class ImportCommand extends ActionCommand {
 
-		public ImportExportCommand() {
-			super("import.export.command");			
+		public ImportCommand() {
+			super("import.command");			
 		}
 
 		@Override
 		protected void handleExecute() {
-			ImportExportDialog ieDialog=new ImportExportDialog();
+			io.CommonActions.importModel();
+		}
+		
+	}
+	
+	public static class ExportCommand extends ActionCommand {
+
+		public ExportCommand() {
+			super("export.command");			
+		}
+
+		@Override
+		protected void handleExecute() {
+			System.out.println("export");
+//			ImportExportDialog ieDialog=new ImportExportDialog();
 			
 		}
 		
 	}
+	
+	
 	
 	public static class ExitCommand extends ActionCommand {
 		

@@ -65,10 +65,10 @@
          <member command-id="save.workspace.command"/>
          <member command-id="saveas.workspace.command"/>
          <separator/>
-         <member command-id="export.group" inline="true"/>
+         <member command-id="importExport.group" inline="true"/>
          <expansion-point separator="before"/>
-         <member command-id="import.grail.command"/>
-         <member command-id="import.tct.command"/>
+         <member command-id="import.command"/>
+         <member command-id="export.command"/>
          <separator/>
          <member command-id="exit.command"/>
       </members>  
@@ -237,23 +237,9 @@
       </face>
     </command>    
     
-    
-    <group id="export.group">
-      <face>
-         <text>_Export</text>
-         <description>Export model</description>
-      </face>
-      <members>
-      	 <member command-id="import.export.command"/>
-         <member command-id="export.latex.command"/>         
-         <member command-id="export.eps.command"/>
-         <member command-id="export.grail.command"/>
-         <member command-id="export.tct.command"/>
-      </members>  
-    </group>
-    <command id="import.export.command">
+    <command id="import.command">
     	<face>
-    		<text>Import/Export</text>
+    		<text>Import</text>
     		<icon type ="classpath">images/icons/file_export_gif.gif</icon>
     		<description>Import Export Manager</description>
     	</face>
@@ -261,87 +247,18 @@
     		<text/>
     	</face>
     </command>
-     /
-    <command id="export.gif.command">    
-      <face>
-         <text>Export to GIF</text>
-         <icon type="classpath">images/icons/file_export_gif.gif</icon>
-         <description>Export to GIF</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
+
+    <command id="export.command">
+    	<face>
+    		<text>Export</text>
+    		<icon type ="classpath">images/icons/file_export_gif.gif</icon>
+    		<description>Import Export Manager</description>
+    	</face>
+    	<face name="toolbar" extends="[default]">
+    		<text/>
+    	</face>
     </command>
-    <command id="export.latex.command">
-      <face>
-         <text>Export to LaTeX</text>
-         <icon type="classpath">images/icons/file_export_tex.gif</icon>
-         <description>Export to LaTeX</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>
-    <command id="export.eps.command">
-      <face>
-         <text>Export to EPS</text>
-         <icon type="classpath">images/icons/file_export_eps.gif</icon>
-         <description>Export to Encapsulated PostScript</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>
-    <command id="export.grail.command">
-      <face>
-         <text>Export to Grail</text>
-         <icon type="classpath">images/icons/file_export_png.gif</icon>
-         <description>Export to Grail</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>
-    <command id="export.tct.command">
-      <face>
-         <text>Export to TCT</text>
-         <icon type="classpath">images/icons/file_export_png.gif</icon>
-         <description>Export to TCT</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>
-    <command id="export.png.command">    
-      <face>
-         <text>Export to PNG</text>
-         <icon type="classpath">images/icons/file_export_png.gif</icon>
-         <description>Export to PNG</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>    
-    <command id="import.grail.command">    
-      <face>
-         <text>Import from Grail</text>
-         <icon type="classpath">images/icons/file_export_png.gif</icon>
-         <description>Import from Grail</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>
-    <command id="import.tct.command">    
-      <face>
-         <text>Import from TCT</text>
-         <icon type="classpath">images/icons/file_export_png.gif</icon>
-         <description>Import from TCT</description>
-      </face>
-      <face name="toolbar" extends="[default]">
-         <text/>
-      </face>
-    </command>
+
     
     <command id="exit.command">    
       <face>

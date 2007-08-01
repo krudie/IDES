@@ -291,6 +291,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 			while( i.hasNext() ) {
 				FSAState s=i.next();
+//				if(s.getName() == null)
+//				{
+//					s.setName(String.valueOf(s.getId()));
+//				}
 				wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
 				stateGroups.clear();
 				Iterator<FSATransition> j = s.getSourceTransitionsListIterator();

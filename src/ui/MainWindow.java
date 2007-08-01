@@ -199,7 +199,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		new FileCommands.SaveWorkspaceCommand().export();
 		new FileCommands.SaveWorkspaceAsCommand().export();
 
-		new FileCommands.ImportExportCommand().export();
+		new FileCommands.ImportCommand().export();
+		new FileCommands.ExportCommand().export();
 //		// new FileCommands.ExportToGIFCommand().export();
 //		new FileCommands.ExportToEPSCommand().export();
 //		new FileCommands.ExportToLatexCommand().export();

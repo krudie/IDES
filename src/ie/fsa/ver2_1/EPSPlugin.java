@@ -55,7 +55,6 @@ public class EPSPlugin implements ImportExportPlugin{
 	public void initializeImportExport()
 	{
 		IOPluginManager.getInstance().registerExport(this, IOUtilities.EPS_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
-		IOPluginManager.getInstance().registerImport(this, IOUtilities.EPS_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
 	}
 	/**
 	 * Unregisters itself from the IOPluginManager

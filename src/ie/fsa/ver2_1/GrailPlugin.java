@@ -211,11 +211,6 @@ public class GrailPlugin implements ImportExportPlugin{
     		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
 			//Save the model to the selected destination
     		IOCoordinator.getInstance().save(a, dst);
-    		//Add the new layout to the workspace
-    		Hub.getWorkspace().addModel(a);
-			Hub.getWorkspace().setActiveModel(a.getName());
-			//Hub.getWorkspace().fireRepaintRequired();
-
     	}catch(java.io.IOException e)
     	{
     		Hub.displayAlert(Hub.string("cantParseImport")+src);
