@@ -1,19 +1,20 @@
-package presentation;
+package model;
 
 import java.awt.geom.Rectangle2D;
 
+import presentation.LayoutShell;
 import presentation.fsa.FSAGraph;
 
-public class LayoutShellMessage {
+public class DESModelMessage {
 
 	/* the possible events that caused this message to be sent */
-	/** Layout shell became dirty (clean to dirty) */
+	/** DESModel became dirty (clean to dirty) */
 	public static final int DIRTY = 0;
-	/** Changes to layout shell were saved (dirty ro clean) */
+	/** Changes to DESModel were saved (dirty ro clean) */
 	public static final int CLEAN = 1;
 
 	/** the publisher that sent this message */
-	private LayoutShell source;
+	private DESModel source;
 	
 	/** the type of event that occurred */
 	private int eventType;
@@ -22,25 +23,25 @@ public class LayoutShellMessage {
 	private String messageText;
 
 	/**
-	 * Creates a change notification message for LayoutShells to pass
-	 * to LayoutShellSubscribers. 
+	 * Creates a change notification message for DESModels to pass
+	 * to DESModelSubscribers. 
 	 * 
 	 * @param eventType DIRTY or CLEAN
 	 * @param source message sender
 	 */
-	public LayoutShellMessage(int eventType, LayoutShell source) {
+	public DESModelMessage(int eventType, DESModel source) {
 		this(eventType, source, "");		
 	}
 
 	/**
-	 * Creates a change notification message for LayoutShells to pass
-	 * to LayoutShellSubscribers. 
+	 * Creates a change notification message for DESModels to pass
+	 * to DESModelSubscribers. 
 	 * 
 	 * @param eventType DIRTY or CLEAN
 	 * @param source message sender
 	 * @param message a description of the event fired
 	 */
-	public LayoutShellMessage(int eventType, LayoutShell source, String message) {
+	public DESModelMessage(int eventType, DESModel source, String message) {
 		super();		
 		this.source = source;
 		this.eventType = eventType;
@@ -58,11 +59,11 @@ public class LayoutShellMessage {
 	}
 
 	/**
-	 * Returns the graph that sent this message. 
+	 * Returns the model that sent this message. 
 	 * 
-	 * @return the graph that sent this message
+	 * @return the model that sent this message
 	 */
-	public LayoutShell getSource() {
+	public DESModel getSource() {
 		return source;
 	}
 	

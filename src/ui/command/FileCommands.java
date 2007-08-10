@@ -100,7 +100,13 @@ public class FileCommands {
 				DESModel model=gm.getModel();
 				if( model != null)
 				{
-					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+					try
+					{
+						IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+					}catch(IOException e)
+					{
+						Hub.displayAlert(e.getMessage());
+					}
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 			}
@@ -116,10 +122,7 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			io.CommonActions.save();
-			Hub.getMainWindow().setCursor(cursor);
+			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);
 		}
 	}
 
@@ -131,10 +134,7 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			io.CommonActions.saveAs();
-			Hub.getMainWindow().setCursor(cursor);
+			io.CommonActions.saveAs(Hub.getWorkspace().getActiveModel());
 		}	
 
 	}
@@ -765,7 +765,12 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
-			io.CommonActions.exportModel();			
+//			try{
+				io.CommonActions.exportModel();	
+//			}catch(IOException e)
+//			{
+//				Hub.displayAlert(e.getMessage());
+//			}
 		}
 
 	}

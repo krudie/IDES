@@ -46,15 +46,11 @@ public interface FSAPublisher {
 	 */
 	public void fireFSAEventSetChanged(FSAMessage message);
 	
-	/**
-	 * Triggers a notification to all subscribers that the
-	 * FSA model was saved to disk.
-	 */
-	public void fireFSASaved();
+//	/**
+//	 * Triggers a notification to all subscribers that the
+//	 * FSA model was saved to disk.
+//	 */
+//	public void fireFSASaved();
 
-	/**
-	 * Returns the model for which events are published.
-	 * @return the model for which events are published
-	 */
-	public FSAModel getFSAModel();
+//	public FSAModel getFSAModel();
 }

@@ -161,7 +161,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 	 */
 	public void fsaGraphChanged(FSAGraphMessage message) {
 		// TODO check contents of message to determine minimal response required
-		refreshView();			
+		refreshView();		
 	}
 
 	
@@ -182,8 +182,6 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 				setScaleFactor(Math.min(xScale,yScale));
 			}
 			invalidate();
-				
-			
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 //		repaint();

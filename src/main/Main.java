@@ -41,6 +41,7 @@ import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
 import presentation.template.TemplateToolset;
 
+import model.DESModel;
 import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
@@ -174,11 +175,11 @@ public class Main {
 //		if(Hub.getWorkspace().isDirty())
 //			if(!CommonTasks.handleUnsavedWorkspace())
 //				return;
-		for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();)
+		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
 		{
-			LayoutShell gm=i.next();
-			if( gm.needsSave() )
-				if(!CommonTasks.handleUnsavedModel(gm))
+			DESModel m=i.next();
+			if( m.needsSave() )
+				if(!CommonTasks.handleUnsavedModel(m))
 					return;
 		}
 		//store settings

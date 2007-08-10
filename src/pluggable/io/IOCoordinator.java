@@ -47,7 +47,7 @@ public final class IOCoordinator{
 		return instance;
 	}
 
-	public boolean save(DESModel model, File file)
+	public void save(DESModel model, File file) throws IOException
 	{	
 		//Read the dataType from the plugin modelDescriptor
 		String type = model.getModelDescriptor().getIOTypeDescription();
@@ -63,13 +63,7 @@ public final class IOCoordinator{
 
 		//Open  ""file"" and start writing the header of the IDES file format
 		WrappedPrintStream ps = null;
-		try{
-			ps=new WrappedPrintStream(IOUtilities.getPrintStream(file));
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
+		ps=new WrappedPrintStream(IOUtilities.getPrintStream(file));
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		ps.println("<model version=\"2.1\" type=\""+ type + "\" id=\""+model.getId()+"\">");
 		ps.println("<data>");
@@ -96,19 +90,12 @@ public final class IOCoordinator{
 		ps.closeWrappedPrintStream();
 		//4 - close the file.
 		//5 - Return true if the operation was a success, otherwise return false.
-		//TODO THROW IO EXCEPTION OR PLUGIN EXCEPTIONS IF SOMETHING HAPPENS and return false
-		return true;
 	}
 
 	//Get the "type" of the model in file and ask the plugin that manage this
 	//kind of "type" to load the DES.
 	public DESModel load(File file) throws IOException
 	{
-		if(!file.exists())
-		{
-			//TODO Show an error msg.
-		}
-
 		DESModel returnModel = null;
 		XmlParser xmlParser = new XmlParser();
 		String type = xmlParser.getType(file);
@@ -116,7 +103,7 @@ public final class IOCoordinator{
 		//System.out.println(type);
 		if(type == null)
 		{
-			throw new IOException(Hub.string("errorsParsingXMLFileL1"));
+			return null;
 		}
 
 		//Create a FileInputStream with "file"
@@ -128,19 +115,15 @@ public final class IOCoordinator{
 		FileIOPlugin plugin = IOPluginManager.getInstance().getDataLoader(type);
 		if(plugin == null)
 		{
-			//TODO THROW A PLUGIN EXCEPTION
 			return null;
 		}
 		DataProtector dp = new DataProtector(br);
 		InputStream dataStream = dp.getXmlContent("data", file);
-
-		if(dataStream == null)
-		{
-			//TODO THROW IO EXCEPTION
-		}	
-
 		returnModel = plugin.loadData(dataStream, file.getParentFile());
-//		System.out.println("DATA LOADED!");
+		if(returnModel == null)
+		{
+			return null;
+		}
 		//LOADING METADATA TO THE MODEL:
 		Iterator<String> mIt = metaTags.iterator();
 		while(mIt.hasNext())//For each metaTag in the file
@@ -153,7 +136,6 @@ public final class IOCoordinator{
 			Set<FileIOPlugin>plugins = IOPluginManager.getInstance().getMetLoaders(type, meta);
 			if(plugins == null)
 			{
-				//TODO Show a message to the user saying that there are no plugins capable of loading the information
 				// for the metadata: meta
 			}else{
 				//Make every plugin load its metadata
@@ -401,11 +383,9 @@ public final class IOCoordinator{
 		switch(plugins.size())
 		{
 		case 0:
-			//TODO: Show a message that no plugin was registered to import
 		case 1:
 			plugins.iterator().next().importFile(src, dst);
 		default:
-			//TODO throw an error: more than one plugin with the same description
 		}
 	}
 
@@ -415,13 +395,17 @@ public final class IOCoordinator{
 		switch(plugins.size())
 		{
 		case 0:
-			//TODO: Show a message that no plugin was registered to import
+			//no plugin exporting
 		case 1:
 			ImportExportPlugin plugin = plugins.iterator().next();
-			dst = new File(ParsingToolbox.removeFileType(dst.getAbsolutePath()) + "." + plugin.getExportExtension());
+			String extension = ParsingToolbox.getFileType(dst.getName());
+			if(extension.equals(""))
+			{
+				dst = new File(ParsingToolbox.removeFileType(dst.getAbsolutePath()) + "." + plugin.getExportExtension());
+			}
 			plugin.exportFile(src, dst);
 		default:
-			//TODO throw an error: more than one plugin with the same description
+			//more than one plugin hanging
 		}
 	}
 }

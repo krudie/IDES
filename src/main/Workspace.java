@@ -82,7 +82,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	public void addLayoutShell(LayoutShell g)
 	{	
 		// Remove initial Untitled graph if it has not been modified
-		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveLayoutShell().needsSave()){
+		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
 			removeModel(getActiveLayoutShell().getModel().getName());
 		}
 		
@@ -129,7 +129,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 */
 	public void addModel(DESModel model) {		
 		// Remove initial Untitled model if it is empty
-		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveLayoutShell().needsSave()){
+		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
 			removeModel(getActiveLayoutShell().getModel().getName());	
 		}
 		
@@ -206,14 +206,14 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	}
 	
 	public void removeModel(String name) {
-		LayoutShell gm=getLayoutShell(name);
+		DESModel m=this.getModel(name);
 		
-		if(gm==null){
+		if(m==null){
 			return;
 		}
 		
-		if( gm.needsSave() ){
-			if(!CommonTasks.handleUnsavedModel(gm)){
+		if( m.needsSave() ){
+			if(!CommonTasks.handleUnsavedModel(m)){
 				return;
 			}
 		}
@@ -472,8 +472,13 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			{
 				if(!(a instanceof DESModel))
 					continue;
-				if(!IOCoordinator.getInstance().save(a, (File)a.getAnnotation(Annotable.FILE)))
-					throw new IncompleteWorkspaceDescriptorException();
+				try{
+				IOCoordinator.getInstance().save(a, (File)a.getAnnotation(Annotable.FILE));
+				}catch(IOException e)
+				{
+					Hub.displayAlert(Hub.string(e.getMessage()));
+				}
+//					throw new IncompleteWorkspaceDescriptorException();
 //				getGraphModel(a.getName()).setDirty(false);
 //				getGraphModel(a.getName()).notifyAllSubscribers();
 			}
@@ -584,6 +589,5 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	
 	public void fireRepaintRequired() {
 		super.fireRepaintRequired();
-//		((MainWindow)Hub.getMainWindow()).getMainPane().validate();
 	}
 }

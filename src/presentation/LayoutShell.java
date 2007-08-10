@@ -39,19 +39,6 @@ public interface LayoutShell {
 	public Class getModelInterface();
 	
 	/**
-	 * Returns <code>true</code> if the information about
-	 * the presentation of the model needs to be saved;
-	 * <code>false</code> otherwise. E.g., if the user moves
-	 * a node of a {@link FSAGraph}, this method will return
-	 * <code>true</code> since the updated position of the
-	 * node has to be saved.
-	 * @return <code>true</code> if the information maintained
-	 * by the shell about the presentation of the model
-	 * needs to be saved; <code>false</code> otherwise
-	 */
-	public boolean needsSave();
-	
-	/**
 	 * Releases any resources used to wrap the model.
 	 * For example, the shell should unsubscribe from
 	 * listening to changes in the model.

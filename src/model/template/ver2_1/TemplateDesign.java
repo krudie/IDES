@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 import main.Hub;
 import model.DESModel;
+import model.DESModelSubscriber;
 import model.ModelDescriptor;
 import model.fsa.FSAEvent;
 import model.fsa.FSAMessage;
@@ -30,7 +31,43 @@ import model.template.TemplatePublisher;
 import model.template.TemplateSubscriber;
 
 public class TemplateDesign implements TemplateModel {
+	private boolean dirty = false;
+	public boolean needsSave()
+	{
+		return dirty;
+	}
+	
+	public void removeSubscriber(DESModelSubscriber subscriber) {
+	}
+	
+	public DESModelSubscriber[] getDESModelSubscribers()
+	{
+		return null;
+	}
+	
+	public void addSubscriber(DESModelSubscriber subscriber)
+	{
+		
+	}
+	
+	/**
+	 * Notifies the model that some associated metadata has been changed.
+	 */
+	public void metadataChanged()
+	{
+		
+	}
+	
+	/**
+	 * Notifies the model that it has been saved.
+	 */
+	public void modelSaved()
+	{
+		
+	}
+	
 
+	
 	protected Map<String,String> plcCode=new HashMap<String,String>();
 
 	protected static class DesignDescriptor implements ModelDescriptor

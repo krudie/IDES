@@ -23,10 +23,10 @@ import javax.swing.border.TitledBorder;
 import main.Hub;
 import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
+import model.DESModelMessage;
+import model.DESModelPublisher;
+import model.DESModelSubscriber;
 import presentation.LayoutShell;
-import presentation.LayoutShellMessage;
-import presentation.LayoutShellPublisher;
-import presentation.LayoutShellSubscriber;
 import presentation.Presentation;
 import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
@@ -42,7 +42,7 @@ import presentation.fsa.FSAGraphSubscriber;
  * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
-public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListener, MouseMotionListener, LayoutShellSubscriber {
+public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListener, MouseMotionListener, DESModelSubscriber {
 	
 	private HashMap<LayoutShell, Thumbnail> graphPanels = new HashMap<LayoutShell, Thumbnail>();
 	private Vector<Presentation> graphViews=new Vector<Presentation>();
@@ -66,7 +66,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	
 	protected String getDecoratedName(LayoutShell mw)
 	{
-		if(mw.needsSave())
+		if(mw.getModel().needsSave())
 		{
 			return "* "+mw.getModel().getName();
 		}
@@ -123,9 +123,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 		}
 		
 		for( Presentation gv : toRemove ) {
-			if(gv.getLayoutShell() instanceof LayoutShellPublisher)
+			if(gv.getLayoutShell().getModel() instanceof DESModelPublisher)
 			{
-				((LayoutShellPublisher)gv.getLayoutShell()).removeSubscriber(this);
+				((DESModelPublisher)gv.getLayoutShell().getModel()).removeSubscriber(this);
 			}
 			gv.setTrackModel(false);
 			gv.getGUI().removeMouseListener(this);
@@ -138,9 +138,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 			LayoutShell gm = currentModels.elementAt(i);
 			if( graphViews.size() <=i || !graphViews.elementAt(i).getLayoutShell().equals(gm) ) {
 				Presentation gv = PresentationManager.getToolset(gm.getModelInterface()).getModelThumbnail(gm,10,10);
-				if(gv.getLayoutShell() instanceof LayoutShellPublisher)
+				if(gv.getLayoutShell().getModel() instanceof DESModelPublisher)
 				{
-					((LayoutShellPublisher)gv.getLayoutShell()).addSubscriber(this);
+					((DESModelPublisher)gv.getLayoutShell().getModel()).addSubscriber(this);
 				}
 				gv.getGUI().addMouseListener(this);
 				gv.getGUI().addMouseMotionListener(this);
@@ -245,7 +245,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 		}
 	}
 
-	public void saveStatusChanged(LayoutShellMessage message)
+	public void saveStatusChanged(DESModelMessage message)
 	{
 		buildThumbnailBox();
 		invalidate();

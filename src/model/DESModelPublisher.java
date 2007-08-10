@@ -1,15 +1,15 @@
-package presentation;
+package model;
 
-import main.WorkspaceSubscriber;
+import model.DESModelSubscriber;
 
-public interface LayoutShellPublisher {
+public interface DESModelPublisher {
 	/**
 	 * Attaches the given subscriber to this publisher.
 	 * The given subscriber will receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(LayoutShellSubscriber subscriber);
+	public void addSubscriber(DESModelSubscriber subscriber);
 	
 	/**
 	 * Removes the given subscriber to this publisher.
@@ -17,12 +17,12 @@ public interface LayoutShellPublisher {
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(LayoutShellSubscriber subscriber);
+	public void removeSubscriber(DESModelSubscriber subscriber);
 
 	/**
 	 * Returns all current subscribers to this publisher.
 	 * @return all current subscribers to this publisher
 	 */
-	public LayoutShellSubscriber[] getLayoutShellSubscribers();
+	public DESModelSubscriber[] getDESModelSubscribers();
 
 }

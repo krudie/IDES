@@ -8,6 +8,7 @@ import io.IOUtilities;
 
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -71,25 +72,26 @@ public class CommonTasks {
 	 * @param gm the GraphModel that needs to be saved
 	 * @return false if the process was cancelled
 	 */
-	public static boolean handleUnsavedModel(LayoutShell gm)
+	public static boolean handleUnsavedModel(DESModel m)
 	{
-		//TODO make this work with any LayoutShell
-		if(!(gm instanceof FSAGraph))
-			return true;
 		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-				Hub.string("saveChangesAskModel")+"\""+gm.getModel().getName()+"\"?",
+				Hub.string("saveChangesAskModel")+"\""+m.getName()+"\"?",
 				Hub.string("saveChangesModelTitle"),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
 			return false;
 		if(choice==JOptionPane.YES_OPTION)
 		{
-			if((File)gm.getModel().getAnnotation(Annotable.FILE) != null)
+			if((File)m.getAnnotation(Annotable.FILE) != null)
 			{
-				return IOCoordinator.getInstance().save(gm.getModel(), (File)gm.getModel().getAnnotation(Annotable.FILE));
-			}
+				try{
+				IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
+				}catch(IOException e)
+				{
+					Hub.displayAlert(e.getMessage());
+				}
+				}
 			else{
-				DESModel model = gm.getModel();
 				JFileChooser fc;
 				String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
 				if(path == null)
@@ -103,10 +105,10 @@ public class CommonTasks {
 				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
 						Hub.string("modelFileDescription")));
 				
-				if((File)model.getAnnotation(Annotable.FILE)!=null){
-					fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
+				if((File)m.getAnnotation(Annotable.FILE)!=null){
+					fc.setSelectedFile((File)m.getAnnotation(Annotable.FILE));
 				}else{
-					fc.setSelectedFile(new File(model.getName()));
+					fc.setSelectedFile(new File(m.getName()));
 				}
 				
 				int retVal;
@@ -134,8 +136,14 @@ public class CommonTasks {
 			
 				if(retVal != JFileChooser.CANCEL_OPTION)
 				{
-					model.setAnnotation(Annotable.FILE, file);
-					IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+					m.setAnnotation(Annotable.FILE, file);
+					try
+					{
+						IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
+					}catch(Exception e)
+					{
+						Hub.displayAlert(e.getMessage());
+					}
 					Hub.getWorkspace().fireRepaintRequired();
 				}
 				return false;

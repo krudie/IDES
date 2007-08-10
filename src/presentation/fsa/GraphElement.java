@@ -8,6 +8,8 @@ import java.awt.geom.Point2D.Float;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import main.Hub;
+
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 
@@ -233,7 +235,7 @@ public class GraphElement implements PresentationElement {
 		for(PresentationElement g : children.values()){
 			g.translate(dx,dy);
 		}
-		setNeedsRefresh(true);		
+		setNeedsRefresh(true);	
 	}
 
 	/**

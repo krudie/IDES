@@ -19,6 +19,8 @@ import java.util.ListIterator;
 
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNodeLayout;
+import presentation.fsa.FSAGraphMessage;
+import presentation.fsa.FSAGraphSubscriber;
 
 import services.General;
 import util.StupidSetWrapper;
@@ -26,6 +28,8 @@ import util.StupidSetWrapper;
 import main.Annotable;
 import main.Hub;
 import model.DESModel;
+import model.DESModelMessage;
+import model.DESModelSubscriber;
 import model.ModelDescriptor;
 import model.ModelManager;
 import model.fsa.FSAEvent;
@@ -48,6 +52,82 @@ import model.fsa.FSATransition;
  * @author Lenko Grigorov
  */
 public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupervisor {	
+
+	/** DESModelPublisher part which maintains a collection of, and 
+	 * sends change notifications to, all interested observers (subscribers). 
+	 */
+	private ArrayList<DESModelSubscriber> mwSubscribers = new ArrayList<DESModelSubscriber>();
+	private boolean needsSave = false;
+
+	public boolean needsSave()
+	{
+		return needsSave;
+	}
+
+	/**
+	 * Attaches the given subscriber to this publisher.
+	 * The given subscriber will receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void addSubscriber(DESModelSubscriber subscriber)
+	{
+		mwSubscribers.add(subscriber);
+	}
+
+	/**
+	 * Removes the given subscriber to this publisher.
+	 * The given subscriber will no longer receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void removeSubscriber(DESModelSubscriber subscriber) {
+		mwSubscribers.remove(subscriber);
+	}
+
+	/**
+	 * Returns all current subscribers to this publisher.
+	 * @return all current subscribers to this publisher
+	 */
+	public DESModelSubscriber[] getDESModelSubscribers()
+	{
+		return mwSubscribers.toArray(new DESModelSubscriber[]{});
+	}
+
+
+	/**
+	 * Notifies the model that some associated metadata has been changed.
+	 */
+	public void metadataChanged()
+	{
+		setNeedsSave(true);
+	}
+
+
+	protected void setNeedsSave(boolean b)
+	{
+		if(needsSave != b)
+		{
+			needsSave = b;
+			DESModelMessage message=new DESModelMessage(
+					needsSave?DESModelMessage.DIRTY:DESModelMessage.CLEAN,
+							this);
+			for(DESModelSubscriber s : mwSubscribers)	{
+				s.saveStatusChanged(message);
+			}
+		}
+
+	}
+
+	/**
+	 * Notifies the model that it has been saved.
+	 */
+	public void modelSaved()
+	{
+		this.setNeedsSave(false);
+	}
+
+
 
 	protected static class AutomatonDescriptor implements ModelDescriptor
 	{
@@ -216,10 +296,10 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		return name;
 	}
 
-	public FSAModel getFSAModel()
-	{
-		return this;
-	}
+//	public FSAModel getFSAModel()
+//	{
+//		return this;
+//	}
 
 	public ModelDescriptor getModelDescriptor()
 	{
@@ -230,7 +310,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 * @see model.fsa.ver2_1.FSAModel#setName(java.lang.String)
 	 */
 	public void setName(String name){
-		this.name = name;        
+		this.name = name; 
+		this.metadataChanged();
 	}
 
 	/* (non-Javadoc)
@@ -283,6 +364,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		maxStateId = maxStateId < s.getId() ? s.getId() : maxStateId;
 		fireFSAStructureChanged(new FSAMessage(FSAMessage.ADD,
 				FSAMessage.STATE, s.getId(), this));
+		this.metadataChanged();
 
 	}
 
@@ -338,6 +420,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
 		fireFSAStructureChanged(new FSAMessage(FSAMessage.ADD,
 				FSAMessage.TRANSITION, t.getId(), this));
+		this.metadataChanged();
 	}
 
 	/* (non-Javadoc)
@@ -378,6 +461,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		maxEventId = maxEventId < e.getId() ? e.getId() : maxEventId;    	
 		fireFSAEventSetChanged(new FSAMessage(FSAMessage.ADD,
 				FSAMessage.EVENT, e.getId(), this));
+		this.metadataChanged();
 	}
 
 	/**

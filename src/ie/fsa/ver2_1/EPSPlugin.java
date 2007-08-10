@@ -84,8 +84,6 @@ public class EPSPlugin implements ImportExportPlugin{
 		//		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(src);
 		String fileContents = GraphExporter.createEPSFileContents();
 		//		System.out.println(fileContents);
-		FileWriter latexWriter = null;
-		
 		if (fileContents == null)
 		{
 			return;
@@ -93,14 +91,16 @@ public class EPSPlugin implements ImportExportPlugin{
 		
 		try
 		{
-			latexWriter = new FileWriter(dst);
-			latexWriter.write(fileContents);
-			latexWriter.close();
-		}
-		catch (IOException fileException)
+			LatexManager.getRenderer().latex2EPS(fileContents,dst);
+		}catch (IOException fileException)
 		{
 			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
-		}
+			}
+			catch (LatexRenderException e)
+			{
+			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
+			}
+
 
 	}
 	

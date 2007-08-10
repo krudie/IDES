@@ -102,7 +102,8 @@ public class TCTPlugin implements ImportExportPlugin{
 	
 	/**
 	 * Import a file from a different format to the IDES file system
-	 * @param importFile - the source file
+	 * @param src - the source file
+	 * @param dst - the destination file
 	 * @return
 	 */
 	public void importFile(File src, File dst)
@@ -111,12 +112,17 @@ public class TCTPlugin implements ImportExportPlugin{
     	try
     	{
     		FSAModel a=LL_CTCT_Command.CTCTtoGiddes(src.getAbsolutePath(),src.getName().substring(0,src.getName().lastIndexOf(".")));
-//    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
-    		//saving the imported model to dst
-    		IOCoordinator.getInstance().save(a, dst);
-       		//Add the new layout to the workspace
-//    		Hub.getWorkspace().addModel(a);
-//			Hub.getWorkspace().setActiveModel(a.getName());
+    		if(a!= null)
+    		{
+    			//Save the imported model to <code>dst</code>
+    			try
+    			{
+    				IOCoordinator.getInstance().save(a, dst);
+    			}catch(Exception e)
+    			{
+    				Hub.displayAlert(e.getMessage());
+    			}
+    		}
     	}catch(CTCTException e)
     	{
     		e.printStackTrace();
@@ -127,7 +133,6 @@ public class TCTPlugin implements ImportExportPlugin{
     		e.printStackTrace();
     		Hub.displayAlert(Hub.string("cantParseImport")+src);
     	}
-
 	}
 	
 	

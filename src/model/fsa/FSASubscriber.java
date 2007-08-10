@@ -13,6 +13,6 @@ public interface FSASubscriber {
 
 	public void fsaStructureChanged(FSAMessage message);
 	public void fsaEventSetChanged(FSAMessage message);
-	public void fsaSaved();
+//	public void fsaSaved();
 	
 }

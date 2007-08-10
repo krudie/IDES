@@ -104,6 +104,7 @@ public class SelectionTool extends DrawingTool {
 			ContextAdaptorHack.context.highlightCurrentSelection(true);
 			ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);	
 			moving = true;
+			ContextAdaptorHack.context.setMoving(moving);
 			return;
 		}
 		
@@ -132,6 +133,7 @@ public class SelectionTool extends DrawingTool {
 			dragging = true;
 		}
 		
+		ContextAdaptorHack.context.setMoving(moving);
 		//context.getGraphModel().notifyAllSubscribers();
 		ContextAdaptorHack.context.repaint();
 	}

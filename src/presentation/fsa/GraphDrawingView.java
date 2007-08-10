@@ -51,18 +51,31 @@ import ui.tools.TextTool;
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements MouseMotionListener, MouseListener, KeyListener {
 
+	/**If true, the next refresh will not change the view*/
 	private boolean avoidNextDraw;
-	
+	/**Set a flag to avoid a chage for the next refresh operation*/
 	public void setAvoidNextDraw(boolean b)
 	{
 		avoidNextDraw = b;
 	}
-	
+
 	public boolean getAvoidNextDraw()
 	{
 		return avoidNextDraw;
 	}
-	
+
+
+
+	private boolean moving = false;
+	public void setMoving(boolean b)
+	{
+		moving = b;
+	}
+	public boolean getMoving()
+	{
+		return moving;
+	}
+
 	//The tool to be automatically returned to after the MODIFY tool is used
 	private int PreferredTool;
 	public int getPreferredTool()
@@ -74,13 +87,13 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		avoidNextDraw = false;
 		PreferredTool = pt;
 	}
-	
+
 	protected static ToggleCommand nodesControl;
 	public static boolean isUniformNodes()
 	{
 		return nodesControl.isSelected();
 	}
-	
+
 	private TexturePaint gridBG=null;
 	private boolean showGrid=false;
 	public void setShowGrid(boolean b)
@@ -95,32 +108,32 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			}
 		}
 	}
-	
+
 	private int currentTool = DEFAULT;
-	
+
 	/**
 	 * The set of drawing tools which handle delegated i.e. events forwarded from this view.
 	 * Each tool corresponds to a drawing mode.
 	 */
 	private DrawingTool[] drawingTools;
-	
+
 	/**
 	 * Retangle to render as the area selected by mouse. 
 	 */
 	private Rectangle selectionArea;
-	
+
 	/**
 	 * Temporary edge for use while creating new edge.
 	 */
 	private Edge tempEdge;	
-	
+
 	/**
 	 * Currently selected group of 0 or more elements
 	 */
 	private SelectionGroup selectedGroup;	
-	
+
 	private GraphElement hoverElement;
-	
+
 	/**
 	 * The selected print area.
 	 */
@@ -146,7 +159,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			}
 		}
 	};
-	
+
 	protected Action escapeListener = new AbstractAction("escape")
 	{
 		public void actionPerformed(ActionEvent actionEvent)
@@ -159,21 +172,21 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			setAvoidNextDraw(false);
 		}
 	};
-	
+
 	public GraphDrawingView() {
 		super();
 //		Hub.getWorkspace().addSubscriber(this);		
-		
+
 		scaleFactor = 1f;
 		scaleToFit=false;
-	
+
 		nodesControl=new UniformNodesCommand();
 		nodesControl.export();
-		
+
 		selectedGroup = new SelectionGroup();
 		selectionArea = new Rectangle();
 		hoverElement = null;
-		
+
 		drawingTools = new DrawingTool[NUMBER_OF_TOOLS];
 		drawingTools[DEFAULT] = new SelectionTool();
 		drawingTools[SELECT] = drawingTools[DEFAULT];
@@ -182,7 +195,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		drawingTools[MOVE] = new MovementTool();
 		drawingTools[MODIFY] = new ModifyEdgeTool();		
 		currentTool = DEFAULT;		
-	    		
+
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		addKeyListener(this);
@@ -199,10 +212,10 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		//Associating the action names with operations:
 		getActionMap().put(deleteActionName,deleteListener);
 		getActionMap().put(escActionName,escapeListener);
-		
-	    setVisible(true);
+
+		setVisible(true);
 	}	
-	
+
 	public void setEnabled(boolean b)
 	{
 		if(b)
@@ -245,7 +258,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			removeKeyListener(this);
 		}
 	}
-	
+
 	/**
 	 * TODO If no model open, set BG colour to some inactive looking grey.
 	 */
@@ -257,13 +270,13 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		Graphics2D g2D = (Graphics2D)g;
 		if(gridBG == null)
 		{
-				BufferedImage image= (BufferedImage) createImage(GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE);
-				Graphics2D im_g2d = (Graphics2D) image.getGraphics();
-		    	im_g2d.setColor(Color.WHITE);
-		    	im_g2d.fillRect(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE);
-				im_g2d.setColor(Color.BLACK);
-				im_g2d.drawLine(0,0,0,0);
-				gridBG = new TexturePaint(image,new Rectangle(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE));
+			BufferedImage image= (BufferedImage) createImage(GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE);
+			Graphics2D im_g2d = (Graphics2D) image.getGraphics();
+			im_g2d.setColor(Color.WHITE);
+			im_g2d.fillRect(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE);
+			im_g2d.setColor(Color.BLACK);
+			im_g2d.drawLine(0,0,0,0);
+			gridBG = new TexturePaint(image,new Rectangle(0,0,GraphicalLayout.GRID_SIZE,GraphicalLayout.GRID_SIZE));
 		}
 		if(gridBG != null && scaleFactor==1 && showGrid)
 		{
@@ -275,19 +288,19 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		}
 		else
 		{
-	    	g2D.setColor(Color.WHITE);
-	    	g2D.fillRect(0,0,getBounds().width,getBounds().height);
+			g2D.setColor(Color.WHITE);
+			g2D.fillRect(0,0,getBounds().width,getBounds().height);
 		}
 		super.paint(g,false);
-		
+
 		if(tempEdge != null) {
 			tempEdge.draw(g2D);
 		}
-		
+
 		if(selectionArea.height > 0 && selectionArea.width > 0){
 			g2D.setStroke(GraphicalLayout.DASHED_STROKE);
 			g2D.setColor(Color.DARK_GRAY);
-					
+
 			// DEBUG
 			try{
 				g2D.draw(selectionArea);
@@ -295,8 +308,14 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 				System.out.println(selectionArea.toString());
 			}
 		}
+		//TODO: CHRISTIAN
+//		moving = false;
+//		if(!moving)
+//		{
+//			super.graphModel.updateSelection(null);
+//		}
 	}
-	
+
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
 		arg0=transformMouseCoords(arg0);
@@ -331,11 +350,21 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		}else{
 			drawingTools[currentTool].handleMouseReleased(arg0);			
 		}
+		if(this.moving)
+		{
+			this.setMoving(false);
+			GraphElement selection = this.getSelectedElement();
+			if(selection != null)
+			{
+				this.graphModel.commitTranslation(this.getSelectedElement());
+			}
+		}
 	}
 
 	public void mouseDragged(MouseEvent arg0) {		
 		arg0=transformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseDragged(arg0);
+		this.setMoving(true);
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
@@ -344,7 +373,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	}	
 
 	public void mouseEntered(MouseEvent arg0) {}
-	
+
 	public void mouseExited(MouseEvent arg0) {
 		if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
 		{
@@ -355,7 +384,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			repaint();
 		}
 	}
-	
+
 
 	// Key listener events
 	// FIXME move all key listening to the main window since it seems events don't make it this far...
@@ -366,8 +395,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 
 	public void keyPressed(KeyEvent arg0) {
 		drawingTools[currentTool].handleKeyPressed(arg0);	
-		
-		
+
+
 	}
 
 
@@ -384,7 +413,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		selectedGroup.clear();
 		selectionArea.setSize(0,0);			
 	}
-	
+
 	/**
 	 * Updates the selection group to the element hit by <code>point</code> and returns true.
 	 * If nothing intersected, returns false.
@@ -398,8 +427,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 //			selectedElement = graphModel.getElementIntersectedBy(point); 
 //			if(selectedElement != null)
 //			{
-//				selectedElement.setSelected(true);
-//				return true; // selectedElement != null;
+//			selectedElement.setSelected(true);
+//			return true; // selectedElement != null;
 //			}
 			GraphElement el = graphModel.getElementIntersectedBy(point);
 			if(el != null){				
@@ -410,7 +439,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		}
 		return false;				
 	}	
-	
+
 	/**
 	 * Set the current selection to all elements contained by the given rectangle.
 	 * 
@@ -435,7 +464,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		selectedGroup.setHighlighted(b);
 		selectedGroup.setSelected(!b);		
 	}	
-	
+
 	/**
 	 * 
 	 * @return true iff there is a current selection of elements
@@ -477,7 +506,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	public Rectangle getSelectionArea() {
 		return selectionArea;
 	}	
-	
+
 	/**
 	 * Tools types (corresponding to user interaction modes) to 
 	 * determine mouse and keyboard responses.
@@ -492,7 +521,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	public final static int MOVE = 5;
 	public final static int TEXT = 6;
 	public final static int NUMBER_OF_TOOLS = 9;
-	
+
 	/**
 	 * Set the current drawing tool to the one with the given tool id.
 	 * 
@@ -509,7 +538,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	public boolean hasCurrentSelection() {		
 		return selectedGroup.hasChildren();
 	}
-	
+
 	protected MouseEvent transformMouseCoords(MouseEvent e)
 	{
 		Point2D.Float p=new Point2D.Float(e.getX(),e.getY());
@@ -524,9 +553,9 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 				e.getClickCount(),
 				e.isPopupTrigger(),
 				e.getButton()
-				);
+		);
 	}
-	
+
 	public Point2D.Float screenToLocal(Point2D.Float p)
 	{
 		Point2D.Float r=(Point2D.Float)p.clone();
@@ -534,7 +563,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		r.y=r.y/scaleFactor;
 		return r;
 	}
-	
+
 	public Point2D.Float localToScreen(Point2D.Float p)
 	{
 		Point2D.Float r=(Point2D.Float)p.clone();
@@ -557,7 +586,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	public void setTempEdge(Edge tempEdge) {
 		this.tempEdge = tempEdge;
 	}
-	
+
 	public JComponent getGUI()
 	{
 		JScrollPane sp = new JScrollPane(this, 
@@ -565,16 +594,16 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		return sp;
 	}
-	
+
 //	public void update(){
-//		scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
-//		if(scaleFactor!=1)
-//			setShowGrid(false);
-//		
-//		// get the active graph model and update the graph view part of me		
-//		graphModel = Workspace.instance().getActiveGraphModel();		
-//		super.update();
-//		Hub.getMainWindow().validate();
+//	scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
+//	if(scaleFactor!=1)
+//	setShowGrid(false);
+
+//	// get the active graph model and update the graph view part of me		
+//	graphModel = Workspace.instance().getActiveGraphModel();		
+//	super.update();
+//	Hub.getMainWindow().validate();
 //	}
 
 	/**
@@ -584,52 +613,52 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	 */
 //	public void fsmGraphSelectionChanged(FSMGraphMessage message) 
 //	{
-//		// ??? Do I need to do anything here ?  
-//		// Or is this event always going to be fired from within this class ?
+//	// ??? Do I need to do anything here ?  
+//	// Or is this event always going to be fired from within this class ?
 //	}
-	
+
 //	/* (non-Javadoc)
-//	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
-//	 */
+//	* @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+//	*/
 //	public void modelCollectionChanged(WorkspaceMessage message) {
-//		// get the active graph model and update the graph view  part of me
-//		if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
-//			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
-//		else
-//			setGraphModel(null);
-//		Hub.getMainWindow().validate();
+//	// get the active graph model and update the graph view  part of me
+//	if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
+//	setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
+//	else
+//	setGraphModel(null);
+//	Hub.getMainWindow().validate();
 //	}
-//
+
 //	/* (non-Javadoc)
-//	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
-//	 */
+//	* @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+//	*/
 //	public void repaintRequired(WorkspaceMessage message) {
-//		
-//		Hub.getMainWindow().validate();
-//		repaint();
+
+//	Hub.getMainWindow().validate();
+//	repaint();
 //	}
-//
+
 //	/* (non-Javadoc)
-//	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
-//	 */
+//	* @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+//	*/
 //	public void modelSwitched(WorkspaceMessage message) {
-//		// get the active graph model and update the graph view  part of me
-//		if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
-//			setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
-//		else
-//			setGraphModel(null);
-//		Hub.getMainWindow().validate();
-//		//repaint();
+//	// get the active graph model and update the graph view  part of me
+//	if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
+//	setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
+//	else
+//	setGraphModel(null);
+//	Hub.getMainWindow().validate();
+//	//repaint();
 //	}	
-	
+
 	public void setGraphModel(FSAGraph graphModel)
 	{
 		super.setGraphModel(graphModel);
-		
+
 		if(graphModel != null && graphModel.isAvoidLayoutDrawing())
 		{
 			this.setEnabled(false);
 		}
 	}
-	
+
 }

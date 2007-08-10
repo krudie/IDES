@@ -18,6 +18,9 @@ import java.util.TreeSet;
 
 import main.Annotable;
 import model.DESModel;
+import model.DESModelMessage;
+import model.DESModelPublisher;
+import model.DESModelSubscriber;
 import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.template.TemplateBlock;
@@ -31,11 +34,8 @@ import model.template.ver2_1.Channel;
 import model.template.ver2_1.Link;
 import model.template.ver2_1.Module;
 import presentation.LayoutShell;
-import presentation.LayoutShellMessage;
-import presentation.LayoutShellPublisher;
-import presentation.LayoutShellSubscriber;
 
-public class TemplateGraph implements LayoutShell, LayoutShellPublisher, TemplateSubscriber, Annotable {
+public class TemplateGraph implements LayoutShell, /*DESModelPublisher,*/ TemplateSubscriber, Annotable {
 	
 	public static final Color COLOR_NORM=Color.BLACK;
 	public static final Color COLOR_SELECT=Color.RED;
@@ -47,7 +47,7 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	/** LayoutShellPublisher part which maintains a collection of, and 
 	 * sends change notifications to, all interested observers (subscribers). 
 	 */
-	protected ArrayList<LayoutShellSubscriber> lssubscribers = new ArrayList<LayoutShellSubscriber>();
+	protected ArrayList<DESModelSubscriber> lssubscribers = new ArrayList<DESModelSubscriber>();
 	/** FSAGraphPublisher part which maintains a collection of, and 
 	 * sends change notifications to, all interested observers (subscribers). 
 	 */
@@ -468,7 +468,7 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	 * 
 	 * @param subscriber
 	 */
-	public void addSubscriber(LayoutShellSubscriber subscriber) {
+	public void addSubscriber(DESModelSubscriber subscriber) {
 		lssubscribers.add(subscriber);
 	}
 
@@ -478,7 +478,7 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	 * 
 	 * @param subscriber
 	 */
-	public void removeSubscriber(LayoutShellSubscriber subscriber) {
+	public void removeSubscriber(DESModelSubscriber subscriber) {
 		lssubscribers.remove(subscriber);
 	}
 
@@ -486,9 +486,9 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	 * Returns all current subscribers to this publisher.
 	 * @return all current subscribers to this publisher
 	 */
-	public LayoutShellSubscriber[] getLayoutShellSubscribers()
+	public DESModelSubscriber[] getLayoutShellSubscribers()
 	{
-		return lssubscribers.toArray(new LayoutShellSubscriber[]{});
+		return lssubscribers.toArray(new DESModelSubscriber[]{});
 	}
 	
 	/**
@@ -496,12 +496,12 @@ public class TemplateGraph implements LayoutShell, LayoutShellPublisher, Templat
 	 * the save status of the design.
 	 */
 	private void fireSaveStatusChanged() {
-		LayoutShellMessage message=new LayoutShellMessage(
-				needsSave?LayoutShellMessage.DIRTY:LayoutShellMessage.CLEAN,
-						this);
-		for(LayoutShellSubscriber s : lssubscribers)	{
-			s.saveStatusChanged(message);
-		}
+//		DESModelMessage message=new DESModelMessage(
+//				needsSave?DESModelMessage.DIRTY:DESModelMessage.CLEAN,
+//						this);
+//		for(DESModelSubscriber s : lssubscribers)	{
+//			s.saveStatusChanged(message);
+//		}
 	}
 	
 	/**

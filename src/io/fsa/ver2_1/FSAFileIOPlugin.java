@@ -105,22 +105,24 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	public boolean saveData(PrintStream stream, DESModel model, File fileDirectory)
 	{
 		ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
-		while(si.hasNext()){
-			XMLExporter.stateToXML((State)si.next(), stream, XMLExporter.INDENT);            
-		}
+		try{
+			while(si.hasNext()){
+				XMLExporter.stateToXML((State)si.next(), stream, XMLExporter.INDENT);            
+			}
 
-		ListIterator<FSAEvent> ei = ((FSAModel)model).getEventIterator();
-		while(ei.hasNext()){
-			XMLExporter.eventToXML((Event)ei.next(),stream, XMLExporter.INDENT);
-		}
+			ListIterator<FSAEvent> ei = ((FSAModel)model).getEventIterator();
+			while(ei.hasNext()){
+				XMLExporter.eventToXML((Event)ei.next(),stream, XMLExporter.INDENT);
+			}
 
-		ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
-		while(ti.hasNext()){
-			XMLExporter.transitionToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
+			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
+			while(ti.hasNext()){
+				XMLExporter.transitionToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
+			}
+		}catch(Exception e)
+		{
+			return false;
 		}
-		//TODO make IOCoordinator call a "fireModelSaved", it should be a generic call for any
-		//kind of DES Model.
-		((FSAModel)model).fireFSASaved();
 		return true;
 	}
 
@@ -137,17 +139,15 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		{
 			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
-			//TODO: get font size from somewhere! The size was a metaData inside model, for now it will be constant: 12
-			//CONSULT LENKO ABOUT, WHERE TO STORE THE FONT SIZE!
-//			stream.println("\t<font size=\""+(((FSAModel)model).metan()==null?12:((FSAModel)model).getMeta().getAttribute("size"))+"\"/>");
+			//TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
 			stream.println("\t<font size=\""+ 12+"\"/>");
 			si = ((FSAModel)model).getStateIterator();
-	
+
 			while(si.hasNext())
 			{
 				XMLExporter.stateLayoutToXML((State)si.next(), stream, XMLExporter.INDENT);            
 			}
-	
+
 			//Save the transitions
 			ti = ((FSAModel)model).getTransitionIterator();
 			//Create a hashmap to store the transition layouts, this information is used for the "groups" creation.
@@ -179,16 +179,9 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		model = ModelManager.createModel(FSAModel.class);
 		model = parser.parseData(dataField);
 
-		if(model == null)
+		if(model == null || !"".equals(errors))
 		{
-			//TODO THROW AN ERROR
 			return null;
-		}
-
-		if(!"".equals(errors))
-		{
-			Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+
-					"\n"+Hub.string("errorsParsingXMLFileL2"));
 		}
 		return model;//(DESModel)a;
 	}
@@ -201,7 +194,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	{		
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<meta>" + System.getProperty("line.separator")).getBytes();
 		HeadTailInputStream metaField = new HeadTailInputStream(stream,FILE_HEADER,"</meta>".getBytes());
-		
+
 		AutomatonParser parser = new AutomatonParser();
 		parser.parseMeta(metaField, model);
 	}
@@ -226,32 +219,32 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void stateToXML(State s, PrintStream ps,String indent){
-				ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-				
-				if(!(s.isInitial() | s.isMarked()))
+			ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
+
+			if(!(s.isInitial() | s.isMarked()))
+			{
+				ps.println(indent + indent + "<properties/>");
+			}else{
+				ps.println(indent + indent + "<properties>");
+				if(s.isInitial())
 				{
-					ps.println(indent + indent + "<properties/>");
-				}else{
-					ps.println(indent + indent + "<properties>");
-					if(s.isInitial())
-					{
-						ps.println(indent + indent + indent + "<initial />");
-					}
-					if(s.isMarked())
-					{
-						ps.println(indent + indent + indent + "<marked />");
-					}
-					ps.println(indent + indent + "</properties>");
+					ps.println(indent + indent + indent + "<initial />");
 				}
-				
-				if(s.getName() != null)
+				if(s.isMarked())
 				{
-					ps.println(indent + indent + "<name>" + s.getName() + "</name>");
-				}else{
-					ps.println(indent + indent + "<name />");
+					ps.println(indent + indent + indent + "<marked />");
 				}
-				
-				ps.println(indent + "</state>");
+				ps.println(indent + indent + "</properties>");
+			}
+
+			if(s.getName() != null)
+			{
+				ps.println(indent + indent + "<name>" + s.getName() + "</name>");
+			}else{
+				ps.println(indent + indent + "<name />");
+			}
+
+			ps.println(indent + "</state>");
 		}
 		/**
 		 * prints an event in xml
@@ -297,12 +290,12 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 */ 
 		private static void transitionToXML(Transition t, PrintStream ps, String indent){
 			ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
-						+ t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
+					+ t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
 
-						+ ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
-				ps.println(indent + "</transition>");			
+					+ ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
+			ps.println(indent + "</transition>");			
 		}
-	
+
 		/**
 		 * prints a state in xml
 		 * @param s the state to convert 
@@ -359,21 +352,21 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		COORD_Y="y", BEZIER="bezier", X1="x1", Y1="y1", X2="x2", Y2="y2", CTRLX1="ctrlx1", CTRLY1="ctrly1",
 		CTRLX2="ctrlx2", CTRLY2="ctrly2", SOURCE="source", TARGET="target",STATE = "state", 
 		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label", ARROW="arrow", GROUP_ID="group";
-		
+
 		//Auxiliar attributes: "Actions" to be developed by the parser
 		//Tells some parseDataElements and parseMetaElements whether they are
 		//parsing main tags or subtags
 		protected final int MAINTAG = 2, SUBTAG = 3, SUBSUBTAG=4, SUBSUBSUBTAG=5; //,,, 
 		private String CURRENT_PARSING_ELEMENT="";
-		
+
 		boolean parsingData = false;
 		boolean parsingMeta = false;
-		
+
 		//Chain to store the strings meaning all the xml tags being processed.
 		//The order is from the most important xml tag, to the less importants (MAINTAG->SUBTAG->SUBSUBTAG...)
 		public Vector<String> tags = new Vector<String>();
-		
-		
+
+
 		/**
 		 * creates an automatonParser.
 		 */
@@ -413,17 +406,17 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			}
 			catch(Exception e)
 			{
-				
+
 			}
-			
+
 			if(parsingData)
 			{
-					parseDataElements(qName,atts);
+				parseDataElements(qName,atts);
 			}
-			
+
 			if(parsingMeta)
 			{
-					parseMetaElements(qName,atts);
+				parseMetaElements(qName,atts);
 			}
 		}
 		/**
@@ -432,9 +425,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		public void endElement(String uri, String localName, String qName){			
 			if(!qName.equals(tags.get(tags.size() -1)))
 			{
-				System.out.println("ERROR: Closing an non-oppened tag.");
-				//Closing an unnopen tag.
-				//TODO show error: "The tag: tags.get(tags.size() -1) was not closed."
+				Hub.displayAlert(Hub.string("errorsParsingXMLFileL2"));
 			}else{
 				tags.remove(tags.remove(tags.size()-1));
 				CURRENT_PARSING_ELEMENT="";
@@ -504,8 +495,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					tmpEvent = (Event)getModelElement(atts, CURRENT_PARSING_ELEMENT);
 					model.add(tmpEvent);
 				}
-			
-			//////////////////////////////////////////////
+
+				//////////////////////////////////////////////
 			case SUBTAG:			
 				if(qName.equals(NAME))
 				{    	
@@ -513,7 +504,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				}else{
 					settingName = false;
 				}
-			//////////////////////////////////////////////
+				//////////////////////////////////////////////
 			case SUBSUBTAG:
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
@@ -539,9 +530,9 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					}
 				}
 			}
-				
+
 		}
-		
+
 		public void parseMetaElements(String qName, Attributes atts)
 		{
 			//THIS STRUCTURE CAN BE USED TO PARSE A XML TAG IN ANY SUB-LEVEL
@@ -594,7 +585,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 							break;
 						}
 					}
-					
+
 					BezierLayout l = null;
 					if(groupId == -1)//The transition has no group
 					{
@@ -687,7 +678,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				}
 			}
 		}
-	
+
 		/**
 		 * Sets annotations for all the model elements in <code>model</code> based on the informations
 		 * countained in <code>stream</code>

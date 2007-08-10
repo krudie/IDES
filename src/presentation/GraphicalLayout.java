@@ -10,6 +10,8 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 
+import main.Hub;
+
 /**
  * Encapsulates the basic position and appearance characteristics of 
  * graphical elements displayed in the graph views.

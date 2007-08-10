@@ -3,6 +3,7 @@
  */
 package io;
 
+import io.fsa.ver2_1.CommonTasks;
 import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Cursor;
@@ -14,6 +15,7 @@ import java.util.Vector;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import main.Annotable;
 import main.Hub;
@@ -55,7 +57,8 @@ public class CommonActions {
 				model = IOCoordinator.getInstance().load(file);
 			}catch(IOException e)
 			{
-				Hub.displayAlert(e.getMessage());
+				Hub.displayAlert(Hub.string("errorsParsingXMLFileL1" + file.getName() + "\n" 
+						+ Hub.string("errorsParsingXMLFileL2")));
 				return;
 			}
 			if(model != null)
@@ -70,41 +73,45 @@ public class CommonActions {
 		}	
 	}
 
-	public static void save()
+	public static void save(DESModel model, File file)
 	{
 		//Make the model be saved by the IOCoordinator.
 		//IOCoordinator will select the plugins which saves data and metadata information for model.
-		DESModel model = Hub.getWorkspace().getActiveModel();
 		if( model != null)
 		{		
-			String path;
-			try{
-				path = (String)((File)model.getAnnotation(Annotable.FILE)).getPath();
-			}catch(NullPointerException e){
-				saveAs();
-				return;
+			if(file == null)
+			{
+				String path;
+				try{
+					path = (String)((File)model.getAnnotation(Annotable.FILE)).getPath();
+				}catch(NullPointerException e){
+					saveAs(model);
+					return;
+				}
+				file = new File(path);
+			}
+			try
+			{
+				IOCoordinator.getInstance().save(model, file);
+			}catch(IOException e)
+			{
+				Hub.displayAlert(e.getMessage());
 			}
 
-			File file = new File(path);
-			IOCoordinator.getInstance().save(model, file);
-			Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
-
-			String newName=ParsingToolbox.removeFileType(file.getName());
-			if(!newName.equals(model.getName())
-					&&Hub.getWorkspace().getModel(newName)!=null)
-				Hub.getWorkspace().removeModel(newName);
-
-			model.setName(newName);
+			String name=ParsingToolbox.removeFileType(file.getName());
 			model.setAnnotation(Annotable.FILE,file);
-
+			model.setName(name);
+			if(!name.equals(model.getName()) && Hub.getWorkspace().getModel(name)!=null)
+			{
+				Hub.getWorkspace().removeModel(name);
+			}
+			Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
+			model.modelSaved();
 		}
 	}
 
-	public static void saveAs()
+	public static void saveAs(DESModel model)
 	{
-		//Make the model be saved by the IOCoordinator.
-		//IOCoordinator will select the plugins which saves data and metadata information for model.
-		DESModel model = Hub.getWorkspace().getActiveModel();
 		if( model != null)
 		{
 			JFileChooser fc;
@@ -151,8 +158,7 @@ public class CommonActions {
 
 			if(retVal != JFileChooser.CANCEL_OPTION)
 			{
-				model.setAnnotation(Annotable.FILE, file);
-				IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+				save(model, file);
 			}
 			try
 			{
@@ -162,6 +168,7 @@ public class CommonActions {
 				//cancel button pressed... that's OK.
 			}
 		}
+
 	}
 
 	public static void importModel()
@@ -176,14 +183,13 @@ public class CommonActions {
 			ImportExportPlugin plugin = it.next();
 			if(plugin.getExportExtension() == null)
 			{
-				//TODO THROW ERROR: Plugin Error
+				return;
 			}
 			ext.add(plugin.getExportExtension());
 			desc.add(plugin.getDescription());
 		}
 		if(ext.size() <= 0)
 		{
-			//TODO: SHOW MESSAGE:
 			//NO PLUGINS REGISTERED TO IMPORT!
 			//actually this should never happen since IDES already register some "basic" plugins
 			//in the Main.main() method.
@@ -194,7 +200,16 @@ public class CommonActions {
 		while(extIt.hasNext())
 		{
 			fc.addChoosableFileFilter(new ExtensionFileFilter(extIt.next(), descIt.next()));
-			//fc.setFileFilter();
+		}
+		String lastFilter = Hub.persistentData.getProperty("LAST_USED_IMPORT_FILTER");
+		FileFilter[] f = fc.getChoosableFileFilters();
+		for(int i = 0; i < f.length; i++)
+		{
+			FileFilter last = f[i];
+			if(last.getDescription().equals(lastFilter))
+			{
+				fc.setFileFilter(last);
+			}
 		}
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int retVal = fc.showOpenDialog(Hub.getMainWindow());
@@ -217,47 +232,50 @@ public class CommonActions {
 				String suffix = IOUtilities.MODEL_FILE_EXT;
 				File dst = File.createTempFile("tmp" + prefix, suffix);
 				IOCoordinator.getInstance().importFile(file, dst, fc.getFileFilter().getDescription());
-				model = IOCoordinator.getInstance().load(dst);
+				if(dst.exists())
+				{
+					model = IOCoordinator.getInstance().load(dst);
+				}
 				if(model != null)
 				{
-					model.setName(ParsingToolbox.removeFileType(Hub.string("newModelName")));
+					model.setName(prefix);
 					Hub.getWorkspace().addModel(model);
 					Hub.getWorkspace().setActiveModel(model.getName());
 				}
+				dst.delete();
 			}catch(IOException e)
 			{
 				Hub.displayAlert(Hub.string("cantParseImport"));
 			}
-
-
 			Hub.getMainWindow().setCursor(cursor);
+			try
+			{
+				Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
+				Hub.persistentData.setProperty("LAST_USED_IMPORT_FILTER", fc.getFileFilter().getDescription());
+			}catch(NullPointerException e)
+			{
+				//cancel button pressed... that's OK.
+			}
 		}
 	}
 
 	public static void exportModel()
-	{
-		//Make the model be saved by the IOCoordinator.
-		//IOCoordinator will select the plugins which saves data and metadata information for model.
+	{		
 		DESModel model = Hub.getWorkspace().getActiveModel();
 		//Src is the file that will be used by the exporter.
 		File src = null;
 		if(model != null)
 		{
-			src = (File)model.getAnnotation(Annotable.FILE);
-			if(src == null)
+			try{
+				src = File.createTempFile("export", IOUtilities.MODEL_FILE_EXT);
+				IOCoordinator.getInstance().save(model, src);
+			}catch(IOException e)
 			{
-				try{
-					src = File.createTempFile("export", IOUtilities.MODEL_FILE_EXT);
-					IOCoordinator.getInstance().save(model, src);
-				}catch(IOException e)
-				{
-					//TODO display an error to the user
-					return;
-				}
-			}	
+				Hub.displayAlert(Hub.string("ProblemsWhileExporting") + e.getMessage());
+				return;
+			}
 		}else{
 			//The model can't be null
-			//TODO display an error to the user
 			return;
 		}
 
@@ -271,13 +289,22 @@ public class CommonActions {
 			fc=new JFileChooser(path);	
 		}
 		fc.setDialogTitle(Hub.string("exportTitle"));
-
-		//TODO add export filters
+		fc.setSelectedFile(new File(path + "/" + model.getName()));
 		Iterator<ImportExportPlugin> pluginIt = IOPluginManager.getInstance().getExporters().iterator();
 		while(pluginIt.hasNext())
 		{
 			ImportExportPlugin p = pluginIt.next();
 			fc.addChoosableFileFilter(new ExtensionFileFilter(p.getExportExtension(), p.getDescription()));
+		}
+		String lastFilter = Hub.persistentData.getProperty("LAST_USED_EXPORT_FILTER");
+		FileFilter[] f = fc.getChoosableFileFilters();
+		for(int i = 0; i < f.length; i++)
+		{
+			FileFilter last = f[i];
+			if(last.getDescription().equals(lastFilter))
+			{
+				fc.setFileFilter(last);
+			}
 		}
 		int retVal;
 		boolean fcDone=true;
@@ -302,22 +329,22 @@ public class CommonActions {
 
 		if(retVal != JFileChooser.CANCEL_OPTION)
 		{
-			//TODO EXPORT THE FILE: file
 			try{
 				IOCoordinator.getInstance().exportFile(src, file, fc.getFileFilter().getDescription());
 			}
-			catch(Exception e)
+			catch(IOException e)
 			{
-				//TODO show an error
+				Hub.displayAlert(Hub.string("problemWhileExporting") + e.getMessage());
 			}
 		}
 		try
 		{
 			Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME", file.getParentFile().getAbsolutePath());
+			Hub.persistentData.setProperty("LAST_USED_EXPORT_FILTER", fc.getFileFilter().getDescription());
 		}catch(NullPointerException e)
 		{
 			//cancel button pressed... that's OK.
 		}
-
+		src.delete();
 	}
 }
