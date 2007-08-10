@@ -3,22 +3,23 @@
  */
 package io;
 
-import io.fsa.ver2_1.CommonTasks;
-import io.fsa.ver2_1.FileOperations;
-
 import java.awt.Cursor;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import main.Annotable;
 import main.Hub;
+import main.IncompleteWorkspaceDescriptorException;
+import main.WorkspaceDescriptor;
 import model.DESModel;
 
 import org.pietschy.command.file.ExtensionFileFilter;
@@ -32,7 +33,6 @@ import pluggable.io.ImportExportPlugin;
  *
  */
 public class CommonActions {
-
 	public static void load()
 	{
 		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
@@ -346,5 +346,242 @@ public class CommonActions {
 			//cancel button pressed... that's OK.
 		}
 		src.delete();
+	}
+
+
+
+	/**
+	 * Saves the workspace described by <code>wd</code>. If the file name is invalid, calls
+	 * {@link #saveWorkspaceAs(WorkspaceDescriptor)} to get a new file name.
+	 * 
+	 * @param wd the description of the workspace
+	 * @param file the file where the workspace will be written
+	 * @return true if file was saved
+	 */
+	public static boolean saveWorkspace(WorkspaceDescriptor wd, File file){
+		PrintStream ps = IOUtilities.getPrintStream(file);
+		if(ps == null)
+			return saveWorkspaceAs(wd);
+		else
+		{
+			workspaceToXML(wd, ps);
+			Hub.getWorkspace().setFile(file);
+			Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME",file.getParent());
+			return true;
+		}
+	}
+
+	/**
+	 * Asks the user for a file name and then calls {@link #saveWorkspace(WorkspaceDescriptor, File)}.
+	 * 
+	 * @param wd the description of the workspace
+	 * @return true if file was saved
+	 */
+	public static boolean saveWorkspaceAs(WorkspaceDescriptor wd){
+		JFileChooser fc;
+
+		if(wd.getFile()!=null)
+			fc=new JFileChooser(wd.getFile().getParent());
+		else
+			fc=new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
+
+		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
+		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+
+		if(wd.getFile()!=null)
+			fc.setSelectedFile(wd.getFile());
+		else
+			fc.setSelectedFile(new File(Hub.string("newModelName")));
+
+		int retVal;
+		boolean fcDone=true;
+		File file=null;
+		do
+		{
+			retVal = fc.showSaveDialog(Hub.getMainWindow());
+			if(retVal != JFileChooser.APPROVE_OPTION)
+				break;
+			file=fc.getSelectedFile();
+			if(!file.getName().toLowerCase().endsWith("."+IOUtilities.WORKSPACE_FILE_EXT))
+				file=new File(file.getPath()+"."+IOUtilities.WORKSPACE_FILE_EXT);
+
+			if(file.exists())
+			{
+				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+						Hub.string("saveWorkspaceTitle"),
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				fcDone=choice!=JOptionPane.NO_OPTION;
+				if(choice!=JOptionPane.YES_OPTION)
+					retVal=JFileChooser.CANCEL_OPTION;
+			}
+		} while(!fcDone);
+
+		if(retVal == JFileChooser.APPROVE_OPTION)
+			return saveWorkspace(wd,file);  	
+		return false;
+	}
+
+	/**
+	 * Opens the workspace described in the given configuration file. 
+	 * 
+	 * @param file the file containing the workspace description
+	 * @return a workspace descriptor object if file is valid, null otherwise
+	 */
+	public static WorkspaceDescriptor openWorkspace(File file){
+		WorkspaceDescriptor wd = null;
+		if(!file.canRead())
+		{
+			Hub.displayAlert(Hub.string("fileCantRead")+file.getPath());
+			return wd;
+		}
+		WorkspaceParser wdp = new WorkspaceParser();	    	
+		wd = wdp.parse(file);
+		if(!"".equals(wdp.getParsingErrors()))
+		{
+			Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")+file.getPath()+
+					"\n"+Hub.string("errorsParsingXMLFileL2"));
+		}
+		Hub.persistentData.setProperty("LAST_PATH_SETTING_NAME",file.getParent());    		
+		return wd;
+	}
+
+
+	/**
+	 * prints a object to XML.
+	 * @param wd the workspace descriptor to convert to XML
+	 * @param ps the printstream this object should be printed to.
+	 */
+	private static void workspaceToXML(WorkspaceDescriptor wd, PrintStream ps) {
+		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		ps.println("<workspace version=\"2.1\">");
+		Vector<String> models=wd.getModels();
+		for(int i=0;i<models.size();++i)
+		{
+			ps.print("\t<model file=\""+models.elementAt(i)+"\" position=\""+i+"\"");
+			if(i==wd.getSelectedModel())
+				ps.print(" selected=\"true\"");
+			ps.println("/>");
+		}
+		ps.println("</workspace>");
+	}
+	
+	/**
+	 * Asks the user if they want to save the workspace
+	 * 
+	 * @return false if the process was cancelled
+	 */
+	public static boolean handleUnsavedWorkspace()
+	{
+		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+				Hub.string("saveChangesAskWorkspace")+"\""+Hub.getWorkspace().getName()+"\"?",
+				Hub.string("saveChangesWorkspaceTitle"),
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/save_workspace.gif"))));
+		if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
+			return false;
+		if(choice==JOptionPane.YES_OPTION)
+		{
+			try
+			{
+				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
+				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
+					Hub.getWorkspace().setDirty(false);
+				else
+					return false;
+			}catch(IncompleteWorkspaceDescriptorException e)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Asks the user if they want to save the model
+	 * 
+	 * @param gm the GraphModel that needs to be saved
+	 * @return false if the process was cancelled
+	 */
+	public static boolean handleUnsavedModel(DESModel m)
+	{
+		int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+				Hub.string("saveChangesAskModel")+"\""+m.getName()+"\"?",
+				Hub.string("saveChangesModelTitle"),
+				JOptionPane.YES_NO_CANCEL_OPTION);
+		if(choice!=JOptionPane.YES_OPTION&&choice!=JOptionPane.NO_OPTION)
+			return false;
+		if(choice==JOptionPane.YES_OPTION)
+		{
+			if((File)m.getAnnotation(Annotable.FILE) != null)
+			{
+				try{
+				IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
+				}catch(IOException e)
+				{
+					Hub.displayAlert(e.getMessage());
+				}
+				}
+			else{
+				JFileChooser fc;
+				String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
+				if(path == null)
+				{
+					fc=new JFileChooser();
+				}else
+				{
+					fc=new JFileChooser(path);	
+				}
+		        fc.setDialogTitle(Hub.string("saveModelTitle"));
+				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+						Hub.string("modelFileDescription")));
+				
+				if((File)m.getAnnotation(Annotable.FILE)!=null){
+					fc.setSelectedFile((File)m.getAnnotation(Annotable.FILE));
+				}else{
+					fc.setSelectedFile(new File(m.getName()));
+				}
+				
+				int retVal;
+				boolean fcDone=true;
+				File file=null;
+				do
+				{
+					retVal = fc.showSaveDialog(Hub.getMainWindow());
+					if(retVal != JFileChooser.APPROVE_OPTION)
+						break;
+					file=fc.getSelectedFile();
+		    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
+		    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+					if(file.exists())
+					{
+						int _choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+							Hub.string("saveModelTitle"),
+							JOptionPane.YES_NO_CANCEL_OPTION);
+						fcDone=_choice!=JOptionPane.NO_OPTION;
+						if(_choice!=JOptionPane.YES_OPTION)
+							retVal=JFileChooser.CANCEL_OPTION;
+					}
+				} while(!fcDone);					
+			
+				if(retVal != JFileChooser.CANCEL_OPTION)
+				{
+					m.setAnnotation(Annotable.FILE, file);
+					try
+					{
+						IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
+					}catch(Exception e)
+					{
+						Hub.displayAlert(e.getMessage());
+					}
+					Hub.getWorkspace().fireRepaintRequired();
+				}
+				return false;
+			}
+
+		}
+		return true;
 	}
 }

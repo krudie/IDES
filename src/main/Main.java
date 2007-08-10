@@ -3,8 +3,6 @@ package main;
 import ie.fsa.ver2_1.GrailPlugin;
 import ie.fsa.ver2_1.TCTPlugin;
 import ie.fsa.ver2_1.EPSPlugin;
-import io.fsa.ver2_1.CommonTasks;
-
 import io.fsa.ver2_1.FSAFileIOPlugin;
 
 
@@ -172,14 +170,14 @@ public class Main {
 	public static void onExit()
 	{
 //This cannot be handled by the io.fsa.ver2_1.handleUnsavedWorkspace
-//		if(Hub.getWorkspace().isDirty())
-//			if(!CommonTasks.handleUnsavedWorkspace())
-//				return;
+		if(Hub.getWorkspace().isDirty())
+			if(!io.CommonActions.handleUnsavedWorkspace())
+				return;
 		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
 		{
 			DESModel m=i.next();
 			if( m.needsSave() )
-				if(!CommonTasks.handleUnsavedModel(m))
+				if(!io.CommonActions.handleUnsavedModel(m))
 					return;
 		}
 		//store settings

@@ -4,7 +4,6 @@ import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ctct.CTCTException;
 import io.ctct.LL_CTCT_Command;
-import io.fsa.ver2_1.CommonTasks;
 import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Cursor;
@@ -176,7 +175,7 @@ public class FileCommands {
 		@Override
 		protected void handleExecute() {
 			if(Hub.getWorkspace().isDirty())
-				if(!CommonTasks.handleUnsavedWorkspace())
+				if(!io.CommonActions.handleUnsavedWorkspace())
 					return;
 			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
@@ -186,7 +185,7 @@ public class FileCommands {
 			if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
 				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				WorkspaceDescriptor wd = FileOperations.openWorkspace(fc.getSelectedFile());
+				WorkspaceDescriptor wd = io.CommonActions.openWorkspace(fc.getSelectedFile());
 				if(wd != null){
 					Hub.getWorkspace().replaceWorkspace(wd);
 				}
@@ -207,7 +206,7 @@ public class FileCommands {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(FileOperations.saveWorkspace(wd,wd.getFile()))
+				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
 					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			Hub.getMainWindow().setCursor(cursor);
@@ -226,7 +225,7 @@ public class FileCommands {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(FileOperations.saveWorkspaceAs(wd))
+				if(io.CommonActions.saveWorkspaceAs(wd))
 					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			Hub.getMainWindow().setCursor(cursor);
