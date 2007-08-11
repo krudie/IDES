@@ -98,13 +98,13 @@ public class TemplateDesign implements TemplateModel {
 		public DESModel createModel(String id)
 		{
 			TemplateDesign td=new TemplateDesign("");
-			td.setId(id);
+			td.setName(id);
 			return td;
 		}
 		public DESModel createModel(String id, String name)
 		{
 			TemplateDesign td=new TemplateDesign(name);
-			td.setId(id);
+			td.setName(id);
 			return td;
 		}
 	}
@@ -311,10 +311,6 @@ public class TemplateDesign implements TemplateModel {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setId(String id) {
-		this.id=id;
 	}
 
 	public void setName(String name) {

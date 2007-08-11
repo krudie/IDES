@@ -127,11 +127,12 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 * Adds the given DESModel to the set of models in the workspace.
 	 *  @param fsa the model to be added
 	 */
-	public void addModel(DESModel model) {		
-		// Remove initial Untitled model if it is empty
-		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
-			removeModel(getActiveLayoutShell().getModel().getName());	
-		}
+	public void addModel(DESModel model) {	
+
+//		Remove initial Untitled model if it is empty
+//		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
+//		removeModel(getActiveLayoutShell().getModel().getName());	
+//		}
 
 		if(getModel(model.getName())!=null){
 			int i=1;

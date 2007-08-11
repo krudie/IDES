@@ -325,7 +325,7 @@ public class TemplateLibrary implements Presentation, KeyListener {
 //    	{
 //    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
 //    	}
-    	fsa.setId(General.getRandomId());
+    	fsa.setName(General.getRandomId());
     	FSAEventSet iface=new StupidSetWrapper();
     	for(Long id:selected.getInterfaceEventIds())
     	{
@@ -360,7 +360,7 @@ public class TemplateLibrary implements Presentation, KeyListener {
 //    	{
 //    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);
 //    	}
-    	fsa.setId(General.getRandomId());
+    	fsa.setName(General.getRandomId());
     	FSAEventSet iface=new StupidSetWrapper();
     	for(Long id:selected.getInterfaceEventIds())
     	{

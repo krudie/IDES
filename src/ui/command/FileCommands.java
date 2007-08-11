@@ -60,7 +60,7 @@ public class FileCommands {
 			ModelDescriptor md=new NewModelDialog().selectModel();
 			if(md==null)
 				return;
-			DESModel des=md.createModel(General.getRandomId(),Hub.string("newModelName")+"-"+Count++);
+			DESModel des=md.createModel(Hub.string("newModelName")+"-"+Count++);
 			Hub.getWorkspace().addModel(des);
 			Hub.getWorkspace().setActiveModel(des.getName());
 		}	

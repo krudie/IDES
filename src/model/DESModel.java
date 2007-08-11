@@ -11,15 +11,6 @@ import main.Annotable;
  * @author Lenko Grigorov
  */
 public interface DESModel extends Annotable, DESModelPublisher {
-
-	/**
-	 * Sets the ID of the model. It is highly desirable that
-	 * this ID is a unique string. Use {@link General#getRandomId()}
-	 * to get a unique ID.
-	 * @param id the new ID for the module
-	 * @see General#getRandomId()
-	 */
-	public void setId(String id);
 	
 	/**
 	 * Returns the ID of the model.

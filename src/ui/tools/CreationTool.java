@@ -104,6 +104,10 @@ public class CreationTool extends DrawingTool {
 		GraphElement selectedElement = ContextAdaptorHack.context.getSelectedElement(); 
 		if(selectedElement instanceof CircleNode || ContextAdaptorHack.context.getSelectedElement() == null)
 			{	//If a node or an empty space is clicked
+				if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
+				{
+					return;
+				}
 				startNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
 				if(!drawingEdge)
 				{

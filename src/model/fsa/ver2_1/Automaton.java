@@ -153,16 +153,17 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		{
 			return Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/model_fsa.gif"));
 		}
-		public DESModel createModel(String id)
-		{
-			Automaton a=new Automaton("");
-			a.setId(id);
-			return a;
-		}
-		public DESModel createModel(String id, String name)
+		
+//		public DESModel createModel(String id)
+//		{
+//			Automaton a=new Automaton("");
+//			a.setId(id);
+//			return a;
+//		}
+		public DESModel createModel(String name)
 		{
 			Automaton a=new Automaton(name);
-			a.setId(id);
+			a.setName(name);
 			return a;
 		}
 	}
@@ -218,7 +219,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 */
 	public FSAModel clone(){
 		Automaton clone = new Automaton(this.name);
-		clone.setId(General.getRandomId());
+		clone.setName(General.getRandomId());
 		//Cloning the events:
 		ListIterator<FSAEvent> ei = getEventIterator();
 		while(ei.hasNext()){
@@ -281,12 +282,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 
 	public String getId()
 	{
-		return id;
-	}
-
-	public void setId(String id)
-	{
-		this.id=id;
+		return this.getName();
 	}
 
 	/* (non-Javadoc)

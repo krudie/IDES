@@ -3,6 +3,8 @@
  */
 package model.fsa;
 
+import model.DESModel;
+
 /**
  * Message sent to subscribers listening for changes to a FSA.
  * 
@@ -28,14 +30,14 @@ public class FSAMessage {
 	private int elementType; // the type of element that was affected by the event	
 	private long elementId; // unique id of the element
 	private int eventType; // the type of event that occurred	
-	private FSAPublisher source; // the publisher that sent this message
+	private DESModel source; // the publisher that sent this message
 	private String messageText;
 	
-	public FSAMessage(int eventType, int elementType, long elementId, FSAPublisher source) {
+	public FSAMessage(int eventType, int elementType, long elementId, DESModel source) {
 		this(eventType, elementType, elementId, source, "");
 	}	
 
-	public FSAMessage(int eventType, int elementType, long elementId, FSAPublisher source, String messageText) {
+	public FSAMessage(int eventType, int elementType, long elementId, DESModel source, String messageText) {
 		super();		
 		this.elementType = elementType;
 		this.elementId = elementId;
@@ -56,7 +58,7 @@ public class FSAMessage {
 		return eventType;
 	}
 
-	public FSAPublisher getSource() {
+	public DESModel getSource() {
 		return source;
 	}
 

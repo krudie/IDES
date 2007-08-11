@@ -163,7 +163,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 	    	}
 	    		    		
 	    	((FSAPublisher)a).fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
-	    			FSAMessage.EVENT, events.elementAt(row).getId(), (FSAPublisherAdaptor)a));			
+	    			FSAMessage.EVENT, events.elementAt(row).getId(), a));			
 	    	
 	    	if(col==0)
 	    	{

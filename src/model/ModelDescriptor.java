@@ -60,13 +60,13 @@ public interface ModelDescriptor {
 	 */
 	public DESModel createModel(String id);
 
-	/**
-	 * Creates and returns a new model of this type.
-	 * @param id the ID which will be used to identify the model instance.
-	 * Preferrably a unique string ({@link General#getRandomId()} can be used).
-	 * @param name the display name to be assigned to the new model
-	 * @return the new model
-	 * @see General#getRandomId()
-	 */
-	public DESModel createModel(String id, String name);
+//	/**
+//	 * Creates and returns a new model of this type.
+//	 * @param id the ID which will be used to identify the model instance.
+//	 * Preferrably a unique string ({@link General#getRandomId()} can be used).
+//	 * @param name the display name to be assigned to the new model
+//	 * @return the new model
+//	 * @see General#getRandomId()
+//	 */
+//	public DESModel createModel(String id, String name);
 }

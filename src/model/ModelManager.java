@@ -51,7 +51,7 @@ public class ModelManager {
 		else
 		{
 			String id=General.getRandomId();
-			return (T)s.iterator().next().createModel(id,name);
+			return (T)s.iterator().next().createModel(name);
 		}
 	}
 
