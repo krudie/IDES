@@ -20,6 +20,7 @@ import main.Annotable;
 import main.Hub;
 import main.IncompleteWorkspaceDescriptorException;
 import main.WorkspaceDescriptor;
+import main.WorkspaceMessage;
 import model.DESModel;
 
 import org.pietschy.command.file.ExtensionFileFilter;
@@ -159,6 +160,8 @@ public class CommonActions {
 			if(retVal != JFileChooser.CANCEL_OPTION)
 			{
 				save(model, file);
+				//Inform the workspace that one of its models was modified (renamed)
+				Hub.getWorkspace().setDirty(true);
 			}
 			try
 			{
@@ -168,7 +171,6 @@ public class CommonActions {
 				//cancel button pressed... that's OK.
 			}
 		}
-
 	}
 
 	public static void importModel()
