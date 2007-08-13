@@ -18,69 +18,23 @@ import pluggable.operation.OperationManager;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class SupCon implements Operation {
+public class SupCon extends OperationParent {
 
-	public final static String NAME="SupCon";
-	public final static String DESCRIPTION="Returns the supremal" +
-			" controllable sublanguage of the plant with respect to the" +
-			" given specification.";
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
+	public SupCon() {
+		NAME = "SupCon";
+		DESCRIPTION = "Returns an automaton that generates the supremal" +
+				" controllable sublanguage of the plant with respect to the" +
+				" given specification.";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class,FSAModel.class};
+		inputDesc = new String[]{"Plant","Specification"};
+
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"composedAutomaton"};
 	}
 	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class,FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Plant","Specification"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"automaton of supremal controllable sublanguage"};
-	}
-
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */

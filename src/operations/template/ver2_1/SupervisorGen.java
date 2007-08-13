@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import operations.fsa.ver2_1.Selfloop;
+import operations.fsa.ver2_1.SelfLoop;
 import operations.fsa.ver2_1.SupCon;
 import operations.fsa.ver2_1.SynchronousProduct;
 
@@ -47,6 +47,10 @@ public class SupervisorGen implements Operation {
 	
 	public String getDescription() {
 		return "placeholder description";
+	}
+	
+	public Vector<String> getWarnings() {
+		return null;
 	}
 
 	public int getNumberOfInputs() {
@@ -158,7 +162,7 @@ public class SupervisorGen implements Operation {
 				if(toRemove.contains(j.next()))
 					j.remove();
 			}
-			FSAModel csl=(FSAModel)new Selfloop().perform(new Object[]{c.getFSA(),new StupidSetWrapper(diff)})[0];
+			FSAModel csl=(FSAModel)new SelfLoop().perform(new Object[]{c.getFSA(),new StupidSetWrapper(diff)})[0];
 			g=new FSAGraph(csl);
 			g.setName("selfloop "+csl.getName());
 			Hub.getWorkspace().addLayoutShell(g);

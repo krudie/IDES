@@ -18,65 +18,20 @@ import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import pluggable.operation.Operation;
 
-public class SupRed implements Operation {
+public class SupRed extends OperationParent {
 
-	public final static String NAME="supervisor reduction (Grail)";
-	public final static String DESCRIPTION="temp";
+	public SupRed() {
+		NAME = "Supervisor Reduction (Grail)";
+		DESCRIPTION = "Returns a reduced supervisor. " +
+				" Requires grail.";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class,FSAModel.class};
+		inputDesc = new String[]{"Plant","Specification"};
 
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
-	}
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class,FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Plant","Supervisor"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"reduced supervisor"};
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"modifiedAutomaton"};
 	}
 
 	/* (non-Javadoc)

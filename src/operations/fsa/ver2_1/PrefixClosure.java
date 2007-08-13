@@ -12,67 +12,21 @@ import pluggable.operation.FilterOperation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class PrefixClosure implements FilterOperation {
-
-	public final static String NAME="Prefix Closure";
-	public final static String DESCRIPTION="Creates an automaton that" +
-			"generates the prefix closure of the language accepted by the" +
-			"given automaton.";
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
-	}
+public class PrefixClosure extends OperationParent implements FilterOperation {
 	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
+	public PrefixClosure() {
+		NAME = "Prefix Closure";
+		DESCRIPTION = "Creates an automaton that " +
+				"generates the prefix closure of the language accepted by the " +
+				"input automaton.";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class};
+		inputDesc = new String[]{"Finite-state automaton"};
 
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Finite-state automaton"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"prefix-closed automaton"};
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"modifiedAutomaton"};
 	}
 
 	/* (non-Javadoc)
@@ -90,6 +44,7 @@ public class PrefixClosure implements FilterOperation {
 		return new int[]{0};
 	}
 	
+	//unknown if this code is ever reached...
 	public Object[] filter(Object[] inputs)
 	{
 		FSAModel a=(FSAModel)inputs[0];

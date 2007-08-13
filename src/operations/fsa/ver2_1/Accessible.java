@@ -12,66 +12,20 @@ import pluggable.operation.FilterOperation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Accessible implements FilterOperation {
+public class Accessible extends OperationParent implements FilterOperation {
 
-	public final static String NAME="Accessible";
-	public final static String DESCRIPTION="Removes all states" +
-			" that are not reachable from the initial state.";
+	public Accessible() {
+		NAME = "Accessible";
+		DESCRIPTION = "Removes all states" +
+				" that are not reachable from the initial state.";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class};
+		inputDesc = new String[]{"Finite-state Automaton"};
 
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Finite-state automaton"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"accessible automaton"};
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"Finite-state Automaton"};
 	}
 
 	/* (non-Javadoc)
@@ -89,10 +43,12 @@ public class Accessible implements FilterOperation {
 		return new int[]{0};
 	}
 	
+	//code never reached ******************
 	public Object[] filter(Object[] inputs)
 	{
 		FSAModel a=(FSAModel)inputs[0];
 		Unary.accessible(a);
 		return new Object[]{a};
 	}
+	//end code never reached **************
 }

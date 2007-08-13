@@ -13,68 +13,22 @@ import pluggable.operation.Operation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Trim implements FilterOperation {
+public class Trim extends OperationParent implements FilterOperation {
 
-	public final static String NAME="Trim";
-	public final static String DESCRIPTION="Removes all states that are not" +
-			"both reachable and coreachable.";
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
+	public Trim() {
+		NAME = "Trim";
+		DESCRIPTION = "Removes all states that are not" +
+		"both reachable and coreachable.";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class};
+		inputDesc = new String[]{"Finite-state automaton"};
+
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"modifiedAutomaton"};
 	}
 	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Finite-state automaton"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"trim automaton"};
-	}
-
 	/* (non-Javadoc)
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */

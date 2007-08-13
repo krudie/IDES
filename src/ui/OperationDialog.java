@@ -23,6 +23,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -39,6 +40,7 @@ import util.EscapeDialog;
 
 /**
  * @author Lenko Grigorov
+ * @author Chris Dragert
  *
  */
 public class OperationDialog extends EscapeDialog {
@@ -50,6 +52,7 @@ public class OperationDialog extends EscapeDialog {
 	protected Vector<JTextField> outputNames=null;
 	private Box inputsBox;
 	private Box outputsBox;
+	private Box descriptionBox;
 	private ActionListener al=new ActionListener()
 	{
 		public void actionPerformed(ActionEvent e)
@@ -85,7 +88,7 @@ public class OperationDialog extends EscapeDialog {
 					{
 						if(!e.getValueIsAdjusting())
 						{
-							resetInputOutputBoxes(inputsBox,outputsBox,OperationManager.getOperation(opList.getSelectedValue().toString()));
+							resetBoxes(inputsBox,outputsBox,descriptionBox,OperationManager.getOperation(opList.getSelectedValue().toString()));
 						}
 					}
 				}
@@ -111,6 +114,13 @@ public class OperationDialog extends EscapeDialog {
 		sp.setBorder(BorderFactory.createTitledBorder(Hub.string("outputTitle")));
 		controlBox.add(sp);
 		
+		descriptionBox=Box.createVerticalBox();
+		sp=new JScrollPane(descriptionBox);
+		sp.setPreferredSize(new Dimension(225,350));
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.setBorder(BorderFactory.createTitledBorder("Description"));
+		controlBox.add(sp);
+		
 		mainBox.add(controlBox);
 		
 		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
@@ -132,30 +142,38 @@ public class OperationDialog extends EscapeDialog {
 					Hub.displayAlert(Hub.string("missingOperationParams"));
 				else
 				{
+					//call function to perform selected operation
 					Operation op=OperationManager.getOperation(opList.getSelectedValue().toString());
 					Object[] inputModels=new Object[inputs.size()];
 					for(int i=0;i<inputs.size();++i)
 						inputModels[i]=Hub.getWorkspace().getModel(inputs.elementAt(i).getSelectedItem().toString());
 					Object[] outputs=op.perform(inputModels);
+					String[] outputDesc = op.getDescriptionOfOutputs().clone();
 					boolean closeWindow = true;
-					for(int i=0;i<outputs.length;++i)
-					{
-						if(outputs[i] instanceof FSAModel)
-						{
+					
+					//now generate and display output
+					//four output types to deal with:
+					// 1)  modifiedAutomaton: a unary operation that retains formatting information
+					// 2)  composedAutomaton: a composition that results in a wholly new graph with composite labels
+					// 3)  result: a boolean 'answer' to a query-type operation
+					// 4)  resultMessage: user-readable result to a query-type operation
+					//use output description to determine the type of output
+					
+					for(int i=0; i<outputs.length; ++i){
+						if (outputs[i] instanceof Boolean) {
+							//op.get
+						}
+						else if (outputs[i] instanceof FSAModel) {
 							((FSAModel)outputs[i]).setName(outputNames.elementAt(i).getText());
 							FSAGraph g=new FSAGraph((FSAModel)outputs[i]);
 							g.labelCompositeNodes();
 							Hub.getWorkspace().addLayoutShell(g);
 							closeWindow = true;
 						}
-						else if(outputs[i] instanceof Boolean)
-						{
-							Hub.displayAlert(op.getDescriptionOfOutputs()[i]+"? \r\n - "+(Boolean)outputs[i]);
-							closeWindow = false;
-						}
 						else
 						{
-							Hub.displayAlert(Hub.string("Error: Can't interpret output!"));
+							//should never be reached
+							Hub.displayAlert(Hub.string("Error: Can't interpret output of type: " + outputDesc[i]));
 							closeWindow = true;
 						}
 					}
@@ -210,8 +228,9 @@ public class OperationDialog extends EscapeDialog {
 		dispose();
 	}
 
-	protected void resetInputOutputBoxes(Box in, Box out, Operation o)
+	protected void resetBoxes(Box in, Box out, Box descriptionBox, Operation o)
 	{
+		//configure input box
 		in.removeAll();
 		inputs=new Vector<JComboBox>();
 		String[] descs=o.getDescriptionOfInputs();
@@ -247,6 +266,8 @@ public class OperationDialog extends EscapeDialog {
 			in.add(Box.createRigidArea(new Dimension(0,5)));
 		}
 		in.add(Box.createVerticalGlue());
+		
+		//configure output box
 		out.removeAll();
 		outputNames=new Vector<JTextField>();
 		descs=o.getDescriptionOfOutputs();
@@ -258,13 +279,34 @@ public class OperationDialog extends EscapeDialog {
 				JTextField tf=new JTextField(20);
 				outputNames.add(tf);
 				p.add(tf);
-				p.setBorder(BorderFactory.createTitledBorder(Hub.string("nameFor")+descs[i]));
+				p.setBorder(BorderFactory.createTitledBorder(Hub.string("nameFor")));
 				out.add(p);
 				out.add(Box.createRigidArea(new Dimension(0,5)));
 			}
 			else
 				outputNames.add(null);
 		out.add(Box.createVerticalGlue());
+		
+		//configure description box
+		descriptionBox.removeAll();
+		descriptionBox.add(Box.createRigidArea(new Dimension(0,7)));
+		
+		//looks okay but isn't graceful
+		JTextArea descriptionTextArea = new JTextArea();
+		descriptionTextArea.setText(o.getDescription());
+		descriptionTextArea.setEditable(false);
+		descriptionTextArea.setLineWrap(true);
+		descriptionTextArea.setWrapStyleWord(true);
+		//descriptionTextArea.setEnabled(false);
+		descriptionTextArea.setBackground(descriptionBox.getBackground());
+		descriptionTextArea.setForeground(descriptionBox.getForeground());
+		descriptionTextArea.setBorder(BorderFactory.createTitledBorder(""));
+		descriptionTextArea.setFont(descriptionBox.getFont());
+		
+		descriptionBox.add(descriptionTextArea);
+		descriptionBox.add(Box.createRigidArea(new Dimension(0,136)));
+		
+		//now pack and repaint the dialog
 		pack();
 		repaint();
 	}

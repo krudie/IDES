@@ -11,72 +11,25 @@ import java.util.Set;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
-import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
 
 /**
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Containment implements Operation {
+public class Containment extends OperationParent {
 
-	public final static String NAME="containment";
-	public final static String DESCRIPTION="temp";
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
-	}
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
+	public Containment() {
+		NAME = "Containment";
+		DESCRIPTION = "Determines if the given sublanguage is contained within the " +
+				"given superlanguage.";
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class,FSAModel.class};
+		inputDesc = new String[]{"Sublanguage","Superlanguage"};
 
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class,FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Sublanguage","Superlanguage"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{Boolean.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"containment of sublanguage in superlanguage"};
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{Boolean.class,String.class};
+		outputDesc = new String[]{"result", "resultMessage"};
 	}
 
 	/* (non-Javadoc)
@@ -137,7 +90,12 @@ public class Containment implements Operation {
 					break;
 			}
 		}
-		return new Object[]{new Boolean(contained)};
+		
+		String resultMessage = "";
+		if (contained) resultMessage = "Sublanguage is contained in superlanguage.";
+		else resultMessage = "Sublanguage is not contained in superlanguage.";
+		
+		return new Object[]{new Boolean(contained), resultMessage};
 	}
 
 }

@@ -6,74 +6,27 @@ package operations.fsa.ver2_1;
 import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
-import pluggable.operation.Operation;
 
 /**
  *
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Projection implements Operation {
+public class Projection extends OperationParent {
 
-	public final static String NAME="Projection";
-	public final static String DESCRIPTION="Returns a projection" +
-			" of the given automaton such that all unobservable events" +
-			" have been removed.";
+	public Projection() {
+		NAME = "Projection";
+		DESCRIPTION = "Returns a projection" +
+				" of the given automaton such that all unobservable events" +
+				" have been removed.";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class};
+		inputDesc = new String[]{"Finite-state automaton"};
 
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
-	}
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Finite-state automaton"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"automaton with no unobservable events"};
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"modifiedAutomaton"};
 	}
 
 	/* (non-Javadoc)

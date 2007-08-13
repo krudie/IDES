@@ -22,16 +22,19 @@ import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.operation.FilterOperation;
 
-public class ControlMap implements FilterOperation {
-
-	public final static String NAME="control map";
-	public final static String DESCRIPTION="temp";
+public class ControlMap extends OperationParent implements FilterOperation {
 	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
+	public ControlMap() {
+		NAME = "Control Map";
+		DESCRIPTION = "Creates the supervisor with " +
+				"the control map.";
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSASupervisor.class,FSAModel.class};
+		inputDesc = new String[]{"Supervisor","Plant"};;
+
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"Finite-state Automaton"};
 	}
 
 	/**
@@ -121,7 +124,7 @@ public class ControlMap implements FilterOperation {
 //		{
 //			System.out.println(supervisor.getDisabledEvents(i.next()).toString());
 //		}
-		
+		      
 		return new Object[]{supervisor};
 	}
 	
@@ -175,34 +178,6 @@ public class ControlMap implements FilterOperation {
 
 	public int[] getInputOutputIndexes() {
 		return new int[]{0};
-	}
-
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Supervisor","Plant"};
-	}
-
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"Supervisor with control map"};
-	}
-
-	public String getName() {
-		return NAME;
-	}
-
-	public int getNumberOfInputs() {
-		return 2;
-	}
-
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSASupervisor.class,FSAModel.class};
-	}
-
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
 	}
 
 	public Object[] perform(Object[] inputs) {

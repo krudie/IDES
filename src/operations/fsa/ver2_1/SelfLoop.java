@@ -12,53 +12,27 @@ import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Transition;
 import pluggable.operation.FilterOperation;
 
-public class Selfloop implements FilterOperation {
+public class SelfLoop extends OperationParent implements FilterOperation {
 
+	public SelfLoop() {
+		NAME = "Self Loop";
+		DESCRIPTION = "Unknown";
+		
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class};
+		inputDesc = new String[]{"Finite-state automaton"};
+
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"modifiedAutomaton"};
+	}
+	
 	public Object[] filter(Object[] inputs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public int[] getInputOutputIndexes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String[] getDescriptionOfInputs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String[] getDescriptionOfOutputs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public String getDescription() {
-		return null;
-	}
-
-	public int getNumberOfInputs() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public int getNumberOfOutputs() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public Class[] getTypeOfInputs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Class[] getTypeOfOutputs() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -13,67 +13,20 @@ import pluggable.operation.Operation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class SynchronousProduct implements Operation {
+public class SynchronousProduct extends OperationParent {
 
-	public final static String NAME="Synchronous Product";
-	public final static String DESCRIPTION="Resultant automaton forces " +
+	public SynchronousProduct() {
+		NAME = "Synchronous Product";
+		DESCRIPTION = "Resultant automaton forces " +
 			"shared events to occur simultaneously, and allows unshared events" +
 			" to interleave.";
+		//WARNING - Ensure that input type and description always match!	
+		inputType = new Class[]{FSAModel.class,FSAModel.class};
+		inputDesc = new String[]{"Finite-state automaton","Finite-state automaton"};
 
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getName()
-	 */
-	public String getName() {
-		return NAME;
-	}
-	
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescription()
-	 */
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfInputs()
-	 */
-	public int getNumberOfInputs() {
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfInputs()
-	 */
-	public Class[] getTypeOfInputs() {
-		return new Class[]{FSAModel.class,FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfInputs()
-	 */
-	public String[] getDescriptionOfInputs() {
-		return new String[]{"Finite-state automaton","Finite-state automaton"};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getNumberOfOutputs()
-	 */
-	public int getNumberOfOutputs() {
-		return 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getTypeOfOutputs()
-	 */
-	public Class[] getTypeOfOutputs() {
-		return new Class[]{FSAModel.class};
-	}
-
-	/* (non-Javadoc)
-	 * @see pluggable.operation.Operation#getDescriptionOfOutputs()
-	 */
-	public String[] getDescriptionOfOutputs() {
-		return new String[]{"synchronous product of two automata"};
+		//WARNING - Ensure that output type and description always match!
+		outputType = new Class[]{FSAModel.class};
+		outputDesc = new String[]{"composedAutomaton"};
 	}
 
 	/* (non-Javadoc)
