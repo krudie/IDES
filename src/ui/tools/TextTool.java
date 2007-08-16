@@ -29,8 +29,7 @@ public class TextTool extends DrawingTool {
 	
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
-		super.handleMouseClicked(me);
-		
+		super.handleMouseClicked(me);	
 		if(me.getClickCount() != 2){
 			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
 			ContextAdaptorHack.context.getCurrentTool().handleMouseClicked(me);

@@ -64,4 +64,9 @@ public interface Presentation {
 	 * presentation should no longer be considered deterministic.
 	 */
 	public void release();
+	
+	/**
+	 * Forces a repaint of the presentation.
+	 */
+	public void forceRepaint();
 }

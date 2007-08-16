@@ -194,4 +194,5 @@ public class DesignView extends JComponent implements Presentation, TemplateGrap
 		}
 		return ret;
 	}
+	public void forceRepaint(){}
 }

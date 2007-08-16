@@ -3,6 +3,7 @@
  */
 package ui.command;
 
+import ie.fsa.ver2_1.GraphExporter;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.fsa.ver2_1.FileOperations;
@@ -35,7 +36,6 @@ import org.pietschy.command.file.ExtensionFileFilter;
 
 import pluggable.layout.LayoutManager;
 import presentation.fsa.FSAGraph;
-import presentation.fsa.GraphExporter;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
 import services.latex.LatexManager;

@@ -610,4 +610,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 	{
 		setTrackModel(false);
 	}
+	
+	public void forceRepaint(){}
+	
 }

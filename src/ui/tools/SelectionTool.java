@@ -145,7 +145,6 @@ public class SelectionTool extends DrawingTool {
 	 */
 	public void handleMouseReleased(MouseEvent me) {
 		super.handleMouseReleased(me);
-		
 		if(dragging){
 			// compute the set of graph elements hit by rectangle
 			ContextAdaptorHack.context.updateCurrentSelection(ContextAdaptorHack.context.getSelectionArea());
@@ -155,8 +154,9 @@ public class SelectionTool extends DrawingTool {
 			startPoint = null;
 			endPoint = null;			
 			dragging = false;
-		}		
-		ContextAdaptorHack.context.repaint();
+		}
+		//Is this repaint needed? Probably not.
+		//ContextAdaptorHack.context.repaint();
 		ContextAdaptorHack.context.setTool(ContextAdaptorHack.context.getPreferredTool());
 	}
 

@@ -137,4 +137,5 @@ public class CodeChooser extends JPanel implements Presentation,
 			graph.getModel().setPLCCode(((FSAEvent)eventList.getSelectedValue()).getSymbol(),codeField.getText());
 		}
 	}
+	public void forceRepaint(){}
 }

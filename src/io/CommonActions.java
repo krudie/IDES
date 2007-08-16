@@ -64,8 +64,6 @@ public class CommonActions {
 			}
 			if(model != null)
 			{
-				model.setName(ParsingToolbox.removeFileType(file.getName()));
-				model.setAnnotation(Annotable.FILE,file);
 				Hub.getWorkspace().addModel(model);
 				Hub.getWorkspace().setActiveModel(model.getName());
 			}

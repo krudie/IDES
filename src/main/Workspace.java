@@ -128,11 +128,10 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 *  @param fsa the model to be added
 	 */
 	public void addModel(DESModel model) {	
-
 //		Remove initial Untitled model if it is empty
-//		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
-//		removeModel(getActiveLayoutShell().getModel().getName());	
-//		}
+		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
+		removeModel(getActiveLayoutShell().getModel().getName());	
+		}
 
 		if(getModel(model.getName())!=null){
 			int i=1;
@@ -326,6 +325,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			UIDescriptor uid=ts.getUIElements(getActiveLayoutShell());
 			activePresentations=new LinkedList<Presentation>();
 			Presentation[] ps=uid.getMainPanePresentations();
+			
 			for(int i=0;i<ps.length;++i)
 			{
 				activePresentations.add(ps[i]);

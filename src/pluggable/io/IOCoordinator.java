@@ -2,6 +2,7 @@
  * 
  */
 package pluggable.io;
+import main.Annotable;
 import main.Hub;
 import model.DESModel;
 import io.IOUtilities;
@@ -149,6 +150,11 @@ public final class IOCoordinator{
 		}
 		br.close();
 		fis.close();
+		if(returnModel !=null)
+		{
+			returnModel.setName(ParsingToolbox.removeFileType(file.getName()));
+			returnModel.setAnnotation(Annotable.FILE,file);
+		}
 		return returnModel;
 	}
 

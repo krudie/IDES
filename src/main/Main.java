@@ -1,12 +1,13 @@
 package main;
 
 import ie.fsa.ver2_1.GrailPlugin;
+import ie.fsa.ver2_1.GraphExporter;
+import ie.fsa.ver2_1.LatexPlugin;
 import ie.fsa.ver2_1.TCTPlugin;
 import ie.fsa.ver2_1.EPSPlugin;
 import io.fsa.ver2_1.FSAFileIOPlugin;
 
 
-import io.template.ver2_1.TemplateFileIOPlugin;
 
 
 import java.io.IOException;
@@ -35,28 +36,28 @@ import pluggable.operation.OperationManager;
 import presentation.LayoutShell;
 import presentation.PresentationManager;
 import presentation.fsa.FSAToolset;
-import presentation.fsa.GraphExporter;
 import presentation.fsa.FSAGraph;
-import presentation.template.TemplateToolset;
 
 import model.DESModel;
 import model.ModelManager;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
-import model.template.TemplateModel;
-import model.template.ver2_1.TemplateDesign;
 
 import services.General;
 import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
 import pluggable.io.*;
+//import io.template.ver2_1.TemplateFileIOPlugin;
+//import presentation.template.TemplateToolset;
+//import model.template.TemplateModel;
+//import model.template.ver2_1.TemplateDesign;
 /**
  * 
  * @author Lenko Grigorov
  */
 public class Main {
-	
+
 	private Main()
 	{
 	}
@@ -65,24 +66,26 @@ public class Main {
 	{
 		//Input/Output plugins:
 		FSAFileIOPlugin.getInstance().initializeFileIO();
-		TemplateFileIOPlugin.getInstance().initializeFileIO();
-		
+		//The template design is disabled for this version of IDES:
+		//		TemplateFileIOPlugin.getInstance().initializeFileIO();
+
 		//Import/Export plugins:
 		GrailPlugin.getInstance().initializeImportExport();
 		TCTPlugin.getInstance().initializeImportExport();
 		EPSPlugin.getInstance().initializeImportExport();
+		LatexPlugin.getInstance().initializeImportExport();
 	}
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		//set up global exception handler
 		// TODO uncomment this line before shipping.  Default exception handler
 		// disabled for debugging. -- CLM
 //		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
-		
+
 		//load resource with strings used in the program
 		try
 		{
@@ -90,10 +93,10 @@ public class Main {
 		}catch(MissingResourceException e)
 		{
 			javax.swing.JOptionPane.showMessageDialog(null, "Cannot load the file with the text messages used in the program.\n" +
-					"The file \"strings.properties\" has to be available at startup.");
+			"The file \"strings.properties\" has to be available at startup.");
 			System.exit(2);
 		}
-		
+
 		//load settings
 		try
 		{
@@ -103,20 +106,21 @@ public class Main {
 			Hub.displayAlert(Hub.string("cantLoadSettings"));
 			System.exit(3);
 		}
-		
+
 		//setup other stuff
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		
+
 		Cache.init();
 		// TODO: move operation inits to the plugin manager eventually
 		///TODO: move the initialization of the plugins to the plugin manager
 		initializePlugins();
-		
+
+		//The template design is disabled for this version of IDES:
+//		ModelManager.registerModel(TemplateDesign.myDescriptor);
+//		PresentationManager.registerToolset(TemplateModel.class, new TemplateToolset());
 		ModelManager.registerModel(Automaton.myDescriptor);
-		ModelManager.registerModel(TemplateDesign.myDescriptor);
 		PresentationManager.registerToolset(FSAModel.class, new FSAToolset());
-		PresentationManager.registerToolset(TemplateModel.class, new TemplateToolset());
 		OperationManager.register(new Meet());
 		OperationManager.register(new SynchronousProduct());
 		OperationManager.register(new Projection());
@@ -131,7 +135,7 @@ public class Main {
 		OperationManager.register(new ControlMap());
 		OperationManager.register(new LocalModular());
 		OperationManager.register(new SupRed());
-		
+
 		try {
 			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.metal.MetalLookAndFeel");
@@ -139,17 +143,17 @@ public class Main {
 				UIManager.setLookAndFeel(
 						UIManager.getSystemLookAndFeelClassName());
 			}
-	    } catch (Exception e) { }
-//DEBUG: remove eventually
-//	    for(Object o:UIManager.getLookAndFeelDefaults().keySet())
-//	    	System.out.println(o.toString());
-	    
+		} catch (Exception e) { }
+//		DEBUG: remove eventually
+//		for(Object o:UIManager.getLookAndFeelDefaults().keySet())
+//		System.out.println(o.toString());
+
 		// show splash screen
 		Hub.setMainWindow(new MainWindow());
 
 		//setup stuff that needs the main window
 		LatexManager.init(); 
-		
+
 		FSAModel fsa = ModelManager.createModel(FSAModel.class,Hub.string("newModelName"));
 		Hub.getWorkspace().addModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
@@ -162,14 +166,14 @@ public class Main {
 		//Hub.getMainWindow().pack();
 		Hub.getMainWindow().setVisible(true);
 	}
-	
+
 	/**
 	 * Handles stuff that has to be done before the application terminates.
 	 *
 	 */
 	public static void onExit()
 	{
-//This cannot be handled by the io.fsa.ver2_1.handleUnsavedWorkspace
+//		This cannot be handled by the io.fsa.ver2_1.handleUnsavedWorkspace
 		if(Hub.getWorkspace().isDirty())
 			if(!io.CommonActions.handleUnsavedWorkspace())
 				return;
@@ -185,5 +189,5 @@ public class Main {
 		Hub.getMainWindow().dispose();
 		Hub.storePersistentData();
 	}
-	
+
 }

@@ -105,7 +105,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 		int statesCounter = fsa.getStateCount();
 
-		avoidLayoutDrawing = (statesCounter > 900 ? true: false);
+		avoidLayoutDrawing = (statesCounter > 100 ? true: false);
 		if(avoidLayoutDrawing)
 		{
 			return;
@@ -291,10 +291,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 			while( i.hasNext() ) {
 				FSAState s=i.next();
-//				if(s.getName() == null)
-//				{
-//				s.setName(String.valueOf(s.getId()));
-//				}
+				//Labeling the states according to the id:
+				if(s.getName() == null)
+				{
+				s.setName(String.valueOf(s.getId()));
+				}
 				wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
 				stateGroups.clear();
 				Iterator<FSATransition> j = s.getSourceTransitionsListIterator();
@@ -322,7 +323,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			buildIntersectionDS();
 		}
 //		System.out.println("Graph created!");
-		//Update the bezierLayoutFreeGroup
+		//Grouping edges
 		Set<Long> setEdges = edges.keySet();
 		Iterator<Long> it = setEdges.iterator();
 		while(it.hasNext())
@@ -333,8 +334,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			}catch(ClassCastException e){
 				//No problem... that happened because we can have initial edges amongst the edges
 			}
-		}
-		this.refresh();
+		}	
 	}
 
 	/**
@@ -1516,7 +1516,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 
 	public void translate(float x, float y) {
-		super.translate(x,y);		
+		super.translate(x,y);	
 		// FIXME refreshBounds
 //		commitMovement(this);  // fires graph changed, so don't need to do it here			
 	}
@@ -1629,10 +1629,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	private ArrayList<FSAGraphSubscriber> subscribers = new ArrayList<FSAGraphSubscriber>();
 
 	//////////////////////////////////////////////////////////////////////// 
-	/** LayoutShellPublisher part which maintains a collection of, and 
-	 * sends change notifications to, all interested observers (subscribers). 
-	 */
-	private ArrayList<DESModelSubscriber> mwsubscribers = new ArrayList<DESModelSubscriber>();
 
 	/**
 	 * Attaches the given subscriber to this publisher.
@@ -1644,15 +1640,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		subscribers.add(subscriber);
 	}
 
-	/**
-	 * Attaches the given subscriber to this publisher.
-	 * The given subscriber will receive notifications of changes from this publisher.
-	 * 
-	 * @param subscriber
-	 */
-	public void addSubscriber(DESModelSubscriber subscriber) {
-		mwsubscribers.add(subscriber);
-	}
 
 	/**
 	 * Removes the given subscriber to this publisher.
@@ -1664,15 +1651,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		subscribers.remove(subscriber);
 	}
 
-	/**
-	 * Removes the given subscriber to this publisher.
-	 * The given subscriber will no longer receive notifications of changes from this publisher.
-	 * 
-	 * @param subscriber
-	 */
-	public void removeSubscriber(DESModelSubscriber subscriber) {
-		mwsubscribers.remove(subscriber);
-	}
 
 	/**
 	 * Returns all current subscribers to this publisher.
@@ -1682,32 +1660,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	{
 		return subscribers.toArray(new FSAGraphSubscriber[]{});
 	}
-
-	/**
-	 * Returns all current subscribers to this publisher.
-	 * @return all current subscribers to this publisher
-	 */
-	public DESModelSubscriber[] getLayoutShellSubscribers()
-	{
-		return mwsubscribers.toArray(new DESModelSubscriber[]{});
-	}
-
 	
-//CHRISTIAN: The automaton will implement this method, which will be called by
-	// the implementation of metaDataChanged() and by internal changes in the model
-//	/**
-//	 * Notifies all subscribers that there has been a change to an element of 
-//	 * the save status of the graph.
-//	 */
-//	private void fireSaveStatusChanged() {
-//		LayoutShellMessage message=new LayoutShellMessage(
-//				needsSave?LayoutShellMessage.DIRTY:LayoutShellMessage.CLEAN,
-//						this);
-//		for(LayoutShellSubscriber s : mwsubscribers)	{
-//			s.saveStatusChanged(message);
-//		}		
-//	}
-
 	/**
 	 * Notifies all subscribers that there has been a change to an element of 
 	 * this graph publisher.
@@ -1715,7 +1668,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param message
 	 */
 	private void fireFSAGraphChanged(FSAGraphMessage message) {
-		
 		fsa.metadataChanged();
 		for(FSAGraphSubscriber s : subscribers)	{
 			s.fsaGraphChanged(message);
@@ -1992,6 +1944,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 	public void commitTranslation(GraphElement selection)
 	{
+		if(selection == null)
+		{
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+					FSAGraphMessage.SELECTION,
+					this.getId(), 
+					this.bounds(),
+					this, "all graph"));
+			return;
+		}
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.SELECTION,
 				0, 

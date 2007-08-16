@@ -350,10 +350,13 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		}else{
 			drawingTools[currentTool].handleMouseReleased(arg0);			
 		}
+		
+		//If the user was moving graph elements before releasing the button,
+		//inform FSAGraph that translations were done. So FSAGraph will inform its subscribers.
 		if(this.moving)
 		{
 			this.setMoving(false);
-			GraphElement selection = this.getSelectedElement();
+			GraphElement selection = this.getSelectedGroup();
 			if(selection != null)
 			{
 				this.graphModel.commitTranslation(this.getSelectedElement());

@@ -98,7 +98,7 @@ public class MovementTool extends DrawingTool {
 		}
 		
 		ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
-		ContextAdaptorHack.context.repaint();		
+		ContextAdaptorHack.context.repaint();	
 	}
 
 	@Override

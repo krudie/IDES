@@ -3,11 +3,14 @@ package presentation.fsa;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.Point;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -24,12 +27,12 @@ import ui.command.OptionsCommands.ShowGridCommand;
  */
 @SuppressWarnings("serial")
 public class ToolPopup extends JPopupMenu {
-	
+
 	private static ToolPopup popup;
 	private static GraphDrawingView view;
-	
+
 	private JMenuItem miSelect, miCreate, miMove, miAlign, miShowGrid;
-	
+
 	private AlignCommand alignCmd;
 	private ShowGridCommand showGridCmd;
 
@@ -41,13 +44,11 @@ public class ToolPopup extends JPopupMenu {
 		Point p = m.getPoint();
 		popup.show(context, (int)p.x, (int)p.y);
 	}
-	
+
 	protected ToolPopup() {
 		super("Graph Operations");
-		
 		alignCmd = new AlignCommand();
 		showGridCmd = new ShowGridCommand();
-		
 		miSelect = new JMenuItem("Select nodes", new ImageIcon(Hub.getResource("images/icons/graphic_modify.gif")));
 		miSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -69,20 +70,20 @@ public class ToolPopup extends JPopupMenu {
 				view.setPreferredTool(GraphDrawingView.SELECT);
 			}
 		});
-		
+
 		miAlign = alignCmd.createMenuItem();
 		miShowGrid = showGridCmd.createMenuItem();
-		
+
 		add(miSelect);
 		add(miCreate);
 		add(miMove);
 		add(new JPopupMenu.Separator());
 		add(miAlign);
 		add(miShowGrid);
-		addPopupMenuListener(new PopupListener());
+		PopupListener popListener = new PopupListener();
+		addPopupMenuListener(popListener);
 	}
-	class PopupListener implements PopupMenuListener {
-
+	class PopupListener implements PopupMenuListener{
 		boolean wasCanceled = false;
 		boolean becomeInvisible = false;
 		/* (non-Javadoc)
@@ -97,7 +98,7 @@ public class ToolPopup extends JPopupMenu {
 			{
 				view.setAvoidNextDraw(false);
 			}
-			
+
 		}
 		public void popupMenuWillBecomeVisible(PopupMenuEvent arg0)
 		{
@@ -107,5 +108,14 @@ public class ToolPopup extends JPopupMenu {
 		{
 			wasCanceled = true;
 		}
-	  }	
+	}	
+
+	public void processMouseEvent(MouseEvent event,
+			MenuElement[] path,
+			MenuSelectionManager manager)
+	{
+		System.out.println("Event");
+	}
+
+
 }

@@ -98,6 +98,11 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 		paint(g,true);
 	}
 
+	public void forceRepaint()
+	{
+		refreshView();	
+	}
+	
 	public void paint(Graphics g, boolean doFill) {
 		Graphics2D g2D = (Graphics2D) g;			
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -131,7 +136,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 		
 		if(graphModel != null) {					
 			graphModel.addSubscriber(this);
-			this.setName(graphModel.getName());		
+			this.setName(graphModel.getName());	
 			refreshView();
 		} else {
 			this.setName("No automaton");
@@ -174,6 +179,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 			{
 				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
 			}
+
 			if(scaleToFit&&getParent()!=null)
 			{
 				Insets ins=getParent().getInsets();

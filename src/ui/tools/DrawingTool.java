@@ -23,14 +23,13 @@ import presentation.template.Template;
 
 /**
  * All tools used by the drawing board to handle requests forwarded from keyboard 
- * and mouse events extend this class.  
+ * and mouse xevents extend this class.  
  * These tools may also update the command history and shared data model.
  *  
  * @author helen bretzke
  *
  */
 public abstract class DrawingTool {
-
 //	protected GraphDrawingView context;
 	protected Cursor cursor;
 	
@@ -47,7 +46,7 @@ public abstract class DrawingTool {
 		// get intersected element and display appropriate popup menu
 		ContextAdaptorHack.context.clearCurrentSelection();
 		if(ContextAdaptorHack.context.updateCurrentSelection(m.getPoint())){
-			ContextAdaptorHack.context.getSelectedElement().showPopup(ContextAdaptorHack.context);			
+			ContextAdaptorHack.context.getSelectedElement().showPopup(ContextAdaptorHack.context);
 		}else{
 			ToolPopup.showPopup(ContextAdaptorHack.context, m);
 		}

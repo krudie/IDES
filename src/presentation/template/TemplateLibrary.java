@@ -669,4 +669,5 @@ public class TemplateLibrary implements Presentation, KeyListener {
 //	        break;
 //	    }
 //	  }
+	public void forceRepaint(){}
 }

@@ -1,8 +1,9 @@
-package presentation.fsa;
+package ie.fsa.ver2_1;
 
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import model.fsa.FSAModel;
 import pluggable.io.IOCoordinator;
@@ -10,6 +11,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import pluggable.ui.OptionsPane;
+import presentation.fsa.CircleNode;
+import presentation.fsa.Edge;
+import presentation.fsa.FSAGraph;
+import presentation.fsa.GraphLabel;
 import util.BentoBox;
 
 import main.Workspace;
@@ -17,9 +22,9 @@ import main.Hub;
 
 
 /**
- * This class is charged with exporting the current graph (or a 
- * selection of that graph) to one of four formats: LaTex-PSTricks, 
- * EPS, GIF and PNG.  All of the methods are static; there is no
+ * This class is charged with exporting a FSAgraph
+ * to one of four formats: LaTex-PSTricks, 
+ * EPS. All of the methods are static; there is no
  * need to instantiate to perform these functions.
  * 
  * @author Sarah-Jane Whittaker, Lenko Grigorov
@@ -128,6 +133,7 @@ public class GraphExporter
 	private static final String STR_PSTRICKS_COMMENTED_DOC_DECLARATION = 
 		"% Sample document declarationt that will include a PSTRICKS tex figure\n\n" +
 		"% \\documentclass[letterpaper,12pt]{report}\n" +
+		"% \\usepackage{graphics}\n" +
 		"% \\usepackage{setspace}\n" +
 		"% \\usepackage{pstricks}\n" +
 		"% \\begin{document}\n" +
@@ -143,26 +149,20 @@ public class GraphExporter
 	 * Creates a LaTeX document which contains a PSTricks figure of the current model
 	 * @return LaTeX document containing a PSTricks description of the current model
 	 */
-	public static String createPSTricksFileContents()
+	public static void createPSTricksFileContents(FSAGraph graphModel, PrintStream ps)
 	{
-		String contentsString = STR_PSTRICKS_BEGIN_FIGURE;
-		Workspace workspace = null;
-		FSAGraph graphModel = null;
-		
+		if(!(graphModel instanceof FSAGraph))
+		{
+			return;
+		}
+
+		ps.print(STR_PSTRICKS_BEGIN_FIGURE);
 		Rectangle exportBounds = null;
 		int border = 0;
 		double scale = 1;
 		boolean useFrame = Hub.persistentData.getBoolean(
 			STR_EXPORT_PROP_USE_FRAME);
 		
-		// Step #1 - Get the GraphModel
-		workspace = Workspace.instance();
-		if(workspace.getActiveLayoutShell() == null ||
-				!(workspace.getActiveLayoutShell() instanceof FSAGraph))
-		{
-			return null;
-		}
-		graphModel = (FSAGraph)workspace.getActiveLayoutShell();
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 
@@ -206,21 +206,19 @@ public class GraphExporter
 		
 		// Step #4 - Begin with the basic sclaing, picture boundary
 		// and frame information
-		contentsString += 
+	ps.print( 
 			"\\scalebox{" 
 			+ scale + "}\n"
 			+ "{\n"
-			+ "\\psset{unit=1pt}\n";
+			+ "\\psset{unit=1pt}\n");
 		
 		// Step #5 - Get the PSTricks figure
-		contentsString += createPSPicture(exportBounds,useFrame);
+		ps.print(createPSPicture(exportBounds,useFrame));
 
 		// Step #6 - End the pciture and add the commented LaTeX
 		// document declaration
-		contentsString += STR_PSTRICKS_END_FIGURE
-			+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION;
-	
-		return contentsString;
+		ps.print(STR_PSTRICKS_END_FIGURE
+			+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION);
 	}
 
 	/**
@@ -301,11 +299,9 @@ public class GraphExporter
 	 * Creates the LaTeX document which will be rendered into an EPS
 	 * @return LaTeX document containing a PSTricks description of the current model
 	 */
-	public static String createEPSFileContents()
+	public static String createEPSFileContents(FSAGraph graphModel)
 	{
 		String contentsString = STR_EPS_BEGIN_DOC;
-		Workspace workspace = null;
-		FSAGraph graphModel = null;
 		
 		Rectangle exportBounds = null;
 		int border = 0;
@@ -313,13 +309,10 @@ public class GraphExporter
 			STR_EXPORT_PROP_USE_FRAME);
 		
 		// Step #1 - Get the GraphModel
-		workspace = Workspace.instance();
-		if(workspace.getActiveLayoutShell() == null ||
-				!(workspace.getActiveLayoutShell() instanceof FSAGraph))
+		if(!(graphModel instanceof FSAGraph))
 		{
 			return null;
 		}
-		graphModel = (FSAGraph)workspace.getActiveLayoutShell();
 
 		// Step #3 - Figure out the dimensions
 		// If there's a selection box, then use that, otherwise make 
@@ -364,81 +357,7 @@ public class GraphExporter
 	
 		return contentsString;
 	}
-	
-	
-	
-	/**
-	 * Creates the LaTeX document which will be rendered into an EPS
-	 * @return LaTeX document containing a PSTricks description of the current model
-	 */
-	public static String createEPSFileContentsFromFile(File file)
-	{
-		String contentsString = STR_EPS_BEGIN_DOC;
-		FSAGraph graphModel = null;
 		
-		Rectangle exportBounds = null;
-		int border = 0;
-		boolean useFrame = Hub.persistentData.getBoolean(
-			STR_EXPORT_PROP_USE_FRAME);
-		
-		// Step #1 - Get the GraphModel
-		FSAModel model = null;
-		try{
-			model = (FSAModel)IOCoordinator.getInstance().load(file);
-		}catch(IOException e){
-			Hub.displayAlert(e.getMessage());
-		}
-		
-
-		graphModel = new presentation.fsa.FSAGraph(model);
-	
-			
-		
-		// Step #3 - Figure out the dimensions
-		// If there's a selection box, then use that, otherwise make 
-		// a box that holds eveything
-		// if (there is a selection)
-		// {
-		//		exportBounds = selection;
-		// }		
-		// else
-		// {
-		exportBounds = graphModel.getBounds(false);
-		// }
-		
-		// Step #3.5 - Add a border to the export bounds
-		/*
-		exportBounds.width -= exportBounds.x;
-		exportBounds.height -= exportBounds.y;
-		*/
-		border = (exportBounds.x > INT_PSTRICKS_BORDER_SIZE) ?
-			INT_PSTRICKS_BORDER_SIZE : exportBounds.x;
-		exportBounds.x -= border;
-		exportBounds.width += (border * 2);
-
-		border = (exportBounds.y > INT_PSTRICKS_BORDER_SIZE) ?
-				INT_PSTRICKS_BORDER_SIZE : exportBounds.y;
-		exportBounds.y -= border;
-		exportBounds.height += (border * 2);
-
-		// Step #4 - Begin with the basic sclaing, picture boundary
-		// and frame information
-		contentsString += "\\special{papersize=" + (exportBounds.width + 10) + "pt," + (exportBounds.height + 10) + "pt}\n"
-			+ "\\begin{document}\n"	
-			+ "\\psset{unit=1pt}\n";
-		
-		// Step #5 - Get the PSTricks figure
-		contentsString+=createPSPicture(exportBounds,useFrame);
-
-		// Step #6 - End the pciture and add the commented LaTeX
-		// document declaration
-		contentsString += STR_EPS_END_DOC +
-			STR_EPS_COMMENTED_DOC_DECLARATION;
-	
-		return contentsString;
-	}
-	
-	
 	/**
 	 * This method is reponsible for calculcating the size of the 
 	 * bounding box necessary for the entire graph.  It goes

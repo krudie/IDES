@@ -235,7 +235,7 @@ public class GraphElement implements PresentationElement {
 		for(PresentationElement g : children.values()){
 			g.translate(dx,dy);
 		}
-		setNeedsRefresh(true);	
+//		setNeedsRefresh(true);	
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class GraphElement implements PresentationElement {
 	 * @param p the new location to set
 	 */
 	public void setLocation(Point2D.Float p) {
-		layout.setLocation((float)p.getX(), (float)p.getY());		
+		layout.setLocation((float)p.getX(), (float)p.getY());	
 	}
 
 	/**

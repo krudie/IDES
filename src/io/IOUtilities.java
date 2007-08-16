@@ -22,6 +22,7 @@ public class IOUtilities {
 	public static final String GRAIL_DESCRIPTOR="GRAIL";
 	public static final String TCT_DESCRIPTOR="TCT";
 	public static final String EPS_DESCRIPTOR="EPS";
+	public static final String LATEX_DESCRIPTOR="LaTeX (PSTricks)";
 	
 	
 	

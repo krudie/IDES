@@ -3,6 +3,8 @@
  */
 package presentation.fsa;
 
+import ie.fsa.ver2_1.GraphExporter;
+
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Point2D;

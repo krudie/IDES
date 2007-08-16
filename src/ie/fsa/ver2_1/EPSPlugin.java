@@ -21,7 +21,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 import pluggable.io.IOPluginManager;
 
 import pluggable.io.ImportExportPlugin;
-import presentation.fsa.GraphExporter;
+import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexRenderException;
 /**
@@ -82,7 +82,8 @@ public class EPSPlugin implements ImportExportPlugin{
 		// Modified: June 16, 2006
 		// Modifier: Sarah-Jane Whittaker
 		//		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(src);
-		String fileContents = GraphExporter.createEPSFileContents();
+		FSAGraph graphModel = (FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
+		String fileContents = GraphExporter.createEPSFileContents(graphModel);
 		//		System.out.println(fileContents);
 		if (fileContents == null)
 		{
