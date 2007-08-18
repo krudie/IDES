@@ -672,12 +672,13 @@ public class Renderer {
         	return getEmptyImage();
 		
 		//DVIPS
-		command=new String[5];
+		command=new String[6];
 		command[0]=latexPath.getCanonicalPath()+File.separator+"dvips";
 		command[1]="-E";
-		command[2]="-o";
-		command[3]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
-		command[4]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".dvi";
+		command[2]="-q";
+		command[3]="-o";
+		command[4]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".ps";
+		command[5]=latexFile.getName().substring(0,latexFile.getName().lastIndexOf('.'))+".dvi";
 		Executor dvips=new Executor(command,new File(latexFile.getParentFile().getCanonicalPath()));
 		execute(dvips);
 
