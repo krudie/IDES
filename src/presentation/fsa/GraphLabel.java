@@ -1,6 +1,6 @@
 package presentation.fsa;
 
-import ie.fsa.ver2_1.GraphExporter;
+import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;

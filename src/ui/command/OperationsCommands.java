@@ -3,10 +3,10 @@
  */
 package ui.command;
 
-import ie.fsa.ver2_1.GraphExporter;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.fsa.ver2_1.FileOperations;
+import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Cursor;
 import java.io.File;

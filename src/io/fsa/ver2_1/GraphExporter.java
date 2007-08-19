@@ -1,4 +1,4 @@
-package ie.fsa.ver2_1;
+package io.fsa.ver2_1;
 
 import java.awt.Rectangle;
 import java.io.File;

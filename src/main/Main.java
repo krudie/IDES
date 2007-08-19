@@ -1,11 +1,11 @@
 package main;
 
-import ie.fsa.ver2_1.GrailPlugin;
-import ie.fsa.ver2_1.GraphExporter;
-import ie.fsa.ver2_1.LatexPlugin;
-import ie.fsa.ver2_1.TCTPlugin;
-import ie.fsa.ver2_1.EPSPlugin;
+import io.fsa.ver2_1.EPSPlugin;
 import io.fsa.ver2_1.FSAFileIOPlugin;
+import io.fsa.ver2_1.GrailPlugin;
+import io.fsa.ver2_1.GraphExporter;
+import io.fsa.ver2_1.LatexPlugin;
+import io.fsa.ver2_1.TCTPlugin;
 
 
 

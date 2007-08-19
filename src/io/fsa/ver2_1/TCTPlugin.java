@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ie.fsa.ver2_1;
+package io.fsa.ver2_1;
 
 import io.IOUtilities;
 import io.ctct.CTCTException;
@@ -108,21 +108,17 @@ public class TCTPlugin implements ImportExportPlugin{
 	 */
 	public void importFile(File src, File dst)
 	{
-		//This code does not work. It will result in errors if used.
     	try
     	{
     		FSAModel a=LL_CTCT_Command.CTCTtoGiddes(src.getAbsolutePath(),src.getName().substring(0,src.getName().lastIndexOf(".")));
-    		if(a!= null)
-    		{
-    			//Save the imported model to <code>dst</code>
-    			try
-    			{
-    				IOCoordinator.getInstance().save(a, dst);
-    			}catch(Exception e)
-    			{
-    				Hub.displayAlert(e.getMessage());
-    			}
-    		}
+   			//Save the imported model to <code>dst</code>
+   			try
+   			{
+   				IOCoordinator.getInstance().save(a, dst);
+   			}catch(Exception e)
+   			{
+   				Hub.displayAlert(e.getMessage());
+   			}
     	}catch(CTCTException e)
     	{
     		e.printStackTrace();

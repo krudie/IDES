@@ -1,53 +1,49 @@
 /**
  * 
  */
-package ie.fsa.ver2_1;
+package io.fsa.ver2_1;
 
 import io.IOUtilities;
-import pluggable.io.IOCoordinator;
-import model.fsa.FSAModel;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import main.Hub;
 
-import org.pietschy.command.file.ExtensionFileFilter;
 
+import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
-
 import pluggable.io.ImportExportPlugin;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
-import services.latex.LatexRenderException;
+
 /**
  * @author christiansilvano
  *
  */
-public class EPSPlugin implements ImportExportPlugin{
-	private String description = IOUtilities.EPS_DESCRIPTOR;
-	private String ext = IOUtilities.EPS_FILE_EXT;
+public class LatexPlugin implements ImportExportPlugin{
+
+	private String description = IOUtilities.LATEX_DESCRIPTOR;
+	private String ext = IOUtilities.LATEX_FILE_EXT;
 //	Singleton instance:
-	private static EPSPlugin instance = null;
-	private EPSPlugin()
+	private static LatexPlugin instance = null;
+	private LatexPlugin()
 	{
 		this.initializeImportExport();
 	}
-	
-	
-	public static EPSPlugin getInstance()
+
+
+	public static LatexPlugin getInstance()
 	{
 		if (instance == null)
 		{
-			instance = new EPSPlugin();
+			instance = new LatexPlugin();
 		}
 		return instance;
 	}
-	
 	/**
 	 * Registers itself to the IOPluginManager
 	 *
@@ -62,9 +58,9 @@ public class EPSPlugin implements ImportExportPlugin{
 	 */
 	public void unload()
 	{
-		
+
 	}
-	
+
 	/**
 	 * Exports a file to a different format
 	 * @param src - the source file
@@ -72,8 +68,6 @@ public class EPSPlugin implements ImportExportPlugin{
 	 */
 	public void exportFile(File src, File dst)
 	{
-		if(Hub.getWorkspace().getActiveModel()==null)
-			return;
 		if(!LatexManager.isLatexEnabled())
 		{
 			Hub.displayAlert(Hub.string("enableLatex4Export"));
@@ -81,41 +75,45 @@ public class EPSPlugin implements ImportExportPlugin{
 		}
 		// Modified: June 16, 2006
 		// Modifier: Sarah-Jane Whittaker
-		//		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(src);
-		FSAGraph graphModel = (FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
-		String fileContents = GraphExporter.createEPSFileContents(graphModel);
-		//		System.out.println(fileContents);
-		if (fileContents == null)
-		{
-			return;
-		}
-		
+		//Comment by Christian: Why don't make the "GraphExporter" return an OutputStream
+		//instead of a String?
 		try
 		{
-			LatexManager.getRenderer().latex2EPS(fileContents,dst);
-		}catch (IOException fileException)
+			FSAGraph graphModel = (FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
+			PrintStream ps = new PrintStream(dst);
+			GraphExporter.createPSTricksFileContents(graphModel, ps);
+		}catch(IOException e)
 		{
 			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
-			}
-			catch (LatexRenderException e)
-			{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
-			}
-
-
+		}
+//		if (fileContents == null)
+//		{
+//			return;
+//		}
+//
+//		try
+//		{
+//			latexWriter = new FileWriter(dst);
+//			latexWriter.write(fileContents);
+//			latexWriter.close();
+//		}
+//		catch (IOException fileException)
+//		{
+//			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
+//		}
 	}
-	
+
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * @param importFile - the source file
 	 * @return
 	 */
-	public void importFile(File src, File dst)
+	public File importFile(File importFile)
 	{
-		
+		return null;
 	}
-	
-	
+
+
 	/**
 	 * Return a human readable description of the plugin
 	 */
@@ -123,12 +121,22 @@ public class EPSPlugin implements ImportExportPlugin{
 	{
 		return description;
 	}
-	
+
 	/**
 	 * 
 	 */
 	public String getExportExtension()
 	{
 		return ext;
+	}
+
+	/**
+	 * Import a file from a different format to the IDES file system
+	 * @param importFile - the source file
+	 * @return
+	 */
+	public void importFile(File src, File dst)
+	{
+
 	}
 }

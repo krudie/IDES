@@ -22,8 +22,9 @@ public class SupRed extends OperationParent {
 
 	public SupRed() {
 		NAME = "Supervisor Reduction (Grail)";
-		DESCRIPTION = "Returns a reduced supervisor. " +
-				" Requires grail.";
+		DESCRIPTION = "Returns a reduced supervisor (experimental). " +
+				" Requires that \"fsasupred.exe\" from Grail be" +
+				" present in the folder where IDES is installed.";
 		
 		//WARNING - Ensure that input type and description always match!	
 		inputType = new Class[]{FSAModel.class,FSAModel.class};

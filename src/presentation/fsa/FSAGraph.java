@@ -788,6 +788,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		CircleNodeLayout layout = new CircleNodeLayout(uniformR,p);
 		if(s.isInitial())
 			layout.setArrow(new Point2D.Float(1,0));
+		layout.setText(s.getName());
 
 //		metaData.setLayoutData(s, layout);
 //		Christian - The following line is to supress the use of metadata, the above line should be erased as soon as possible.
