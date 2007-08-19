@@ -11,7 +11,7 @@ import model.DESElement;
  * 
  * @author Helen Bretzke
  */
-public interface FSAState extends DESElement,Annotable {
+public interface FSAState extends DESElement {
 	
 	/**
 	 * Gets the name of the state

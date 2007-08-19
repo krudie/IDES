@@ -7,7 +7,7 @@ import main.Annotable;
  * 
  * @author Lenko Grigorov
  */
-public interface DESEvent extends Annotable, DESElement {
+public interface DESEvent extends DESElement {
 	/**
      * Returns the symbol that represents this event in the (local?) alphabet.
      *      

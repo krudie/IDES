@@ -3,7 +3,7 @@ package model.fsa;
 import main.Annotable;
 import model.DESElement;
 
-public interface FSATransition extends DESElement, Annotable {
+public interface FSATransition extends DESElement {
 
 	/**
 	 * Sets a new source, i.e., state from which this transition originates, for

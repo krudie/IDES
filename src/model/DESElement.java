@@ -1,12 +1,14 @@
 package model;
 
+import main.Annotable;
+
 /**
  * Interface defining the required operations for an element 
  * in a discrete event system. 
  * 
  * @author Helen Bretzke
  */
-public interface DESElement {
+public interface DESElement extends Annotable {
 
 	/**
 	 * Returns the id of this element. 

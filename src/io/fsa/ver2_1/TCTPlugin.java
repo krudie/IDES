@@ -94,7 +94,7 @@ public class TCTPlugin implements ImportExportPlugin{
 		}
 		catch (CTCTException fileException)
 		{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
+			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath()+"\n"+fileException.getMessage());
 		}
 	}
  
