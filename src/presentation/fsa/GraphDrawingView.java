@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -312,13 +313,18 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 //		moving = false;
 //		if(!moving)
 //		{
-//			super.graphModel.updateSelection(null);
+//		super.graphModel.updateSelection(null);
 //		}
 	}
 
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
 		arg0=transformMouseCoords(arg0);
+		FSAGraph g = super.getGraphModel();
+		if(g.isAvoidLayoutDrawing())
+		{
+			return;
+		}
 		// Switch to labelling tool if we are not in creation mode
 		// NOTE there is a conflict with double click paradigm in creation mode
 		// since don't know we've got a double click until after self-loop has been created.
@@ -333,6 +339,11 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 
 	public void mousePressed(MouseEvent arg0) {
 		arg0=transformMouseCoords(arg0);
+		FSAGraph g = super.getGraphModel();
+		if(g.isAvoidLayoutDrawing())
+		{
+			return;
+		}
 		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
@@ -344,13 +355,23 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 
 	public void mouseReleased(MouseEvent arg0) {
 		arg0=transformMouseCoords(arg0);
+		FSAGraph g = super.getGraphModel();
+		if(g.isAvoidLayoutDrawing())
+		{
+			if(g.isHackedButtonHighlighted())
+			{
+				g.forceLayoutDisplay();
+				forceRepaint();
+			}
+			return;
+		}
 		if(arg0.isPopupTrigger()){			
 			// from both mousePressed and mouseReleased to be truly platform independant.
 			drawingTools[currentTool].handleRightClick(arg0);
 		}else{
 			drawingTools[currentTool].handleMouseReleased(arg0);			
 		}
-		
+
 		//If the user was moving graph elements before releasing the button,
 		//inform FSAGraph that translations were done. So FSAGraph will inform its subscribers.
 		if(this.moving)
@@ -365,12 +386,24 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	}
 
 	public void mouseDragged(MouseEvent arg0) {		
+		FSAGraph g = super.getGraphModel();
+		if(g.isAvoidLayoutDrawing())
+		{
+			return;
+		}
 		arg0=transformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseDragged(arg0);
 		this.setMoving(true);
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
+		FSAGraph g = super.getGraphModel();
+		if(g.isAvoidLayoutDrawing())
+		{
+			g.refreshHackedButtonStatus(arg0.getX(), arg0.getY());
+			this.repaint(g.getHackedButtonRectangle());
+			return;
+		}
 		arg0=transformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}	
@@ -378,6 +411,11 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	public void mouseEntered(MouseEvent arg0) {}
 
 	public void mouseExited(MouseEvent arg0) {
+		FSAGraph g = super.getGraphModel();
+		if(g.isAvoidLayoutDrawing())
+		{
+			return;
+		}
 		if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
 		{
 			// USABILITY Cancels edge when leave panel bounds.
@@ -657,11 +695,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	public void setGraphModel(FSAGraph graphModel)
 	{
 		super.setGraphModel(graphModel);
-
-		if(graphModel != null && graphModel.isAvoidLayoutDrawing())
-		{
-			this.setEnabled(false);
-		}
 	}
 
 }

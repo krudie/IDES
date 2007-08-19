@@ -212,6 +212,11 @@ public class FileCommands {
 				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
 					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
+			catch(NullPointerException e)
+			{
+				Hub.getMainWindow().setCursor(cursor);
+				return;
+			}
 			Hub.getMainWindow().setCursor(cursor);
 		}
 	}

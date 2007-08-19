@@ -223,10 +223,12 @@ public class EdgeLabellingDialog extends EscapeDialog {
 					listAvailableEvents.setSelectedIndex(i);
 				}
 				
-				i = listAssignedEvents.indexOfFirstElementWithPrefix(symbol);
-				if(i > -1){
-					listAssignedEvents.setSelectedIndex(i);
-				}
+//Christian: This code was causing the bug #57
+//It was selecting events on the wrong list, reacting events names given by the user.
+//				i = listAssignedEvents.indexOfFirstElementWithPrefix(symbol);
+//				if(i > -1){
+//					listAssignedEvents.setSelectedIndex(i);
+//				}
 			}			
 		});
 		createBox.add(textField);

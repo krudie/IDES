@@ -239,6 +239,7 @@ public class CommonActions {
 				if(model != null)
 				{
 					model.setName(prefix);
+					model.removeAnnotation(Annotable.FILE);
 					Hub.getWorkspace().addModel(model);
 					Hub.getWorkspace().setActiveModel(model.getName());
 				}

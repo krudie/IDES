@@ -1,9 +1,21 @@
 package presentation.fsa;
-
+import java.awt.Button;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.ImageProducer;
+import java.awt.image.renderable.RenderContext;
+import java.awt.image.renderable.RenderableImage;
+import java.awt.image.renderable.RenderableImageOp;
+import java.awt.image.renderable.RenderableImageProducer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -96,7 +108,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			throw new RuntimeException("FSAGraph can only layout Automatons");
 		}
 		this.fsa = (Automaton)fsa;
-//		metaData = new MetaData(this.fsa);
 		fsa.addSubscriber(this);
 		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
@@ -105,11 +116,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 		int statesCounter = fsa.getStateCount();
 
-		avoidLayoutDrawing = (statesCounter > 100 ? true: false);
-		if(avoidLayoutDrawing)
-		{
-			return;
-		}
+		avoidLayoutDrawing = (statesCounter >100 ? true: false);
 
 		/////////////////
 		//////////
@@ -117,14 +124,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		//Testing annotations:
 		boolean hasLayout = true;
 		Iterator <FSAState> sIt = fsa.getStateIterator();
-		while(sIt.hasNext())
-		{
-			if(sIt.next() == null)
-			{
-				System.out.println("NULL!!!!!!");
-			}
-		}
-
 		sIt = fsa.getStateIterator();
 		while(sIt.hasNext())
 		{
@@ -1975,6 +1974,66 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 //		this, "updating node"));
 //		}
 
+	}
+	
+	
+	private int buttonX = 30, buttonY = 10;
+	private int buttonHeight = 30, buttonWidth = 140;
+	private Color btColor = new Color(150,150,150);
+	private boolean hackedButtonHighlighted = false;
+	public boolean isHackedButtonHighlighted()
+	{
+		return hackedButtonHighlighted;
+	}
+	/**
+	 * If avoidLayoutDrawing is true, this function will draw a button to the user choose whether
+	 * or not, show the layout, setting the variable to false if desired.
+	 * @param g the graphics context
+	 */
+	public void draw(Graphics g) {
+		if(!this.avoidLayoutDrawing)
+		{
+			super.draw(g);
+		}else
+		{
+			Graphics2D g2d = (Graphics2D)g;
+			Font font = new Font("times", Font.PLAIN, 10);
+			g2d.setFont(font);
+			g2d.setStroke(GraphicalLayout.WIDE_STROKE);	
+			g2d.setColor(btColor);
+			g2d.fill3DRect(buttonX, buttonY, buttonWidth, buttonHeight, true);
+			g2d.setColor(new Color(0,0,0));
+			if(hackedButtonHighlighted)
+			{
+				g2d.draw3DRect(buttonX, buttonY, buttonWidth, buttonHeight, true);
+			}
+			g2d.drawString("Click here to show the layout", buttonX+ 10, buttonY+20);
+		}	
+	}
+	
+	public void refreshHackedButtonStatus(int x, int y)
+	{
+		Rectangle rect = new Rectangle(buttonX,buttonY,buttonWidth,buttonHeight);
+		if(rect.intersects(x, y, 1, 1))
+		{
+			btColor = new Color(80,80,80);
+			hackedButtonHighlighted = true;
+		}else
+		{
+			btColor = new Color(150,150,150);
+			hackedButtonHighlighted = false;
+		}
+		this.refresh();
+	}
+	
+	public Rectangle getHackedButtonRectangle()
+	{
+		return new Rectangle(buttonX,buttonY,buttonWidth,buttonHeight);
+	}
+	
+	public void forceLayoutDisplay()
+	{
+		this.avoidLayoutDrawing = false;
 	}
 }
 

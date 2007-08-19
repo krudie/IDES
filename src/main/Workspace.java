@@ -130,7 +130,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	public void addModel(DESModel model) {	
 //		Remove initial Untitled model if it is empty
 		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
-		removeModel(getActiveLayoutShell().getModel().getName());	
+			removeModel(getActiveLayoutShell().getModel().getName());	
 		}
 
 		if(getModel(model.getName())!=null){
@@ -325,7 +325,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			UIDescriptor uid=ts.getUIElements(getActiveLayoutShell());
 			activePresentations=new LinkedList<Presentation>();
 			Presentation[] ps=uid.getMainPanePresentations();
-			
+
 			for(int i=0;i<ps.length;++i)
 			{
 				activePresentations.add(ps[i]);
@@ -459,6 +459,13 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 */
 	public WorkspaceDescriptor getDescriptor() throws IncompleteWorkspaceDescriptorException
 	{
+		//Christian: If activated, the following code will ignore aptemptives to save the workspace,
+		//when the only model being showed is the "default" model which is opened when IDES is loaded 
+		//for the first time *and* this model was never modified.
+//		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave())
+//		{
+//		return null;
+//		}
 		WorkspaceDescriptor wd=new WorkspaceDescriptor(myFile);
 		HashSet<DESModel> unsavedModels=new HashSet<DESModel>();
 		Iterator<DESModel> i = getModels();
@@ -476,12 +483,10 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			{
 				if(!(a instanceof DESModel))
 					continue;
-				try{
-					IOCoordinator.getInstance().save(a, (File)a.getAnnotation(Annotable.FILE));
-				}catch(IOException e)
-				{
-					Hub.displayAlert(Hub.string(e.getMessage()));
-				}
+				//if(a.needsSave())
+				//{
+				io.CommonActions.saveAs(a);
+				//}
 //				throw new IncompleteWorkspaceDescriptorException();
 //				getGraphModel(a.getName()).setDirty(false);
 //				getGraphModel(a.getName()).notifyAllSubscribers();
@@ -490,7 +495,13 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		for(int counter=0; counter<systems.size(); ++counter)
 		{
 			DESModel a=systems.elementAt(counter);
-			wd.insertModel(((File)a.getAnnotation(Annotable.FILE)).getName(),counter);
+			try
+			{
+				wd.insertModel(((File)a.getAnnotation(Annotable.FILE)).getName(),counter);
+			}catch(NullPointerException e)
+			{
+				return null;
+			}
 			if(a.getName().equals(getActiveModelName()))
 				wd.setSelectedModel(counter);
 		}
