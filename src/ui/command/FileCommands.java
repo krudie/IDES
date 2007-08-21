@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -37,6 +38,7 @@ import services.latex.LatexManager;
 import services.latex.LatexRenderException;
 import ui.NewModelDialog;
 import ui.OperationDialog;
+import ui.SaveDialog;
 import pluggable.io.IOCoordinator;
 import ui.ImportExportDialog;
 ;/**
@@ -124,6 +126,12 @@ public class FileCommands {
 
 		@Override
 		protected void handleExecute() {
+//			Vector<DESModel> models=new Vector<DESModel>();
+//			for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
+//			{
+//				models.add(i.next());
+//			}
+//			new SaveDialog(models).selectModels();
 			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);
 		}
 	}

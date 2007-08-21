@@ -157,6 +157,7 @@ public class GrailPlugin implements ImportExportPlugin{
     				if(s==null)
     				{
     					s=new model.fsa.ver2_1.State(sId);
+    					s.setName(""+sId);
     					a.add(s);
     				}
     				s.setInitial(true);
@@ -168,6 +169,7 @@ public class GrailPlugin implements ImportExportPlugin{
     				if(s==null)
     				{
     					s=new model.fsa.ver2_1.State(sId);
+    					s.setName(""+sId);
     					a.add(s);
     				}
     				s.setMarked(true);
@@ -179,6 +181,7 @@ public class GrailPlugin implements ImportExportPlugin{
     				if(s1==null)
     				{
     					s1=new model.fsa.ver2_1.State(sId1);
+    					s1.setName(""+sId1);
     					a.add(s1);
     				}
     				long sId2=Long.parseLong(parts[2]);
@@ -186,6 +189,7 @@ public class GrailPlugin implements ImportExportPlugin{
     				if(s2==null)
     				{
     					s2=new model.fsa.ver2_1.State(sId2);
+    					s2.setName(""+sId2);
     					a.add(s2);
     				}
     				model.fsa.ver2_1.Event e=null;
