@@ -13,12 +13,9 @@ import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.impl.SimpleDirectedSparseVertex;
 import edu.uci.ics.jung.visualization.contrib.KKLayout;
 import pluggable.layout.FSALayouter;
-import presentation.Geometry;
 import presentation.fsa.Edge;
-import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.Node;
-import presentation.fsa.CircleNode;
 
 /**
  *
@@ -48,6 +45,13 @@ public class JUNGLayouter implements FSALayouter {
 		}
 		for(Edge e:graph.getEdges())
 		{
+//			System.out.println(e.getSourceNode() + ", " + e.getTargetNode()
+//			+ ", " + BridgeMapper.nodeMap.get(e.getSourceNode()) + ", " 
+//			+ BridgeMapper.nodeMap.get(e.getTargetNode())
+//			);
+			//FIXME: DISCOVER WHY IT SOMETIMES BREAKS!
+			// The calls BridgeMapper.nodeMap.get(e.getTargetNode())) for source and target are returning
+			//null
 			DirectedSparseEdge edge=new DirectedSparseEdge(
 					BridgeMapper.nodeMap.get(e.getSourceNode()),
 					BridgeMapper.nodeMap.get(e.getTargetNode()));

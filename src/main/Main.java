@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 import javax.swing.UIManager;
 
@@ -47,6 +48,7 @@ import services.General;
 import services.cache.Cache;
 import services.latex.LatexManager;
 import ui.MainWindow;
+import ui.SaveDialog;
 import pluggable.io.*;
 //import io.template.ver2_1.TemplateFileIOPlugin;
 //import presentation.template.TemplateToolset;
@@ -177,13 +179,28 @@ public class Main {
 		if(Hub.getWorkspace().isDirty())
 			if(!io.CommonActions.handleUnsavedWorkspace())
 				return;
+		Vector<DESModel> models=new Vector<DESModel>();
 		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
 		{
+		
 			DESModel m=i.next();
 			if( m.needsSave() )
-				if(!io.CommonActions.handleUnsavedModel(m))
-					return;
+					models.add(m);
 		}
+		
+		if(!models.isEmpty())
+		{
+			io.CommonActions.handleUnsavedModels(models);
+		}
+		
+		
+//		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
+//		{
+//			models.add(i.next());
+//		}
+//		new SaveDialog(models).selectModels();
+		
+		
 		//store settings
 		Cache.close();
 		Hub.getMainWindow().dispose();

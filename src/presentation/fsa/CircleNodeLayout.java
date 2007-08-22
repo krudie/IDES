@@ -27,7 +27,7 @@ public class CircleNodeLayout extends GraphicalLayout implements Serializable{
 	/**
 	 * The default radius of the circle which represents this Node.
 	 */    
-	public static final float DEFAULT_RADIUS = 15;
+	public static final float DEFAULT_RADIUS = (2.0f/3.0f)*15;
 	/**
 	 * The fixed margin between outer and inner circles for marked Nodes.
 	 */

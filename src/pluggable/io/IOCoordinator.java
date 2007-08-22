@@ -405,11 +405,6 @@ public final class IOCoordinator{
 			//no plugin exporting
 		case 1:
 			ImportExportPlugin plugin = plugins.iterator().next();
-			String extension = ParsingToolbox.getFileType(dst.getName());
-			if(extension.equals(""))
-			{
-				dst = new File(ParsingToolbox.removeFileType(dst.getAbsolutePath()) + "." + plugin.getExportExtension());
-			}
 			plugin.exportFile(src, dst);
 		default:
 			//more than one plugin hanging

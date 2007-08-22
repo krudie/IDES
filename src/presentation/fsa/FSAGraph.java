@@ -293,7 +293,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				//Labeling the states according to the id:
 				if(s.getName() == null)
 				{
-				s.setName(String.valueOf(s.getId()));
+					s.setName(String.valueOf(s.getId()));
 				}
 				wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
 				stateGroups.clear();
@@ -1976,9 +1976,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 	}
 	
-	
-	private int buttonX = 30, buttonY = 10;
-	private int buttonHeight = 30, buttonWidth = 140;
+	//HACK OF A BUTTON:
+	private int buttonX = 55, buttonY = 105;
+	private int buttonHeight = 30, buttonWidth = 250;
 	private Color btColor = new Color(150,150,150);
 	private boolean hackedButtonHighlighted = false;
 	public boolean isHackedButtonHighlighted()
@@ -1986,8 +1986,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		return hackedButtonHighlighted;
 	}
 	/**
-	 * If avoidLayoutDrawing is true, this function will draw a button to the user choose whether
-	 * or not, show the layout, setting the variable to false if desired.
+	 * If avoidLayoutDrawing is true, this function will draw a button, so the user can choose whether
+	 * or not to show the layout, setting the avoidLayoutDrawing to false, if desired.
 	 * @param g the graphics context
 	 */
 	public void draw(Graphics g) {
@@ -1997,7 +1997,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}else
 		{
 			Graphics2D g2d = (Graphics2D)g;
-			Font font = new Font("times", Font.PLAIN, 10);
+			Font font = new Font("times", Font.PLAIN, 16);
 			g2d.setFont(font);
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);	
 			g2d.setColor(btColor);
@@ -2006,8 +2006,16 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			if(hackedButtonHighlighted)
 			{
 				g2d.draw3DRect(buttonX, buttonY, buttonWidth, buttonHeight, true);
-			}
-			g2d.drawString("Click here to show the layout", buttonX+ 10, buttonY+20);
+			}			g2d.setFont(new Font("times", Font.PLAIN, 12));
+			g2d.drawString("The current automaton has more than 100 states", buttonX, buttonY - 60);
+			g2d.drawString("This is why the graphical display has been disabled.", buttonX, buttonY - 45);
+			g2d.drawString("If you would like to see the automaton, click on the", buttonX, buttonY-30);
+			g2d.drawString("button below.", buttonX, buttonY - 15);
+			g2d.drawString("Please, be aware that IDES may become noticeably slower.", buttonX-15, buttonY + 50);
+			g2d.setFont(font);
+			g2d.drawString("Click here to display this automaton.", buttonX+ 10, buttonY+20);
+			g2d.setStroke(GraphicalLayout.FINE_STROKE);
+			g2d.draw3DRect(buttonX-25, buttonY-75, buttonX+buttonWidth, buttonY+buttonHeight, true);
 		}	
 	}
 	
@@ -2016,14 +2024,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		Rectangle rect = new Rectangle(buttonX,buttonY,buttonWidth,buttonHeight);
 		if(rect.intersects(x, y, 1, 1))
 		{
-			btColor = new Color(80,80,80);
+			btColor = new Color(100,100,100);
 			hackedButtonHighlighted = true;
 		}else
 		{
 			btColor = new Color(150,150,150);
 			hackedButtonHighlighted = false;
 		}
-		this.refresh();
 	}
 	
 	public Rectangle getHackedButtonRectangle()
@@ -2034,7 +2041,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void forceLayoutDisplay()
 	{
 		this.avoidLayoutDrawing = false;
+		this.getBounds(true);
 	}
+	//END OF THE HACKING OF A BUTTON
 }
 
 

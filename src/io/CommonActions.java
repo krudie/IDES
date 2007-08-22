@@ -28,6 +28,7 @@ import org.pietschy.command.file.ExtensionFileFilter;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
+import ui.SaveDialog;
 
 /**
  * @author christiansilvano
@@ -94,7 +95,7 @@ public class CommonActions {
 				IOCoordinator.getInstance().save(model, file);
 			}catch(IOException e)
 			{
-				Hub.displayAlert(e.getMessage());
+				Hub.displayAlert(Hub.string("cantSaveModel") + " " + file.getName() + "\n" + "Message: "+  e.getMessage());
 			}
 
 			String name=ParsingToolbox.removeFileType(file.getName());
@@ -316,6 +317,15 @@ public class CommonActions {
 			if(retVal != JFileChooser.APPROVE_OPTION)
 				break;
 			file=fc.getSelectedFile();
+			String extension = ParsingToolbox.getFileType(file.getName());
+			String extPlugin = IOPluginManager.getInstance().getExporters(fc.getFileFilter().getDescription()).iterator().next().getExportExtension();
+			//If the user doesn't select a file with an extension, IDES will automatically put an
+			//extension for the file, based on a plugin which exports the model.
+			if(extension.equals(""))
+			{
+				file = new File(ParsingToolbox.removeFileType(file.getAbsolutePath()) + (extPlugin!=null ? ("." + extPlugin) : ""));
+			}
+			//Confirms with the user whether an existent file should be replaced.
 			if(file.exists())
 			{
 				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
@@ -466,7 +476,7 @@ public class CommonActions {
 		}
 		ps.println("</workspace>");
 	}
-	
+
 	/**
 	 * Asks the user if they want to save the workspace
 	 * 
@@ -498,11 +508,11 @@ public class CommonActions {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Asks the user if they want to save the model
 	 * 
-	 * @param gm the GraphModel that needs to be saved
+	 * @param m the DESModel that needs to be saved
 	 * @return false if the process was cancelled
 	 */
 	public static boolean handleUnsavedModel(DESModel m)
@@ -518,12 +528,12 @@ public class CommonActions {
 			if((File)m.getAnnotation(Annotable.FILE) != null)
 			{
 				try{
-				IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
+					IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
 				}catch(IOException e)
 				{
-					Hub.displayAlert(e.getMessage());
+					Hub.displayAlert(Hub.string("cantSaveModel") + " " +(File)m.getAnnotation(Annotable.FILE) + "\n" + "Message: "+  e.getMessage());
 				}
-				}
+			}
 			else{
 				JFileChooser fc;
 				String path = Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME");
@@ -534,16 +544,16 @@ public class CommonActions {
 				{
 					fc=new JFileChooser(path);	
 				}
-		        fc.setDialogTitle(Hub.string("saveModelTitle"));
+				fc.setDialogTitle(Hub.string("saveModelTitle"));
 				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
 						Hub.string("modelFileDescription")));
-				
+
 				if((File)m.getAnnotation(Annotable.FILE)!=null){
 					fc.setSelectedFile((File)m.getAnnotation(Annotable.FILE));
 				}else{
 					fc.setSelectedFile(new File(m.getName()));
 				}
-				
+
 				int retVal;
 				boolean fcDone=true;
 				File file=null;
@@ -553,20 +563,20 @@ public class CommonActions {
 					if(retVal != JFileChooser.APPROVE_OPTION)
 						break;
 					file=fc.getSelectedFile();
-		    		if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
-		    			file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
+					if(!file.getName().toLowerCase().endsWith("."+IOUtilities.MODEL_FILE_EXT))
+						file=new File(file.getPath()+"."+IOUtilities.MODEL_FILE_EXT);
 					if(file.exists())
 					{
 						int _choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-							Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
-							Hub.string("saveModelTitle"),
-							JOptionPane.YES_NO_CANCEL_OPTION);
+								Hub.string("fileExistAsk1")+file.getPath()+Hub.string("fileExistAsk2"),
+								Hub.string("saveModelTitle"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
 						fcDone=_choice!=JOptionPane.NO_OPTION;
 						if(_choice!=JOptionPane.YES_OPTION)
 							retVal=JFileChooser.CANCEL_OPTION;
 					}
 				} while(!fcDone);					
-			
+
 				if(retVal != JFileChooser.CANCEL_OPTION)
 				{
 					m.setAnnotation(Annotable.FILE, file);
@@ -575,7 +585,7 @@ public class CommonActions {
 						IOCoordinator.getInstance().save(m, (File)m.getAnnotation(Annotable.FILE));
 					}catch(Exception e)
 					{
-						Hub.displayAlert(e.getMessage());
+						Hub.displayAlert(Hub.string("cantSaveModel") + " " + file.getName() + "\n" + "Message: "+  e.getMessage());
 					}
 					Hub.getWorkspace().fireRepaintRequired();
 				}
@@ -584,5 +594,30 @@ public class CommonActions {
 
 		}
 		return true;
+	}
+
+	public static void handleUnsavedModels(Vector<DESModel> models)
+	{
+		if(models.size() > 0)
+		{
+			Vector<DESModel> selectedModels = new SaveDialog(models).selectModels();
+			Iterator<DESModel> it = selectedModels.iterator();
+			while(it.hasNext())
+			{
+				DESModel model = it.next();
+				File file = (File)model.getAnnotation(Annotable.FILE);
+				if(file != null)
+				{
+					try{
+						IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+					}catch(IOException e)
+					{
+						Hub.displayAlert(Hub.string("cantSaveModel") + " " + file.getName() + "\n" + "Message: "+  e.getMessage());
+					}
+				}else{
+					saveAs(model);
+				}
+			}
+		}
 	}
 }

@@ -467,7 +467,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 //		return null;
 //		}
 		WorkspaceDescriptor wd=new WorkspaceDescriptor(myFile);
-		HashSet<DESModel> unsavedModels=new HashSet<DESModel>();
+		Vector<DESModel> unsavedModels=new Vector<DESModel>();
 		Iterator<DESModel> i = getModels();
 		while(i.hasNext())
 		{
@@ -479,18 +479,19 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		if(!unsavedModels.isEmpty())
 		{
 			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
-			for(DESModel a:unsavedModels)
-			{
-				if(!(a instanceof DESModel))
-					continue;
-				//if(a.needsSave())
-				//{
-				io.CommonActions.saveAs(a);
-				//}
-//				throw new IncompleteWorkspaceDescriptorException();
-//				getGraphModel(a.getName()).setDirty(false);
-//				getGraphModel(a.getName()).notifyAllSubscribers();
-			}
+			io.CommonActions.handleUnsavedModels(unsavedModels);
+//			for(DESModel a:unsavedModels)
+//			{
+//				if(!(a instanceof DESModel))
+//					continue;
+//				//if(a.needsSave())
+//				//{
+//				io.CommonActions.saveAs(a);
+//				//}
+////				throw new IncompleteWorkspaceDescriptorException();
+////				getGraphModel(a.getName()).setDirty(false);
+////				getGraphModel(a.getName()).notifyAllSubscribers();
+//			}
 		}
 		for(int counter=0; counter<systems.size(); ++counter)
 		{
