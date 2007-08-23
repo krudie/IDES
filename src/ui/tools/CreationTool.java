@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.util.Collection;
+import java.util.Iterator;
 
 import main.Hub;
 
@@ -30,11 +32,11 @@ import presentation.fsa.GraphElement;
  * @author helen bretzke
  */
 public class CreationTool extends DrawingTool {
-	
+
 	private boolean drawingEdge = false;
 	private CircleNode sourceNode, targetNode; // nodes to be source and target of created edge
 	private CircleNode startNode, endNode; // nodes intersected on mouse pressed and released respectively
-	private BezierEdge edge, auxEdge;
+	private BezierEdge edge;
 	private CreateCommand cmd;	
 	private boolean aborted;
 	private boolean firstClick;
@@ -42,14 +44,14 @@ public class CreationTool extends DrawingTool {
 	public CreationTool(){
 //		context = board;		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		
+
 		// JAVA BUG: for any preferred dimension, always 32 X 32 on Windows (works on MAC, what about Linux?)!!
 		//System.out.println(toolkit.getBestCursorSize(10, 10));
-		
+
 		// FIXME dynamic cursor names in UISettings class
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub.getResource("images/cursors/create.gif")), new Point(0,0), "CREATE_NODES_OR_EDGES");		
 	}
-	
+
 	public void init(){
 		cmd = null;
 		startNode = null;
@@ -61,16 +63,16 @@ public class CreationTool extends DrawingTool {
 			aborted = true;
 		}
 	}
-	
+
 	@Override
 	public void handleMouseClicked(MouseEvent me) {
 		super.handleMouseClicked(me);
-		
+
 		if(aborted){
 			aborted = false;
 			return;
 		}
-		
+
 		if(drawingSelfLoop()){
 			if( !firstClick && me.getClickCount() != 2 ){
 				// second click on same node so make a self-loop			
@@ -90,7 +92,7 @@ public class CreationTool extends DrawingTool {
 		startNode = null;
 		cmd = null;
 
-	
+
 		//Do not clear the selection if the selected element is a BezierEdge
 		//Reason: let the user modify the control points of the bezier curve without
 		//need to change the curve.
@@ -103,105 +105,126 @@ public class CreationTool extends DrawingTool {
 		ContextAdaptorHack.context.repaint();
 		GraphElement selectedElement = ContextAdaptorHack.context.getSelectedElement(); 
 		if(selectedElement instanceof CircleNode || ContextAdaptorHack.context.getSelectedElement() == null)
-			{	//If a node or an empty space is clicked
-				if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
-				{
-					return;
-				}
-				startNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
-				if(!drawingEdge)
-				{
-					if(startNode != null)
-					{
-						startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
-						dragging = true; // assume we're dragging until mouse released decides otherwise.
-						return;
-					}
-				}
-			}
-			else{//If an edge or label is selected:
-				startNode = null;
-				ContextAdaptorHack.context.setAvoidNextDraw(true);
-				//Let the SELECTION tool work on the edge or label modification
-				ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
-				ContextAdaptorHack.context.getCurrentTool().handleMousePressed(me);
+		{	//If a node or an empty space is clicked
+			if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
+			{
 				return;
 			}
+			startNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
+			if(!drawingEdge)
+			{
+				if(startNode != null)
+				{
+					startEdge(); // assume we're drawing an edge until mouse released decides otherwise.				 
+					dragging = true; // assume we're dragging until mouse released decides otherwise.
+					return;
+				}
+			}
+		}
+		else{//If an edge or label is selected:
+			startNode = null;
+			ContextAdaptorHack.context.setAvoidNextDraw(true);
+			//Let the SELECTION tool work on the edge or label modification
+			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+			ContextAdaptorHack.context.getCurrentTool().handleMousePressed(me);
+			return;
+		}
 
-		}		
+	}		
 
 
 	@Override
-		public void handleMouseReleased(MouseEvent me) {
-			super.handleMouseReleased(me);
-			if(!(me.getButton() == MouseEvent.BUTTON1))
-			{
-				return;
-			}
-			//Cleaning the selection
-			ContextAdaptorHack.context.clearCurrentSelection();
-			ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());
-			ContextAdaptorHack.context.repaint();
-
-			//Avoiding a new node to be created based in some of the context flags.
-			//These flags may be initially set by interface elements which can interrupt the
-			//"normal" interaction with the software.
-			//Example: 1 - the user open a popup. 
-			//         2 - the user click at a point in the canvas to cancel the popup. 
-			//		A new node should not be created in this case because the user just
-			//      wanted to destroy the popup.
-			if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
-			{
-				ContextAdaptorHack.context.setAvoidNextDraw(false);
-				return;
-			}
-
-			//Creating a new node:
-			endNode = null;
-			if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
-				try{		
-					endNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
-				}catch(ClassCastException e){}
-			}				
-			
-			if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging
-				// IDEA To fix conflict with TextTool, delay creation of self loops until we know if user has double clicked.
-				// Don't finish edge on mouse released if target == source.
-				//// second click on same node so make a self-loop
-				//finishSelfLoop();				
-				firstClick = false;
-				return;
-				
-			}else if(startNode != null && startNode == endNode && startNode == sourceNode && dragging){ // select source node, keep drawing edge by mouse move (not dragging)				
-				dragging = false;
-				firstClick = true;
-			}else if(startNode == null && endNode == null && !drawingEdge){								
-				// create a new node at current location
-				createNode(me.getPoint());
-				firstClick = false;
-			}else if(startNode == endNode && startNode != sourceNode && endNode != null){ // select target node, finish drawing edge by mouse move				
-				finishEdge();		
-				firstClick = false;
-			}else if(drawingEdge && endNode == null){  // 
-				// Assumption: startNode and sourceNode are non-null				
-				finishEdgeAndCreateTarget(me.getPoint());
-				firstClick = false;
-			}else if(drawingEdge && dragging && endNode != null){  // Assumption: sourceNode != null						
-				finishEdge();			
-			}else{
-				try{
-					finishEdge();
-					}catch(Exception e){};
-			}
-						
-			endNode = null;
-			ContextAdaptorHack.context.repaint();
+	public void handleMouseReleased(MouseEvent me) {
+		super.handleMouseReleased(me);
+		if(!(me.getButton() == MouseEvent.BUTTON1))
+		{
+			return;
 		}
+		//Cleaning the selection
+		ContextAdaptorHack.context.clearCurrentSelection();
+		ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());
+		ContextAdaptorHack.context.repaint();
+
+		try{
+			targetNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
+		}catch(ClassCastException e){
+			Point pt = me.getPoint();
+			Iterator<CircleNode> it = ContextAdaptorHack.context.getGraphModel().getNodes().iterator();
+			while(it.hasNext())
+			{
+				Node tmpNode = it.next();
+				if(tmpNode.intersects(pt))
+				{
+					targetNode = (CircleNode)tmpNode;
+					break;
+				}
+			}
+		}
+
+		//Avoiding a new node to be created based in some of the context flags.
+		//These flags may be initially set by interface elements which can interrupt the
+		//"normal" interaction with the software.
+		//Example: 1 - the user open a popup. 
+		//         2 - the user click at a point in the canvas to cancel the popup. 
+		//		A new node should not be created in this case because the user just
+		//      wanted to destroy the popup.
+		if(ContextAdaptorHack.context.getAvoidNextDraw() == true)
+		{
+			ContextAdaptorHack.context.setAvoidNextDraw(false);
+			return;
+		}
+
+		//Creating a new node:
+		if(targetNode == null)
+		{endNode = null;
+		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
+			try{		
+				endNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
+			}catch(ClassCastException e){}
+		}}else
+		{
+			endNode = targetNode;
+		}
+	
+		if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging
+			// IDEA To fix conflict with TextTool, delay creation of self loops until we know if user has double clicked.
+			// Don't finish edge on mouse released if target == source.
+			//// second click on same node so make a self-loop
+			//finishSelfLoop();	
+			firstClick = false;
+			return;
+
+		}else if(startNode != null && startNode == endNode && startNode == sourceNode && dragging){ // select source node, keep drawing edge by mouse move (not dragging)				
+			dragging = false;
+			firstClick = true;
+			finishEdge();
+		}else if(startNode == null && endNode == null && !drawingEdge){								
+			// create a new node at current location
+			createNode(me.getPoint());
+			firstClick = false;
+		}else if(startNode == endNode && startNode != sourceNode && endNode != null){ // select target node, finish drawing edge by mouse move				
+			finishEdge();		
+			firstClick = false;
+		}else if(drawingEdge && endNode == null){  // 
+			// Assumption: startNode and sourceNode are non-null				
+			finishEdgeAndCreateTarget(me.getPoint());
+			firstClick = false;
+		}else if(drawingEdge && dragging && endNode != null){  // Assumption: sourceNode != null						
+			finishEdge();			
+		}else{
+			try{
+				finishEdge();
+			}catch(Exception e){};
+		}
+
+		endNode = null;
+		ContextAdaptorHack.context.repaint();
+	}
 
 	private boolean drawingSelfLoop(){
 		return startNode == endNode && endNode == sourceNode && drawingEdge && !dragging;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -255,7 +278,7 @@ public class CreationTool extends DrawingTool {
 		edge = beginEdge(sourceNode);				
 		drawingEdge = true;		
 	}
-	
+
 	/**
 	 * Creates and returns an Edge with source node <code>n1</code>, 
 	 * undefined target node, and terminating at the centre of node <code>n1</code>.
@@ -269,11 +292,10 @@ public class CreationTool extends DrawingTool {
 		layout.computeCurve((CircleNodeLayout)n1.getLayout(), n1.getLayout().getLocation());
 		ContextAdaptorHack.context.setTempEdge(e);
 		edgeLeftLayout = false;
-		auxEdge = null;
 		return e;
 	}
-	
-	
+
+
 	/**
 	 * Updates the layout for the given edge so it extends to the given target point.
 	 * If the focused point is a point of the source node, the layout will capture the 
@@ -286,35 +308,42 @@ public class CreationTool extends DrawingTool {
 		CircleNodeLayout s = (CircleNodeLayout)e.getSourceNode().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSourceNode().intersects(p) ){
-			e = (auxEdge!=null?auxEdge:beginEdge((CircleNode)e.getSourceNode()));
+			e = beginEdge((CircleNode)e.getSourceNode());
 			e.computeCurve(s, p);
 			edge = e;
 			ContextAdaptorHack.context.setTempEdge(edge);
 			this.edgeLeftLayout = true;
-		}else{
-			if(!(e instanceof ReflexiveEdge))
-			{
-				auxEdge = e;
-			}
-			 if(this.edgeLeftLayout)
-			{edge =  new ReflexiveEdge(e.getSourceNode(), null);
-			edge.setTargetNode(edge.getSourceNode());
+		}else if(this.edgeLeftLayout)
+		{
+			edge =  new ReflexiveEdge(e.getSourceNode(), null);
+			targetNode = (CircleNode)edge.getTargetNode();
+			sourceNode = (CircleNode)edge.getSourceNode();
 			((ReflexiveEdge)edge).computeEdge();
-			ContextAdaptorHack.context.setTempEdge(edge);}
+			ContextAdaptorHack.context.setTempEdge(edge);
 		}
 	}
-	
-	
+
+
 	private void finishEdge() {		
-		targetNode = endNode;
 		// DEBUG there are some circumstances where we make it to this method with edge==null
 		// ... don't know what they are yet ...
+
+		//Cancel the execution flow if the user has clicked once and never left the node
+		//with the mouse. The user could be either dragging an edge or has just clicked once to
+		//create a new edge. 
+		//If this variable is false, it is still not time to finish the edge.
+		if(!this.edgeLeftLayout)
+		{
+			return;
+		}
+
 		if (edge != null) {
 			cmd = new CreateCommand(CreateCommand.EDGE, edge, targetNode);
 			cmd.execute();
 		}
 		edge = null;
 		ContextAdaptorHack.context.setTempEdge(null);
+		edgeLeftLayout=false;
 		drawingEdge = false;
 		dragging = false;		
 		sourceNode = null;
@@ -328,12 +357,12 @@ public class CreationTool extends DrawingTool {
 		ContextAdaptorHack.context.repaint();
 		//super.handleRightClick(me);		
 	}
-	
+
 	public boolean isDrawingEdge()
 	{
 		return drawingEdge;
 	}
-	
+
 	public void abortEdge() {
 		if(drawingEdge){			
 			// context.getGraphModel().abortEdge(edge);
@@ -348,7 +377,7 @@ public class CreationTool extends DrawingTool {
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
 		super.handleMouseDragged(me);
-		
+
 		// if drawing an edge, recompute the curve
 		if(dragging && drawingEdge){
 			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));

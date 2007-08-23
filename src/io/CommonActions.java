@@ -596,28 +596,34 @@ public class CommonActions {
 		return true;
 	}
 
-	public static void handleUnsavedModels(Vector<DESModel> models)
+	public static boolean handleUnsavedModels(Vector<DESModel> models)
 	{
 		if(models.size() > 0)
 		{
 			Vector<DESModel> selectedModels = new SaveDialog(models).selectModels();
-			Iterator<DESModel> it = selectedModels.iterator();
-			while(it.hasNext())
-			{
-				DESModel model = it.next();
-				File file = (File)model.getAnnotation(Annotable.FILE);
-				if(file != null)
+			try{
+				Iterator<DESModel> it = selectedModels.iterator();
+				while(it.hasNext())
 				{
-					try{
-						IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
-					}catch(IOException e)
+					DESModel model = it.next();
+					File file = (File)model.getAnnotation(Annotable.FILE);
+					if(file != null)
 					{
-						Hub.displayAlert(Hub.string("cantSaveModel") + " " + file.getName() + "\n" + "Message: "+  e.getMessage());
+						try{
+							IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
+						}catch(IOException e)
+						{
+							Hub.displayAlert(Hub.string("cantSaveModel") + " " + file.getName() + "\n" + "Message: "+  e.getMessage());
+						}
+					}else{
+						saveAs(model);
 					}
-				}else{
-					saveAs(model);
 				}
+			}catch(NullPointerException e)
+			{
+				return false;
 			}
 		}
+		return true;
 	}
 }

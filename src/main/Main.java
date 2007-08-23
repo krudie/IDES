@@ -190,7 +190,8 @@ public class Main {
 		
 		if(!models.isEmpty())
 		{
-			io.CommonActions.handleUnsavedModels(models);
+			if(!io.CommonActions.handleUnsavedModels(models))
+				return;
 		}
 		
 		
