@@ -60,15 +60,18 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 		
 	
 	private void refreshStatusLabel() {
+		if(Hub.getWorkspace().getActiveModel() == null)
+		{
+			statsLabel.setText( Hub.string("noModelOpen") );
+			return;
+		}
 		if ( a != null ) {
 			String name;
 			name = a.getName();
 			statsLabel.setText( name + ":  " +					
 					+ a.getStateCount() + " states,  " +
 					+ a.getTransitionCount() + " transitions" );
-		} else {
-			statsLabel.setText( Hub.string("noModelOpen") );
-		}
+		} 
 	}
 	
 	/* (non-Javadoc)

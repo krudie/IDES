@@ -918,4 +918,5 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		else
 			state.setAnnotation(Annotable.CONTROL_MAP,set);
 	}
+
 }

@@ -144,21 +144,21 @@ public class CreationTool extends DrawingTool {
 		ContextAdaptorHack.context.clearCurrentSelection();
 		ContextAdaptorHack.context.updateCurrentSelection(me.getPoint());
 		ContextAdaptorHack.context.repaint();
-
+		GraphElement selection = ContextAdaptorHack.context.getSelectedElement();
 		try{
-			targetNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
+			targetNode = (CircleNode)selection;
 		}catch(ClassCastException e){
-			Point pt = me.getPoint();
-			Iterator<CircleNode> it = ContextAdaptorHack.context.getGraphModel().getNodes().iterator();
-			while(it.hasNext())
-			{
-				Node tmpNode = it.next();
-				if(tmpNode.intersects(pt))
-				{
-					targetNode = (CircleNode)tmpNode;
-					break;
-				}
-			}
+//			Point pt = me.getPoint();
+//			Iterator<CircleNode> it = ContextAdaptorHack.context.getGraphModel().getNodes().iterator();
+//			while(it.hasNext())
+//			{
+//			Node tmpNode = it.next();
+//			if(tmpNode.intersects(pt))
+//			{
+//			targetNode = (CircleNode)tmpNode;
+//			break;
+//			}
+//			}
 		}
 
 		//Avoiding a new node to be created based in some of the context flags.
@@ -175,17 +175,14 @@ public class CreationTool extends DrawingTool {
 		}
 
 		//Creating a new node:
-		if(targetNode == null)
-		{endNode = null;
-		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
-			try{		
-				endNode = (CircleNode)ContextAdaptorHack.context.getSelectedElement();
-			}catch(ClassCastException e){}
-		}}else
-		{
-			endNode = targetNode;
-		}
-	
+
+		endNode = null;
+		try{		
+			endNode = (CircleNode)selection;
+		}catch(ClassCastException e){}
+
+
+
 		if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging
 			// IDEA To fix conflict with TextTool, delay creation of self loops until we know if user has double clicked.
 			// Don't finish edge on mouse released if target == source.
@@ -348,6 +345,7 @@ public class CreationTool extends DrawingTool {
 		dragging = false;		
 		sourceNode = null;
 		targetNode = null;
+		edge = null;
 		ContextAdaptorHack.context.clearCurrentSelection();
 	}	
 
