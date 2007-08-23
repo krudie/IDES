@@ -34,11 +34,11 @@ public class CreationTool extends DrawingTool {
 	private boolean drawingEdge = false;
 	private CircleNode sourceNode, targetNode; // nodes to be source and target of created edge
 	private CircleNode startNode, endNode; // nodes intersected on mouse pressed and released respectively
-	private BezierEdge edge;
+	private BezierEdge edge, auxEdge;
 	private CreateCommand cmd;	
 	private boolean aborted;
 	private boolean firstClick;
-	
+	private boolean edgeLeftLayout = false;
 	public CreationTool(){
 //		context = board;		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -268,12 +268,16 @@ public class CreationTool extends DrawingTool {
 		BezierEdge e = new BezierEdge(layout, n1);
 		layout.computeCurve((CircleNodeLayout)n1.getLayout(), n1.getLayout().getLocation());
 		ContextAdaptorHack.context.setTempEdge(e);
+		edgeLeftLayout = false;
+		auxEdge = null;
 		return e;
 	}
 	
 	
 	/**
 	 * Updates the layout for the given edge so it extends to the given target point.
+	 * If the focused point is a point of the source node, the layout will capture the 
+	 * possible intencion of a reflexive edge and IDES will draw a reflexive layout.
 	 * 
 	 * @param e the Edge to be updated
 	 * @param p the target point
@@ -282,10 +286,21 @@ public class CreationTool extends DrawingTool {
 		CircleNodeLayout s = (CircleNodeLayout)e.getSourceNode().getLayout();
 		// only draw the edge if the point is outside the bounds of the source node
 		if( ! e.getSourceNode().intersects(p) ){
+			e = (auxEdge!=null?auxEdge:beginEdge((CircleNode)e.getSourceNode()));
 			e.computeCurve(s, p);
-			e.setVisible(true);
+			edge = e;
+			ContextAdaptorHack.context.setTempEdge(edge);
+			this.edgeLeftLayout = true;
 		}else{
-			e.setVisible(false);
+			if(!(e instanceof ReflexiveEdge))
+			{
+				auxEdge = e;
+			}
+			 if(this.edgeLeftLayout)
+			{edge =  new ReflexiveEdge(e.getSourceNode(), null);
+			edge.setTargetNode(edge.getSourceNode());
+			((ReflexiveEdge)edge).computeEdge();
+			ContextAdaptorHack.context.setTempEdge(edge);}
 		}
 	}
 	

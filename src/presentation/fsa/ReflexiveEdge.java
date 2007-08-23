@@ -78,7 +78,10 @@ public class ReflexiveEdge extends BezierEdge {
 	public ReflexiveEdge(Node node, FSATransition t) {
 		super(node, node);
 		lastNodeRadius = ((CircleNodeLayout)node.getLayout()).getRadius();
-		addTransition(t);				
+		if(t != null)
+		{
+			addTransition(t);				
+		}
 		setLayout(new ReflexiveLayout(node, this));
 		setHandler(new ReflexiveHandler(this));
 
