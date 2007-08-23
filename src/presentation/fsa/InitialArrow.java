@@ -571,5 +571,10 @@ public class InitialArrow extends Edge {
 		}
 	} // end Handler
 	
+	/**
+	 * Method not applicable for initial edges.
+	 *
+	 */
+	public void symmetrize(){};
 
 } // end InitialArrow

@@ -31,7 +31,7 @@ public class TextTool extends DrawingTool {
 	public void handleMouseClicked(MouseEvent me) {
 		super.handleMouseClicked(me);	
 		if(me.getClickCount() != 2){
-			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+			ContextAdaptorHack.context.setTool(ContextAdaptorHack.context.getPreferredTool());
 			ContextAdaptorHack.context.getCurrentTool().handleMouseClicked(me);
 			return;
 		}
@@ -44,7 +44,9 @@ public class TextTool extends DrawingTool {
 			new GraphCommands.TextCommand(me.getPoint()).execute();			
 		}
 		ContextAdaptorHack.context.clearCurrentSelection();
-		ContextAdaptorHack.context.setTool(GraphDrawingView.DEFAULT);
+		ContextAdaptorHack.context.setAvoidNextDraw(false);
+		ContextAdaptorHack.context.setTool(ContextAdaptorHack.context.getPreferredTool());
+		
 	}
 
 //	@Override

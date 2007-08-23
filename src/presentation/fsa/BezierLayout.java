@@ -552,13 +552,24 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * 
 	 * FIXME This doesn't work since changed Point[] to CubicCurve2D and lots of other changes :(
 	 */
+	/**
+	 * If this edge is not straight,  make it have a symmetrical appearance.
+	 * Make the two vectors - from P1 to CTRL1 and from P2 to CTRL2, be of 
+	 * the same length and have the same angle. So the edge will look it has 
+	 * a symmetrical curve. 
+	 * There are two cases:
+	 * The 2 control points are on the same side of the curve (a curve with the 
+	 * form of a bow); and the 2 control points are on different sides of the 
+	 * edge (a curve like a wave). In one of the cases, theangles of the vectors
+	 * should be A=B, in the other A=-B.
+	 */
 	protected void symmetrize(){
 		Point2D.Float[] points=new Point2D.Float[4];
 		points[0]=Geometry.translate(curve.getP1(),-curve.getX1(),-curve.getY1());
 		points[1]=Geometry.translate(curve.getCtrlP1(),-curve.getX1(),-curve.getY1());
 		points[2]=Geometry.translate(curve.getCtrlP2(),-curve.getX1(),-curve.getY1());
 		points[3]=Geometry.translate(curve.getP2(),-curve.getX1(),-curve.getY1());
-		
+
 		float edgeAngle=(float)Math.atan(Geometry.slope(curve.getP1(),curve.getP2()));
 		points[0]=Geometry.rotate(points[0],-edgeAngle);
 		points[1]=Geometry.rotate(points[1],-edgeAngle);
@@ -587,8 +598,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		points[1]=Geometry.translate(points[1],curve.getX1(),curve.getY1());
 		points[2]=Geometry.translate(points[2],curve.getX1(),curve.getY1());
 		points[3]=new Point2D.Float((float)curve.getX2(), (float)curve.getY2());
-
 		curve.setCurve(points, 0);
+		setCurve(curve);
 		setDirty(true);
 	}
 	

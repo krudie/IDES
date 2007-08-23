@@ -783,4 +783,19 @@ public class BezierEdge extends Edge {
 		return ((BezierLayout)getLayout()).getTargetEndPoint();	
 	}
 	
+	/**
+	 * If this edge is not straight,  make it have a symmetrical appearance.
+	 * Make the two vectors - from P1 to CTRL1 and from P2 to CTRL2, be of 
+	 * the same length and have the same angle. So the edge will look it has 
+	 * a symmetrical curve. 
+	 * There are two cases:
+	 * The 2 control points are on the same side of the curve (a curve with the 
+	 * form of a bow); and the 2 control points are on different sides of the 
+	 * edge (a curve like a wave). In one of the cases, theangles of the vectors
+	 * should be A=B, in the other A=-B.
+	 */
+	public void symmetrize()
+	{
+		this.getBezierLayout().symmetrize();
+	}
 }

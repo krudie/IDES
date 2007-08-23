@@ -29,7 +29,7 @@ public class EdgePopup extends JPopupMenu {
 
 	private Edge edge;
 	private DeleteCommand deleteCmd;
-	private JMenuItem miModify, miEditEvents, miStraighten, miDeleteEdge, miArcMore, miArcLess; // , miSymmetrize;
+	private JMenuItem miModify, miEditEvents, miStraighten, miSymmetrize, miDeleteEdge, miArcMore, miArcLess; // , miSymmetrize;
 	private static GraphDrawingView view;
 	
 	// Using a singleton pattern (delayed instantiation) 
@@ -49,9 +49,9 @@ public class EdgePopup extends JPopupMenu {
 		miEditEvents.addActionListener(listener);
 		add(miEditEvents);
 
-		/*miSymmetrize = new JMenuItem(Hub.string("symmetrize"));		
+		miSymmetrize = new JMenuItem(Hub.string("symmetrize"));		
 		miSymmetrize.addActionListener(listener);
-		add(miSymmetrize);*/
+		add(miSymmetrize);
 		
 		miStraighten = new JMenuItem("Straighten");
 		miStraighten.addActionListener(listener);
@@ -107,13 +107,13 @@ public class EdgePopup extends JPopupMenu {
 			// otherwise tamper with its shape
 			miArcLess.setVisible(edge.canBeStraightened());
 			miArcMore.setVisible(edge.canBeStraightened());
-//			miSymmetrize.setVisible(edge.canStraighten());
+			miSymmetrize.setVisible(edge.canBeStraightened());
 			
 			// Don't enable straightening, flattening or symmetrizing if edge is already straight
 			// since there is nothing to to.  
 			miArcLess.setEnabled(!edge.isStraight());
 			miStraighten.setEnabled(!edge.isStraight());
-//			miSymmetrize.setEnabled(!edge.isStraight());
+			miSymmetrize.setEnabled(!edge.isStraight());
 		}		
 	}
 
@@ -137,9 +137,9 @@ public class EdgePopup extends JPopupMenu {
 				
 			// TODO should be UNDOABLE graph commands
 				
-/*			}else if(source.equals(miSymmetrize)){				
-				Hub.getWorkspace().getActiveGraphModel().symmetrize(edge);
-*/			}else if(source.equals(miArcMore)){
+			}else if(source.equals(miSymmetrize)){				
+				edge.getGraph().symmetrize(edge);
+			}else if(source.equals(miArcMore)){
 				edge.getGraph().arcMore(edge);
 			}else if(source.equals(miArcLess)){
 				edge.getGraph().arcLess(edge);
