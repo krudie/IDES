@@ -134,7 +134,10 @@ public class LatexManager {
 				new LatexPrerenderer(Hub.getWorkspace().getLayoutShellsOfType(FSAGraph.class).iterator());
 			if(Hub.getWorkspace().getActiveLayoutShell()!=null&&Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
 				((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(true);
-			Hub.getWorkspace().fireRepaintRequired();	
+			Hub.getWorkspace().fireRepaintRequired();
+			try{
+				Hub.getWorkspace().getActiveModel().metadataChanged();
+			}catch(NullPointerException e){}
 		}
 	}
 
