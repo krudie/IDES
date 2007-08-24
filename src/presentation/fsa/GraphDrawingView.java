@@ -380,7 +380,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			GraphElement selection = this.getSelectedGroup();
 			if(selection != null)
 			{
-				this.graphModel.commitTranslation(this.getSelectedElement());
+				this.graphModel.commitLayoutModified(this.getSelectedElement());
 			}
 		}
 	}
@@ -453,8 +453,9 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		selectedGroup.setHighlighted(false);			
 		selectedGroup.clear();
 		selectionArea.setSize(0,0);	
-		
-		this.graphModel.commitTranslation(null);
+		//Notify the subscribers that the layout was changed (selection colors)
+		//so they can repaint the graphs.
+		this.graphModel.commitLayoutModified(null);
 	}
 
 	/**

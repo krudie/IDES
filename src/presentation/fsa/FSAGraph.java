@@ -1942,7 +1942,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	}
 
 
-	public void commitTranslation(GraphElement selection)
+	//This is to notify the subscribers that the layout was changed, so they
+	//can repaint.
+	public void commitLayoutModified(GraphElement selection)
 	{
 		if(selection == null)
 		{
