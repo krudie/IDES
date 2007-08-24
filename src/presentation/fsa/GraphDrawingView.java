@@ -452,7 +452,9 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		selectedGroup.setSelected(false);
 		selectedGroup.setHighlighted(false);			
 		selectedGroup.clear();
-		selectionArea.setSize(0,0);			
+		selectionArea.setSize(0,0);	
+		
+		this.graphModel.commitTranslation(null);
 	}
 
 	/**
