@@ -1977,6 +1977,16 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 //		}
 
 	}
+//	This is to notify the subscribers that the layout was changed, so they
+	//can repaint.
+	public void commitLayoutModified()
+	{
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+					FSAGraphMessage.SELECTION,
+					this.getId(), 
+					this.bounds(),
+					this, "all graph"));
+	}
 	
 	//HACK OF A BUTTON:
 	private int buttonX = 55, buttonY = 105;

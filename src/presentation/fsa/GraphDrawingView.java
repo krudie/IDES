@@ -455,7 +455,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		selectionArea.setSize(0,0);	
 		//Notify the subscribers that the layout was changed (selection colors)
 		//so they can repaint the graphs.
-		this.graphModel.commitLayoutModified(null);
+		this.graphModel.commitLayoutModified();
 	}
 
 	/**
