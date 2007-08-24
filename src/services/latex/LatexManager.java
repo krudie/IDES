@@ -135,7 +135,6 @@ public class LatexManager {
 			if(Hub.getWorkspace().getActiveLayoutShell()!=null&&Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
 				((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();
-			
 		}
 	}
 

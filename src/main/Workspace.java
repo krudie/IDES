@@ -129,7 +129,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	 */
 	public void addModel(DESModel model) {	
 //		Remove initial Untitled model if it is empty
-		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave()){
+		if(countAdd==1 && getActiveLayoutShell()!=null && !getActiveModel().needsSave() && getActiveModel().getAnnotation(Annotable.FILE) == null){
 			removeModel(getActiveLayoutShell().getModel().getName());	
 		}
 
