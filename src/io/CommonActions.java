@@ -632,6 +632,7 @@ public class CommonActions {
 					}else{
 						saveAs(model);
 					}
+					model.modelSaved();
 				}
 			}catch(NullPointerException e)
 			{
