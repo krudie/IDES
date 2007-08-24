@@ -112,7 +112,7 @@ public class InitialArrow extends Edge {
 	    
 	    // NOTE point movement will be constrained to be outside of node boundary so targetPt should never be null.
 	    Point2D.Float basePt;	    
-	    basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH+1)));
+	    basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH+3)));
 	   	    
 		at.setToTranslation(basePt.x, basePt.y);
 		g2d.transform(at);
