@@ -92,7 +92,6 @@ public class CreationTool extends DrawingTool {
 		startNode = null;
 		cmd = null;
 
-
 		//Do not clear the selection if the selected element is a BezierEdge
 		//Reason: let the user modify the control points of the bezier curve without
 		//need to change the curve.
@@ -181,7 +180,10 @@ public class CreationTool extends DrawingTool {
 			endNode = (CircleNode)selection;
 		}catch(ClassCastException e){}
 
-
+		if(targetNode == sourceNode && sourceNode != null)
+		{
+			finishEdge();
+		}
 
 		if(startNode == endNode && endNode == sourceNode && drawingEdge && !dragging && firstClick){ // drawing edge by not dragging
 			// IDEA To fix conflict with TextTool, delay creation of self loops until we know if user has double clicked.
@@ -374,10 +376,9 @@ public class CreationTool extends DrawingTool {
 
 	@Override
 	public void handleMouseDragged(MouseEvent me) {
-		super.handleMouseDragged(me);
-
+		super.handleMouseDragged(me);		
 		// if drawing an edge, recompute the curve
-		if(dragging && drawingEdge){
+		if(dragging && drawingEdge || (sourceNode == targetNode && targetNode != null)){
 			updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			//context.getGraphModel().updateEdge(edge, new Float(me.getPoint().x, me.getPoint().y));
 			ContextAdaptorHack.context.repaint();
