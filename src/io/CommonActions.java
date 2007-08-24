@@ -370,6 +370,20 @@ public class CommonActions {
 	 * @return true if file was saved
 	 */
 	public static boolean saveWorkspace(WorkspaceDescriptor wd, File file){
+		Vector<DESModel> models=new Vector<DESModel>();
+		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
+		{
+		
+			DESModel m=i.next();
+			if( m.needsSave() )
+					models.add(m);
+		}
+		
+		if(!models.isEmpty())
+		{
+			if(!io.CommonActions.handleUnsavedModels(models))
+				return false;
+		}
 		PrintStream ps = IOUtilities.getPrintStream(file);
 		if(ps == null)
 			return saveWorkspaceAs(wd);
