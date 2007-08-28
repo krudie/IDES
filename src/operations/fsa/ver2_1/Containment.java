@@ -17,7 +17,7 @@ import pluggable.operation.OperationManager;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Containment extends OperationParent {
+public class Containment extends AbstractOperation {
 
 	public Containment() {
 		NAME = "Containment";

@@ -18,7 +18,7 @@ import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import pluggable.operation.Operation;
 
-public class SupRed extends OperationParent {
+public class SupRed extends AbstractOperation {
 
 	public SupRed() {
 		NAME = "Supervisor Reduction (Grail)";

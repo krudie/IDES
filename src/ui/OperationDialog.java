@@ -151,14 +151,6 @@ public class OperationDialog extends EscapeDialog {
 					String[] outputDesc = op.getDescriptionOfOutputs().clone();
 					boolean closeWindow = true;
 					
-					//now generate and display output
-					//four output types to deal with:
-					// 1)  modifiedAutomaton: a unary operation that retains formatting information
-					// 2)  composedAutomaton: a composition that results in a wholly new graph with composite labels
-					// 3)  result: a boolean 'answer' to a query-type operation
-					// 4)  resultMessage: user-readable result to a query-type operation
-					//use output description to determine the type of output
-					
 					for(int i=0; i<outputs.length; ++i){
 						if (outputs[i] instanceof Boolean) {
 							//op.get

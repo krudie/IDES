@@ -22,7 +22,7 @@ import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.operation.FilterOperation;
 
-public class ControlMap extends OperationParent implements FilterOperation {
+public class ControlMap extends AbstractOperation implements FilterOperation {
 	
 	public ControlMap() {
 		NAME = "Control Map";

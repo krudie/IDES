@@ -12,7 +12,7 @@ import pluggable.operation.FilterOperation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Coaccessible extends OperationParent implements FilterOperation {
+public class Coaccessible extends AbstractOperation implements FilterOperation {
 
 	public Coaccessible() {
 		NAME = "Coaccessible";

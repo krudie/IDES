@@ -18,7 +18,7 @@ import pluggable.operation.OperationManager;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class SupCon extends OperationParent {
+public class SupCon extends AbstractOperation {
 
 	public SupCon() {
 		NAME = "SupCon";

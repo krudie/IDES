@@ -12,7 +12,7 @@ import model.fsa.ver2_1.Automaton;
  * @author Chris Dragert
  *
  */
-public class Meet extends OperationParent {
+public class Meet extends AbstractOperation {
 	
 	public Meet() {
 		NAME = "Meet";

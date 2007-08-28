@@ -12,7 +12,7 @@ import model.fsa.ver2_1.Automaton;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Projection extends OperationParent {
+public class Projection extends AbstractOperation {
 
 	public Projection() {
 		NAME = "Projection";

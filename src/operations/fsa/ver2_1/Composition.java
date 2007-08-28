@@ -28,6 +28,7 @@ import model.fsa.ver2_1.Transition;
  * @author Kristian Edlund 
  * @author Axel Gottlieb Michelsen
  * @author Lenko Grigorov
+ * @author Chris Dragert
  */
 public class Composition{
 	
@@ -631,8 +632,8 @@ public class Composition{
 
 //        SubElement properties = new SubElement("properties");
 
-        state.setStateCompositionList(
-        		new long[]{s[0].getId(),s[1].getId()});
+        //state.setName("{" + s[0].getName() + "," + s[1].getName() + "}");
+        state.setStateCompositionList(new long[]{s[0].getId(),s[1].getId()});
         
         if(s[0].isInitial() && s[1].isInitial())
         	state.setInitial(true);

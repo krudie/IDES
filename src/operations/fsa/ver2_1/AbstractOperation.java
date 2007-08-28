@@ -20,7 +20,7 @@ import java.util.Vector;
  *
  *
  */
-public abstract class OperationParent implements Operation {
+public abstract class AbstractOperation implements Operation {
 
 	//member variables
 	protected String NAME;

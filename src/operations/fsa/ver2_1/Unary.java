@@ -37,7 +37,7 @@ public class Unary{
     	automaton.setAnnotation(Annotable.COMPOSED_OF, new String[]{automaton.getId()});
     	
         LinkedList<FSAState> searchList = new LinkedList<FSAState>();
-        // find initial states, mark them as reached and add them to the que
+        // find initial states, mark them as reached and add them to the queue
         Iterator<FSAState> stateIterator = automaton.getStateIterator();
         while(stateIterator.hasNext()){
             FSAState state = stateIterator.next();

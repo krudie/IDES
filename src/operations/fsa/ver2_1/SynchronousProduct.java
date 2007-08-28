@@ -13,7 +13,7 @@ import pluggable.operation.Operation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class SynchronousProduct extends OperationParent {
+public class SynchronousProduct extends AbstractOperation {
 
 	public SynchronousProduct() {
 		NAME = "Synchronous Product";

@@ -12,7 +12,7 @@ import pluggable.operation.FilterOperation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Accessible extends OperationParent implements FilterOperation {
+public class Accessible extends AbstractOperation implements FilterOperation {
 
 	public Accessible() {
 		NAME = "Accessible";

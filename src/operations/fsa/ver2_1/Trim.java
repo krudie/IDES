@@ -13,7 +13,7 @@ import pluggable.operation.Operation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Trim extends OperationParent implements FilterOperation {
+public class Trim extends AbstractOperation implements FilterOperation {
 
 	public Trim() {
 		NAME = "Trim";

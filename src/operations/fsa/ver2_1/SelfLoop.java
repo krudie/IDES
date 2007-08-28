@@ -12,7 +12,7 @@ import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Transition;
 import pluggable.operation.FilterOperation;
 
-public class SelfLoop extends OperationParent implements FilterOperation {
+public class SelfLoop extends AbstractOperation implements FilterOperation {
 
 	public SelfLoop() {
 		NAME = "Self Loop";

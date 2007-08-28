@@ -10,7 +10,7 @@ import pluggable.operation.OperationManager;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Nonconflicting extends OperationParent {
+public class Nonconflicting extends AbstractOperation {
 	
 	public Nonconflicting() {
 		NAME = "Nonconflicting";

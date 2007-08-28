@@ -12,7 +12,7 @@ import pluggable.operation.FilterOperation;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class PrefixClosure extends OperationParent implements FilterOperation {
+public class PrefixClosure extends AbstractOperation implements FilterOperation {
 	
 	public PrefixClosure() {
 		NAME = "Prefix Closure";

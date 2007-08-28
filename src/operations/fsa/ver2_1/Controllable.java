@@ -10,7 +10,7 @@ import model.fsa.FSAModel;
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Controllable extends OperationParent {
+public class Controllable extends AbstractOperation {
 
 	public Controllable() {
 		NAME = "Controllable";

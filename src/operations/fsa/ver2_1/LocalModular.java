@@ -6,7 +6,7 @@ import model.fsa.FSAModel;
 import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
 
-public class LocalModular extends OperationParent {
+public class LocalModular extends AbstractOperation {
 
 	public LocalModular() {
 		NAME = "Local Modular";
