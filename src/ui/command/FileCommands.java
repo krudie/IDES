@@ -104,14 +104,8 @@ public class FileCommands {
 				DESModel model=gm.getModel();
 				if( model != null)
 				{
-					try
-					{
-						IOCoordinator.getInstance().save(model, (File)model.getAnnotation(Annotable.FILE));
-					}catch(IOException e)
-					{
-						Hub.displayAlert(e.getMessage());
-					}
-					Hub.getWorkspace().fireRepaintRequired();
+					io.CommonActions.save(model, (File)model.getAnnotation(Annotable.FILE));
+//					Hub.getWorkspace().fireRepaintRequired();
 				}
 			}
 			Hub.getMainWindow().setCursor(cursor);

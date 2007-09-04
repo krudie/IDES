@@ -479,30 +479,23 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		if(!unsavedModels.isEmpty())
 		{
 			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
-			io.CommonActions.handleUnsavedModels(unsavedModels);
-//			for(DESModel a:unsavedModels)
-//			{
-//			if(!(a instanceof DESModel))
-//			continue;
-//			//if(a.needsSave())
-//			//{
-//			io.CommonActions.saveAs(a);
-//			//}
-////			throw new IncompleteWorkspaceDescriptorException();
-////			getGraphModel(a.getName()).setDirty(false);
-////			getGraphModel(a.getName()).notifyAllSubscribers();
-//			}
+//			io.CommonActions.handleUnsavedModels(unsavedModels);
+			for(DESModel a:unsavedModels)
+			{
+				if(!io.CommonActions.saveAs(a))
+					throw new IncompleteWorkspaceDescriptorException();
+			}
 		}
 		for(int counter=0; counter<systems.size(); ++counter)
 		{
 			DESModel a=systems.elementAt(counter);
-			try
-			{
+//			try
+//			{
 				wd.insertModel(((File)a.getAnnotation(Annotable.FILE)).getName(),counter);
-			}catch(NullPointerException e)
-			{
-				return null;
-			}
+//			}catch(NullPointerException e)
+//			{
+//				throw new IncompleteWorkspaceDescriptorException();
+//			}
 			if(a.getName().equals(getActiveModelName()))
 				wd.setSelectedModel(counter);
 		}
