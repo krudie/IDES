@@ -94,8 +94,6 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		createAndAddToolBar();
 
 		pack();
-		// TODO uncomment line below before shipping
-		// setExtendedState(MAXIMIZED_BOTH);
 
 		// get the stored window size information and ensure it falls within
 		// the current display
