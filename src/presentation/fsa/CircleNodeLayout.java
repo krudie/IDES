@@ -79,7 +79,9 @@ public class CircleNodeLayout extends GraphicalLayout implements Serializable{
 
 	public float getRadius() {
 		if(uniformR!=null&&GraphDrawingView.isUniformNodes())
+		{
 			return uniformR.getRadius();
+		}
 		return radius;
 	}	
 

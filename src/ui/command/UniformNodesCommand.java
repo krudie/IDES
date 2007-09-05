@@ -1,11 +1,14 @@
 package ui.command;
 
+import java.util.Iterator;
+
 import main.Hub;
 
 import org.pietschy.command.CommandManager;
 import org.pietschy.command.ToggleCommand;
 import org.pietschy.command.ToggleVetoException;
 
+import presentation.LayoutShell;
 import presentation.fsa.FSAGraph;
 
 import services.latex.LatexManager;
@@ -21,19 +24,21 @@ public class UniformNodesCommand extends ToggleCommand {
 
 	protected void handleSelection(boolean arg0) throws ToggleVetoException {
 		Hub.persistentData.setBoolean(PROPERTY_NAME,!isSelected());
-//		if(Hub.getWorkspace().getActiveGraphModel()!=null)
-//			Hub.getWorkspace().getActiveGraphModel().update();
 		
-		// set FSMGraph (the activeGraphModel()) to dirty
+		// set all FSMGraphs to dirty
 		// so when repaint happens, graph will recompute its layout.
 		// NOTE depends on FSMGraph extending GraphElement
 		// ??? will FSMGraph fire any notifications ?
-		if(Hub.getWorkspace().getActiveLayoutShell()!= null &&
-				Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph){
-			((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(true);
-		// gm.setDirty(true);
-			Hub.getWorkspace().fireRepaintRequired();
+		for(Iterator<LayoutShell> i=Hub.getWorkspace().getLayoutShells();i.hasNext();)
+		{
+			LayoutShell shell=i.next();
+			if(shell instanceof FSAGraph)
+			{
+				((FSAGraph)shell).setNeedsRefresh(true);
+			}
 		}
+
+			Hub.getWorkspace().fireRepaintRequired();
 	}
 
 }

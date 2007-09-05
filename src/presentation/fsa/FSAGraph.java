@@ -1813,6 +1813,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 
 	}
+	
 	private long getFreeBezierLayoutGroup()
 	{
 		return ++bezierLayoutFreeGroup;

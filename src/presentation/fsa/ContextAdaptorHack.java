@@ -11,7 +11,6 @@ import main.WorkspaceSubscriber;
  */
 public class ContextAdaptorHack implements WorkspaceSubscriber {
 
-	private static GraphDrawingView empty=new GraphDrawingView();
 	public static GraphDrawingView context=null;
 	
 	public void modelCollectionChanged(WorkspaceMessage message) {

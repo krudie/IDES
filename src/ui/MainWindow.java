@@ -93,7 +93,6 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		createAndAddMenuBar();
 		createAndAddToolBar();
 
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();
 		// TODO uncomment line below before shipping
 		// setExtendedState(MAXIMIZED_BOTH);

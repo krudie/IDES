@@ -114,6 +114,22 @@ public class Main {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		Cache.init();
+
+		try {
+			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.metal.MetalLookAndFeel");
+			} else {
+				UIManager.setLookAndFeel(
+						UIManager.getSystemLookAndFeelClassName());
+			}
+		} catch (Exception e) { }
+//		DEBUG: remove eventually
+//		for(Object o:UIManager.getLookAndFeelDefaults().keySet())
+//		System.out.println(o.toString());
+
+		// setup main window
+		Hub.setMainWindow(new MainWindow());
+		
 		// TODO: move operation inits to the plugin manager eventually
 		///TODO: move the initialization of the plugins to the plugin manager
 		initializePlugins();
@@ -138,21 +154,6 @@ public class Main {
 		OperationManager.register(new LocalModular());
 		OperationManager.register(new SupRed());
 
-		try {
-			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
-				UIManager.setLookAndFeel("com.sun.java.swing.plaf.metal.MetalLookAndFeel");
-			} else {
-				UIManager.setLookAndFeel(
-						UIManager.getSystemLookAndFeelClassName());
-			}
-		} catch (Exception e) { }
-//		DEBUG: remove eventually
-//		for(Object o:UIManager.getLookAndFeelDefaults().keySet())
-//		System.out.println(o.toString());
-
-		// show splash screen
-		Hub.setMainWindow(new MainWindow());
-
 		//setup stuff that needs the main window
 		LatexManager.init(); 
 
@@ -161,11 +162,7 @@ public class Main {
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
-		//go live!		
-		// TODO make sure that this second call to pack() is necessary (called
-		// in the MainWindow constructor as well, and interferes with window sizing
-		// code) -- CLM
-		//Hub.getMainWindow().pack();
+		//go live!
 		Hub.getMainWindow().setVisible(true);
 	}
 

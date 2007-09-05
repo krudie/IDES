@@ -156,6 +156,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	 * @param arg0
 	 */
 	public void mouseClicked(MouseEvent arg0) {
+		System.out.println("---------------------");
+
 		if( !(arg0.getSource() instanceof Presentation) ) {
 			return;
 		}
@@ -164,9 +166,15 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 			Hub.getWorkspace().setActiveModel(gv.getLayoutShell().getModel().getName());
 	}
 
-	public void mousePressed(MouseEvent arg0) {}
+	public void mousePressed(MouseEvent arg0) {
+		System.out.println("foo");
 
-	public void mouseReleased(MouseEvent arg0) {}
+	}
+
+	public void mouseReleased(MouseEvent arg0) {
+		System.out.println("goo");
+
+	}
 
 	public void mouseEntered(MouseEvent arg0) {}
 

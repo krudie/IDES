@@ -89,7 +89,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		PreferredTool = pt;
 	}
 
-	protected static ToggleCommand nodesControl;
+	private static ToggleCommand nodesControl;
+	
 	public static boolean isUniformNodes()
 	{
 		return nodesControl.isSelected();
@@ -174,15 +175,14 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		}
 	};
 
-	public GraphDrawingView() {
+	public GraphDrawingView(ToggleCommand nc) {
 		super();
+		//FIXME: other mechanism to bind the object with user-selectable options is needed
+		nodesControl=nc;
 //		Hub.getWorkspace().addSubscriber(this);		
 
 		scaleFactor = 1f;
 		scaleToFit=false;
-
-		nodesControl=new UniformNodesCommand();
-		nodesControl.export();
 
 		selectedGroup = new SelectionGroup();
 		selectionArea = new Rectangle();

@@ -20,6 +20,7 @@ import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
 import presentation.LayoutShell;
 import presentation.Presentation;
+import ui.command.UniformNodesCommand;
 
 /**
  * The toolset for {@link FSAModel}s.
@@ -47,7 +48,9 @@ public class FSAToolset implements Toolset {
 		{
 			shell=ls;
 			views=new Presentation[2];
-			GraphDrawingView drawingBoard=new GraphDrawingView();
+			//FIXME passing nodesControl as a reference but other mechanism has
+			//to be invented for binding GraphdrawingView with user-selectable options
+			GraphDrawingView drawingBoard=new GraphDrawingView(nodesControl);
 			drawingBoard.setShowGrid(gridState);
 			drawingBoard.setGraphModel(shell);
 			drawingBoard.setName(Hub.string("graph"));
@@ -92,9 +95,14 @@ public class FSAToolset implements Toolset {
 
 	}
 	
+	//TODO: ultimately include this control in the UIDescriptor and show/hide it
+	// when different types of models are activated
+	private static UniformNodesCommand nodesControl;
 	
 	public FSAToolset()
 	{
+		nodesControl=new UniformNodesCommand();
+		nodesControl.export();
 	}
 
 	public UIDescriptor getUIElements(LayoutShell mw)
