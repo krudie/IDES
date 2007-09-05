@@ -130,6 +130,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			try{
 				FSAState s = sIt.next();
 				CircleNodeLayout l = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
+				//set this FSAGraph's uniform radius management 
+				l.setUniformRadius(uniformR);
 				//Avoid give the name "" to the state!
 				if(l.getText() != "")
 				{
