@@ -87,13 +87,13 @@ public class OptionsCommands {
 		 */
 		public void handleSelection(boolean state) {
 			MainWindow mw=(MainWindow)Hub.getMainWindow();
-			if(!isSelected())
+			if(state)
 			{
 				mw.getZoomControl().setZoom(1);
 			}
 			for(Presentation p:Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class))
-				((GraphDrawingView)p).setShowGrid(!isSelected());
-			FSAToolset.gridState=!isSelected();
+				((GraphDrawingView)p).setShowGrid(state);
+			FSAToolset.gridState=state;
 		}
 
 	}
