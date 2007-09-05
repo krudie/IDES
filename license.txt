@@ -1,4 +1,4 @@
-(c) 2005-2006 Karen Rudie, Queen's University
+(c) 2005-2007 Karen Rudie, Queen's University
 
 This software can be downloaded and used free of
 charge. Redistribution or modification is
