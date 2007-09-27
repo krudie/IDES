@@ -21,6 +21,7 @@ import main.Hub;
 import main.IncompleteWorkspaceDescriptorException;
 import main.WorkspaceDescriptor;
 import main.WorkspaceMessage;
+import main.WorkspacePublisher;
 import model.DESModel;
 
 import org.pietschy.command.file.ExtensionFileFilter;
@@ -40,7 +41,7 @@ public class CommonActions {
 	public static final String LAST_IMPEX_SETTING_NAME="lastUsedFilterPath";
 	
 	public static void load()
-	{
+	{		
 		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("openModelTitle"));
 		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));

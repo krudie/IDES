@@ -779,6 +779,60 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	}
 
 	/**
+	 * Creates a new node based on an existent node.
+	 * If the existent node already makes part of the graph, the method will return true.
+	 * 
+	 * @param node the node to be added to the graph
+	 * @return the node added, or null case the node is already part of the graph
+	 */
+	public void reCreateNode(CircleNode node){
+		//Return null if the graph already countains the node
+		if(nodes.containsValue(node))
+			return;
+
+		State s = (State)node.getState();
+		fsa.removeSubscriber(this);
+		fsa.add(s);
+		fsa.addSubscriber(this);
+
+		//Insert the new node to the graph
+		nodes.put(new Long(s.getId()), node);
+		insert(node);
+
+		if(node.getState().isInitial())
+		{
+			node.insert(node.getInitialArrow());
+		}
+	}
+
+	public void reCreateEdge(BezierEdge edge){
+		if(edges.containsValue(edge))
+			return;
+		long id_dest = edge.getTargetNode().getState().getId();
+		long id_source = edge.getSourceNode().getState().getId();
+
+		Node n1 = nodes.get(id_source);
+		Node n2 = nodes.get(id_dest);
+
+		Transition t = new Transition(edge.getId(), n1.getState(), n2.getState());
+		edge.addTransition(t);
+		//Set the BezierLayout as an annotation for the edge
+		t.setAnnotation(Annotable.LAYOUT, (BezierLayout)edge.getLayout());
+		fsa.removeSubscriber(this);
+		if(fsa.getTransition(t.getId())  == null)
+		{
+			fsa.add(t);
+		}
+		fsa.addSubscriber(this);		
+		n1.insert(edge);
+		n2.insert(edge);
+		edges.put(edge.getId(), edge);		
+		edgeLabels.put(edge.getId(), edge.getLabel());
+	}
+
+
+
+	/**
 	 * Creates a new node which wraps the provided automaton state.
 	 * 
 	 * @param s automaton state to be wrapped
@@ -899,9 +953,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	}
 
 	public void setInitial(Node node, boolean b){
-
 		node.setInitial(b);
-
 		// add or remove the intial arrow from the set of edges
 		InitialArrow arrow = node.getInitialArrow();
 		if(arrow != null){
@@ -911,7 +963,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				edges.remove(arrow.getId());				
 			}
 		}				
-
+		// update the state
+		((State)node.getState()).setInitial(b);
 		// tell the node that it must refresh its appearance
 		node.setNeedsRefresh(true);
 
@@ -1069,6 +1122,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
+		// CHRISTIAN - I agree with the above comment ...
 		if(nodes.containsValue(el)){			
 			delete((Node)el);			
 		}else if(edges.containsValue(el)){			
@@ -1121,32 +1175,31 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param e
 	 */
 	private void delete(Edge e){
-		if(e instanceof InitialArrow){
-			setInitial(e.getTargetNode(), false);			
-		}else{		
-			Iterator<FSATransition> transitions = e.getTransitions();
-			while(transitions.hasNext()){
-				fsa.removeSubscriber(this);
-				fsa.remove(transitions.next());
-				fsa.addSubscriber(this);
-			}
-			Node source = e.getSourceNode();
-			if(source != null){
-				source.remove(e);
-			}
-			Node target = e.getTargetNode();
-			if(target != null){
-				target.remove(e);
-			}
-			edgeLabels.remove(e.getId());
-			edges.remove(e.getId());
-			setNeedsRefresh(true);		
-			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
-					FSAGraphMessage.EDGE,
-					e.getId(), 
-					e.bounds(),
-					this, ""));
+//		if(e instanceof InitialArrow){
+//		//setInitial(e.getTargetNode(), false);			
+//		}else{		
+		Iterator<FSATransition> transitions = e.getTransitions();
+		while(transitions.hasNext()){
+			fsa.removeSubscriber(this);
+			fsa.remove(transitions.next());
+			fsa.addSubscriber(this);
 		}
+		Node source = e.getSourceNode();
+		if(source != null){
+			source.remove(e);
+		}
+		Node target = e.getTargetNode();
+		if(target != null){
+			target.remove(e);
+		}
+		edgeLabels.remove(e.getId());
+		edges.remove(e.getId());
+		setNeedsRefresh(true);		
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+				FSAGraphMessage.EDGE,
+				e.getId(), 
+				e.bounds(),
+				this, ""));
 	}
 
 	/**
@@ -1420,7 +1473,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 
 		for(Edge e : edges.values()) {
-			if(rectangle.contains(e.bounds())){
+			if(rectangle.intersects(e.bounds())){
 				g.insert(e);
 			}
 		}
@@ -1815,7 +1868,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 
 	}
-	
+
 	private long getFreeBezierLayoutGroup()
 	{
 		return ++bezierLayoutFreeGroup;

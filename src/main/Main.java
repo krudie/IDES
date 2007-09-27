@@ -81,13 +81,15 @@ public class Main {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-
+	public static void main(String[] args) {	
+		//setup other stuff
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+	
 		//set up global exception handler
 		// TODO uncomment this line before shipping.  Default exception handler
 		// disabled for debugging. -- CLM
-//		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
-
+		//Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 		//load resource with strings used in the program
 		try
 		{
@@ -108,10 +110,6 @@ public class Main {
 			Hub.displayAlert(Hub.string("cantLoadSettings"));
 			System.exit(3);
 		}
-
-		//setup other stuff
-		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		Cache.init();
 

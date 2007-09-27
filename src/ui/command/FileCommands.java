@@ -8,6 +8,8 @@ import io.fsa.ver2_1.FileOperations;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
@@ -45,6 +47,154 @@ import ui.ImportExportDialog;
  * @author Lenko Grigorov
  */
 public class FileCommands {	
+
+	public static class ExitAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			Main.onExit(); 
+		}
+	}
+
+	public static class NewAction implements ActionListener{
+		/**
+		 * used to create unique  names in a session
+		 */
+		private static int Count=0;
+
+		public void actionPerformed(ActionEvent e)
+		{
+			DESModel des= ModelManager.createModel(FSAModel.class);
+			des.setName(Hub.string("newModelName")+"-"+Count++);
+			Hub.getWorkspace().addModel(des);
+			Hub.getWorkspace().setActiveModel(des.getName());
+		}
+	}
+
+	public static class OpenAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+//			Open a window for the user to choose the file to open:
+			io.CommonActions.load();
+		}
+	}
+	public static class SaveAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);
+		}
+	}
+	public static class SaveAsAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			io.CommonActions.saveAs(Hub.getWorkspace().getActiveModel());
+		}
+	}
+	public static class SaveAllAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+			Iterator<LayoutShell> iterator = Hub.getWorkspace().getLayoutShells();			
+			while(iterator.hasNext())
+			{
+				LayoutShell gm=iterator.next();
+				DESModel model=gm.getModel();
+				if( model != null)
+				{
+					io.CommonActions.save(model, (File)model.getAnnotation(Annotable.FILE));
+//					Hub.getWorkspace().fireRepaintRequired();
+				}
+			}
+			Hub.getMainWindow().setCursor(cursor);
+		}
+	}
+
+	public static class SaveWorkspaceAction implements ActionListener{
+		public void actionPerformed(ActionEvent event)
+		{
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			try
+			{
+				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
+				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
+					Hub.getWorkspace().setDirty(false);
+			}catch(IncompleteWorkspaceDescriptorException e){}
+			catch(NullPointerException e)
+			{
+				Hub.getMainWindow().setCursor(cursor);
+				return;
+			}
+			Hub.getMainWindow().setCursor(cursor);
+		}
+	}
+
+	public static class SaveWorkspaceAsAction implements ActionListener{
+		public void actionPerformed(ActionEvent event)
+		{
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			try
+			{
+				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
+				if(io.CommonActions.saveWorkspaceAs(wd))
+					Hub.getWorkspace().setDirty(false);
+			}catch(IncompleteWorkspaceDescriptorException e){}
+			Hub.getMainWindow().setCursor(cursor);
+		}
+	}
+
+	public static class ImportAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			io.CommonActions.importModel();
+		}
+	}
+
+	public static class ExportAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			io.CommonActions.exportModel();	
+		}
+	}
+
+	public static class CloseAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			Hub.getWorkspace().removeModel(Hub.getWorkspace().getActiveModelName());
+		}
+	}
+
+	public static class NewWorkspaceAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			JOptionPane.showMessageDialog(null, "Create new workspace");
+		}
+	}
+
+	public static class OpenWorkspaceAction implements ActionListener{
+		public void actionPerformed(ActionEvent e)
+		{
+			if(Hub.getWorkspace().isDirty())
+				if(!io.CommonActions.handleUnsavedWorkspace())
+					return;
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
+			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
+			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int retVal = fc.showOpenDialog(Hub.getMainWindow());
+			if(retVal == JFileChooser.APPROVE_OPTION){
+				Cursor cursor = Hub.getMainWindow().getCursor();
+				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				WorkspaceDescriptor wd = io.CommonActions.openWorkspace(fc.getSelectedFile());
+				if(wd != null){
+					Hub.getWorkspace().replaceWorkspace(wd);
+				}
+				Hub.getMainWindow().setCursor(cursor);
+			}
+		}	
+	}
 
 	public static class NewCommand extends ActionCommand {
 
@@ -123,7 +273,7 @@ public class FileCommands {
 //			Vector<DESModel> models=new Vector<DESModel>();
 //			for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
 //			{
-//				models.add(i.next());
+//			models.add(i.next());
 //			}
 //			new SaveDialog(models).selectModels();
 			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);

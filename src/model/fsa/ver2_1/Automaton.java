@@ -246,8 +246,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 				s.setAnnotation(Annotable.LAYOUT, layout);
 				clone.add(s);
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
 			}		
 		}
 

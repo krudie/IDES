@@ -9,6 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.BorderFactory;
@@ -20,6 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -90,7 +95,7 @@ public class GlobalExceptionHandler extends JDialog implements UncaughtException
 	 * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread, java.lang.Throwable)
 	 */
 	public void uncaughtException(Thread arg0, Throwable arg1) {
-		messageArea.setText("Message: "+arg1.getMessage()+"\n");
+		messageArea.setText("Message: "+arg1.getMessage()+"\n");	
 		messageArea.append("Exception in thread \""+arg0.getName()+"\" "+arg1.getClass().getName()+"\n");
 		StackTraceElement[] elements=arg1.getStackTrace();
 		for(int i=0;i<elements.length;++i)
@@ -103,7 +108,22 @@ public class GlobalExceptionHandler extends JDialog implements UncaughtException
 		setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-getWidth())/2,
 				(Toolkit.getDefaultToolkit().getScreenSize().height-getHeight())/2);
 		setVisible(true);
+		
+		//Logging the message into a text file that follows the format: 
+		//log_|YEAR|MONTH|DAY|HOUR|MIN|SEC|.log
+		//The file will be saved on the IDES main folder.
+		String logMessage = messageArea.getText();
+		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		String logFilename = "log_" + dataFormat.format(new Date()) + ".log";
+		try{
+			PrintStream ps = new PrintStream(new FileOutputStream(logFilename));
+			ps.print(logMessage);
+			ps.close();
+		}catch(Exception e){
+		
+		}
 	}
+	
 
 	protected void goOn()
 	{

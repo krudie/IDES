@@ -511,6 +511,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 	public void setFile(File f)
 	{
 		myFile=f;
+		name = myFile.getName();
 	}
 
 //	/**

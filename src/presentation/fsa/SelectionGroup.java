@@ -1,6 +1,14 @@
 package presentation.fsa;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Iterator;
+
+import main.Annotable;
+import model.fsa.FSAState;
+import model.fsa.ver2_1.State;
 
 import presentation.PresentationElement;
 
@@ -62,5 +70,5 @@ public class SelectionGroup extends GraphElement {
 		super.insert(e);
 		e.setParent(p);
 	}	
-	
+		
 }

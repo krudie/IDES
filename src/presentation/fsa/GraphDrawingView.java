@@ -16,13 +16,17 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
 
 import main.Hub;
 import main.WorkspaceMessage;
@@ -41,7 +45,7 @@ import ui.tools.ModifyEdgeTool;
 import ui.tools.MovementTool;
 import ui.tools.SelectionTool;
 import ui.tools.TextTool;
-
+import ui.command.CommandManager_new;
 /**
  * The component in which users view, create and modify a graph representation
  * of an automaton.
@@ -90,7 +94,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	}
 
 	private static ToggleCommand nodesControl;
-	
+
 	public static boolean isUniformNodes()
 	{
 		return nodesControl.isSelected();
@@ -119,6 +123,10 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	 */
 	private DrawingTool[] drawingTools;
 
+	public DrawingTool[] getTools()
+	{
+		return drawingTools;
+	}
 	/**
 	 * Retangle to render as the area selected by mouse. 
 	 */
@@ -141,28 +149,23 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	 */
 	private PresentationElement printArea;
 
+	private GraphDrawingView getGraph()
+	{
+		return this;
+	}
+	
 	/**
 	 * The listener for the user pressing the <code>Delete</code> key.
 	 */
-	protected Action deleteListener = new AbstractAction("delete")
+	protected Action deleteCommand = new AbstractAction("delete")
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			if(selectedGroup!=null)
-			{
-				if(((CreationTool)drawingTools[CREATE]).isDrawingEdge())
-					((CreationTool)drawingTools[CREATE]).abortEdge();
-				for(Iterator i=selectedGroup.children();i.hasNext();)
-				{
-					GraphElement ge=(GraphElement)i.next();
-					graphModel.delete(ge);
-				}
-				setAvoidNextDraw(false);
-			}
+			UndoableEdits.deleteSelection(selectedGroup, getGraph());
 		}
 	};
 
-	protected Action escapeListener = new AbstractAction("escape")
+	protected Action escapeCommand = new AbstractAction("escape")
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
@@ -205,14 +208,18 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 
 
 
-		String deleteActionName = "delete";
-		String escActionName = "esc";
+		//Custom actions that can be performed, sometimes undone.
+		String escAction = "esc";
+		//Undoable actions
+		String deleteAction = Hub.string("deleteSelection");
+
+
 		//Associating key strokes with action names:
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),deleteActionName);
-		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),escActionName);
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),deleteAction);
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0),escAction);
 		//Associating the action names with operations:
-		getActionMap().put(deleteActionName,deleteListener);
-		getActionMap().put(escActionName,escapeListener);
+		getActionMap().put(deleteAction,deleteCommand);
+		getActionMap().put(escAction,escapeCommand);
 
 		setVisible(true);
 	}	

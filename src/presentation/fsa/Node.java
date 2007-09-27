@@ -117,7 +117,7 @@ public abstract class Node extends GraphElement {
 		if(b && initialArrow == null){
 			setInitialArrow(new InitialArrow(this));
 		}
-		((State)getState()).setInitial(b);		
+		((State)getState()).setInitial(b);	
 	}
 
 	/**

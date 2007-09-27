@@ -1,6 +1,7 @@
 package presentation.fsa;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
@@ -11,9 +12,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+
+import main.Hub;
+
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
+import ui.command.CommandManager_new;
+import ui.tools.CreationTool;
 
 /**
  * Graphical data and operations for visual display of a BezierEdge. 
@@ -30,7 +40,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	public static final int CTRL1 = 1;
 	public static final int CTRL2 = 2;
 	public static final int P2 = 3;
-	
+
 	protected long group = UNGROUPPED;
 	public void setGroup(long i)
 	{
@@ -40,18 +50,18 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	{
 		return group;
 	}
-	
+
 	/* default displacement vector for the label from the midpoint of the edge */
 	public final Point2D.Float DEFAULT_LABEL_OFFSET = new Point2D.Float(5,5);
-	
+
 	/*	 lower bound for abs(angle), below which is angle set to zero. */
 	public static final double EPSILON = 0.0001;  
-	
+
 	/* List of event symbols to be displayed on the edge's label
 	 * TODO redundant storage since this information should only be stored in the label's layout 
 	 */
 	private ArrayList<String> eventNames;
-	
+
 	/** the curve representing the edge being laid out */
 	protected CubicParamCurve2D curve;
 
@@ -65,13 +75,13 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	protected double s2 = DEFAULT_CONTROL_HANDLE_SCALAR;  // scalar |(CTRL2 - P2)|/|(P1-P2)|
 	protected double angle1 = 0.0; // angle between  (CTRL1 - P1) and (P2-P1)
 	protected double angle2 = 0.0; // angle between  (CTRL2 - P2) and (P1-P2)	
-		
+
 	/* the start and end parameters for the visible portion of the curve 
 	 * initialized such that the entire curve is visible 
 	 */
 	protected float sourceT = 0;
 	protected float targetT = 1;
-	
+
 	/**
 	 * Creates a default layout for a bezier curve.
 	 */
@@ -80,7 +90,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		eventNames = new ArrayList<String>();
 		setLabelOffset(DEFAULT_LABEL_OFFSET);
 	}
-	
+
 	/**
 	 * Creates a layout for a bezier edge with the given control points.
 	 *  
@@ -94,8 +104,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		updateAnglesAndScalars();
 		setDirty(true);
 	}
-	
-	
+
+
 	/**
 	 * Creates a layout for a bezier edge with the given control points
 	 * and event names.
@@ -151,7 +161,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		this.edge = edge;
 		setDirty(true);
 	}
-	
+
 	/**
 	 * Returns the edge associated with this layout.
 	 * 
@@ -160,7 +170,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	protected BezierEdge getEdge() {
 		return edge;
 	}
-	
+
 	/**
 	 * Returns true iff <code>o</code> is an instance of BezierLayout and this layout has the same
 	 * curve and label offset as <code>o</code>. 
@@ -170,7 +180,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * curve and label offset as <code>o</code>. 
 	 */
 	public boolean equals( Object o ) {
-		
+
 		try {
 			BezierLayout other = (BezierLayout)o;
 			// DEBUG
@@ -179,14 +189,14 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 				System.out.println(this.getText() + " " + this.getLabelOffset() + " " + this.curve);
 				System.out.println();
 			}*/
-			
+
 			return other.curve.equals(this.curve) &&
-					other.getLabelOffset().equals(this.getLabelOffset());
+			other.getLabelOffset().equals(this.getLabelOffset());
 		} catch ( ClassCastException cce ) {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Calls computeCurve(NodeLayout s, NodeLayout t) with source and target
 	 * layouts for this layout's edge. 
@@ -196,7 +206,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 			computeCurve((CircleNodeLayout)edge.getSourceNode().getLayout(), (CircleNodeLayout)edge.getTargetNode().getLayout());			
 		}
 	}
-	
+
 	/**
 	 * Returns an array of 4 control points for a straight, directed edge from
 	 * <code>s</code>, the layout for the source node to <code>t</code>, the 
@@ -212,7 +222,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		Point2D.Float centre1 = s.getLocation();
 		Point2D.Float centre2 = t.getLocation();		
 		Point2D.Float[] ctrls = new Point2D.Float[4]; 
-		
+
 		// TODO remove self-loop case once ReflexiveEdge class is fully debugged
 		if(s.equals(t)) { 
 			// endpoints are at intersections of circle with rotations from vertical vector	
@@ -222,19 +232,19 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 			ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, targetRadius), angle1));
 			ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.rotate(Geometry.scale(UNIT_VERTICAL, targetRadius), angle2));			
 		} else {
-			
+
 			Point2D.Float base = Geometry.subtract(centre2, centre1);
 			float norm = (float)Geometry.norm(base);
 			Point2D.Float unitBase = Geometry.unit(base);  // computing norm twice :(
-		
+
 			// endpoints are at node centres
 			ctrls[P1] = s.getLocation();//		
 			ctrls[P2] = t.getLocation();
-			
+
 			base = Geometry.subtract(ctrls[P2], ctrls[P1]);
 			norm = (float)Geometry.norm(base);
 			unitBase = Geometry.unit(base);		
-		
+
 			if(isStraight()) {  // compute a default straight edge	
 				angle1 = 0;
 				angle2 = 0;					
@@ -243,7 +253,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 
 				ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.scale(unitBase, (float)(norm * s1)));			
 				ctrls[CTRL2] = Geometry.add(ctrls[P2], Geometry.scale(unitBase, -(float)(norm * s2)));			
-				
+
 			} else { // recompute the edge preserving the shape of the curve
 
 				ctrls[CTRL1] = Geometry.add(ctrls[P1], Geometry.rotate(Geometry.scale(base, (float)s1), angle1)); 
@@ -251,10 +261,10 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 
 			}
 		}		
-		
+
 		curve.setCurve(ctrls, 0);		
 		Point2D midpoint = Geometry.midpoint(curve);
-	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
+		setLocation((float)midpoint.getX(), (float)midpoint.getY());
 
 		setDirty(true);
 	}	
@@ -269,7 +279,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	protected boolean isStraight() {		
 		return Math.abs(angle1) < EPSILON && Math.abs(angle2) < EPSILON;
 	}
-	
+
 	/**
 	 * Computes and stores the control points for a straight, directed edge from
 	 * <code>s</code>, the layout for the source node to endpoint <code>c2</code>.
@@ -299,11 +309,11 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		}		
 		curve.setCurve(ctrls, 0);
 		Point2D midpoint = Geometry.midpoint(curve);
-	    setLocation((float)midpoint.getX(), (float)midpoint.getY());
-	    setDirty(true);		
+		setLocation((float)midpoint.getX(), (float)midpoint.getY());
+		setDirty(true);		
 	}
-	
-	
+
+
 	/**
 	 * Computes and store the shape of the curve so that it
 	 * can be preserved under compression or expansion due to
@@ -319,30 +329,30 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 *  and scalars are simply the lengths of (CTRL2 - P2) and (CTRL1 - P1).
 	 */
 	protected void updateAnglesAndScalars(){
-		
+
 		// IDEA should there be constraints on the angle to control point 
 		// e.g. abs(angle between base line and tangent) <= PI/2?
 		Point2D.Float p1p2 = Geometry.subtract(curve.getP2(), curve.getP1());	
 		Point2D.Float p2p1 = Geometry.subtract(curve.getP1(), curve.getP2());
 		Point2D.Float p1c1 = Geometry.subtract(curve.getCtrlP1(), curve.getP1());
 		Point2D.Float p2c2 = Geometry.subtract(curve.getCtrlP2(), curve.getP2());		
-				
+
 //		if(selfLoop){			
-//			s1 = Geometry.norm(p1c1);
-//			s2 = Geometry.norm(p2c2);		
-//			angle1 = Geometry.angleFrom(UNIT_VERTICAL, p1c1);
-//			angle2 = Geometry.angleFrom(UNIT_VERTICAL, p2c2);
+//		s1 = Geometry.norm(p1c1);
+//		s2 = Geometry.norm(p2c2);		
+//		angle1 = Geometry.angleFrom(UNIT_VERTICAL, p1c1);
+//		angle2 = Geometry.angleFrom(UNIT_VERTICAL, p2c2);
 //		}else{
-			double n = Geometry.norm(p1p2);
-			
-			if(n != 0){			
-				s1 = Geometry.norm(p1c1)/n;
-				s2 = Geometry.norm(p2c2)/n;		
-				angle1 = Geometry.angleFrom(p1p2, p1c1);
-				angle2 = Geometry.angleFrom(p2p1, p2c2);
-			}else{
-				// FIXME do what? set to defaults?
-			}
+		double n = Geometry.norm(p1p2);
+
+		if(n != 0){			
+			s1 = Geometry.norm(p1c1)/n;
+			s2 = Geometry.norm(p2c2)/n;		
+			angle1 = Geometry.angleFrom(p1p2, p1c1);
+			angle2 = Geometry.angleFrom(p2p1, p2c2);
+		}else{
+			// FIXME do what? set to defaults?
+		}
 		//}
 
 		// DEBUG
@@ -359,28 +369,28 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * @param index the index of the control point to be set
 	 */
 	public void setPoint(Point2D point, int index){		
-		
+
 		float x = (float)point.getX();
 		float y = (float)point.getY();
-		
+
 		switch (index){
-			case P1:
-				curve.x1 = x;
-				curve.y1 = y;
-				break;
-			case P2:
-				curve.x2 = x;
-				curve.y2 = y;
-				break;				
-			case CTRL1:
-				curve.ctrlx1 = x;
-				curve.ctrly1 = y;
-				break;
-			case CTRL2:
-				curve.ctrlx2 = x;
-				curve.ctrly2 = y;
-				break;
-			default: throw new IllegalArgumentException("Invalid control point index: " + index);
+		case P1:
+			curve.x1 = x;
+			curve.y1 = y;
+			break;
+		case P2:
+			curve.x2 = x;
+			curve.y2 = y;
+			break;				
+		case CTRL1:
+			curve.ctrlx1 = x;
+			curve.ctrly1 = y;
+			break;
+		case CTRL2:
+			curve.ctrlx2 = x;
+			curve.ctrly2 = y;
+			break;
+		default: throw new IllegalArgumentException("Invalid control point index: " + index);
 		}
 		updateAnglesAndScalars();				
 		setDirty(true);
@@ -394,7 +404,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	public CubicParamCurve2D getCurve() {
 		return curve;		
 	}	
-	
+
 	/**
 	 * Sets the curve representing the edge.
 	 * 
@@ -404,7 +414,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		this.curve = cubicCurve;
 		updateAnglesAndScalars();
 	}	
-	
+
 	/**
 	 * Sets the curve representing the edge.
 	 * 
@@ -417,10 +427,10 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 				cubicCurve.ctrlx1, cubicCurve.ctrly1,
 				cubicCurve.ctrlx2, cubicCurve.ctrly2,
 				cubicCurve.x2, cubicCurve.y2
-				);
+		);
 		updateAnglesAndScalars();
 	}	
-	
+
 	/** 
 	 * Returns the visible portion of the curve i.e. the part that is 
 	 * outside the boundaries of both source and target nodes; 
@@ -432,14 +442,14 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	public CubicCurve2D getVisibleCurve()
 	{
 		// TODO check sourceT and targetT
-		
+
 		Node s = edge.getSourceNode();
 		Node t = edge.getTargetNode();
 		if(s.intersects(curve.getPointAt(targetT)) || 
 				( t != null && t.intersects(curve.getPointAt(sourceT)) ) )	{
 			return null;
 		}
-				
+
 		return curve.getSegment(sourceT, targetT);		
 	}
 
@@ -451,7 +461,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	protected void arcMore() {	
 		arcMore(true);
 	}		
-	
+
 	/**
 	 * Increase the arc on this edge layout.
 	 * Increases the angle of the tangents to the curve, 
@@ -462,13 +472,13 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 */
 	protected void arcMore(boolean clockwise) {
 
-		
+
 		if(clockwise) { // swap angles
 			double temp = angle1;
 			angle1 = angle2;
 			angle2 = temp;
 		}
-		
+
 		if( Math.abs(angle1) < EPSILON ) {
 			angle1 = DEFAULT_CONTROL_HANDLE_ANGLE;
 			s1 = DEFAULT_CONTROL_HANDLE_SCALAR;
@@ -480,7 +490,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 			}
 			s1 *= 1.2;
 		}
-		
+
 		if( Math.abs(angle2) < EPSILON ) {
 			angle2 = -DEFAULT_CONTROL_HANDLE_ANGLE;
 			s2 = DEFAULT_CONTROL_HANDLE_SCALAR;
@@ -492,7 +502,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 			}
 			s2 *= 1.2;		
 		}
-				
+
 		if( clockwise ){ // swap angles back
 			double temp = angle1;
 			angle1 = angle2;
@@ -500,7 +510,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		}
 		computeCurve();
 	}
-	
+
 	/**
 	 * Decreases angles of tangents to curve by DEFAULT_CONTROL_HANDLE_ANGLE / 2  
 	 * and tangent length by 20%. 
@@ -534,7 +544,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		}
 		computeCurve();
 	}
-		
+
 	/**
 	 * Straightens the curve representing the edge
 	 * to a straight line.
@@ -546,12 +556,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		s2 = DEFAULT_CONTROL_HANDLE_SCALAR;	
 		computeCurve();
 	}
-	
-	/**
-	 * TODO Comment : What does this method claim to be doing?
-	 * 
-	 * FIXME This doesn't work since changed Point[] to CubicCurve2D and lots of other changes :(
-	 */
+
 	/**
 	 * If this edge is not straight,  make it have a symmetrical appearance.
 	 * Make the two vectors - from P1 to CTRL1 and from P2 to CTRL2, be of 
@@ -562,47 +567,14 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * form of a bow); and the 2 control points are on different sides of the 
 	 * edge (a curve like a wave). In one of the cases, theangles of the vectors
 	 * should be A=B, in the other A=-B.
+	 *
+	 *The command is undoable, so it is encapsuladed on an UndoableEdit.
+	 *
 	 */
 	protected void symmetrize(){
-		Point2D.Float[] points=new Point2D.Float[4];
-		points[0]=Geometry.translate(curve.getP1(),-curve.getX1(),-curve.getY1());
-		points[1]=Geometry.translate(curve.getCtrlP1(),-curve.getX1(),-curve.getY1());
-		points[2]=Geometry.translate(curve.getCtrlP2(),-curve.getX1(),-curve.getY1());
-		points[3]=Geometry.translate(curve.getP2(),-curve.getX1(),-curve.getY1());
-
-		float edgeAngle=(float)Math.atan(Geometry.slope(curve.getP1(),curve.getP2()));
-		points[0]=Geometry.rotate(points[0],-edgeAngle);
-		points[1]=Geometry.rotate(points[1],-edgeAngle);
-		points[2]=Geometry.rotate(points[2],-edgeAngle);
-		points[3]=Geometry.rotate(points[3],-edgeAngle);
-		
-		double quadrantFix1=(points[0].x-points[1].x>0)?Math.PI:0;
-		double quadrantFix2=(points[2].x-points[3].x>0)?Math.PI:0;
-		
-		float a1=(float)Math.atan(Geometry.slope(points[0],points[1]));
-		float a2=(float)Math.atan(Geometry.slope(points[3],points[2]));
-		float angle=(float)(Math.abs(a1)+Math.abs(a2))/2F;
-		float distance=(float)(points[0].distance(points[1])+points[2].distance(points[3]))/2F;
-		
-		points[1]=Geometry.rotate(new Point2D.Float(distance,0),(angle*Math.signum(a1)+quadrantFix1));
-		points[2]=Geometry.rotate(new Point2D.Float(distance,0),(angle*Math.signum(a2)+quadrantFix2+Math.PI));
-		points[2].x+=points[3].x;
-		points[2].y+=points[3].y;
-		
-		a1=(float)Math.atan(Geometry.slope(points[0],points[1]));
-		a2=(float)Math.atan(Geometry.slope(points[3],points[2]));
-
-		points[1]=Geometry.rotate(points[1],edgeAngle);
-		points[2]=Geometry.rotate(points[2],edgeAngle);
-		points[0]=new Point2D.Float((float)curve.getX1(), (float)curve.getY1());
-		points[1]=Geometry.translate(points[1],curve.getX1(),curve.getY1());
-		points[2]=Geometry.translate(points[2],curve.getX1(),curve.getY1());
-		points[3]=new Point2D.Float((float)curve.getX2(), (float)curve.getY2());
-		curve.setCurve(points, 0);
-		setCurve(curve);
-		setDirty(true);
+		UndoableEdits.symmetrizeBezierLayout(this);
 	}
-	
+
 	/**
 	 * Indicates whether an edge can be rigidly translated 
 	 * with both of its nodes or must be recomputed.
@@ -610,7 +582,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * NOT YET USED
 	 */
 	private boolean rigidTranslation = false;
-	
+
 	protected boolean isRigidTranslation() {
 		return rigidTranslation;
 	}
@@ -618,8 +590,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	protected void setRigidTranslation(boolean rigid) {
 		this.rigidTranslation = rigid;
 	}
-	
-	
+
+
 	/**
 	 * Set this layout to be the reflection of <code>other</code>
 	 * where reflection is about the line between source and target nodes.  
@@ -628,19 +600,19 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 */
 	public void setToReflectionOf(BezierLayout other) {
 		if( other.isStraight() ) return;
-		
+
 		if( this.edge.getSourceNode().equals(other.edge.getSourceNode()) ) {			
-				this.angle1 = other.angle1 * -1;
-				this.angle2 = other.angle2 * -1;							
+			this.angle1 = other.angle1 * -1;
+			this.angle2 = other.angle2 * -1;							
 		} else { // heads to toes			
-				this.angle1 = other.angle1;
-				this.angle2 = other.angle2;			
+			this.angle1 = other.angle1;
+			this.angle2 = other.angle2;			
 		}
 		this.s1 = other.s1;
 		this.s2 = other.s2;
 		this.computeCurve();
 	}
-	
+
 	/**
 	 * Check to see if this layout is the reflection of <code>other</code>, about
 	 * the line between source and target nodes.
@@ -657,7 +629,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 					&& (this.angle2 == other.angle2) );
 		}
 	}
-	
+
 	/**
 	 * Returns the parameter in [0,1] of the point on a parametric cubic curve 
 	 * where my edge intersects with with the boundary of its source node.
@@ -749,13 +721,13 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		updateTextFromEventNames();
 		setDirty(true);
 	}
-	
+
 	public void removeEventName(String symbol) {
 		eventNames.remove(symbol);
 		updateTextFromEventNames();
-	 	setDirty(true);		
+		setDirty(true);		
 	}
-	
+
 	/**
 	 * KLUGE until all changes to text go directly from Edge to Label.
 	 */
@@ -763,24 +735,24 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		updateTextFromEventNames();
 		return super.getText();
 	}
-	
+
 	/**
 	 * Sets text to comma-delimited string of event symbols.
 	 */
 	private void updateTextFromEventNames()	{
 		// Concat label from associated event[s]
-	    String s = "";	    
+		String s = "";	    
 
 		if(eventNames != null) {
-		    Iterator iter = eventNames.iterator();
-		    while(iter.hasNext()) {
-		    	s += (String)iter.next();
-		    	s += ", ";
-		    }
-		    s = s.trim();
-		    if(s.length()>0) s = s.substring(0, s.length() - 1);
+			Iterator iter = eventNames.iterator();
+			while(iter.hasNext()) {
+				s += (String)iter.next();
+				s += ", ";
+			}
+			s = s.trim();
+			if(s.length()>0) s = s.substring(0, s.length() - 1);
 		}			
-	    setText(s);
+		setText(s);
 	}		
 	///////////////////////////////////////////////////////////////////////////
 	/**

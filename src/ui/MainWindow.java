@@ -9,20 +9,26 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 
 import main.Hub;
 import main.Workspace;
@@ -74,10 +80,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		});
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif"))
-				.getImage());
+		.getImage());
 		Workspace.instance().addSubscriber(this); // subscribe to
-													// notifications from the
-													// workspace
+		// notifications from the
+		// workspace
 
 		FileOperations.loadCommandManager("commands.xml");
 
@@ -150,7 +156,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 
 	private void createAndAddToolBar() {
 		toolbar = CommandManager.defaultInstance().getGroup("ides.toolbar")
-				.createToolBar();
+		.createToolBar();
 		// toolbar.addSeparator();
 		Box p = Box.createHorizontalBox();// new JPanel();
 		p.add(new JLabel(" " + Hub.string("zoom") + ": "));
@@ -161,8 +167,14 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	}
 
 	private void createAndAddMenuBar() {
-		JMenuBar menuBar = CommandManager.defaultInstance().getGroup(
-				"ides.menu.group").createMenuBar();
+
+//		Old implementation of the menus (using the external guiCommands library)	
+//		JMenuBar menuBar = CommandManager.defaultInstance().getGroup(
+//		"ides.menu.group").createMenuBar();
+//		this.setJMenuBar(menuBar);
+		
+		//New implementation of the menus
+		JMenuBar menuBar = ui.command.CommandManager_new.getInstance().getMenuBar(); 
 		this.setJMenuBar(menuBar);
 	}
 
@@ -170,10 +182,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 * Dynamically loads and export all commands in package ui.command.
 	 */
 	private void loadAndExportCommands() {
-
 		// Lenko: moved to constructor: needs to load for drawing board
 		// FileOperations.loadCommandManager("commands.xml");
-
 		new CreateCommand().export();
 		new SelectCommand().export();
 		new MoveCommand().export();
@@ -227,7 +237,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 
 	// private GraphDrawingView drawingBoard;
 	private FilmStrip filmStrip; // thumbnails of graphs for all open
-									// machines in the workspace
+	// machines in the workspace
 
 	private JToolBar toolbar;
 
@@ -350,8 +360,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 			Hub.persistentData.setInt("rightViewExt", (int) Math.ceil(1000
 					* (float) (tabsAndRight.getDividerLocation() - tabsAndRight
 							.getMinimumDividerLocation())
-					/ (tabsAndRight.getMaximumDividerLocation() - tabsAndRight
-							.getMinimumDividerLocation())));
+							/ (tabsAndRight.getMaximumDividerLocation() - tabsAndRight
+									.getMinimumDividerLocation())));
 		}
 	}
 

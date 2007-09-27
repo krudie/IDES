@@ -22,7 +22,7 @@ import model.fsa.FSATransition;
  *
  */
 public class State implements model.fsa.FSAState {
-	private static final String NAME="name", INITIAL="initial", MARKED="marked";
+	public static final String NAME="name", INITIAL="initial", MARKED="marked";
 	/* transitions originating from this state and ending in this state respectively. */
 	private LinkedList<FSATransition> sourceT, targetT;
 
