@@ -8,6 +8,8 @@ import io.fsa.ver2_1.FileOperations;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -16,6 +18,8 @@ import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -48,19 +52,21 @@ import ui.ImportExportDialog;
  */
 public class FileCommands {	
 
-	public static class ExitAction implements ActionListener{
-		public void actionPerformed(ActionEvent e)
-		{
-			Main.onExit(); 
-		}
-	}
-
-	public static class NewAction implements ActionListener{
+	public static class NewAction extends AbstractAction{
 		/**
 		 * used to create unique  names in a session
 		 */
 		private static int Count=0;
-
+		
+		private static String text = "New model";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public NewAction()
+		{	
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_new_automaton.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			DESModel des= ModelManager.createModel(FSAModel.class);
@@ -70,26 +76,66 @@ public class FileCommands {
 		}
 	}
 
-	public static class OpenAction implements ActionListener{
+	public static class OpenAction extends AbstractAction{
+		
+		private static String text = "Open model";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public OpenAction()
+		{
+			super(text,icon);			
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_open_automaton.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 //			Open a window for the user to choose the file to open:
 			io.CommonActions.load();
 		}
 	}
-	public static class SaveAction implements ActionListener{
+	public static class SaveAction extends AbstractAction{
+		
+		private static String text = "Save model";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public SaveAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_save_automaton.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);
 		}
 	}
-	public static class SaveAsAction implements ActionListener{
+	
+	public static class SaveAsAction extends AbstractAction{
+		private static String text = "Save model as...";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public SaveAsAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_saveas_automaton.gif")));
+		}
 		public void actionPerformed(ActionEvent e)
 		{
 			io.CommonActions.saveAs(Hub.getWorkspace().getActiveModel());
 		}
 	}
-	public static class SaveAllAction implements ActionListener{
+	
+	public static class SaveAllAction extends AbstractAction{
+		
+		private static String text = "Save all model";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public SaveAllAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_saveall_automata.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			Cursor cursor = Hub.getMainWindow().getCursor();
@@ -110,7 +156,17 @@ public class FileCommands {
 		}
 	}
 
-	public static class SaveWorkspaceAction implements ActionListener{
+	public static class SaveWorkspaceAction extends AbstractAction{
+		
+		private static String text = "Save workspace";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public SaveWorkspaceAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_save_workspace.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent event)
 		{
 			Cursor cursor = Hub.getMainWindow().getCursor();
@@ -130,7 +186,17 @@ public class FileCommands {
 		}
 	}
 
-	public static class SaveWorkspaceAsAction implements ActionListener{
+	public static class SaveWorkspaceAsAction extends AbstractAction{
+		
+		private static String text = "Save workspace as...";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public SaveWorkspaceAsAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_saveas_workspace.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent event)
 		{
 			Cursor cursor = Hub.getMainWindow().getCursor();
@@ -145,35 +211,83 @@ public class FileCommands {
 		}
 	}
 
-	public static class ImportAction implements ActionListener{
+	public static class ImportAction extends AbstractAction{
+		
+		private static String text = "Import";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public ImportAction()
+		{
+			super(text,icon);
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			io.CommonActions.importModel();
 		}
 	}
 
-	public static class ExportAction implements ActionListener{
+	public static class ExportAction extends AbstractAction{
+		
+		private static String text = "Export";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public ExportAction()
+		{
+			super(text,icon);
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			io.CommonActions.exportModel();	
 		}
 	}
 
-	public static class CloseAction implements ActionListener{
+	public static class CloseAction extends AbstractAction{
+		
+		private static String text = "Close model";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public CloseAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_close_automaton.gif")));
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			Hub.getWorkspace().removeModel(Hub.getWorkspace().getActiveModelName());
 		}
 	}
 
-	public static class NewWorkspaceAction implements ActionListener{
+	public static class NewWorkspaceAction extends AbstractAction{
+		
+		private static String text = "New workspace";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public NewWorkspaceAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_new_workspace.gif")));	
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			JOptionPane.showMessageDialog(null, "Create new workspace");
 		}
 	}
 
-	public static class OpenWorkspaceAction implements ActionListener{
+	public static class OpenWorkspaceAction extends AbstractAction{
+		
+		private static String text = "Open workspace";
+		private static ImageIcon icon = new ImageIcon();
+		
+		public OpenWorkspaceAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_open_workspace.gif")));	
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			if(Hub.getWorkspace().isDirty())
@@ -196,244 +310,19 @@ public class FileCommands {
 		}	
 	}
 
-	public static class NewCommand extends ActionCommand {
-
-		/**
-		 * used to create unique  names in a session
-		 */
-		private static int Count=0;
-
-		public NewCommand(){
-			super("new.command");
+	
+	
+	public static class ExitAction extends AbstractAction{
+		private static String text = "Exit";
+		private static ImageIcon icon = new ImageIcon();
+		public ExitAction()
+		{
+			super(text,icon);
 		}
-
-		@Override
-		protected void handleExecute() {
-//			ModelDescriptor md=new NewModelDialog().selectModel();
-//			if(md==null)
-//			return;
-//			DESModel des=md.createModel(Hub.string("newModelName")+"-"+Count++);
-			//This version of IDES just support FSAModel:
-			DESModel des= ModelManager.createModel(FSAModel.class);
-			des.setName(Hub.string("newModelName")+"-"+Count++);
-			Hub.getWorkspace().addModel(des);
-			Hub.getWorkspace().setActiveModel(des.getName());
-		}	
-	}
-
-	public static class OpenCommand extends ActionCommand {
-
-		public OpenCommand() {
-			super("open.command");			
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			Main.onExit(); 
 		}
-		@Override
-		/**
-		 * FIXME Don't add workspace files as if they were automata...
-		 */
-		protected void handleExecute() {
-			//Open a window for the user to choose the file to open:
-			io.CommonActions.load();
-		}
-	}
-
-	public static class SaveAllCommand extends ActionCommand {
-
-		public SaveAllCommand(){
-			super("saveall.command");
-		}
-
-		@Override
-		protected void handleExecute() {
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-			Iterator<LayoutShell> iterator = Hub.getWorkspace().getLayoutShells();			
-			while(iterator.hasNext())
-			{
-				LayoutShell gm=iterator.next();
-				DESModel model=gm.getModel();
-				if( model != null)
-				{
-					io.CommonActions.save(model, (File)model.getAnnotation(Annotable.FILE));
-//					Hub.getWorkspace().fireRepaintRequired();
-				}
-			}
-			Hub.getMainWindow().setCursor(cursor);
-		}	
-	}
-
-	public static class SaveCommand extends ActionCommand {
-
-		public SaveCommand() {
-			super("save.command");
-		}
-
-		@Override
-		protected void handleExecute() {
-//			Vector<DESModel> models=new Vector<DESModel>();
-//			for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
-//			{
-//			models.add(i.next());
-//			}
-//			new SaveDialog(models).selectModels();
-			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);
-		}
-	}
-
-	public static class SaveAsCommand extends ActionCommand {
-
-		public SaveAsCommand(){
-			super("saveas.command");
-		}
-
-		@Override
-		protected void handleExecute() {
-			io.CommonActions.saveAs(Hub.getWorkspace().getActiveModel());
-		}	
-
-	}
-
-
-
-	public static class CloseCommand extends ActionCommand {
-
-		public CloseCommand(){
-			super("close.command");
-		}
-
-		@Override
-		protected void handleExecute() {
-			Hub.getWorkspace().removeModel(Hub.getWorkspace().getActiveModelName());
-		}	
-	}
-
-
-	public static class NewWorkspaceCommand extends ActionCommand {
-
-		public NewWorkspaceCommand(){
-			super("new.workspace.command");
-		}
-
-		@Override
-		protected void handleExecute() {
-			// TODO
-			JOptionPane.showMessageDialog(null, "Create new workspace");
-		}	
-	}
-
-	public static class OpenWorkspaceCommand extends ActionCommand {
-
-		public OpenWorkspaceCommand(){
-			super("open.workspace.command");
-		}
-
-		@Override
-		protected void handleExecute() {
-			if(Hub.getWorkspace().isDirty())
-				if(!io.CommonActions.handleUnsavedWorkspace())
-					return;
-			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
-			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
-			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
-			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			int retVal = fc.showOpenDialog(Hub.getMainWindow());
-			if(retVal == JFileChooser.APPROVE_OPTION){
-				Cursor cursor = Hub.getMainWindow().getCursor();
-				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				WorkspaceDescriptor wd = io.CommonActions.openWorkspace(fc.getSelectedFile());
-				if(wd != null){
-					Hub.getWorkspace().replaceWorkspace(wd);
-				}
-				Hub.getMainWindow().setCursor(cursor);
-			}
-		}	
-	}
-
-	public static class SaveWorkspaceCommand extends ActionCommand {
-
-		public SaveWorkspaceCommand(){
-			super("save.workspace.command");
-		}
-		@Override
-		protected void handleExecute() {
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			try
-			{
-				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
-					Hub.getWorkspace().setDirty(false);
-			}catch(IncompleteWorkspaceDescriptorException e){}
-			catch(NullPointerException e)
-			{
-				Hub.getMainWindow().setCursor(cursor);
-				return;
-			}
-			Hub.getMainWindow().setCursor(cursor);
-		}
-	}
-
-	public static class SaveWorkspaceAsCommand extends ActionCommand {
-
-		public SaveWorkspaceAsCommand(){
-			super("saveas.workspace.command");
-		}
-		@Override
-		protected void handleExecute() {
-			Cursor cursor = Hub.getMainWindow().getCursor();
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			try
-			{
-				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(io.CommonActions.saveWorkspaceAs(wd))
-					Hub.getWorkspace().setDirty(false);
-			}catch(IncompleteWorkspaceDescriptorException e){}
-			Hub.getMainWindow().setCursor(cursor);
-		}
-	}
-
-	public static class ImportCommand extends ActionCommand {
-
-		public ImportCommand() {
-			super("import.command");			
-		}
-
-		@Override
-		protected void handleExecute() {
-			io.CommonActions.importModel();
-		}
-
-	}
-
-	public static class ExportCommand extends ActionCommand {
-
-		public ExportCommand() {
-			super("export.command");			
-		}
-
-		@Override
-		protected void handleExecute() {
-//			try{
-			io.CommonActions.exportModel();	
-//			}catch(IOException e)
-//			{
-//			Hub.displayAlert(e.getMessage());
-//			}
-		}
-
-	}
-
-
-
-	public static class ExitCommand extends ActionCommand {
-
-		public ExitCommand(){
-			super("exit.command");
-		}
-
-		@Override
-		protected void handleExecute() {			
-			Main.onExit();
-		}	
 	}
 }

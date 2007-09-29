@@ -11,7 +11,7 @@ import main.Hub;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
 
-import ui.command.GraphCommands.MoveCommand;
+import ui.command.GraphCommands.MoveAction;
 
 public class MovementTool extends DrawingTool {
 
@@ -78,7 +78,7 @@ public class MovementTool extends DrawingTool {
 				// and the total translation
 				// save the set of selected objects for undo purposes
 				// NOTE: must make COPIES of all references in the selection group		
-				MoveCommand moveCmd = new MoveCommand( 
+				MoveAction moveCmd = new MoveAction( 
 						ContextAdaptorHack.context.getSelectedGroup(), 
 													displacement);		
 				moveCmd.execute();

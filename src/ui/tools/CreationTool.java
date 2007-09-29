@@ -21,7 +21,7 @@ import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
-import ui.command.GraphCommands.CreateCommand;
+import ui.command.GraphCommands.CreateAction;
 import presentation.fsa.GraphElement;
 /**
  * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.
@@ -37,7 +37,7 @@ public class CreationTool extends DrawingTool {
 	private CircleNode sourceNode, targetNode; // nodes to be source and target of created edge
 	private CircleNode startNode, endNode; // nodes intersected on mouse pressed and released respectively
 	private BezierEdge edge;
-	private CreateCommand cmd;	
+	private CreateAction cmd;	
 	private boolean aborted;
 	private boolean firstClick;
 	private boolean edgeLeftLayout = false;
@@ -230,7 +230,7 @@ public class CreationTool extends DrawingTool {
 	private void finishSelfLoop() {
 		targetNode = endNode;
 		abortEdge();
-		cmd = new CreateCommand(CreateCommand.SELF_LOOP, targetNode);
+		cmd = new CreateAction(CreateAction.SELF_LOOP, targetNode);
 		cmd.execute();
 		sourceNode = null;
 		targetNode = null;
@@ -241,7 +241,7 @@ public class CreationTool extends DrawingTool {
 	 * @param point
 	 */
 	private void createNode(Point point) {
-		cmd = new CreateCommand(CreateCommand.NODE, point);
+		cmd = new CreateAction(CreateAction.NODE, point);
 		cmd.execute();
 		abortEdge();
 		//dragging = false;		
@@ -254,8 +254,8 @@ public class CreationTool extends DrawingTool {
 	 * @param point
 	 */
 	private void finishEdgeAndCreateTarget(Point point) {		
-		cmd = new CreateCommand(
-				CreateCommand.NODE_AND_EDGE, edge, point);				
+		cmd = new CreateAction(
+				CreateAction.NODE_AND_EDGE, edge, point);				
 		cmd.execute();
 		// IDEA Don't keep a copy of the temp edge in this class, just use the get and set in context.
 		// TODO call abortEdge here and have it do all the work (duplicate code here and in finishEdge).
@@ -337,7 +337,7 @@ public class CreationTool extends DrawingTool {
 		}
 
 		if (edge != null) {
-			cmd = new CreateCommand(CreateCommand.EDGE, edge, targetNode);
+			cmd = new CreateAction(CreateAction.EDGE, edge, targetNode);
 			cmd.execute();
 		}
 		edge = null;

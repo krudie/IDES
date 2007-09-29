@@ -44,14 +44,12 @@ import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
 import ui.command.EditCommands;
 import ui.command.FileCommands;
+import ui.command.GraphCommands;
 import ui.command.HelpCommands;
 import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
 import ui.command.GraphCommands.AlignCommand;
-import ui.command.GraphCommands.CreateCommand;
 import ui.command.GraphCommands.DeleteCommand;
-import ui.command.GraphCommands.MoveCommand;
-import ui.command.GraphCommands.SelectCommand;
 import ui.command.GraphCommands.TextCommand;
 
 /**
@@ -155,8 +153,19 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	}
 
 	private void createAndAddToolBar() {
-		toolbar = CommandManager.defaultInstance().getGroup("ides.toolbar")
-		.createToolBar();
+		toolbar = CommandManager.defaultInstance().getGroup("ides.toolbar").createToolBar();
+	
+		toolbar.add(new FileCommands.NewAction());
+		toolbar.add(new FileCommands.OpenAction());
+		toolbar.add(new FileCommands.SaveAllAction());
+		toolbar.addSeparator();
+		toolbar.add(new FileCommands.OpenWorkspaceAction());
+		toolbar.add(new FileCommands.SaveWorkspaceAction());
+		toolbar.addSeparator();
+		toolbar.add(new GraphCommands.SelectAction());
+		toolbar.add(new GraphCommands.CreateAction());
+		toolbar.add(new GraphCommands.MoveAction());
+		
 		// toolbar.addSeparator();
 		Box p = Box.createHorizontalBox();// new JPanel();
 		p.add(new JLabel(" " + Hub.string("zoom") + ": "));
@@ -181,48 +190,23 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	/**
 	 * Dynamically loads and export all commands in package ui.command.
 	 */
+	//TODO REMOVE THIS METHOD!
 	private void loadAndExportCommands() {
+		
 		// Lenko: moved to constructor: needs to load for drawing board
 		// FileOperations.loadCommandManager("commands.xml");
-		new CreateCommand().export();
-		new SelectCommand().export();
-		new MoveCommand().export();
+//		new CreateCommand().export();
+//		new SelectCommand().export();
+//		new MoveCommand().export();
 		new TextCommand().export();
 		new DeleteCommand().export();
 		new AlignCommand().export();
-
 		new EditCommands.CutCommand().export();
 		new EditCommands.CopyCommand().export();
 		new EditCommands.PasteCommand().export();
-
-		new FileCommands.NewCommand().export();
-		new FileCommands.OpenCommand().export();
-		new FileCommands.CloseCommand().export();
-		new FileCommands.SaveCommand().export();
-		new FileCommands.SaveAsCommand().export();
-		new FileCommands.SaveAllCommand().export();
-
-		new FileCommands.OpenWorkspaceCommand().export();
-		new FileCommands.SaveWorkspaceCommand().export();
-		new FileCommands.SaveWorkspaceAsCommand().export();
-
-		new FileCommands.ImportCommand().export();
-		new FileCommands.ExportCommand().export();
-//		// new FileCommands.ExportToGIFCommand().export();
-//		new FileCommands.ExportToEPSCommand().export();
-//		new FileCommands.ExportToLatexCommand().export();
-//		new FileCommands.ExportToGrailCommand().export();
-//		new FileCommands.ExportToTCTCommand().export();
-//		// new FileCommands.ExportToPNGCommand().export();
-//		new FileCommands.ImportFromGrailCommand().export();
-//		new FileCommands.ImportFromTCTCommand().export();
-		new FileCommands.ExitCommand().export();
-
 		new OptionsCommands.ShowGridCommand().export();
 		new OptionsCommands.MoreOptionsCommand().export();
-
 		new HelpCommands.AboutCommand().export();
-
 		new OperationsCommands.ProductCommand().export();
 	}
 

@@ -216,56 +216,44 @@ public class CommandManager_new {
 		helpMenu = new JMenu("Help");
 
 		//Initializing the menu items in the "fileMenu"
-		newModel = new JMenuItem("New model");
+		newModel = new JMenuItem(new FileCommands.NewAction());
 		newModel.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-		newModel.addActionListener(new ui.command.FileCommands.NewAction());
 
-		openModel = new JMenuItem("Open model");
+		openModel = new JMenuItem(new FileCommands.OpenAction());
 		openModel.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		openModel.addActionListener(new ui.command.FileCommands.OpenAction());
 
-		saveModel = new JMenuItem("Save model");
+		saveModel = new JMenuItem(new FileCommands.SaveAction());
 		saveModel.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_S, ActionEvent.CTRL_MASK));	
-		saveModel.addActionListener(new ui.command.FileCommands.SaveAction());
 
-		saveModelAs = new JMenuItem("Save model as...");
-		saveModelAs.addActionListener(new ui.command.FileCommands.SaveAsAction());
+		saveModelAs = new JMenuItem(new FileCommands.SaveAsAction());
 
-		saveAllModels = new JMenuItem("Save all model");
+		saveAllModels = new JMenuItem(new FileCommands.SaveAllAction());
 		saveAllModels.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
-		saveAllModels.addActionListener(new ui.command.FileCommands.SaveAllAction());
 
-		closeModel = new JMenuItem("Close model");
+		closeModel = new JMenuItem(new FileCommands.CloseAction());
 		closeModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-		closeModel.addActionListener(new ui.command.FileCommands.CloseAction());
 
-		openWorkspace = new JMenuItem("Open workspace");
+		openWorkspace = new JMenuItem(new FileCommands.OpenWorkspaceAction());
 		openWorkspace.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_O, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
-		openWorkspace.addActionListener(new ui.command.FileCommands.OpenWorkspaceAction());
 
-		saveWorkspace = new JMenuItem("Save workspace");
+		saveWorkspace = new JMenuItem(new FileCommands.SaveWorkspaceAction());
 		saveWorkspace.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
-		saveWorkspace.addActionListener(new ui.command.FileCommands.SaveWorkspaceAction());
 
-		saveWorkspaceAs = new JMenuItem("Save workspace as...");
-		saveWorkspaceAs.addActionListener(new ui.command.FileCommands.SaveWorkspaceAsAction());
+		saveWorkspaceAs = new JMenuItem(new FileCommands.SaveWorkspaceAsAction());
 
-		importModel = new JMenuItem("Import");
-		importModel.addActionListener(new ui.command.FileCommands.ImportAction());
+		importModel = new JMenuItem(new FileCommands.ImportAction());
 
-		exportModel = new JMenuItem("Export");
-		exportModel.addActionListener(new ui.command.FileCommands.ExportAction());
+		exportModel = new JMenuItem(new FileCommands.ExportAction());
 
-		exitIDES = new JMenuItem("Exit");
-		exitIDES.addActionListener(new ui.command.FileCommands.ExitAction());
+		exitIDES = new JMenuItem(new FileCommands.ExitAction());
+
 		//Adding the menu items to the "fileMenu"
-
 		fileMenu.add(newModel);
 		fileMenu.add(openModel);
 		fileMenu.add(saveModel);
@@ -281,12 +269,10 @@ public class CommandManager_new {
 		fileMenu.add(exportModel);
 		fileMenu.addSeparator();
 		fileMenu.add(exitIDES);
-
 		//Initializing the menu items for the "editMenu"
 		undo = new JMenuItem("Undo");
 		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 		undo.addActionListener(undoAction);
-
 
 		redo = new JMenuItem("Redo");
 		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));

@@ -1,10 +1,14 @@
 package ui.command;
 
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.Iterator;
 
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
@@ -27,42 +31,79 @@ import presentation.fsa.SelectionGroup;
 
 public class GraphCommands {
 
+
+
+
 	/**
 	 * A command to set the current drawing mode to editing mode. 
 	 * While in editing mode, user may select graph objects in the
 	 * GraphDrawingView for deleting, copying, pasting and moving.
 	 * 
-	 * @author Helen Bretzke
+	 * @author Helen Bretzke, Christian Silvano
 	 */
-	public static class SelectCommand extends ActionCommand {
+	public static class SelectAction extends AbstractAction {
 
-//		private GraphDrawingView context;
-		
-		public SelectCommand(){
-			super("select.command");
-//			this.context = context;
-		}
-		@Override
-		protected void handleExecute() {			
+		private static String text = "Select";
+		private static ImageIcon icon = new ImageIcon();
+
+		public SelectAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_modify.gif")));
+		}		
+
+		public void actionPerformed(ActionEvent event)
+		{			
 			// TODO set the tool in the *currently active* drawing view
 			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
 			ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.SELECT);
 		}
 	}
-	
+
+
+//	/**
+//	* A command to set the current drawing mode to editing mode. 
+//	* While in editing mode, user may select graph objects in the
+//	* GraphDrawingView for deleting, copying, pasting and moving.
+//	* 
+//	* @author Helen Bretzke
+//	*/
+//	public static class SelectAction extends ActionCommand {
+
+////	private GraphDrawingView context;
+
+//	public SelectAction(){
+//	super("select.command");
+////	this.context = context;
+//	}
+//	@Override
+//	protected void handleExecute() {			
+//	// TODO set the tool in the *currently active* drawing view
+//	ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+//	ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.SELECT);
+//	}
+//	}
+
+
+
+
+
 	/**
 	 * Creates nodes and edges in a GraphDrawingView.
 	 *	 
-	 * @author Helen Bretzke
+	 * @author Helen Bretzke, Christian Silvano
 	 */
-	public static class CreateCommand extends UndoableActionCommand {
+	public static class CreateAction extends AbstractAction {
+
+		private static String text = "Create";
+		private static ImageIcon icon = new ImageIcon();
 
 //		private GraphDrawingView context;
 		private int elementType;
 		private CircleNode source, target;
 		private BezierEdge edge;
 		private Point location;
-		
+
 		/**
 		 * Types of elements to be created.
 		 */
@@ -71,41 +112,48 @@ public class GraphCommands {
 		public static final int EDGE = 1;	
 		public static final int NODE_AND_EDGE = 2;
 		public static final int SELF_LOOP = 3;
-		
+
 		/**
 		 * Default constructor.
 		 */
-		public CreateCommand(){		
-			super("create.command");
+		public CreateAction(){		
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_create.gif")));
 			elementType = UNKNOWN;
 		}
-		
-//		public CreateCommand(GraphDrawingView context){
-//			super("create.command");
-//			setContext(context, UNKNOWN, null);
+
+//		public CreateAction(GraphDrawingView context){
+//		super("create.command");
+//		setContext(context, UNKNOWN, null);
 //		}
-		
+
 		/**
 		 * @param context
 		 * @param elementType
 		 * @param location
 		 */
-		public CreateCommand(int elementType, Point location){
+		public CreateAction(int elementType, Point location){
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_create.gif")));
 			setContext(elementType, location);
 		}	
-		
-		public CreateCommand(int elementType, BezierEdge edge, Point location){
+
+		public CreateAction(int elementType, BezierEdge edge, Point location){
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_create.gif")));
 			setContext(elementType, location);
 			this.edge = edge;
 		}	
 
-		
+
 		/**
 		 * @param context
 		 * @param elementType
 		 * @param n
 		 */
-		public CreateCommand(int elementType, CircleNode n) {
+		public CreateAction(int elementType, CircleNode n) {
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_create.gif")));
 //			this.context = context;			
 			this.elementType = elementType;
 			source = n;
@@ -117,7 +165,9 @@ public class GraphCommands {
 		 * @param edge
 		 * @param target
 		 */
-		public CreateCommand(int elementType, BezierEdge edge, CircleNode target) {
+		public CreateAction(int elementType, BezierEdge edge, CircleNode target) {
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_create.gif")));
 //			this.context = context;
 			this.elementType = elementType;
 			this.edge = edge;
@@ -129,23 +179,23 @@ public class GraphCommands {
 			this.elementType = elementType;
 			this.location = location;
 		}
-		
+
 		public void setSourceNode(CircleNode s){
 			source = s;
 		}
-		
+
 		public void setTargetNode(CircleNode t){
 			target = t;
 			t.setHighlighted(true);
 		}
-		
+
 
 		public void setEdge(BezierEdge edge) {
 			this.edge = edge;
 		}
 
-		@Override
-		protected UndoableEdit performEdit() {
+		public void actionPerformed(ActionEvent event)
+		{
 			switch(elementType){
 			case NODE:				
 				ContextAdaptorHack.context.getGraphModel().createNode(new Float(location.x, location.y));
@@ -161,25 +211,40 @@ public class GraphCommands {
 				break;				
 			default:
 				ContextAdaptorHack.context.setTool(GraphDrawingView.CREATE);
-				ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.CREATE);
+			ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.CREATE);
 			}		
-			 
-			// TODO create and return an UndoableEdit object
-			return null;
+
+		}
+
+		public void execute()
+		{
+			actionPerformed(null);
 		}
 	}
-	
-	
-	public static class MoveCommand extends UndoableActionCommand {
+//	/**
+//	* Creates nodes and edges in a GraphDrawingView.
+//	*	 
+//	* @author Helen Bretzke
+//	*/
+//	public static class CreateAction extends UndoableActionCommand {
+
+//	}
+
+
+	public static class MoveAction extends AbstractAction {
 
 //		GraphDrawingView context;
 		SelectionGroup selection = null;		
 		Point displacement;
-		
-		public MoveCommand() {
-			super("move.command");
-//			this.context = context;
-		}
+		private static String text = "Move";
+		private static ImageIcon icon = new ImageIcon();
+
+		public MoveAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_move.gif")));
+		}		
+
 
 		/**
 		 * 
@@ -187,51 +252,93 @@ public class GraphCommands {
 		 * @param currentSelection
 		 * @param displacement
 		 */
-		public MoveCommand(SelectionGroup currentSelection, Point displacement) {
+		public MoveAction(SelectionGroup currentSelection, Point displacement) {
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_modify.gif")));
 			this.selection = currentSelection.copy();
 //			this.context = context;
 			this.displacement = displacement;
 		}
 
-		@Override
-		protected UndoableEdit performEdit() {
+		public void actionPerformed(ActionEvent event)
+		{
 			if(selection == null){
 				ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
 				ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.MOVE);
-				return null;
-			}else{
-				// finalize movement of current selection in graph model
-				//Christian - commitMovement removed
-//				ContextAdaptorHack.context.getGraphModel().commitMovement(ContextAdaptorHack.context.getSelectedGroup());
-				// TODO create an UndoableEdit object using displacement and 
-				// copy of currentSelection and return undoableEdit object
-				return null;
 			}
-			
+
 		}	
-	}
-	
-	
-	public static class TextCommand extends UndoableActionCommand {
 		
+		public void execute()
+		{
+			actionPerformed(null);
+		}
+	}
+
+	
+	
+//	public static class MoveCommand extends UndoableActionCommand {
+//
+////		GraphDrawingView context;
+//		SelectionGroup selection = null;		
+//		Point displacement;
+//
+//		public MoveCommand() {
+//			super("move.command");
+////			this.context = context;
+//		}
+//
+//		/**
+//		 * 
+//		 * @param context
+//		 * @param currentSelection
+//		 * @param displacement
+//		 */
+//		public MoveCommand(SelectionGroup currentSelection, Point displacement) {
+//			this.selection = currentSelection.copy();
+////			this.context = context;
+//			this.displacement = displacement;
+//		}
+//
+//		@Override
+//		protected UndoableEdit performEdit() {
+//			if(selection == null){
+//				ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
+//				ContextAdaptorHack.context.setPreferredTool(GraphDrawingView.MOVE);
+//				return null;
+//			}else{
+//				// finalize movement of current selection in graph model
+//				//Christian - commitMovement removed
+////				ContextAdaptorHack.context.getGraphModel().commitMovement(ContextAdaptorHack.context.getSelectedGroup());
+//				// TODO create an UndoableEdit object using displacement and 
+//				// copy of currentSelection and return undoableEdit object
+//				return null;
+//			}
+//
+//		}	
+//	}
+
+
+	public static class TextCommand extends UndoableActionCommand {
+
 //		GraphDrawingView context;		
 		String text;
 		GraphElement element = null;
 		Point2D.Float location = null;
-		
+
 		public TextCommand(){
 			super("text.command");
 //			this.context = context;
 		}
-		
+
 		public TextCommand( 
-							GraphElement currentSelection, String text) {
+				GraphElement currentSelection, String text) {
 			super("text.command");
 			this.element = currentSelection;
 //			this.context = context;
 			this.text = text;
 		}
-	
+
 		public TextCommand(GraphElement currentSelection) {
 			super("text.command");
 			this.element = currentSelection;
@@ -250,7 +357,7 @@ public class GraphCommands {
 		public void setElement(GraphElement element) {
 			this.element = element;
 		}
-		
+
 		@Override
 		protected UndoableEdit performEdit() {
 			if(element == null){ 
@@ -291,11 +398,11 @@ public class GraphCommands {
 			return null;
 		}
 	}
-	
+
 	public static class ZoomInCommand extends ActionCommand {
 
 //		private GraphDrawingView context;
-		
+
 		public ZoomInCommand(){
 			super("zoomin.command");
 //			this.context = context;
@@ -306,11 +413,11 @@ public class GraphCommands {
 			ContextAdaptorHack.context.setTool(GraphDrawingView.ZOOM_IN);
 		}
 	}
-	
+
 	public static class ZoomOutCommand extends ActionCommand {
 
 //		private GraphDrawingView context;
-		
+
 		public ZoomOutCommand(){
 			super("zoomout.command");
 //			this.context = context;
@@ -330,10 +437,10 @@ public class GraphCommands {
 	 *
 	 */
 	public static class DeleteCommand extends UndoableActionCommand {
-		
+
 		private GraphElement element;	 // TODO decide on type, GraphElement composite type?
 //		private GraphDrawingView context;  // Does this need to be stored?
-		
+
 		/**
 		 * Default constructor; handy for exporting this command for group setup.
 		 *
@@ -341,11 +448,11 @@ public class GraphCommands {
 		public DeleteCommand(){
 			super("delete.command");
 		}
-		
+
 //		public DeleteCommand(GraphDrawingView context){
-//			this(null, context);
+//		this(null, context);
 //		}
-		
+
 		/**
 		 * Creates a command that, when executed, will cut 
 		 * <code>element</code> from the given context.
@@ -362,7 +469,7 @@ public class GraphCommands {
 		public void setElement(GraphElement element){
 			this.element = element;
 		}
-		
+
 		@Override
 		protected UndoableEdit performEdit() {
 			// TODO return Undoable edit containing removed element and where it should be restored to
@@ -371,7 +478,7 @@ public class GraphCommands {
 			ContextAdaptorHack.context.repaint();
 			return null;
 		}
-		
+
 	}
 
 	/**
@@ -383,9 +490,9 @@ public class GraphCommands {
 	public static class AlignCommand extends ActionCommand {
 
 		//TODO: redo all of this so there's an independent grid going
-		
+
 //		private GraphDrawingView context;
-		
+
 		public AlignCommand(){
 			super("align.command");
 //			this.context = context;
@@ -405,7 +512,7 @@ public class GraphCommands {
 				ge.getLayout().snapToGrid();
 				ge.refresh();
 			}
-		
+
 			ContextAdaptorHack.context.getGraphModel().setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();
 		}
