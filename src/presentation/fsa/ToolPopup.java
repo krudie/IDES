@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.awt.Point;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenuItem;
 import javax.swing.MenuElement;
@@ -17,8 +18,9 @@ import javax.swing.event.PopupMenuListener;
 import presentation.fsa.NodePopup.PopupListener;
 
 import main.Hub;
-import ui.command.GraphCommands.AlignCommand;
-import ui.command.OptionsCommands.ShowGridCommand;
+import ui.command.GraphCommands;
+import ui.command.OptionsCommands;
+import ui.command.GraphCommands.AlignAction;
 
 /**
  * A default context menu which allows the user to switch drawing tools and
@@ -33,8 +35,6 @@ public class ToolPopup extends JPopupMenu {
 
 	private JMenuItem miSelect, miCreate, miMove, miAlign, miShowGrid;
 
-	private AlignCommand alignCmd;
-	private ShowGridCommand showGridCmd;
 
 	public static void showPopup(GraphDrawingView context, MouseEvent m) {
 		view = context;
@@ -47,32 +47,12 @@ public class ToolPopup extends JPopupMenu {
 
 	protected ToolPopup() {
 		super("Graph Operations");
-		alignCmd = new AlignCommand();
-		showGridCmd = new ShowGridCommand();
-		miSelect = new JMenuItem("Select nodes", new ImageIcon(Hub.getResource("images/icons/graphic_modify.gif")));
-		miSelect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				view.setTool(GraphDrawingView.SELECT);
-				view.setPreferredTool(GraphDrawingView.SELECT);
-			}
-		});
-		miCreate = new JMenuItem("Create nodes and edges", new ImageIcon(Hub.getResource("images/icons/graphic_create.gif")));
-		miCreate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				view.setTool(GraphDrawingView.CREATE);
-				view.setPreferredTool(GraphDrawingView.CREATE);
-			}
-		});
-		miMove = new JMenuItem("Move nodes and edges", new ImageIcon(Hub.getResource("images/icons/graphic_move.gif")));
-		miMove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				view.setTool(GraphDrawingView.MOVE);
-				view.setPreferredTool(GraphDrawingView.SELECT);
-			}
-		});
-
-		miAlign = alignCmd.createMenuItem();
-		miShowGrid = showGridCmd.createMenuItem();
+	
+		miSelect = new JMenuItem(new GraphCommands.SelectAction());
+		miCreate = new JMenuItem(new GraphCommands.CreateAction());
+		miMove = new JMenuItem(new GraphCommands.MoveAction());
+		miAlign = new JMenuItem(new GraphCommands.AlignAction());
+		miShowGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
 
 		add(miSelect);
 		add(miCreate);

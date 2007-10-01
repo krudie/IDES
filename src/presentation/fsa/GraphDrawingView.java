@@ -38,6 +38,7 @@ import org.pietschy.command.ToggleCommand;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import ui.MainWindow;
+import ui.command.OptionsCommands;
 import ui.command.UniformNodesCommand;
 import ui.tools.CreationTool;
 import ui.tools.DrawingTool;
@@ -110,7 +111,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 			repaint();
 			if(!showGrid)
 			{
-				((ToggleCommand)CommandManager.defaultInstance().getCommand("showgrid.command")).setSelected(false);
+				(new OptionsCommands.ShowGridAction()).disableGrid();
 			}
 		}
 	}

@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
@@ -42,13 +43,13 @@ import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EventView;
 import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
+import ui.command.CommandManager_new;
 import ui.command.EditCommands;
 import ui.command.FileCommands;
 import ui.command.GraphCommands;
 import ui.command.HelpCommands;
 import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
-import ui.command.GraphCommands.AlignCommand;
 import ui.command.GraphCommands.DeleteCommand;
 import ui.command.GraphCommands.TextCommand;
 
@@ -153,20 +154,9 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	}
 
 	private void createAndAddToolBar() {
-		toolbar = CommandManager.defaultInstance().getGroup("ides.toolbar").createToolBar();
-	
-		toolbar.add(new FileCommands.NewAction());
-		toolbar.add(new FileCommands.OpenAction());
-		toolbar.add(new FileCommands.SaveAllAction());
-		toolbar.addSeparator();
-		toolbar.add(new FileCommands.OpenWorkspaceAction());
-		toolbar.add(new FileCommands.SaveWorkspaceAction());
-		toolbar.addSeparator();
-		toolbar.add(new GraphCommands.SelectAction());
-		toolbar.add(new GraphCommands.CreateAction());
-		toolbar.add(new GraphCommands.MoveAction());
-		
-		// toolbar.addSeparator();
+		//toolbar = CommandManager.defaultInstance().getGroup("ides.toolbar").createToolBar();
+		toolbar = CommandManager_new.getInstance().getToolBar();
+
 		Box p = Box.createHorizontalBox();// new JPanel();
 		p.add(new JLabel(" " + Hub.string("zoom") + ": "));
 		p.add(zoom);
@@ -198,16 +188,16 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 //		new CreateCommand().export();
 //		new SelectCommand().export();
 //		new MoveCommand().export();
-		new TextCommand().export();
-		new DeleteCommand().export();
-		new AlignCommand().export();
-		new EditCommands.CutCommand().export();
-		new EditCommands.CopyCommand().export();
-		new EditCommands.PasteCommand().export();
-		new OptionsCommands.ShowGridCommand().export();
-		new OptionsCommands.MoreOptionsCommand().export();
-		new HelpCommands.AboutCommand().export();
-		new OperationsCommands.ProductCommand().export();
+//		new TextCommand().export();
+	//	new DeleteCommand().export();
+//		new AlignCommand().export();
+//		new EditCommands.CutCommand().export();
+//		new EditCommands.CopyCommand().export();
+//		new EditCommands.PasteCommand().export();
+//		new OptionsCommands.ShowGridCommand().export();
+//		new OptionsCommands.MoreOptionsCommand().export();
+//		new HelpCommands.AboutCommand().export();
+//		new OperationsCommands.ProductCommand().export();
 	}
 
 	/**

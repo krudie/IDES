@@ -481,24 +481,31 @@ public class GraphCommands {
 
 	}
 
+	
 	/**
 	 * Emulates "snap to grid".
 	 * 
-	 * @author Lenko Grigorov
+	 * @author Lenko Grigorov, Christian Silvano
 	 *
 	 */
-	public static class AlignCommand extends ActionCommand {
+	public static class AlignAction extends AbstractAction {
 
 		//TODO: redo all of this so there's an independent grid going
 
 //		private GraphDrawingView context;
 
-		public AlignCommand(){
-			super("align.command");
-//			this.context = context;
-		}
-		@Override
-		protected void handleExecute() {
+		private static String text = "Align nodes";
+		private static ImageIcon icon = new ImageIcon();
+
+		public AlignAction()
+		{
+			super(text,icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/graphic_align.gif")));
+		}		
+
+		
+		public void actionPerformed(ActionEvent event)
+		{
 			if(Hub.getWorkspace().getActiveModel()==null)
 				return;
 			Iterator i;
@@ -517,4 +524,42 @@ public class GraphCommands {
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}
+	
+	
+//	/**
+//	 * Emulates "snap to grid".
+//	 * 
+//	 * @author Lenko Grigorov
+//	 *
+//	 */
+//	public static class AlignCommand extends ActionCommand {
+//
+//		//TODO: redo all of this so there's an independent grid going
+//
+////		private GraphDrawingView context;
+//
+//		public AlignCommand(){
+//			super("align.command");
+////			this.context = context;
+//		}
+//		@Override
+//		protected void handleExecute() {
+//			if(Hub.getWorkspace().getActiveModel()==null)
+//				return;
+//			Iterator i;
+//			if(ContextAdaptorHack.context.getSelectedGroup().size()>0)
+//				i=ContextAdaptorHack.context.getSelectedGroup().children();
+//			else
+//				i=ContextAdaptorHack.context.getGraphModel().children();
+//			while(i.hasNext())
+//			{
+//				GraphElement ge=(GraphElement)i.next();
+//				ge.getLayout().snapToGrid();
+//				ge.refresh();
+//			}
+//
+//			ContextAdaptorHack.context.getGraphModel().setNeedsRefresh(true);
+//			Hub.getWorkspace().fireRepaintRequired();
+//		}
+//	}
 }

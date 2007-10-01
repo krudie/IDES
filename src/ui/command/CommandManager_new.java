@@ -8,10 +8,13 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -32,10 +35,10 @@ import pluggable.io.IOCoordinator;
  *
  */
 public class CommandManager_new {
-
+	public JToolBar toolbar;
 	public UndoableEditSupport undoSupport = new UndoableEditSupport();
-	
-	
+
+
 	/**
 	 * The MultiUndoManager is the class responsible for undo and redo undoable actions
 	 * for multiple files in the workspace.
@@ -46,13 +49,13 @@ public class CommandManager_new {
 	private class MultiUndoManager implements WorkspaceSubscriber{
 		UndoManager activeUndoManager;
 		HashMap<String, UndoManager> undoManagers;
-	
+
 		public MultiUndoManager()
 		{
 			undoManagers = new HashMap<String, UndoManager>();
 			Hub.getWorkspace().addSubscriber(this);
 		}
-	
+
 		private UndoManager getActiveUndoManager()
 		{
 			if(activeUndoManager == null)
@@ -66,7 +69,7 @@ public class CommandManager_new {
 			}
 			return activeUndoManager;
 		}
-		
+
 		public void undo()
 		{
 			getActiveUndoManager().undo();
@@ -75,7 +78,7 @@ public class CommandManager_new {
 			//TODO make the repaint be called just when needed.
 			Hub.getWorkspace().fireRepaintRequired();
 		}
-		
+
 		//Makes the ActiveUndoManager redo an action
 		public void redo()
 		{
@@ -85,7 +88,7 @@ public class CommandManager_new {
 			//TODO make the repaint be called just when needed.
 			Hub.getWorkspace().fireRepaintRequired();
 		}
-		
+
 		//Add an action to the active manager, the action has to be always added to the
 		//active model.
 		public void addEdit(UndoableEdit edit)
@@ -93,7 +96,7 @@ public class CommandManager_new {
 			getActiveUndoManager().addEdit(edit);
 			refreshUndoRedo();
 		}
-		
+
 		//Update the names of the undo/redo items in the user menu, reflecting
 		//the action to be done.
 		private void refreshUndoRedo() {
@@ -104,7 +107,7 @@ public class CommandManager_new {
 			redo.setText(undoManager.getActiveUndoManager().getRedoPresentationName());
 			redo.setEnabled(undoManager.getActiveUndoManager().canRedo()); 
 		} 
-		
+
 		//Implementation of the WorkspaceSubscriber interface
 		/**
 		 * Notifies this subscriber that a model collection change 
@@ -117,7 +120,7 @@ public class CommandManager_new {
 		public void modelCollectionChanged(WorkspaceMessage message)
 		{
 		}
-		
+
 		/**
 		 * Notifies this subscriber that a the model type has been switched 
 		 * (the type of active model has changed e.g. from FSA to petri net) 
@@ -142,7 +145,7 @@ public class CommandManager_new {
 		/* NOTE not used here */
 		public void repaintRequired(WorkspaceMessage message){}; 
 	}
-	
+
 	//Edit listener, will inform the UndoManager everytime an undoable action is done.
 	private class UndoAdaptor implements UndoableEditListener {
 		public void undoableEditHappened (UndoableEditEvent evt) {
@@ -165,8 +168,8 @@ public class CommandManager_new {
 			undoManager.redo();
 		}
 	}
-	
-	
+
+
 	private MultiUndoManager undoManager = new MultiUndoManager();
 	private UndoAction undoAction = new UndoAction();
 	private RedoAction redoAction = new RedoAction();
@@ -191,7 +194,22 @@ public class CommandManager_new {
 	//Defining the menu items to the "helpMenu"
 	private JMenuItem aboutIDES;
 
+	//The only toggle button in the toolbar. It is here to have the rollover effect 
+	//set via accessors.
+	private ToggleButtonAdaptor gridButton;
+	public static String TOGGLE_BUTTON="toggle", GRID_BUTTON="grid";
 
+	public void updateToggleButton(String type, String name, boolean state)
+	{
+		if(type == TOGGLE_BUTTON)
+		{
+			if(name == GRID_BUTTON)
+			{
+				gridButton.setSelected(state);
+			}
+		}
+	}
+		
 //	Singleton instance:
 	private static CommandManager_new instance = null;
 
@@ -206,6 +224,26 @@ public class CommandManager_new {
 
 	private CommandManager_new()
 	{
+		//Initializing the ToolBar
+		toolbar = new JToolBar();
+		toolbar.add(new FileCommands.NewAction());
+		toolbar.add(new FileCommands.OpenAction());
+		toolbar.add(new FileCommands.SaveAllAction());
+		toolbar.addSeparator();
+		toolbar.add(new FileCommands.OpenWorkspaceAction());
+		toolbar.add(new FileCommands.SaveWorkspaceAction());
+		toolbar.addSeparator();
+		toolbar.add(new GraphCommands.SelectAction());
+		toolbar.add(new GraphCommands.CreateAction());
+		toolbar.add(new GraphCommands.MoveAction());
+		toolbar.addSeparator();
+		toolbar.add(new GraphCommands.AlignAction());
+
+		gridButton = new ToggleButtonAdaptor(new OptionsCommands.ShowGridAction());
+		toolbar.add(gridButton);
+
+
+		//Initializing the undoable edit support
 		undoSupport.addUndoableEditListener(new UndoAdaptor());
 		//Initialize the categories in the menu.
 		fileMenu = new JMenu("File");
@@ -332,5 +370,29 @@ public class CommandManager_new {
 	public JMenuBar getMenuBar()
 	{
 		return menuBar;
+	}
+
+	/**
+	 * This is just an adaptation of a JToggleButton that will supress the 
+	 * label from the action it is constructed from.
+	 * @author christiansilvano
+	 *
+	 */
+	public static class ToggleButtonAdaptor extends JToggleButton
+	{
+		public ToggleButtonAdaptor(AbstractAction action)
+		{
+			super(action);
+			this.setText("");
+		}
+	}
+
+	/**
+	 * Accessor for the ToolBar
+	 * @return
+	 */
+	public JToolBar getToolBar()
+	{
+		return toolbar;
 	}
 }
