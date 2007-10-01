@@ -162,7 +162,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			UndoableEdits.deleteSelection(selectedGroup, getGraph());
+		//	UndoableEdits.deleteSelection(selectedGroup, getGraph());
 		}
 	};
 

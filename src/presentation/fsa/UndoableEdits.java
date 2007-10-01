@@ -45,19 +45,19 @@ public class UndoableEdits {
 		CommandManager_new.getInstance().undoSupport.postEdit(action);
 	}
 	
-	/**
-	 * Delete a selection of GraphElements from the canvas
-	 * @param g , the group that is selected
-	 * @param w , a reference to the GraphDrawingView 
-	 */
-	public static void deleteSelection(SelectionGroup g, GraphDrawingView w)
-	{
-		UndoableDelete action = new UndoableDelete(g, w);
-		//Perform the operation
-		action.redo();
-		// notify the listeners
-		CommandManager_new.getInstance().undoSupport.postEdit(action);
-	}
+//	/**
+//	 * Delete a selection of GraphElements from the canvas
+//	 * @param g , the group that is selected
+//	 * @param w , a reference to the GraphDrawingView 
+//	 */
+//	public static void deleteSelection(SelectionGroup g, GraphDrawingView w)
+//	{
+//		UndoableDelete action = new UndoableDelete(g, w);
+//		//Perform the operation
+//		action.redo();
+//		// notify the listeners
+//		CommandManager_new.getInstance().undoSupport.postEdit(action);
+//	}
 	
 	/**
 	 * Undoable Action related to the command Symmetrize Edge
@@ -144,75 +144,75 @@ public class UndoableEdits {
 	}
 
 
-	private static class UndoableDelete extends AbstractUndoableEdit{
-
-		SelectionGroup backup, group;
-		GraphDrawingView graph;
-		public UndoableDelete(SelectionGroup g, GraphDrawingView w)
-		{
-			graph = w;
-			group = g;
-			//TODO: make backup be a "clone" of g
-			backup = g.copy();
-			Iterator<GraphElement> ge = backup.children();
- 		}
-
-		public void undo() throws CannotRedoException{
-			if(backup !=null)
-			{
-				for(Iterator i =backup.children();i.hasNext();)
-				{
-					GraphElement ge=(GraphElement)i.next();
-					if(ge instanceof CircleNode)
-					{
-						CircleNode node = (CircleNode)ge;
-						graph.graphModel.reCreateNode(node);
-					}
-				}
-				
-				for(Iterator i =backup.children();i.hasNext();)
-				{
-					GraphElement ge=(GraphElement)i.next();
-					if(ge instanceof BezierEdge)
-					{
-						BezierEdge edge = (BezierEdge)ge;
-						graph.graphModel.reCreateEdge(edge);
-					}
-				}
-			}
-		}
-
-		public void redo() throws CannotRedoException{
-			if(group!=null)
-			{
-				if(((CreationTool)graph.getTools()[GraphDrawingView.CREATE]).isDrawingEdge())
-					((CreationTool)graph.getTools()[GraphDrawingView.CREATE]).abortEdge();
-				for(Iterator i=group.children();i.hasNext();)
-				{
-					GraphElement ge=(GraphElement)i.next();
-					graph.graphModel.delete(ge);
-				}
-				graph.setAvoidNextDraw(false);
-			}
-		}
-
-		public boolean canUndo()
-		{
-			return true;
-		}
-
-		public boolean canRedo()
-		{
-			return true;
-		}
-
-		public String getPresentationName()
-		{
-			return Hub.string("deleteSelection");
-		}
-
-	}
-	
+//	private static class UndoableDelete extends AbstractUndoableEdit{
+//
+//		SelectionGroup backup, group;
+//		GraphDrawingView graph;
+//		public UndoableDelete(SelectionGroup g, GraphDrawingView w)
+//		{
+//			graph = w;
+//			group = g;
+//			//TODO: make backup be a "clone" of g
+//			backup = g.copy();
+//			Iterator<GraphElement> ge = backup.children();
+// 		}
+//
+//		public void undo() throws CannotRedoException{
+//			if(backup !=null)
+//			{
+//				for(Iterator i =backup.children();i.hasNext();)
+//				{
+//					GraphElement ge=(GraphElement)i.next();
+//					if(ge instanceof CircleNode)
+//					{
+//						CircleNode node = (CircleNode)ge;
+//						graph.graphModel.reCreateNode(node);
+//					}
+//				}
+//				
+//				for(Iterator i =backup.children();i.hasNext();)
+//				{
+//					GraphElement ge=(GraphElement)i.next();
+//					if(ge instanceof BezierEdge)
+//					{
+//						BezierEdge edge = (BezierEdge)ge;
+//						graph.graphModel.reCreateEdge(edge);
+//					}
+//				}
+//			}
+//		}
+//
+//		public void redo() throws CannotRedoException{
+//			if(group!=null)
+//			{
+//				if(((CreationTool)graph.getTools()[GraphDrawingView.CREATE]).isDrawingEdge())
+//					((CreationTool)graph.getTools()[GraphDrawingView.CREATE]).abortEdge();
+//				for(Iterator i=group.children();i.hasNext();)
+//				{
+//					GraphElement ge=(GraphElement)i.next();
+//					graph.graphModel.delete(ge);
+//				}
+//				graph.setAvoidNextDraw(false);
+//			}
+//		}
+//
+//		public boolean canUndo()
+//		{
+//			return true;
+//		}
+//
+//		public boolean canRedo()
+//		{
+//			return true;
+//		}
+//
+//		public String getPresentationName()
+//		{
+//			return Hub.string("deleteSelection");
+//		}
+//
+//	}
+//	
 	
 
 

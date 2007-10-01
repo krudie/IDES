@@ -75,8 +75,7 @@ public class CommandManager_new {
 			getActiveUndoManager().undo();
 			refreshUndoRedo();
 			//Inform the workspace to repaint the graph.
-			//TODO make the repaint be called just when needed.
-			Hub.getWorkspace().fireRepaintRequired();
+//			Hub.getWorkspace().fireRepaintRequired();
 		}
 
 		//Makes the ActiveUndoManager redo an action
@@ -85,8 +84,7 @@ public class CommandManager_new {
 			getActiveUndoManager().redo();
 			refreshUndoRedo();
 			//Inform the workspace to repaint the graph.
-			//TODO make the repaint be called just when needed.
-			Hub.getWorkspace().fireRepaintRequired();
+//			Hub.getWorkspace().fireRepaintRequired();
 		}
 
 		//Add an action to the active manager, the action has to be always added to the

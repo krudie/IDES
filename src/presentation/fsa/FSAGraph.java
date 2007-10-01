@@ -649,10 +649,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param e the edge to be finished
 	 * @param p the location of the new node
 	 */
-	public void finishEdgeAndCreateTargetNode(BezierEdge e, Point2D.Float p) {	
+	public SelectionGroup finishEdgeAndCreateTargetNode(BezierEdge e, Point2D.Float p) {	
 		if( ! e.getSourceNode().intersects(p) ){
 			finishEdge( e, createNode(p) );
 		}
+		SelectionGroup s = new SelectionGroup();
+		s.insert(e);
+		s.insert(e.getTargetNode());
+		return s;
 	}
 
 	/**
@@ -662,7 +666,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param e 
 	 * @param target	
 	 */
-	public void finishEdge(BezierEdge e, CircleNode target) {
+	public BezierEdge finishEdge(BezierEdge e, CircleNode target) {
 
 		e.setTargetNode(target);			
 		e.computeEdge();	
@@ -720,6 +724,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				e.getId(), 
 				e.bounds(),
 				this, ""));
+		return e;
 	}	
 
 	/** 
@@ -803,6 +808,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		{
 			node.insert(node.getInitialArrow());
 		}
+		Rectangle2D dirtySpot = node.adjacentBounds();
+		
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.NODE,
+				node.getId(), 
+				dirtySpot,
+				this, ""));
 	}
 
 	public void reCreateEdge(BezierEdge edge){
@@ -828,6 +840,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		n2.insert(edge);
 		edges.put(edge.getId(), edge);		
 		edgeLabels.put(edge.getId(), edge.getLabel());
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+				FSAGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, ""));
 	}
 
 
@@ -871,7 +888,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param n1 source node 
 	 * @param n2 target node
 	 */
-	public void createEdge(Node n1, Node n2){
+	public BezierEdge createEdge(Node n1, Node n2){
 		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(n1.getId()), fsa.getState(n2.getId()));				
 		Edge e;
 		if(n1.equals(n2)){
@@ -897,6 +914,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				e.getId(), 
 				e.bounds(),
 				this, ""));
+		return (BezierEdge)e;
 	}
 
 	/** 
