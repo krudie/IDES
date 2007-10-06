@@ -226,6 +226,7 @@ public class CommandManager_new {
 		toolbar = new JToolBar();
 		toolbar.add(new FileCommands.NewAction());
 		toolbar.add(new FileCommands.OpenAction());
+		toolbar.add(new FileCommands.SaveAction());
 		toolbar.add(new FileCommands.SaveAllAction());
 		toolbar.addSeparator();
 		toolbar.add(new FileCommands.OpenWorkspaceAction());
@@ -236,7 +237,8 @@ public class CommandManager_new {
 		toolbar.add(new GraphCommands.MoveAction());
 		toolbar.addSeparator();
 		toolbar.add(new GraphCommands.AlignAction());
-
+		toolbar.setFloatable(false);
+		
 		gridButton = new ToggleButtonAdaptor(new OptionsCommands.ShowGridAction());
 		toolbar.add(gridButton);
 

@@ -103,11 +103,11 @@ public class JUNGLayouter implements FSALayouter {
 			//change this methods to a "auto-format" method on the node??
 			
 			//Resetting the position for the self-arrows
-			node.resetReflexiveEdges();
+			node.relocateReflexiveEdges();
 			//Resetting the position for the initial arrows
 			if(node.getState().isInitial())
 			{
-				node.resetInitialArrow();
+				node.relocateInitialArrow();
 			}
 		}
 

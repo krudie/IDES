@@ -148,13 +148,13 @@ public abstract class Node extends GraphElement {
 	 * at the best position.
 	 * @author christian
 	 */
-	public void resetInitialArrow()
+	public void relocateInitialArrow()
 	{
 		this.remove(initialArrow);
 		this.initialArrow.resetPosition();
 		this.insert(initialArrow);
 	}
-	public void resetReflexiveEdges()
+	public void relocateReflexiveEdges()
 	{
 		Iterator<Edge> adjEdges = adjacentEdges();
 		while(adjEdges.hasNext())

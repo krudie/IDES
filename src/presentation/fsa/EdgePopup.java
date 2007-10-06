@@ -14,9 +14,10 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.Presentation;
+import ui.command.GraphCommands;
+import ui.command.GraphCommands.DeleteAction;
 
 import main.Hub;
-import ui.command.GraphCommands.DeleteCommand;
 
 /**
  * A popup menu providing operations to modify or delete an edge.
@@ -28,7 +29,7 @@ import ui.command.GraphCommands.DeleteCommand;
 public class EdgePopup extends JPopupMenu {
 
 	private Edge edge;
-	private DeleteCommand deleteCmd;
+	private DeleteAction deleteCmd;
 	private JMenuItem miModify, miEditEvents, miStraighten, miSymmetrize, miDeleteEdge, miArcMore, miArcLess; // , miSymmetrize;
 	private static GraphDrawingView view;
 	
@@ -67,9 +68,8 @@ public class EdgePopup extends JPopupMenu {
 
 		add(new JPopupMenu.Separator());
 		
-		deleteCmd = new DeleteCommand();
-		miDeleteEdge = deleteCmd.createMenuItem();
-		add(miDeleteEdge);
+		deleteCmd = new DeleteAction();
+		add(deleteCmd);
 		
 		addPopupMenuListener(new PopupListener());
 		setEdge(e);
@@ -101,6 +101,7 @@ public class EdgePopup extends JPopupMenu {
 	public void setEdge(Edge edge){		
 		this.edge = edge;
 		deleteCmd.setElement(edge);
+		deleteCmd.setContext(view);
 		if(edge != null){			
 			miStraighten.setVisible(edge.canBeStraightened());
 			// if the edge can't be straightened, then we assume we cannot 

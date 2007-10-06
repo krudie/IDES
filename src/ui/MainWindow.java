@@ -50,7 +50,6 @@ import ui.command.GraphCommands;
 import ui.command.HelpCommands;
 import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
-import ui.command.GraphCommands.DeleteCommand;
 import ui.command.GraphCommands.TextCommand;
 
 /**
@@ -94,7 +93,6 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		// TODO add graph spec, latex and eps views to the state model
 		getContentPane().add(new StatusBar(), BorderLayout.SOUTH);
 
-		loadAndExportCommands();
 		createAndAddMenuBar();
 		createAndAddToolBar();
 
@@ -177,28 +175,28 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		this.setJMenuBar(menuBar);
 	}
 
-	/**
-	 * Dynamically loads and export all commands in package ui.command.
-	 */
-	//TODO REMOVE THIS METHOD!
-	private void loadAndExportCommands() {
-		
-		// Lenko: moved to constructor: needs to load for drawing board
-		// FileOperations.loadCommandManager("commands.xml");
-//		new CreateCommand().export();
-//		new SelectCommand().export();
-//		new MoveCommand().export();
-//		new TextCommand().export();
-	//	new DeleteCommand().export();
-//		new AlignCommand().export();
-//		new EditCommands.CutCommand().export();
-//		new EditCommands.CopyCommand().export();
-//		new EditCommands.PasteCommand().export();
-//		new OptionsCommands.ShowGridCommand().export();
-//		new OptionsCommands.MoreOptionsCommand().export();
-//		new HelpCommands.AboutCommand().export();
-//		new OperationsCommands.ProductCommand().export();
-	}
+//	/**
+//	 * Dynamically loads and export all commands in package ui.command.
+//	 */
+// REMOVE THIS METHOD!
+//	private void loadAndExportCommands() {
+//		
+//		// Lenko: moved to constructor: needs to load for drawing board
+//		// FileOperations.loadCommandManager("commands.xml");
+////		new CreateCommand().export();
+////		new SelectCommand().export();
+////		new MoveCommand().export();
+////		new TextCommand().export();
+//	//	new DeleteCommand().export();
+////		new AlignCommand().export();
+////		new EditCommands.CutCommand().export();
+////		new EditCommands.CopyCommand().export();
+////		new EditCommands.PasteCommand().export();
+////		new OptionsCommands.ShowGridCommand().export();
+////		new OptionsCommands.MoreOptionsCommand().export();
+////		new HelpCommands.AboutCommand().export();
+////		new OperationsCommands.ProductCommand().export();
+//	}
 
 	/**
 	 * The views.

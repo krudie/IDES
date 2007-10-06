@@ -59,8 +59,8 @@ public class ZoomControl extends JComboBox implements ActionListener {
 		setEditable(true);
 		setSelectedIndex(3);
 		addActionListener(this);
-		setMaximumSize(new Dimension(60,getPreferredSize().height));
-		setPreferredSize(new Dimension(60,getPreferredSize().height));
+		setMaximumSize(new Dimension(90,getPreferredSize().height));
+		setPreferredSize(new Dimension(90,getPreferredSize().height));
 	}
 
 	public void actionPerformed(ActionEvent e)

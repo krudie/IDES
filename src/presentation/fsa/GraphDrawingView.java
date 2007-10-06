@@ -38,6 +38,7 @@ import org.pietschy.command.ToggleCommand;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
 import ui.MainWindow;
+import ui.command.GraphCommands;
 import ui.command.OptionsCommands;
 import ui.command.UniformNodesCommand;
 import ui.tools.CreationTool;
@@ -47,6 +48,7 @@ import ui.tools.MovementTool;
 import ui.tools.SelectionTool;
 import ui.tools.TextTool;
 import ui.command.CommandManager_new;
+import ui.command.GraphCommands.DeleteAction;
 /**
  * The component in which users view, create and modify a graph representation
  * of an automaton.
@@ -155,17 +157,19 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		return this;
 	}
 	
+
 	/**
 	 * The listener for the user pressing the <code>Delete</code> key.
 	 */
-	protected Action deleteCommand = new AbstractAction("delete")
-	{
-		public void actionPerformed(ActionEvent actionEvent)
+	protected DeleteAction deleteCommand = new DeleteAction(this){
+		
+		public void actionPerformed(ActionEvent evt)
 		{
-		//	UndoableEdits.deleteSelection(selectedGroup, getGraph());
+			super.setContext(getGraph());
+			super.setElement(getSelectedElement());
+			super.actionPerformed(evt);
 		}
 	};
-
 	protected Action escapeCommand = new AbstractAction("escape")
 	{
 		public void actionPerformed(ActionEvent actionEvent)

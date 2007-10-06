@@ -810,6 +810,16 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 		Rectangle2D dirtySpot = node.adjacentBounds();
 		
+		Iterator<GraphElement> it = node.children();
+		while(it.hasNext())
+		{
+			GraphElement ge = it.next();
+			if(ge instanceof BezierEdge)
+			{
+				reCreateEdge((BezierEdge)ge);
+			}
+		}
+		
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
 				FSAGraphMessage.NODE,
 				node.getId(), 
@@ -1141,20 +1151,29 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void delete(GraphElement el){
 		// KLUGE This is worse (less efficient) than using instance of ...
 		// CHRISTIAN - I agree with the above comment ...
-		if(nodes.containsValue(el)){			
-			delete((Node)el);			
-		}else if(edges.containsValue(el)){			
-			delete((Edge)el);
-		}else{
-			freeLabels.remove(el.getId());
-			this.remove(el);
-			setNeedsRefresh(true);
-			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
-					FSAGraphMessage.LABEL,
-					FSAGraphMessage.UNKNOWN_ID, 
-					el.bounds(),
-					this, ""));
+		if(el instanceof CircleNode)
+		{
+			delete((Node)el);
 		}
+		if(el instanceof BezierEdge)
+		{
+			delete((Edge)el);
+		}
+//		
+//		if(nodes.containsValue(el)){			
+//			delete((Node)el);			
+//		}else if(edges.containsValue(el)){			
+//			delete((Edge)el);
+//		}else{
+//			freeLabels.remove(el.getId());
+//			this.remove(el);
+//			setNeedsRefresh(true);
+//			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
+//					FSAGraphMessage.LABEL,
+//					FSAGraphMessage.UNKNOWN_ID, 
+//					el.bounds(),
+//					this, ""));
+//		}
 	}
 
 	/**
@@ -1169,6 +1188,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while(edges.hasNext()){
 			delete(edges.next());
 		}
+		
 		// remove n but don't listen to update notifications since 
 		// we already know about the change
 		fsa.removeSubscriber(this);
