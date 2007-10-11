@@ -1016,7 +1016,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void setMarked(CircleNode node, boolean b){
 		// update the state
 		((State)node.getState()).setMarked(b);		
-
 		// tell node it must refresh its appearance
 		node.setNeedsRefresh(true);		
 
