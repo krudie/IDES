@@ -61,7 +61,7 @@ public class OptionsCommands {
 	 * @author Lenko Grigorov
 	 */
 	public static class MoreOptionsAction extends AbstractAction {
-		private static String text = "More options...";
+		private static String text = Hub.string("moreOptions");
 		private static ImageIcon icon = new ImageIcon();
 		
 		/**

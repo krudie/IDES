@@ -3,6 +3,10 @@
  */
 package ui.command;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
 import main.Hub;
 import main.Workspace;
 import model.fsa.ver2_1.Automaton;
@@ -17,14 +21,13 @@ import ui.AboutDialog;
  */
 public class HelpCommands {
 
-	public static class AboutCommand extends ActionCommand {
+	public static class AboutCommand extends AbstractAction {
 		
 		public AboutCommand(){
-			super("about.command");
+			super(Hub.string("aboutIDES"));
 		}
 		
-		@Override
-		protected void handleExecute() {
+		public void actionPerformed(ActionEvent e) {
 			AboutDialog about = new AboutDialog();
 			about.setVisible(true);
 		}	

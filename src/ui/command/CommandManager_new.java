@@ -27,6 +27,8 @@ import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
 
 import pluggable.io.IOCoordinator;
+import services.latex.LatexManager;
+import services.latex.UseLatexAction;
 
 /**
  * This class was created to replace the external class "GUI Commands" used in the past.
@@ -340,8 +342,9 @@ public class CommandManager_new {
 
 		//adding the menu items to the "optionsMenu"
 		uniformNodeSize = new JCheckBoxMenuItem("Uniform node size");
-		useLaTeX  = new JCheckBoxMenuItem("Use LaTeX");
-		moreOptions = new JMenuItem("More options...");
+		useLaTeX  = new JCheckBoxMenuItem(new services.latex.UseLatexAction());
+		useLaTeX.setSelected(LatexManager.isLatexEnabled());
+		moreOptions = new JMenuItem(new OptionsCommands.MoreOptionsAction());
 
 		optionsMenu.add(uniformNodeSize);
 		optionsMenu.add(useLaTeX);
@@ -349,7 +352,7 @@ public class CommandManager_new {
 		optionsMenu.add(moreOptions);
 
 		//adding the menu items to the "helpMenu"
-		aboutIDES = new JMenuItem("About IDES...");
+		aboutIDES = new JMenuItem(new HelpCommands.AboutCommand());
 		helpMenu.add(aboutIDES);
 
 

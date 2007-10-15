@@ -3,6 +3,7 @@ package services.latex;
 import java.io.File;
 import java.util.Iterator;
 
+import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -34,7 +35,7 @@ public class LatexManager {
 	/**
 	 * The "Use LaTeX rendering" menu item.
 	 */
-	static ToggleCommand menuItem=null;
+	static UseLatexAction menuItem=null;
 	
 	/**
 	 * Initializes the LaTeX rendering subsystem.
@@ -43,8 +44,7 @@ public class LatexManager {
 	{
 		Hub.registerOptionsPane(new LatexOptionsPane());
 		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
-		menuItem=new UseLatexCommand();
-		menuItem.export();
+		menuItem=new UseLatexAction();
 	}
 
 	/**
