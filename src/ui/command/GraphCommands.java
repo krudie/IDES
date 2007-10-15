@@ -72,9 +72,7 @@ public class GraphCommands {
 		SelectionGroup selection = null;
 
 		Point displacement;
-		FSAGraph context;
 		private static String text = "Move";
-
 		private static ImageIcon icon = new ImageIcon();
 
 		public MoveAction() {
@@ -90,11 +88,7 @@ public class GraphCommands {
 		 * @param displacement
 		 */
 		public MoveAction(FSAGraph context, SelectionGroup currentSelection, Point displacement) {
-			super(text, icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(
-					Hub.getResource("images/icons/graphic_modify.gif")));
 			this.selection = currentSelection.copy();
-			// this.context = context;
 			this.displacement = displacement;
 		}
 
@@ -672,24 +666,25 @@ public class GraphCommands {
 			{
 				FSAGraph fsagraph = graph.getGraphModel();
 				//Recreate all the nodes:
-				for(Iterator i=group.children();i.hasNext();)
+				Iterator<GraphElement> itNodes = group.children();
+				while(itNodes.hasNext())
 				{
-					GraphElement ge=(GraphElement)i.next();
+					GraphElement ge=itNodes.next();
 					if(ge instanceof CircleNode)
 					{
 						fsagraph.reCreateNode((CircleNode)ge);
 					}
 				}
 				//Recreate all the edges:
-				for(Iterator i=group.children();i.hasNext();)
+				Iterator<GraphElement> itEdges = group.children();
+				while(itEdges.hasNext())
 				{
-					GraphElement ge=(GraphElement)i.next();
+					GraphElement ge= itEdges.next();
 					if(ge instanceof BezierEdge)
 					{
 						fsagraph.reCreateEdge((BezierEdge)ge);
 					}
 				}
-				graph.clearCurrentSelection();
 			}
 		}
 

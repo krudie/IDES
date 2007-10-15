@@ -43,7 +43,6 @@ import presentation.GraphicalLayout;
 import presentation.LayoutShell;
 import presentation.PresentationElement;
 import presentation.Geometry;
-import presentation.fsa.ReflexiveEdge.ReflexiveLayout;
 
 /**
  * A recursive structure used to view, draw and modify the graph representation of an Automaton.

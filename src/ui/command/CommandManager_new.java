@@ -182,7 +182,7 @@ public class CommandManager_new {
 	//Defining the menu items for the "editMenu"
 	private JMenuItem undo, redo;
 	//Defining the menu items to the "graphMenu"
-	private JMenuItem select, create, move, alignNodes;
+	private JMenuItem select, create, move, alignNodes, showGrid;
 	//Defining the menu items to the "operationsMenu"
 	private JMenuItem operations;
 	//Defining the menu items to the "operationsMenu"
@@ -320,22 +320,22 @@ public class CommandManager_new {
 		editMenu.add(redo);
 
 		//Initializing the menu items for the "graphMenu"
-		select = new JMenuItem("Select");
-		create = new JMenuItem("Create");
-		move = new JMenuItem("Move");
-		alignNodes = new JMenuItem("AlignNodes"); 
-
+		select = new JMenuItem(new GraphCommands.SelectAction());
+		create = new JMenuItem(new GraphCommands.CreateAction());
+		move = new JMenuItem(new GraphCommands.MoveAction());
+		alignNodes = new JMenuItem(new GraphCommands.AlignAction()); 
+		showGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
 		//Adding the menu items to the "graphMenu"
 		graphMenu.add(select);
 		graphMenu.add(create);
 		graphMenu.add(move);
 		graphMenu.add(alignNodes);
-
+		graphMenu.add(showGrid);
 
 
 		//adding the menu items to the "operationsMenu"
 		operations = new JMenuItem("DES operations");
-		operationsMenu.add(operations);
+		operationsMenu.add(new OperationsCommands.ProductCommand());
 
 
 		//adding the menu items to the "optionsMenu"

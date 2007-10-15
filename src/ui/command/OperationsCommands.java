@@ -9,11 +9,13 @@ import io.fsa.ver2_1.FileOperations;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -48,14 +50,13 @@ import ui.OperationDialog;
  */
 public class OperationsCommands {
 	
-	public static class ProductCommand extends ActionCommand {
+	public static class ProductCommand extends AbstractAction {
 
 		public ProductCommand() {
-			super("operations.menu");			
+			super(Hub.string("operationsDialogTitle"));			
 		}
 
-		@Override
-		protected void handleExecute() {
+		public void actionPerformed(ActionEvent evt) {
 			OperationDialog od=new OperationDialog();
 		}
 		

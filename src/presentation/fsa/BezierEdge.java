@@ -141,6 +141,10 @@ public class BezierEdge extends Edge {
 		}		   
 
 		// TODO should stop drawing at base of arrowhead and at outside of node boundaries.
+		if(getBezierLayout().getEdge() == null)
+		{
+			getBezierLayout().setEdge(this);
+		}
 		CubicCurve2D curve = getBezierLayout().getVisibleCurve();
 		if(curve != null)
 		{
@@ -190,11 +194,8 @@ public class BezierEdge extends Edge {
 	 * from underlying data.
 	 */
 	public void refresh() {
-		
 		super.refresh(); // refresh all children
-		
 		CubicCurve2D.Float curve = getBezierLayout().getCurve();
-		
 		// DEBUG //////////////////////////////
 		assertAllPointsNumbers(curve);		
 		///////////////////////////////////////
@@ -217,15 +218,12 @@ public class BezierEdge extends Edge {
 			float tTarget = intersectionWithBoundary(getTargetNode().getShape(), targetEndPt, TARGET_NODE);
 			((BezierLayout)getLayout()).setTargetT(tTarget);
 		}	
-		
 		/////////////////////////////////////////////////////////////////////////////////
-		
 		if(!isSelected()){
 			getHandler().setVisible(false);
+			getHandler().refresh();
 		}			
-			    
 		refreshLabelText();	    
-	    
 	    // Compute location of label: midpoint of curve	plus offset vector     
 	    CubicCurve2D.Float left = new CubicCurve2D.Float(); 
 	    curve.subdivide(left, new CubicCurve2D.Float());	        
@@ -233,7 +231,6 @@ public class BezierEdge extends Edge {
 	    this.setLocation(midpoint);
 	    Point2D.Float location = Geometry.add(new Point2D.Float((float)midpoint.getX(), (float)midpoint.getY()), getBezierLayout().getLabelOffset());	    
 	    getLabel().setLocation(location);	
-	    
 	    getBezierLayout().setDirty(false);
 	    setNeedsRefresh(false);
 	}
