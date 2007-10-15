@@ -1509,7 +1509,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 
 		for(Edge e : edges.values()) {
-			if(rectangle.intersects(e.bounds())){
+			if(rectangle.contains(e.bounds())){
 				g.insert(e);
 			}
 		}
