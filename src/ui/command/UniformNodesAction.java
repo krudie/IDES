@@ -1,6 +1,9 @@
 package ui.command;
 
+import java.awt.event.ActionEvent;
 import java.util.Iterator;
+
+import javax.swing.AbstractAction;
 
 import main.Hub;
 
@@ -13,18 +16,30 @@ import presentation.fsa.FSAGraph;
 
 import services.latex.LatexManager;
 
-public class UniformNodesCommand extends ToggleCommand {
+public class UniformNodesAction extends AbstractAction {
 
 	protected static final String PROPERTY_NAME="uniformNodeSize";
+	private boolean state;
 	
-	public UniformNodesCommand() {
-		super("uniformnodes.command");
+	public UniformNodesAction() {
+		super(Hub.string("uniformNodeSize"));
 		setSelected(Hub.persistentData.getBoolean(PROPERTY_NAME));
 	}
 
-	protected void handleSelection(boolean arg0) throws ToggleVetoException {
-		Hub.persistentData.setBoolean(PROPERTY_NAME,!isSelected());
-		
+	public void setSelected(boolean b)
+	{
+		state = b;
+	}
+	
+	public static boolean isSelected()
+	{
+		return Hub.persistentData.getBoolean("uniformNodeSize");
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		state = !state;	
+		Hub.persistentData.setBoolean(PROPERTY_NAME,state);
+			
 		// set all FSMGraphs to dirty
 		// so when repaint happens, graph will recompute its layout.
 		// NOTE depends on FSMGraph extending GraphElement

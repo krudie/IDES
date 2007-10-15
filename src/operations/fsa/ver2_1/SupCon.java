@@ -41,7 +41,7 @@ public class SupCon extends AbstractOperation {
 	public Object[] perform(Object[] inputs) {
 		FSAModel a=ModelManager.createModel(FSAModel.class,"none");
 		SuperVisory.supC((FSAModel)inputs[0],(FSAModel)inputs[1],a);
-		FilterOperation fo=OperationManager.getFilterOperation("control map");
+		FilterOperation fo=OperationManager.getFilterOperation("Control Map");
 		fo.filter(new Object[]{a,inputs[0]});
 		return new Object[]{a};
 	}

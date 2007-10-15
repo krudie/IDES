@@ -341,7 +341,8 @@ public class CommandManager_new {
 
 
 		//adding the menu items to the "optionsMenu"
-		uniformNodeSize = new JCheckBoxMenuItem("Uniform node size");
+		uniformNodeSize = new JCheckBoxMenuItem(new UniformNodesAction());
+		uniformNodeSize.setSelected(Hub.persistentData.getBoolean("uniformNodeSize"));
 		useLaTeX  = new JCheckBoxMenuItem(new services.latex.UseLatexAction());
 		useLaTeX.setSelected(LatexManager.isLatexEnabled());
 		moreOptions = new JMenuItem(new OptionsCommands.MoreOptionsAction());

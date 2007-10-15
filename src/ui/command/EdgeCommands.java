@@ -17,6 +17,7 @@ import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
+import presentation.fsa.InitialArrow;
 import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.ReflexiveLayout;
 import presentation.fsa.SelectionGroup;
@@ -116,15 +117,26 @@ public class EdgeCommands {
 		}
 
 		public void undo() throws CannotRedoException {
-			if(edge.getSourceNode().equals(edge.getTargetNode()))
+
+			if(edge.getSourceNode() == null)
+			{//Initial edge
+
+			}else
 			{
-				((ReflexiveLayout)previousLayout).setEdge((ReflexiveEdge)edge);
-				
+				if(edge.getSourceNode().equals(edge.getTargetNode()))
+				{//Reflexive edge
+					((ReflexiveLayout)previousLayout).setEdge((ReflexiveEdge)edge);
+
+				}else
+				{//Regular bezier edge
+					
+					
+				}
 			}
 			edge.setLayout(previousLayout);
 			edge.refresh();
 			edge.getGraph().commitLayoutModified();
-			
+
 		}
 
 		public void redo() throws CannotRedoException {
@@ -139,9 +151,19 @@ public class EdgeCommands {
 					ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
 					ObjectInputStream objectIS = new ObjectInputStream(is);
 					backupCurrentLayout = (GraphicalLayout)objectIS.readObject();
-					if(edge.getSourceNode().equals(edge.getTargetNode()))
-					{
-						((ReflexiveLayout)backupCurrentLayout).setEdge((ReflexiveEdge)edge);
+					if(edge.getSourceNode() == null)
+					{//Initial Edge
+						
+					}
+					else{
+						if(edge.getSourceNode().equals(edge.getTargetNode()))
+						{//If it is a reflexiveEdge
+							((ReflexiveLayout)backupCurrentLayout).setEdge((ReflexiveEdge)edge);
+						}
+						else
+						{//Regular Bezier Edge
+
+						}
 					}
 				}catch(IOException e){
 					Hub.displayAlert(e.getMessage());

@@ -20,7 +20,7 @@ import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import ui.command.UniformNodesCommand;
+import ui.command.UniformNodesAction;
 
 /**
  * The toolset for {@link FSAModel}s.
@@ -97,12 +97,12 @@ public class FSAToolset implements Toolset {
 	
 	//TODO: ultimately include this control in the UIDescriptor and show/hide it
 	// when different types of models are activated
-	private static UniformNodesCommand nodesControl;
+	private static UniformNodesAction nodesControl;
 	
 	public FSAToolset()
 	{
-		nodesControl=new UniformNodesCommand();
-		nodesControl.export();
+		nodesControl=new UniformNodesAction();
+//		nodesControl.export();
 	}
 
 	public UIDescriptor getUIElements(LayoutShell mw)

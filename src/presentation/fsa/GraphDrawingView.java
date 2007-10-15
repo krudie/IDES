@@ -40,7 +40,7 @@ import presentation.PresentationElement;
 import ui.MainWindow;
 import ui.command.GraphCommands;
 import ui.command.OptionsCommands;
-import ui.command.UniformNodesCommand;
+import ui.command.UniformNodesAction;
 import ui.tools.CreationTool;
 import ui.tools.DrawingTool;
 import ui.tools.ModifyEdgeTool;
@@ -96,7 +96,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		PreferredTool = pt;
 	}
 
-	private static ToggleCommand nodesControl;
+	private static UniformNodesAction nodesControl;
 
 	public static boolean isUniformNodes()
 	{
@@ -183,7 +183,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener, 
 		}
 	};
 
-	public GraphDrawingView(ToggleCommand nc) {
+	public GraphDrawingView(UniformNodesAction nc) {
 		super();
 		//FIXME: other mechanism to bind the object with user-selectable options is needed
 		nodesControl=nc;
