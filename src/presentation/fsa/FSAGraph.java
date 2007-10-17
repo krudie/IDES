@@ -1374,16 +1374,16 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				this, "reduced arc of edge"));
 	}
 
-	public void symmetrize(Edge edge){
-		BezierLayout el=(BezierLayout)edge.getLayout();
-		el.symmetrize();
-		// TODO include edge label in bounds (dirty spot)
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-				FSAGraphMessage.EDGE,
-				edge.getId(), 
-				edge.bounds(),
-				this, "symmetrized edge"));
-	}
+//	public void symmetrize(Edge edge){
+//		BezierLayout el=(BezierLayout)edge.getLayout();
+//		el.symmetrize();
+//		// TODO include edge label in bounds (dirty spot)
+//		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+//				FSAGraphMessage.EDGE,
+//				edge.getId(), 
+//				edge.bounds(),
+//				this, "symmetrized edge"));
+//	}
 
 	/**
 	 * If this edge is not straight and can be straightened (e.g. is not reflexive)

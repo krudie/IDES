@@ -220,7 +220,7 @@ public class GraphElement implements PresentationElement {
 	}
 	
 	public void setLayout(GraphicalLayout layout) {
-		this.layout = layout;		
+		this.layout = layout;	
 	}
 
 

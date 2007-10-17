@@ -264,11 +264,11 @@ public abstract class Edge extends GraphElement{
 	 */
 	public abstract void straighten();
 	
-	/**
-	 * If this edge is not straight,  make it have a symmetrical appearance.
-	 *
-	 */
-	public abstract void symmetrize();
+//	/**
+//	 * If this edge is not straight,  make it have a symmetrical appearance.
+//	 *
+//	 */
+//	public abstract void symmetrize();
 
 	/**
 	 * Returns whether this edge can be straightened. 

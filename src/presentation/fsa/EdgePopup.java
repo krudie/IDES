@@ -14,6 +14,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.Presentation;
+import ui.command.EdgeCommands;
 import ui.command.GraphCommands;
 import ui.command.GraphCommands.DeleteAction;
 
@@ -44,26 +45,22 @@ public class EdgePopup extends JPopupMenu {
 	 */
 	protected EdgePopup(Edge e) {		
 
-		MenuListener listener = new MenuListener();
-
-		miEditEvents = new JMenuItem("Label with events", new ImageIcon(Hub.getResource("images/icons/machine_alpha.gif")));
-		miEditEvents.addActionListener(listener);
+		miEditEvents = new JMenuItem(new EdgeCommands.CreateEventCommand(view,e));
 		add(miEditEvents);
 
-		miSymmetrize = new JMenuItem(Hub.string("symmetrize"));		
-		miSymmetrize.addActionListener(listener);
+		miSymmetrize = new JMenuItem(new EdgeCommands.SymmetrizeEdgeAction(view,e));		
 		add(miSymmetrize);
 		
 		miStraighten = new JMenuItem("Straighten");
-		miStraighten.addActionListener(listener);
+//		miStraighten.addActionListener(listener);
 		add(miStraighten);
 		
 		miArcMore = new JMenuItem(Hub.string("arcmore"));
-		miArcMore.addActionListener(listener);
+//		miArcMore.addActionListener(listener);
 		add(miArcMore);
 				
 		miArcLess = new JMenuItem(Hub.string("arcless"));
-		miArcLess.addActionListener(listener);
+//		miArcLess.addActionListener(listener);
 		add(miArcLess);		
 
 		add(new JPopupMenu.Separator());
@@ -118,39 +115,39 @@ public class EdgePopup extends JPopupMenu {
 		}		
 	}
 
-	/**
-	 * Listens to events on the EdgePopup menu.
-	 * 
-	 * @author helen bretzke
-	 */
-	class MenuListener implements ActionListener {
-
-		/* (non-Javadoc)
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		 */
-		public void actionPerformed(ActionEvent arg0) {
-			Object source = arg0.getSource();
-			if(source.equals(miModify)){				
-				edge.getHandler().setVisible(true);
-				view.setTool(GraphDrawingView.MODIFY);
-			}else if(source.equals(miEditEvents)){				
-				EdgeLabellingDialog.showDialog(view, edge);
-				
-			// TODO should be UNDOABLE graph commands
-				
-			}else if(source.equals(miSymmetrize)){				
-				edge.getGraph().symmetrize(edge);
-			}else if(source.equals(miArcMore)){
-				edge.getGraph().arcMore(edge);
-			}else if(source.equals(miArcLess)){
-				edge.getGraph().arcLess(edge);
-			}else if(source.equals(miStraighten)){
-				edge.getGraph().straighten(edge);
-			}else{
-				Hub.displayAlert("Edge popup: " + source.toString());
-			}			
-		}		
-	}
+//	/**
+//	 * Listens to events on the EdgePopup menu.
+//	 * 
+//	 * @author helen bretzke
+//	 */
+//	class MenuListener implements ActionListener {
+//
+//		/* (non-Javadoc)
+//		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+//		 */
+//		public void actionPerformed(ActionEvent arg0) {
+//			Object source = arg0.getSource();
+//			if(source.equals(miModify)){				
+//				edge.getHandler().setVisible(true);
+//				view.setTool(GraphDrawingView.MODIFY);
+//			}else if(source.equals(miEditEvents)){				
+//				EdgeLabellingDialog.showDialog(view, edge);
+//				
+//			// TODO should be UNDOABLE graph commands
+//				
+//			}else if(source.equals(miSymmetrize)){				
+//				edge.getGraph().symmetrize(edge);
+//			}else if(source.equals(miArcMore)){
+//				edge.getGraph().arcMore(edge);
+//			}else if(source.equals(miArcLess)){
+//				edge.getGraph().arcLess(edge);
+//			}else if(source.equals(miStraighten)){
+//				edge.getGraph().straighten(edge);
+//			}else{
+//				Hub.displayAlert("Edge popup: " + source.toString());
+//			}			
+//		}		
+//	}
 	
 	class PopupListener implements PopupMenuListener {
 

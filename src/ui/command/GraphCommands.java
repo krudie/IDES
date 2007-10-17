@@ -629,11 +629,11 @@ public class GraphCommands {
 			context.repaint();
 			context.setAvoidNextDraw(false);
 			context.setTool(context.getPreferredTool());
-			
+
 		}
 
 	}
-
+//	TODO Christian: I have to rewrite this shit!
 	private static class UndoableDelete extends AbstractUndoableEdit{
 		SelectionGroup group;
 		GraphDrawingView graph;

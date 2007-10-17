@@ -23,6 +23,7 @@ import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 import ui.command.CommandManager_new;
+import ui.command.EdgeCommands;
 import ui.tools.CreationTool;
 
 /**
@@ -161,13 +162,13 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		this.edge = edge;
 		setDirty(true);
 	}
-
+	
 	/**
 	 * Returns the edge associated with this layout.
 	 * 
 	 * @return the edge
 	 */
-	protected BezierEdge getEdge() {
+	public BezierEdge getEdge() {
 		return edge;
 	}
 
@@ -571,9 +572,9 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 *The command is undoable, so it is encapsuladed on an UndoableEdit.
 	 *
 	 */
-	protected void symmetrize(){
-		UndoableEdits.symmetrizeBezierLayout(this);
-	}
+//	protected void symmetrize(){
+//		EdgeCommands.SymmetrizeEdgeAction()
+//	}
 
 	/**
 	 * Indicates whether an edge can be rigidly translated 
