@@ -93,7 +93,7 @@ public class EdgeCommands {
 
 		private Edge edge;
 		private GraphicalLayout previousLayout;
-
+		private GraphDrawingView view;
 		public ModifyEdgeAction(){
 			super("modify.edge.command");
 		}
@@ -102,9 +102,10 @@ public class EdgeCommands {
 		 * @param edge
 		 * @param previousLayout
 		 */
-		public ModifyEdgeAction(Edge edge, GraphicalLayout previousLayout) {
+		public ModifyEdgeAction(GraphDrawingView view, Edge edge, GraphicalLayout previousLayout) {
 			setEdge(edge);
 			setPreviousLayout(previousLayout);
+			this.view = view;
 		}
 
 		public void setEdge(Edge edge){
@@ -121,82 +122,64 @@ public class EdgeCommands {
 		}
 
 		public void actionPerformed(ActionEvent evt) {
-			UndoableModifyEdge action = new UndoableModifyEdge(edge,previousLayout);
+			UndoableModifyEdge action = new UndoableModifyEdge(view, edge,previousLayout);
 			//perform action
 			action.redo();
 			// notify the listeners
 			CommandManager_new.getInstance().undoSupport.postEdit(action);	
 		}		
 	}
-
+	/**
+	 * This class is responsible to make backups of the states of an edge, both before and
+	 * after an edit. It will swap the states if the user wants to make an undo or a redo of 
+	 * the edition.
+	 * @author christiansilvano
+	 *
+	 */
 	private static class UndoableModifyEdge extends AbstractUndoableEdit {
 		Edge edge;
-		GraphicalLayout previousLayout, backupCurrentLayout;
-		public UndoableModifyEdge(Edge edge, GraphicalLayout previousLayout) {
+		GraphDrawingView view; 
+		GraphicalLayout previousLayout, editedLayout;
+		public UndoableModifyEdge(GraphDrawingView view, Edge edge, GraphicalLayout previousLayout) {
+			this.view = view;
 			this.edge = edge;
 			this.previousLayout = previousLayout;
+			if(edge.getSourceNode() == null & edge.getTargetNode() != null)
+			{
+				//This is an initial edge!
+				editedLayout = new GraphicalLayout(((InitialArrow)edge).getDirection());
+			}else{
+				Point2D.Float[] bezierControls = new Point2D.Float[4];
+				BezierLayout layout = (BezierLayout)edge.getLayout();
+				bezierControls[0] = (Point2D.Float)((BezierLayout)layout).getCurve().getP1();
+				bezierControls[1] = (Point2D.Float)((BezierLayout)layout).getCurve().getCtrlP1();
+				bezierControls[2] = (Point2D.Float)((BezierLayout)layout).getCurve().getCtrlP2();
+				bezierControls[3] = (Point2D.Float)((BezierLayout)layout).getCurve().getP2();
+				editedLayout = new BezierLayout(bezierControls);
+				//Backup the layout:
+				if(!edge.getSourceNode().equals(edge.getTargetNode()))
+				{
+					//This is a regular edge, neither a reflexive edge nor an initial edge.
+					((BezierLayout)editedLayout).setEdge((BezierEdge)edge);
+				}else if(edge.getSourceNode().equals(edge.getTargetNode()))
+				{
+					//This is a reflexive edge!
+					editedLayout = new ReflexiveLayout(edge.getSourceNode(), (ReflexiveEdge)edge, (BezierLayout)editedLayout);
+					((ReflexiveLayout)editedLayout).setEdge((ReflexiveEdge)edge);
+				}
+			}
 		}
 
 		public void undo() throws CannotRedoException {
-
-			if(edge.getSourceNode() == null)
-			{//Initial edge
-
-			}else
-			{
-				if(edge.getSourceNode().equals(edge.getTargetNode()))
-				{//Reflexive edge
-					((ReflexiveLayout)previousLayout).setEdge((ReflexiveEdge)edge);
-
-				}else
-				{//Regular bezier edge
-
-
-				}
-			}
 			edge.setLayout(previousLayout);
-			edge.refresh();
-			edge.getGraph().commitLayoutModified();
-
+			edge.getLayout().setDirty(true);
+			view.repaint();
 		}
 
 		public void redo() throws CannotRedoException {
-			if(backupCurrentLayout == null)
-			{
-				ByteArrayOutputStream fo = new ByteArrayOutputStream();
-				try{
-					ObjectOutputStream so = new ObjectOutputStream(fo);
-					so.writeObject(edge.getLayout());
-					so.flush();
-					so.close();
-					ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
-					ObjectInputStream objectIS = new ObjectInputStream(is);
-					backupCurrentLayout = (GraphicalLayout)objectIS.readObject();
-					if(edge.getSourceNode() == null)
-					{//Initial Edge
-
-					}
-					else{
-						if(edge.getSourceNode().equals(edge.getTargetNode()))
-						{//If it is a reflexiveEdge
-							((ReflexiveLayout)backupCurrentLayout).setEdge((ReflexiveEdge)edge);
-						}
-						else
-						{//Regular Bezier Edge
-
-						}
-					}
-				}catch(IOException e){
-					Hub.displayAlert(e.getMessage());
-				}catch(ClassNotFoundException e)
-				{
-					Hub.displayAlert(e.getMessage());
-				}
-			}else{
-				edge.setLayout((BezierLayout)(backupCurrentLayout));
-				edge.refresh();
-				edge.getGraph().commitLayoutModified();
-			}
+			edge.setLayout(editedLayout);
+			edge.getLayout().setDirty(true);
+			view.repaint();
 		}
 
 		public boolean canUndo() {
@@ -266,7 +249,6 @@ public class EdgeCommands {
 		public UndoableSymmetrizeEdge(GraphDrawingView view, BezierLayout layout)
 		{
 			edge = layout.getEdge();
-			
 			//Backing up the original edge, so the action can be undone as many times as it is 
 			//necessary.
 			Point2D.Float[] bezierControls = new Point2D.Float[4];
@@ -325,7 +307,7 @@ public class EdgeCommands {
 			points[1]=Geometry.translate(points[1],backupLayout.getCurve().getX1(),backupLayout.getCurve().getY1());
 			points[2]=Geometry.translate(points[2],backupLayout.getCurve().getX1(),backupLayout.getCurve().getY1());
 			points[3]=new Point2D.Float((float)backupLayout.getCurve().getX2(), (float)backupLayout.getCurve().getY2());
-			
+
 			//Apply a new layout to the edge
 			edge.setLayout(new BezierLayout(points));
 			//Make the new layout have a reference to its edge.
@@ -351,5 +333,5 @@ public class EdgeCommands {
 
 	}
 
-
 }
+

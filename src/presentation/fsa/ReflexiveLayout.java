@@ -115,6 +115,12 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	}
 
 
+	public void setLayout(BezierLayout layout)
+	{
+		System.out.println("Layout!");
+		setCurve(layout.getCurve());
+	}
+	
 	/**
 	 * FIXME 
 	 * Problem: using fixed scalars and angles causes midpoint 

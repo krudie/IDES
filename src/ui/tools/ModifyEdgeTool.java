@@ -20,13 +20,16 @@ import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierHandler;
+import presentation.fsa.BezierLayout;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeHandler;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.InitialArrow;
+import presentation.fsa.Node;
 import presentation.fsa.ReflexiveEdge;
+import presentation.fsa.ReflexiveLayout;
 import ui.command.EdgeCommands.ModifyEdgeAction;
 
 /**
@@ -53,28 +56,36 @@ public class ModifyEdgeTool extends DrawingTool {
 	public void handleMousePressed(MouseEvent m) {
 		super.handleMousePressed(m);
 
-		// FIXME If an edge was just selected by SelectionTool,
-		// use it, don't lose it.
 		if(ContextAdaptorHack.context.hasCurrentSelection()){
 			Edge temp = getEdge(ContextAdaptorHack.context.getSelectedElement());
+			//Make a backup for the edge before it is modified! It will be used if the user wants
+			//to undo the edit!
 			if( temp != null )
 			{
 				edge = temp;
-
-				ByteArrayOutputStream fo = new ByteArrayOutputStream();
-				try{
-					ObjectOutputStream so = new ObjectOutputStream(fo);
-					so.writeObject(edge.getLayout());
-					so.flush();
-					so.close();
-					ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
-					ObjectInputStream objectIS = new ObjectInputStream(is);
-					previousLayout = (GraphicalLayout)objectIS.readObject();
-				}catch(IOException e){
-					Hub.displayAlert(e.getMessage());
-				}catch(ClassNotFoundException e)
+				if(edge.getSourceNode() == null & edge.getTargetNode() != null)
 				{
-					Hub.displayAlert(e.getMessage());
+					//This is an initial edge!
+					previousLayout = new GraphicalLayout(((InitialArrow)edge).getDirection());
+				}else{
+					Point2D.Float[] bezierControls = new Point2D.Float[4];
+					BezierLayout layout = (BezierLayout)edge.getLayout();
+					bezierControls[0] = (Point2D.Float)((BezierLayout)layout).getCurve().getP1();
+					bezierControls[1] = (Point2D.Float)((BezierLayout)layout).getCurve().getCtrlP1();
+					bezierControls[2] = (Point2D.Float)((BezierLayout)layout).getCurve().getCtrlP2();
+					bezierControls[3] = (Point2D.Float)((BezierLayout)layout).getCurve().getP2();
+					previousLayout = new BezierLayout(bezierControls);
+					//Backup the layout:
+					if(!edge.getSourceNode().equals(edge.getTargetNode()))
+					{
+						//This is a regular edge, neither a reflexive edge nor an initial edge.
+						((BezierLayout)previousLayout).setEdge((BezierEdge)edge);
+					}else if(edge.getSourceNode().equals(edge.getTargetNode()))
+					{
+						//This is a reflexive edge!
+						previousLayout = new ReflexiveLayout(edge.getSourceNode(), (ReflexiveEdge)edge, (BezierLayout)previousLayout);
+						((ReflexiveLayout)previousLayout).setEdge((ReflexiveEdge)edge);
+					}
 				}
 			}
 		}
@@ -168,7 +179,7 @@ public class ModifyEdgeTool extends DrawingTool {
 		super.handleMouseReleased(m);
 
 		if(dragging){ // TODO check to see if edge has been changed
-			ModifyEdgeAction cmd = new ModifyEdgeAction(edge, previousLayout);		
+			ModifyEdgeAction cmd = new ModifyEdgeAction(ContextAdaptorHack.context, edge, previousLayout);		
 			cmd.execute();		
 			ContextAdaptorHack.context.repaint();						
 			dragging = false;	
