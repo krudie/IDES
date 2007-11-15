@@ -20,7 +20,7 @@ import presentation.fsa.NodePopup.PopupListener;
 import main.Hub;
 import ui.command.GraphCommands;
 import ui.command.OptionsCommands;
-import ui.command.GraphCommands.AlignAction;
+import ui.command.GraphCommands.AlignTool;
 
 /**
  * A default context menu which allows the user to switch drawing tools and
@@ -48,10 +48,10 @@ public class ToolPopup extends JPopupMenu {
 	protected ToolPopup() {
 		super("Graph Operations");
 	
-		miSelect = new JMenuItem(new GraphCommands.SelectAction());
+		miSelect = new JMenuItem(new GraphCommands.SelectTool());
 		miCreate = new JMenuItem(new GraphCommands.CreateAction());
-		miMove = new JMenuItem(new GraphCommands.MoveAction());
-		miAlign = new JMenuItem(new GraphCommands.AlignAction());
+		miMove = new JMenuItem(new GraphCommands.MoveTool());
+		miAlign = new JMenuItem(new GraphCommands.AlignTool());
 		miShowGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
 
 		add(miSelect);

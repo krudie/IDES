@@ -31,15 +31,34 @@ import presentation.fsa.GraphElement;
 import presentation.fsa.SelectionGroup;
 
 /**
- * @author Helen Bretzke
+ * This class holds static classes regarding actions over nodes.
+ * Normally, when the user wants to explicitly execute an action (e.g.: by 
+ * clicking in a button), an AbstractAction will be encapsulating an UndoableAction
+ * that knows how to undo/redo the action to be done.
+ * 
+  * So everytime an action that can be undone is started, two steps will be executed:
+ * 1- One <code>AbstractAction</code> executes an <action>UndoableAction</action> that can 
+ * redo\/undo the result of the action.
+ * 2- The <code>AbstractAction</code> then, notifies the UndoManager
+ * in the CommandManager about a performed action.
+ * 
+ * One of the reasons for making the UndoableAction being called by an 
+ * AbstractAction is the fact that by doing this, one AbstractAction could
+ * encapsulate several UndoableActions making then a "composite" UndoableAction.
+ * 
+ * Also it is simpler (in my opinion (Christian)), to have to simpler classes one to
+ * create an UndoableAction and talk to the CommandManager, and other which is the 
+ * UndoableAction itself.
+ * Having everything in just one class would make this class be too big and more 
+ * difficult to write. 
+ *
+ * @author Christian Silvano
  *
  */
 public class NodeCommands {
 
 	/**
 	 * A command that sets the value of a boolean attribute for a DES element.
-	 * 
-	 * TODO figure out how to make this an undoable edit.
 	 * 
 	 * @author helen bretzke
 	 *
@@ -62,6 +81,12 @@ public class NodeCommands {
 
 	}
 
+	/**
+	 * A command that sets the value of a boolean attribute for a DES element.
+	 * 
+	 * @author helen bretzke
+	 *
+	 */
 	public static class SetInitialAction extends AbstractAction {
 
 		private CircleNode node;				
@@ -82,8 +107,14 @@ public class NodeCommands {
 
 	}
 
-	public static class SelfLoopAction extends AbstractAction {
+	/**
+	 * A command that creates a reflexive edge on a node.
+	 * 
+	 * @author helen bretzke
+	 *
+	 */
 
+	public static class SelfLoopAction extends AbstractAction {
 		private CircleNode node;
 
 		public SelfLoopAction(CircleNode node){
@@ -100,6 +131,12 @@ public class NodeCommands {
 		}
 	}
 
+	/**
+	 * An action that can create and (un)create a reflexive edge over a node.
+	 * 
+	 * @author Christian Silvano
+	 *
+	 */
 	private static class UndoableSelfLoop extends AbstractUndoableEdit {
 		CircleNode node;
 		BezierEdge edge;
@@ -116,6 +153,8 @@ public class NodeCommands {
 		}
 
 		public void redo() throws CannotRedoException {
+			//Creates an edge using <code>node</code> as the source and
+			//destination for it.
 			edge = node.getGraph().createEdge(node, node);
 		}
 
@@ -133,6 +172,12 @@ public class NodeCommands {
 
 	}
 	
+	/**
+	 * An action that can set and (un)set a node as marked.
+	 * 
+	 * @author Christian Silvano
+	 *
+	 */
 	private static class UndoableSetMarked extends AbstractUndoableEdit {
 		CircleNode node;
 
@@ -141,10 +186,12 @@ public class NodeCommands {
 		}
 
 		public void undo() throws CannotRedoException {
+			//Toggles the attribute "marked" on the node
 			node.getGraph().setMarked(node, !node.getState().isMarked()); 	
 		}
 
 		public void redo() throws CannotRedoException {
+			//Toggles the attribute "marked" on the node
 			node.getGraph().setMarked(node, !node.getState().isMarked()); 	
 		}
 
@@ -162,6 +209,12 @@ public class NodeCommands {
 
 	}
 
+	/**
+	 * An action that can set and (un)set a node as initial.
+	 * 
+	 * @author Christian Silvano
+	 *
+	 */
 	private static class UndoableSetInitial extends AbstractUndoableEdit {
 		CircleNode node;
 
@@ -170,10 +223,12 @@ public class NodeCommands {
 		}
 
 		public void undo() throws CannotRedoException {
+			//Toggles the attribute "initial" on the node
 			node.getGraph().setInitial(node, !node.getState().isInitial()); 	
 		}
 
 		public void redo() throws CannotRedoException {
+			//Toggles the attribute "initial" on the node
 			node.getGraph().setInitial(node, !node.getState().isInitial()); 	
 		}
 

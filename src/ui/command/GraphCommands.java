@@ -38,7 +38,7 @@ import presentation.fsa.SelectionGroup;
 import ui.tools.CreationTool;
 
 public class GraphCommands {
-
+	
 	/**
 	 * A command to set the current drawing mode to editing mode. While in
 	 * editing mode, user may select graph objects in the GraphDrawingView for
@@ -46,18 +46,18 @@ public class GraphCommands {
 	 * 
 	 * @author Helen Bretzke, Christian Silvano
 	 */
-	public static class SelectAction extends AbstractAction {
-
+	public static class SelectTool extends AbstractAction {
+		
 		private static String text = "Select";
-
+		
 		private static ImageIcon icon = new ImageIcon();
-
-		public SelectAction() {
+		
+		public SelectTool() {
 			super(text, icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_modify.gif")));
 		}
-
+		
 		public void actionPerformed(ActionEvent event) {
 			// TODO set the tool in the *currently active* drawing view
 			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
@@ -65,22 +65,32 @@ public class GraphCommands {
 			.setPreferredTool(GraphDrawingView.SELECT);
 		}
 	}
-
-	public static class MoveAction extends AbstractAction {
-
-		// GraphDrawingView context;
-		SelectionGroup selection = null;
-
-		Point displacement;
+	
+	public static class MoveTool extends AbstractAction {
 		private static String text = "Move";
 		private static ImageIcon icon = new ImageIcon();
-
-		public MoveAction() {
+		
+		public MoveTool() {
 			super(text, icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_move.gif")));
 		}
-
+		public void actionPerformed(ActionEvent event) {
+			ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
+			ContextAdaptorHack.context
+			.setPreferredTool(GraphDrawingView.MOVE);
+		}
+	}
+	
+	public static class MoveAction extends AbstractAction {
+		
+		// GraphDrawingView context;
+		SelectionGroup selection = null;
+		
+		Point displacement;
+		private static String text = "Move";
+		private static ImageIcon icon = new ImageIcon();
+		
 		/**
 		 * 
 		 * @param context
@@ -91,7 +101,7 @@ public class GraphCommands {
 			this.selection = currentSelection.copy();
 			this.displacement = displacement;
 		}
-
+		
 		public void actionPerformed(ActionEvent event) {
 			if (selection == null) {
 				ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
@@ -106,39 +116,39 @@ public class GraphCommands {
 				CommandManager_new.getInstance().undoSupport.postEdit(action);
 			}
 		}
-
+		
 		public void execute() {
 			actionPerformed(null);
 		}
 	}
-
+	
 	public static class TextCommand extends UndoableActionCommand {
-
+		
 		// GraphDrawingView context;
 		String text;
-
+		
 		GraphElement element = null;
-
+		
 		Point2D.Float location = null;
-
+		
 		public TextCommand() {
 			super("text.command");
 			// this.context = context;
 		}
-
+		
 		public TextCommand(GraphElement currentSelection, String text) {
 			super("text.command");
 			this.element = currentSelection;
 			// this.context = context;
 			this.text = text;
 		}
-
+		
 		public TextCommand(GraphElement currentSelection) {
 			super("text.command");
 			this.element = currentSelection;
 			// this.context = context;
 		}
-
+		
 		/**
 		 * @param context
 		 * @param location
@@ -147,11 +157,11 @@ public class GraphCommands {
 			// this.context = context;
 			this.location = new Point2D.Float(location.x, location.y);
 		}
-
+		
 		public void setElement(GraphElement element) {
 			this.element = element;
 		}
-
+		
 		@Override
 		protected UndoableEdit performEdit() {
 			if (element == null) {
@@ -201,59 +211,59 @@ public class GraphCommands {
 			return null;
 		}
 	}
-
+	
 	public static class ZoomInAction extends AbstractAction {
-
+		
 		// private GraphDrawingView context;
-
+		
 		public ZoomInAction() {
 			super("zoomin.command");
 			// this.context = context;
 		}
-
+		
 		public void actionPerformed(ActionEvent evt) {
 			// TODO set the tool in the *currently active* drawing view
 			ContextAdaptorHack.context.setTool(GraphDrawingView.ZOOM_IN);
 		}
 	}
-
+	
 	public static class ZoomOutAction extends AbstractAction {
-
+		
 		// private GraphDrawingView context;
-
+		
 		public ZoomOutAction() {
 			super("zoomout.command");
 			// this.context = context;
 		}
-
+		
 		public void actionPerformed(ActionEvent evt) {
 			// TODO set the tool in the *currently active* drawing view
 			ContextAdaptorHack.context.setTool(GraphDrawingView.ZOOM_OUT);
 		}
 	}
-
+	
 	/**
 	 * Emulates "snap to grid".
 	 * 
 	 * @author Lenko Grigorov, Christian Silvano
 	 * 
 	 */
-	public static class AlignAction extends AbstractAction {
-
+	public static class AlignTool extends AbstractAction {
+		
 		// TODO: redo all of this so there's an independent grid going
-
+		
 		// private GraphDrawingView context;
-
+		
 		private static String text = "Align nodes";
-
+		
 		private static ImageIcon icon = new ImageIcon();
-
-		public AlignAction() {
+		
+		public AlignTool() {
 			super(text, icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_align.gif")));
 		}
-
+		
 		public void actionPerformed(ActionEvent event) {
 			if (Hub.getWorkspace().getActiveModel() == null)
 				return;
@@ -267,26 +277,26 @@ public class GraphCommands {
 				ge.getLayout().snapToGrid();
 				ge.refresh();
 			}
-
+			
 			ContextAdaptorHack.context.getGraphModel().setNeedsRefresh(true);
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}
-
+	
 	private static class UndoableMove extends AbstractUndoableEdit {
 		SelectionGroup selection = null;
-
+		
 		Point displacement;
-
+		
 		SelectionGroup backup, group;
-
+		
 		GraphDrawingView graph;
-
+		
 		public UndoableMove(SelectionGroup g, Point d) {
 			selection = g;
 			displacement = d;
 		}
-
+		
 		public void undo() throws CannotRedoException {
 			Iterator<GraphElement> it = selection.children();
 			while (it.hasNext()) {
@@ -296,7 +306,7 @@ public class GraphCommands {
 			}
 			ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
 		}
-
+		
 		public void redo() throws CannotRedoException {
 			Iterator<GraphElement> it = selection.children();
 			while (it.hasNext()) {
@@ -306,54 +316,54 @@ public class GraphCommands {
 			}
 			ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
 		}
-
+		
 		public boolean canUndo() {
 			return true;
 		}
-
+		
 		public boolean canRedo() {
 			return true;
 		}
-
+		
 		public String getPresentationName() {
 			return Hub.string("moveSelection");
 		}
-
+		
 	}
-
+	
 	/**
 	 * Creates nodes and edges in a GraphDrawingView.
 	 * 
 	 * @author Helen Bretzke, Christian Silvano
 	 */
 	public static class CreateAction extends AbstractAction {
-
+		
 		private static String text = "Create";
-
+		
 		private static ImageIcon icon = new ImageIcon();
-
+		
 		// private GraphDrawingView context;
 		private int elementType;
-
+		
 		private CircleNode source, target;
-
+		
 		private BezierEdge edge;
-
+		
 		private Point location;
-
+		
 		/**
 		 * Types of elements to be created.
 		 */
 		public static final int UNKNOWN = -1;
-
+		
 		public static final int NODE = 0;
-
+		
 		public static final int EDGE = 1;
-
+		
 		public static final int NODE_AND_EDGE = 2;
-
+		
 		public static final int SELF_LOOP = 3;
-
+		
 		/**
 		 * Default constructor.
 		 */
@@ -362,9 +372,9 @@ public class GraphCommands {
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_create.gif")));
 			elementType = UNKNOWN;
-
+			
 		}
-
+		
 		/**
 		 * @param context
 		 * @param elementType
@@ -373,12 +383,12 @@ public class GraphCommands {
 		public CreateAction(int elementType, Point location) {
 			setContext(elementType, location);
 		}
-
+		
 		public CreateAction(int elementType, BezierEdge edge, Point location) {
 			setContext(elementType, location);
 			this.edge = edge;
 		}
-
+		
 		/**
 		 * @param context
 		 * @param elementType
@@ -389,7 +399,7 @@ public class GraphCommands {
 			this.elementType = elementType;
 			source = n;
 		}
-
+		
 		/**
 		 * @param context
 		 * @param elementType
@@ -402,26 +412,26 @@ public class GraphCommands {
 			this.edge = edge;
 			this.target = target;
 		}
-
+		
 		public void setContext(int elementType, Point location) {
 			// this.context = context;
 			this.elementType = elementType;
 			this.location = location;
 		}
-
+		
 		public void setSourceNode(CircleNode s) {
 			source = s;
 		}
-
+		
 		public void setTargetNode(CircleNode t) {
 			target = t;
 			t.setHighlighted(true);
 		}
-
+		
 		public void setEdge(BezierEdge edge) {
 			this.edge = edge;
 		}
-
+		
 		public void actionPerformed(ActionEvent event) {
 			if(elementType == -1 && source ==null && target == null  &&
 					edge == null && location == null)
@@ -439,12 +449,12 @@ public class GraphCommands {
 			// notify the listeners
 			CommandManager_new.getInstance().undoSupport.postEdit(action);
 		}
-
+		
 		public void execute() {
 			actionPerformed(null);
 		}
 	}
-
+	
 	private static class UndoableCreate extends AbstractUndoableEdit {
 		SelectionGroup selection = null;
 		GraphElement bkpNode, bkpEdge;
@@ -452,7 +462,7 @@ public class GraphCommands {
 		private CircleNode source, target;
 		private BezierEdge edge;
 		private Point location;
-
+		
 		public UndoableCreate(int type, CircleNode s, CircleNode t,
 				BezierEdge e, Point l) {
 			elementType = type;
@@ -461,7 +471,7 @@ public class GraphCommands {
 			edge = e;
 			location = l;
 		}
-
+		
 		public void undo() throws CannotRedoException {
 			FSAState s;
 			Automaton model = (Automaton) Hub.getWorkspace().getActiveModel();
@@ -483,7 +493,7 @@ public class GraphCommands {
 			}
 			// ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
 		}
-
+		
 		public void redo() throws CannotRedoException {
 			switch (elementType) {
 			case CreateAction.NODE:
@@ -516,28 +526,28 @@ public class GraphCommands {
 					ContextAdaptorHack.context.getGraphModel().reCreateEdge(
 							(BezierEdge) bkpEdge);
 				}
-
+				
 				break;
 			case CreateAction.EDGE:
 				bkpEdge = ContextAdaptorHack.context.getGraphModel()
 				.finishEdge(edge, target);
 				break;
 			case CreateAction.SELF_LOOP:
-
+				
 				bkpEdge = ContextAdaptorHack.context.getGraphModel()
 				.createEdge(source, source);
 				break;
 			}
 		}
-
+		
 		public boolean canUndo() {
 			return true;
 		}
-
+		
 		public boolean canRedo() {
 			return true;
 		}
-
+		
 		public String getPresentationName() {
 			switch (elementType) {
 			case CreateAction.NODE:
@@ -551,9 +561,9 @@ public class GraphCommands {
 			}
 			return Hub.string("createElement");
 		}
-
+		
 	}
-
+	
 	/**
 	 * Represent a user issued command to delete an element of the graph.
 	 * What about deleting elements of a text label?
@@ -568,8 +578,8 @@ public class GraphCommands {
 		private GraphElement element; // TODO decide on type, GraphElement
 		// composite type?
 		// private GraphDrawingView context; // Does this need to be stored?
-
-
+		
+		
 		/**
 		 * Default constructor; handy for exporting this command for group
 		 * setup.
@@ -578,7 +588,7 @@ public class GraphCommands {
 		public DeleteAction() {
 			super(text, icon);
 		}
-
+		
 		/**
 		 * Default constructor; handy for exporting this command for group
 		 * setup.
@@ -590,11 +600,11 @@ public class GraphCommands {
 					Hub.getResource("images/icons/edit_delete.gif")));
 			context = c;
 		}
-
+		
 		// public DeleteCommand(GraphDrawingView context){
 		// this(null, context);
 		// }
-
+		
 		/**
 		 * Creates a command that, when executed, will cut <code>element</code>
 		 * from the given context.
@@ -607,16 +617,16 @@ public class GraphCommands {
 			context = c;
 			// this.context = context;
 		}
-
+		
 		public void setElement(GraphElement element) {
 			this.element = element;
-
+			
 		}
-
+		
 		public void setContext(GraphDrawingView g) {
 			this.context = g;
 		}
-
+		
 		public void actionPerformed(ActionEvent evt) {
 			if(((CreationTool)context.getTools()[GraphDrawingView.CREATE]).isDrawingEdge())
 				((CreationTool)context.getTools()[GraphDrawingView.CREATE]).abortEdge();
@@ -629,9 +639,9 @@ public class GraphCommands {
 			context.repaint();
 			context.setAvoidNextDraw(false);
 			context.setTool(context.getPreferredTool());
-
+			
 		}
-
+		
 	}
 //	TODO Christian: I have to rewrite this shit!
 	private static class UndoableDelete extends AbstractUndoableEdit{
@@ -659,7 +669,7 @@ public class GraphCommands {
 				}
 			}
 		}
-
+		
 		public void undo() throws CannotRedoException{
 			//Make the FSAGraph recreate the children of the selection one by one:
 			if(group!=null & graph !=null)
@@ -687,8 +697,8 @@ public class GraphCommands {
 				}
 			}
 		}
-
-
+		
+		
 		public void redo() throws CannotRedoException{
 			//Make the FSAGraph delete the children of the selection one by one:
 			if(group!=null & graph !=null)
@@ -701,17 +711,17 @@ public class GraphCommands {
 				}
 			}
 		}
-
+		
 		public boolean canUndo()
 		{
 			return true;
 		}
-
+		
 		public boolean canRedo()
 		{
 			return true;
 		}
-
+		
 		public String getPresentationName()
 		{
 			if(group.size() == 1)
@@ -731,7 +741,7 @@ public class GraphCommands {
 			return null;
 		}
 	}
-
+	
 }
 
 
