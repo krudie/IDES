@@ -31,7 +31,7 @@ import presentation.Geometry;
 import presentation.GraphicalLayout;
 
 /**
- * This class holds static commands that can take actions over edges.
+ * This class holds static commands that can perform actions over edges.
  * All the actions that can be undone, follows the "Swing way" and the "Command"
  * Design Pattern.
  * When the user wants to execute an action (e.g.: by clicking a button),

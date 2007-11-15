@@ -49,7 +49,7 @@ public class ToolPopup extends JPopupMenu {
 		super("Graph Operations");
 	
 		miSelect = new JMenuItem(new GraphCommands.SelectTool());
-		miCreate = new JMenuItem(new GraphCommands.CreateAction());
+		miCreate = new JMenuItem(new GraphCommands.CreateTool());
 		miMove = new JMenuItem(new GraphCommands.MoveTool());
 		miAlign = new JMenuItem(new GraphCommands.AlignTool());
 		miShowGrid = new JMenuItem(new OptionsCommands.ShowGridAction());

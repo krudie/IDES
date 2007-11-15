@@ -304,7 +304,7 @@ public class CommandManager_new {
 		toolbar.add(new FileCommands.SaveWorkspaceAction());
 		toolbar.addSeparator();
 		toolbar.add(new GraphCommands.SelectTool());
-		toolbar.add(new GraphCommands.CreateAction());
+		toolbar.add(new GraphCommands.CreateTool());
 		toolbar.add(new GraphCommands.MoveTool());
 		toolbar.addSeparator();
 		toolbar.add(new GraphCommands.AlignTool());
@@ -392,7 +392,7 @@ public class CommandManager_new {
 
 		//Initializing the menu items for the "graphMenu"
 		select = new JMenuItem(new GraphCommands.SelectTool());
-		create = new JMenuItem(new GraphCommands.CreateAction());
+		create = new JMenuItem(new GraphCommands.CreateTool());
 		move = new JMenuItem(new GraphCommands.MoveTool());
 		alignNodes = new JMenuItem(new GraphCommands.AlignTool()); 
 		showGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
