@@ -77,9 +77,9 @@ public class GraphCommands {
 		private static String text = "Create";
 
 		private static ImageIcon icon = new ImageIcon();
-		
-	
-	 // Default constructor.	 
+
+
+		// Default constructor.	 
 		public CreateTool() {
 			super(text, icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
@@ -110,7 +110,7 @@ public class GraphCommands {
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_move.gif")));
 		}
-		
+
 		//Switches the tool to Moving Tool
 		public void actionPerformed(ActionEvent event) {
 			ContextAdaptorHack.context.setTool(GraphDrawingView.MOVE);
@@ -119,28 +119,45 @@ public class GraphCommands {
 		}
 	}
 
+	/**
+	 * This action is executed every time a graph element is moved in a Graph.
+	 * The objective is to make undo/redo actions possible. 
+	 * According to the chosen design for undoable actions, there are two static
+	 * classes involved on any UndoableAction, one to construct the UndoableAction(s),
+	 * perform it(or them), and inform the CommandManager
+	 * about this(these) action. The other class is the UndoableAction itself.
+	 *
+	 * This class constructs an UndoableMovement, informing the GraphElement of interest and
+	 * its displacement over the Graph. 
+	 * @author Christian Silvano
+	 *
+	 */
 	public static class MoveAction extends AbstractAction {
-		// GraphDrawingView context;
+		//The set of elements that are being moved.
 		SelectionGroup selection = null;
+		//The displacement of the selection, it is a vector where the direction
+		//of the displacement can be inferred by the signals of its coordinates.
 		Point displacement;
 
 		/**
 		 * 
-		 * @param context
 		 * @param currentSelection
 		 * @param displacement
 		 */
-		public MoveAction(FSAGraph context, SelectionGroup currentSelection, Point displacement) {
+		public MoveAction(SelectionGroup currentSelection, Point displacement) {
 			this.selection = currentSelection.copy();
 			this.displacement = displacement;
 		}
 
+		//Creates an UndoableMove (an object capable of undoing/redoing the movement)
+		//and informs CommandManager about a new UndoableAction.
 		public void actionPerformed(ActionEvent event) {
 			if (displacement != null) {
 				UndoableMove action = new UndoableMove(selection, displacement);
-				// There is no "perform" operation, since the movement was done
-				// by the user
-				// notify the listeners
+				// There is no "perform" operation like most of the UndoableActions, 
+				// the reason is that the movement is made by a user (e.g.: by dragging a node in a FSA).
+
+				// Notify the listeners
 				CommandManager_new.getInstance().undoSupport.postEdit(action);
 			}
 		}
@@ -161,7 +178,6 @@ public class GraphCommands {
 
 		public TextCommand() {
 			super("text.command");
-			// this.context = context;
 		}
 
 		public TextCommand(GraphElement currentSelection, String text) {
@@ -311,37 +327,64 @@ public class GraphCommands {
 		}
 	}
 
+
+	/**
+	 * Undo/Redo a movement of a SelectionGroup (collection of graph elements)
+	 * over a Graph.
+	 * In order to do that, the SelectionGroup and a vector representing the displacement
+	 * are sent in the class constructor. 
+	 * @author Christian Silvano
+	 *
+	 */
 	private static class UndoableMove extends AbstractUndoableEdit {
+
+		//A collection of graph elements
 		SelectionGroup selection = null;
 
+		//A vector meaning the displacement of the selection
 		Point displacement;
 
-		SelectionGroup backup, group;
-
-		GraphDrawingView graph;
-
+		/**
+		 * Default constructor
+		 * @param g collection of graph elements
+		 * @param d displacement of the elements
+		 */
 		public UndoableMove(SelectionGroup g, Point d) {
 			selection = g;
 			displacement = d;
 		}
 
+		/**
+		 * Undoes a movement by applying a vector opposite to <code>displacement</code>
+		 * over <code>collection</code>
+		 */
 		public void undo() throws CannotRedoException {
 			Iterator<GraphElement> it = selection.children();
+
+			//Applies a displacement over every element under <code>selection</selection>
 			while (it.hasNext()) {
 				GraphElement ge = it.next();
 				ge.setLocation(new Point2D.Float(ge.getLocation().x
 						- displacement.x, ge.getLocation().y - displacement.y));
 			}
+			//TODO Stop using ContextAdaptorHack!!
 			ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
 		}
 
+		/**
+		 * Redoes a movement by applying a <code>displacement</code>
+		 * over <code>collection</code>
+		 */
 		public void redo() throws CannotRedoException {
 			Iterator<GraphElement> it = selection.children();
+
+			//Applies a displacement over every element under <code>selection</selection>
 			while (it.hasNext()) {
 				GraphElement ge = it.next();
 				ge.setLocation(new Point2D.Float(ge.getLocation().x
 						+ displacement.x, ge.getLocation().y + displacement.y));
 			}
+			//TODO Stop using ContextAdaptorHack!!
 			ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
 		}
 
@@ -353,6 +396,10 @@ public class GraphCommands {
 			return true;
 		}
 
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
 		public String getPresentationName() {
 			return Hub.string("moveSelection");
 		}
@@ -360,7 +407,15 @@ public class GraphCommands {
 	}
 
 	/**
-	 * Creates nodes and edges in a GraphDrawingView.
+	 * This action is executed every time graph elements are created in a Graph.
+	 * The objective is to make undo/redo actions possible. 
+	 * According to the chosen design for undoable actions, there are two static
+	 * classes involved on any UndoableAction, one to construct the undoable actions and
+	 * perform them and inform the CommandManager about the action. 
+	 * Other that is the UndoableAction itself.
+	 * 
+	 * The class bellow creates an UndoableCreate object and informs the CommandManager
+	 * about its existence.
 	 * 
 	 * @author Helen Bretzke, Christian Silvano
 	 */
@@ -452,6 +507,12 @@ public class GraphCommands {
 		}
 	}
 
+	/**
+	 * This class is responsible for undoing/redoing the creation of elements
+	 * on a graph.
+	 * @author Christian Silvano
+	 *
+	 */
 	private static class UndoableCreate extends AbstractUndoableEdit {
 		SelectionGroup selection = null;
 		GraphElement bkpNode, bkpEdge;
