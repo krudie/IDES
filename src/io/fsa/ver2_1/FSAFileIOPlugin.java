@@ -463,9 +463,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				head.close();
 			}catch(IOException e)
 			{
-				System.out.println("Erro: " + e.getMessage());
+				Hub.displayAlert("Error: " + e.getMessage());
 			}
-			System.out.println("Stream content:\n=======\n" + body);
 		}
 		/**
 		 * Parses XML information and builds a FSAModels based on the content given by the IOCoordinator
@@ -681,7 +680,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 		/**
 		 * Sets annotations for all the model elements in <code>model</code> based on the informations
-		 * countained in <code>stream</code>
+		 * contained in <code>stream</code>
 		 * @param stream
 		 * @param model
 		 */

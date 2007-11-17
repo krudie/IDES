@@ -704,7 +704,8 @@ public class GraphCommands {
 		}
 
 	}
-//	TODO Rewrite undoable Delete. It is very buggy.
+//	TODO Rewrite undoable Delete. It is very buggy. Sorry Lenko ;-)
+	//If one needs any help with it, please talk to Christian.
 	private static class UndoableDelete extends AbstractUndoableEdit{
 		SelectionGroup group;
 		GraphDrawingView graph;
