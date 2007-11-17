@@ -58,9 +58,10 @@ import presentation.fsa.SelectionGroup;
 public class NodeCommands {
 
 	/**
-	 * A command that sets the value of a boolean attribute for a DES element.
+	 * A command that creates an UndoableAction to set the value of a boolean attribute 
+	 * for a DES element.
 	 * 
-	 * @author helen bretzke
+	 * @author Christian Silvano
 	 *
 	 */
 	public static class SetMarkedAction extends AbstractAction {
@@ -75,16 +76,17 @@ public class NodeCommands {
 			UndoableSetMarked action = new UndoableSetMarked(node);
 			//perform the action
 			action.redo();
-			// notify the listeners
+			// notify the CommandManager about a new UndoableAction
 			CommandManager_new.getInstance().undoSupport.postEdit(action);		
 		}		
 
 	}
 
 	/**
-	 * A command that sets the value of a boolean attribute for a DES element.
+	 * A command that creates an UndoableAction that sets the value of a 
+	 * boolean attribute for a DES element.
 	 * 
-	 * @author helen bretzke
+	 * @author Christian Silvano
 	 *
 	 */
 	public static class SetInitialAction extends AbstractAction {

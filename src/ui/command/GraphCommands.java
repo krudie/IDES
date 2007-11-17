@@ -48,10 +48,12 @@ public class GraphCommands {
 	 */
 	public static class SelectTool extends AbstractAction {
 
-		private static String text = "Select";
-
+		//The label that can be used to describe this action
+		private static String text = Hub.string("select");
+		//An icon that can be used to describe this action
 		private static ImageIcon icon = new ImageIcon();
 
+		//Default constructor
 		public SelectTool() {
 			super(text, icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
@@ -68,14 +70,15 @@ public class GraphCommands {
 	}
 
 	/**
-	 * A command to set the current drawing mode to creating mode. While in
+	 * A command to set the current drawing mode to creation mode. While in
 	 * creating mode, user may create new objects in the GraphDrawingView.
 	 * 
 	 * @author Helen Bretzke
 	 */
 	public static class CreateTool extends AbstractAction {
-		private static String text = "Create";
-
+		//The label that can be used to describe this action
+		private static String text = Hub.string("create");
+		//An icon that can be used to describe this action
 		private static ImageIcon icon = new ImageIcon();
 
 
@@ -102,7 +105,7 @@ public class GraphCommands {
 	 * @author Helen Bretzke
 	 */
 	public static class MoveTool extends AbstractAction {
-		private static String text = "Move";
+		private static String text = Hub.string("move");
 		private static ImageIcon icon = new ImageIcon();
 
 		public MoveTool() {
