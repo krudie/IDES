@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -46,10 +47,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.undo.CompoundEdit;
 
 import observer.Subscriber;
+import presentation.fsa.commands.GraphCommands;
 
 
+import services.undo.UndoManager;
 import util.EscapeDialog;
 /**
  * Dialog window for assigning multiple events from the global events model
@@ -62,6 +66,7 @@ import util.EscapeDialog;
 public class EdgeLabellingDialog extends EscapeDialog {
 	
 	private static EdgeLabellingDialog dialog;
+	protected CompoundEdit allEdits;
 	
 	public static void initialize(JComponent parent, EventsModel eventsModel){
 		Frame f = JOptionPane.getFrameForComponent(parent);
@@ -77,6 +82,7 @@ public class EdgeLabellingDialog extends EscapeDialog {
 		if (dialog == null) {
           initialize(view, null);
         }
+		dialog.allEdits=new CompoundEdit();
 		dialog.checkControllable.setSelected(dialog.cbCState);
 		dialog.checkObservable.setSelected(dialog.cbOState);
         dialog.setEdge(e);
@@ -612,12 +618,16 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			if(!"".equals(textField.getText()))
 				buttonCreate.doClick();
 			// Apply any changes to edge's events
-			Event[] events = new Event[listAssignedEvents.getContents().size()];
+			Vector<FSAEvent> events = new Vector<FSAEvent>();
 			Object[] contents = listAssignedEvents.getContents().toArray();
 			for(int i = 0; i < contents.length; i++){
-				events[i] = (Event)contents[i];
-			}				
-			((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).replaceEventsOnEdge(events, edge);
+				events.add((FSAEvent)contents[i]);
+			}
+			new GraphCommands.EdgeLabelAction(edge,events,allEdits).execute();
+			allEdits.end();
+			UndoManager.addEdit(allEdits);
+
+//			((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).replaceEventsOnEdge(events, edge);
 			
 			if(arg0.getSource().equals(buttonOK)){
 		        textField.requestFocus();

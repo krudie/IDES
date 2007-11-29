@@ -1,4 +1,4 @@
-package ui.command;
+package presentation.fsa.commands;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -6,22 +6,25 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import main.Hub;
+import model.fsa.FSAEvent;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
 import model.fsa.ver2_1.Automaton;
 
-import org.pietschy.command.ActionCommand;
-import org.pietschy.command.undo.UndoableActionCommand;
-
+import presentation.LayoutShell;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
@@ -35,6 +38,9 @@ import presentation.fsa.CircleNode;
 import presentation.fsa.Node;
 import presentation.fsa.NodeLabellingDialog;
 import presentation.fsa.SelectionGroup;
+import services.undo.UndoManager;
+import ui.command.EdgeCommands;
+import ui.command.EdgeCommands.CreateEventCommand;
 import ui.tools.CreationTool;
 
 public class GraphCommands {
@@ -48,16 +54,15 @@ public class GraphCommands {
 	 */
 	public static class SelectTool extends AbstractAction {
 
-		//The label that can be used to describe this action
-		private static String text = Hub.string("select");
 		//An icon that can be used to describe this action
 		private static ImageIcon icon = new ImageIcon();
 
 		//Default constructor
 		public SelectTool() {
-			super(text, icon);
+			super(Hub.string("comSelectTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_modify.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSelectTool"));
 		}
 
 		//Switches the tool to Selecting Tool.
@@ -76,17 +81,17 @@ public class GraphCommands {
 	 * @author Helen Bretzke
 	 */
 	public static class CreateTool extends AbstractAction {
-		//The label that can be used to describe this action
-		private static String text = Hub.string("create");
+
 		//An icon that can be used to describe this action
 		private static ImageIcon icon = new ImageIcon();
 
 
 		// Default constructor.	 
 		public CreateTool() {
-			super(text, icon);
+			super(Hub.string("comCreateTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_create.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintCreateTool"));
 		}
 
 		//Switches the tool to Creating tool
@@ -105,13 +110,14 @@ public class GraphCommands {
 	 * @author Helen Bretzke
 	 */
 	public static class MoveTool extends AbstractAction {
-		private static String text = Hub.string("move");
+
 		private static ImageIcon icon = new ImageIcon();
 
 		public MoveTool() {
-			super(text, icon);
+			super(Hub.string("comMoveTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_move.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintMoveTool"));
 		}
 
 		//Switches the tool to Moving Tool
@@ -160,8 +166,7 @@ public class GraphCommands {
 				// There is no "perform" operation like most of the UndoableActions, 
 				// the reason is that the movement is made by a user (e.g.: by dragging a node in a FSA).
 
-				// Notify the listeners
-				CommandManager_new.getInstance().undoSupport.postEdit(action);
+				UndoManager.addEdit(action);
 			}
 		}
 
@@ -170,8 +175,37 @@ public class GraphCommands {
 		}
 	}
 
-	public static class TextCommand extends UndoableActionCommand {
+	/**
+	 * A command to set the current drawing mode to labelling mode. While in
+	 * labelling mode, user may label nodes and edges or create free labels.
+	 * 
+	 * @author Lenko Grigorov
+	 */
+	public static class TextTool extends AbstractAction {
 
+		//An icon that can be used to describe this action
+		private static ImageIcon icon = new ImageIcon();
+
+		//Default constructor
+		public TextTool() {
+			super(Hub.string("comTextTool"), icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(
+					Hub.getResource("images/icons/machine_alpha.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintTextTool"));
+		}
+
+		//Switches the tool to Selecting Tool.
+		public void actionPerformed(ActionEvent event) {
+			// TODO set the tool in the *currently active* drawing view
+			ContextAdaptorHack.context.setTool(GraphDrawingView.SELECT);
+			ContextAdaptorHack.context
+			.setPreferredTool(GraphDrawingView.SELECT);
+		}
+	}
+
+	public static class TextAction extends AbstractAction {
+
+		
 		// GraphDrawingView context;
 		String text;
 
@@ -179,29 +213,27 @@ public class GraphCommands {
 
 		Point2D.Float location = null;
 
-		public TextCommand() {
-			super("text.command");
+		//An icon that can be used to describe this action
+		private static ImageIcon icon = new ImageIcon();
+
+		//Default constructor
+		protected TextAction() {
+			super(Hub.string("setLabel"), icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(
+					Hub.getResource("images/icons/machine_alpha.gif")));
 		}
 
-		public TextCommand(GraphElement currentSelection, String text) {
-			super("text.command");
+		public TextAction(GraphElement currentSelection) {
+			this();
 			this.element = currentSelection;
-			// this.context = context;
-			this.text = text;
-		}
-
-		public TextCommand(GraphElement currentSelection) {
-			super("text.command");
-			this.element = currentSelection;
-			// this.context = context;
 		}
 
 		/**
 		 * @param context
 		 * @param location
 		 */
-		public TextCommand(Point location) {
-			// this.context = context;
+		public TextAction(Point location) {
+			this();
 			this.location = new Point2D.Float(location.x, location.y);
 		}
 
@@ -209,8 +241,7 @@ public class GraphCommands {
 			this.element = element;
 		}
 
-		@Override
-		protected UndoableEdit performEdit() {
+		public void actionPerformed(ActionEvent event){
 			if (element == null) {
 				// create a new free label
 				// TODO uncomment the following statement when finished
@@ -230,16 +261,18 @@ public class GraphCommands {
 							.getGraphModel(), node);
 				} else if (element instanceof BezierEdge) {
 					BezierEdge edge = (BezierEdge) element;
-					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
-							edge);
+					new EdgeCommands.CreateEventCommand(ContextAdaptorHack.context,edge).execute();
+//					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+//							edge);
 					// TODO accumulate set of edits that were performed in the
 					// edge
 					// labelling dialog
 				} else if (element instanceof GraphLabel
 						&& element.getParent() instanceof Edge) {
 					Edge edge = (Edge) element.getParent();
-					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
-							edge);
+					new EdgeCommands.CreateEventCommand(ContextAdaptorHack.context,edge).execute();
+//					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+//							edge);
 				} else {
 					// TODO uncomment the following statement when finished
 					// implementing
@@ -253,10 +286,241 @@ public class GraphCommands {
 			}
 			element = null;
 			text = null;
-			// TODO create an UndoableEdit object using
-			// my instance variables and return it.
-			return null;
 		}
+		
+		public void execute()
+		{
+			actionPerformed(null);
+		}
+		
+		public boolean canUndo() {
+			return true;
+		}
+
+		public boolean canRedo() {
+			return true;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return Hub.string("moveSelection");
+		}
+
+	}
+	
+	public static class LabelAction extends AbstractAction
+	{
+		protected String text;
+		protected GraphElement element;
+		
+		public LabelAction(GraphLabel element, String text)
+		{
+			this.element=element;
+			this.text=text;
+			if(this.text==null)
+			{
+				this.text="";
+			}
+		}
+		
+		public LabelAction(Node element, String text)
+		{
+			this.element=element;
+			this.text=text;
+			if(this.text==null)
+			{
+				this.text="";
+			}
+		}
+		
+		public void actionPerformed(ActionEvent event)
+		{
+			if (element != null) {
+				UndoableLabel action = new UndoableLabel(element,text);
+				action.redo();
+				UndoManager.addEdit(action);
+			}
+
+		}
+
+		public void execute() {
+			actionPerformed(null);
+		}
+	}
+	
+	public static class UndoableLabel extends AbstractUndoableEdit
+	{
+		String text=null;
+		String originalText=null;
+		GraphElement element;
+		
+		public UndoableLabel(GraphElement element, String text)
+		{
+			this.element=element;
+			this.text=text;
+		}
+		
+		public void undo() throws CannotUndoException {
+			if(originalText==null)
+			{
+				throw new CannotUndoException();
+			}
+			if(element instanceof Node)
+			{
+				text=((Node)element).getLabel().getText();
+				ContextAdaptorHack.context.getGraphModel().labelNode((Node)element, originalText);
+			}
+			else if(element instanceof GraphLabel)
+			{
+				text=((GraphLabel)element).getText();
+				ContextAdaptorHack.context.getGraphModel().setLabelText((GraphLabel)element, originalText);
+			}
+//			else
+//			{
+//				//TODO add modification for free labels 
+//			}
+			originalText=null;
+		}
+
+		public void redo() throws CannotRedoException {
+			if(text==null)
+			{
+				throw new CannotRedoException();
+			}
+			if(element instanceof Node)
+			{
+				originalText=((Node)element).getLabel().getText();
+				ContextAdaptorHack.context.getGraphModel().labelNode((Node)element, text);
+			}
+			else if(element instanceof GraphLabel)
+			{
+				originalText=((GraphLabel)element).getText();
+				ContextAdaptorHack.context.getGraphModel().setLabelText((GraphLabel)element, text);
+			}
+//			else
+//			{
+//				//TODO add modification for free labels 
+//			}
+			text=null;
+		}
+
+		public boolean canUndo() {
+			return true;
+		}
+
+		public boolean canRedo() {
+			return true;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return Hub.string("setLabel");
+		}		
+	}
+	
+	public static class EdgeLabelAction extends AbstractAction
+	{
+		Vector<FSAEvent> assignedEvents=null;
+		Edge edge;
+		CompoundEdit parent=null;
+		public EdgeLabelAction(Edge edge, Vector<FSAEvent> assignedEvents)
+		{
+			this(edge,assignedEvents,null);
+		}
+		public EdgeLabelAction(Edge edge, Vector<FSAEvent> assignedEvents, CompoundEdit parent)
+		{
+			this.edge=edge;
+			this.assignedEvents=assignedEvents;
+			if(this.assignedEvents==null)
+			{
+				this.assignedEvents=new Vector<FSAEvent>();
+			}
+			this.parent=parent;
+		}
+		
+		public void actionPerformed(ActionEvent event)
+		{
+			if (edge != null) {
+				UndoableEdgeLabel action = new UndoableEdgeLabel(edge,assignedEvents);
+				action.redo();
+				if(parent!=null)
+				{
+					parent.addEdit(action);
+				}
+				else
+				{
+					UndoManager.addEdit(action);
+				}
+			}
+
+		}
+
+		public void execute() {
+			actionPerformed(null);
+		}
+	}
+
+	public static class UndoableEdgeLabel extends AbstractUndoableEdit
+	{
+		Vector<FSAEvent> assignedEvents=null;
+		Vector<FSAEvent> originalEvents=null;
+		Edge edge;
+		
+		public UndoableEdgeLabel(Edge edge, Vector<FSAEvent> assignedEvents)
+		{
+			this.edge=edge;
+			this.assignedEvents=assignedEvents;
+		}
+		
+		public void undo() throws CannotUndoException {
+			if(originalEvents==null)
+			{
+				throw new CannotUndoException();
+			}
+			assignedEvents=new Vector<FSAEvent>();
+			for(Iterator<FSATransition> i=edge.getTransitions();i.hasNext();)
+			{
+				assignedEvents.add(i.next().getEvent());
+			}
+			ContextAdaptorHack.context.getGraphModel().replaceEventsOnEdge(originalEvents.toArray(new FSAEvent[0]), edge);
+			originalEvents=null;
+		}
+
+		public void redo() throws CannotRedoException {
+			if(assignedEvents==null)
+			{
+				throw new CannotRedoException();
+			}
+			originalEvents=new Vector<FSAEvent>();
+			for(Iterator<FSATransition> i=edge.getTransitions();i.hasNext();)
+			{
+				originalEvents.add(i.next().getEvent());
+			}
+			ContextAdaptorHack.context.getGraphModel().replaceEventsOnEdge(assignedEvents.toArray(new FSAEvent[0]), edge);
+			assignedEvents=null;
+		}
+
+		public boolean canUndo() {
+			return true;
+		}
+
+		public boolean canRedo() {
+			return true;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return Hub.string("setLabel");
+		}		
 	}
 
 	public static class ZoomInAction extends AbstractAction {
@@ -299,16 +563,13 @@ public class GraphCommands {
 
 		// TODO: redo all of this so there's an independent grid going
 
-		// private GraphDrawingView context;
-
-		private static String text = "Align nodes";
-
 		private static ImageIcon icon = new ImageIcon();
 
 		public AlignTool() {
-			super(text, icon);
+			super(Hub.string("comAlign"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(
 					Hub.getResource("images/icons/graphic_align.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintAlign"));
 		}
 
 		public void actionPerformed(ActionEvent event) {
@@ -361,7 +622,7 @@ public class GraphCommands {
 		 * Undoes a movement by applying a vector opposite to <code>displacement</code>
 		 * over <code>collection</code>
 		 */
-		public void undo() throws CannotRedoException {
+		public void undo() throws CannotUndoException {
 			Iterator<GraphElement> it = selection.children();
 
 			//Applies a displacement over every element under <code>selection</selection>
@@ -498,11 +759,9 @@ public class GraphCommands {
 		public void actionPerformed(ActionEvent event) {
 			UndoableCreate action = new UndoableCreate(elementType, source,
 					target, edge, location);
-			// There is no "perform" operation, since the movement was done by
-			// the user
+
 			action.redo();
-			// notify the listeners
-			CommandManager_new.getInstance().undoSupport.postEdit(action);
+			UndoManager.addEdit(action);
 		}
 
 		public void execute() {
@@ -533,7 +792,7 @@ public class GraphCommands {
 			location = l;
 		}
 
-		public void undo() throws CannotRedoException {
+		public void undo() throws CannotUndoException {
 			FSAState s;
 			Automaton model = (Automaton) Hub.getWorkspace().getActiveModel();
 			FSATransition t;
@@ -694,8 +953,7 @@ public class GraphCommands {
 			UndoableDelete action = new UndoableDelete(context,context.getSelectedGroup());
 			//perform the action
 			action.redo();
-			// notify the listeners
-			CommandManager_new.getInstance().undoSupport.postEdit(action);
+			UndoManager.addEdit(action);
 			context.setAvoidNextDraw(false);
 			context.repaint();
 			context.setAvoidNextDraw(false);
@@ -732,7 +990,7 @@ public class GraphCommands {
 			}
 		}
 
-		public void undo() throws CannotRedoException{
+		public void undo() throws CannotUndoException{
 			//Make the FSAGraph recreate the children of the selection one by one:
 			if(group!=null & graph !=null)
 			{
@@ -804,6 +1062,20 @@ public class GraphCommands {
 		}
 	}
 
+	public static class UniformNodesAction extends AbstractAction {
+		
+		protected FSAGraph graph;
+		
+		public UniformNodesAction(FSAGraph graph) {
+			super(Hub.string("comUniformNodeSize"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintUniformNodeSize"));
+			this.graph=graph;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			graph.setUseUniformRadius(!graph.isUseUniformRadius());
+		}
+	}
 }
 
 

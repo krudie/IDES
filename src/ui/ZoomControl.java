@@ -49,7 +49,7 @@ public class ZoomControl extends JComboBox implements ActionListener {
 
 	protected int zoomValue=100;
 	
-	protected static final String[] presets = { "10 %", "25 %", "50 %", "100 %", "200 %" };
+	protected static final String[] presets = { "10 %", "25 %", "50 %", "75 %", "100 %", "150 %", "200 %" };
 	
 	/**
 	 * 
@@ -57,7 +57,7 @@ public class ZoomControl extends JComboBox implements ActionListener {
 	public ZoomControl() {
 		super(presets);
 		setEditable(true);
-		setSelectedIndex(3);
+		setSelectedIndex(4);
 		addActionListener(this);
 		setMaximumSize(new Dimension(90,getPreferredSize().height));
 		setPreferredSize(new Dimension(90,getPreferredSize().height));

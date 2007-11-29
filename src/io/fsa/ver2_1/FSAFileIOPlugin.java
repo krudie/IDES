@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 
 import presentation.CubicParamCurve2D;
 import presentation.fsa.CircleNodeLayout;
+import presentation.fsa.GraphLayout;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -141,8 +143,14 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
 			//TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
 			stream.println("\t<font size=\""+ 12+"\"/>");
+			
+			GraphLayout layout=(GraphLayout)model.getAnnotation(Annotable.LAYOUT);
+			if(layout!=null)
+			{
+				stream.println("\t<layout uniformnodes=\""+layout.getUseUniformRadius().get()+"\"/>");
+			}
+			
 			si = ((FSAModel)model).getStateIterator();
-
 			while(si.hasNext())
 			{
 				XMLExporter.stateLayoutToXML((State)si.next(), stream, XMLExporter.INDENT);            
@@ -351,7 +359,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		CONTROLLABLE="controllable",NAME="name", ID="id", CIRCLE="circle",RADIUS="r", COORD_X="x", 
 		COORD_Y="y", BEZIER="bezier", X1="x1", Y1="y1", X2="x2", Y2="y2", CTRLX1="ctrlx1", CTRLY1="ctrly1",
 		CTRLX2="ctrlx2", CTRLY2="ctrly2", SOURCE="source", TARGET="target",STATE = "state", 
-		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label", ARROW="arrow", GROUP_ID="group";
+		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label", ARROW="arrow", GROUP_ID="group",
+		LAYOUT="layout", UNIFORM_NODES="uniformnodes";
 
 		//Auxiliar attributes: "Actions" to be developed by the parser
 		//Tells some parseDataElements and parseMetaElements whether they are
@@ -560,7 +569,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					tmpState = (State)s;
 				}
 
-				if(CURRENT_PARSING_ELEMENT == TRANSITION)
+				else if(CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
 					long id = Long.parseLong(atts.getValue(ID));
 					long groupId = -1;
@@ -608,10 +617,23 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					tmpTransition = (Transition)transition;
 				}
 
-				if(CURRENT_PARSING_ELEMENT == FONT)
+				else if(CURRENT_PARSING_ELEMENT == FONT)
 				{
 
 				}
+				
+				else if(CURRENT_PARSING_ELEMENT == LAYOUT)
+				{
+					String uniformNodes=atts.getValue(UNIFORM_NODES);
+					if(uniformNodes==null)
+					{
+						uniformNodes="false";
+					}
+					GraphLayout gl=new GraphLayout();
+					gl.getUseUniformRadius().set(Boolean.parseBoolean(uniformNodes));
+					model.setAnnotation(Annotable.LAYOUT,gl);
+				}
+				
 			case SUBTAG: //FIRST LEVEL AFTER THE MAIN TAG
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{

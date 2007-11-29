@@ -16,8 +16,6 @@ import javax.swing.JOptionPane;
 
 import main.Hub;
 
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import pluggable.io.IOPluginManager;
 
 import pluggable.io.ImportExportPlugin;

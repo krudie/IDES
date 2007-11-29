@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 
 import operations.fsa.ver2_1.Accessible;
 import operations.fsa.ver2_1.Coaccessible;
+import operations.fsa.ver2_1.MultiAgentProductFSA;
 import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.Containment;
 import operations.fsa.ver2_1.ControlMap;
@@ -151,6 +152,7 @@ public class Main {
 		OperationManager.register(new ControlMap());
 		OperationManager.register(new LocalModular());
 		OperationManager.register(new SupRed());
+		OperationManager.register(new MultiAgentProductFSA());
 
 		//setup stuff that needs the main window
 		LatexManager.init(); 
@@ -188,14 +190,6 @@ public class Main {
 			if(!io.CommonActions.handleUnsavedModels(models))
 				return;
 		}
-		
-		
-//		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
-//		{
-//			models.add(i.next());
-//		}
-//		new SaveDialog(models).selectModels();
-		
 		
 		//store settings
 		Cache.close();

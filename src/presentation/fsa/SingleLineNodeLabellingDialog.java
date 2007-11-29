@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import presentation.Presentation;
+import presentation.fsa.commands.GraphCommands;
 
 import main.Hub;
 
@@ -46,13 +47,22 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 	{
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			if(gm!= null){
-				gm.labelNode(n,area.getText());						
+			if(gm!= null&&!area.getText().equals(n.getLabel().getText())){
+				new GraphCommands.LabelAction(n,area.getText()).execute();						
 			}
 			setVisible(false);
 		}
 	};
 
+	//the main job will be handled by commitListener on focusLost
+	protected Action enterListener = new AbstractAction()
+	{
+		public void actionPerformed(ActionEvent actionEvent)
+		{
+			setVisible(false);
+		}
+	};
+	
 	protected static FocusListener commitOnFocusLost=new FocusListener()
 	{
 		public void focusLost(FocusEvent e)
@@ -79,7 +89,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 //		Object actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),this);
 //		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
-		area.getActionMap().put(this,commitListener);
+		area.getActionMap().put(this,enterListener);
 //		JScrollPane sPane=new JScrollPane(area);
 		mainBox.add(area);
 		mainBox.add(Box.createRigidArea(new Dimension(0,5)));

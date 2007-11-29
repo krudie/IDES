@@ -33,11 +33,6 @@ import model.ModelDescriptor;
 import model.ModelManager;
 import model.fsa.FSAModel;
 
-import org.pietschy.command.ActionCommand;
-import org.pietschy.command.CommandManager;
-import org.pietschy.command.file.AbstractSaveAsCommand;
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import presentation.LayoutShell;
 import services.General;
 import services.latex.LatexManager;
@@ -58,13 +53,13 @@ public class FileCommands {
 		 */
 		private static int Count=0;
 		
-		private static String text = "New model";
 		private static ImageIcon icon = new ImageIcon();
 		
 		public NewAction()
-		{	
-			super(text,icon);
+		{
+			super(Hub.string("comNewModel"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_new_automaton.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintNewModel"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -78,13 +73,13 @@ public class FileCommands {
 
 	public static class OpenAction extends AbstractAction{
 		
-		private static String text = "Open model";
 		private static ImageIcon icon = new ImageIcon();
 		
 		public OpenAction()
 		{
-			super(text,icon);			
+			super(Hub.string("comOpenModel"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_open_automaton.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintOpenModel"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -95,13 +90,13 @@ public class FileCommands {
 	}
 	public static class SaveAction extends AbstractAction{
 		
-		private static String text = "Save model";
 		private static ImageIcon icon = new ImageIcon();
 		
 		public SaveAction()
 		{
-			super(text,icon);
+			super(Hub.string("comSaveModel"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_save_automaton.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveModel"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -111,13 +106,14 @@ public class FileCommands {
 	}
 	
 	public static class SaveAsAction extends AbstractAction{
-		private static String text = "Save model as...";
+
 		private static ImageIcon icon = new ImageIcon();
 		
 		public SaveAsAction()
 		{
-			super(text,icon);
+			super(Hub.string("comSaveAsModel"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_saveas_automaton.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAsModel"));
 		}
 		public void actionPerformed(ActionEvent e)
 		{
@@ -126,14 +122,14 @@ public class FileCommands {
 	}
 	
 	public static class SaveAllAction extends AbstractAction{
-		
-		private static String text = "Save all model";
+
 		private static ImageIcon icon = new ImageIcon();
 		
 		public SaveAllAction()
 		{
-			super(text,icon);
+			super(Hub.string("comSaveAllModels"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_saveall_automata.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAllModels"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -158,13 +154,13 @@ public class FileCommands {
 
 	public static class SaveWorkspaceAction extends AbstractAction{
 		
-		private static String text = "Save workspace";
 		private static ImageIcon icon = new ImageIcon();
 		
 		public SaveWorkspaceAction()
 		{
-			super(text,icon);
+			super(Hub.string("comSaveWorkspace"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_save_workspace.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveWorkspace"));
 		}
 		
 		public void actionPerformed(ActionEvent event)
@@ -188,13 +184,13 @@ public class FileCommands {
 
 	public static class SaveWorkspaceAsAction extends AbstractAction{
 		
-		private static String text = "Save workspace as...";
 		private static ImageIcon icon = new ImageIcon();
 		
 		public SaveWorkspaceAsAction()
 		{
-			super(text,icon);
+			super(Hub.string("comSaveAsWorkspace"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_saveas_workspace.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAsWorkspace"));
 		}
 		
 		public void actionPerformed(ActionEvent event)
@@ -213,12 +209,10 @@ public class FileCommands {
 
 	public static class ImportAction extends AbstractAction{
 		
-		private static String text = "Import";
-		private static ImageIcon icon = new ImageIcon();
-		
 		public ImportAction()
 		{
-			super(text,icon);
+			super(Hub.string("comImport"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintImport"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -229,12 +223,10 @@ public class FileCommands {
 
 	public static class ExportAction extends AbstractAction{
 		
-		private static String text = "Export";
-		private static ImageIcon icon = new ImageIcon();
-		
 		public ExportAction()
 		{
-			super(text,icon);
+			super(Hub.string("comExport"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintExport"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -244,14 +236,14 @@ public class FileCommands {
 	}
 
 	public static class CloseAction extends AbstractAction{
-		
-		private static String text = "Close model";
+
 		private static ImageIcon icon = new ImageIcon();
 		
 		public CloseAction()
 		{
-			super(text,icon);
+			super(Hub.string("comCloseModel"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_close_automaton.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintCloseModel"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -260,32 +252,15 @@ public class FileCommands {
 		}
 	}
 
-	public static class NewWorkspaceAction extends AbstractAction{
-		
-		private static String text = "New workspace";
-		private static ImageIcon icon = new ImageIcon();
-		
-		public NewWorkspaceAction()
-		{
-			super(text,icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_new_workspace.gif")));	
-		}
-		
-		public void actionPerformed(ActionEvent e)
-		{
-			JOptionPane.showMessageDialog(null, "Create new workspace");
-		}
-	}
-
 	public static class OpenWorkspaceAction extends AbstractAction{
-		
-		private static String text = "Open workspace";
+
 		private static ImageIcon icon = new ImageIcon();
 		
 		public OpenWorkspaceAction()
 		{
-			super(text,icon);
+			super(Hub.string("comOpenWorkspace"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/file_open_workspace.gif")));	
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintOpenWorkspace"));
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -295,7 +270,7 @@ public class FileCommands {
 					return;
 			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
-			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+			fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.WORKSPACE_FILE_EXT}, Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int retVal = fc.showOpenDialog(Hub.getMainWindow());
 			if(retVal == JFileChooser.APPROVE_OPTION){
@@ -313,11 +288,11 @@ public class FileCommands {
 	
 	
 	public static class ExitAction extends AbstractAction{
-		private static String text = "Exit";
-		private static ImageIcon icon = new ImageIcon();
+
 		public ExitAction()
 		{
-			super(text,icon);
+			super(Hub.string("comExit"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintExit"));
 		}
 		
 		public void actionPerformed(ActionEvent e)

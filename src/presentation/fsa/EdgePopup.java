@@ -14,9 +14,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.Presentation;
+import presentation.fsa.commands.GraphCommands;
+import presentation.fsa.commands.GraphCommands.DeleteAction;
 import ui.command.EdgeCommands;
-import ui.command.GraphCommands;
-import ui.command.GraphCommands.DeleteAction;
 
 import main.Hub;
 

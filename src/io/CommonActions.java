@@ -24,8 +24,6 @@ import main.WorkspaceMessage;
 import main.WorkspacePublisher;
 import model.DESModel;
 
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
@@ -44,7 +42,7 @@ public class CommonActions {
 	{		
 		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("openModelTitle"));
-		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
+		fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.MODEL_FILE_EXT}, Hub.string("modelFileDescription")));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int retVal = fc.showOpenDialog(Hub.getMainWindow());
 		if(retVal == JFileChooser.APPROVE_OPTION){
@@ -131,7 +129,7 @@ public class CommonActions {
 				fc=new JFileChooser(path);	
 			}
 			fc.setDialogTitle(Hub.string("saveModelTitle"));
-			fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+			fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.MODEL_FILE_EXT}, 
 					Hub.string("modelFileDescription")));
 
 			if((File)model.getAnnotation(Annotable.FILE)!=null){
@@ -204,7 +202,7 @@ public class CommonActions {
 		Iterator<String> descIt = desc.iterator(); 
 		while(extIt.hasNext())
 		{
-			fc.addChoosableFileFilter(new ExtensionFileFilter(extIt.next(), descIt.next()));
+			fc.addChoosableFileFilter(new IOUtilities.ExtensionFilter(new String[]{extIt.next()}, descIt.next()));
 		}
 		String lastFilter = Hub.persistentData.getProperty(LAST_IMPEX_SETTING_NAME);
 		FileFilter[] f = fc.getChoosableFileFilters();
@@ -300,7 +298,7 @@ public class CommonActions {
 		while(pluginIt.hasNext())
 		{
 			ImportExportPlugin p = pluginIt.next();
-			fc.addChoosableFileFilter(new ExtensionFileFilter(p.getExportExtension(), p.getDescription()));
+			fc.addChoosableFileFilter(new IOUtilities.ExtensionFilter(new String[]{p.getExportExtension()}, p.getDescription()));
 		}
 		String lastFilter = Hub.persistentData.getProperty(LAST_IMPEX_SETTING_NAME);
 		FileFilter[] f = fc.getChoosableFileFilters();
@@ -415,7 +413,7 @@ public class CommonActions {
 			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 
 		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
-		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+		fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.WORKSPACE_FILE_EXT}, Hub.string("workspaceFileDescription")));
 
 		if(wd.getFile()!=null)
 			fc.setSelectedFile(wd.getFile());
@@ -563,7 +561,7 @@ public class CommonActions {
 					fc=new JFileChooser(path);	
 				}
 				fc.setDialogTitle(Hub.string("saveModelTitle"));
-				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+				fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.MODEL_FILE_EXT}, 
 						Hub.string("modelFileDescription")));
 
 				if((File)m.getAnnotation(Annotable.FILE)!=null){

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import presentation.GraphicalLayout;
 import presentation.LayoutShell;
 import presentation.PresentationElement;
 import presentation.Geometry;
+import util.BooleanUIBinder;
 
 /**
  * A recursive structure used to view, draw and modify the graph representation of an Automaton.
@@ -55,7 +57,7 @@ import presentation.Geometry;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell {
+public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell, Annotable {
 	private long bezierLayoutFreeGroup = 0;
 	//This flag is set to true when the FSAGraph is a result of an automatic
 	//DES operation and this result has more than 100 states
@@ -66,9 +68,31 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	}
 
 	protected UniformRadius uniformR=new UniformRadius();
-
-	/** Flag indicating whether this graph needs to be saved to file */
-	private boolean needsSave = false;
+	
+	public boolean isUseUniformRadius()
+	{
+		return ((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT)).getUseUniformRadius().get();
+	}
+	
+	public void setUseUniformRadius(boolean b)
+	{
+		BooleanUIBinder binder=((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT)).getUseUniformRadius();
+		if(b!=binder.get())
+		{
+			binder.set(b);
+			setNeedsRefresh(true);
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+					FSAGraphMessage.GRAPH,
+					-1,
+					getBounds(false),
+					this));
+		}
+	}
+	
+	public BooleanUIBinder getUseUniformRadiusBinder()
+	{
+		return ((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT)).getUseUniformRadius();
+	}
 
 	/**
 	 * Maps used in searches of intersection
@@ -84,17 +108,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */	
 	private Automaton fsa;	   // system model
 
-//	/**
-//	* Intermediary used to extract and update presentation data between the system model
-//	* and the graphical display. 
-//	* TODO remove after removing all layout data from Automaton,
-//	* 		testing graph extraction by LayoutDataParser, and 
-//	*		delaying committing all changes until time of save.	
-//	*/	
-//	//TODO eliminate the need for this attribute and erase it
-//	private MetaData metaData;
-
-
 	/**
 	 * Creates a graph model from the given system data model using
 	 * an automatic layout tool.
@@ -108,6 +121,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		}
 		this.fsa = (Automaton)fsa;
 		fsa.addSubscriber(this);
+		
+		//test for global layout
+		if(!fsa.hasAnnotation(Annotable.LAYOUT))
+		{
+			fsa.setAnnotation(Annotable.LAYOUT,new GraphLayout());
+		}
+		
 		nodes = new HashMap<Long, CircleNode>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
@@ -411,14 +431,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 //	}
 
 
-	/**
-	 * Sets a flag to indicate that this graph needs to refresh itself
-	 * because it is out of sync with its underlying model or some of its elements
-	 * are out of sync.
-	 */
-	public void setNeedsRefresh( boolean b ) {
-		super.setNeedsRefresh(b);
-	}
+//	/**
+//	 * Sets a flag to indicate that this graph needs to refresh itself
+//	 * because it is out of sync with its underlying model or some of its elements
+//	 * are out of sync.
+//	 */
+//	public void setNeedsRefresh( boolean b ) {
+//		super.setNeedsRefresh(b);
+//	}
 
 //	/**
 //	* Tells the graph that it needs to be saved to file. 
@@ -758,14 +778,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		s.setInitial(false);
 		s.setMarked(false);
 		CircleNodeLayout layout = new CircleNodeLayout(uniformR,p);			
-//		metaData.setLayoutData(s, layout);
-//		Christian - The following line is to supress the use of metadata, the above line should be erased as soon as possible.
 		s.setAnnotation(Annotable.LAYOUT, layout);
 		fsa.removeSubscriber(this);
 		fsa.add(s);
 		fsa.addSubscriber(this);
 
-		CircleNode n = new CircleNode(s, layout);	
+		CircleNode n = new CircleNode(s, layout);
 		nodes.put(new Long(s.getId()), n);
 		insert(n);
 		setNeedsRefresh(true);
@@ -1046,7 +1064,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param events a non-null, non-empty list of FSA events
 	 * @param edge the edge to which the edges will be assigned
 	 */
-	protected void replaceEventsOnEdge(Event[] events, Edge edge){
+	public void replaceEventsOnEdge(FSAEvent[] events, Edge edge){
 		BezierLayout layout = (BezierLayout)edge.getLayout();
 		// get the transitions for edge
 		Iterator<FSATransition> trans = edge.getTransitions();
@@ -1075,7 +1093,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			}
 		}				
 
-		for(Event e : events){
+		for(FSAEvent e : events){
 			if(trans.hasNext()){
 				t = trans.next();			
 				t.setEvent(e);
@@ -1104,7 +1122,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		layout.getEventNames().clear();
 		for(int i = 0; i < events.length; i++)
 		{
-			layout.getEventNames().add(events[i].getSymbol());
+			if(events[i]!=null)
+			{
+				layout.getEventNames().add(events[i].getSymbol());
+			}
 		}
 		// add transitions to accommodate added events
 		iter = toAdd.iterator();
@@ -1247,38 +1268,33 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param n the node to be labelled
 	 * @param text the name for the node
 	 */
-	public void labelNode(Node n, String text){		
+	public void labelNode(Node n, String text){
+		//get uniform radius to compare if there was change
+		float originalRadius=uniformR.getRadius();
 		State s = (State)fsa.getState(n.getId());
 		n.getLayout().setText(text);
 		n.getLabel().setText(text);
-		////////////////////////////////////////////////////
-		s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
+		s.setAnnotation(Annotable.LAYOUT, n.getLayout());
 		s.setName(text);
-		/////////////////////////////////////////////////////
-		setNeedsRefresh(true);		
-//		Iterator<Edge> adjEdges = n.adjacentEdges();
-
-
-		//Christian: CODE REMOVED! IT IS NOT NECESSARY ANYMORE
-		// /TODO remove this code as soon as possible, since it is metadata related
-		//every time a node have its size changed.
-//		//Updating the self-loops since its handler is changed when the label
-//		//makes the node change its size.
-//		while(adjEdges.hasNext()){
-//		Edge itsEdge = adjEdges.next();
-//		if(itsEdge.getTargetNode().equals(itsEdge.getSourceNode()))
-//		{
-//		this.commitMovement(itsEdge);
-//		}
-//		}
-		//<<move it>>
-
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-				FSAGraphMessage.NODE,
-				n.getId(), 
-				n.bounds(),
-				this, ""));
-
+		//this is needed to update the uniform radius database
+		n.refresh();
+		if(isUseUniformRadius()&&originalRadius!=uniformR.getRadius())
+		{
+			setNeedsRefresh(true);
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+					FSAGraphMessage.GRAPH,
+					-1, 
+					getBounds(false),
+					this));	
+		}
+		else
+		{
+			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+					FSAGraphMessage.NODE,
+					n.getId(), 
+					n.bounds(),
+					this));
+		}
 	}
 
 	/**
@@ -2025,6 +2041,31 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		this.getBounds(true);
 	}
 	//END OF THE HACKING OF A BUTTON
+	
+	protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
+
+	public Object getAnnotation(String key)
+	{
+		return annotations.get(key);
+	}
+
+	public void setAnnotation(String key, Object annotation)
+	{
+		if(annotation != null)
+		{
+			annotations.put(key, annotation);
+		}
+	}
+
+	public void removeAnnotation(String key)
+	{
+		annotations.remove(key);
+	}
+
+	public boolean hasAnnotation(String key)
+	{
+		return annotations.containsKey(key);
+	}
 }
 
 

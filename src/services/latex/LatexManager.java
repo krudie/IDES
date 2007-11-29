@@ -7,8 +7,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.pietschy.command.ToggleCommand;
-
 import presentation.fsa.FSAGraph;
 
 import ui.OptionsWindow;

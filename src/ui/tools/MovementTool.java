@@ -10,8 +10,8 @@ import main.Hub;
 
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
+import presentation.fsa.commands.GraphCommands.MoveAction;
 
-import ui.command.GraphCommands.MoveAction;
 
 public class MovementTool extends DrawingTool {
 

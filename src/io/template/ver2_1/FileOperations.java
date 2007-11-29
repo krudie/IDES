@@ -16,8 +16,6 @@ import main.Annotable;
 import main.Hub;
 import model.fsa.FSAModel;
 
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import presentation.template.TemplateGraph;
 
 public class FileOperations {

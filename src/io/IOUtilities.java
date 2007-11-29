@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.DataOutputStream;
 import java.io.OutputStream;
+
+import javax.swing.filechooser.FileFilter;
+
 import org.apache.commons.codec.binary.Base64;
 
 import main.Hub;
@@ -145,5 +148,83 @@ public class IOUtilities {
     	         buffer.append(c);
     	   }
     	   return buffer.toString();
-    }    
+    }
+    
+    /**
+     * Class used to create file filters for Open/Save/etc. dialog boxes. It filters
+     * files depending on their extenstions. 
+     * 
+     * @author Lenko Grigorov
+     *
+     */
+    public static class ExtensionFilter extends FileFilter
+    {
+    	private String description;
+    	private String[] extensions;
+    	
+    	/**
+    	 * Construct a new file filter which will select all directories (regardless
+    	 * of name) and all files having an extension equal to the provided extension
+    	 * (regardless of letter case).
+    	 * @param extension file extension to be used for filtering (e.g., "txt")
+    	 * @param description description to be used for the filter (e.g., "Text file")
+    	 */
+    	public ExtensionFilter(String extension, String description)
+    	{
+    		this(new String[]{extension},description);
+    	}
+    	
+    	/**
+    	 * Construct a new file filter which will select all directories (regardless
+    	 * of name) and all files having an extension equal to on of the provided extensions
+    	 * (regardless of letter case).
+    	 * @param extensions file extensions to be used for filtering (e.g., ["jpg","bmp","png"])
+    	 * @param description description to be used for the filter (e.g., "Image file")
+    	 */
+    	public ExtensionFilter(String[] extensions, String description)
+    	{
+    		this.extensions=extensions;
+    		for(int i=0;i<extensions.length;++i)
+    		{
+    			extensions[i]=extensions[i].toLowerCase();
+    		}
+    		this.description=description;
+    	}
+    	
+    	/**
+    	 * Returns the description of the file filter (e.g. "Text file").
+    	 * @return the description of the file filter (e.g. "Text file")
+    	 */
+    	public String getDescription()
+    	{
+    		return description;
+    	}
+    	
+    	/**
+    	 * Says if the provided file satisfies the constraints of the filter.
+    	 * @return <code>true</code> if the file is a directory or if the extension
+    	 * of the file is one of the accepted extensions (regrdless of letter case),
+    	 * otherwise returns <code>false</code>
+    	 */
+    	public boolean accept(File f)
+    	{
+    		if(f.isDirectory())
+    		{
+    			return true;
+    		}
+    		String extension="";
+    		if(f.getName().contains("."))
+    		{
+    			extension=f.getName().substring(f.getName().lastIndexOf('.')+1);
+    		}
+    		for(String accepted:extensions)
+    		{
+    			if(extension.toLowerCase().equals(accepted))
+    			{
+    				return true;
+    			}
+    		}
+    		return false;
+    	}
+    }
 }

@@ -15,8 +15,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoableEdit;
 import main.Hub;
 import main.Workspace;
-import org.pietschy.command.ActionCommand;
-import org.pietschy.command.undo.UndoableActionCommand;
+
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNode;
@@ -29,6 +28,7 @@ import presentation.fsa.ReflexiveLayout;
 import presentation.fsa.SelectionGroup;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
+import services.undo.UndoManager;
 
 /**
  * This class holds static commands that can perform actions over edges.
@@ -90,37 +90,9 @@ public class EdgeCommands {
 			}
 		}
 		
-	}
-	
-	//TODO make this action undoable according to what was done for the other actions, e.g.: SymmetrizeEdge()
-	//In order to do that, the AbstractAction bellow should instantiate an UndoableAction sending all the references
-	//needed, so the UndoableAction can undo/redo the action everytime it is requested by the command manager.
-	//CreateEvent should also, after instanciating the UndoableAction, send a reference of this action to the CommandManager
-	//using the method undoSupport->postEdit(UndoableAction) inside the CommandManager.
-	public static class RemoveEventCommand extends ActionCommand {
-		
-		public RemoveEventCommand(){
-			super("event.remove.command");
-		}
-		
-		@Override
-		protected void handleExecute() {
-			// TODO Auto-generated method stub
-			System.out.println("Remove an event from local alphabet (leave it in the global alphabet).");
-		}
-		
-	}
-	
-	public static class PruneEventsCommand extends ActionCommand {
-		
-		public PruneEventsCommand(){
-			super("event.prune.command");
-		}
-		
-		@Override
-		protected void handleExecute() {
-			// TODO Auto-generated method stub
-			System.out.println("Remove all events from global alphabet that don't exist in any local alphabet in the workspace.");
+		public void execute()
+		{
+			actionPerformed(null);
 		}
 		
 	}
@@ -176,8 +148,7 @@ public class EdgeCommands {
 			UndoableModifyEdge action = new UndoableModifyEdge(view, edge,previousLayout);
 			//perform action
 			action.redo();
-			// notify the listeners
-			CommandManager_new.getInstance().undoSupport.postEdit(action);	
+			UndoManager.addEdit(action);	
 		}		
 	}
 	/**
@@ -289,7 +260,7 @@ public class EdgeCommands {
 		
 		//Default constructor. It gets the references for the edge and graph of interest.
 		public SymmetrizeEdgeAction(GraphDrawingView view,Edge edge){
-			super(name,icon);
+			super(name);
 			this.edge = edge;
 			this.view = view;
 		}
@@ -303,8 +274,7 @@ public class EdgeCommands {
 			UndoableSymmetrizeEdge action = new UndoableSymmetrizeEdge(view,l);
 			//Perform the operation
 			action.redo();
-			// notify the listeners
-			CommandManager_new.getInstance().undoSupport.postEdit(action);
+			UndoManager.addEdit(action);
 		}
 	}
 	

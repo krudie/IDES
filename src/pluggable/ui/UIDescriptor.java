@@ -14,4 +14,5 @@ public interface UIDescriptor {
 	public JToolBar getToolbar();
 	public JComponent getStatusBar();
 	public JMenu getPopupMenu();
+	public boolean showZoomControl();
 }

@@ -19,9 +19,6 @@ import main.Workspace;
 import model.DESElement;
 import model.fsa.ver2_1.State;
 
-import org.pietschy.command.ToggleVetoException;
-import org.pietschy.command.undo.UndoableActionCommand;
-
 import presentation.fsa.BezierEdge;
 import presentation.fsa.CircleNode;
 import presentation.fsa.ContextAdaptorHack;
@@ -29,6 +26,7 @@ import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.SelectionGroup;
+import services.undo.UndoManager;
 
 /**
  * This class holds static classes regarding actions over nodes.
@@ -76,8 +74,7 @@ public class NodeCommands {
 			UndoableSetMarked action = new UndoableSetMarked(node);
 			//perform the action
 			action.redo();
-			// notify the CommandManager about a new UndoableAction
-			CommandManager_new.getInstance().undoSupport.postEdit(action);		
+			UndoManager.addEdit(action);		
 		}		
 
 	}
@@ -103,8 +100,7 @@ public class NodeCommands {
 			UndoableSetInitial action = new UndoableSetInitial(node);
 			//perform the action
 			action.redo();
-			// notify the listeners
-			CommandManager_new.getInstance().undoSupport.postEdit(action);		
+			UndoManager.addEdit(action);		
 		}
 
 	}
@@ -128,8 +124,7 @@ public class NodeCommands {
 			UndoableSelfLoop action = new UndoableSelfLoop(node);
 			//perform the action
 			action.redo();
-			// notify the listeners
-			CommandManager_new.getInstance().undoSupport.postEdit(action);
+			UndoManager.addEdit(action);
 		}
 	}
 

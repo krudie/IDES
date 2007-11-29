@@ -164,6 +164,10 @@ public class GraphElement implements PresentationElement {
 	 */
 	public FSAGraph getGraph()
 	{
+		if(parent==null)
+		{
+			return null;
+		}
 		return parent.getGraph();
 	}
 

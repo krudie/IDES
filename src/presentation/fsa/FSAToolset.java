@@ -2,9 +2,13 @@ package presentation.fsa;
 
 import java.util.Collection;
 
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 
@@ -20,7 +24,10 @@ import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import ui.command.UniformNodesAction;
+import presentation.fsa.commands.GraphCommands;
+import ui.command.OperationsCommands;
+import ui.command.OptionsCommands;
+import util.BooleanUIBinder;
 
 /**
  * The toolset for {@link FSAModel}s.
@@ -30,28 +37,26 @@ import ui.command.UniformNodesAction;
  */
 public class FSAToolset implements Toolset {
 	
-//	/**
-//	 * Keeps track of which {@link LayoutShell} the {@link GraphDrawingView}
-//	 * is attached to.
-//	 */
-//	FSAGraph attachedTo=null;
-	
-	//FIXME eventually make a better design for the grid
-	public static boolean gridState=false;
-
-	protected class FSAUIDescriptor implements UIDescriptor
+	protected static class FSAUIDescriptor implements UIDescriptor
 	{
 		protected FSAGraph shell;
 		protected Presentation[] views;
-		
+		protected static JToolBar toolbar=null;
+		protected static JMenu graphMenu=null;
+		private static Action selectAction=null;
+		private static Action createAction=null;
+		private static Action moveAction=null;
+		private static Action alignAction=null;
+		private Action gridAction=null;
+		private static BooleanUIBinder gridBinder=new BooleanUIBinder();
+		private static JToggleButton gridButton=null;
+
 		public FSAUIDescriptor(FSAGraph ls)
 		{
 			shell=ls;
 			views=new Presentation[2];
-			//FIXME passing nodesControl as a reference but other mechanism has
-			//to be invented for binding GraphdrawingView with user-selectable options
-			GraphDrawingView drawingBoard=new GraphDrawingView(nodesControl);
-			drawingBoard.setShowGrid(gridState);
+			GraphDrawingView drawingBoard=new GraphDrawingView(gridBinder);
+			gridAction=new OptionsCommands.ShowGridAction(drawingBoard);
 			drawingBoard.setGraphModel(shell);
 			drawingBoard.setName(Hub.string("graph"));
 			views[0]=drawingBoard;
@@ -73,14 +78,86 @@ public class FSAToolset implements Toolset {
 			return new Presentation[0];
 		}
 
+		protected void setupActions()
+		{
+			if(selectAction==null)
+			{
+				selectAction=new GraphCommands.SelectTool();
+			}
+			if(createAction==null)
+			{
+				createAction=new GraphCommands.CreateTool();
+			}
+			if(moveAction==null)
+			{
+				moveAction=new GraphCommands.MoveTool();
+			}
+			if(alignAction==null)
+			{
+				alignAction=new GraphCommands.AlignTool();
+			}
+		}
+		
 		public JMenu[] getMenus()
 		{
-			return null;
+			if(graphMenu==null)
+			{
+				setupActions();
+				graphMenu=new JMenu(Hub.string("menuGraph"));
+				//Initializing the menu items for the "graphMenu"
+				JMenuItem select = new JMenuItem(selectAction);
+				JMenuItem create = new JMenuItem(createAction);
+				JMenuItem move = new JMenuItem(moveAction);
+				JMenuItem alignNodes = new JMenuItem(alignAction); 
+				JMenuItem showGrid = new JCheckBoxMenuItem(gridAction);
+				gridBinder.bind(showGrid);
+				//this is a dummy menu item since it'll be replaced 
+				JCheckBoxMenuItem uniformNodeSize = new JCheckBoxMenuItem();
+				//Adding the menu items to the "graphMenu"
+				graphMenu.add(select);
+				graphMenu.add(create);
+				graphMenu.add(move);
+				graphMenu.addSeparator();
+				graphMenu.add(alignNodes);
+				graphMenu.add(showGrid);
+				graphMenu.add(uniformNodeSize);
+			}
+			//get the "use uniform node size" menu item for the current shell
+			String MENU_ITEM="useUniformNodeSizeMenuItem";
+			JMenuItem useUniformNodeSizeMenu=(JMenuItem)shell.getAnnotation(MENU_ITEM);
+			if(useUniformNodeSizeMenu==null)
+			{
+				useUniformNodeSizeMenu=new JCheckBoxMenuItem(new GraphCommands.UniformNodesAction(shell));
+				shell.getUseUniformRadiusBinder().bind(useUniformNodeSizeMenu);
+				shell.setAnnotation(MENU_ITEM, useUniformNodeSizeMenu);
+			}
+			//update menu with current layout shell's uniform node size menu item 
+			graphMenu.remove(graphMenu.getMenuComponentCount()-1);
+			graphMenu.add(useUniformNodeSizeMenu);
+			return new JMenu[]{graphMenu};
 		}
 
 		public JToolBar getToolbar()
 		{
-			return null;
+			if(toolbar==null)
+			{
+				setupActions();
+				toolbar=new JToolBar();
+			}
+			if(toolbar.getComponentCount()==0)
+			{
+				toolbar.add(selectAction);
+				toolbar.add(createAction);
+				toolbar.add(moveAction);
+				toolbar.addSeparator();
+				toolbar.add(alignAction);
+				gridBinder.unbind(gridButton);
+				gridButton=new JToggleButton(gridAction);
+				gridButton.setText("");
+				gridBinder.bind(gridButton);
+				toolbar.add(gridButton);
+			}
+			return toolbar;
 		}
 
 		public JComponent getStatusBar()
@@ -93,18 +170,12 @@ public class FSAToolset implements Toolset {
 			return null;
 		}
 
+		public boolean showZoomControl()
+		{
+			return true;
+		}
 	}
 	
-	//TODO: ultimately include this control in the UIDescriptor and show/hide it
-	// when different types of models are activated
-	private static UniformNodesAction nodesControl;
-	
-	public FSAToolset()
-	{
-		nodesControl=new UniformNodesAction();
-//		nodesControl.export();
-	}
-
 	public UIDescriptor getUIElements(LayoutShell mw)
 	{
 		if(!(mw instanceof FSAGraph))
@@ -147,74 +218,5 @@ public class FSAToolset implements Toolset {
 			{
 			return (GraphDrawingView)ps.iterator().next();
 			}
-	}
-	
-//	/**
-//	 * Called when a model collection change 
-//	 * (a DES model is created or opened (added), closed (removed) 
-//	 * or renamed) has occurred in a <code>WorkspacePublisher</code> 
-//	 * to which I have subscribed.
-//	 *  
-//	 * @param message details of the change notification
-//	 */
-//	public void modelCollectionChanged(WorkspaceMessage message)
-//	{
-//		if(attachedTo!=null)
-//		{
-//			attachedTo.removeSubscriber(Hub.getWorkspace().getDrawingBoard());
-//		}
-//		LayoutShell activew=Hub.getWorkspace().getActiveLayoutShell();
-//		if(activew!=null&&activew instanceof FSAGraph)
-//		{
-//			attachedTo=(FSAGraph)activew;
-//			Hub.getWorkspace().getDrawingBoard().setGraphModel(attachedTo);
-//		}
-//		else
-//		{
-//			attachedTo=null;
-//		}
-//		Hub.getWorkspace().getDrawingBoard().repaint();
-//	}
-//	
-//
-//	/**
-//	 * Called when a change requiring a repaint has
-//	 * occurred in a <code>WorkspacePublisher</code> to which I have
-//	 * subscribed.
-//	 *  
-//	 * @param message details of the change notification
-//	 */
-//	/* NOTE ignore param except possibly for the source field */
-//	public void repaintRequired(WorkspaceMessage message)
-//	{
-//		if(attachedTo!=null)
-//			Hub.getWorkspace().getDrawingBoard().repaint();			
-//	}
-//	
-//
-//	/**
-//	 * Called when a the model type has been switched 
-//	 * (the type of active model has changed e.g. from FSA to petri net) 
-//	 * in a <code>WorkspacePublisher</code> to which I have subscribed. 
-//	 *  
-//	 * @param message details of the change notification
-//	 */
-//	public void modelSwitched(WorkspaceMessage message)
-//	{
-//		if(attachedTo!=null)
-//		{
-//			attachedTo.removeSubscriber(Hub.getWorkspace().getDrawingBoard());
-//		}
-//		LayoutShell activew=Hub.getWorkspace().getActiveLayoutShell();
-//		if(activew!=null&&activew instanceof FSAGraph)
-//		{
-//			attachedTo=(FSAGraph)activew;
-//			Hub.getWorkspace().getDrawingBoard().setGraphModel(attachedTo);
-//		}
-//		else
-//		{
-//			attachedTo=null;
-//		}
-//		Hub.getWorkspace().getDrawingBoard().repaint();
-//	}
+	}	
 }

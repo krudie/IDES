@@ -74,7 +74,7 @@ OpenSymphony Group (http://www.opensymphony.com/).
  * ====================================================================
  */
  
---- GUI Commands, Commons Logging Package, commons-codec, and Jakarta Commons Collections License ---
+--- Commons Logging Package, commons-codec, and Jakarta Commons Collections License ---
                                   Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/

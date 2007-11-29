@@ -18,10 +18,6 @@ import main.WorkspaceDescriptor;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
 
-import org.pietschy.command.CommandManager;
-import org.pietschy.command.LoadException;
-import org.pietschy.command.file.ExtensionFileFilter;
-
 /**
  * Contains operations for reading and writing automaton and workspace files.
  * 
@@ -127,7 +123,7 @@ public class FileOperations {
 		}
 		
 		fc.setDialogTitle(Hub.string("saveModelTitle"));
-		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, 
+		fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.MODEL_FILE_EXT}, 
 				Hub.string("modelFileDescription")));
 		
 		if((File)a.getAnnotation(Annotable.FILE)!=null){
@@ -236,7 +232,7 @@ public class FileOperations {
 			fc=new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
     	
 		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
-		fc.setFileFilter(new ExtensionFileFilter(IOUtilities.WORKSPACE_FILE_EXT, Hub.string("workspaceFileDescription")));
+		fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.WORKSPACE_FILE_EXT}, Hub.string("workspaceFileDescription")));
 		
 		if(wd.getFile()!=null)
 			fc.setSelectedFile(wd.getFile());
@@ -273,22 +269,5 @@ public class FileOperations {
     	return false;
     }
 
-	/**
-	 * Loads the commands definitions from an xml file with the given name 
-	 * and initializes the command manager (i.e. the singleton class that 
-	 * manages and locates ActionCommand and CommandGroup instances.)
-	 * 
-	 * TODO move this to the io or ui.command package; it doesn't do anything with FSAs. 
-	 *  
-	 * @param commandFileName the absolute path to the command configuration file.
-	 */
-	public static void loadCommandManager(String commandFileName){		
-		try {
-		   CommandManager.defaultInstance().load(Hub.getResource(commandFileName));
-		} catch (LoadException e){
-			throw new RuntimeException(e);
-		}		
-	}	    
-    
  }
 

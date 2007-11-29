@@ -21,8 +21,8 @@ import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
-import ui.command.GraphCommands.CreateAction;
 import presentation.fsa.GraphElement;
+import presentation.fsa.commands.GraphCommands.CreateAction;
 /**
  * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.
  * 

@@ -11,9 +11,6 @@ import javax.swing.event.ChangeListener;
 
 import main.Hub;
 
-import org.pietschy.command.ActionCommand;
-import org.pietschy.command.ToggleCommand;
-
 import presentation.Presentation;
 import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
@@ -61,14 +58,13 @@ public class OptionsCommands {
 	 * @author Lenko Grigorov
 	 */
 	public static class MoreOptionsAction extends AbstractAction {
-		private static String text = Hub.string("moreOptions");
-		private static ImageIcon icon = new ImageIcon();
 		
 		/**
 		 * Default constructor; handy for exporting this command for group setup.
 		 */
 		public MoreOptionsAction(){
-			super(text,icon);
+			super(Hub.string("comMoreOptions"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintMoreOptions"));
 		}
 		
 		/**
@@ -86,40 +82,43 @@ public class OptionsCommands {
 	 */
 	public static class ShowGridAction extends AbstractAction{
 
-		private static String text = "Toggle grid display";
 		private static ImageIcon icon = new ImageIcon();
 		public boolean state = 	false;
+		protected GraphDrawingView gdv=null;
 		
-		public ShowGridAction()
+		public ShowGridAction(GraphDrawingView gdv)
 		{
-			super(text,icon);
+			super(Hub.string("comGrid"),icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/view_grid.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintGrid"));
+			this.gdv=gdv;
 		}	
 
 				
-		public void disableGrid()
-		{
-			state = false;
-			for(Presentation p:Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class))
-				((GraphDrawingView)p).setShowGrid(state);
-			FSAToolset.gridState=state;
-			CommandManager_new.getInstance().updateToggleButton(CommandManager_new.TOGGLE_BUTTON, CommandManager_new.GRID_BUTTON,state);
-		}
+//		public void disableGrid()
+//		{
+//			state = false;
+//			for(Presentation p:Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class))
+//				((GraphDrawingView)p).setShowGrid(state);
+//			FSAToolset.gridState=state;
+//			CommandManager_new.getInstance().updateToggleButton(CommandManager_new.TOGGLE_BUTTON, CommandManager_new.GRID_BUTTON,state);
+//		}
 		
 		/**
 		 * Changes the property state.
 		 */
 		public void actionPerformed(ActionEvent e) {
-			state=(FSAToolset.gridState==true?false:true);
-			MainWindow mw=(MainWindow)Hub.getMainWindow();
-			if(state)
-			{
-				mw.getZoomControl().setZoom(1);
-			}
-			for(Presentation p:Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class))
-				((GraphDrawingView)p).setShowGrid(state);
-			FSAToolset.gridState=state;
-			CommandManager_new.getInstance().updateToggleButton(CommandManager_new.TOGGLE_BUTTON, CommandManager_new.GRID_BUTTON,state);
+			gdv.setShowGrid(!gdv.getShowGrid());
+//			state=(FSAToolset.gridState==true?false:true);
+//			MainWindow mw=(MainWindow)Hub.getMainWindow();
+//			if(state)
+//			{
+//				mw.getZoomControl().setZoom(1);
+//			}
+//			for(Presentation p:Hub.getWorkspace().getPresentationsOfType(GraphDrawingView.class))
+//				((GraphDrawingView)p).setShowGrid(state);
+//			FSAToolset.gridState=state;
+//			CommandManager_new.getInstance().updateToggleButton(CommandManager_new.TOGGLE_BUTTON, CommandManager_new.GRID_BUTTON,state);
 		}
 	}
 

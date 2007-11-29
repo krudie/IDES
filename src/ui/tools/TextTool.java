@@ -14,8 +14,8 @@ import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
+import presentation.fsa.commands.GraphCommands;
 import ui.tools.DrawingTool;
-import ui.command.GraphCommands;
 
 public class TextTool extends DrawingTool {
 		
@@ -37,11 +37,11 @@ public class TextTool extends DrawingTool {
 		}
 		// get current selection
 		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){			
-			new GraphCommands.TextCommand(ContextAdaptorHack.context.getSelectedElement()).execute();			
+			new GraphCommands.TextAction(ContextAdaptorHack.context.getSelectedElement()).execute();			
 		}else{
 			// if nothing selected
 			// create a free label
-			new GraphCommands.TextCommand(me.getPoint()).execute();			
+			new GraphCommands.TextAction(me.getPoint()).execute();			
 		}
 		ContextAdaptorHack.context.clearCurrentSelection();
 		ContextAdaptorHack.context.setAvoidNextDraw(false);

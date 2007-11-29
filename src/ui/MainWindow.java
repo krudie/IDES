@@ -14,7 +14,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Dimension;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -37,20 +41,22 @@ import main.Main;
 import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
 
-import org.pietschy.command.CommandManager;
-
+import pluggable.ui.Toolset;
+import pluggable.ui.UIDescriptor;
+import presentation.PresentationManager;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EventView;
 import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
-import ui.command.CommandManager_new;
+import presentation.fsa.commands.GraphCommands;
+import presentation.fsa.commands.GraphCommands.TextAction;
+import services.latex.LatexManager;
+import services.undo.UndoManager;
 import ui.command.EditCommands;
 import ui.command.FileCommands;
-import ui.command.GraphCommands;
 import ui.command.HelpCommands;
 import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
-import ui.command.GraphCommands.TextCommand;
 
 /**
  * The main window in which the application is displayed. Provides real estate
@@ -66,8 +72,14 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	private static final int MINIMUM_WIDTH = 500;
 
 	private static final int MINIMUM_HEIGHT = 500;
+	
+	protected Set<Action> disabledOnNoProject=new HashSet<Action>();
+	
+	protected JMenuBar menuBar;
 
 	private ZoomControl zoom = new ZoomControl();
+	
+	Box zoomSelector;
 
 	public MainWindow() {
 		super(Hub.string("IDES_SHORT_NAME") + " " + Hub.string("IDES_VER"));
@@ -83,7 +95,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		// notifications from the
 		// workspace
 
-		FileOperations.loadCommandManager("commands.xml");
+//		FileOperations.loadCommandManager("commands.xml");
 
 		// drawingBoard = new GraphDrawingView();
 		Hub.getWorkspace().addSubscriber(new ContextAdaptorHack());
@@ -93,6 +105,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		// TODO add graph spec, latex and eps views to the state model
 		getContentPane().add(new StatusBar(), BorderLayout.SOUTH);
 
+		setupActions();
 		createAndAddMenuBar();
 		createAndAddToolBar();
 
@@ -151,52 +164,227 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		getContentPane().add(mainPane, "Center");
 	}
 
-	private void createAndAddToolBar() {
-		//toolbar = CommandManager.defaultInstance().getGroup("ides.toolbar").createToolBar();
-		toolbar = CommandManager_new.getInstance().getToolBar();
+	Action newAction;
+	Action openAction;
+	Action saveAction;
+	Action saveasAction;
+	Action saveallAction;
+	Action closeAction;
+	Action wopenAction;
+	Action wsaveAction;
+	Action wsaveasAction;
+	Action importAction;
+	Action exportAction;
+	Action exitAction;
+	Action undoAction;
+	Action redoAction;
+	Action operationsAction;
+	Action latexAction;
+	Action optionsAction;
+	Action aboutAction;
+	
+	private void setupActions()
+	{
+		//Create actions
+		newAction=new FileCommands.NewAction();
+		openAction=new FileCommands.OpenAction();
+		saveAction=new FileCommands.SaveAction();
+		saveasAction=new FileCommands.SaveAsAction();
+		saveallAction=new FileCommands.SaveAllAction();
+		closeAction=new FileCommands.CloseAction();
+		wopenAction=new FileCommands.OpenWorkspaceAction();
+		wsaveAction=new FileCommands.SaveWorkspaceAction();
+		wsaveasAction=new FileCommands.SaveWorkspaceAsAction();
+		importAction=new FileCommands.ImportAction();
+		exportAction=new FileCommands.ExportAction();
+		exitAction=new FileCommands.ExitAction();
+		undoAction=new UndoManager.UndoAction();//CommandManager_new.getInstance().new UndoAction();
+		redoAction=new UndoManager.RedoAction();//CommandManager_new.getInstance().new RedoAction();
+		operationsAction=new OperationsCommands.ShowDialogCommand();
+		latexAction=new services.latex.UseLatexAction();
+		optionsAction=new OptionsCommands.MoreOptionsAction();
+		aboutAction=new HelpCommands.AboutCommand();
 
-		Box p = Box.createHorizontalBox();// new JPanel();
-		p.add(new JLabel(" " + Hub.string("zoom") + ": "));
-		p.add(zoom);
-		p.add(Box.createHorizontalGlue());
-		toolbar.add(p);
-		getContentPane().add(toolbar, BorderLayout.PAGE_START);
+		//decide which ones will be disabled when there's no model open
+		disabledOnNoProject.add(saveAction);
+		disabledOnNoProject.add(saveasAction);
+		disabledOnNoProject.add(saveallAction);
+		disabledOnNoProject.add(closeAction);
+		disabledOnNoProject.add(exportAction);
+		disabledOnNoProject.add(undoAction);
+		disabledOnNoProject.add(redoAction);
 	}
-
+	
 	private void createAndAddMenuBar() {
-
-//		Old implementation of the menus (using the external guiCommands library)	
-//		JMenuBar menuBar = CommandManager.defaultInstance().getGroup(
-//		"ides.menu.group").createMenuBar();
-//		this.setJMenuBar(menuBar);
 		
 		//New implementation of the menus
-		JMenuBar menuBar = ui.command.CommandManager_new.getInstance().getMenuBar(); 
-		this.setJMenuBar(menuBar);
+		//Initialize the categories in the menu.
+		JMenu fileMenu = new JMenu(Hub.string("menuFile"));
+		JMenu editMenu = new JMenu(Hub.string("menuEdit"));
+		JMenu operationsMenu=new JMenu(Hub.string("menuOperations"));
+		JMenu optionsMenu = new JMenu(Hub.string("menuOptions"));
+		JMenu helpMenu = new JMenu(Hub.string("menuHelp"));
+
+		//Initializing the menu items in the "fileMenu"
+		JMenuItem newModel = new JMenuItem(newAction);
+		newModel.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+
+		JMenuItem openModel = new JMenuItem(openAction);
+		openModel.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+
+		JMenuItem saveModel = new JMenuItem(saveAction);
+		saveModel.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+
+		JMenuItem saveModelAs = new JMenuItem(saveasAction);
+
+		JMenuItem saveAllModels = new JMenuItem(saveallAction);
+		saveAllModels.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+
+		JMenuItem closeModel = new JMenuItem(closeAction);
+		closeModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+
+		JMenuItem openWorkspace = new JMenuItem(wopenAction);
+		openWorkspace.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_O, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+
+		JMenuItem saveWorkspace = new JMenuItem(wsaveAction);
+		saveWorkspace.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.ALT_MASK));
+
+		JMenuItem saveWorkspaceAs = new JMenuItem(wsaveasAction);
+
+		JMenuItem importModel = new JMenuItem(importAction);
+
+		JMenuItem exportModel = new JMenuItem(exportAction);
+
+		JMenuItem exitIDES = new JMenuItem(exitAction);
+
+		//Adding the menu items to the "fileMenu"
+		fileMenu.add(newModel);
+		fileMenu.add(openModel);
+		fileMenu.add(saveModel);
+		fileMenu.add(saveModelAs);
+		fileMenu.add(saveAllModels);
+		fileMenu.add(closeModel);
+		fileMenu.addSeparator();
+		fileMenu.add(openWorkspace);
+		fileMenu.add(saveWorkspace);
+		fileMenu.add(saveWorkspaceAs);
+		fileMenu.addSeparator();
+		fileMenu.add(importModel);
+		fileMenu.add(exportModel);
+		fileMenu.addSeparator();
+		fileMenu.add(exitIDES);
+		
+		//Initializing the menu items for the "editMenu"
+		JMenuItem undo = new JMenuItem(Hub.string("undo"));
+		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		undo.addActionListener(undoAction);
+		//CommandManager_new.getInstance().setUndoMenu(undo);
+		JMenuItem redo = new JMenuItem(Hub.string("redo"));
+		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		redo.addActionListener(redoAction);
+		//CommandManager_new.getInstance().setRedoAction(redo);
+		//Initialize the undo manager
+		UndoManager.init(undo, redo);
+		//Adding the menu items to the "editMenu"
+		editMenu.add(undo);
+		editMenu.add(redo);
+
+		//adding the menu items to the "operationsMenu"
+		operationsMenu.add(operationsAction);
+		
+		//Initializing the menu items for the "optionsMenu"
+		JCheckBoxMenuItem useLaTeX  = new JCheckBoxMenuItem(latexAction);
+		useLaTeX.setSelected(LatexManager.isLatexEnabled());
+		JMenuItem moreOptions = new JMenuItem(new OptionsCommands.MoreOptionsAction());
+		//adding the menu items to the "optionsMenu"
+		optionsMenu.add(useLaTeX);
+		optionsMenu.addSeparator();
+		optionsMenu.add(moreOptions);
+
+		//adding the menu items to the "helpMenu"
+		JMenuItem aboutIDES = new JMenuItem(aboutAction);
+		helpMenu.add(aboutIDES);
+
+
+		menuBar = new JMenuBar(); 
+		//Adding the main categories to the menu
+		menuBar.add(fileMenu);
+		menuBar.add(editMenu);
+		menuBar.add(operationsMenu);
+		menuBar.add(optionsMenu);
+		menuBar.add(helpMenu);
 	}
 
-//	/**
-//	 * Dynamically loads and export all commands in package ui.command.
-//	 */
-// REMOVE THIS METHOD!
-//	private void loadAndExportCommands() {
-//		
-//		// Lenko: moved to constructor: needs to load for drawing board
-//		// FileOperations.loadCommandManager("commands.xml");
-////		new CreateCommand().export();
-////		new SelectCommand().export();
-////		new MoveCommand().export();
-////		new TextCommand().export();
-//	//	new DeleteCommand().export();
-////		new AlignCommand().export();
-////		new EditCommands.CutCommand().export();
-////		new EditCommands.CopyCommand().export();
-////		new EditCommands.PasteCommand().export();
-////		new OptionsCommands.ShowGridCommand().export();
-////		new OptionsCommands.MoreOptionsCommand().export();
-////		new HelpCommands.AboutCommand().export();
-////		new OperationsCommands.ProductCommand().export();
-//	}
+	private void createAndAddToolBar() {
+//		toolbar = CommandManager_new.getInstance().getToolBar();
+		toolbar = new JToolBar();
+		toolbar.add(newAction);
+		toolbar.add(openAction);
+		toolbar.add(saveAction);
+		toolbar.add(saveallAction);
+		toolbar.addSeparator();
+		toolbar.add(wopenAction);
+		toolbar.add(wsaveAction);
+		toolbar.addSeparator();
+//		toolbar.add(new GraphCommands.SelectTool());
+//		toolbar.add(new GraphCommands.CreateTool());
+//		toolbar.add(new GraphCommands.MoveTool());
+//		toolbar.addSeparator();
+//		toolbar.add(new GraphCommands.AlignTool());
+		zoomSelector = Box.createHorizontalBox();// new JPanel();
+		zoomSelector.add(new JLabel(" " + Hub.string("zoom") + ": "));
+		zoomSelector.add(zoom);
+//		p.add(Box.createHorizontalGlue());
+//		toolbar.add(z);
+	}
+	
+	private void hotPlugMenus(JMenu[] menus)
+	{
+		JMenuBar newMenu=new JMenuBar();
+		newMenu.add(menuBar.getMenu(0));
+		// once you add a menu to another bar, it's removed from the previous bar
+		newMenu.add(menuBar.getMenu(0));
+		for(JMenu menu:menus)
+		{
+			newMenu.add(menu);
+		}
+		newMenu.add(menuBar.getMenu(menuBar.getMenuCount()-3));
+		newMenu.add(menuBar.getMenu(menuBar.getMenuCount()-2));
+		newMenu.add(menuBar.getMenu(menuBar.getMenuCount()-1));
+		menuBar=newMenu;
+		this.setJMenuBar(menuBar);
+	}
+	
+	private void hotPlugToolbar(JToolBar tb, boolean showZoomControl)
+	{
+		getContentPane().remove(toolbar);
+		JToolBar newToolbar=new JToolBar();
+		for(int i=0;i<8;++i)
+		{
+			// once you add a button to another bar, it's removed from the previous bar
+			newToolbar.add(toolbar.getComponentAtIndex(0));
+		}
+		if(showZoomControl)
+		{
+			newToolbar.add(zoomSelector);
+			newToolbar.addSeparator();
+		}
+		int tbSize=tb.getComponentCount();
+		for(int i=0;i<tbSize;++i)
+		{
+			// once you add a button to another bar, it's removed from the previous bar
+			newToolbar.add(tb.getComponentAtIndex(0));
+		}
+		toolbar=newToolbar;
+		toolbar.setFloatable(false);
+		getContentPane().add(toolbar, BorderLayout.PAGE_START);
+	}
 
 	/**
 	 * The views.
@@ -248,7 +436,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message) {
-		configureTools();
+//		reconfigureUI();
 	}
 
 	/*
@@ -265,6 +453,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message) {
+		reconfigureUI();
 	}
 
 	/**
@@ -272,35 +461,28 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 * open in the workspace.
 	 * 
 	 */
-	private void configureTools() {
-		CommandManager commandManager = CommandManager.defaultInstance();
-
-		if (Hub.getWorkspace().size() < 1) {
-			// drawingBoard.setEnabled(false);
+	private void reconfigureUI() {
+		if (Hub.getWorkspace().getActiveModel()==null) {
 			zoom.setEnabled(false);
-			toolbar.setEnabled(false);
-			commandManager.getGroup("graph.group").setEnabled(false);
-			// commandManager.getGroup("ides.toolbar.group").setEnabled(false);
-			commandManager.getGroup("edit.group").setEnabled(false);
-			commandManager.getGroup("file.group").setEnabled(true);
-			// TODO disable save and close commands
-			// TODO enable options groups
-
-			// disable save commands
-			// FIXME this doesn't work
-			commandManager.getGroup("file.save.group").setEnabled(false);
+			for(Action a:disabledOnNoProject)
+			{
+				a.setEnabled(false);
+			}
+			hotPlugMenus(new JMenu[0]);
+			hotPlugToolbar(new JToolBar(),false);
 		} else {
-			// drawingBoard.setEnabled(true);
 			zoom.setEnabled(true);
-			// enable all commands except save commands which depend on the
-			// dirty bit for the workspace and the acive s
-			// commandManager.getGroup("ides.toolbar.group").setEnabled(true);
-			toolbar.setEnabled(true);
-			commandManager.getGroup("graph.group").setEnabled(true);
-			commandManager.getGroup("edit.group").setEnabled(false);
+			for(Action a:disabledOnNoProject)
+			{
+				a.setEnabled(true);
+			}
+			Toolset t=PresentationManager.getToolset(Hub.getWorkspace().getActiveModel().getModelDescriptor().getPreferredModelInterface());
+			UIDescriptor uid=t.getUIElements(Hub.getWorkspace().getActiveLayoutShell());
+			hotPlugMenus(uid.getMenus());
+			hotPlugToolbar(uid.getToolbar(),uid.showZoomControl());
 		}
 	}
-
+	
 	/**
 	 * Store the window size with the persistent properties, then free up all
 	 * screen resources used by this window.

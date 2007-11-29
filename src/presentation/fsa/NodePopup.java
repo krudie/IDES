@@ -10,11 +10,11 @@ import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
 import presentation.Presentation;
+import presentation.fsa.commands.GraphCommands;
+import presentation.fsa.commands.GraphCommands.DeleteAction;
+import presentation.fsa.commands.GraphCommands.TextAction;
 
-import ui.command.GraphCommands;
 import ui.command.NodeCommands;
-import ui.command.GraphCommands.DeleteAction;
-import ui.command.GraphCommands.TextCommand;
 import ui.command.NodeCommands.SelfLoopAction;
 import ui.command.NodeCommands.SetInitialAction;
 import ui.command.NodeCommands.SetMarkedAction;
@@ -31,7 +31,7 @@ public class NodePopup extends JPopupMenu {
 
 	private SetMarkedAction markedCmd;
 	private SetInitialAction initialCmd;
-	private TextCommand textCmd;
+//	private GraphCommands.TextCommand textCmd;
 	private SelfLoopAction selfLoopCmd;
 	private DeleteAction deleteCmd;	 
 
@@ -57,13 +57,12 @@ public class NodePopup extends JPopupMenu {
 		super("Node Properties");		
 //		initialCmd = new SetInitialCommand();
 //		selfLoopCmd = new SelfLoopCommand();
-		textCmd = new TextCommand();
 		deleteCmd = new GraphCommands.DeleteAction();
 
 		miSetMarked = new JCheckBoxMenuItem(new NodeCommands.SetMarkedAction(n));
 		miSetInitial = new JCheckBoxMenuItem(new NodeCommands.SetInitialAction(n));
 		miSelfLoop = new JMenuItem(new NodeCommands.SelfLoopAction(n));
-		miLabelNode = textCmd.createMenuItem();
+		miLabelNode = new JMenuItem(new GraphCommands.TextAction(n));
 //		miDeleteNode.addActionListener(deleteCmd);
 
 		add(miLabelNode);
@@ -83,7 +82,7 @@ public class NodePopup extends JPopupMenu {
 //		selfLoopCmd.setNode(n);
 		deleteCmd.setElement(n);
 		deleteCmd.setContext(view);
-		textCmd.setElement(n);
+//		textCmd.setElement(n);
 		miSetMarked.setSelected(n.getState().isMarked());
 		miSetInitial.setSelected(n.getState().isInitial());
 //		markedCmd..setSelected(node.getState().isMarked());		

@@ -6,8 +6,6 @@ import javax.swing.AbstractAction;
 
 import main.Hub;
 
-import org.pietschy.command.ToggleCommand;
-
 /**
  * The class for the "Use LaTeX rendering" menu item.
  * 
@@ -20,7 +18,8 @@ public class UseLatexAction extends AbstractAction {
 	 * Default constructor; handy for exporting this command for group setup.
 	 */
 	public UseLatexAction(){
-		super(Hub.string("useLatex"));
+		super(Hub.string("comUseLaTeX"));
+		putValue(SHORT_DESCRIPTION, Hub.string("comHintUseLaTeX"));
 		setSelected(LatexManager.isLatexEnabled());
 	}
 	

@@ -30,12 +30,6 @@ import model.fsa.ver2_1.State;
 
 import operations.fsa.ver2_1.Composition;
 
-import org.pietschy.command.ActionCommand;
-import org.pietschy.command.CommandManager;
-import org.pietschy.command.file.AbstractSaveAsCommand;
-import org.pietschy.command.file.ExtensionFileFilter;
-
-
 import pluggable.layout.LayoutManager;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphLabel;
@@ -50,10 +44,11 @@ import ui.OperationDialog;
  */
 public class OperationsCommands {
 	
-	public static class ProductCommand extends AbstractAction {
+	public static class ShowDialogCommand extends AbstractAction {
 
-		public ProductCommand() {
-			super(Hub.string("operationsDialogTitle"));			
+		public ShowDialogCommand() {
+			super(Hub.string("comOperationsDialog"));			
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintOperationsDialog"));
 		}
 
 		public void actionPerformed(ActionEvent evt) {

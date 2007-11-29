@@ -69,6 +69,7 @@ public class CircleNode extends Node {
 	// TODO change to iterate over collection of labels on a state
 	// Note: To accommodate composite states requires change to file reading and writing.		
 	public void refresh() {
+		super.refresh();
 		
 		Point2D.Float centre = getLayout().getLocation();			
 		label.updateLayout(getLayout().getText(), centre);
@@ -90,7 +91,6 @@ public class CircleNode extends Node {
 		if( initialArrow != null ) {
 			initialArrow.setVisible(state.isInitial());
 		}
-		
 		setNeedsRefresh(false);
 	}
 	

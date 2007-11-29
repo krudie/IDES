@@ -15,11 +15,10 @@ import main.Hub;
 import model.ModelManager;
 import model.fsa.FSAModel;
 
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import pluggable.io.IOPluginManager;
 import pluggable.io.IOCoordinator;
 import pluggable.io.ImportExportPlugin;
+import presentation.PresentationManager;
 import io.IOUtilities;
 
 /**
@@ -212,7 +211,7 @@ public class GrailPlugin implements ImportExportPlugin{
     			}
     		}
     		//Create an automatic layout given the imported method
-    		presentation.fsa.FSAGraph g=new presentation.fsa.FSAGraph(a);
+    		PresentationManager.getToolset(a.getModelDescriptor().getPreferredModelInterface()).wrapModel(a);
 			//Save the model to the selected destination
     		IOCoordinator.getInstance().save(a, dst);
     	}catch(java.io.IOException e)

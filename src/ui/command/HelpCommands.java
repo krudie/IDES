@@ -11,8 +11,6 @@ import main.Hub;
 import main.Workspace;
 import model.fsa.ver2_1.Automaton;
 
-import org.pietschy.command.ActionCommand;
-
 import ui.AboutDialog;
 
 /**
@@ -24,7 +22,8 @@ public class HelpCommands {
 	public static class AboutCommand extends AbstractAction {
 		
 		public AboutCommand(){
-			super(Hub.string("aboutIDES"));
+			super(Hub.string("comAbout"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintAbout"));
 		}
 		
 		public void actionPerformed(ActionEvent e) {

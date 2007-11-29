@@ -39,8 +39,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.GridLayout;
 import javax.swing.border.LineBorder;
 
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import main.Hub;
 import model.DESModel;
 import model.fsa.FSAModel;
@@ -274,7 +272,7 @@ public class ImportExportDialog extends EscapeDialog{
 				//Open a window for the user to choose the file to open:
 				JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
 				fc.setDialogTitle(Hub.string("openModelTitle"));
-				fc.setFileFilter(new ExtensionFileFilter(IOUtilities.MODEL_FILE_EXT, Hub.string("modelFileDescription")));
+				fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.MODEL_FILE_EXT}, Hub.string("modelFileDescription")));
 				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int retVal = fc.showOpenDialog(Hub.getMainWindow());
 				if(retVal == JFileChooser.APPROVE_OPTION){

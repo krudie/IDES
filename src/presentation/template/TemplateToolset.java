@@ -74,6 +74,11 @@ public class TemplateToolset implements Toolset {
 		{
 			return null;
 		}
+		
+		public boolean showZoomControl()
+		{
+			return false;
+		}
 
 	}
 

@@ -15,8 +15,6 @@ import java.util.Iterator;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.pietschy.command.file.ExtensionFileFilter;
-
 import main.Hub;
 import model.fsa.FSAModel;
 import pluggable.io.IOCoordinator;

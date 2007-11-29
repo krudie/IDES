@@ -190,7 +190,6 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 			invalidate();
 			Hub.getWorkspace().fireRepaintRequired();
 		}
-//		repaint();
 	}
 	
 	/* Don't need to respond to selection changes.

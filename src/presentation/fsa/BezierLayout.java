@@ -22,7 +22,6 @@ import main.Hub;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
-import ui.command.CommandManager_new;
 import ui.command.EdgeCommands;
 import ui.tools.CreationTool;
 
