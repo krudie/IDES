@@ -1,12 +1,8 @@
 package io.fsa.ver2_1;
 
 import java.awt.Rectangle;
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 
-import model.fsa.FSAModel;
-import pluggable.io.IOCoordinator;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -15,11 +11,14 @@ import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphLabel;
+import model.fsa.FSATransition;
 import util.BentoBox;
 
 import main.Workspace;
 import main.Hub;
 
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * This class is charged with exporting a FSAgraph
@@ -229,8 +228,13 @@ public class GraphExporter
 	 */
 	public static String createPSPicture(Rectangle exportBounds, boolean useFrame)
 	{
+		Hashtable<GraphLabel, Edge> labelHash = 
+			new Hashtable<GraphLabel, Edge>();
+		
 		Workspace workspace = null;
 		FSAGraph graphModel = null;
+		GraphLabel edgeLabel = null;
+		Iterator<FSATransition> edgeTransitions = null;
 		
 		CircleNode[] nodeArray = null;
 		Edge[] edgeArray = null;
@@ -276,6 +280,33 @@ public class GraphExporter
 		// Step #6 - Add the edge data 
 		for (int i = 0; i < edgeArray.length; i++)
 		{
+			// Bug Fix: since each event on a transition has an edge, 
+			// a model export will sometimes produce one line/label combo
+			// for each event on the transition.  This results in extra
+			// labels and transitions that don't need to be there.  In
+			// this case, however, the labels appear to be identical.  
+			// The hashtable is used to track labels that have been written
+			// and prevent the same label from being written twice.
+			// The edge is stored as well in case, in the future, more 
+			// testing beyond an identity check is needed to ensure the 
+			// label has not already been written.
+			edgeTransitions = edgeArray[i].getTransitions();
+			if ((edgeTransitions != null) && (edgeTransitions.hasNext())
+				&& (edgeTransitions.next() != null) 
+				& (edgeTransitions.hasNext()))
+			{
+				edgeLabel = edgeArray[i].getLabel();
+				System.out.println(edgeLabel.getText());
+				if (edgeLabel != null)
+				{
+					if (labelHash.containsKey(edgeLabel))
+					{
+						continue;
+					}
+				}
+			
+				labelHash.put(edgeLabel, edgeArray[i]);
+			}
 			contentsString += edgeArray[i].createExportString(exportBounds,
 				INT_EXPORT_TYPE_PSTRICKS);
 		}		

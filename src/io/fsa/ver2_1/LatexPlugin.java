@@ -82,6 +82,7 @@ public class LatexPlugin implements ImportExportPlugin{
 			FSAGraph graphModel = (FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
 			PrintStream ps = new PrintStream(dst);
 			GraphExporter.createPSTricksFileContents(graphModel, ps);
+			ps.close();
 		}catch(IOException e)
 		{
 			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
