@@ -35,16 +35,16 @@ import main.WorkspaceSubscriber;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
-import presentation.fsa.commands.GraphCommands;
-import presentation.fsa.commands.GraphCommands.DeleteAction;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.UIActions;
+import presentation.fsa.tools.CreationTool;
+import presentation.fsa.tools.DrawingTool;
+import presentation.fsa.tools.ModifyEdgeTool;
+import presentation.fsa.tools.MovementTool;
+import presentation.fsa.tools.SelectionTool;
+import presentation.fsa.tools.TextTool;
 import ui.MainWindow;
 import ui.command.OptionsCommands;
-import ui.tools.CreationTool;
-import ui.tools.DrawingTool;
-import ui.tools.ModifyEdgeTool;
-import ui.tools.MovementTool;
-import ui.tools.SelectionTool;
-import ui.tools.TextTool;
 import util.BooleanUIBinder;
 
 /**
@@ -159,14 +159,20 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	/**
 	 * The listener for the user pressing the <code>Delete</code> key.
 	 */
-	protected DeleteAction deleteCommand = new DeleteAction(this) {
-
-		public void actionPerformed(ActionEvent evt) {
-			super.setContext(getGraph());
-			super.setElement(getSelectedElement());
-			super.actionPerformed(evt);
-		}
-	};
+	protected UIActions.DeleteAction deleteCommand = new UIActions.DeleteAction(this);
+//	{
+//
+//		public void actionPerformed(ActionEvent evt) {
+//			super.setContext(getGraph());
+//			super.setElement(getSelectedElement());
+//			super.actionPerformed(evt);
+//		}
+//	};
+	
+	public Action getDeleteAction()
+	{
+		return deleteCommand;
+	}
 
 	protected Action escapeCommand = new AbstractAction("escape") {
 		public void actionPerformed(ActionEvent actionEvent) {
@@ -209,7 +215,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		// Custom actions that can be performed, sometimes undone.
 		String escAction = "esc";
 		// Undoable actions
-		String deleteAction = Hub.string("deleteSelection");
+		String deleteAction = "deleteSelection";
 
 		// Associating key strokes with action names:
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
@@ -699,6 +705,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		}
 		else
 		{
+			setShowGrid(false);
 			((MainWindow) Hub.getMainWindow()).getZoomControl().setZoom(1);
 		}
 	}

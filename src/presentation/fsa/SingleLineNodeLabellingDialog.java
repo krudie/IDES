@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import presentation.Presentation;
-import presentation.fsa.commands.GraphCommands;
+import presentation.fsa.commands.GraphActions;
 
 import main.Hub;
 
@@ -48,7 +48,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 		public void actionPerformed(ActionEvent actionEvent)
 		{
 			if(gm!= null&&!area.getText().equals(n.getLabel().getText())){
-				new GraphCommands.LabelAction(n,area.getText()).execute();						
+				new GraphActions.LabelAction(gm,n,area.getText()).execute();						
 			}
 			setVisible(false);
 		}
@@ -116,7 +116,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 
 	protected static JTextField area;
 	
-	public static void showAndLabel(FSAGraph gm, Node node)
+	public static void showAndLabel(GraphDrawingView gdv,FSAGraph gm, Node node)
 	{
 		SingleLineNodeLabellingDialog.gm=gm;
 		n=node;
@@ -132,8 +132,6 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 		if(!hasOurListener)
 			area.addFocusListener(commitOnFocusLost);
 		area.setText(label);
-		// FIXME rework to eliminate call to getcurrentboard
-		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
 		if(gdv==null)
 		{
 			return;

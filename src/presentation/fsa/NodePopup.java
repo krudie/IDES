@@ -2,6 +2,7 @@ package presentation.fsa;
 
 import java.awt.geom.Point2D.Float;
 
+import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -10,14 +11,12 @@ import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
 import presentation.Presentation;
-import presentation.fsa.commands.GraphCommands;
-import presentation.fsa.commands.GraphCommands.DeleteAction;
-import presentation.fsa.commands.GraphCommands.TextAction;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.NodeActions;
+import presentation.fsa.commands.UIActions;
+import presentation.fsa.commands.NodeActions.SetInitialAction;
+import presentation.fsa.commands.NodeActions.SetMarkedAction;
 
-import ui.command.NodeCommands;
-import ui.command.NodeCommands.SelfLoopAction;
-import ui.command.NodeCommands.SetInitialAction;
-import ui.command.NodeCommands.SetMarkedAction;
 
 public class NodePopup extends JPopupMenu {
 
@@ -32,37 +31,29 @@ public class NodePopup extends JPopupMenu {
 	private SetMarkedAction markedCmd;
 	private SetInitialAction initialCmd;
 //	private GraphCommands.TextCommand textCmd;
-	private SelfLoopAction selfLoopCmd;
-	private DeleteAction deleteCmd;	 
+//	private SelfLoopAction selfLoopCmd;
+	private Action deleteCmd;
 
 	private static final long serialVersionUID = 6664241416811568136L;
 
 	protected static void showPopup(GraphDrawingView context, CircleNode n){
 		view = context;
-		popup = new NodePopup(n);
-
+		popup = new NodePopup(context, n);
 		Float p = n.getLayout().getLocation();
-
-		// FIXME rework to eliminate call to getcurrentboard
-		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
-		if(gdv!=null)
-		{
-			p=gdv.localToScreen(p);
-			popup.show(context, (int)p.x, (int)p.y);
-		}
-
+		p=context.localToScreen(p);
+		popup.show(context,(int)p.x, (int)p.y);
 	}
 
-	protected NodePopup(CircleNode n) {
+	protected NodePopup(GraphDrawingView gdv, CircleNode n) {
 		super("Node Properties");		
 //		initialCmd = new SetInitialCommand();
 //		selfLoopCmd = new SelfLoopCommand();
-		deleteCmd = new GraphCommands.DeleteAction();
+		deleteCmd = gdv.getDeleteAction();
 
-		miSetMarked = new JCheckBoxMenuItem(new NodeCommands.SetMarkedAction(n));
-		miSetInitial = new JCheckBoxMenuItem(new NodeCommands.SetInitialAction(n));
-		miSelfLoop = new JMenuItem(new NodeCommands.SelfLoopAction(n));
-		miLabelNode = new JMenuItem(new GraphCommands.TextAction(n));
+		miSetMarked = new JCheckBoxMenuItem(new NodeActions.SetMarkedAction(n));
+		miSetInitial = new JCheckBoxMenuItem(new NodeActions.SetInitialAction(n));
+		JMenuItem miSelfLoop = new JMenuItem(new UIActions.SelfLoopAction(gdv.getGraphModel(),n));
+		miLabelNode = new JMenuItem(new UIActions.TextAction(n));
 //		miDeleteNode.addActionListener(deleteCmd);
 
 		add(miLabelNode);
@@ -72,22 +63,24 @@ public class NodePopup extends JPopupMenu {
 		add(new JPopupMenu.Separator());
 		add(deleteCmd);
 		addPopupMenuListener(new PopupListener());
-		setNode(n);
-	}
-
-	protected void setNode(CircleNode n){
 		node = n;
-//		markedCmd.setNode(n);
-//		initialCmd.setNode(n);
-//		selfLoopCmd.setNode(n);
-		deleteCmd.setElement(n);
-		deleteCmd.setContext(view);
-//		textCmd.setElement(n);
 		miSetMarked.setSelected(n.getState().isMarked());
 		miSetInitial.setSelected(n.getState().isInitial());
-//		markedCmd..setSelected(node.getState().isMarked());		
-//		initialCmd.setSelected(node.getState().isInitial());
 	}
+
+//	protected void setNode(CircleNode n){
+//		node = n;
+////		markedCmd.setNode(n);
+////		initialCmd.setNode(n);
+////		selfLoopCmd.setNode(n);
+////		deleteCmd.setElement(n);
+////		deleteCmd.setContext(view);
+////		textCmd.setElement(n);
+//		miSetMarked.setSelected(n.getState().isMarked());
+//		miSetInitial.setSelected(n.getState().isInitial());
+////		markedCmd..setSelected(node.getState().isMarked());		
+////		initialCmd.setSelected(node.getState().isInitial());
+//	}
 
 	class PopupListener implements PopupMenuListener {
 

@@ -1,4 +1,4 @@
-package ui.tools;
+package presentation.fsa.tools;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -14,8 +14,9 @@ import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
-import presentation.fsa.commands.GraphCommands;
-import ui.tools.DrawingTool;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.UIActions;
+import presentation.fsa.tools.DrawingTool;
 
 public class TextTool extends DrawingTool {
 		
@@ -37,11 +38,11 @@ public class TextTool extends DrawingTool {
 		}
 		// get current selection
 		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){			
-			new GraphCommands.TextAction(ContextAdaptorHack.context.getSelectedElement()).execute();			
+			new UIActions.TextAction(ContextAdaptorHack.context.getSelectedElement()).execute();			
 		}else{
 			// if nothing selected
 			// create a free label
-			new GraphCommands.TextAction(me.getPoint()).execute();			
+			new UIActions.TextAction(me.getPoint()).execute();			
 		}
 		ContextAdaptorHack.context.clearCurrentSelection();
 		ContextAdaptorHack.context.setAvoidNextDraw(false);

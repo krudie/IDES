@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -50,7 +51,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.CompoundEdit;
 
 import observer.Subscriber;
-import presentation.fsa.commands.GraphCommands;
+import presentation.fsa.commands.EdgeActions;
+import presentation.fsa.commands.GraphActions;
 
 
 import services.undo.UndoManager;
@@ -117,9 +119,11 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			}
 			if(((JButton)actionEvent.getSource()).getText().equals(Hub.string("assignNew")))
 			{
-				newEvent = ((FSAGraph)Workspace.instance().getActiveLayoutShell()).createAndAddEvent(textField.getText(), checkControllable.isSelected(), checkObservable.isSelected());
-				updateOnlyAvailable();	
-				listAvailableEvents.setSelectedValue(newEvent, true);
+				FSAEvent[] eventBuffer=new FSAEvent[1];
+				//FIXME use passed FSAGraph rather than take current from Workspace 
+				new GraphActions.CreateEventAction(allEdits,(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),textField.getText(),checkControllable.isSelected(),checkObservable.isSelected(),eventBuffer).execute();
+				updateOnlyAvailable();
+				listAvailableEvents.setSelectedValue(eventBuffer[0], true);
 			}
 			else
 			{
@@ -441,6 +445,8 @@ public class EdgeLabellingDialog extends EscapeDialog {
 	{
         textField.requestFocus();
 		dialog.setVisible(false);
+        allEdits.end();
+        allEdits.undo();
 	}
 	
 	
@@ -623,7 +629,8 @@ public class EdgeLabellingDialog extends EscapeDialog {
 			for(int i = 0; i < contents.length; i++){
 				events.add((FSAEvent)contents[i]);
 			}
-			new GraphCommands.EdgeLabelAction(edge,events,allEdits).execute();
+			//FIXME use passed FSAGraph rather than take current from Workspace 
+			new EdgeActions.LabelAction(allEdits,(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),edge,events).execute();
 			allEdits.end();
 			UndoManager.addEdit(allEdits);
 

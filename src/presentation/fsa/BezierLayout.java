@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,13 +19,14 @@ import javax.swing.Action;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 
+import main.Annotable;
 import main.Hub;
 
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
-import ui.command.EdgeCommands;
-import ui.tools.CreationTool;
+import presentation.fsa.commands.EdgeActions;
+import presentation.fsa.tools.CreationTool;
 
 /**
  * Graphical data and operations for visual display of a BezierEdge. 
@@ -145,8 +148,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 */
 	BezierLayout(BezierLayout other) {
 		edge = other.edge;
-		curve = new CubicParamCurve2D();		
-		curve.setCurve(new CubicParamCurve2D(other.curve));
+		curve = new CubicParamCurve2D(other.curve);		
 		updateAnglesAndScalars();
 		eventNames = new ArrayList<String>();
 		setLabelOffset(DEFAULT_LABEL_OFFSET);
@@ -413,7 +415,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	protected void setCurve(CubicParamCurve2D cubicCurve) {
 		this.curve = cubicCurve;
 		updateAnglesAndScalars();
-	}	
+	}
 
 	/**
 	 * Sets the curve representing the edge.
@@ -795,5 +797,24 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		s1 = in.readDouble();
 		s2 = in.readDouble();
 		eventNames = (ArrayList<String>)in.readObject();
+	}
+	
+	public BezierLayout clone()
+	{
+		BezierLayout layout=null;
+		try
+		{
+			ByteArrayOutputStream fo = new ByteArrayOutputStream();
+			ObjectOutputStream so = new ObjectOutputStream(fo);
+			so.writeObject(this);
+			so.flush();
+			so.close();
+			ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
+			ObjectInputStream objectIS = new ObjectInputStream(is);
+			layout = (BezierLayout)objectIS.readObject();
+			is.close();
+			layout.setEdge(edge);
+		}catch(Exception e){ throw new RuntimeException("Cloning of BezierEdge failed.");}
+		return layout;
 	}
 }

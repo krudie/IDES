@@ -170,7 +170,9 @@ public class ReflexiveEdge extends BezierEdge {
 	 * FIXME customize so that intersection with boundary is computed properly;
 	 * parameters (sourceT and targetT) are currently being reverse.
 	 */
-	public void refresh() {		
+	public void refresh() {
+//		System.out.println("foo");
+		((ReflexiveLayout)getLayout()).computeCurve();
 		super.refresh();
 	}
 
@@ -412,5 +414,20 @@ public class ReflexiveEdge extends BezierEdge {
 		}
 
 	} // end Handler
+
+	/**
+	 * Sets the graphical layout to <code>layout</code>. 
+	 * 
+	 * Precondition: layout != null
+	 * 
+	 * @param layout graphical layout data to be set
+	 */
+	public void setLayout(GraphicalLayout layout) {
+		((BezierLayout)layout).setEdge(this);
+		super.setLayout(layout);
+		// ??? //
+		//computeEdge();
+		setNeedsRefresh(true);
+	}
 
 }

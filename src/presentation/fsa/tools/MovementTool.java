@@ -1,4 +1,4 @@
-package ui.tools;
+package presentation.fsa.tools;
 
 import java.awt.Cursor;
 import java.awt.Point;
@@ -10,7 +10,7 @@ import main.Hub;
 
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
-import presentation.fsa.commands.GraphCommands.MoveAction;
+import presentation.fsa.commands.GraphActions.MoveAction;
 
 
 public class MovementTool extends DrawingTool {

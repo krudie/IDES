@@ -27,10 +27,14 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.undo.CompoundEdit;
 
 import observer.Subscriber;
 import presentation.LayoutShell;
 import presentation.Presentation;
+import presentation.fsa.commands.AbstractGraphAction;
+import presentation.fsa.commands.GraphActions;
+import services.undo.UndoManager;
 
 import main.Hub;
 import main.WorkspaceMessage;
@@ -144,26 +148,31 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 	    			return;
 	    		}
 	    		
-	    		events.elementAt(row).setSymbol((String)value);
+	    		new GraphActions.ModifyEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),events.elementAt(row),
+	    				(String)value,events.elementAt(row).isControllable(),events.elementAt(row).isObservable()).execute();
+//	    		events.elementAt(row).setSymbol((String)value);
 
 	    	}
 	    	else if(col==1)
 	    	{
+	    		new GraphActions.ModifyEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),events.elementAt(row),
+	    				events.elementAt(row).getSymbol(),(Boolean)value,events.elementAt(row).isObservable()).execute();
 	    		
-	    		events.elementAt(row).setControllable(((Boolean)value).booleanValue());
+//	    		events.elementAt(row).setControllable(((Boolean)value).booleanValue());
 	    		controllable.removeElementAt(row);
 	    		controllable.insertElementAt((Boolean)value, row);
 	    	}
 	    	else
 	    	{
-	    		
-	    		events.elementAt(row).setObservable(((Boolean)value).booleanValue());
+	    		new GraphActions.ModifyEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),events.elementAt(row),
+	    				events.elementAt(row).getSymbol(),events.elementAt(row).isControllable(),(Boolean)value).execute();	    		
+//	    		events.elementAt(row).setObservable(((Boolean)value).booleanValue());
 	    		observable.removeElementAt(row);
 	    		observable.insertElementAt((Boolean)value, row);	    		
 	    	}
 	    		    		
-	    	((FSAPublisher)a).fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
-	    			FSAMessage.EVENT, events.elementAt(row).getId(), a));			
+//	    	((FSAPublisher)a).fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
+//	    			FSAMessage.EVENT, events.elementAt(row).getId(), a));			
 	    	
 	    	if(col==0)
 	    	{
@@ -234,13 +243,20 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 			{
 				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
 			}
-			// FIXME Issue a command that goes to automaton.
-			FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
+			// FIXME EventView should be initialized with the layout shell
+			FSAGraph graph=(FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
+			CompoundEdit allEdits=new CompoundEdit();
 			for(int i=0;i<delEvents.length;++i)
 			{
-				//Hub.getWorkspace().getActiveGraphModel().removeEvent((Event)delEvents[i]);
-				a.remove((Event)delEvents[i]);
+				AbstractGraphAction deleteEvent=new GraphActions.RemoveEventAction(allEdits,graph,delEvents[i]);
+				if(i!=0&&i==delEvents.length-1)
+				{
+					deleteEvent.setLastOfMultiple(true);
+				}
+				deleteEvent.execute();
 			}
+			allEdits.end();
+			UndoManager.addEdit(allEdits);
 			refreshEventTable();
 			eventNameField.requestFocus();
 		}
@@ -262,20 +278,14 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 			if(a==null||"".equals(eventNameField.getText()))
 				return;
 			
-			// FIXME issue a command to the Automaton and let messaging notify the graph model. 
-			Event event=((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).createAndAddEvent(eventNameField.getText(), controllableCBox.isSelected(), observableCBox.isSelected());
-//			Event event=new Event(Hub.getWorkspace().getActiveGraphModel().getFreeEventId());
-//			event.setSymbol(eventNameField.getText());
-//			event.setControllable(controllableCBox.isSelected());
-//			event.setObservable(observableCBox.isSelected());
-//			a.add(event);
-//			a.notifyAllSubscribers();
+			//FIXME EventView has to be initialized with a layoutshell
+			String eventName=eventNameField.getText();
+			new GraphActions.CreateEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),eventName, controllableCBox.isSelected(), observableCBox.isSelected()).execute();
 			
-			//update();
 			int rows=table.getModel().getRowCount();
 			for(int i=0;i<rows;++i)
 			{
-				if(((String)table.getModel().getValueAt(i,0)).equals(event.getSymbol()))
+				if(((String)table.getModel().getValueAt(i,0)).equals(eventName))
 				{
 					table.setRowSelectionInterval(i,i);
 					table.scrollRectToVisible(table.getCellRect(i,0,false));

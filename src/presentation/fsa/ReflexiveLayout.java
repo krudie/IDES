@@ -55,9 +55,12 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 		minAxisLength = in.readFloat();
 	}
 
-
-
-
+	public ReflexiveLayout clone()
+	{
+		ReflexiveLayout layout=(ReflexiveLayout)super.clone();
+		layout.setEdge(edge);
+		return layout;
+	}
 
 	/**
 	 * The minimum length of the axis vector from the centre of the node
@@ -115,12 +118,6 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	}
 
 
-	public void setLayout(BezierLayout layout)
-	{
-		System.out.println("Layout!");
-		setCurve(layout.getCurve());
-	}
-	
 	/**
 	 * FIXME 
 	 * Problem: using fixed scalars and angles causes midpoint 
@@ -213,6 +210,8 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 		{			
 		case MIDPOINT:
 			Float centrePoint;
+//			System.out.println(getEdge());
+
 			centrePoint = getEdge().getSourceNode().getLocation();
 			axis = Geometry.subtract(point, centrePoint);
 			double norm = Geometry.norm(axis);

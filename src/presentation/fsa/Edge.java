@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.geom.Point2D;
 
+import presentation.GraphicalLayout;
+
+import main.Annotable;
 import model.fsa.FSATransition;
 
 /**
@@ -180,16 +183,16 @@ public abstract class Edge extends GraphElement{
 		return transitions.size();
 	}
 
-	/**
-	 * @return the Id of the first transition in the list of
-	 * transitions.  If the list is empty, returns the GraphElement getId()
-	 */
-	public Long getId(){
-		if(!transitions.isEmpty()){
-			return transitions.get(0).getId();
-		}
-		return super.getId();
-	}
+//	/**
+//	 * @return the Id of the first transition in the list of
+//	 * transitions.  If the list is empty, returns the GraphElement getId()
+//	 */
+//	public Long getId(){
+//		if(!transitions.isEmpty()){
+//			return transitions.get(0).getId();
+//		}
+//		return super.getId();
+//	}
 	
 	/**
 	 * Displays a popup menu providing operations on this edge.
@@ -206,6 +209,15 @@ public abstract class Edge extends GraphElement{
 		this.remove(this.label);
 		this.insert(label);
 		this.label = label;
+	}
+	
+	public void setLayout(GraphicalLayout layout)
+	{
+		super.setLayout(layout);
+		for(FSATransition t:transitions)
+		{
+			t.setAnnotation(Annotable.LAYOUT, layout);
+		}
 	}
 
 	/**

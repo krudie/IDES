@@ -1,4 +1,4 @@
-package ui.tools;
+package presentation.fsa.tools;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -7,7 +7,10 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+
+import javax.swing.undo.CompoundEdit;
 
 import main.Hub;
 
@@ -22,7 +25,9 @@ import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
 import presentation.fsa.GraphElement;
-import presentation.fsa.commands.GraphCommands.CreateAction;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.GraphUndoableEdits;
+import services.undo.UndoManager;
 /**
  * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.
  * 
@@ -36,8 +41,7 @@ public class CreationTool extends DrawingTool {
 	private boolean drawingEdge = false;
 	private CircleNode sourceNode, targetNode; // nodes to be source and target of created edge
 	private CircleNode startNode, endNode; // nodes intersected on mouse pressed and released respectively
-	private BezierEdge edge;
-	private CreateAction cmd;	
+	private BezierEdge edge;	
 	private boolean aborted;
 	private boolean firstClick;
 	private boolean edgeLeftLayout = false;
@@ -53,7 +57,6 @@ public class CreationTool extends DrawingTool {
 	}
 
 	public void init(){
-		cmd = null;
 		startNode = null;
 		endNode = null;
 		sourceNode = null;
@@ -90,7 +93,6 @@ public class CreationTool extends DrawingTool {
 		super.handleMousePressed(me);
 
 		startNode = null;
-		cmd = null;
 
 		//Do not clear the selection if the selected element is a BezierEdge
 		//Reason: let the user modify the control points of the bezier curve without
@@ -230,8 +232,9 @@ public class CreationTool extends DrawingTool {
 	private void finishSelfLoop() {
 		targetNode = endNode;
 		abortEdge();
-		cmd = new CreateAction(CreateAction.SELF_LOOP, targetNode);
-		cmd.execute();
+//		cmd = new CreateAction(CreateAction.SELF_LOOP, targetNode);
+//		cmd.execute();
+		new GraphActions.CreateEdgeAction(ContextAdaptorHack.context.getGraphModel(),targetNode,targetNode);
 		sourceNode = null;
 		targetNode = null;
 		ContextAdaptorHack.context.clearCurrentSelection();
@@ -241,8 +244,9 @@ public class CreationTool extends DrawingTool {
 	 * @param point
 	 */
 	private void createNode(Point point) {
-		cmd = new CreateAction(CreateAction.NODE, point);
-		cmd.execute();
+//		cmd = new CreateAction(CreateAction.NODE, point);
+//		cmd.execute();
+		new GraphActions.CreateNodeAction(ContextAdaptorHack.context.getGraphModel(),new Point2D.Float(point.x,point.y)).execute();
 		abortEdge();
 		//dragging = false;		
 		sourceNode = null;
@@ -254,9 +258,16 @@ public class CreationTool extends DrawingTool {
 	 * @param point
 	 */
 	private void finishEdgeAndCreateTarget(Point point) {		
-		cmd = new CreateAction(
-				CreateAction.NODE_AND_EDGE, edge, point);				
-		cmd.execute();
+//		cmd = new CreateAction(
+//				CreateAction.NODE_AND_EDGE, edge, point);				
+//		cmd.execute();
+		CompoundEdit allEdits=new CompoundEdit();
+		Node[] nodeBuffer=new Node[1];
+		new GraphActions.CreateNodeAction(allEdits,ContextAdaptorHack.context.getGraphModel(),new Point2D.Float(point.x,point.y),nodeBuffer).execute();
+		new GraphActions.CreateEdgeAction(allEdits,ContextAdaptorHack.context.getGraphModel(),edge.getSourceNode(),nodeBuffer[0]).execute();
+		allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub.string("undoCreateElements")));
+		allEdits.end();
+		UndoManager.addEdit(allEdits);
 		// IDEA Don't keep a copy of the temp edge in this class, just use the get and set in context.
 		// TODO call abortEdge here and have it do all the work (duplicate code here and in finishEdge).
 		edge = null;
@@ -337,8 +348,10 @@ public class CreationTool extends DrawingTool {
 		}
 
 		if (edge != null) {
-			cmd = new CreateAction(CreateAction.EDGE, edge, targetNode);
-			cmd.execute();
+//			cmd = new CreateAction(CreateAction.EDGE, edge, targetNode);
+//			cmd.execute();
+			new GraphActions.CreateEdgeAction(ContextAdaptorHack.context.getGraphModel(),edge.getSourceNode(),targetNode).execute();
+//			System.out.println(edge.getSourceNode().contains(edge));
 		}
 		edge = null;
 		ContextAdaptorHack.context.setTempEdge(null);

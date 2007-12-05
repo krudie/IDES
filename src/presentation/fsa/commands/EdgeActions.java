@@ -1,31 +1,38 @@
-package ui.command;
+package presentation.fsa.commands;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Vector;
+
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 import main.Hub;
 import main.Workspace;
+import model.fsa.FSAEvent;
 
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeLabellingDialog;
+import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.InitialArrow;
 import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.ReflexiveLayout;
 import presentation.fsa.SelectionGroup;
+import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 import services.undo.UndoManager;
@@ -61,40 +68,40 @@ import services.undo.UndoManager;
  * @author Christian Silvano
  *
  */
-public class EdgeCommands {
+public class EdgeActions {
 	
 	
-	//TODO make this action undoable according to what was done for the other actions, e.g.: SymmetrizeEdge()
-	//In order to do that, the AbstractAction bellow should instantiate an UndoableAction sending all the references
-	//needed, so the UndoableAction can undo/redo the action everytime it is requested by the command manager.
-	//CreateEvent should also, after instanciating the UndoableAction, send a reference of this action to the CommandManager
-	//using the method undoSupport->postEdit(UndoableAction) inside the CommandManager.
-	public static class CreateEventCommand extends AbstractAction {
-		private static final ImageIcon icon = new ImageIcon();
-		private static final String name = "Label with events";
+	public static class LabelAction extends AbstractGraphAction
+	{
+		protected Vector<FSAEvent> assignedEvents=null;
+		protected Edge edge;
+		protected FSAGraph graph;
 		
-		private GraphDrawingView view;
-		private Edge edge;
-		
-		public CreateEventCommand(GraphDrawingView view,Edge edge){
-			super(name,icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/machine_alpha.gif")));
-			this.edge = edge;
-			this.view = view;
+		public LabelAction(FSAGraph graph, Edge edge, Vector<FSAEvent> assignedEvents)
+		{
+			this(null,graph,edge,assignedEvents);
 		}
 		
-		public void actionPerformed(ActionEvent evt) {
-			if(edge != null & view != null)
+		public LabelAction(CompoundEdit parentEdit, FSAGraph graph, Edge edge, Vector<FSAEvent> assignedEvents)
+		{
+			this.graph=graph;
+			this.edge=edge;
+			this.assignedEvents=assignedEvents;
+			if(this.assignedEvents==null)
 			{
-				EdgeLabellingDialog.showDialog(view, edge);
+				this.assignedEvents=new Vector<FSAEvent>();
+			}
+			this.parentEdit=parentEdit;
+		}
+		
+		public void actionPerformed(ActionEvent event)
+		{
+			if (edge != null) {
+				GraphUndoableEdits.UndoableEdgeLabel action = new GraphUndoableEdits.UndoableEdgeLabel(graph,edge,assignedEvents);
+				action.redo();
+				postEdit(action);
 			}
 		}
-		
-		public void execute()
-		{
-			actionPerformed(null);
-		}
-		
 	}
 	
 	/**
@@ -102,42 +109,23 @@ public class EdgeCommands {
 	 * @author christiansilvano
 	 *
 	 */
-	public static class ModifyEdgeAction extends AbstractAction {
+	public static class ModifyAction extends AbstractGraphAction {
 		
-		private Edge edge;
-		private GraphicalLayout previousLayout;
-		private GraphDrawingView view;
-		public ModifyEdgeAction(){
-			super("modify.edge.command");
-		}
-		
-		/**
-		 * Class constructor.
-		 * @param view a reference to the GraphDrawingView displaying the layouts of interest
-		 * @param edge a reference to the edge of interest
-		 * @param previousLayout a copy of the layout before the modification
-		 */
-		public ModifyEdgeAction(GraphDrawingView view, Edge edge, GraphicalLayout previousLayout) {
-			setEdge(edge);
-			setPreviousLayout(previousLayout);
-			this.view = view;
-		}
-		
-		//Sets the edge of interest
-		public void setEdge(Edge edge){
-			this.edge = edge;
-		}
-		
-		//Sets the backup for the Layout of edge 
-		public void setPreviousLayout(GraphicalLayout layout){
-			this.previousLayout = layout;
-		}
-		
-		//Some classes that uses this Action, calls the execute() method. That is legacy from
-		//when IDES used the GUICommands library.
-		public void execute()
+		protected Edge edge;
+		protected FSAGraph graph;
+		protected GraphicalLayout originalLayout;
+
+		public ModifyAction(FSAGraph graph,Edge edge,GraphicalLayout originalLayout)
 		{
-			actionPerformed(null);
+			this(null,graph,edge,originalLayout);
+		}
+		
+		public ModifyAction(CompoundEdit parentEdit,FSAGraph graph,Edge edge,GraphicalLayout originalLayout)
+		{
+			this.graph=graph;
+			this.edge=edge;
+			this.parentEdit=parentEdit;
+			this.originalLayout=originalLayout;
 		}
 		
 		/**Instantiate the UndoableAction of interest, sending references to the Edge, the GraphDrawingView
@@ -145,12 +133,14 @@ public class EdgeCommands {
 		 ** Reports the UndoableAction to the CommandManager.
 		 **/
 		public void actionPerformed(ActionEvent evt) {
-			UndoableModifyEdge action = new UndoableModifyEdge(view, edge,previousLayout);
-			//perform action
-			action.redo();
-			UndoManager.addEdit(action);	
+			if(graph!=null)
+			{
+				UndoableEdit edit=new GraphUndoableEdits.UndoableModifyEdge(graph,edge,originalLayout);
+				postEdit(edit);
+			}
 		}		
 	}
+
 	/**
 	 * This class is an UndoableAction responsible for swaping layouts of an edge, the layouts
 	 * means the state of the edge before and after an edition.

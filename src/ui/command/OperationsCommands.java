@@ -52,7 +52,7 @@ public class OperationsCommands {
 		}
 
 		public void actionPerformed(ActionEvent evt) {
-			OperationDialog od=new OperationDialog();
+			new OperationDialog();
 		}
 		
 	}

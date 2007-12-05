@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import main.Annotable;
 import main.Hub;
@@ -98,7 +100,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * Maps used in searches of intersection
 	 * TODO replace with Quadtree data structure
 	 */
-	private HashMap<Long, CircleNode> nodes;
+	private HashMap<Long, Node> nodes;
 	private HashMap<Long, Edge> edges;
 	private HashMap<Long, GraphLabel> freeLabels;
 	private HashMap<Long, GraphLabel> edgeLabels; // use parent edge's id as key
@@ -128,7 +130,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			fsa.setAnnotation(Annotable.LAYOUT,new GraphLayout());
 		}
 		
-		nodes = new HashMap<Long, CircleNode>();
+		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
@@ -382,7 +384,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	private void buildIntersectionDS()
 	{
-		nodes = new HashMap<Long, CircleNode>();
+		nodes = new HashMap<Long, Node>();
 		edges = new HashMap<Long, Edge>();
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
@@ -473,7 +475,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * 
 	 * @return the set of all nodes in the graph
 	 */
-	public Collection<CircleNode> getNodes() {
+	public Collection<Node> getNodes() {
 		return nodes.values();
 	}
 
@@ -509,8 +511,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	private void initializeGraph() {		
 
-		for( CircleNode n : nodes.values() ) {
-			((CircleNodeLayout)n.getLayout()).dispose();
+		for( Node n : nodes.values() ) {
+			if(n instanceof CircleNode)
+			{
+				((CircleNodeLayout)n.getLayout()).dispose();
+			}
 		}
 
 		this.clear();
@@ -526,7 +531,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		// add to set of nodes		
 		Iterator iter = fsa.getStateIterator();
 		State s;
-		CircleNode n1;
+		Node n1;
 
 		while( iter.hasNext() ) {
 			s = (State)iter.next();
@@ -543,7 +548,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		// add events to collection for that edge.
 		iter = fsa.getTransitionIterator();
 		Transition t;
-		CircleNode n2;
+		Node n2;
 		Edge e;
 		while( iter.hasNext() ) {						
 			t = (Transition)iter.next();
@@ -626,125 +631,125 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		return null;
 	}
 
-	/**
-	 * @deprecated
-	 * Graph is now built in LayoutDataParser
-	 * 
-	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
-	 * Otherwise returns null.
-	 */
-	private Edge directedEdgeBetween(Node source, Node target){		
-		for(Edge e : edges.values())
-		{			
-			if(e.getSourceNode() != null && e.getSourceNode().equals(source) 
-					&& e.getTargetNode() != null && e.getTargetNode().equals(target)){
-				return e;
-			}
-		}		
-		return null;
-	}
-
-
-	/**
-	 * @deprecated 
-	 * TODO wait until automaton is saved before committing
-	 * layout changes. 
-	 * 
-	 * @param t
-	 * @param layout
-	 */
-	private void addToLayout(FSATransition t, Edge edge) {
-		Event event = (Event) t.getEvent();
-		if(event != null){			
-			edge.addEventName(event.getSymbol());
-		}						
-	}
-
-	/**
-	 * If <code>p</code> is not contained within the boundary of <code>e</code>'s source node,
-	 * adds a new node at point <code>p</code> and completes the edge from 
-	 * <code>e</code>'s source node to the new node.
-	 *
-	 * @param e the edge to be finished
-	 * @param p the location of the new node
-	 */
-	public SelectionGroup finishEdgeAndCreateTargetNode(BezierEdge e, Point2D.Float p) {	
-		if( ! e.getSourceNode().intersects(p) ){
-			finishEdge( e, createNode(p) );
-		}
-		SelectionGroup s = new SelectionGroup();
-		s.insert(e);
-		s.insert(e.getTargetNode());
-		return s;
-	}
-
-	/**
-	 * Updates the given edge from node <code>n1</code> to node <code>n2</code>.
-	 * and a adds a new transition to the automaton.
-	 * 
-	 * @param e 
-	 * @param target	
-	 */
-	public BezierEdge finishEdge(BezierEdge e, CircleNode target) {
-
-		e.setTargetNode(target);			
-		e.computeEdge();	
-
-		// Distribute multiple directed edges between same node pair.
-//		Set<Edge> neighbours = getEdgesBetween(target, e.getSourceNode());
-//		if( neighbours.size() > 0 ) {
-//		e.insertAmong(neighbours);
-//		// TODO commit the layout for modified straight edge (if any)
+//	/**
+//	 * @deprecated
+//	 * Graph is now built in LayoutDataParser
+//	 * 
+//	 * Returns the directed edge from <code>source</code> to <code>target</code> if exists.
+//	 * Otherwise returns null.
+//	 */
+//	private Edge directedEdgeBetween(Node source, Node target){		
+//		for(Edge e : edges.values())
+//		{			
+//			if(e.getSourceNode() != null && e.getSourceNode().equals(source) 
+//					&& e.getTargetNode() != null && e.getTargetNode().equals(target)){
+//				return e;
+//			}
+//		}		
+//		return null;
+//	}
+//
+//
+//	/**
+//	 * @deprecated 
+//	 * TODO wait until automaton is saved before committing
+//	 * layout changes. 
+//	 * 
+//	 * @param t
+//	 * @param layout
+//	 */
+//	private void addToLayout(FSATransition t, Edge edge) {
+//		Event event = (Event) t.getEvent();
+//		if(event != null){			
+//			edge.addEventName(event.getSymbol());
+//		}						
+//	}
+//
+//	/**
+//	 * If <code>p</code> is not contained within the boundary of <code>e</code>'s source node,
+//	 * adds a new node at point <code>p</code> and completes the edge from 
+//	 * <code>e</code>'s source node to the new node.
+//	 *
+//	 * @param e the edge to be finished
+//	 * @param p the location of the new node
+//	 */
+//	public SelectionGroup finishEdgeAndCreateTargetNode(BezierEdge e, Point2D.Float p) {	
+//		if( ! e.getSourceNode().intersects(p) ){
+//			finishEdge( e, createNode(p) );
 //		}
-
-
-		// Preliminary code for arcing a newly created edge around any obstructing
-		// nodes.
-		// Commented out while I work out the kinks.  CLM
-//		if (e.isStraight()) {
-//		Set<Node> intersections = new HashSet<Node>();
-//		for (Node n : nodes.values()) {
-//		if (!n.equals(e.getSourceNode()) && !n.equals(e.getTargetNode())
-//		&& e.getBezierLayout().curve.intersects(n.bounds())) {
-//		intersections.add(n);
-//		}
-//		}
-//		if (!intersections.isEmpty()) {
-//		e.arcMore();
-//		}
-//		}
-
-		e.insertAmong(getEdgesBetween(target, e.getSourceNode()));
-
-		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSourceNode().getId()), fsa.getState(target.getId()));			
-		e.addTransition(t);
-
-		// NOTE must assign transition to edge before inserting edge as children of end nodes.
-		e.getSourceNode().insert(e);	
-		target.insert(e);		
-
-		// avoid spurious update
-		fsa.removeSubscriber(this);
-		fsa.add(t);
-		fsa.addSubscriber(this);
-
-		// TO BE REMOVED /////////////////////////////
-//		metaData.setLayoutData(t, e.getBezierLayout());
-		//Christian: the following line is to set the layout without using metadata:
-		t.setAnnotation(Annotable.LAYOUT, e.getBezierLayout());
-		//////////////////////////////////////////////
-
-		edges.put(e.getId(), e);
-		edgeLabels.put(e.getId(), e.getLabel());
-		setNeedsRefresh(true);
-
-		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
-				FSAGraphMessage.EDGE,
-				e.getId(), 
-				e.bounds(),
-				this, ""));
-		return e;
-	}	
+//		SelectionGroup s = new SelectionGroup();
+//		s.insert(e);
+//		s.insert(e.getTargetNode());
+//		return s;
+//	}
+//
+//	/**
+//	 * Updates the given edge from node <code>n1</code> to node <code>n2</code>.
+//	 * and a adds a new transition to the automaton.
+//	 * 
+//	 * @param e 
+//	 * @param target	
+//	 */
+//	public BezierEdge finishEdge(BezierEdge e, CircleNode target) {
+//
+//		e.setTargetNode(target);			
+//		e.computeEdge();	
+//
+//		// Distribute multiple directed edges between same node pair.
+////		Set<Edge> neighbours = getEdgesBetween(target, e.getSourceNode());
+////		if( neighbours.size() > 0 ) {
+////		e.insertAmong(neighbours);
+////		// TODO commit the layout for modified straight edge (if any)
+////		}
+//
+//
+//		// Preliminary code for arcing a newly created edge around any obstructing
+//		// nodes.
+//		// Commented out while I work out the kinks.  CLM
+////		if (e.isStraight()) {
+////		Set<Node> intersections = new HashSet<Node>();
+////		for (Node n : nodes.values()) {
+////		if (!n.equals(e.getSourceNode()) && !n.equals(e.getTargetNode())
+////		&& e.getBezierLayout().curve.intersects(n.bounds())) {
+////		intersections.add(n);
+////		}
+////		}
+////		if (!intersections.isEmpty()) {
+////		e.arcMore();
+////		}
+////		}
+//
+//		e.insertAmong(getEdgesBetween(target, e.getSourceNode()));
+//
+//		Transition t = new Transition(fsa.getFreeTransitionId(), fsa.getState(e.getSourceNode().getId()), fsa.getState(target.getId()));			
+//		e.addTransition(t);
+//
+//		// NOTE must assign transition to edge before inserting edge as children of end nodes.
+//		e.getSourceNode().insert(e);	
+//		target.insert(e);		
+//
+//		// avoid spurious update
+//		fsa.removeSubscriber(this);
+//		fsa.add(t);
+//		fsa.addSubscriber(this);
+//
+//		// TO BE REMOVED /////////////////////////////
+////		metaData.setLayoutData(t, e.getBezierLayout());
+//		//Christian: the following line is to set the layout without using metadata:
+//		t.setAnnotation(Annotable.LAYOUT, e.getBezierLayout());
+//		//////////////////////////////////////////////
+//
+//		edges.put(e.getId(), e);
+//		edgeLabels.put(e.getId(), e.getLabel());
+//		setNeedsRefresh(true);
+//
+//		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD, 
+//				FSAGraphMessage.EDGE,
+//				e.getId(), 
+//				e.bounds(),
+//				this, ""));
+//		return e;
+//	}	
 
 	/** 
 	 * @param n1 the source or target node
@@ -752,7 +757,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * 
 	 * @return the set of all edges connecting n1 and n2
 	 */
-	private Set<Edge> getEdgesBetween(Node n1, Node n2){
+	public Set<Edge> getEdgesBetween(Node n1, Node n2){
 		Set<Edge> set = new HashSet<Edge>();
 		for(Edge e : edges.values()) {	
 			if((e.getSourceNode() != null && e.getTargetNode() != null)
@@ -801,14 +806,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	}
 
 	/**
-	 * Creates a new node based on an existent node.
-	 * If the existent node already makes part of the graph, the method will return true.
+	 * Reinstates a node.
+	 * If the node is already in the graph, the method will have no effect.
 	 * 
-	 * @param node the node to be added to the graph
-	 * @return the node added, or null case the node is already part of the graph
+	 * @param node the node to be reinstated
 	 */
-	public void reCreateNode(CircleNode node){
-		//Return null if the graph already countains the node
+	public void reviveNode(Node node){
+		//Return if the graph already countains the node
 		if(nodes.containsValue(node))
 			return;
 
@@ -818,7 +822,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		fsa.addSubscriber(this);
 
 		//Insert the new node to the graph
-		nodes.put(new Long(s.getId()), node);
+		nodes.put(new Long(node.getId()), node);
 		insert(node);
 
 		if(node.getState().isInitial())
@@ -831,9 +835,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while(it.hasNext())
 		{
 			GraphElement ge = it.next();
-			if(ge instanceof BezierEdge)
+			if(ge instanceof Edge)
 			{
-				reCreateEdge((BezierEdge)ge);
+				reviveEdge((Edge)ge);
 			}
 		}
 		
@@ -844,7 +848,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				this, ""));
 	}
 
-	public void reCreateEdge(BezierEdge edge){
+	public void reviveEdge(Edge edge){
 		if(edges.containsValue(edge))
 			return;
 		long id_dest = edge.getTargetNode().getState().getId();
@@ -853,16 +857,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		Node n1 = nodes.get(id_source);
 		Node n2 = nodes.get(id_dest);
 
-		Transition t = new Transition(edge.getId(), n1.getState(), n2.getState());
-		edge.addTransition(t);
-		//Set the BezierLayout as an annotation for the edge
-		t.setAnnotation(Annotable.LAYOUT, (BezierLayout)edge.getLayout());
 		fsa.removeSubscriber(this);
-		if(fsa.getTransition(t.getId())  == null)
+		for(Iterator<FSATransition> i=edge.getTransitions();i.hasNext();)
 		{
-			fsa.add(t);
+			fsa.add(i.next());
 		}
-		fsa.addSubscriber(this);		
+		fsa.addSubscriber(this);
 		n1.insert(edge);
 		n2.insert(edge);
 		edges.put(edge.getId(), edge);		
@@ -925,6 +925,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			BezierLayout layout = new BezierLayout((CircleNodeLayout)n1.getLayout(), (CircleNodeLayout)n2.getLayout());
 //			computes layout of new edges (default to straight edge between pair of nodes)			
 			e = new BezierEdge(layout, n1, n2, t);			
+			((BezierEdge)e).insertAmong(getEdgesBetween(e.getSourceNode(), e.getTargetNode()));
 		}
 		//Set the BezierLayout as an annotation for the edge
 		t.setAnnotation(Annotable.LAYOUT, (BezierLayout)e.getLayout());
@@ -1065,84 +1066,98 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param edge the edge to which the edges will be assigned
 	 */
 	public void replaceEventsOnEdge(FSAEvent[] events, Edge edge){
-		BezierLayout layout = (BezierLayout)edge.getLayout();
-		// get the transitions for edge
-		Iterator<FSATransition> trans = edge.getTransitions();
-		FSATransition t;			
-		// temp lists for adding or removing transitions since can't change
-		// collection while iterating over it
-		ArrayList<Transition> toAdd = new ArrayList<Transition>();
-		ArrayList<Transition> toRemove = new ArrayList<Transition>();
+			
+		List<FSATransition> toAdd = new ArrayList<FSATransition>();
+		List<FSATransition> toRemove = new ArrayList<FSATransition>();
 
-		// reset the EdgeLayout's event labels
-		while(trans.hasNext()){
-			//TODO: remove annotation from the model element 
-			trans.next().removeAnnotation(Annotable.LAYOUT);
+//		// reset the EdgeLayout's event labels
+//		while(trans.hasNext()){
+//			//TODO: remove annotation from the model element 
+//			trans.next().removeAnnotation(Annotable.LAYOUT);
+//		}
+
+		Set<FSAEvent> allEvents=new HashSet<FSAEvent>();
+		Set<FSAEvent> newEvents=new HashSet<FSAEvent>();
+		for(FSAEvent e:events)
+		{
+			allEvents.add(e);
+			newEvents.add(e);
 		}
-
-		trans = edge.getTransitions();
-		// Boundary case:  if there are no events on the edge
-		// there has to be exactly one transition.
-		if(events.length == 0){
-			if(trans.hasNext()){
-				t = trans.next();
-				t.setEvent(null);
+		
+		Iterator<FSATransition> trans = edge.getTransitions();
+		while(trans.hasNext())
+		{
+			FSATransition t=trans.next();
+			
+			if(!allEvents.contains(t.getEvent()))
+			{
+				toRemove.add(t);
 			}
-			while(trans.hasNext()){
-				toRemove.add((Transition)trans.next());
+			else
+			{
+				newEvents.remove(t.getEvent());
 			}
-		}				
-
-		for(FSAEvent e : events){
-			if(trans.hasNext()){
-				t = trans.next();			
-				t.setEvent(e);
-			}else{ // more events than transitions
-				// create a new transition
+		}
+		
+		if(newEvents.size()>0||edge.transitionCount()-toRemove.size()>0)
+		{
+			for(FSAEvent e:newEvents)
+			{
 				toAdd.add(new Transition(fsa.getFreeTransitionId(), edge.getSourceNode().getState(), edge.getTargetNode().getState(), e));
 			}
 		}
-
-		// more transitions than events
-		while(trans.hasNext()){			
-			toRemove.add((Transition)trans.next());			
+		else //we'll be removing all events, so leave only one "empty" transition
+		{
+			toAdd.add(new Transition(fsa.getFreeTransitionId(), edge.getSourceNode().getState(), edge.getTargetNode().getState(), null));
 		}
+
+		addAndRemoveTransitions(toRemove,toAdd,edge);
+	}
+	
+	public void replaceTransitionsOnEdge(List<FSATransition> transitions, Edge edge)
+	{
+		List<FSATransition> oldTrans=new ArrayList<FSATransition>();
+		for(Iterator<FSATransition> i=edge.getTransitions();i.hasNext();)
+		{
+			oldTrans.add(i.next());
+		}
+		addAndRemoveTransitions(oldTrans,transitions,edge);
+	}
+	
+	protected void addAndRemoveTransitions(List<FSATransition> toRemove, List<FSATransition> toAdd, Edge edge)
+	{
+		BezierLayout layout = (BezierLayout)edge.getLayout();
+		// get the transitions for edge
+		Iterator<FSATransition> trans;
 
 		fsa.removeSubscriber(this);
 
 		// remove extra transitions	
-		Iterator iter = toRemove.iterator();
+		Iterator<FSATransition> iter = toRemove.iterator();
 		while(iter.hasNext()){
-			t = (Transition)iter.next();		
-			edge.removeTransition((Transition)t);			
+			FSATransition t = iter.next();		
+			edge.removeTransition(t);			
 			fsa.remove(t);			
 		}	
 
-		//replace in the layout the field EventNames:
-		layout.getEventNames().clear();
-		for(int i = 0; i < events.length; i++)
-		{
-			if(events[i]!=null)
-			{
-				layout.getEventNames().add(events[i].getSymbol());
-			}
-		}
 		// add transitions to accommodate added events
 		iter = toAdd.iterator();
 		while(iter.hasNext()){
-			t = (Transition)iter.next();
+			FSATransition t = iter.next();
 			// add the transition to the edge
-			edge.addTransition((Transition)t);		
+			edge.addTransition(t);		
 			// add the transition to the FSA			
-			fsa.add(t);			
+			fsa.add(t);		
 		}		
 
 		fsa.addSubscriber(this);
 
 		// Update the event labels in the layout
+		List<FSAEvent> events=new ArrayList<FSAEvent>();
 		trans = edge.getTransitions();
 		while(trans.hasNext()){
-			t = trans.next();
+			FSATransition t = trans.next();
+			events.add(t.getEvent());
 			// add the transition data to the layout
 //			addToLayout(t, edge);	
 			// set the layout data for the transition in metadata model
@@ -1150,6 +1165,16 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 //			Christian - The following line is to supress the use of metadata, the above line should be erased as soon as possible.
 			t.setAnnotation(Annotable.LAYOUT,layout);
 		}		
+		//replace in the layout the field EventNames:
+		layout.getEventNames().clear();
+		for(FSAEvent e:events)
+		{
+			if(e!=null)
+			{
+				layout.getEventNames().add(e.getSymbol());
+			}
+		}
+
 		if(layout.getEventNames().size() > 1 && layout.getGroup() == BezierLayout.UNGROUPPED)
 		{
 			layout.setGroup(this.getFreeBezierLayoutGroup());
@@ -1168,31 +1193,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	}
 
 	public void delete(GraphElement el){
-		// KLUGE This is worse (less efficient) than using instance of ...
-		// CHRISTIAN - I agree with the above comment ...
-		if(el instanceof CircleNode)
+		if(el instanceof Node)
 		{
 			delete((Node)el);
 		}
-		if(el instanceof BezierEdge)
+		if(el instanceof Edge)
 		{
 			delete((Edge)el);
 		}
-//		
-//		if(nodes.containsValue(el)){			
-//			delete((Node)el);			
-//		}else if(edges.containsValue(el)){			
-//			delete((Edge)el);
-//		}else{
-//			freeLabels.remove(el.getId());
-//			this.remove(el);
-//			setNeedsRefresh(true);
-//			fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
-//					FSAGraphMessage.LABEL,
-//					FSAGraphMessage.UNKNOWN_ID, 
-//					el.bounds(),
-//					this, ""));
-//		}
 	}
 
 	/**
@@ -1214,8 +1222,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		fsa.remove(n.getState());
 		fsa.addSubscriber(this);
 
-		super.remove(n);
-		((CircleNodeLayout)n.getLayout()).dispose();
+		remove(n);
+		if(n instanceof CircleNode)
+		{
+			((CircleNodeLayout)n.getLayout()).dispose();
+		}
 		nodes.remove(new Long(n.getId()));
 		setNeedsRefresh(true);
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, 
@@ -1232,15 +1243,13 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param e
 	 */
 	private void delete(Edge e){
-//		if(e instanceof InitialArrow){
-//		//setInitial(e.getTargetNode(), false);			
-//		}else{		
+		fsa.removeSubscriber(this);
 		Iterator<FSATransition> transitions = e.getTransitions();
 		while(transitions.hasNext()){
-			fsa.removeSubscriber(this);
+
 			fsa.remove(transitions.next());
-			fsa.addSubscriber(this);
 		}
+		fsa.addSubscriber(this);
 		Node source = e.getSourceNode();
 		if(source != null){
 			source.remove(e);
@@ -1438,18 +1447,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				FSAState nodeState = null;
 
 				// Start with the nodes
-				for (CircleNode graphNode : nodes.values())
+				for (Node graphNode : nodes.values())
 				{
-					// If the node is initial, take into account the initial
-					// arrow
-					nodeState = graphNode.getState();
-					if (nodeState.isInitial())
-					{		
-						graphBounds = graphBounds.union(
-								graphNode.getInitialArrowBounds());
-					}
-
-					graphBounds = graphBounds.union(graphNode.getSquareBounds());
+					graphBounds = graphBounds.union(graphNode.bounds());
 				}
 
 				for (Edge graphEdge : edges.values())
@@ -1480,9 +1480,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 */
 	private Rectangle getElementBounds()
 	{
-		for (CircleNode graphNode : nodes.values())
+		for (Node graphNode : nodes.values())
 		{
-			return graphNode.getSquareBounds();
+			return graphNode.bounds();
 		}
 
 		for (Edge graphEdge : edges.values())
@@ -1518,7 +1518,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		// the group of elements selected
 		SelectionGroup g = new SelectionGroup();
 
-		for(CircleNode n : nodes.values()) {
+		for(Node n : nodes.values()) {
 			if(rectangle.intersects(n.bounds()) ){ // TODO && do a more thorough intersection test
 				g.insert(n);				
 			}
@@ -1651,7 +1651,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * 
 	 * @param message
 	 */
-	private void fireFSAGraphChanged(FSAGraphMessage message) {
+	public void fireFSAGraphChanged(FSAGraphMessage message) {
 		fsa.metadataChanged();
 		for(FSAGraphSubscriber s : subscribers)	{
 			s.fsaGraphChanged(message);
@@ -1664,7 +1664,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * 
 	 * @param message
 	 */
-	protected void fireFSAGraphSelectionChanged(FSAGraphMessage message) {
+	public void fireFSAGraphSelectionChanged(FSAGraphMessage message) {
 		for(FSAGraphSubscriber s : subscribers) {
 			s.fsaGraphSelectionChanged(message);
 		}
@@ -1764,7 +1764,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				t = trans.next();						
 				if( id.equals( t.getId() ) ) {					
 					edge = e;				
-				}					
+				}
 			}	
 
 			if( edge != null ) {
@@ -1796,6 +1796,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @see FSASubscriber#fsaEventSetChanged(FSAMessage)
 	 */
 	public void fsaEventSetChanged(FSAMessage message) {
+		for(Edge edge:edges.values())
+		{
+			edge.setNeedsRefresh(true);
+		}
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,FSAGraphMessage.GRAPH,
+				-1,getBounds(false),this));
 		// Remove any edges that have only one transition and
 		// that transition is fired by the removed event
 

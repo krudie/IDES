@@ -238,6 +238,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 				ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
 				ObjectInputStream objectIS = new ObjectInputStream(is);
 				Object layout = objectIS.readObject();
+				is.close();
 				State s = new State((State)tmpState);
 				s.setId(tmpState.getId());
 				s.setMarked(tmpState.isMarked());
@@ -263,6 +264,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 				ByteArrayInputStream is = new ByteArrayInputStream(fo.toByteArray());
 				ObjectInputStream objectIS = new ObjectInputStream(is);
 				Object layout = objectIS.readObject();
+				is.close();
 				Transition t = new Transition(oldt, source, target);
 				t.setAnnotation(Annotable.LAYOUT, layout);	
 				clone.add(t);

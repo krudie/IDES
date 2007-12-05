@@ -16,8 +16,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.fsa.NodePopup.PopupListener;
-import presentation.fsa.commands.GraphCommands;
-import presentation.fsa.commands.GraphCommands.AlignTool;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.UIActions;
+import presentation.fsa.commands.GraphActions.AlignToolAction;
 
 import main.Hub;
 import ui.command.OptionsCommands;
@@ -48,10 +49,10 @@ public class ToolPopup extends JPopupMenu {
 	protected ToolPopup() {
 		super("Graph Operations");
 	
-		miSelect = new JMenuItem(new GraphCommands.SelectTool());
-		miCreate = new JMenuItem(new GraphCommands.CreateTool());
-		miMove = new JMenuItem(new GraphCommands.MoveTool());
-		miAlign = new JMenuItem(new GraphCommands.AlignTool());
+		miSelect = new JMenuItem(new UIActions.SelectTool());
+		miCreate = new JMenuItem(new UIActions.CreateTool());
+		miMove = new JMenuItem(new UIActions.MoveTool());
+		miAlign = new JMenuItem(new GraphActions.AlignToolAction());
 //		miShowGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
 
 		add(miSelect);

@@ -9,6 +9,7 @@ import presentation.fsa.Edge;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.CircleNode;
+import presentation.fsa.Node;
 
 import main.Hub;
 import util.InterruptableProgressDialog;
@@ -88,8 +89,8 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 			FSAGraph model=models.next();
 			label.setText(Hub.string("renderPrerender")+model.getName());
 			HashSet<GraphLabel> labels=new HashSet<GraphLabel>();
-			Collection<CircleNode> nodes=model.getNodes();
-			for(CircleNode n: nodes)
+			Collection<Node> nodes=model.getNodes();
+			for(Node n: nodes)
 			{
 			
 				labels.add(n.getLabel());

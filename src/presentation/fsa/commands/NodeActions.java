@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui.command;
+package presentation.fsa.commands;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -53,7 +53,7 @@ import services.undo.UndoManager;
  * @author Christian Silvano
  *
  */
-public class NodeCommands {
+public class NodeActions {
 
 	/**
 	 * A command that creates an UndoableAction to set the value of a boolean attribute 
@@ -105,70 +105,6 @@ public class NodeCommands {
 
 	}
 
-	/**
-	 * A command that creates a reflexive edge on a node.
-	 * 
-	 * @author helen bretzke
-	 *
-	 */
-
-	public static class SelfLoopAction extends AbstractAction {
-		private CircleNode node;
-
-		public SelfLoopAction(CircleNode node){
-			super("Add self-loop");
-			this.node = node;
-		}
-
-		public void actionPerformed(ActionEvent e){
-			UndoableSelfLoop action = new UndoableSelfLoop(node);
-			//perform the action
-			action.redo();
-			UndoManager.addEdit(action);
-		}
-	}
-
-	/**
-	 * An action that can create and (un)create a reflexive edge over a node.
-	 * 
-	 * @author Christian Silvano
-	 *
-	 */
-	private static class UndoableSelfLoop extends AbstractUndoableEdit {
-		CircleNode node;
-		BezierEdge edge;
-
-		public UndoableSelfLoop(CircleNode node) {
-			this.node = node;
-		}
-
-		public void undo() throws CannotRedoException {
-			if(edge != null)
-			{
-				node.getGraph().delete(edge);
-			}
-		}
-
-		public void redo() throws CannotRedoException {
-			//Creates an edge using <code>node</code> as the source and
-			//destination for it.
-			edge = node.getGraph().createEdge(node, node);
-		}
-
-		public boolean canUndo() {
-			return true;
-		}
-
-		public boolean canRedo() {
-			return true;
-		}
-
-		public String getPresentationName() {
-			return Hub.string("createSelfLoop");
-		}
-
-	}
-	
 	/**
 	 * An action that can set and (un)set a node as marked.
 	 * 

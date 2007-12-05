@@ -385,8 +385,8 @@ public class BezierEdge extends Edge {
 	 * 
 	 * @param layout graphical layout data to be set
 	 */
-	private void setLayout(BezierLayout layout) {		
-		layout.setEdge(this);
+	public void setLayout(GraphicalLayout layout) {
+		((BezierLayout)layout).setEdge(this);
 		super.setLayout(layout);
 		// ??? //
 		//computeEdge();

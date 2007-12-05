@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D.Float;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -14,9 +15,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.Presentation;
-import presentation.fsa.commands.GraphCommands;
-import presentation.fsa.commands.GraphCommands.DeleteAction;
-import ui.command.EdgeCommands;
+import presentation.fsa.commands.EdgeActions;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.UIActions;
 
 import main.Hub;
 
@@ -29,10 +30,10 @@ import main.Hub;
  */
 public class EdgePopup extends JPopupMenu {
 
-	private Edge edge;
-	private DeleteAction deleteCmd;
-	private JMenuItem miModify, miEditEvents, miStraighten, miSymmetrize, miDeleteEdge, miArcMore, miArcLess; // , miSymmetrize;
 	private static GraphDrawingView view;
+	private Edge edge;
+	private Action deleteCmd;
+	private JMenuItem miModify, miEditEvents, miStraighten, miSymmetrize, miDeleteEdge, miArcMore, miArcLess; // , miSymmetrize;
 	
 	// Using a singleton pattern (delayed instantiation) 
 	// rather than initializing here since otherwise get java.lang.NoClassDefFoundError error
@@ -43,12 +44,12 @@ public class EdgePopup extends JPopupMenu {
 	 * 
 	 * @param e the edge to associate with this menu instance
 	 */
-	protected EdgePopup(Edge e) {		
+	protected EdgePopup(GraphDrawingView gdv, Edge e) {		
 
-		miEditEvents = new JMenuItem(new EdgeCommands.CreateEventCommand(view,e));
+		miEditEvents = new JMenuItem(new UIActions.TextAction(e));
 		add(miEditEvents);
 
-		miSymmetrize = new JMenuItem(new EdgeCommands.SymmetrizeEdgeAction(view,e));		
+		miSymmetrize = new JMenuItem(new EdgeActions.SymmetrizeEdgeAction(gdv,e));		
 		add(miSymmetrize);
 		
 		miStraighten = new JMenuItem("Straighten");
@@ -65,55 +66,57 @@ public class EdgePopup extends JPopupMenu {
 
 		add(new JPopupMenu.Separator());
 		
-		deleteCmd = new DeleteAction();
+		deleteCmd = gdv.getDeleteAction();
 		add(deleteCmd);
 		
 		addPopupMenuListener(new PopupListener());
-		setEdge(e);
+		edge = e;
+		miStraighten.setVisible(edge.canBeStraightened());
+		// if the edge can't be straightened, then we assume we cannot 
+		// otherwise tamper with its shape
+		miArcLess.setVisible(edge.canBeStraightened());
+		miArcMore.setVisible(edge.canBeStraightened());
+		miSymmetrize.setVisible(edge.canBeStraightened());
+		
+		// Don't enable straightening, flattening or symmetrizing if edge is already straight
+		// since there is nothing to to.  
+		miArcLess.setEnabled(!edge.isStraight());
+		miStraighten.setEnabled(!edge.isStraight());
+		miSymmetrize.setEnabled(!edge.isStraight());
 	}
 
 	protected static void showPopup(GraphDrawingView context, Edge e){
 		view = context;
-		if(popup == null) {
-			popup = new EdgePopup(e);
-		}else{		
-			popup.setEdge(e);
-		}
+		popup = new EdgePopup(context,e);
 		Float p = e.getLayout().getLocation();
-		// FIXME rework to eliminate call to getcurrentboard
-		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
-		if(gdv!=null)
-		{
-			p=gdv.localToScreen(p);
-			popup.show(context, (int)p.x,
-				(int)p.y);
-		}
+		p=context.localToScreen(p);
+		popup.show(context, (int)p.x,(int)p.y);
 	}
 			
-	/**
-	 * Associates the given edge with this menu instance. 
-	 * 
-	 * @param edge the edge to associate with this menu instance
-	 */
-	public void setEdge(Edge edge){		
-		this.edge = edge;
-		deleteCmd.setElement(edge);
-		deleteCmd.setContext(view);
-		if(edge != null){			
-			miStraighten.setVisible(edge.canBeStraightened());
-			// if the edge can't be straightened, then we assume we cannot 
-			// otherwise tamper with its shape
-			miArcLess.setVisible(edge.canBeStraightened());
-			miArcMore.setVisible(edge.canBeStraightened());
-			miSymmetrize.setVisible(edge.canBeStraightened());
-			
-			// Don't enable straightening, flattening or symmetrizing if edge is already straight
-			// since there is nothing to to.  
-			miArcLess.setEnabled(!edge.isStraight());
-			miStraighten.setEnabled(!edge.isStraight());
-			miSymmetrize.setEnabled(!edge.isStraight());
-		}		
-	}
+//	/**
+//	 * Associates the given edge with this menu instance. 
+//	 * 
+//	 * @param edge the edge to associate with this menu instance
+//	 */
+//	public void setEdge(Edge edge){		
+//		this.edge = edge;
+////		deleteCmd.setElement(edge);
+////		deleteCmd.setContext(view);
+//		if(edge != null){			
+//			miStraighten.setVisible(edge.canBeStraightened());
+//			// if the edge can't be straightened, then we assume we cannot 
+//			// otherwise tamper with its shape
+//			miArcLess.setVisible(edge.canBeStraightened());
+//			miArcMore.setVisible(edge.canBeStraightened());
+//			miSymmetrize.setVisible(edge.canBeStraightened());
+//			
+//			// Don't enable straightening, flattening or symmetrizing if edge is already straight
+//			// since there is nothing to to.  
+//			miArcLess.setEnabled(!edge.isStraight());
+//			miStraighten.setEnabled(!edge.isStraight());
+//			miSymmetrize.setEnabled(!edge.isStraight());
+//		}		
+//	}
 
 //	/**
 //	 * Listens to events on the EdgePopup menu.

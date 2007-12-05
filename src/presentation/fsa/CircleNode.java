@@ -333,11 +333,11 @@ public class CircleNode extends Node {
 	}
 	
 	/**
-	 * TODO: Comment!
+	 * Used to compute bounds for LaTeX export.
 	 * 
 	 * @author Sarah-Jane Whittaker
 	 */
-	public Rectangle getSquareBounds()
+	protected Rectangle getSquareBounds()
 	{
 		Point2D.Float nodeLocation = getLayout().getLocation();
 		float radius = getRadius();

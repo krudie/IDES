@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui.tools;
+package presentation.fsa.tools;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -30,7 +30,8 @@ import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.ReflexiveLayout;
-import ui.command.EdgeCommands.ModifyEdgeAction;
+import presentation.fsa.commands.EdgeActions;
+import presentation.fsa.commands.GraphActions;
 
 /**
  * @author Squirrel
@@ -63,6 +64,12 @@ public class ModifyEdgeTool extends DrawingTool {
 			if( temp != null )
 			{
 				edge = temp;
+				if(edge.getLayout() instanceof BezierLayout)
+				{
+					previousLayout=((BezierLayout)edge.getLayout()).clone();
+				}
+				else
+				{
 				if(edge.getSourceNode() == null & edge.getTargetNode() != null)
 				{
 					//This is an initial edge!
@@ -86,6 +93,7 @@ public class ModifyEdgeTool extends DrawingTool {
 						previousLayout = new ReflexiveLayout(edge.getSourceNode(), (ReflexiveEdge)edge, (BezierLayout)previousLayout);
 						((ReflexiveLayout)previousLayout).setEdge((ReflexiveEdge)edge);
 					}
+				}
 				}
 			}
 		}
@@ -179,8 +187,9 @@ public class ModifyEdgeTool extends DrawingTool {
 		super.handleMouseReleased(m);
 
 		if(dragging){ // TODO check to see if edge has been changed
-			ModifyEdgeAction cmd = new ModifyEdgeAction(ContextAdaptorHack.context, edge, previousLayout);		
-			cmd.execute();		
+//			ModifyEdgeAction cmd = new ModifyEdgeAction(ContextAdaptorHack.context, edge, previousLayout);		
+//			cmd.execute();
+			new EdgeActions.ModifyAction(ContextAdaptorHack.context.getGraphModel(),edge,previousLayout).execute();
 			ContextAdaptorHack.context.repaint();						
 			dragging = false;	
 			switchTool();

@@ -24,7 +24,8 @@ import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.fsa.commands.GraphCommands;
+import presentation.fsa.commands.GraphActions;
+import presentation.fsa.commands.UIActions;
 import ui.command.OperationsCommands;
 import ui.command.OptionsCommands;
 import util.BooleanUIBinder;
@@ -56,7 +57,7 @@ public class FSAToolset implements Toolset {
 			shell=ls;
 			views=new Presentation[2];
 			GraphDrawingView drawingBoard=new GraphDrawingView(gridBinder);
-			gridAction=new OptionsCommands.ShowGridAction(drawingBoard);
+			gridAction=new UIActions.ShowGridAction(drawingBoard);
 			drawingBoard.setGraphModel(shell);
 			drawingBoard.setName(Hub.string("graph"));
 			views[0]=drawingBoard;
@@ -82,19 +83,19 @@ public class FSAToolset implements Toolset {
 		{
 			if(selectAction==null)
 			{
-				selectAction=new GraphCommands.SelectTool();
+				selectAction=new UIActions.SelectTool();
 			}
 			if(createAction==null)
 			{
-				createAction=new GraphCommands.CreateTool();
+				createAction=new UIActions.CreateTool();
 			}
 			if(moveAction==null)
 			{
-				moveAction=new GraphCommands.MoveTool();
+				moveAction=new UIActions.MoveTool();
 			}
 			if(alignAction==null)
 			{
-				alignAction=new GraphCommands.AlignTool();
+				alignAction=new GraphActions.AlignToolAction();
 			}
 		}
 		
@@ -127,7 +128,7 @@ public class FSAToolset implements Toolset {
 			JMenuItem useUniformNodeSizeMenu=(JMenuItem)shell.getAnnotation(MENU_ITEM);
 			if(useUniformNodeSizeMenu==null)
 			{
-				useUniformNodeSizeMenu=new JCheckBoxMenuItem(new GraphCommands.UniformNodesAction(shell));
+				useUniformNodeSizeMenu=new JCheckBoxMenuItem(new GraphActions.UniformNodesAction(shell));
 				shell.getUseUniformRadiusBinder().bind(useUniformNodeSizeMenu);
 				shell.setAnnotation(MENU_ITEM, useUniformNodeSizeMenu);
 			}

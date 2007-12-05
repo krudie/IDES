@@ -115,7 +115,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 	protected static JTextField area;
 	protected static GraphLabel freeLabel;
 	
-	public static void showAndLabel(FSAGraph gm, GraphLabel label)
+	public static void showAndLabel(GraphDrawingView gdv,FSAGraph gm, GraphLabel label)
 	{
 		SingleLineFreeLabellingDialog.gm=gm;
 		freeLabel=label;
@@ -130,8 +130,6 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 		if(!hasOurListener)
 			area.addFocusListener(commitOnFocusLost);
 		area.setText(label.getText());
-		// FIXME rework to eliminate call to getcurrentboard
-		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
 		if(gdv==null)
 		{
 			return;
@@ -152,7 +150,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 	 * TODO Create a label where none exists so show the dialog at the given point
 	 * and place the new label at this location.
 	 */
-	public static void showAndLabel(FSAGraph gm, Point2D.Float p){
+	public static void showAndLabel(GraphDrawingView gdv,FSAGraph gm, Point2D.Float p){
 		SingleLineFreeLabellingDialog.gm=gm;
 		freeLabel = null;
 		instance();
@@ -164,8 +162,6 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog {
 		if(!hasOurListener)
 			area.addFocusListener(commitOnFocusLost);
 		area.setText("");
-		// FIXME rework to eliminate call to getcurrentboard
-		GraphDrawingView gdv=FSAToolset.getCurrentBoard();
 		if(gdv==null)
 		{
 			return;
