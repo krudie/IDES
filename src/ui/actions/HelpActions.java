@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui.command;
+package ui.actions;
 
 import java.awt.event.ActionEvent;
 
@@ -17,11 +17,11 @@ import ui.AboutDialog;
  * @author lenko
  *
  */
-public class HelpCommands {
+public class HelpActions {
 
-	public static class AboutCommand extends AbstractAction {
+	public static class AboutAction extends AbstractAction {
 		
-		public AboutCommand(){
+		public AboutAction(){
 			super(Hub.string("comAbout"));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintAbout"));
 		}

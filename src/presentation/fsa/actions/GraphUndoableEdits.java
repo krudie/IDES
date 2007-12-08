@@ -1,4 +1,4 @@
-package presentation.fsa.commands;
+package presentation.fsa.actions;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -21,6 +21,7 @@ import model.fsa.FSATransition;
 import model.fsa.ver2_1.Automaton;
 import presentation.CubicParamCurve2D;
 import presentation.GraphicalLayout;
+import presentation.PresentationElement;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNode;
@@ -31,6 +32,7 @@ import presentation.fsa.FSAGraphMessage;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
+import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 import presentation.fsa.SelectionGroup;
 
@@ -203,22 +205,29 @@ public class GraphUndoableEdits {
 	 * @author Christian Silvano
 	 *
 	 */
-	public static class UndoableMove extends AbstractUndoableEdit {
+	public static class UndoableMove extends AbstractGraphUndoableEdit {
 
 		//A collection of graph elements
-		SelectionGroup selection = null;
+		protected GraphElement element = null;
 
 		//A vector meaning the displacement of the selection
-		Point displacement;
+		protected Point2D.Float displacement;
+		
+		protected FSAGraph graph;
 
 		/**
 		 * Default constructor
 		 * @param g collection of graph elements
 		 * @param d displacement of the elements
 		 */
-		public UndoableMove(SelectionGroup g, Point d) {
-			selection = g;
-			displacement = d;
+		public UndoableMove(FSAGraph graph, GraphElement element, Point2D.Float d) {
+			this.graph=graph;
+			this.element=element;
+			displacement = (Point2D.Float)d.clone();
+			if(displacement==null)
+			{
+				displacement=new Point2D.Float();
+			}
 		}
 
 		/**
@@ -226,16 +235,12 @@ public class GraphUndoableEdits {
 		 * over <code>collection</code>
 		 */
 		public void undo() throws CannotUndoException {
-			Iterator<GraphElement> it = selection.children();
-
-			//Applies a displacement over every element under <code>selection</selection>
-			while (it.hasNext()) {
-				GraphElement ge = it.next();
-				ge.setLocation(new Point2D.Float(ge.getLocation().x
-						- displacement.x, ge.getLocation().y - displacement.y));
+			if(element==null)
+			{
+				throw new CannotUndoException();
 			}
-			//TODO Stop using ContextAdaptorHack!!
-			ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
+			element.translate(-displacement.x, -displacement.y);
+			graph.commitLayoutModified();
 		}
 
 		/**
@@ -243,24 +248,20 @@ public class GraphUndoableEdits {
 		 * over <code>collection</code>
 		 */
 		public void redo() throws CannotRedoException {
-			Iterator<GraphElement> it = selection.children();
-
-			//Applies a displacement over every element under <code>selection</selection>
-			while (it.hasNext()) {
-				GraphElement ge = it.next();
-				ge.setLocation(new Point2D.Float(ge.getLocation().x
-						+ displacement.x, ge.getLocation().y + displacement.y));
+			if(element==null)
+			{
+				throw new CannotRedoException();
 			}
-			//TODO Stop using ContextAdaptorHack!!
-			ContextAdaptorHack.context.getGraphModel().commitLayoutModified();
+			element.translate(displacement.x, displacement.y);
+			graph.commitLayoutModified();
 		}
 
 		public boolean canUndo() {
-			return true;
+			return element!=null;
 		}
 
 		public boolean canRedo() {
-			return true;
+			return element!=null;
 		}
 
 		/**
@@ -268,9 +269,40 @@ public class GraphUndoableEdits {
 		 * which action will be undone/redone.
 		 */
 		public String getPresentationName() {
-			return Hub.string("moveSelection");
+			if(element instanceof Node)
+			{
+				if(usePluralDescription)
+				{
+					return Hub.string("undoMoveNodes");
+				}
+				else
+				{
+					return Hub.string("undoMoveNode");
+				}
+			}
+			else if(element instanceof GraphLabel)
+			{
+				if(usePluralDescription)
+				{
+					return Hub.string("undoMoveLabels");
+				}
+				else
+				{
+					return Hub.string("undoMoveLabel");
+				}
+			}
+			else
+			{
+				if(usePluralDescription)
+				{
+					return Hub.string("undoMoveElements");
+				}
+				else
+				{
+					return Hub.string("undoMoveElement");
+				}				
+			}
 		}
-
 	}
 
 	public static class UndoableCreateEvent extends AbstractGraphUndoableEdit
@@ -675,7 +707,65 @@ public class GraphUndoableEdits {
 		}		
 	}
 	
+	public static class UndoableModifyInitialArrow extends AbstractGraphUndoableEdit
+	{
+		protected FSAGraph graph;
+		protected InitialArrow arrow;
+		protected Point2D.Float altDirection;
+		
+		public UndoableModifyInitialArrow(FSAGraph graph, InitialArrow arrow, Point2D.Float originalDirection)
+		{
+			this.graph=graph;
+			this.arrow=arrow;
+			altDirection=originalDirection;
+		}
+		
+		public void undo() throws CannotUndoException {
+			if(arrow==null)
+			{
+				throw new CannotUndoException();
+			}
+			swapDirection();
+		}
 
+		public void redo() throws CannotRedoException {
+			if(arrow==null)
+			{
+				throw new CannotRedoException();
+			}
+			swapDirection();
+		}
+		
+		protected void swapDirection()
+		{
+			Point2D.Float tDirection=(Point2D.Float)arrow.getDirection().clone();
+			arrow.setDirection(altDirection);
+			altDirection=tDirection;
+			if(arrow.getParent()!=null&&arrow.getParent() instanceof Node)
+			{
+				arrow.getParent().refresh();
+				graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
+					FSAGraphMessage.NODE,arrow.getParent().getId(),arrow.getParent().bounds(),graph));
+			}
+		}
+
+		public boolean canUndo() {
+			return arrow!=null;
+		}
+
+		public boolean canRedo() {
+			return arrow!=null;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return Hub.string("undoModifyInitialArrow");
+		}		
+	}
+	
 	public static class UndoableCreateNode extends AbstractGraphUndoableEdit
 	{
 		protected FSAGraph graph;
@@ -780,7 +870,202 @@ public class GraphUndoableEdits {
 			{
 				return Hub.string("undoDeleteNode");
 			}
-		}		
+		}	
 	}
 
+	public static class UndoableTranslateGraph extends AbstractGraphUndoableEdit
+	{
+		protected FSAGraph graph;
+		protected Point2D.Float displacement;
+		
+		public UndoableTranslateGraph(FSAGraph graph, Point2D.Float displacement)
+		{
+			this.graph=graph;
+			this.displacement=displacement;
+		}
+		
+		public void redo() throws CannotRedoException {
+			graph.translate(displacement.x, displacement.y);
+		}
+
+		public void undo() throws CannotUndoException {
+			graph.translate(-displacement.x, -displacement.y);
+		}
+
+		public boolean canUndo() {
+			return true;
+		}
+
+		public boolean canRedo() {
+			return true;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return Hub.string("undoTranslateGraph");
+		}	
+	}
+
+	public static class UndoableSetInitial extends AbstractGraphUndoableEdit
+	{
+		protected Node node;
+		protected boolean state;
+		protected String desc;
+		protected FSAGraph graph;
+		
+		public UndoableSetInitial(FSAGraph graph, Node node, boolean state)
+		{
+			this.graph=graph;
+			this.node=node;
+			this.state=state;
+			if(state)
+			{
+				desc=Hub.string("undoMakeInitial");
+			}
+			else
+			{
+				desc=Hub.string("undoRemoveInitial");
+			}
+		}
+		
+		public void redo() throws CannotRedoException {
+			if(node==null)
+			{
+				throw new CannotRedoException();
+			}
+			graph.setInitial(node,state);
+			state=!state;
+		}
+
+		public void undo() throws CannotUndoException {
+			if(node==null)
+			{
+				throw new CannotUndoException();
+			}
+			graph.setInitial(node,state);
+			state=!state;
+		}
+
+		public boolean canUndo() {
+			return node!=null;
+		}
+
+		public boolean canRedo() {
+			return node!=null;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return desc;
+		}
+	}
+	
+	public static class UndoableSetMarking extends AbstractGraphUndoableEdit
+	{
+		protected Node node;
+		protected boolean state;
+		protected String desc;
+		protected FSAGraph graph;
+		
+		public UndoableSetMarking(FSAGraph graph, Node node, boolean state)
+		{
+			this.graph=graph;
+			this.node=node;
+			this.state=state;
+			if(state)
+			{
+				desc=Hub.string("undoMarkNode");
+			}
+			else
+			{
+				desc=Hub.string("undoUnmarkNode");
+			}
+		}
+		
+		public void redo() throws CannotRedoException {
+			if(node==null)
+			{
+				throw new CannotRedoException();
+			}
+			graph.setMarked(node,state);
+			state=!state;
+		}
+
+		public void undo() throws CannotUndoException {
+			if(node==null)
+			{
+				throw new CannotUndoException();
+			}
+			graph.setMarked(node,state);
+			state=!state;
+		}
+
+		public boolean canUndo() {
+			return node!=null;
+		}
+
+		public boolean canRedo() {
+			return node!=null;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return desc;
+		}	
+	}
+
+	public static class UndoableUniformNodeSize extends AbstractGraphUndoableEdit
+	{
+		protected boolean state;
+		protected FSAGraph graph;
+		
+		public UndoableUniformNodeSize(FSAGraph graph, boolean state)
+		{
+			this.graph=graph;
+			this.state=state;
+		}
+		
+		public void redo() throws CannotRedoException {
+			if(graph==null)
+			{
+				throw new CannotRedoException();
+			}
+			graph.setUseUniformRadius(state);
+			state=!state;
+		}
+
+		public void undo() throws CannotUndoException {
+			if(graph==null)
+			{
+				throw new CannotUndoException();
+			}
+			graph.setUseUniformRadius(state);
+			state=!state;
+		}
+
+		public boolean canUndo() {
+			return graph!=null;
+		}
+
+		public boolean canRedo() {
+			return graph!=null;
+		}
+
+		/**
+		 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+		 * which action will be undone/redone.
+		 */
+		public String getPresentationName() {
+			return Hub.string("undoUniformNodeSize");
+		}
+	}
 }

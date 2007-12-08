@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 import presentation.fsa.FSAGraph;
 
 import ui.OptionsWindow;
-import ui.command.OptionsCommands;
+import ui.actions.OptionsActions;
 
 import main.Hub;
 import model.fsa.FSAModel;
@@ -161,6 +161,7 @@ public class LatexManager {
 		if(menuItem!=null)
 		{
 			if(b)
+			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
@@ -168,6 +169,7 @@ public class LatexManager {
 						menuItem.setSelected(true);
 					}
 				});
+			}
 			else
 				SwingUtilities.invokeLater(new Runnable()
 				{

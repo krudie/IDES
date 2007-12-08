@@ -166,6 +166,7 @@ public class InitialArrow extends Edge {
 	 */
 	@Override
 	public void computeEdge() {
+//		System.out.println("foo");
 		Node target = this.getTargetNode();
 		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
 		float currentNodeRadius = layout.getRadius();
@@ -534,7 +535,7 @@ public class InitialArrow extends Edge {
 	 * Auto-format: Change the angle of the axis to make the initial arrow go to the
 	 * most confortable position
 	 */
-	void resetPosition()
+	public void resetPosition()
 	{
 		direction = this.computeBestDirection(this.getTargetNode());
 	}

@@ -5,12 +5,13 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 import main.Hub;
 
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
-import presentation.fsa.commands.GraphActions.MoveAction;
+import presentation.fsa.actions.GraphActions.MoveAction;
 
 
 public class MovementTool extends DrawingTool {
@@ -28,7 +29,7 @@ public class MovementTool extends DrawingTool {
 	public void handleMousePressed(MouseEvent me) {
 		super.handleMousePressed(me);
 		
-		// get the object to be moved		
+		// get the object to be moved
 		start = me.getPoint();
 		prev = start;
 		
@@ -53,9 +54,8 @@ public class MovementTool extends DrawingTool {
 		
 		// update the location of the selected objects 
 		if(start == null){
-			start = me.getPoint();
+			start = (Point)lastMousePressedLocation.clone();
 			prev = start;
-			return;
 		}		
 		next = me.getPoint();
 		ContextAdaptorHack.context.getSelectedGroup().translate(next.x - prev.x, next.y - prev.y);		
@@ -72,14 +72,12 @@ public class MovementTool extends DrawingTool {
 		// Null pointer exception, hard to replicate
 		if ((end != null) && (start != null))
 		{	
-			Point displacement = new Point(end.x - start.x, end.y - start.y);
+			Point2D.Float displacement = new Point2D.Float(end.x - start.x, end.y - start.y);
 			if( displacement.x != 0 || displacement.y != 0 ){
 				// undo needs to know the selection of moved objects
 				// and the total translation
 				// save the set of selected objects for undo purposes
-				// NOTE: must make COPIES of all references in the selection group		
-				MoveAction moveCmd = new MoveAction(ContextAdaptorHack.context.getSelectedGroup(), displacement);		
-				moveCmd.execute();
+				new MoveAction(ContextAdaptorHack.context.getGraphModel(),ContextAdaptorHack.context.getSelectedGroup(), displacement).execute();		
 			}			
 		}
 		

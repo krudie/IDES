@@ -1031,7 +1031,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				this, "set initial property: " + node.toString()));
 	}
 
-	public void setMarked(CircleNode node, boolean b){
+	public void setMarked(Node node, boolean b){
 		// update the state
 		((State)node.getState()).setMarked(b);		
 		// tell node it must refresh its appearance
@@ -1377,6 +1377,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param edge
 	 */
 	public void arcMore(Edge edge) {
+		if(!(edge instanceof BezierEdge))
+			return;
 		((BezierEdge)edge).arcMore();	
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
@@ -1391,6 +1393,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	 * @param edge
 	 */
 	public void arcLess(Edge edge) {
+		if(!(edge instanceof BezierEdge))
+			return;
 		((BezierEdge)edge).arcLess();
 		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
 				FSAGraphMessage.EDGE,
@@ -1399,16 +1403,17 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				this, "reduced arc of edge"));
 	}
 
-//	public void symmetrize(Edge edge){
-//		BezierLayout el=(BezierLayout)edge.getLayout();
-//		el.symmetrize();
-//		// TODO include edge label in bounds (dirty spot)
-//		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-//				FSAGraphMessage.EDGE,
-//				edge.getId(), 
-//				edge.bounds(),
-//				this, "symmetrized edge"));
-//	}
+	public void symmetrize(Edge edge){
+		if(!(edge instanceof BezierEdge))
+			return;
+		((BezierEdge)edge).symmetrize();
+		// TODO include edge label in bounds (dirty spot)
+		fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+				FSAGraphMessage.EDGE,
+				edge.getId(), 
+				edge.bounds(),
+				this, "symmetrized edge"));
+	}
 
 	/**
 	 * If this edge is not straight and can be straightened (e.g. is not reflexive)

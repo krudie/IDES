@@ -171,9 +171,8 @@ public class ReflexiveEdge extends BezierEdge {
 	 * parameters (sourceT and targetT) are currently being reverse.
 	 */
 	public void refresh() {
-//		System.out.println("foo");
-		((ReflexiveLayout)getLayout()).computeCurve();
 		super.refresh();
+		((ReflexiveLayout)getLayout()).computeCurve();
 	}
 
 	/**

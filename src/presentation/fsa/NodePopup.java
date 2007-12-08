@@ -11,11 +11,10 @@ import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
 import presentation.Presentation;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.NodeActions;
-import presentation.fsa.commands.UIActions;
-import presentation.fsa.commands.NodeActions.SetInitialAction;
-import presentation.fsa.commands.NodeActions.SetMarkedAction;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.NodeActions;
+import presentation.fsa.actions.UIActions;
+import presentation.fsa.actions.NodeActions.SetInitialAction;
 
 
 public class NodePopup extends JPopupMenu {
@@ -28,8 +27,8 @@ public class NodePopup extends JPopupMenu {
 	// rather than initializing here since otherwise get java.lang.NoClassDefFoundError error
 	private static NodePopup popup;
 
-	private SetMarkedAction markedCmd;
-	private SetInitialAction initialCmd;
+//	private SetMarkedAction markedCmd;
+//	private SetInitialAction initialCmd;
 //	private GraphCommands.TextCommand textCmd;
 //	private SelfLoopAction selfLoopCmd;
 	private Action deleteCmd;
@@ -50,15 +49,16 @@ public class NodePopup extends JPopupMenu {
 //		selfLoopCmd = new SelfLoopCommand();
 		deleteCmd = gdv.getDeleteAction();
 
-		miSetMarked = new JCheckBoxMenuItem(new NodeActions.SetMarkedAction(n));
-		miSetInitial = new JCheckBoxMenuItem(new NodeActions.SetInitialAction(n));
+		JCheckBoxMenuItem miSetMarked = new JCheckBoxMenuItem(new UIActions.ModifyMarkingAction(gdv.getGraphModel(),n));
+		JCheckBoxMenuItem miSetInitial = new JCheckBoxMenuItem(new UIActions.ModifyInitialAction(gdv.getGraphModel(),n));
 		JMenuItem miSelfLoop = new JMenuItem(new UIActions.SelfLoopAction(gdv.getGraphModel(),n));
 		miLabelNode = new JMenuItem(new UIActions.TextAction(n));
 //		miDeleteNode.addActionListener(deleteCmd);
 
-		add(miLabelNode);
 		add(miSetMarked);				
 		add(miSetInitial);
+		add(new JPopupMenu.Separator());
+		add(miLabelNode);
 		add(miSelfLoop);		
 		add(new JPopupMenu.Separator());
 		add(deleteCmd);

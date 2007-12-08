@@ -51,8 +51,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.CompoundEdit;
 
 import observer.Subscriber;
-import presentation.fsa.commands.EdgeActions;
-import presentation.fsa.commands.GraphActions;
+import presentation.fsa.actions.EdgeActions;
+import presentation.fsa.actions.GraphActions;
 
 
 import services.undo.UndoManager;

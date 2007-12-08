@@ -662,6 +662,11 @@ public class BezierEdge extends Edge {
 		getBezierLayout().arcLess();
 	}
 	
+	public void symmetrize()
+	{
+		getBezierLayout().symmetrize();
+	}
+	
 	/**
 	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node, int type)
 	 */

@@ -35,8 +35,8 @@ import main.WorkspaceSubscriber;
 
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.UIActions;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.UIActions;
 import presentation.fsa.tools.CreationTool;
 import presentation.fsa.tools.DrawingTool;
 import presentation.fsa.tools.ModifyEdgeTool;
@@ -44,7 +44,7 @@ import presentation.fsa.tools.MovementTool;
 import presentation.fsa.tools.SelectionTool;
 import presentation.fsa.tools.TextTool;
 import ui.MainWindow;
-import ui.command.OptionsCommands;
+import ui.actions.OptionsActions;
 import util.BooleanUIBinder;
 
 /**
@@ -160,18 +160,15 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	 * The listener for the user pressing the <code>Delete</code> key.
 	 */
 	protected UIActions.DeleteAction deleteCommand = new UIActions.DeleteAction(this);
-//	{
-//
-//		public void actionPerformed(ActionEvent evt) {
-//			super.setContext(getGraph());
-//			super.setElement(getSelectedElement());
-//			super.actionPerformed(evt);
-//		}
-//	};
-	
 	public Action getDeleteAction()
 	{
 		return deleteCommand;
+	}
+	
+	protected UIActions.AlignAction alignCommand=new UIActions.AlignAction(this);
+	public Action getAlignAction()
+	{
+		return alignCommand;
 	}
 
 	protected Action escapeCommand = new AbstractAction("escape") {

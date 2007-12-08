@@ -3,6 +3,7 @@ package presentation.fsa;
 import java.util.Collection;
 
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -24,10 +25,10 @@ import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.UIActions;
-import ui.command.OperationsCommands;
-import ui.command.OptionsCommands;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.UIActions;
+import ui.actions.OperationsActions;
+import ui.actions.OptionsActions;
 import util.BooleanUIBinder;
 
 /**
@@ -47,10 +48,12 @@ public class FSAToolset implements Toolset {
 		private static Action selectAction=null;
 		private static Action createAction=null;
 		private static Action moveAction=null;
-		private static Action alignAction=null;
+		private Action alignAction=null;
 		private Action gridAction=null;
 		private static BooleanUIBinder gridBinder=new BooleanUIBinder();
 		private static JToggleButton gridButton=null;
+		private static JMenuItem alignMenuItem=new JMenuItem();
+		private static JButton alignButton=new JButton();
 
 		public FSAUIDescriptor(FSAGraph ls)
 		{
@@ -58,6 +61,7 @@ public class FSAToolset implements Toolset {
 			views=new Presentation[2];
 			GraphDrawingView drawingBoard=new GraphDrawingView(gridBinder);
 			gridAction=new UIActions.ShowGridAction(drawingBoard);
+			alignAction=drawingBoard.getAlignAction();
 			drawingBoard.setGraphModel(shell);
 			drawingBoard.setName(Hub.string("graph"));
 			views[0]=drawingBoard;
@@ -93,10 +97,6 @@ public class FSAToolset implements Toolset {
 			{
 				moveAction=new UIActions.MoveTool();
 			}
-			if(alignAction==null)
-			{
-				alignAction=new GraphActions.AlignToolAction();
-			}
 		}
 		
 		public JMenu[] getMenus()
@@ -109,7 +109,6 @@ public class FSAToolset implements Toolset {
 				JMenuItem select = new JMenuItem(selectAction);
 				JMenuItem create = new JMenuItem(createAction);
 				JMenuItem move = new JMenuItem(moveAction);
-				JMenuItem alignNodes = new JMenuItem(alignAction); 
 				JMenuItem showGrid = new JCheckBoxMenuItem(gridAction);
 				gridBinder.bind(showGrid);
 				//this is a dummy menu item since it'll be replaced 
@@ -119,10 +118,11 @@ public class FSAToolset implements Toolset {
 				graphMenu.add(create);
 				graphMenu.add(move);
 				graphMenu.addSeparator();
-				graphMenu.add(alignNodes);
+				graphMenu.add(alignMenuItem);
 				graphMenu.add(showGrid);
 				graphMenu.add(uniformNodeSize);
 			}
+			alignMenuItem.setAction(alignAction);
 			//get the "use uniform node size" menu item for the current shell
 			String MENU_ITEM="useUniformNodeSizeMenuItem";
 			JMenuItem useUniformNodeSizeMenu=(JMenuItem)shell.getAnnotation(MENU_ITEM);
@@ -151,7 +151,9 @@ public class FSAToolset implements Toolset {
 				toolbar.add(createAction);
 				toolbar.add(moveAction);
 				toolbar.addSeparator();
-				toolbar.add(alignAction);
+				alignButton.setAction(alignAction);
+				alignButton.setText("");
+				toolbar.add(alignButton);
 				gridBinder.unbind(gridButton);
 				gridButton=new JToggleButton(gridAction);
 				gridButton.setText("");

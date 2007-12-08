@@ -25,7 +25,7 @@ import main.Hub;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
-import presentation.fsa.commands.EdgeActions;
+import presentation.fsa.actions.EdgeActions;
 import presentation.fsa.tools.CreationTool;
 
 /**
@@ -569,13 +569,49 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * form of a bow); and the 2 control points are on different sides of the 
 	 * edge (a curve like a wave). In one of the cases, theangles of the vectors
 	 * should be A=B, in the other A=-B.
-	 *
-	 *The command is undoable, so it is encapsuladed on an UndoableEdit.
-	 *
 	 */
-//	protected void symmetrize(){
-//		EdgeCommands.SymmetrizeEdgeAction()
-//	}
+	protected void symmetrize(){
+
+		// translate all points to 0,0
+		Point2D.Float[] points=new Point2D.Float[4];
+		points[0]=Geometry.translate(curve.getP1(),-curve.getX1(),-curve.getY1());
+		points[1]=Geometry.translate(curve.getCtrlP1(),-curve.getX1(),-curve.getY1());
+		points[2]=Geometry.translate(curve.getCtrlP2(),-curve.getX1(),-curve.getY1());
+		points[3]=Geometry.translate(curve.getP2(),-curve.getX1(),-curve.getY1());
+		
+		// rotate all points so edge has angle 0
+		float edgeAngle=(float)Math.atan(Geometry.slope(curve.getP1(),curve.getP2()));
+		points[0]=Geometry.rotate(points[0],-edgeAngle);
+		points[1]=Geometry.rotate(points[1],-edgeAngle);
+		points[2]=Geometry.rotate(points[2],-edgeAngle);
+		points[3]=Geometry.rotate(points[3],-edgeAngle);
+		
+		// compute quadrants for the control points
+		double quadrantFix1=(points[0].x-points[1].x>0)?Math.PI:0;
+		double quadrantFix2=(points[2].x-points[3].x>0)?Math.PI:0;
+		
+		float a1=(float)Math.atan(Geometry.slope(points[0],points[1]));
+		float a2=(float)Math.atan(Geometry.slope(points[3],points[2]));
+		float angle=(float)(Math.abs(a1)+Math.abs(a2))/2F;
+		float distance=(float)(points[0].distance(points[1])+points[2].distance(points[3]))/2F;
+		
+		points[1]=Geometry.rotate(new Point2D.Float(distance,0),(angle*(a1==0?1:Math.signum(a1))+quadrantFix1));
+		points[2]=Geometry.rotate(new Point2D.Float(distance,0),(angle*(a2==0?1:Math.signum(a2))+quadrantFix2+Math.PI));
+		points[2].x+=points[3].x;
+		points[2].y+=points[3].y;
+		
+		// rotate and translate edge back to original location/angle
+		points[1]=Geometry.rotate(points[1],edgeAngle);
+		points[2]=Geometry.rotate(points[2],edgeAngle);
+		points[0]=new Point2D.Float((float)curve.getX1(), (float)curve.getY1());
+		points[1]=Geometry.translate(points[1],curve.getX1(),curve.getY1());
+		points[2]=Geometry.translate(points[2],curve.getX1(),curve.getY1());
+		points[3]=new Point2D.Float((float)curve.getX2(), (float)curve.getY2());
+
+		curve.setCurve(points, 0);
+		updateAnglesAndScalars();
+		setDirty(true);
+	}
 
 	/**
 	 * Indicates whether an edge can be rigidly translated 

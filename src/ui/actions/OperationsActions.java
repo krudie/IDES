@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui.command;
+package ui.actions;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
@@ -42,11 +42,11 @@ import ui.OperationDialog;
  *
  * @author Lenko Grigorov
  */
-public class OperationsCommands {
+public class OperationsActions {
 	
-	public static class ShowDialogCommand extends AbstractAction {
+	public static class ShowDialogAction extends AbstractAction {
 
-		public ShowDialogCommand() {
+		public ShowDialogAction() {
 			super(Hub.string("comOperationsDialog"));			
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintOperationsDialog"));
 		}

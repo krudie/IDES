@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Dimension;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
 
@@ -34,6 +35,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import main.Hub;
 import main.Workspace;
@@ -43,19 +46,20 @@ import main.WorkspaceSubscriber;
 
 import pluggable.ui.Toolset;
 import pluggable.ui.UIDescriptor;
+import presentation.Presentation;
 import presentation.PresentationManager;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EventView;
 import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
-import presentation.fsa.commands.GraphActions;
+import presentation.fsa.actions.GraphActions;
 import services.latex.LatexManager;
 import services.undo.UndoManager;
-import ui.command.EditCommands;
-import ui.command.FileCommands;
-import ui.command.HelpCommands;
-import ui.command.OperationsCommands;
-import ui.command.OptionsCommands;
+import ui.actions.EditActions;
+import ui.actions.FileActions;
+import ui.actions.HelpActions;
+import ui.actions.OperationsActions;
+import ui.actions.OptionsActions;
 
 /**
  * The main window in which the application is displayed. Provides real estate
@@ -68,6 +72,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 
 	String imagePath = "images/icons/";
 
+	protected static final String UI_SETTINGS="MainWindow settings";
+	
 	private static final int MINIMUM_WIDTH = 500;
 
 	private static final int MINIMUM_HEIGHT = 500;
@@ -135,21 +141,23 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 
 	private void createAndAddMainPane() {
 		JPanel mainPane = new JPanel(new BorderLayout());
+		ChangeListener tabIdxRecorder=new ChangeListener(){
+			public void stateChanged(ChangeEvent e)
+			{
+				if((e.getSource() instanceof JTabbedPane)&&((JTabbedPane)e.getSource()).getSelectedIndex()<0)
+				{
+					return;
+				}
+				Hub.getWorkspace().getActiveModel().setAnnotation(UI_SETTINGS,new UILayout(tabbedViews.getSelectedIndex(),rightViews.getSelectedIndex()));
+			}
+		};
 		tabbedViews = new JTabbedPane();
-		rightView = new JTabbedPane();
-		// drawingBoard.setName("No graph");
-		// JScrollPane sp = new JScrollPane(drawingBoard,
-		// JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-		// JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		// sp.setName(drawingBoard.getName());
-		//		
-		// // TODO attach a listener to the tabbedPane that sets the active view
-		// in the UIStateModel
-		// tabbedViews.addTab("Graph",sp);
-		// tabbedViews.addTab("Events", new EventView());
+		tabbedViews.addChangeListener(tabIdxRecorder);
+		rightViews = new JTabbedPane();
+		rightViews.addChangeListener(tabIdxRecorder);
 		tabsAndRight = new JSplitPane();
 		tabsAndRight.setLeftComponent(tabbedViews);
-		tabsAndRight.setRightComponent(rightView);
+		tabsAndRight.setRightComponent(rightViews);
 		mainPane.add(tabsAndRight, BorderLayout.CENTER);
 
 		Box fsBox = Box.createHorizontalBox();
@@ -185,24 +193,24 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	private void setupActions()
 	{
 		//Create actions
-		newAction=new FileCommands.NewAction();
-		openAction=new FileCommands.OpenAction();
-		saveAction=new FileCommands.SaveAction();
-		saveasAction=new FileCommands.SaveAsAction();
-		saveallAction=new FileCommands.SaveAllAction();
-		closeAction=new FileCommands.CloseAction();
-		wopenAction=new FileCommands.OpenWorkspaceAction();
-		wsaveAction=new FileCommands.SaveWorkspaceAction();
-		wsaveasAction=new FileCommands.SaveWorkspaceAsAction();
-		importAction=new FileCommands.ImportAction();
-		exportAction=new FileCommands.ExportAction();
-		exitAction=new FileCommands.ExitAction();
+		newAction=new FileActions.NewAction();
+		openAction=new FileActions.OpenAction();
+		saveAction=new FileActions.SaveAction();
+		saveasAction=new FileActions.SaveAsAction();
+		saveallAction=new FileActions.SaveAllAction();
+		closeAction=new FileActions.CloseAction();
+		wopenAction=new FileActions.OpenWorkspaceAction();
+		wsaveAction=new FileActions.SaveWorkspaceAction();
+		wsaveasAction=new FileActions.SaveWorkspaceAsAction();
+		importAction=new FileActions.ImportAction();
+		exportAction=new FileActions.ExportAction();
+		exitAction=new FileActions.ExitAction();
 		undoAction=new UndoManager.UndoAction();//CommandManager_new.getInstance().new UndoAction();
 		redoAction=new UndoManager.RedoAction();//CommandManager_new.getInstance().new RedoAction();
-		operationsAction=new OperationsCommands.ShowDialogCommand();
+		operationsAction=new OperationsActions.ShowDialogAction();
 		latexAction=new services.latex.UseLatexAction();
-		optionsAction=new OptionsCommands.MoreOptionsAction();
-		aboutAction=new HelpCommands.AboutCommand();
+		optionsAction=new OptionsActions.MoreOptionsAction();
+		aboutAction=new HelpActions.AboutAction();
 
 		//decide which ones will be disabled when there's no model open
 		disabledOnNoProject.add(saveAction);
@@ -300,7 +308,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		//Initializing the menu items for the "optionsMenu"
 		JCheckBoxMenuItem useLaTeX  = new JCheckBoxMenuItem(latexAction);
 		useLaTeX.setSelected(LatexManager.isLatexEnabled());
-		JMenuItem moreOptions = new JMenuItem(new OptionsCommands.MoreOptionsAction());
+		JMenuItem moreOptions = new JMenuItem(new OptionsActions.MoreOptionsAction());
 		//adding the menu items to the "optionsMenu"
 		optionsMenu.add(useLaTeX);
 		optionsMenu.addSeparator();
@@ -390,7 +398,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	 */
 	private JTabbedPane tabbedViews;
 
-	private JTabbedPane rightView;
+	private JTabbedPane rightViews;
 
 	private JSplitPane tabsAndRight;
 
@@ -475,8 +483,29 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 			{
 				a.setEnabled(true);
 			}
-			Toolset t=PresentationManager.getToolset(Hub.getWorkspace().getActiveModel().getModelDescriptor().getPreferredModelInterface());
-			UIDescriptor uid=t.getUIElements(Hub.getWorkspace().getActiveLayoutShell());
+			//getting the tabLayout has to be before adding the tabs because it will be overwritten
+			UILayout tabLayout=(UILayout)Hub.getWorkspace().getActiveModel().getAnnotation(UI_SETTINGS);
+			UIDescriptor uid=Hub.getWorkspace().getActiveUID();
+			for(Presentation p:uid.getMainPanePresentations())
+			{
+				tabbedViews.add(p.getName(),p.getGUI());
+			}
+			for(Presentation p:uid.getRightPanePresentations())
+			{
+				rightViews.add(p.getName(),p.getGUI());
+			}
+			if(tabLayout!=null)
+			{
+				if(tabLayout.activeMainTab>-1&&tabLayout.activeMainTab<tabbedViews.getTabCount())
+				{
+					tabbedViews.setSelectedIndex(tabLayout.activeMainTab);
+				}
+				if(tabLayout.activeRightTab>-1&&tabLayout.activeRightTab<rightViews.getTabCount())
+				{
+					rightViews.setSelectedIndex(tabLayout.activeRightTab);
+				}
+			}
+			arrangeViews();
 			hotPlugMenus(uid.getMenus());
 			hotPlugToolbar(uid.getToolbar(),uid.showZoomControl());
 		}
@@ -504,11 +533,11 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	}
 
 	public JTabbedPane getRightPane() {
-		return rightView;
+		return rightViews;
 	}
 
 	public void aboutToRearrangeViews() {
-		if (rightView.getComponentCount() != 0) {
+		if (rightViews.getComponentCount() != 0) {
 			// apply Math.ceil to avoid "creeping" of the divider
 			Hub.persistentData.setInt("rightViewExt", (int) Math.ceil(1000
 					* (float) (tabsAndRight.getDividerLocation() - tabsAndRight
@@ -519,7 +548,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	}
 
 	public void arrangeViews() {
-		if (rightView.getComponentCount() == 0) {
+		if (rightViews.getComponentCount() == 0) {
 			tabsAndRight.setDividerLocation(1d);
 		} else {
 			float ext = Hub.persistentData.getInt("rightViewExt", 750) / 1000f;

@@ -3,6 +3,7 @@ package presentation.fsa.tools;
 import io.IOUtilities;
 
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -36,6 +37,13 @@ public abstract class DrawingTool {
 // Dragging flag -- set to true when user presses mouse button
 // and cleared to false when user releases mouse button.
 	protected boolean dragging = false;
+	
+	/**
+	 * It is important to remember when the mouse button went down so that
+	 * the "move" tool can respond correctly when the graph is too large and
+	 * the mouse is moved too fast to detect where exactly the dragging has started.
+	 */
+	protected static Point lastMousePressedLocation=new Point();
 		
 	public Cursor getCursor() { return cursor; }
 	
@@ -70,6 +78,7 @@ public abstract class DrawingTool {
 	{
 		if(ContextAdaptorHack.context!=null)
 			ContextAdaptorHack.context.requestFocus();
+		lastMousePressedLocation=m.getPoint();
 	}
 	
 	public void handleMouseReleased(MouseEvent m)

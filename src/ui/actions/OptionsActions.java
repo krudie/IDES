@@ -1,4 +1,4 @@
-package ui.command;
+package ui.actions;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -24,7 +24,7 @@ import ui.OptionsWindow;
  *  
  * @author Lenko Grigorov
  */
-public class OptionsCommands {
+public class OptionsActions {
 
 	/**
 	 * The class for the "More options..." menu item.

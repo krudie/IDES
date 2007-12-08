@@ -175,10 +175,11 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 		if(getGraphModel()!=null)  
 		{
 			graphBounds=getGraphModel().getBounds(true);
-			if(graphBounds.x<0||graphBounds.y<0)
-			{
-				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
-			}
+			//the following fuctionality will be assumed by the GraphActions
+//			if(graphBounds.x<0||graphBounds.y<0)
+//			{
+//				graphModel.translate(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS);
+//			}
 
 			if(scaleToFit&&getParent()!=null)
 			{

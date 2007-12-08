@@ -1,6 +1,7 @@
 package operations.fsa.ver2_1;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -16,8 +17,6 @@ import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
-
-import pluggable.operation.Operation;
 
 public class MultiAgentProductFSA extends AbstractOperation {
 	
@@ -39,7 +38,6 @@ public class MultiAgentProductFSA extends AbstractOperation {
 	}
 
 	int maOrder;
-	LinkedList<FSAState[]> openStates;
 	HashMap<String,FSAState> stateMap;
 	HashMap<String,FSAEvent> eventMap;
 	protected class PseudoTransition
@@ -77,7 +75,8 @@ public class MultiAgentProductFSA extends AbstractOperation {
 			}
 		}
 		a.setAnnotation(Annotable.COMPOSED_OF, fsaIds);
-		openStates=new LinkedList<FSAState[]>();
+		LinkedList<FSAState[]> openStates=new LinkedList<FSAState[]>();
+		HashSet<String> closedStates=new HashSet<String>();
 		stateMap=new HashMap<String, FSAState>();
 		eventMap=new HashMap<String, FSAEvent>();
 		openStates.add(initial);
@@ -88,6 +87,12 @@ public class MultiAgentProductFSA extends AbstractOperation {
 		{
 			FSAState[] states=openStates.getFirst();
 			openStates.removeFirst();
+			if(closedStates.contains(keyOf(states)))
+			{
+				continue;
+			}
+//			System.out.println(states[0].getName()+","+states[1].getName());
+			closedStates.add(keyOf(states));
 			FSAState state=stateMap.get(keyOf(states));
 			FSAEventSet[] eventSets=new FSAEventSet[maOrder];
 			for(int i=0;i<states.length;++i)
@@ -230,10 +235,15 @@ public class MultiAgentProductFSA extends AbstractOperation {
 	protected FSAEvent makeEvent(FSAEvent[] events,long id)
 	{
 		FSAEvent e=new Event(id);
+		boolean isUncontrollable=true;
 		String label="$\\left[\\begin{array}{c}";
 		for(FSAEvent event:events)
 		{
-			label+=event.getSymbol()+"\\\\";
+			label+="\\mbox{"+event.getSymbol()+"}\\\\";
+			if(event.isControllable())
+			{
+				isUncontrollable=false;
+			}
 		}
 		if(label.endsWith("\\\\"))
 		{
@@ -241,7 +251,7 @@ public class MultiAgentProductFSA extends AbstractOperation {
 		}
 		label+="\\end{array}\\right]$";
 		e.setSymbol(label);
-		e.setControllable(true);
+		e.setControllable(!isUncontrollable);
 		return e;
 	}
 	

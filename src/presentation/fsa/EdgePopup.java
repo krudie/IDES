@@ -15,9 +15,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.Presentation;
-import presentation.fsa.commands.EdgeActions;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.UIActions;
+import presentation.fsa.actions.EdgeActions;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.UIActions;
 
 import main.Hub;
 
@@ -44,45 +44,47 @@ public class EdgePopup extends JPopupMenu {
 	 * 
 	 * @param e the edge to associate with this menu instance
 	 */
-	protected EdgePopup(GraphDrawingView gdv, Edge e) {		
+	protected EdgePopup(GraphDrawingView gdv, Edge edge) {		
 
-		miEditEvents = new JMenuItem(new UIActions.TextAction(e));
+		miEditEvents = new JMenuItem(new UIActions.TextAction(edge));
 		add(miEditEvents);
 
-		miSymmetrize = new JMenuItem(new EdgeActions.SymmetrizeEdgeAction(gdv,e));		
-		add(miSymmetrize);
+		// if the edge can't be straightened, then we assume we cannot 
+		// otherwise tamper with its shape
+		if(edge.canBeStraightened())
+		{
+			miStraighten = new JMenuItem(new UIActions.StraightenEdgeAction(gdv.graphModel,edge));
+//			miStraighten.addActionListener(listener);
+			add(miStraighten);
+			
+			miSymmetrize = new JMenuItem(new UIActions.SymmetrizeEdgeAction(gdv.graphModel,edge));		
+			add(miSymmetrize);
+			
+			miArcMore = new JMenuItem(new UIActions.ArcMoreEdgeAction(gdv.graphModel,edge));
+//			miArcMore.addActionListener(listener);
+			add(miArcMore);
+					
+			miArcLess = new JMenuItem(new UIActions.ArcLessEdgeAction(gdv.graphModel,edge));
+//			miArcLess.addActionListener(listener);
+			add(miArcLess);		
+//			miStraighten.setVisible(edge.canBeStraightened());
+//			miArcLess.setVisible(edge.canBeStraightened());
+//			miArcMore.setVisible(edge.canBeStraightened());
+//			miSymmetrize.setVisible(edge.canBeStraightened());
+			
+			// Don't enable straightening, flattening or symmetrizing if edge is already straight
+			// since there is nothing to to.  
+			miArcLess.setEnabled(!edge.isStraight());
+			miStraighten.setEnabled(!edge.isStraight());
+			miSymmetrize.setEnabled(!edge.isStraight());
+		}
 		
-		miStraighten = new JMenuItem("Straighten");
-//		miStraighten.addActionListener(listener);
-		add(miStraighten);
-		
-		miArcMore = new JMenuItem(Hub.string("arcmore"));
-//		miArcMore.addActionListener(listener);
-		add(miArcMore);
-				
-		miArcLess = new JMenuItem(Hub.string("arcless"));
-//		miArcLess.addActionListener(listener);
-		add(miArcLess);		
-
 		add(new JPopupMenu.Separator());
 		
 		deleteCmd = gdv.getDeleteAction();
 		add(deleteCmd);
 		
 		addPopupMenuListener(new PopupListener());
-		edge = e;
-		miStraighten.setVisible(edge.canBeStraightened());
-		// if the edge can't be straightened, then we assume we cannot 
-		// otherwise tamper with its shape
-		miArcLess.setVisible(edge.canBeStraightened());
-		miArcMore.setVisible(edge.canBeStraightened());
-		miSymmetrize.setVisible(edge.canBeStraightened());
-		
-		// Don't enable straightening, flattening or symmetrizing if edge is already straight
-		// since there is nothing to to.  
-		miArcLess.setEnabled(!edge.isStraight());
-		miStraighten.setEnabled(!edge.isStraight());
-		miSymmetrize.setEnabled(!edge.isStraight());
 	}
 
 	protected static void showPopup(GraphDrawingView context, Edge e){

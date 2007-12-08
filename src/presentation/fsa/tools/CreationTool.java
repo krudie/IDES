@@ -25,8 +25,8 @@ import presentation.fsa.GraphDrawingView;
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
 import presentation.fsa.GraphElement;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.GraphUndoableEdits;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.GraphUndoableEdits;
 import services.undo.UndoManager;
 /**
  * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.

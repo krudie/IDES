@@ -117,6 +117,14 @@ public abstract class Node extends GraphElement {
 		if(b && initialArrow == null){
 			setInitialArrow(new InitialArrow(this));
 		}
+		if(b)
+		{
+			insert(initialArrow);
+		}
+		else
+		{
+			remove(initialArrow);
+		}
 		((State)getState()).setInitial(b);	
 	}
 
@@ -154,6 +162,7 @@ public abstract class Node extends GraphElement {
 		this.initialArrow.resetPosition();
 		this.insert(initialArrow);
 	}
+	
 	public void relocateReflexiveEdges()
 	{
 		Iterator<Edge> adjEdges = adjacentEdges();

@@ -1,4 +1,4 @@
-package presentation.fsa.commands;
+package presentation.fsa.actions;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -15,6 +15,7 @@ import main.Hub;
 
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierEdge;
+import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNode;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
@@ -24,6 +25,7 @@ import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.Node;
+import presentation.fsa.SelectionGroup;
 import presentation.fsa.tools.CreationTool;
 import services.undo.UndoManager;
 
@@ -178,7 +180,7 @@ public class UIActions {
 		public static class DeleteAction extends AbstractAction{
 			private static ImageIcon icon = new ImageIcon();
 			protected GraphDrawingView context;
-			private GraphElement selection;
+			private SelectionGroup selection;
 
 			public DeleteAction(GraphDrawingView context) {
 				super(Hub.string("comDelete"), icon);
@@ -192,39 +194,7 @@ public class UIActions {
 				if(((CreationTool)context.getTools()[GraphDrawingView.CREATE]).isDrawingEdge())
 					((CreationTool)context.getTools()[GraphDrawingView.CREATE]).abortEdge();
 				selection=context.getSelectedGroup();
-				if(selection.size()<1)
-				{
-					return;
-				}
-				if(selection.size()==1)
-				{
-					new GraphActions.DeleteElementAction((FSAGraph)context.getLayoutShell(),selection.children().next()).execute();
-				}
-				else
-				{
-					CompoundEdit allEdits=new CompoundEdit();
-					//first delete all edges
-					for(Iterator<GraphElement> i=selection.children();i.hasNext();)
-					{
-						GraphElement element=i.next();
-						if(element instanceof Edge)
-						{
-							new GraphActions.DeleteElementAction(allEdits,(FSAGraph)context.getLayoutShell(),element).execute();
-						}
-					}
-					//then delete everything else - otherwise an edge may be undone before its nodes
-					for(Iterator<GraphElement> i=selection.children();i.hasNext();)
-					{
-						GraphElement element=i.next();
-						if(!(element instanceof Edge))
-						{
-							new GraphActions.DeleteElementAction(allEdits,(FSAGraph)context.getLayoutShell(),element).execute();
-						}
-					}
-					allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub.string("undoDeleteElements")));
-					allEdits.end();
-					UndoManager.addEdit(allEdits);
-				}
+				new GraphActions.RemoveAction((FSAGraph)context.getLayoutShell(),selection).execute();
 				context.setTool(context.getPreferredTool());
 			}
 
@@ -355,6 +325,174 @@ public class UIActions {
 
 			public void actionPerformed(ActionEvent e){
 				new GraphActions.CreateEdgeAction(graph,node,node).execute();
+			}
+		}
+		
+		/**
+		 * A command that creates an UndoableAction that sets the value of a 
+		 * boolean attribute for a DES element.
+		 * 
+		 * @author Christian Silvano
+		 *
+		 */
+		public static class ModifyInitialAction extends AbstractAction {
+
+			protected Node node;
+			protected FSAGraph graph;
+
+			public ModifyInitialAction(FSAGraph graph,Node node){
+				super(Hub.string("comInitialNode"));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintInitialNode"));
+				this.node = node;
+				this.graph=graph;
+			}
+
+			public void actionPerformed(ActionEvent e) 
+			{
+				new NodeActions.SetInitialAction(graph,node,!node.getState().isInitial()).execute();		
+			}
+
+		}
+		
+		/**
+		 * A command that creates an UndoableAction to set the value of a boolean attribute 
+		 * for a DES element.
+		 * 
+		 * @author Christian Silvano
+		 *
+		 */
+		public static class ModifyMarkingAction extends AbstractAction {
+			protected Node node;
+			protected FSAGraph graph;
+
+			public ModifyMarkingAction(FSAGraph graph, Node node){
+				super(Hub.string("comMarkedNode"));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintMarkedNode"));
+				this.node = node;
+				this.graph=graph;
+			}	
+
+			public void actionPerformed(ActionEvent e){
+				new NodeActions.SetMarkingAction(graph,node,!node.getState().isMarked()).execute();
+			}		
+
+		}
+		
+		/**
+		 * If this edge is not straight,  make it have a symmetrical appearance.
+		 * Make the two vectors - from P1 to CTRL1 and from P2 to CTRL2, be of 
+		 * the same length and have the same angle. So the edge will look it has 
+		 * a symmetrical curve. 
+		 * There are two cases:
+		 * The 2 control points are on the same side of the curve (a curve with the 
+		 * form of a bow); and the 2 control points are on different sides of the 
+		 * edge (a curve like a wave). In one of the cases, theangles of the vectors
+		 * should be A=B, in the other A=-B.
+		 *
+		 */
+		public static class SymmetrizeEdgeAction extends AbstractAction
+		{
+			protected FSAGraph graph;
+			protected Edge edge;
+			
+			public SymmetrizeEdgeAction(FSAGraph graph,Edge edge){
+				super(Hub.string("comSymmetrizeEdge"));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintSymmetrizeEdge"));
+				this.edge = edge;
+				this.graph = graph;
+			}
+			
+			public void actionPerformed(ActionEvent evt){
+				new EdgeActions.SymmetrizeAction(graph,edge).execute();
+			}
+		}
+
+		public static class StraightenEdgeAction extends AbstractAction
+		{
+			protected FSAGraph graph;
+			protected Edge edge;
+			
+			public StraightenEdgeAction(FSAGraph graph,Edge edge){
+				super(Hub.string("comStraightenEdge"));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintStraightenEdge"));
+				this.edge = edge;
+				this.graph = graph;
+			}
+			
+			public void actionPerformed(ActionEvent evt){
+				new EdgeActions.StraightenAction(graph,edge).execute();
+			}
+		}
+
+		public static class ArcMoreEdgeAction extends AbstractAction
+		{
+			protected FSAGraph graph;
+			protected Edge edge;
+			
+			public ArcMoreEdgeAction(FSAGraph graph,Edge edge){
+				super(Hub.string("comArcMoreEdge"));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintArcMoreEdge"));
+				this.edge = edge;
+				this.graph = graph;
+			}
+			
+			public void actionPerformed(ActionEvent evt){
+				new EdgeActions.ArcMoreAction(graph,edge).execute();
+			}
+		}
+
+		public static class ArcLessEdgeAction extends AbstractAction
+		{
+			protected FSAGraph graph;
+			protected Edge edge;
+			
+			public ArcLessEdgeAction(FSAGraph graph,Edge edge){
+				super(Hub.string("comArcLessEdge"));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintArcLessEdge"));
+				this.edge = edge;
+				this.graph = graph;
+			}
+			
+			public void actionPerformed(ActionEvent evt){
+				new EdgeActions.ArcLessAction(graph,edge).execute();
+			}
+		}
+		
+		/**
+		 * Emulates "snap to grid".
+		 * 
+		 * @author Lenko Grigorov, Christian Silvano
+		 * 
+		 */
+		public static class AlignAction extends AbstractAction {
+
+			private static ImageIcon icon = new ImageIcon();
+			protected GraphDrawingView gdv;
+
+			public AlignAction(GraphDrawingView gdv) {
+				super(Hub.string("comAlign"), icon);
+				icon.setImage(Toolkit.getDefaultToolkit().createImage(
+						Hub.getResource("images/icons/graphic_align.gif")));
+				putValue(SHORT_DESCRIPTION, Hub.string("comHintAlign"));
+				this.gdv=gdv;
+			}
+
+			public void actionPerformed(ActionEvent event) {
+				if (gdv == null)
+					return;
+				if (gdv.getSelectedGroup().size() > 0)
+				{
+					new GraphActions.AlignNodesAction(gdv.getGraphModel(),gdv.getSelectedGroup()).execute();
+				}
+				else
+				{
+					SelectionGroup group=new SelectionGroup();
+					for(Iterator<GraphElement> i=gdv.getGraphModel().children();i.hasNext();)
+					{
+						group.insert(i.next());
+					}
+					new GraphActions.AlignNodesAction(gdv.getGraphModel(),group).execute();
+				}
 			}
 		}
 }

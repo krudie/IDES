@@ -16,12 +16,11 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import presentation.fsa.NodePopup.PopupListener;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.UIActions;
-import presentation.fsa.commands.GraphActions.AlignToolAction;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.UIActions;
 
 import main.Hub;
-import ui.command.OptionsCommands;
+import ui.actions.OptionsActions;
 
 /**
  * A default context menu which allows the user to switch drawing tools and
@@ -52,7 +51,7 @@ public class ToolPopup extends JPopupMenu {
 		miSelect = new JMenuItem(new UIActions.SelectTool());
 		miCreate = new JMenuItem(new UIActions.CreateTool());
 		miMove = new JMenuItem(new UIActions.MoveTool());
-		miAlign = new JMenuItem(new GraphActions.AlignToolAction());
+		miAlign = new JMenuItem(ContextAdaptorHack.context.getAlignAction());
 //		miShowGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
 
 		add(miSelect);

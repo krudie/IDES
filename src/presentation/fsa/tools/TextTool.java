@@ -14,8 +14,8 @@ import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.EdgeLabellingDialog;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
-import presentation.fsa.commands.GraphActions;
-import presentation.fsa.commands.UIActions;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.UIActions;
 import presentation.fsa.tools.DrawingTool;
 
 public class TextTool extends DrawingTool {

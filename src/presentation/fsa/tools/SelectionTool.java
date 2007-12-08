@@ -148,7 +148,7 @@ public class SelectionTool extends DrawingTool {
 		if(dragging){
 			// compute the set of graph elements hit by rectangle
 			ContextAdaptorHack.context.updateCurrentSelection(ContextAdaptorHack.context.getSelectionArea());
-			ContextAdaptorHack.context.highlightCurrentSelection(true);						
+//			ContextAdaptorHack.context.highlightCurrentSelection(true);						
 			// reset
 			ContextAdaptorHack.context.getSelectionArea().setSize(0,0);
 			startPoint = null;

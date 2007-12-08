@@ -1,4 +1,4 @@
-package ui.command;
+package ui.actions;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
@@ -45,7 +45,7 @@ import ui.ImportExportDialog;
 ;/**
  * @author Lenko Grigorov
  */
-public class FileCommands {	
+public class FileActions {	
 
 	public static class NewAction extends AbstractAction{
 		/**

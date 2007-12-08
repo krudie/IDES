@@ -27,7 +27,7 @@ import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import ui.MainWindow;
-import ui.command.FileCommands;
+import ui.actions.FileActions;
 
 import model.DESModel;
 import model.ModelDescriptor;
@@ -51,6 +51,8 @@ public class Workspace extends WorkspacePublisherAdaptor {
 
 	// index of the currently active DESModel
 	private int activeModelIdx;
+	
+	protected UIDescriptor activeUID;
 
 	// TODO A model of global events set (alphabet) and all local alphabets
 	//private FSAEventsModel eventsModel;
@@ -279,9 +281,13 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		return systems.elementAt(activeModelIdx);
 	}
 
-//	public int getActiveModelIndex(){
-//	return activeModelIdx;
-//	}
+	public UIDescriptor getActiveUID(){
+		if(activeModelIdx<0)
+		{
+			return null;
+		}
+		return activeUID;
+	}
 
 	/**
 	 * Remove all tabs from the main pane of IDES.
@@ -318,30 +324,31 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		else
 		{
 			activeModelIdx=getModelIndex(name);			
-			// FIXME the obtainment of the tabbed pane is ugly
-			JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
-			JTabbedPane right=((MainWindow)Hub.getMainWindow()).getRightPane();
+//			// FIXME the obtainment of the tabbed pane is ugly
+//			JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
+//			JTabbedPane right=((MainWindow)Hub.getMainWindow()).getRightPane();
 			Toolset ts=PresentationManager.getToolset(systems.elementAt(activeModelIdx).getModelDescriptor().getPreferredModelInterface());
-			UIDescriptor uid=ts.getUIElements(getActiveLayoutShell());
+			activeUID=ts.getUIElements(getActiveLayoutShell());
 			activePresentations=new LinkedList<Presentation>();
-			Presentation[] ps=uid.getMainPanePresentations();
+			Presentation[] ps=activeUID.getMainPanePresentations();
 
 			for(int i=0;i<ps.length;++i)
 			{
 				activePresentations.add(ps[i]);
 			}
-			for(Presentation p:activePresentations)
-			{
-				tabs.add(p.getName(),p.getGUI());
-			}
-			ps=uid.getRightPanePresentations();
+//			for(Presentation p:activePresentations)
+//			{
+//				tabs.add(p.getName(),p.getGUI());
+//			}
+			ps=activeUID.getRightPanePresentations();
 			for(int i=0;i<ps.length;++i)
 			{
-				right.add(ps[i].getName(),ps[i].getGUI());
+//				right.add(ps[i].getName(),ps[i].getGUI());
 				activePresentations.add(ps[i]);
 			}
+//		}
+//		((MainWindow)Hub.getMainWindow()).arrangeViews();
 		}
-		((MainWindow)Hub.getMainWindow()).arrangeViews();
 		// TODO change name to fsa.id for consistency with add and remove
 		fireModelSwitched(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 				name, 

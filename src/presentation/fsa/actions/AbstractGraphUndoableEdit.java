@@ -1,4 +1,4 @@
-package presentation.fsa.commands;
+package presentation.fsa.actions;
 
 import javax.swing.undo.AbstractUndoableEdit;
 

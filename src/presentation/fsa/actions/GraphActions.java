@@ -1,4 +1,4 @@
-package presentation.fsa.commands;
+package presentation.fsa.actions;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -133,10 +133,12 @@ public class GraphActions {
 					}
 					new EdgeActions.LabelAction(allEdits,graph,e,eventsToKeep).execute();
 				}
+				SelectionGroup group=new SelectionGroup();
 				for(Edge e:edgesToRemove)
 				{
-					new GraphActions.DeleteElementAction(allEdits,graph,e).execute();
+					group.insert(e);
 				}
+				new GraphActions.RemoveAction(allEdits,graph,group).execute();
 				GraphUndoableEdits.UndoableRemoveEvent action =
 					new GraphUndoableEdits.UndoableRemoveEvent(graph,this.event);
 				action.redo();
@@ -194,37 +196,72 @@ public class GraphActions {
 	 * @author Christian Silvano
 	 *
 	 */
-	public static class MoveAction extends AbstractAction {
+	public static class MoveAction extends AbstractGraphAction {
 		//The set of elements that are being moved.
-		SelectionGroup selection = null;
+		protected SelectionGroup selection = null;
 		//The displacement of the selection, it is a vector where the direction
 		//of the displacement can be inferred by the signals of its coordinates.
-		Point displacement;
+		protected Point2D.Float displacement;
 
+		protected FSAGraph graph;
+
+		public MoveAction(FSAGraph graph, SelectionGroup currentSelection, Point2D.Float displacement) {
+			this(null,graph,currentSelection,displacement);
+		}
 		/**
 		 * 
 		 * @param currentSelection
 		 * @param displacement
 		 */
-		public MoveAction(SelectionGroup currentSelection, Point displacement) {
-			this.selection = currentSelection.copy();
-			this.displacement = displacement;
+		public MoveAction(CompoundEdit parentEdit, FSAGraph graph, SelectionGroup selection, Point2D.Float displacement) {
+			this.parentEdit=parentEdit;
+			if(selection==null)
+			{
+				selection=new SelectionGroup();
+			}
+			this.selection = selection.copy();
+			this.displacement = (Point2D.Float)displacement.clone();
+			this.graph=graph;
+		}
+
+		public MoveAction(FSAGraph graph, GraphElement element, Point2D.Float displacement) {
+			this(null,graph,element,displacement);
+		}
+		
+		public MoveAction(CompoundEdit parentEdit, FSAGraph graph, GraphElement element, Point2D.Float displacement) {
+			this(parentEdit,graph,new SelectionGroup(element),displacement);
 		}
 
 		//Creates an UndoableMove (an object capable of undoing/redoing the movement)
 		//and informs CommandManager about a new UndoableAction.
 		public void actionPerformed(ActionEvent event) {
-			if (displacement != null) {
-				GraphUndoableEdits.UndoableMove action = new GraphUndoableEdits.UndoableMove(selection, displacement);
-				// There is no "perform" operation like most of the UndoableActions, 
-				// the reason is that the movement is made by a user (e.g.: by dragging a node in a FSA).
-
-				UndoManager.addEdit(action);
+			if (graph != null) {
+				if(selection.size()<1)
+				{
+					return;
+				}
+				if(selection.size()==1)
+				{
+					postEditAdjustCanvas(graph,new GraphUndoableEdits.UndoableMove(graph,selection.children().next(),displacement));
+				}
+				else
+				{
+					CompoundEdit allEdits=new CompoundEdit();
+					for(Iterator<GraphElement> i=selection.children();i.hasNext();)
+					{
+						GraphElement element=i.next();
+						if((element instanceof Node)||(element instanceof GraphLabel))
+						{
+							UndoableEdit edit=new GraphUndoableEdits.UndoableMove(graph,element,displacement);
+							//no need to "redo" the edit since the element has already been moved
+							allEdits.addEdit(edit);
+						}
+					}
+					allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub.string("undoMoveElements")));
+					allEdits.end();
+					postEditAdjustCanvas(graph,allEdits);
+				}
 			}
-		}
-
-		public void execute() {
-			actionPerformed(null);
 		}
 	}
 
@@ -273,7 +310,7 @@ public class GraphActions {
 			if (element != null) {
 				GraphUndoableEdits.UndoableLabel action = new GraphUndoableEdits.UndoableLabel(graph,element,text);
 				action.redo();
-				postEdit(action);
+				postEditAdjustCanvas(graph,action);
 			}
 
 		}
@@ -285,35 +322,47 @@ public class GraphActions {
 	 * @author Lenko Grigorov, Christian Silvano
 	 * 
 	 */
-	public static class AlignToolAction extends AbstractAction {
+	public static class AlignNodesAction extends AbstractGraphAction {
 
-		// TODO: redo all of this so there's an independent grid going
+		protected FSAGraph graph;
+		protected SelectionGroup group;
 
-		private static ImageIcon icon = new ImageIcon();
+		public AlignNodesAction(FSAGraph graph,SelectionGroup group) {
+			this(null,graph,group);
+		}
 
-		public AlignToolAction() {
-			super(Hub.string("comAlign"), icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(
-					Hub.getResource("images/icons/graphic_align.gif")));
-			putValue(SHORT_DESCRIPTION, Hub.string("comHintAlign"));
+		public AlignNodesAction(CompoundEdit parentEdit, FSAGraph graph,SelectionGroup group) {
+			this.parentEdit=parentEdit;
+			this.graph=graph;
+			if(group==null)
+			{
+				group=new SelectionGroup();
+			}
+			this.group=group.copy();
 		}
 
 		public void actionPerformed(ActionEvent event) {
-			if (Hub.getWorkspace().getActiveModel() == null)
-				return;
-			Iterator i;
-			if (ContextAdaptorHack.context.getSelectedGroup().size() > 0)
-				i = ContextAdaptorHack.context.getSelectedGroup().children();
-			else
-				i = ContextAdaptorHack.context.getGraphModel().children();
-			while (i.hasNext()) {
-				GraphElement ge = (GraphElement) i.next();
-				ge.getLayout().snapToGrid();
-				ge.refresh();
+			if(graph!=null)
+			{
+				if(group.size()<1)
+				{
+					return;
+				}
+				CompoundEdit allEdits=new CompoundEdit();
+				for(Iterator<GraphElement> i=group.children();i.hasNext();)
+				{
+					GraphElement element=i.next();
+					if(element instanceof Node)
+					{
+						Point2D.Float displacement=element.snapToGrid();
+						new MoveAction(allEdits,graph,element,displacement).execute();
+					}
+				}
+				graph.commitLayoutModified();
+				allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub.string("undoMoveNodes")));
+				allEdits.end();
+				postEditAdjustCanvas(graph,allEdits);
 			}
-
-			ContextAdaptorHack.context.getGraphModel().setNeedsRefresh(true);
-			Hub.getWorkspace().fireRepaintRequired();
 		}
 	}
 
@@ -355,7 +404,7 @@ public class GraphActions {
 		public CreateNodeAction(CompoundEdit parentEdit, FSAGraph graph, Point2D.Float location, Node[] nodeBuffer)
 		{
 			this.parentEdit=parentEdit;
-			this.location=location;
+			this.location=(Point2D.Float)location.clone();
 			this.graph=graph;
 			this.nodeBuffer=nodeBuffer;
 		}
@@ -369,7 +418,7 @@ public class GraphActions {
 				{
 					nodeBuffer[0]=edit.getNode();
 				}
-				postEdit(edit);
+				postEditAdjustCanvas(graph,edit);
 			}
 		}
 	}
@@ -420,7 +469,7 @@ public class GraphActions {
 				edit.redo();
 				allEdits.addEdit(edit);
 				allEdits.end();
-				postEdit(allEdits);
+				postEditAdjustCanvas(graph,allEdits);
 				if(edgeBuffer!=null&&edgeBuffer.length>0)
 				{
 					edgeBuffer[0]=edit.getEdge();
@@ -429,61 +478,112 @@ public class GraphActions {
 		}
 	}
 	
-	public static class DeleteElementAction extends AbstractGraphAction
+	public static class RemoveAction extends AbstractGraphAction
 	{
-		protected GraphElement element;
+		protected SelectionGroup selection;
 		protected FSAGraph graph;
 		
-		public DeleteElementAction(FSAGraph graph, GraphElement element)
+		public RemoveAction(FSAGraph graph, SelectionGroup selection)
+		{
+			this(null,graph,selection);
+		}
+		
+		public RemoveAction(CompoundEdit parentEdit, FSAGraph graph, SelectionGroup selection)
+		{
+			this.parentEdit=parentEdit;
+			if(selection==null)
+			{
+				selection=new SelectionGroup();
+			}
+			this.selection=selection.copy();
+			this.graph=graph;
+		}
+
+		public RemoveAction(FSAGraph graph, GraphElement element)
 		{
 			this(null,graph,element);
 		}
 		
-		public DeleteElementAction(CompoundEdit parentEdit, FSAGraph graph, GraphElement element)
+		public RemoveAction(CompoundEdit parentEdit, FSAGraph graph, GraphElement element)
 		{
-			this.parentEdit=parentEdit;
-			this.element=element;
-			this.graph=graph;
+			this(parentEdit,graph,new SelectionGroup(element));
 		}
-		
+
 		public void actionPerformed(ActionEvent event)
 		{
 			if (graph != null) {
-				CompoundEdit allEdits=new CompoundEdit();
-				if(element instanceof Edge)
+				if(selection.size()<1)
 				{
-					UndoableEdit edit=new GraphUndoableEdits.UndoableDeleteEdge(graph,(Edge)element);
-					edit.redo();
-					allEdits.addEdit(edit);
+					return;
 				}
-				else if(element instanceof Node)
+				if(selection.size()==1)
 				{
-					Set<Edge> edgesToRemove=new HashSet<Edge>();
-					for(Iterator<GraphElement> i=element.children();i.hasNext();)
+					postEdit(constructUndoableEdit(selection.children().next()));
+				}
+				else
+				{
+					CompoundEdit allEdits=new CompoundEdit();
+					//first delete all edges
+					for(Iterator<GraphElement> i=selection.children();i.hasNext();)
 					{
-						GraphElement child=i.next();
-						if(child instanceof Edge)
+						GraphElement element=i.next();
+						if(element instanceof Edge)
 						{
-							edgesToRemove.add((Edge)child);
+							allEdits.addEdit(constructUndoableEdit(element));
 						}
 					}
-					for(Edge edge:edgesToRemove)
+					//then delete everything else - otherwise an edge may be undone before its nodes
+					for(Iterator<GraphElement> i=selection.children();i.hasNext();)
 					{
-						UndoableEdit edit=new GraphUndoableEdits.UndoableDeleteEdge(graph,edge);
-						edit.redo();
-						allEdits.addEdit(edit);
+						GraphElement element=i.next();
+						if(!(element instanceof Edge))
+						{
+							allEdits.addEdit(constructUndoableEdit(element));
+						}
 					}
-					UndoableEdit edit=new GraphUndoableEdits.UndoableDeleteNode(graph,(Node)element);
+					allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub.string("undoDeleteElements")));
+					allEdits.end();
+					postEdit(allEdits);
+				}
+			}
+		}
+
+		protected UndoableEdit constructUndoableEdit(GraphElement element)
+		{
+			CompoundEdit allEdits=new CompoundEdit();
+			if(element instanceof Edge)
+			{
+				UndoableEdit edit=new GraphUndoableEdits.UndoableDeleteEdge(graph,(Edge)element);
+				edit.redo();
+				allEdits.addEdit(edit);
+			}
+			else if(element instanceof Node)
+			{
+				Set<Edge> edgesToRemove=new HashSet<Edge>();
+				for(Iterator<GraphElement> i=element.children();i.hasNext();)
+				{
+					GraphElement child=i.next();
+					if(child instanceof Edge)
+					{
+						edgesToRemove.add((Edge)child);
+					}
+				}
+				for(Edge edge:edgesToRemove)
+				{
+					UndoableEdit edit=new GraphUndoableEdits.UndoableDeleteEdge(graph,edge);
 					edit.redo();
 					allEdits.addEdit(edit);
 				}
-				allEdits.end();
-				postEdit(allEdits);
+				UndoableEdit edit=new GraphUndoableEdits.UndoableDeleteNode(graph,(Node)element);
+				edit.redo();
+				allEdits.addEdit(edit);
 			}
+			allEdits.end();
+			return allEdits;
 		}
 	}
-
-	public static class UniformNodesAction extends AbstractAction {
+	
+	public static class UniformNodesAction extends AbstractGraphAction {
 		
 		protected FSAGraph graph;
 		
@@ -494,7 +594,9 @@ public class GraphActions {
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			graph.setUseUniformRadius(!graph.isUseUniformRadius());
+			UndoableEdit edit=new GraphUndoableEdits.UndoableUniformNodeSize(graph,!graph.isUseUniformRadius());
+			edit.redo();
+			postEditAdjustCanvas(graph,edit);
 		}
 	}
 }

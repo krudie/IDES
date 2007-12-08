@@ -1,7 +1,7 @@
 /**
  * 
  */
-package presentation.fsa.commands;
+package presentation.fsa.actions;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -12,6 +12,7 @@ import java.util.Iterator;
 import javax.swing.AbstractAction;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import main.Hub;
@@ -25,6 +26,9 @@ import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
+import presentation.fsa.GraphLabel;
+import presentation.fsa.InitialArrow;
+import presentation.fsa.Node;
 import presentation.fsa.SelectionGroup;
 import services.undo.UndoManager;
 
@@ -55,28 +59,38 @@ import services.undo.UndoManager;
  */
 public class NodeActions {
 
+
 	/**
-	 * A command that creates an UndoableAction to set the value of a boolean attribute 
-	 * for a DES element.
+	 * A command that creates an UndoableAction that sets the value of a 
+	 * boolean attribute for a DES element.
 	 * 
 	 * @author Christian Silvano
 	 *
 	 */
-	public static class SetMarkedAction extends AbstractAction {
-		private CircleNode node;
+	public static class SetInitialAction extends AbstractGraphAction {
 
-		public SetMarkedAction(CircleNode node){
-			super("Marked");
+		protected FSAGraph graph;
+		protected Node node;
+		protected boolean state;
+
+		public SetInitialAction(FSAGraph graph,Node node,boolean state){
+			this(null,graph,node,state);
+		}
+		
+		public SetInitialAction(CompoundEdit parentEdit,FSAGraph graph,Node node,boolean state){
+			this.parentEdit=parentEdit;
+			this.graph=graph;
 			this.node = node;
-		}	
+			this.state=state;
+		}
 
-		public void actionPerformed(ActionEvent e){
-			UndoableSetMarked action = new UndoableSetMarked(node);
+		public void actionPerformed(ActionEvent e) 
+		{
+			UndoableEdit action = new GraphUndoableEdits.UndoableSetInitial(graph,node,state);
 			//perform the action
 			action.redo();
-			UndoManager.addEdit(action);		
-		}		
-
+			postEditAdjustCanvas(graph,action);
+		}
 	}
 
 	/**
@@ -86,97 +100,59 @@ public class NodeActions {
 	 * @author Christian Silvano
 	 *
 	 */
-	public static class SetInitialAction extends AbstractAction {
+	public static class SetMarkingAction extends AbstractGraphAction {
 
-		private CircleNode node;				
+		protected FSAGraph graph;
+		protected Node node;
+		protected boolean state;
 
-		public SetInitialAction(CircleNode node){
-			super("Initial");
+		public SetMarkingAction(FSAGraph graph,Node node,boolean state){
+			this(null,graph,node,state);
+		}
+		
+		public SetMarkingAction(CompoundEdit parentEdit,FSAGraph graph,Node node,boolean state){
+			this.parentEdit=parentEdit;
+			this.graph=graph;
 			this.node = node;
+			this.state=state;
 		}
 
 		public void actionPerformed(ActionEvent e) 
 		{
-			UndoableSetInitial action = new UndoableSetInitial(node);
+			UndoableEdit action = new GraphUndoableEdits.UndoableSetMarking(graph,node,state);
 			//perform the action
 			action.redo();
-			UndoManager.addEdit(action);		
+			postEdit(action);
 		}
-
 	}
 
-	/**
-	 * An action that can set and (un)set a node as marked.
-	 * 
-	 * @author Christian Silvano
-	 *
-	 */
-	private static class UndoableSetMarked extends AbstractUndoableEdit {
-		CircleNode node;
-
-		public UndoableSetMarked(CircleNode node) {
-			this.node = node;
+	public static class ModifyInitialArrowAction extends AbstractGraphAction
+	{
+		protected FSAGraph graph;
+		protected InitialArrow arrow;
+		protected Point2D.Float direction;
+		
+		public ModifyInitialArrowAction(FSAGraph graph, InitialArrow arrow, Point2D.Float originalDirection)
+		{
+			this(null,graph,arrow,originalDirection);
 		}
-
-		public void undo() throws CannotRedoException {
-			//Toggles the attribute "marked" on the node
-			node.getGraph().setMarked(node, !node.getState().isMarked()); 	
+		
+		public ModifyInitialArrowAction(CompoundEdit parentEdit, FSAGraph graph, InitialArrow arrow, Point2D.Float originalDirection)
+		{
+			this.parentEdit=parentEdit;
+			this.graph=graph;
+			this.arrow=arrow;
+			direction=originalDirection;
 		}
-
-		public void redo() throws CannotRedoException {
-			//Toggles the attribute "marked" on the node
-			node.getGraph().setMarked(node, !node.getState().isMarked()); 	
+		
+		public void actionPerformed(ActionEvent event)
+		{
+			if (arrow != null) {
+				UndoableEdit action = new GraphUndoableEdits.UndoableModifyInitialArrow(graph,arrow,direction);
+				//no need to "redo" the edit since the initial arrow has already been modified
+				postEditAdjustCanvas(graph,action);
+			}
 		}
-
-		public boolean canUndo() {
-			return true;
-		}
-
-		public boolean canRedo() {
-			return true;
-		}
-
-		public String getPresentationName() {
-			return Hub.string("setMarked");
-		}
-
-	}
-
-	/**
-	 * An action that can set and (un)set a node as initial.
-	 * 
-	 * @author Christian Silvano
-	 *
-	 */
-	private static class UndoableSetInitial extends AbstractUndoableEdit {
-		CircleNode node;
-
-		public UndoableSetInitial(CircleNode node) {
-			this.node = node;
-		}
-
-		public void undo() throws CannotRedoException {
-			//Toggles the attribute "initial" on the node
-			node.getGraph().setInitial(node, !node.getState().isInitial()); 	
-		}
-
-		public void redo() throws CannotRedoException {
-			//Toggles the attribute "initial" on the node
-			node.getGraph().setInitial(node, !node.getState().isInitial()); 	
-		}
-
-		public boolean canUndo() {
-			return true;
-		}
-
-		public boolean canRedo() {
-			return true;
-		}
-
-		public String getPresentationName() {
-			return Hub.string("setInitial");
-		}
-
 	}
 
 }

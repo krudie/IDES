@@ -61,7 +61,7 @@ public class GraphElement implements PresentationElement {
 	 * 
 	 * @return the smallest rectangle containing all of my children 
 	 */
-	public Rectangle bounds() {			
+	public Rectangle bounds() {
 		Rectangle bounds = null;		
 		for(PresentationElement child : children.values()){			
 			if(bounds == null){
@@ -76,7 +76,7 @@ public class GraphElement implements PresentationElement {
 		return bounds;
 	}
 
-	public boolean intersects(Point2D p) {		
+	public boolean intersects(Point2D p) {
 		return bounds().contains(p);
 	}
 
@@ -324,5 +324,10 @@ public class GraphElement implements PresentationElement {
 	 */
 	public Long getId() {		
 		return (long)hashCode();
+	}
+	
+	public Point2D.Float snapToGrid()
+	{
+		return layout.snapToGrid();
 	}
 }

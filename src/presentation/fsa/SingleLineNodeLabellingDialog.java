@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import presentation.Presentation;
-import presentation.fsa.commands.GraphActions;
+import presentation.fsa.actions.GraphActions;
 
 import main.Hub;
 

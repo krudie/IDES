@@ -14,6 +14,17 @@ import presentation.PresentationElement;
 
 public class SelectionGroup extends GraphElement {
 
+	public SelectionGroup()
+	{
+		super();
+	}
+	
+	public SelectionGroup(GraphElement element)
+	{
+		this();
+		insert(element);
+	}
+	
 	/**	
 	 * @return a shallow copy of references to all children
 	 * in this group.

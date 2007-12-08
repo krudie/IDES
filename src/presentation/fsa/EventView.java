@@ -32,8 +32,8 @@ import javax.swing.undo.CompoundEdit;
 import observer.Subscriber;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.fsa.commands.AbstractGraphAction;
-import presentation.fsa.commands.GraphActions;
+import presentation.fsa.actions.AbstractGraphAction;
+import presentation.fsa.actions.GraphActions;
 import services.undo.UndoManager;
 
 import main.Hub;

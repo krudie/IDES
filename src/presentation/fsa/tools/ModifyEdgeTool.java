@@ -30,8 +30,9 @@ import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.ReflexiveLayout;
-import presentation.fsa.commands.EdgeActions;
-import presentation.fsa.commands.GraphActions;
+import presentation.fsa.actions.EdgeActions;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.NodeActions;
 
 /**
  * @author Squirrel
@@ -40,7 +41,8 @@ import presentation.fsa.commands.GraphActions;
 public class ModifyEdgeTool extends DrawingTool {
 
 	private Edge edge;
-	private GraphicalLayout previousLayout;  // TODO clone for undo
+	private GraphicalLayout previousLayout;
+	private Point2D.Float previousDirection;
 	private int pointType = BezierHandler.NO_INTERSECTION;  // types CTRL1 or CTRL2 are moveable	
 
 	public ModifyEdgeTool(){
@@ -68,32 +70,11 @@ public class ModifyEdgeTool extends DrawingTool {
 				{
 					previousLayout=((BezierLayout)edge.getLayout()).clone();
 				}
-				else
+				else if(edge instanceof InitialArrow)
 				{
-				if(edge.getSourceNode() == null & edge.getTargetNode() != null)
-				{
+					previousDirection=(Point2D.Float)((InitialArrow)edge).getDirection().clone();
 					//This is an initial edge!
-					previousLayout = new GraphicalLayout(((InitialArrow)edge).getDirection());
-				}else{
-					Point2D.Float[] bezierControls = new Point2D.Float[4];
-					BezierLayout layout = (BezierLayout)edge.getLayout();
-					bezierControls[0] = (Point2D.Float)((BezierLayout)layout).getCurve().getP1();
-					bezierControls[1] = (Point2D.Float)((BezierLayout)layout).getCurve().getCtrlP1();
-					bezierControls[2] = (Point2D.Float)((BezierLayout)layout).getCurve().getCtrlP2();
-					bezierControls[3] = (Point2D.Float)((BezierLayout)layout).getCurve().getP2();
-					previousLayout = new BezierLayout(bezierControls);
-					//Backup the layout:
-					if(!edge.getSourceNode().equals(edge.getTargetNode()))
-					{
-						//This is a regular edge, neither a reflexive edge nor an initial edge.
-						((BezierLayout)previousLayout).setEdge((BezierEdge)edge);
-					}else if(edge.getSourceNode().equals(edge.getTargetNode()))
-					{
-						//This is a reflexive edge!
-						previousLayout = new ReflexiveLayout(edge.getSourceNode(), (ReflexiveEdge)edge, (BezierLayout)previousLayout);
-						((ReflexiveLayout)previousLayout).setEdge((ReflexiveEdge)edge);
-					}
-				}
+//					previousLayout = new GraphicalLayout(((InitialArrow)edge).getDirection());
 				}
 			}
 		}
@@ -111,7 +92,7 @@ public class ModifyEdgeTool extends DrawingTool {
 			Edge temp = getEdge(ContextAdaptorHack.context.getSelectedElement());
 			if( temp != null )
 			{
-				edge = temp;				
+				edge = temp;		
 			}else{				
 				switchTool();
 				ContextAdaptorHack.context.getCurrentTool().handleMousePressed(m);
@@ -189,7 +170,14 @@ public class ModifyEdgeTool extends DrawingTool {
 		if(dragging){ // TODO check to see if edge has been changed
 //			ModifyEdgeAction cmd = new ModifyEdgeAction(ContextAdaptorHack.context, edge, previousLayout);		
 //			cmd.execute();
-			new EdgeActions.ModifyAction(ContextAdaptorHack.context.getGraphModel(),edge,previousLayout).execute();
+			if(edge instanceof InitialArrow)
+			{
+				new NodeActions.ModifyInitialArrowAction(ContextAdaptorHack.context.getGraphModel(),(InitialArrow)edge,previousDirection).execute();
+			}
+			else
+			{
+				new EdgeActions.ModifyAction(ContextAdaptorHack.context.getGraphModel(),edge,previousLayout).execute();
+			}
 			ContextAdaptorHack.context.repaint();						
 			dragging = false;	
 			switchTool();

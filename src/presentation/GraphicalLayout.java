@@ -284,7 +284,7 @@ public class GraphicalLayout implements Serializable{
 	 * Lenko
 	 *
 	 */
-	public void snapToGrid()
+	public Point2D.Float snapToGrid()
 	{
 		int x=(int)Math.floor(location.x);
 		int lGrid=(x/GRID_SIZE)*GRID_SIZE;
@@ -300,9 +300,11 @@ public class GraphicalLayout implements Serializable{
 			y=bGrid;
 		else
 			y=tGrid;
+		Point2D.Float delta=new Point2D.Float(x-location.x,y-location.y);
 		location.x=x;
 		location.y=y;
 		setDirty(true);
+		return delta;
 	}
 	/**
 	 * Explicitly saves its own fields
