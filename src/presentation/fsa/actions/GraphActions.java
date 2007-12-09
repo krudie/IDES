@@ -1,6 +1,7 @@
 package presentation.fsa.actions;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
@@ -597,6 +598,49 @@ public class GraphActions {
 			UndoableEdit edit=new GraphUndoableEdits.UndoableUniformNodeSize(graph,!graph.isUseUniformRadius());
 			edit.redo();
 			postEditAdjustCanvas(graph,edit);
+		}
+	}
+	
+	public static class ShiftGraphInViewAction extends AbstractAction
+	{
+		protected static final int GRAPH_BORDER_THICKNESS=10;
+		protected FSAGraph graph;
+		protected CompoundEdit parentEdit=null;
+		
+		public ShiftGraphInViewAction(FSAGraph graph)
+		{
+			this(null,graph);
+		}
+		
+		public ShiftGraphInViewAction(CompoundEdit parentEdit, FSAGraph graph)
+		{
+			this.parentEdit=parentEdit;
+			this.graph=graph;
+		}
+		
+		public void actionPerformed(ActionEvent event)
+		{
+			if (graph != null) {
+				Rectangle graphBounds=graph.getBounds(true);
+				if(graphBounds.x<0||graphBounds.y<0)
+				{
+					UndoableEdit translation=new GraphUndoableEdits.UndoableTranslateGraph(graph,new Point2D.Float(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS));
+					translation.redo();
+					if(parentEdit!=null)
+					{
+						parentEdit.addEdit(translation);
+					}
+					else
+					{
+						UndoManager.addEdit(translation);
+					}
+				}
+			}
+		}
+		
+		public void execute()
+		{
+			actionPerformed(null);
 		}
 	}
 }

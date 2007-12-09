@@ -6,11 +6,13 @@ import java.util.Iterator;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.undo.UndoableEdit;
 
 import presentation.fsa.FSAGraph;
 
 import ui.OptionsWindow;
 import ui.actions.OptionsActions;
+import util.BooleanUIBinder;
 
 import main.Hub;
 import model.fsa.FSAModel;
@@ -22,6 +24,10 @@ import model.fsa.FSAModel;
  */
 public class LatexManager {
 
+	protected final static String LATEX_OPTION="useLatexLabels";
+	
+	protected static BooleanUIBinder optionBinder=new BooleanUIBinder(); 
+	
 	private LatexManager()	{
 	}
 	
@@ -31,18 +37,18 @@ public class LatexManager {
 	private static Renderer renderer=null; 
 	
 	/**
-	 * The "Use LaTeX rendering" menu item.
-	 */
-	static UseLatexAction menuItem=null;
-	
-	/**
 	 * Initializes the LaTeX rendering subsystem.
 	 */
 	public static void init()
 	{
 		Hub.registerOptionsPane(new LatexOptionsPane());
 		renderer=Renderer.getRenderer(new File(getLatexPath()),new File(getGSPath()));
-		menuItem=new UseLatexAction();
+		optionBinder.set(isLatexEnabled());
+	}
+	
+	public static BooleanUIBinder getUIBinder()
+	{
+		return optionBinder;
 	}
 
 	/**
@@ -92,97 +98,54 @@ public class LatexManager {
 	 */
 	public static boolean isLatexEnabled()
 	{
-		return Hub.persistentData.getBoolean("useLatexLabels");
+		return Hub.persistentData.getBoolean(LATEX_OPTION);
 	}
 	
 	/**
-	 * A {@link Runnable} that updates the LaTeX redering settings.
+	 * A {@link Runnable} that toggles the LaTeX redering on.
 	 * This is needed since the {@link LatexPrerenderer} displays its
 	 * progress; thus the updating cannot be done inside the Swing
 	 * event loop.
 	 * @see LatexManager#setLatexEnabled(boolean)
-	 * @see LatexManager#setLatexEnabledFromMenu(boolean)
 	 *
 	 * @author Lenko Grigorov
 	 */
 	private static class SetLatexUpdater implements Runnable
 	{
-		/**
-		 * The setting that has to be effected. <code>true</code> to
-		 * enable LaTeX rendering; <code>false</code> otherwise.
-		 */
-		private boolean setting;
-		
-		/**
-		 * Constructs the updater object.
-		 * @param b <code>true</code> to enable LaTeX rendering; <code>false</code> otherwise
-		 */
-		public SetLatexUpdater(boolean b)
-		{
-			setting=b;
-		}
 		
 		/**
 		 * Update the LaTeX rendering setting.
 		 */
 		public void run()
 		{
-			Hub.persistentData.setBoolean("useLatexLabels",setting);
-			if(setting)
-				new LatexPrerenderer(Hub.getWorkspace().getLayoutShellsOfType(FSAGraph.class).iterator());
-			if(Hub.getWorkspace().getActiveLayoutShell()!=null&&Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
-				((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).setNeedsRefresh(true);
-			Hub.getWorkspace().fireRepaintRequired();
+			if(new LatexPrerenderer(Hub.getWorkspace().getLayoutShellsOfType(FSAGraph.class).iterator()).waitFor())
+			{
+				Hub.persistentData.setBoolean(LATEX_OPTION,true);
+				optionBinder.set(true);
+				Hub.getWorkspace().fireRepaintRequired();
+			}
 		}
 	}
 
-	/**
-	 * Called when LaTeX rendering of labels is turned on or off from the menu.
-	 * <p>A separate method is needed because {@link #setLatexEnabled(boolean)}
-	 * modifies the menu item which in turn triggers a call back from the menu item,
-	 * leading to an infinite loop of calls. 
-	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off
-	 * @see #setLatexEnabled(boolean)
-	 * @see LatexManager.SetLatexUpdater  
-	 */
-	protected static void setLatexEnabledFromMenu(boolean b)
-	{
-		SwingUtilities.invokeLater(new SetLatexUpdater(b));
-	}
-	
+
 	/**
 	 * Switches LaTeX rendering of labels on and off.
 	 * @param b <code>true</code> to turn LaTeX rendering on, <code>false</code> to turn LaTeX rendering off
-	 * @see #setLatexEnabledFromMenu(boolean)	
 	 */
 	public static void setLatexEnabled(boolean b)
 	{
-		Hub.persistentData.setBoolean("useLatexLabels",b);
-		if(menuItem!=null)
+		if(b)
 		{
-			if(b)
-			{
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						menuItem.setSelected(true);
-					}
-				});
-			}
-			else
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						menuItem.setSelected(false);
-					}
-				});
+			SwingUtilities.invokeLater(new SetLatexUpdater());
 		}
 		else
-			setLatexEnabledFromMenu(b);
+		{
+			Hub.persistentData.setBoolean(LATEX_OPTION,false);
+			optionBinder.set(false);
+			Hub.getWorkspace().fireRepaintRequired();
+		}
 	}
-
+	
 	/**
 	 * Returns the {@link Renderer} to be used for rendering LaTeX.
 	 * @return the {@link Renderer} to be used for rendering LaTeX

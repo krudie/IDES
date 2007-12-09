@@ -46,6 +46,7 @@ import presentation.GraphicalLayout;
 import presentation.LayoutShell;
 import presentation.PresentationElement;
 import presentation.Geometry;
+import services.latex.LatexManager;
 import util.BooleanUIBinder;
 
 /**
@@ -2049,6 +2050,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void forceLayoutDisplay()
 	{
 		this.avoidLayoutDrawing = false;
+		if(LatexManager.isLatexEnabled())
+		{
+			LatexManager.setLatexEnabled(false);
+			LatexManager.setLatexEnabled(true);
+		}
 		this.getBounds(true);
 	}
 	//END OF THE HACKING OF A BUTTON
@@ -2076,6 +2082,31 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public boolean hasAnnotation(String key)
 	{
 		return annotations.containsKey(key);
+	}
+	
+	/**
+	 * Setting needed to circumvent a bug in AWT.
+	 * Set to false before drawing on a scaled down canvas (e.g. thumbnail).
+	 */
+	protected boolean drawRenderedLabels=true;
+	
+	/**
+	 * Set if rendered labels have to be drawn.
+	 * @param b <code>true</code> to draw rendered labels; <code>false</code> not to
+	 */
+	public void setDrawRenderedLabels(boolean b)
+	{
+		drawRenderedLabels=b;
+	}
+	
+	/**
+	 * Returns if rendered labels have to be drawn.
+	 * To be used by graph labels to determine whether to draw or not.
+	 * @return <code>true</code> to draw rendered labels; <code>false</code> not to
+	 */
+	public boolean isDrawRenderedLabels()
+	{
+		return drawRenderedLabels;
 	}
 }
 

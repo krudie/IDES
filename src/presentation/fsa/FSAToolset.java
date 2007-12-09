@@ -27,6 +27,7 @@ import presentation.LayoutShell;
 import presentation.Presentation;
 import presentation.fsa.actions.GraphActions;
 import presentation.fsa.actions.UIActions;
+import services.latex.LatexManager;
 import ui.actions.OperationsActions;
 import ui.actions.OptionsActions;
 import util.BooleanUIBinder;
@@ -200,7 +201,18 @@ public class FSAToolset implements Toolset {
 	public LayoutShell wrapModel(DESModel model) throws UnsupportedModelException {
 		if(!(model instanceof FSAModel))
 			throw new UnsupportedModelException();
-		return new FSAGraph((FSAModel)model);
+		boolean latexOn=LatexManager.isLatexEnabled();
+		if(latexOn)
+		{
+			//disable Latex so model is wrapped without rendering 
+			LatexManager.setLatexEnabled(false);
+		}
+		FSAGraph graph=new FSAGraph((FSAModel)model);
+		if(latexOn)
+		{
+			LatexManager.setLatexEnabled(true);
+		}
+		return graph;
 	}
 
 	/**

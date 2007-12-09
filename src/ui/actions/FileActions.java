@@ -1,5 +1,6 @@
 package ui.actions;
 
+import io.CommonActions;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ctct.CTCTException;
@@ -268,7 +269,7 @@ public class FileActions {
 			if(Hub.getWorkspace().isDirty())
 				if(!io.CommonActions.handleUnsavedWorkspace())
 					return;
-			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty("LAST_PATH_SETTING_NAME"));
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(CommonActions.LAST_PATH_SETTING_NAME));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.WORKSPACE_FILE_EXT}, Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);

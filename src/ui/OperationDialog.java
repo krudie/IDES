@@ -28,14 +28,19 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import presentation.PresentationManager;
+
 import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
+import pluggable.ui.Toolset;
 import presentation.fsa.FSAGraph;
+import presentation.fsa.FSAToolset;
 
 import main.Hub;
 import model.DESModel;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
+import services.latex.LatexManager;
 import util.EscapeDialog;
 
 /**
@@ -157,7 +162,7 @@ public class OperationDialog extends EscapeDialog {
 						}
 						else if (outputs[i] instanceof FSAModel) {
 							((FSAModel)outputs[i]).setName(outputNames.elementAt(i).getText());
-							FSAGraph g=new FSAGraph((FSAModel)outputs[i]);
+							FSAGraph g=(FSAGraph)PresentationManager.getToolset(FSAModel.class).wrapModel((DESModel)outputs[i]);
 							g.labelCompositeNodes();
 							Hub.getWorkspace().addLayoutShell(g);
 							Hub.getWorkspace().setActiveModel(g.getName());

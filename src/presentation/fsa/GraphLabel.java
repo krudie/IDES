@@ -12,6 +12,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -109,8 +110,12 @@ public class GraphLabel extends GraphElement {
 					(int)layout.getLocation().x,(int)layout.getLocation().y);
 			*/
 			Rectangle2D renderedBounds = bounds();
-			((Graphics2D)g).drawImage(rendered, null, 
-				(int)renderedBounds.getX(), (int)renderedBounds.getY());
+			//circumvent AWT bug (crash if drawing image on scaled down graphics)
+			if(getGraph().isDrawRenderedLabels())
+			{
+				((Graphics2D)g).drawImage(rendered, null, 
+						(int)renderedBounds.getX(), (int)renderedBounds.getY());
+			}
 		}
 		else
 		{					
@@ -345,7 +350,9 @@ public class GraphLabel extends GraphElement {
 		if(!s.equals(getLayout().getText()))
 		{
 			getLayout().setText(s);
+			rendered=null;
 			if(LatexManager.isLatexEnabled())
+			{
 				try
 				{
 					render();
@@ -354,8 +361,7 @@ public class GraphLabel extends GraphElement {
 					LatexManager.handleRenderingProblem();
 					rendered=null;
 				}
-			else
-				rendered=null;
+			}
 		}
 		setNeedsRefresh(true);
 		updateMetrics();
@@ -412,7 +418,7 @@ public class GraphLabel extends GraphElement {
 	 */
 	public void renderIfNeeded() throws LatexRenderException
 	{
-		if(rendered==null)
+		if(rendered==null&&!getGraph().isAvoidLayoutDrawing())
 			render();
 	}
 	

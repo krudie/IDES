@@ -1,8 +1,10 @@
 package services.latex;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import presentation.fsa.BezierEdge;
 import presentation.fsa.Edge;
@@ -12,6 +14,10 @@ import presentation.fsa.CircleNode;
 import presentation.fsa.Node;
 
 import main.Hub;
+import model.ModelManager;
+import model.fsa.FSAEvent;
+import model.fsa.FSAModel;
+import model.fsa.FSAState;
 import util.InterruptableProgressDialog;
 
 /**
@@ -36,6 +42,11 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	private boolean cancel=false;
 	
 	/**
+	 * Variable used to track if pre-rendering has finished.
+	 */
+	private boolean doneRendering;
+	
+	/**
 	 * Displays a dialog box with a progress bar and starts rendering the labels of a
 	 * {@link FSAGraph}. The user may cancel the process
 	 * using the controls in the dialog box. 
@@ -47,6 +58,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 		HashSet<FSAGraph> set=new HashSet<FSAGraph>();
 		set.add(model);
 		this.models=set.iterator();
+		doneRendering=false;
 		new Thread(this).start();
 		setVisible(true);
 	}
@@ -61,6 +73,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	{
 		super(Hub.getMainWindow(),Hub.string("renderPrerenderTitle"),"");
 		this.models=models;
+		doneRendering=false;
 		new Thread(this).start();
 		setVisible(true);
 	}
@@ -123,12 +136,14 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 				}catch(LatexRenderException e)
 				{
 					LatexManager.handleRenderingProblem();
+					cancel=true;
 					close();
 					return;
 				}
 				current++;
 				progressBar.setValue(current);
 			}
+			model.setNeedsRefresh(true);
 		}
 		close();
 		return;
@@ -140,6 +155,30 @@ public class LatexPrerenderer extends InterruptableProgressDialog {
 	 */
 	protected void close()
 	{
+		synchronized(this)
+		{
+			doneRendering=true;
+			notifyAll();
+		}
 		dispose();
+	}
+	
+	/**
+	 * Calling this method blocks until pre-rendering has finished.
+	 * @return <code>false</code> if pre-rendering failed or was cancelled; <code>true</code> otherwise
+	 */
+	public boolean waitFor()
+	{
+		synchronized(this)
+		{
+			if(!doneRendering)
+			{
+				try
+				{
+					wait();
+				}catch(InterruptedException e){}
+			}
+		}
+		return !cancel;
 	}
 }

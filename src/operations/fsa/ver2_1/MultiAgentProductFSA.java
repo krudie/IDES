@@ -91,7 +91,6 @@ public class MultiAgentProductFSA extends AbstractOperation {
 			{
 				continue;
 			}
-//			System.out.println(states[0].getName()+","+states[1].getName());
 			closedStates.add(keyOf(states));
 			FSAState state=stateMap.get(keyOf(states));
 			FSAEventSet[] eventSets=new FSAEventSet[maOrder];
@@ -191,7 +190,7 @@ public class MultiAgentProductFSA extends AbstractOperation {
 						LinkedList<FSAEvent> extendedEvents=new LinkedList<FSAEvent>(events);
 						extendedEvents.addFirst(e);
 						LinkedList<FSAState> extendedTargets=new LinkedList<FSAState>(targets);
-						extendedTargets.add(target);
+						extendedTargets.addFirst(target);
 						pt.events.add(extendedEvents);
 						pt.targets.add(extendedTargets);
 					}

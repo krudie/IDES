@@ -95,7 +95,9 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 	}
 
 	public void paint(Graphics g) {
+		getGraphModel().setDrawRenderedLabels(false);
 		paint(g,true);
+		getGraphModel().setDrawRenderedLabels(true);
 	}
 
 	public void forceRepaint()
@@ -112,16 +114,16 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 	    Rectangle r=getBounds();
 	    if(doFill)
 	    {
-	    	//FIXME remove the condition on avoid layout
+    		g2D.setColor(Color.WHITE);
+	    	g2D.fillRect(0,0,r.width,r.height);
+	    	//FIXME implement better avoid layout 
 	    	if(graphModel.isAvoidLayoutDrawing())
 	    	{
-		    	g2D.setColor(Color.ORANGE);
+	    		g2D.setColor(Color.BLACK);
+	    		g2D.drawLine(0,0,r.width,r.height);
+	    		g2D.drawLine(0,r.height,r.width,0);
+	    		return;
 	    	}
-	    	else
-	    	{
-	    		g2D.setColor(Color.WHITE);
-	    	}
-	    	g2D.fillRect(0,0,r.width,r.height);
 	    }
 	    
 	    g2D.scale(scaleFactor, scaleFactor);

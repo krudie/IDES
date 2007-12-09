@@ -17,7 +17,6 @@ import services.undo.UndoManager;
 
 public abstract class AbstractGraphAction extends AbstractAction {
 
-	protected static final int GRAPH_BORDER_THICKNESS=10;
 	protected CompoundEdit parentEdit=null; 
 	protected boolean usePluralDescription=false;
 
@@ -59,19 +58,12 @@ public abstract class AbstractGraphAction extends AbstractAction {
 	
 	protected UndoableEdit addBoundsAdjust(FSAGraph graph, UndoableEdit edit)
 	{
-		Rectangle graphBounds=graph.getBounds(true);
-		if(graphBounds.x<0||graphBounds.y<0)
-		{
-			CompoundEdit adjEdit=new CompoundEdit();
-			adjEdit.addEdit(edit);
-			UndoableEdit translation=new GraphUndoableEdits.UndoableTranslateGraph(graph,new Point2D.Float(-graphBounds.x+GRAPH_BORDER_THICKNESS,-graphBounds.y+GRAPH_BORDER_THICKNESS));
-			translation.redo();
-			adjEdit.addEdit(translation);
-			adjEdit.addEdit(new GraphUndoableEdits.UndoableDummyLabel(edit.getPresentationName()));
-			adjEdit.end();
-			return adjEdit;
-		}
-		return edit;
+		CompoundEdit adjEdit=new CompoundEdit();
+		adjEdit.addEdit(edit);
+		new GraphActions.ShiftGraphInViewAction(adjEdit,graph).execute();
+		adjEdit.addEdit(new GraphUndoableEdits.UndoableDummyLabel(edit.getPresentationName()));
+		adjEdit.end();
+		return adjEdit;
 	}
 	
 	public void setLastOfMultiple(boolean b)

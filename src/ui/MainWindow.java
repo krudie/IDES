@@ -205,8 +205,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		importAction=new FileActions.ImportAction();
 		exportAction=new FileActions.ExportAction();
 		exitAction=new FileActions.ExitAction();
-		undoAction=new UndoManager.UndoAction();//CommandManager_new.getInstance().new UndoAction();
-		redoAction=new UndoManager.RedoAction();//CommandManager_new.getInstance().new RedoAction();
+		undoAction=new UndoManager.UndoAction();
+		redoAction=new UndoManager.RedoAction();
 		operationsAction=new OperationsActions.ShowDialogAction();
 		latexAction=new services.latex.UseLatexAction();
 		optionsAction=new OptionsActions.MoreOptionsAction();
@@ -307,7 +307,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		
 		//Initializing the menu items for the "optionsMenu"
 		JCheckBoxMenuItem useLaTeX  = new JCheckBoxMenuItem(latexAction);
-		useLaTeX.setSelected(LatexManager.isLatexEnabled());
+		LatexManager.getUIBinder().bind(useLaTeX);
 		JMenuItem moreOptions = new JMenuItem(new OptionsActions.MoreOptionsAction());
 		//adding the menu items to the "optionsMenu"
 		optionsMenu.add(useLaTeX);

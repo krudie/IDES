@@ -15,7 +15,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 
 import pluggable.ui.Toolset;
@@ -27,6 +29,7 @@ import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexPrerenderer;
 import ui.MainWindow;
+import ui.OptionsWindow;
 import ui.actions.FileActions;
 
 import model.DESModel;
@@ -106,12 +109,6 @@ public class Workspace extends WorkspacePublisherAdaptor {
 //		metadata.add(new FSAGraph(ModelManager.createModel(FSAModel.class)).getMeta());
 		graphs.add(g);
 
-		if(LatexManager.isLatexEnabled())
-		{
-			if(getActiveLayoutShell() instanceof FSAGraph)
-				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());
-		}
-
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 				g.getModel().getId(), 
 				WorkspaceMessage.ADD, 
@@ -146,14 +143,10 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		systems.add(model);
 		Toolset ts = PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface());
-		//TODO Check the efficiency od the wrapModel function
+		//TODO Check the efficiency of the wrapModel function
 		LayoutShell ls = ts.wrapModel(model);
 		graphs.add(ls);
-		if(LatexManager.isLatexEnabled()){
-			if(getActiveLayoutShell() instanceof FSAGraph)
-				new LatexPrerenderer((FSAGraph)getActiveLayoutShell());
-		}
-
+		
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 
 				model.getId(), 
 				WorkspaceMessage.ADD, 
@@ -165,7 +158,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		Hub.getMainWindow().setCursor(cursor);
 		countAdd++;
 	}
-
+	
 	protected int getModelIndex(String name)
 	{
 		for(int i=0;i<systems.size();++i)
@@ -580,7 +573,6 @@ public class Workspace extends WorkspacePublisherAdaptor {
 			if(m.getClass().equals(type))
 			{
 				wraps.add((T)m);
-				break;
 			}
 		}
 		return wraps;
