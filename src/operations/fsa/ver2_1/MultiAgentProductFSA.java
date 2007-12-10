@@ -97,7 +97,7 @@ public class MultiAgentProductFSA extends AbstractOperation {
 			for(int i=0;i<states.length;++i)
 			{
 				FSAEventSet eventSet=new EventSet();
-				for(Iterator<FSATransition> ti=states[i].getSourceTransitionsListIterator();ti.hasNext();)
+				for(Iterator<FSATransition> ti=states[i].getOutgoingTransitionsListIterator();ti.hasNext();)
 				{
 					FSATransition t=ti.next();
 					if(t.getEvent()!=null)
@@ -156,7 +156,7 @@ public class MultiAgentProductFSA extends AbstractOperation {
 			if(includeEvent)
 			{
 				FSAState target=null;
-				for(Iterator<FSATransition> i=origin[selectedEvents.length].getSourceTransitionsListIterator();i.hasNext();)
+				for(Iterator<FSATransition> i=origin[selectedEvents.length].getOutgoingTransitionsListIterator();i.hasNext();)
 				{
 					FSATransition t=i.next();
 					if(t.getEvent()!=null&&t.getEvent().getSymbol().equals(e.getSymbol()))
@@ -202,7 +202,7 @@ public class MultiAgentProductFSA extends AbstractOperation {
 	
 	protected boolean hasOutgoingTransitionOn(FSAState s,FSAEvent e)
 	{
-		for(Iterator<FSATransition> i=s.getSourceTransitionsListIterator();i.hasNext();)
+		for(Iterator<FSATransition> i=s.getOutgoingTransitionsListIterator();i.hasNext();)
 		{
 			FSATransition t=i.next();
 			if(t.getEvent()!=null&&t.getEvent().getSymbol().equals(e.getSymbol()))

@@ -53,13 +53,13 @@ public class SuperVisory{
                 State s = (State)si.next();
 
                 FSAState pln = plant.getState(s.getStateCompositionList()[0]);
-                ListIterator<FSATransition> plsti = pln.getSourceTransitionsListIterator();                
+                ListIterator<FSATransition> plsti = pln.getOutgoingTransitionsListIterator();                
                                 
                 while(plsti.hasNext()){
                     FSATransition plst = plsti.next();
                     //if the event is not controllable, check if the event is in the product as well
                     if(plst.getEvent()!=null && !plst.getEvent().isControllable()){
-                        ListIterator<FSATransition> sti = s.getSourceTransitionsListIterator();
+                        ListIterator<FSATransition> sti = s.getOutgoingTransitionsListIterator();
                         boolean found = false;
                         while(sti.hasNext()){
                         	FSATransition t=sti.next();
@@ -100,13 +100,13 @@ public class SuperVisory{
             State s = (State) si.next();
             
             FSAState pln = plant.getState(s.getStateCompositionList()[0]);
-            ListIterator<FSATransition> plsti = pln.getSourceTransitionsListIterator();                
+            ListIterator<FSATransition> plsti = pln.getOutgoingTransitionsListIterator();                
             
                 while(plsti.hasNext()){
                     FSATransition plst = plsti.next();
                     //if the event is not controllable, check if the event is in the product as well
                     if(plst.getEvent()!=null && !plst.getEvent().isControllable()){
-                        ListIterator<FSATransition> sti = s.getSourceTransitionsListIterator();                                                  
+                        ListIterator<FSATransition> sti = s.getOutgoingTransitionsListIterator();                                                  
                         boolean found = false;
                         while(sti.hasNext()){
                         	FSATransition t=sti.next();

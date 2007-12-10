@@ -45,13 +45,6 @@ public class JUNGLayouter implements FSALayouter {
 		}
 		for(Edge e:graph.getEdges())
 		{
-//			System.out.println(e.getSourceNode() + ", " + e.getTargetNode()
-//			+ ", " + BridgeMapper.nodeMap.get(e.getSourceNode()) + ", " 
-//			+ BridgeMapper.nodeMap.get(e.getTargetNode())
-//			);
-			//FIXME: DISCOVER WHY IT SOMETIMES BREAKS!
-			// The calls BridgeMapper.nodeMap.get(e.getTargetNode())) for source and target are returning
-			//null
 			DirectedSparseEdge edge=new DirectedSparseEdge(
 					BridgeMapper.nodeMap.get(e.getSourceNode()),
 					BridgeMapper.nodeMap.get(e.getTargetNode()));

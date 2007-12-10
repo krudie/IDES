@@ -30,42 +30,42 @@ public interface FSAState extends DESElement {
 	 * 
 	 * @param t the transition to be added
 	 */
-	public abstract void addSourceTransition(FSATransition t);
+	public abstract void addOutgoingTransition(FSATransition t);
 
 	/**
 	 * Removes a transition that originates from this state. 
 	 *  
 	 * @param t the transition to be removed
 	 */
-	public abstract void removeSourceTransition(FSATransition t);
+	public abstract void removeOutgoingTransition(FSATransition t);
 
 	/**
 	 * Returns an iterator for the transitions originating from this state.
 	 * 
 	 * @return a source transition iterator
 	 */
-	public abstract ListIterator<FSATransition> getSourceTransitionsListIterator();
+	public abstract ListIterator<FSATransition> getOutgoingTransitionsListIterator();
 	
 	/**
 	 * Adds a transition that ends in this state. 
 	 * 
 	 * @param t the transition to be added.
 	 */
-	public abstract void addTargetTransition(FSATransition t);
+	public abstract void addIncomingTransition(FSATransition t);
 
 	/**
 	 * Removes a transition that ends in this state. 
 	 * 
 	 * @param t the transition to be removed.
 	 */
-	public abstract void removeTargetTransition(FSATransition t);
+	public abstract void removeIncomingTransition(FSATransition t);
 
 	/**
 	 * Returns an iterator for the transitions ending in this state. 
 	 * 
 	 * @return an iterator for the transitions ending in this state
 	 */
-	public abstract ListIterator<FSATransition> getTargetTransitionListIterator();
+	public abstract ListIterator<FSATransition> getIncomingTransitionListIterator();
 	
 	/**
 	 * Returns true iff this is an initial state. 

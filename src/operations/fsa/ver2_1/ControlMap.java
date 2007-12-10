@@ -80,10 +80,10 @@ public class ControlMap extends AbstractOperation implements FilterOperation {
         while(!searchList.isEmpty()){
             FSAState[] sa = searchList.removeFirst();
 
-            ListIterator<FSATransition> sti0 = sa[0].getSourceTransitionsListIterator();
+            ListIterator<FSATransition> sti0 = sa[0].getOutgoingTransitionsListIterator();
             while(sti0.hasNext()){
                 FSATransition t0 = sti0.next();
-                ListIterator<FSATransition> sti1 = sa[1].getSourceTransitionsListIterator();
+                ListIterator<FSATransition> sti1 = sa[1].getOutgoingTransitionsListIterator();
                 FSAEvent notMatched=t0.getEvent();
                 while(sti1.hasNext()){
                     FSATransition t1 = sti1.next();

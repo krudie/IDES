@@ -368,19 +368,19 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 * @see model.fsa.ver2_1.FSAModel#remove(model.fsa.FSAState)
 	 */
 	public void remove(FSAState s){
-		ListIterator<FSATransition> sources = s.getSourceTransitionsListIterator();
+		ListIterator<FSATransition> sources = s.getOutgoingTransitionsListIterator();
 		while(sources.hasNext()){
 			FSATransition t = sources.next();
 			sources.remove();
-			t.getSource().removeSourceTransition(t);
-			t.getTarget().removeTargetTransition(t);
+			t.getSource().removeOutgoingTransition(t);
+			t.getTarget().removeIncomingTransition(t);
 		}
-		ListIterator<FSATransition> targets = s.getTargetTransitionListIterator();
+		ListIterator<FSATransition> targets = s.getIncomingTransitionListIterator();
 		while(targets.hasNext()){
 			FSATransition t = targets.next();
 			targets.remove();
-			t.getSource().removeSourceTransition(t);
-			t.getTarget().removeTargetTransition(t);            
+			t.getSource().removeOutgoingTransition(t);
+			t.getTarget().removeIncomingTransition(t);            
 		}
 		states.remove(s);
 		fireFSAStructureChanged(new FSAMessage(FSAMessage.REMOVE,
@@ -410,8 +410,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 * @see model.fsa.ver2_1.FSAModel#add(model.fsa.FSATransition)
 	 */
 	public void add(FSATransition t){
-		t.getSource().addSourceTransition(t);
-		t.getTarget().addTargetTransition(t);
+		t.getSource().addOutgoingTransition(t);
+		t.getTarget().addIncomingTransition(t);
 		transitions.add(t);
 		maxTransitionId = maxTransitionId < t.getId() ? t.getId() : maxTransitionId;
 		fireFSAStructureChanged(new FSAMessage(FSAMessage.ADD,
@@ -423,8 +423,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 * @see model.fsa.ver2_1.FSAModel#remove(model.fsa.FSATransition)
 	 */
 	public void remove(FSATransition t){
-		t.getSource().removeSourceTransition(t);
-		t.getTarget().removeTargetTransition(t);
+		t.getSource().removeOutgoingTransition(t);
+		t.getTarget().removeIncomingTransition(t);
 		transitions.remove(t);
 		fireFSAStructureChanged(new FSAMessage(FSAMessage.REMOVE,
 				FSAMessage.TRANSITION, t.getId(), this));
@@ -584,39 +584,39 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		 * to this state in order to maintain data integrity.
 		 */
 		public void remove() {
-			ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
+			ListIterator<FSATransition> sources = current.getOutgoingTransitionsListIterator();
 			while(sources.hasNext()) {
 				FSATransition t = sources.next();
 				sources.remove();
 				a.remove(t);
-				t.getSource().removeSourceTransition(t);
-				t.getTarget().removeTargetTransition(t);
+				t.getSource().removeOutgoingTransition(t);
+				t.getTarget().removeIncomingTransition(t);
 			}
 
-			ListIterator<FSATransition> targets = current.getTargetTransitionListIterator();
+			ListIterator<FSATransition> targets = current.getIncomingTransitionListIterator();
 			while(targets.hasNext()){
 				FSATransition t = targets.next();
 				targets.remove();
 				a.remove(t);
-				t.getSource().removeSourceTransition(t);
-				t.getTarget().removeTargetTransition(t);            
+				t.getSource().removeOutgoingTransition(t);
+				t.getTarget().removeIncomingTransition(t);            
 			}
 			sli.remove();
 		}
 
 		public void set(FSAState s){ 
-			ListIterator<FSATransition> sources = current.getSourceTransitionsListIterator();
+			ListIterator<FSATransition> sources = current.getOutgoingTransitionsListIterator();
 			while(sources.hasNext()){
 				FSATransition t = sources.next();
 				t.setSource(s);
-				s.addSourceTransition(t);
+				s.addOutgoingTransition(t);
 			}
 
-			ListIterator<FSATransition> targets = current.getTargetTransitionListIterator();
+			ListIterator<FSATransition> targets = current.getIncomingTransitionListIterator();
 			while(targets.hasNext()){
 				FSATransition t = targets.next();
 				t.setTarget(s);
-				s.addTargetTransition(t);
+				s.addIncomingTransition(t);
 			}
 			sli.set(s);
 		}
@@ -691,8 +691,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		 * @see java.util.Iterator#remove()
 		 */
 		public void remove(){
-			current.getTarget().removeTargetTransition(current);
-			current.getSource().removeSourceTransition(current);
+			current.getTarget().removeIncomingTransition(current);
+			current.getSource().removeOutgoingTransition(current);
 			tli.remove();
 		}
 
@@ -710,8 +710,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 		 * @param t the transition to be added
 		 */
 		public void add(FSATransition t){
-			t.getSource().addSourceTransition(t);
-			t.getTarget().addTargetTransition(t);
+			t.getSource().addOutgoingTransition(t);
+			t.getTarget().addIncomingTransition(t);
 			transitions.add(t);
 		}
 	}

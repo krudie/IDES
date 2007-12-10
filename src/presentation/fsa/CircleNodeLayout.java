@@ -155,5 +155,19 @@ public class CircleNodeLayout extends GraphicalLayout implements Serializable{
 		radius = in.readFloat();
 		arrow = new Point2D.Float(in.readFloat(), in.readFloat());
 	}
+
+	/**
+	 * Sets the label of the node to <code>text</code>. 
+	 * 
+	 * @param text the label text to be set
+	 */
+	public void setText(String text) {
+		super.setText(text);
+		if(node!=null)
+		{
+			node.getState().setName(text);
+		}
+	}
+
 }
 

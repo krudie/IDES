@@ -52,7 +52,7 @@ public class Unary{
             FSAState state = searchList.removeFirst();
             // mark all states that are accesible from this state as accesible
             // if they have not previously been marked as accesible.
-            Iterator<FSATransition> transitionIterator = state.getSourceTransitionsListIterator();
+            Iterator<FSATransition> transitionIterator = state.getOutgoingTransitionsListIterator();
             while(transitionIterator.hasNext()){
                 FSATransition transition = transitionIterator.next();
                 if(!accessible.contains(transition.getTarget())){
@@ -94,7 +94,7 @@ public class Unary{
         // coaccessible.)
         while(!searchList.isEmpty()){
             FSAState s = searchList.removeFirst();
-            ListIterator<FSATransition> tli = s.getTargetTransitionListIterator();
+            ListIterator<FSATransition> tli = s.getIncomingTransitionListIterator();
             while(tli.hasNext()){
                 FSAState source = tli.next().getSource();
                 if(!coaccessible.contains(source)){
@@ -142,7 +142,7 @@ public class Unary{
         // as marked and add it to the list (if it isn't allready marked.)
         while(!searchList.isEmpty()){
             FSAState s = searchList.removeFirst();
-            ListIterator<FSATransition> tli = s.getTargetTransitionListIterator();
+            ListIterator<FSATransition> tli = s.getIncomingTransitionListIterator();
             while(tli.hasNext()){
                 FSAState source = tli.next().getSource();
                 if(!source.isMarked()){

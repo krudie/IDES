@@ -181,8 +181,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		//Add the edges to the FSAGraph
 		Iterator <FSATransition> tIt = fsa.getTransitionIterator();
 		while(tIt.hasNext())
-		{			
+		{
 			FSATransition t = tIt.next();
+//			System.out.println("loadtrans: "+t.getId());
+//			System.out.flush();
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
 			if(l == null)
 			{
@@ -306,7 +308,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		/////////////////////
 		if(!hasLayout)//Generate automatic layout:
 		{
-
+			clear();
+			nodes.clear();
+			edges.clear();
 			// Prepare elements for automatic layout
 			Set<Set<FSATransition>> groups = new HashSet<Set<FSATransition>>();
 			HashMap<FSAState,Set<FSATransition>> stateGroups = new HashMap<FSAState,Set<FSATransition>>();
@@ -321,7 +325,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				}
 				wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
 				stateGroups.clear();
-				Iterator<FSATransition> j = s.getSourceTransitionsListIterator();
+				Iterator<FSATransition> j = s.getOutgoingTransitionsListIterator();
 
 				while( j.hasNext() ) {
 					FSATransition t = j.next();
@@ -987,6 +991,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		while(i.hasNext()) {
 			t = i.next();
 			e.addTransition(t);
+			t.setAnnotation(Annotable.LAYOUT, e.getLayout());
 			if(t.getEvent() != null) {
 				((BezierLayout)e.getLayout()).addEventName(t.getEvent().getSymbol());
 			}
@@ -1853,6 +1858,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				{
 					n.getLayout().setText(label);
 					n.getLabel().softSetText(label);
+					s.setName(label);
 					////////////////////////////////////////////////////
 					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
 					/////////////////////////////////////////////////////
@@ -1886,6 +1892,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				{
 					n.getLayout().setText(label);
 					n.getLabel().softSetText(label);
+					s.setName(label);
 					////////////////////////////////////////////////////
 					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
 					/////////////////////////////////////////////////////

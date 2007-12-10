@@ -102,7 +102,7 @@ public class GrailPlugin implements ImportExportPlugin{
     		{
     			fileContents+=""+s.getId()+" -| (FINAL)\n";
     		}
-    		for(Iterator<model.fsa.FSATransition> j=s.getSourceTransitionsListIterator();j.hasNext();)
+    		for(Iterator<model.fsa.FSATransition> j=s.getOutgoingTransitionsListIterator();j.hasNext();)
     		{
     			model.fsa.FSATransition t=j.next();
     			fileContents+=""+s.getId()+" "+(t.getEvent()==null?"NULL":t.getEvent().getSymbol())+" "+t.getTarget().getId()+"\n";

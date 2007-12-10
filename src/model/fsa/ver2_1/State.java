@@ -69,7 +69,7 @@ public class State implements model.fsa.FSAState {
 	 * of transitions originating from it.
 	 * @param t the transition to be removed
 	 */
-	public void addSourceTransition(FSATransition t){
+	public void addOutgoingTransition(FSATransition t){
 		sourceT.add(t);
 	}
 
@@ -78,14 +78,14 @@ public class State implements model.fsa.FSAState {
 	 * of transtions originating from it.
 	 * @param t the transition to be removed
 	 */
-	public void removeSourceTransition(FSATransition t){
+	public void removeOutgoingTransition(FSATransition t){
 		sourceT.remove(t);
 	}
 	/**
 	 * returns an iterator for the transitions originating from this state.
 	 * @return a source transition iterator
 	 */
-	public ListIterator<FSATransition> getSourceTransitionsListIterator(){
+	public ListIterator<FSATransition> getOutgoingTransitionsListIterator(){
 		return sourceT.listIterator();
 	}
 	/**
@@ -100,7 +100,7 @@ public class State implements model.fsa.FSAState {
 	 * transitions ending in it.
 	 * @param t the transition to be added.
 	 */
-	public void addTargetTransition(FSATransition t){
+	public void addIncomingTransition(FSATransition t){
 		targetT.add(t);
 	}
 
@@ -109,14 +109,14 @@ public class State implements model.fsa.FSAState {
 	 * transitions ending in it.
 	 * @param t the transition to be removed.
 	 */
-	public void removeTargetTransition(FSATransition t){
+	public void removeIncomingTransition(FSATransition t){
 		targetT.remove(t);
 	}
 
 	/**
 	 * @return an iterator for the transitions ending in this state
 	 */
-	public ListIterator<FSATransition> getTargetTransitionListIterator(){
+	public ListIterator<FSATransition> getIncomingTransitionListIterator(){
 		return targetT.listIterator();
 	}
 

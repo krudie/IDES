@@ -169,10 +169,10 @@ public class Composition{
             FSAState[] sa = searchList.removeFirst();
             FSAState source = product.getState(getStateId(sa));
 
-            ListIterator<FSATransition> sti0 = sa[0].getSourceTransitionsListIterator();
+            ListIterator<FSATransition> sti0 = sa[0].getOutgoingTransitionsListIterator();
             while(sti0.hasNext()){
                 FSATransition t0 = sti0.next();
-                ListIterator<FSATransition> sti1 = sa[1].getSourceTransitionsListIterator();
+                ListIterator<FSATransition> sti1 = sa[1].getOutgoingTransitionsListIterator();
                 while(sti1.hasNext()){
                     FSATransition t1 = sti1.next();
                     if((t0.getEvent() == null && t1.getEvent() == null) || (t0.getEvent() != null
@@ -312,7 +312,7 @@ public class Composition{
             // add all transitions in sa[0] and sa[1] that
             // aren't in the intersection between E_a and E_b
             for(int i = 0; i < 2; i++){
-                ListIterator<FSATransition> stli = sa[i].getSourceTransitionsListIterator();
+                ListIterator<FSATransition> stli = sa[i].getOutgoingTransitionsListIterator();
                 while(stli.hasNext()){
                     FSATransition t = stli.next();
                     if(t.getEvent() == null || !intersection.contains(events.get(t.getEvent()))){
@@ -337,11 +337,11 @@ public class Composition{
                 }
             }
 
-            ListIterator<FSATransition> sti0 = sa[0].getSourceTransitionsListIterator();
+            ListIterator<FSATransition> sti0 = sa[0].getOutgoingTransitionsListIterator();
             while(sti0.hasNext()){
                 FSATransition t0 = sti0.next();
                 if(t0.getEvent() != null && !intersection.contains(events.get(t0.getEvent()))) continue;
-                ListIterator<FSATransition> sti1 = sa[1].getSourceTransitionsListIterator();
+                ListIterator<FSATransition> sti1 = sa[1].getOutgoingTransitionsListIterator();
                 while(sti1.hasNext()){
                     FSATransition t1 = sti1.next();
                     if(t1.getEvent() != null && !intersection.contains(events.get(t1.getEvent()))) continue;
@@ -435,7 +435,7 @@ public class Composition{
                 ListIterator<FSAState> sli = sourceList.listIterator();
                 while(sli.hasNext()){
                     FSAState s = sli.next();
-                    ListIterator<FSATransition> tli = s.getSourceTransitionsListIterator();
+                    ListIterator<FSATransition> tli = s.getOutgoingTransitionsListIterator();
                     while(tli.hasNext()){
                         FSATransition t = tli.next();
                         if(t.getEvent().equals(event) && !states.contains(t.getTarget())){
@@ -586,7 +586,7 @@ public class Composition{
         sli = sll.listIterator();
         while(sli.hasNext()){
             FSAState s = sli.next();
-            ListIterator<FSATransition> stli = s.getSourceTransitionsListIterator();
+            ListIterator<FSATransition> stli = s.getOutgoingTransitionsListIterator();
             while(stli.hasNext()){
                 FSATransition t = stli.next();
                 if((t.getEvent() == null || !t.getEvent().isObservable())

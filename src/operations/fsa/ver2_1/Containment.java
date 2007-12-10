@@ -69,11 +69,11 @@ public class Containment extends AbstractOperation {
 			if(!contained)
 				break;
 			pairs.add(""+cState[0].getId()+","+cState[1].getId());
-			for(Iterator<FSATransition> i=cState[0].getSourceTransitionsListIterator();i.hasNext();)
+			for(Iterator<FSATransition> i=cState[0].getOutgoingTransitionsListIterator();i.hasNext();)
 			{
 				FSATransition ta=i.next();
 				boolean matchingFound=false;
-				for(Iterator<FSATransition> j=cState[1].getSourceTransitionsListIterator();j.hasNext();)
+				for(Iterator<FSATransition> j=cState[1].getOutgoingTransitionsListIterator();j.hasNext();)
 				{
 					FSATransition tb=j.next();
 					if((ta.getEvent()==null&&tb.getEvent()==null)||

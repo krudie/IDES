@@ -158,11 +158,11 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 			//Save the transitions
 			ti = ((FSAModel)model).getTransitionIterator();
-			//Create a hashmap to store the transition layouts, this information is used for the "groups" creation.
-			HashMap<Integer,BezierLayout> bezierCurves = new HashMap<Integer,BezierLayout>();
+//			//Create a hashmap to store the transition layouts, this information is used for the "groups" creation.
+//			HashMap<Integer,BezierLayout> bezierCurves = new HashMap<Integer,BezierLayout>();
 			while(ti.hasNext())
 			{
-				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT, bezierCurves);
+				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
 			}
 			return true;
 		}
@@ -327,7 +327,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param ps the printstream to print to 
 		 * @param indent the indentation to be used in the file
 		 */ 
-		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent, HashMap<Integer,BezierLayout> bezierCurves){
+		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
+			System.out.println();
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
 			if(l!= null)
 			{
@@ -431,7 +432,11 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		/**
 		 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
 		 */
-		public void endElement(String uri, String localName, String qName){			
+		public void endElement(String uri, String localName, String qName){
+			//reset name parsing
+			settingName=false;
+			tmpName="";
+			
 			if(!qName.equals(tags.get(tags.size() -1)))
 			{
 				Hub.displayAlert(Hub.string("errorsParsingXMLFileL2"));
@@ -797,6 +802,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			}
 			return null;
 		} 
+		
 		public void characters(char buf[], int offset, int len)
 		throws SAXException
 		{
@@ -808,7 +814,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				{
 					StringBuffer tst = new StringBuffer();
 					tst.append(buf, offset, len);
-					tmpName = tst.toString();
+					tmpName += tst.toString();
 					if(CURRENT_PARSING_ELEMENT == STATE)
 					{
 						tmpState.setName(tmpName);
@@ -818,8 +824,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						tmpEvent.setSymbol(tmpName);
 					}
 				}
-				settingName = false;
-				//
 			}
 		}
 	}
