@@ -234,7 +234,7 @@ public class CreationTool extends DrawingTool {
 		abortEdge();
 //		cmd = new CreateAction(CreateAction.SELF_LOOP, targetNode);
 //		cmd.execute();
-		new GraphActions.CreateEdgeAction(ContextAdaptorHack.context.getGraphModel(),targetNode,targetNode);
+		new GraphActions.CreateEdgeAction(ContextAdaptorHack.context.getGraphModel(),targetNode,targetNode).execute();
 		sourceNode = null;
 		targetNode = null;
 		ContextAdaptorHack.context.clearCurrentSelection();
