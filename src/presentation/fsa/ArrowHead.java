@@ -99,9 +99,9 @@ public class ArrowHead extends Polygon {
     	basePt = new Point2D.Float(0,0);
     	// compute default arrowhead pointing down    	
 	    addPoint(0, HEAD_LENGTH);	     
-		addPoint(-6, -5);	    
+		addPoint(-4, -3);	    
 		addPoint((int)basePt.x, (int)basePt.y);	   
-	    addPoint(6, -5);
+	    addPoint(4, -3);
     }
 
     /**

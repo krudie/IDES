@@ -106,5 +106,6 @@ public class ZoomControl extends JComboBox implements ActionListener {
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 		getEditor().setItem(""+zoomValue+" %");
+		setSelectedIndex(-1);
 	}
 }

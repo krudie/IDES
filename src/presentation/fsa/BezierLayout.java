@@ -3,6 +3,7 @@ package presentation.fsa;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.io.ByteArrayInputStream;
@@ -441,7 +442,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 	 * @return the portion of the curve that is external to both 
 	 * source and target nodes, null if no such segment exists
 	 */
-	public CubicCurve2D getVisibleCurve()
+	public CubicParamCurve2D getVisibleCurve()
 	{
 		// TODO check sourceT and targetT
 
@@ -453,6 +454,21 @@ public class BezierLayout extends GraphicalLayout implements Serializable{
 		}
 
 		return curve.getSegment(sourceT, targetT);		
+	}
+	
+	public Line2D getControllableMarker()
+	{
+		CubicParamCurve2D curve=getVisibleCurve();
+		if(curve==null)
+		{
+			return null;
+		}
+		CubicParamCurve2D part=new CubicParamCurve2D();
+		curve.subdivide(part, null, 0.25f);
+		Point2D.Float vector=Geometry.unit(new Point2D.Float(part.ctrlx2-part.x2,part.ctrly2-part.y2));
+		vector=Geometry.rotate(vector, Math.PI/2);
+		vector=Geometry.scale(vector, 5);
+		return new Line2D.Float(part.x2+vector.x,part.y2+vector.y,part.x2-vector.x,part.y2-vector.y);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package presentation.fsa;
 import java.awt.Button;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Color;
@@ -25,6 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import main.Annotable;
 import main.Hub;
@@ -204,14 +209,14 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		LayoutManager.getDefaultFSMLayouter().layout(this);
 //		buildIntersectionDS();
 		
-		for(Node n:nodes.values())
-		{
-			if(n.getState().isInitial())
-			{
-				//Insert the initial arrow among the egdes
-				edges.put(n.getInitialArrow().getId(), n.getInitialArrow() );
-			}
-		}
+//		for(Node n:nodes.values())
+//		{
+//			if(n.getState().isInitial())
+//			{
+//				//Insert the initial arrow among the egdes
+//				edges.put(n.getInitialArrow().getId(), n.getInitialArrow() );
+//			}
+//		}
 
 		// collect all labels on edges				
 		for( Edge edge : edges.values() )	{
@@ -821,6 +826,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		CircleNode n = new CircleNode(s, layout);
 		nodes.put(new Long(s.getId()), n);
 		insert(n);
+		
+		if(n.getState().isInitial())
+		{
+			//Insert the initial arrow among the egdes
+			edges.put(n.getInitialArrow().getId(), n.getInitialArrow() );
+		}
 		
 		setNeedsRefresh(true);		
 
@@ -1747,91 +1758,91 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	///////////////////////////////////////////////////////////////////////
 
 
-	/**
-	 * TODO: comment and format
-	 * FIXME: move this to a plugin that reads/writes composition data for states
-	 * @author Lenko Grigorov
-	 */
-	public void labelCompositeNodes()
-	{
-		if(fsa.getAnnotation(Annotable.COMPOSED_OF)==null)
-			return;
-		if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length>1)
-		{
-			FSAGraph[] gs=new FSAGraph[((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length];
-			for(int i=0;i<gs.length;++i)
-			{
-				FSAGraph g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
-				if(g==null)
-					return;
-				gs[i]=g;
-			}
-			for(Node n:nodes.values())
-			{
-				State s=(State)n.getState();
-				boolean emptyLabel=true;
-				String label="(";
-				for(int i=0;i<gs.length-1;++i)
-				{
-					if(!"".equals(gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()))
-						emptyLabel=false;
-					label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
-				}
-				if(!"".equals(gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()))
-					emptyLabel=false;
-				label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()+")";
-				if(!emptyLabel)
-				{
-					n.getLayout().setText(label);
-					n.getLabel().softSetText(label);
-					s.setName(label);
-					////////////////////////////////////////////////////
-					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
-					/////////////////////////////////////////////////////
-					setNeedsRefresh(true);		
-					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-							FSAGraphMessage.NODE,
-							n.getId(), 
-							n.bounds(),
-							this, ""));
-				}
-			}
-		}
-		else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
-		{
-			FSAGraph g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
-			if(g==null)
-				return;
-			for(Node n:nodes.values())
-			{
-				State s=(State)n.getState();
-				String label="";
-				if(s.getStateCompositionList().length>1)
-				{
-					label="(";
-					for(int i=0;i<s.getStateCompositionList().length-1;++i)
-						label+=g.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
-					label+=g.getNode(s.getStateCompositionList()[s.getStateCompositionList().length-1]).getLabel().getText()+")";
-				}
-				else if(s.getStateCompositionList().length>0)
-					label=g.getNode(s.getStateCompositionList()[0]).getLabel().getText();
-				{
-					n.getLayout().setText(label);
-					n.getLabel().softSetText(label);
-					s.setName(label);
-					////////////////////////////////////////////////////
-					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
-					/////////////////////////////////////////////////////
-					setNeedsRefresh(true);		
-					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
-							FSAGraphMessage.NODE,
-							n.getId(), 
-							n.bounds(),
-							this, ""));
-				}
-			}
-		}
-	}
+//	/**
+//	 * TODO: comment and format
+//	 * FIXME: move this to a plugin that reads/writes composition data for states
+//	 * @author Lenko Grigorov
+//	 */
+//	public void labelCompositeNodes()
+//	{
+//		if(fsa.getAnnotation(Annotable.COMPOSED_OF)==null)
+//			return;
+//		if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length>1)
+//		{
+//			FSAGraph[] gs=new FSAGraph[((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length];
+//			for(int i=0;i<gs.length;++i)
+//			{
+//				FSAGraph g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
+//				if(g==null)
+//					return;
+//				gs[i]=g;
+//			}
+//			for(Node n:nodes.values())
+//			{
+//				State s=(State)n.getState();
+//				boolean emptyLabel=true;
+//				String label="(";
+//				for(int i=0;i<gs.length-1;++i)
+//				{
+//					if(!"".equals(gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()))
+//						emptyLabel=false;
+//					label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+//				}
+//				if(!"".equals(gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()))
+//					emptyLabel=false;
+//				label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()+")";
+//				if(!emptyLabel)
+//				{
+//					n.getLayout().setText(label);
+//					n.getLabel().softSetText(label);
+//					s.setName(label);
+//					////////////////////////////////////////////////////
+//					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
+//					/////////////////////////////////////////////////////
+//					setNeedsRefresh(true);		
+//					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+//							FSAGraphMessage.NODE,
+//							n.getId(), 
+//							n.bounds(),
+//							this, ""));
+//				}
+//			}
+//		}
+//		else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
+//		{
+//			FSAGraph g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
+//			if(g==null)
+//				return;
+//			for(Node n:nodes.values())
+//			{
+//				State s=(State)n.getState();
+//				String label="";
+//				if(s.getStateCompositionList().length>1)
+//				{
+//					label="(";
+//					for(int i=0;i<s.getStateCompositionList().length-1;++i)
+//						label+=g.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+//					label+=g.getNode(s.getStateCompositionList()[s.getStateCompositionList().length-1]).getLabel().getText()+")";
+//				}
+//				else if(s.getStateCompositionList().length>0)
+//					label=g.getNode(s.getStateCompositionList()[0]).getLabel().getText();
+//				{
+//					n.getLayout().setText(label);
+//					n.getLabel().softSetText(label);
+//					s.setName(label);
+//					////////////////////////////////////////////////////
+//					s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
+//					/////////////////////////////////////////////////////
+//					setNeedsRefresh(true);		
+//					fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, 
+//							FSAGraphMessage.NODE,
+//							n.getId(), 
+//							n.bounds(),
+//							this, ""));
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * TODO comment and format
@@ -1918,15 +1929,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				this, "all graph"));
 	}
 
-	//HACK OF A BUTTON:
-	private int buttonX = 55, buttonY = 105;
-	private int buttonHeight = 30, buttonWidth = 250;
-	private Color btColor = new Color(150,150,150);
-	private boolean hackedButtonHighlighted = false;
-	public boolean isHackedButtonHighlighted()
-	{
-		return hackedButtonHighlighted;
-	}
 	/**
 	 * If avoidLayoutDrawing is true, this function will draw a button, so the user can choose whether
 	 * or not to show the layout, setting the avoidLayoutDrawing to false, if desired.
@@ -1936,62 +1938,34 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		if(!this.avoidLayoutDrawing)
 		{
 			super.draw(g);
-		}else
-		{
-			Graphics2D g2d = (Graphics2D)g;
-			Font font = new Font("times", Font.PLAIN, 16);
-			g2d.setFont(font);
-			g2d.setStroke(GraphicalLayout.WIDE_STROKE);	
-			g2d.setColor(btColor);
-			g2d.fill3DRect(buttonX, buttonY, buttonWidth, buttonHeight, true);
-			g2d.setColor(new Color(0,0,0));
-			if(hackedButtonHighlighted)
-			{
-				g2d.draw3DRect(buttonX, buttonY, buttonWidth, buttonHeight, true);
-			}			g2d.setFont(new Font("times", Font.PLAIN, 12));
-			g2d.drawString("The current automaton has more than 100 states", buttonX, buttonY - 60);
-			g2d.drawString("This is why the graphical display has been disabled.", buttonX, buttonY - 45);
-			g2d.drawString("If you would like to see the automaton, click on the", buttonX, buttonY-30);
-			g2d.drawString("button below.", buttonX, buttonY - 15);
-			g2d.drawString("Please, be aware that IDES may become noticeably slower.", buttonX-15, buttonY + 50);
-			g2d.setFont(font);
-			g2d.drawString("Click here to display this automaton.", buttonX+ 10, buttonY+20);
-			g2d.setStroke(GraphicalLayout.FINE_STROKE);
-			g2d.draw3DRect(buttonX-25, buttonY-75, buttonX+buttonWidth, buttonY+buttonHeight, true);
-		}	
-	}
-
-	public void refreshHackedButtonStatus(int x, int y)
-	{
-		Rectangle rect = new Rectangle(buttonX,buttonY,buttonWidth,buttonHeight);
-		if(rect.intersects(x, y, 1, 1))
-		{
-			btColor = new Color(100,100,100);
-			hackedButtonHighlighted = true;
-		}else
-		{
-			btColor = new Color(150,150,150);
-			hackedButtonHighlighted = false;
 		}
-	}
-
-	public Rectangle getHackedButtonRectangle()
-	{
-		return new Rectangle(buttonX,buttonY,buttonWidth,buttonHeight);
 	}
 
 	public void forceLayoutDisplay()
 	{
-		this.avoidLayoutDrawing = false;
-		initializeGraph();
-		if(LatexManager.isLatexEnabled())
+		boolean latexOn=LatexManager.isLatexEnabled();
+		if(latexOn)
 		{
+			//disable Latex so model is wrapped without rendering 
 			LatexManager.setLatexEnabled(false);
+		}
+		Cursor backupCursor=Hub.getMainWindow().getCursor();
+		Hub.getMainWindow().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		try
+		{
+			initializeGraph();
+			this.avoidLayoutDrawing = false;
+		}catch(RuntimeException e){ throw e; }
+		finally
+		{
+			Hub.getMainWindow().setCursor(backupCursor);
+		}
+		if(latexOn)
+		{
 			LatexManager.setLatexEnabled(true);
 		}
 		this.getBounds(true);
 	}
-	//END OF THE HACKING OF A BUTTON
 	
 	protected Hashtable<String, Object> annotations=new Hashtable<String,Object>();
 

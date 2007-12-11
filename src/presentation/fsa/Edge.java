@@ -158,16 +158,45 @@ public abstract class Edge extends GraphElement{
 	
 	/**
 	 * Returns true iff this edge has at least one transition fired by 
-	 * an uncontrollable event.
+	 * an uncontrollable event or if all transitions have <code>null</code> events.
 	 * 
 	 * @return true iff this edge has at least one transition fired by 
-	 * an uncontrollable event.
+	 * an uncontrollable event or if all transitions have <code>null</code> events.
 	 */
 	public boolean hasUncontrollableEvent() {
+		boolean uncontrol=false;
+		boolean control=false;
 		Iterator<FSATransition> i = getTransitions();
 		while( i.hasNext() ) {
 			FSATransition t = i.next();
-			if( t.getEvent() != null && !t.getEvent().isControllable() ) {
+			if( t.getEvent() != null )
+			{
+				if(t.getEvent().isControllable())
+				{
+					control=true;
+				}
+				else
+				{
+					uncontrol=true;
+				}
+			}
+		}
+		return uncontrol||!control;
+	}
+
+	/**
+	 * Returns true iff this edge has at least one transition fired by 
+	 * an unobservable event.
+	 * 
+	 * @return true iff this edge has at least one transition fired by 
+	 * an unobservable event.
+	 */
+	public boolean hasUnobservableEvent() {
+		Iterator<FSATransition> i = getTransitions();
+		while( i.hasNext() ) {
+			FSATransition t = i.next();
+			if( t.getEvent() != null && !t.getEvent().isObservable() )
+			{
 				return true;
 			}
 		}

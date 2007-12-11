@@ -134,12 +134,12 @@ public class BezierEdge extends Edge {
 			getHandler().setVisible(false);
 		}
 
-		if(hasUncontrollableEvent()){
+		if(hasUnobservableEvent()){
 			g2d.setStroke(GraphicalLayout.DASHED_STROKE);
 		}else{
 			g2d.setStroke(GraphicalLayout.WIDE_STROKE);
 		}		   
-
+		
 		// TODO should stop drawing at base of arrowhead and at outside of node boundaries.
 		if(getBezierLayout().getEdge() == null)
 		{
@@ -149,7 +149,12 @@ public class BezierEdge extends Edge {
 		if(curve != null)
 		{
 			g2d.draw(curve);
-		}	    
+		}
+		if(!hasUncontrollableEvent()&&getBezierLayout().getControllableMarker()!=null)
+		{
+			g2d.setStroke(GraphicalLayout.FINE_STROKE);			
+			g2d.draw(getBezierLayout().getControllableMarker());
+		}
 		
 		// Compute the direction and location of the arrow head
 		AffineTransform at = new AffineTransform();

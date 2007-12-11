@@ -432,9 +432,20 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
 		 */
 		public void endElement(String uri, String localName, String qName){
-			//reset name parsing
-			settingName=false;
-			tmpName="";
+			if(qName.equals(NAME)&&settingName)
+			{
+				if(CURRENT_PARSING_ELEMENT == STATE)
+				{
+					tmpState.setName(tmpName);
+				}
+				if(CURRENT_PARSING_ELEMENT == EVENT)
+				{
+					tmpEvent.setSymbol(tmpName);
+				}
+				//reset name parsing
+				settingName=false;
+				tmpName="";
+			}
 			
 			if(!qName.equals(tags.get(tags.size() -1)))
 			{
@@ -513,6 +524,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				if(qName.equals(NAME))
 				{    	
 					settingName = true;
+					tmpName="";
 				}else{
 					settingName = false;
 				}
@@ -814,14 +826,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					StringBuffer tst = new StringBuffer();
 					tst.append(buf, offset, len);
 					tmpName += tst.toString();
-					if(CURRENT_PARSING_ELEMENT == STATE)
-					{
-						tmpState.setName(tmpName);
-					}
-					if(CURRENT_PARSING_ELEMENT == EVENT)
-					{
-						tmpEvent.setSymbol(tmpName);
-					}
 				}
 			}
 		}

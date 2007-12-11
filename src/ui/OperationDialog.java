@@ -30,6 +30,7 @@ import javax.swing.event.ListSelectionListener;
 
 import presentation.PresentationManager;
 
+import pluggable.layout.CompositeStateLabeller;
 import pluggable.operation.Operation;
 import pluggable.operation.OperationManager;
 import pluggable.ui.Toolset;
@@ -161,11 +162,11 @@ public class OperationDialog extends EscapeDialog {
 							//op.get
 						}
 						else if (outputs[i] instanceof FSAModel) {
-							((FSAModel)outputs[i]).setName(outputNames.elementAt(i).getText());
-							FSAGraph g=(FSAGraph)PresentationManager.getToolset(FSAModel.class).wrapModel((DESModel)outputs[i]);
-							g.labelCompositeNodes();
-							Hub.getWorkspace().addLayoutShell(g);
-							Hub.getWorkspace().setActiveModel(g.getName());
+							FSAModel fsa=(FSAModel)outputs[i];
+							fsa.setName(outputNames.elementAt(i).getText());
+							CompositeStateLabeller.labelStates(fsa);
+							Hub.getWorkspace().addModel(fsa);
+							Hub.getWorkspace().setActiveModel(fsa.getName());
 							closeWindow = true;
 						}
 						else

@@ -255,7 +255,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	 */
 	public void repaintRequired(WorkspaceMessage message) {
 		for(Presentation gv : views) {
-			gv.getGUI().repaint();
+			gv.forceRepaint();
 		}
 	}
 

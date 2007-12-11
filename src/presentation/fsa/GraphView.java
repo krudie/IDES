@@ -105,6 +105,11 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 		refreshView();	
 	}
 	
+	public void originalPaint(Graphics g)
+	{
+		super.paint(g);
+	}
+	
 	public void paint(Graphics g, boolean doFill) {
 		Graphics2D g2D = (Graphics2D) g;			
 		g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -173,7 +178,6 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 
 	
 	protected void refreshView(){
-		
 		if(getGraphModel()!=null)  
 		{
 			graphBounds=getGraphModel().getBounds(true);
@@ -190,9 +194,9 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,Presenta
 				float yScale=(float)(getParent().getHeight()-ins.top-ins.bottom)/(float)(graphBounds.height+graphBounds.y+GRAPH_BORDER_THICKNESS);
 				setScaleFactor(Math.min(xScale,yScale));
 			}
-			invalidate();
-			Hub.getWorkspace().fireRepaintRequired();
 		}
+		revalidate();
+		repaint();
 	}
 	
 	/* Don't need to respond to selection changes.

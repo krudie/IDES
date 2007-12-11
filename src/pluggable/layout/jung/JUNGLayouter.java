@@ -15,6 +15,7 @@ import edu.uci.ics.jung.visualization.contrib.KKLayout;
 import pluggable.layout.FSALayouter;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
+import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 
 /**
@@ -45,6 +46,10 @@ public class JUNGLayouter implements FSALayouter {
 		}
 		for(Edge e:graph.getEdges())
 		{
+			if(e instanceof InitialArrow)
+			{
+				continue;
+			}
 			DirectedSparseEdge edge=new DirectedSparseEdge(
 					BridgeMapper.nodeMap.get(e.getSourceNode()),
 					BridgeMapper.nodeMap.get(e.getTargetNode()));

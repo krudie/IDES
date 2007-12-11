@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 
 
@@ -152,7 +153,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	 * @return the portion of the curve that is external to the node,
 	 * null if no such segment exists
 	 */
-	public CubicCurve2D getVisibleCurve()
+	public CubicParamCurve2D getVisibleCurve()
 	{
 		// FIXME check for NaN here or in CubicCurve2Dex class
 		return curve.getSegment(sourceT, targetT);		

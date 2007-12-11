@@ -3,12 +3,14 @@ package presentation.fsa;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -22,7 +24,12 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
@@ -182,6 +189,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		}
 	};
 
+	Box largeGraphNotice;
+	
 	public GraphDrawingView(BooleanUIBinder gridBinder) {
 		super();
 
@@ -222,6 +231,30 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		// Associating the action names with operations:
 		getActionMap().put(deleteAction, deleteCommand);
 		getActionMap().put(escAction, escapeCommand);
+		
+		largeGraphNotice=Box.createVerticalBox();
+		largeGraphNotice.add(new JLabel(Hub.string("largeGraphNotice1")));
+		largeGraphNotice.add(new JLabel(Hub.string("largeGraphNotice2")));
+		largeGraphNotice.add(new JLabel(Hub.string("largeGraphNotice3")));
+		largeGraphNotice.add(Box.createRigidArea(new Dimension(0,5)));
+		JButton button=new JButton(Hub.string("largeGraphButton"));
+		button.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				largeGraphNotice.setVisible(false);
+				graphModel.forceLayoutDisplay();
+				forceRepaint();
+				Hub.getWorkspace().fireRepaintRequired();
+			}
+		});
+		largeGraphNotice.add(button);
+		largeGraphNotice.add(Box.createRigidArea(new Dimension(0,5)));
+		largeGraphNotice.add(new JLabel(Hub.string("largeGraphNotice4")));
+		largeGraphNotice.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		largeGraphNotice.setSize(largeGraphNotice.getPreferredSize());
+		add(largeGraphNotice);
+		largeGraphNotice.setVisible(false);
 
 		setVisible(true);
 	}
@@ -266,6 +299,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	 * TODO If no model open, set BG colour to some inactive looking grey.
 	 */
 	public void paint(Graphics g) {
+		if(graphModel.isAvoidLayoutDrawing())
+		{
+			largeGraphNotice.setVisible(true);
+			originalPaint(g);
+			return;
+		}
 		if(canvasSettings!=null)
 		{
 			scrollRectToVisible(canvasSettings.viewport);
@@ -362,13 +401,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	public void mouseReleased(MouseEvent arg0) {
 		arg0 = transformMouseCoords(arg0);
 		FSAGraph g = super.getGraphModel();
-		if (g.isAvoidLayoutDrawing()) {
-			if (g.isHackedButtonHighlighted()) {
-				g.forceLayoutDisplay();
-				forceRepaint();
-			}
-			return;
-		}
+
 		if (arg0.isPopupTrigger()) {
 			// from both mousePressed and mouseReleased to be truly platform
 			// independant.
@@ -400,12 +433,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
-		FSAGraph g = super.getGraphModel();
-		if (g.isAvoidLayoutDrawing()) {
-			g.refreshHackedButtonStatus(arg0.getX(), arg0.getY());
-			this.repaint(g.getHackedButtonRectangle());
-			return;
-		}
 		arg0 = transformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}
