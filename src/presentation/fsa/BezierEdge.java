@@ -10,6 +10,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.awt.geom.Line2D;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -469,6 +470,7 @@ public class BezierEdge extends Edge {
 	public String createExportString(Rectangle selectionBox, int exportType)
 	{
 		String exportString = "";
+		Line2D controlLine = null;
 		
 		Point2D.Float edgeP1 = getSourceEndPoint();
 		Point2D.Float edgeP2 = getTargetEndPoint();
@@ -495,7 +497,7 @@ public class BezierEdge extends Edge {
 			{
 				// Draw a straight line
 				exportString += "  \\psline[arrowsize=5pt";
-				exportString += (hasUncontrollableEvent() ?
+				exportString += (hasUnobservableEvent() ?
 					", linestyle=dashed" : "");
 				exportString += "]{->}(" 
 					+ (edgeP1.x - selectionBox.x) + "," 
@@ -507,21 +509,35 @@ public class BezierEdge extends Edge {
 			{	
 				// Draw a curve				
 				exportString += "  \\psbezier[arrowsize=5pt";
-				exportString += (hasUncontrollableEvent() ?
+				exportString += (hasUnobservableEvent() ?
 						", linestyle=dashed" : "");
 				exportString += "]{->}"
-					+ "(" + (edgeP1.x - selectionBox.x) + "," 
-					+ (selectionBox.y + selectionBox.height - edgeP1.y) + ")(" 
-					+ (edgeCTRL1.x - selectionBox.x) + "," 
-					+ (selectionBox.y + selectionBox.height -edgeCTRL1.y) + ")(" 
-					+ (edgeCTRL2.x - selectionBox.x) + "," 
-					+ (selectionBox.y + selectionBox.height -edgeCTRL2.y) + ")(" 
-					+ (edgeP2.x - selectionBox.x) + "," 
-					+ (selectionBox.y + selectionBox.height - edgeP2.y) + ")\n";
+					+ "(" + (edgeP1.getX() - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height - edgeP1.getY()) + ")(" 
+					+ (edgeCTRL1.getX() - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height -edgeCTRL1.getY()) + ")(" 
+					+ (edgeCTRL2.getX() - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height -edgeCTRL2.getY()) + ")(" 
+					+ (edgeP2.getX() - selectionBox.x) + "," 
+					+ (selectionBox.y + selectionBox.height - edgeP2.getY()) + ")\n";
+			}
+			
+			// Now for controllable event line
+			if (! hasUncontrollableEvent())
+			{
+				controlLine = edgeLayout.getControllableMarker();
+				if (controlLine != null)
+				{
+					exportString += "\\psline(" 
+						+ (controlLine.getX1() - selectionBox.x) + "," 
+						+ (selectionBox.y  + selectionBox.height - controlLine.getY1()) + ")(" 
+						+ (controlLine.getX2() - selectionBox.x) + "," 
+						+ (selectionBox.y  + selectionBox.height - controlLine.getY2()) + ")\n";
+				}
 			}
 			
 			// Now for the label
-			if ((getBezierLayout().getText() != null) && (getLabel().getText().length() > 0))
+			if ((edgeLayout.getText() != null) && (getLabel().getText().length() > 0))
 			{
 				exportString += "  " 
 					+ getLabel().createExportString(selectionBox, exportType);

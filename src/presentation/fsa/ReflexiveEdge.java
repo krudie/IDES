@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.io.IOException;
@@ -193,6 +194,7 @@ public class ReflexiveEdge extends BezierEdge {
 	public String createExportString(Rectangle selectionBox, int exportType) {
 
 		String exportString = "";
+		Line2D controlLine = null;
 
 		Point2D.Float edgeP1 = getSourceEndPoint();
 		Point2D.Float edgeP2 = getTargetEndPoint();
@@ -215,7 +217,7 @@ public class ReflexiveEdge extends BezierEdge {
 		{
 			// Draw the curve				
 			exportString += "  \\psbezier[arrowsize=5pt";
-			exportString += (hasUncontrollableEvent() ?
+			exportString += (hasUnobservableEvent() ?
 					", linestyle=dashed" : "");
 			exportString += "]{->}"
 				+ "(" + (edgeP1.x - selectionBox.x) + "," 
@@ -226,6 +228,20 @@ public class ReflexiveEdge extends BezierEdge {
 				+ (selectionBox.y + selectionBox.height -edgeCTRL2.y) + ")(" 
 				+ (edgeP2.x - selectionBox.x) + "," 
 				+ (selectionBox.y + selectionBox.height - edgeP2.y) + ")\n";
+			
+			// Now for uncontrollable event line
+			if (! hasUncontrollableEvent())
+			{
+				controlLine = getBezierLayout().getControllableMarker();
+				if (controlLine != null)
+				{
+					exportString += "\\psline(" 
+						+ (controlLine.getX1() - selectionBox.x) + "," 
+						+ (selectionBox.y  + selectionBox.height - controlLine.getY1()) + ")(" 
+						+ (controlLine.getX2() - selectionBox.x) + "," 
+						+ (selectionBox.y  + selectionBox.height - controlLine.getY2()) + ")\n";
+				}
+			}
 
 			// Now for the label
 			if ((getBezierLayout().getText() != null) && (getLabel().getText().length() > 0))
