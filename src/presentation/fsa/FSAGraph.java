@@ -139,231 +139,99 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		int statesCounter = fsa.getStateCount();
 
 		avoidLayoutDrawing = (statesCounter >100 ? true: false);
-
-		/////////////////
-		//////////
-		//////
-		//Testing annotations:
-		boolean hasLayout = true;
-		Iterator <FSAState> sIt = fsa.getStateIterator();
-		sIt = fsa.getStateIterator();
-		while(sIt.hasNext())
+		
+		if(avoidLayoutDrawing)
 		{
-			try{
-				FSAState s = sIt.next();
-				CircleNodeLayout l = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
-				//set this FSAGraph's uniform radius management 
-				l.setUniformRadius(uniformR);
-				//Avoid give the name "" to the state!
-				if(l.getText() != "")
-				{
-					s.setName(l.getText());
-				}
-				//Create a new node
-				CircleNode node = new CircleNode(s, l);
-				long id = s.getId();
-				nodes.put(id, node);
-				if(s.isInitial())
-				{
-					//Insert the initial arrow among the egdes
-					edges.put(node.getInitialArrow().getId(), node.getInitialArrow() );
-				}
-				l.setText(s.getName());
-				//Insert the node in the graph
-				insert(node);
-			}catch(Exception e)
-			{
-				hasLayout = false;
-			}
+			return;
 		}
 
-
-		//Add the edges to the FSAGraph
-		Iterator <FSATransition> tIt = fsa.getTransitionIterator();
-		while(tIt.hasNext())
-		{
-			FSATransition t = tIt.next();
-//			System.out.println("loadtrans: "+t.getId());
-//			System.out.flush();
-			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
-			if(l == null)
-			{
-				hasLayout = false;
-				break;
-			}
-			Iterator<GraphElement> nIt =  children();
-			CircleNode src = null;
-			CircleNode dst = null;
-			boolean hasSrc = false, hasDst = false;
-
-			//Find the source and target nodes for this edge:
-			while(nIt.hasNext() || !(hasSrc & hasDst))
-			{
-				CircleNode n = null;
-				try{
-					n =(CircleNode)nIt.next();
-				}catch(Exception e)
-				{
-					break;
-				}
-				//Find source
-				if(n.getId() == t.getSource().getId())
-				{
-					src = n;
-					hasSrc = true;
-				}
-				//Find target
-				if(n.getId()  == t.getTarget().getId())
-				{
-					dst = n;
-					hasDst = true;
-				}
-			}
-			Edge edge = null;	
-			boolean groupExists = false;
-			if(l.getGroup() != BezierLayout.UNGROUPPED)
-			{
-				//The edge must have a group of transitions.
-				//Check if there is already an edge with the same layout addressed by: "l".
-				Set<Long> keys = edges.keySet();
-
-				Iterator<Long> kIt = keys.iterator();
-				while(kIt.hasNext())
-				{
-					boolean alreadyInserted = false;
-					boolean skipIteration = false;
-					Edge tmpEdge = edges.get(kIt.next());
-					BezierLayout tmpLayout = null;
-					try{
-						tmpLayout = (BezierLayout)tmpEdge.getLayout();
-					}catch(ClassCastException e)
-					{
-						//The edge is an initial edge, there is no meaning in processing it.
-						//"lets go to the next edge"
-						skipIteration = true;
-					}
-					if(!skipIteration)
-					{
-						//If there is already an Edge with BezierEdges from the same group, then there 
-						//is no need to create a new Edge, just add the transition to the existent one.
-						if((tmpLayout.getGroup() == l.getGroup()) && tmpLayout.getGroup() != BezierLayout.UNGROUPPED)
-						{
-//							System.out.println("Should group transition");
-							//Add the transition to the edge in case it is not there yet.
-							edge =  (Edge)tmpEdge;
-							Iterator<FSATransition> it = edge.getTransitions();
-							while(it.hasNext())
-							{
-								if(t == it.next())
-								{
-									//The transition is already in the edge.
-									alreadyInserted = true;
-								}
-							}
-							if(!alreadyInserted)
-							{
-								//Add the transition to the edge
-								edge.addTransition(t);
-							}
-							groupExists = true;
-						}
-					}		
-				}
-
-				if(!groupExists)//If an Edge still does noe exist for this group, create one.
-				{
-					if(src != dst){
-						edge = new BezierEdge(l, src,dst, t);
-					}else{
-						//Create a reflexive edge
-						edge = new ReflexiveEdge(l, src, t);
-//						System.out.println("A first reflexive edge was created for a group. It is " + edge + ", first event " + t.getEvent().getSymbol());
-						//The first reflexiveEdge is being created, but not the others.
-					}
-
-				}
-				//If the edge already exists, assign the transition t to this edge.
-				//Otherwise, create a new edge!
-			}else{
-				if(src != dst){
-					edge = new BezierEdge(l, src,dst, t);
-				}else{
-					//Create a reflexive edge
-					edge = new ReflexiveEdge(l, src, t);
-				}
-			}			
-			//add this edge among the childs of its source and target
-			src.insert(edge);
-			dst.insert(edge);
-
-			if(edge.getId() != null & edge.getLabel() != null)
-			{
-				//Add the edge label to the set of edge labels in the graph
-				edgeLabels.put(edge.getId(), edge.getLabel());
-			}
-			//Put the edge in the set of edges
-			edges.put(t.getId(), edge);
-		}
-
-		/////////////////////
-		if(!hasLayout)//Generate automatic layout:
-		{
-			clear();
-			nodes.clear();
-			edges.clear();
-			// Prepare elements for automatic layout
-			Set<Set<FSATransition>> groups = new HashSet<Set<FSATransition>>();
-			HashMap<FSAState,Set<FSATransition>> stateGroups = new HashMap<FSAState,Set<FSATransition>>();
-			Iterator<FSAState> i = fsa.getStateIterator();
-
-			while( i.hasNext() ) {
-				FSAState s=i.next();
-				//Labeling the states according to the id:
-				if(s.getName() == null)
-				{
-					s.setName(String.valueOf(s.getId()));
-				}
-				wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
-				stateGroups.clear();
-				Iterator<FSATransition> j = s.getOutgoingTransitionsListIterator();
-
-				while( j.hasNext() ) {
-					FSATransition t = j.next();
-					Set<FSATransition> ts;
-					if(stateGroups.containsKey(t.getTarget())) {
-						ts = stateGroups.get(t.getTarget());
-					} else {
-						ts = new HashSet<FSATransition>();
-					}
-					ts.add(t);
-					stateGroups.put(t.getTarget(),ts);
-				}
-				groups.addAll(stateGroups.values());
-			}
-
-			Iterator<Set<FSATransition>> groupsIter = groups.iterator();
-			while( groupsIter.hasNext() ) {
-				wrapTransitions( groupsIter.next() );
-			}
-
-			LayoutManager.getDefaultFSMLayouter().layout(this);
-			buildIntersectionDS();
-		}
-//		System.out.println("Graph created!");
-		//Grouping edges
-		Set<Long> setEdges = edges.keySet();
-		Iterator<Long> it = setEdges.iterator();
-		while(it.hasNext())
-		{
-			try{
-				Long groupid = ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
-				bezierLayoutFreeGroup = (groupid > bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
-			}catch(ClassCastException e){
-				//No problem... that happened because we can have initial edges amongst the edges
-			}
-		}	
+		initializeGraph();
 	}
 
+	protected void wrapAutomaton()
+	{
+		for( Node n : nodes.values() ) {
+			if(n instanceof CircleNode)
+			{
+				((CircleNodeLayout)n.getLayout()).dispose();
+			}
+		}
+
+		this.clear();
+
+		nodes.clear();
+		edges.clear();
+		edgeLabels.clear();
+		freeLabels.clear();
+		
+		bezierLayoutFreeGroup=0;
+
+		// Prepare elements for automatic layout
+		Set<Set<FSATransition>> groups = new HashSet<Set<FSATransition>>();
+		HashMap<FSAState,Set<FSATransition>> stateGroups = new HashMap<FSAState,Set<FSATransition>>();
+		Iterator<FSAState> i = fsa.getStateIterator();
+
+		while( i.hasNext() ) {
+			FSAState s=i.next();
+			//Labeling the states according to the id:
+			if(s.getName() == null)
+			{
+				s.setName(String.valueOf(s.getId()));
+			}
+			wrapState(s,new Point2D.Float(0,0));//(float)Math.random()*200,(float)Math.random()*200));
+			stateGroups.clear();
+			Iterator<FSATransition> j = s.getOutgoingTransitionsListIterator();
+
+			while( j.hasNext() ) {
+				FSATransition t = j.next();
+				Set<FSATransition> ts;
+				if(stateGroups.containsKey(t.getTarget())) {
+					ts = stateGroups.get(t.getTarget());
+				} else {
+					ts = new HashSet<FSATransition>();
+				}
+				ts.add(t);
+				stateGroups.put(t.getTarget(),ts);
+			}
+			groups.addAll(stateGroups.values());
+		}
+
+		Iterator<Set<FSATransition>> groupsIter = groups.iterator();
+		while( groupsIter.hasNext() ) {
+			wrapTransitions( groupsIter.next() );
+		}
+
+		LayoutManager.getDefaultFSMLayouter().layout(this);
+//		buildIntersectionDS();
+		
+		for(Node n:nodes.values())
+		{
+			if(n.getState().isInitial())
+			{
+				//Insert the initial arrow among the egdes
+				edges.put(n.getInitialArrow().getId(), n.getInitialArrow() );
+			}
+		}
+
+		// collect all labels on edges				
+		for( Edge edge : edges.values() )	{
+			edgeLabels.put(edge.getId(), edge.getLabel());
+		}
+		
+//		//updating free edge group
+//		Set<Long> setEdges = edges.keySet();
+//		Iterator<Long> it = setEdges.iterator();
+//		while(it.hasNext())
+//		{
+//			try{
+//				Long groupid = ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
+//				bezierLayoutFreeGroup = (groupid > bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
+//			}catch(ClassCastException e){
+//				//No problem... that happened because we can have initial edges amongst the edges
+//			}
+//		}
+	}
+	
 	/**
 	 * Returns a pointer to itself.
 	 * @return a pointer to itself 
@@ -530,71 +398,117 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		edgeLabels.clear();
 		freeLabels.clear();		
 
-		// for all states in fsa, 
-		// get the graphic data, 
-		// construct a node and 
-		// add to set of nodes		
-		Iterator iter = fsa.getStateIterator();
-		State s;
-		Node n1;
-
-		while( iter.hasNext() ) {
-			s = (State)iter.next();
-			CircleNodeLayout nL = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
-			nL.setUniformRadius(uniformR);
-			n1 = new CircleNode(s, nL);			
-			insert(n1);
-			nodes.put(new Long(s.getId()), n1);
+		//Testing annotations:
+		boolean hasLayout = true;
+		Iterator <FSAState> sIt = fsa.getStateIterator();
+		sIt = fsa.getStateIterator();
+		while(sIt.hasNext())
+		{
+			FSAState s = sIt.next();
+			CircleNodeLayout l = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
+			if(l==null)
+			{
+				hasLayout=false;
+				break;
+			}
+			//set this FSAGraph's uniform radius management 
+			l.setUniformRadius(uniformR);
+			//Avoid give the name "" to the state!
+			if(l.getText() != "")
+			{
+				s.setName(l.getText());
+			}
+			//Create a new node
+			CircleNode node = new CircleNode(s, l);
+			long id = s.getId();
+			nodes.put(id, node);
+			if(s.isInitial())
+			{
+				//Insert the initial arrow among the egdes
+				edges.put(node.getInitialArrow().getId(), node.getInitialArrow() );
+			}
+			l.setText(s.getName());
+			//Insert the node in the graph
+			insert(node);
 		}
 
-		// for all transitions in fsa
-		// create all edges and connect to nodes
-		// create a single edge for aggregate of all transitions from same start and end state
-		// add events to collection for that edge.
-		iter = fsa.getTransitionIterator();
-		Transition t;
-		Node n2;
-		Edge e;
-		while( iter.hasNext() ) {						
-			t = (Transition)iter.next();
+		/////////////////////
+		if(!hasLayout)//Generate automatic layout:
+		{
+			wrapAutomaton();
+			return;
+		}
 
-			// get the source and target nodes
-			n1 = nodes.get(new Long(t.getSource().getId()));
-			n2 = nodes.get(new Long(t.getTarget().getId()));
-
-			// if the edge corresponding to t already exists,
-			// and its layout is the same
-			// add t to the edge's set of transitions	
-			// FIXME Only finds the first one; need to keep searching until find one with matching layout.
-			e = existingEdge(t);
-			// = directedEdgeBetween(n1, n2); 
-			BezierLayout layout = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
-			if( e != null ) {		
-				e.addTransition(t);	
-
-				FSAEvent tEvent = t.getEvent();
-				if (tEvent != null)	{
-					e.addEventName(tEvent.getSymbol());
-				}
-
-			}else{
-
-				// get the graphic data for the transition and all associated events
-				// construct the edge
-				if(n1 == n2) {
-					e = new ReflexiveEdge(layout, n1, t);
-				}else{
-					e = new BezierEdge(layout, n1, n2, t);
-				}
-
-				// add this edge to source and target nodes' children
-				n1.insert(e);				
-				n2.insert(e);
-
-				// add to set of edges
-				// id may be misleading since it is the id of only the first transition on this edge
-				edges.put(new Long(e.getId()), e);
+		//Add the edges to the FSAGraph
+		HashMap<Long, BezierEdge> groupsMap=new HashMap<Long, BezierEdge>();
+		Iterator <FSATransition> tIt = fsa.getTransitionIterator();
+		while(tIt.hasNext())
+		{
+			FSATransition t = tIt.next();
+			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+			if(l == null)
+			{
+				hasLayout = false;
+				break;
 			}
+			//find source and target nodes
+			Node src = nodes.get(t.getSource().getId());
+			Node dst = nodes.get(t.getTarget().getId());
+			if(src==null||dst==null)
+			{
+				hasLayout=false;
+				break;
+			}
+			if(l.getGroup() != BezierLayout.UNGROUPPED)
+			{
+				//find edge group
+				BezierEdge existingEdge=groupsMap.get(l.getGroup());
+				if(existingEdge==null)
+				{
+					if(src != dst){
+						existingEdge = new BezierEdge(l, src,dst, t);
+						//add this edge among the childs of its source and target
+						src.insert(existingEdge);
+						dst.insert(existingEdge);				
+					}else{
+						//Create a reflexive edge
+						existingEdge = new ReflexiveEdge(l, src, t);
+						//add this edge among the childs of its source and target
+						src.insert(existingEdge);
+					}
+					//Put the edge in the set of edges
+					edges.put(existingEdge.getId(), existingEdge);
+					groupsMap.put(l.getGroup(),existingEdge);
+				}
+				else
+				{
+					existingEdge.addTransition(t);
+				}
+				t.setAnnotation(Annotable.LAYOUT,existingEdge.getLayout());
+			}
+			else{
+				BezierEdge edge;
+				if(src != dst){
+					edge = new BezierEdge(l, src,dst, t);
+					//add this edge among the childs of its source and target
+					src.insert(edge);
+					dst.insert(edge);				
+				}else{
+					//Create a reflexive edge
+					edge = new ReflexiveEdge(l, src, t);
+					//add this edge among the childs of its source and target
+					src.insert(edge);				
+				}
+				//Put the edge in the set of edges
+				edges.put(edge.getId(), edge);
+			}			
+		}
+
+		/////////////////////
+		if(!hasLayout)//Generate automatic layout:
+		{
+			wrapAutomaton();
+			return;
 		}
 
 		// collect all labels on edges				
@@ -602,14 +516,20 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 			edgeLabels.put(edge.getId(), edge.getLabel());
 		}
 
-		// add all intialArrows to the set of edges
-		for( Node node : nodes.values() )	{
-			if( node.getState().isInitial() ) {
-				edges.put( node.getInitialArrow().getId(), node.getInitialArrow() );
-			}
-		}
-
 		// TODO for all free labels in layout data structure
+
+		//updating free edge group
+		Set<Long> setEdges = edges.keySet();
+		Iterator<Long> it = setEdges.iterator();
+		while(it.hasNext())
+		{
+			try{
+				Long groupid = ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
+				bezierLayoutFreeGroup = (groupid > bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
+			}catch(ClassCastException e){
+				//No problem... that happened because we can have initial edges amongst the edges
+			}
+		}	
 
 		// clear all dirty bits in the graph structure		
 		refresh();
@@ -901,6 +821,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		CircleNode n = new CircleNode(s, layout);
 		nodes.put(new Long(s.getId()), n);
 		insert(n);
+		
 		setNeedsRefresh(true);		
 
 		Rectangle2D dirtySpot = n.adjacentBounds(); 
@@ -909,7 +830,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 				n.getId(), 
 				dirtySpot,
 				this, ""));
-		//labelNode(n,)
 		return n;
 	}	
 
@@ -966,7 +886,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		FSATransition t=i.next();
 		Node n1=nodes.get(new Long(t.getSource().getId()));
 		Node n2=nodes.get(new Long(t.getTarget().getId()));
-		Edge e;
+		BezierEdge e;
 		if( n1.equals(n2) ) {
 			// let e figure out how to place itself among its neighbours			
 			e = new ReflexiveEdge(n1, t);
@@ -987,6 +907,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 		edges.put(e.getId(), e);		
 		edgeLabels.put(e.getId(), e.getLabel());
 		setNeedsRefresh(true);
+
+		//if there is more than one transition on the edge
+		if(ts.size()>1)
+		{
+			e.getBezierLayout().setGroup(getFreeBezierLayoutGroup());
+		}
 
 		while(i.hasNext()) {
 			t = i.next();
@@ -2057,6 +1983,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 	public void forceLayoutDisplay()
 	{
 		this.avoidLayoutDrawing = false;
+		initializeGraph();
 		if(LatexManager.isLatexEnabled())
 		{
 			LatexManager.setLatexEnabled(false);

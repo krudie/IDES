@@ -97,6 +97,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 		setCurve(bLayout.getCurve());			
 		setEventNames(bLayout.getEventNames());
 		setLabelOffset(bLayout.getLabelOffset());
+		setGroup(bLayout.getGroup());
 		initializeShape();
 	}
 

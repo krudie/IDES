@@ -328,7 +328,6 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @param indent the indentation to be used in the file
 		 */ 
 		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
-			System.out.println();
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
 			if(l!= null)
 			{

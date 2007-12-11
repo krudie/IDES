@@ -38,6 +38,7 @@ import presentation.fsa.GraphDrawingView;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.CircleNode;
+import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 import presentation.fsa.NodeLabellingDialog;
 import presentation.fsa.SelectionGroup;
@@ -119,6 +120,10 @@ public class GraphActions {
 				Set<Edge> edgesToRemove=new HashSet<Edge>();
 				for(Edge e:graph.getEdges())
 				{
+					if(e instanceof InitialArrow)
+					{
+						continue;
+					}
 					Vector<FSAEvent> eventsToKeep=new Vector<FSAEvent>();
 					for(Iterator<FSATransition> i=e.getTransitions();i.hasNext();)
 					{

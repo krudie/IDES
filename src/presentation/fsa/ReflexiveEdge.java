@@ -211,8 +211,6 @@ public class ReflexiveEdge extends BezierEdge {
 			return exportString;
 		}
 
-		// Adjust the y value for the CTRL points based on the midpoint
-
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
 			// Draw the curve				
