@@ -1,7 +1,6 @@
 package presentation.template.tools;
 
 import io.IOUtilities;
-import io.fsa.ver2_1.AutomatonParser;
 
 import java.awt.Point;
 import java.awt.Rectangle;

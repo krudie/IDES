@@ -1,5 +1,6 @@
 package main;
 
+import io.FileLoadException;
 import io.ParsingToolbox;
 
 import java.awt.Color;
@@ -430,7 +431,17 @@ public class Workspace extends WorkspacePublisherAdaptor {
 				model = IOCoordinator.getInstance().load(file);
 			}catch(IOException e)
 			{
-				Hub.displayAlert(Hub.string("cantLoadModel") + file.getName());
+				if(e instanceof FileLoadException && ((FileLoadException)e).getPartialModel()!=null)
+				{
+					model=((FileLoadException)e).getPartialModel();
+					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1") + file.getName() + "\n" 
+							+ Hub.string("errorsParsingXMLFileL2"));
+				}
+				else
+				{
+					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1") + file.getName() + "\n" 
+							+ Hub.string("errorsParsingXMLfail"));					
+				}
 			}
 			if(model != null)
 			{

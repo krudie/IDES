@@ -104,7 +104,7 @@ public class IOPluginManager {
 	 * @param meta the metadata to be loaded, eg: "layout"
 	 * @return
 	 */
-	public Set<FileIOPlugin> getMetLoaders(String type, String meta)
+	public Set<FileIOPlugin> getMetaLoaders(String type, String meta)
 	{
 		Iterator it = metaLoaders.iterator();
 		Set<FileIOPlugin> returnSet = new HashSet<FileIOPlugin>();
@@ -113,16 +113,8 @@ public class IOPluginManager {
 			FileIOPlugin plugin = (FileIOPlugin)((PluginDescription)it.next()).worksWithMetaType(type, meta);
 			if(plugin != null)
 				returnSet.add(plugin);
-			}
-		
-		
-		switch(returnSet.size()){
-			case 0:
-				//there are no plugins capable of saving metadata for this data type
-				return null;
-			default:
-				return returnSet;
-			}		
+		}		
+		return returnSet;
 	}
 	
 	/**

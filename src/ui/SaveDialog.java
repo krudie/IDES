@@ -195,7 +195,6 @@ public class SaveDialog extends EscapeDialog {
 		setVisible(true);
 		if(selected!=null)
 		{
-//			System.out.println("-------");
 			Collections.sort(selected);
 			Vector<DESModel> selectedModels=new Vector<DESModel>();
 			for(String s:selected)
@@ -206,10 +205,6 @@ public class SaveDialog extends EscapeDialog {
 						selectedModels.add(m);
 				}
 			}
-//			for(DESModel m:selectedModels)
-//			{
-//				System.out.println(m.getName());
-//			}
 			return selectedModels;
 		}
 		return null;

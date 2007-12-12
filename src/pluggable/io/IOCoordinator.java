@@ -5,6 +5,7 @@ package pluggable.io;
 import main.Annotable;
 import main.Hub;
 import model.DESModel;
+import io.FileLoadException;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ProtectedInputStream;
@@ -13,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +32,7 @@ import org.xml.sax.SAXException;
 import pluggable.io.IOPluginManager;
 import pluggable.io.FileIOPlugin;
 import io.AbstractParser;
+import io.fsa.ver2_1.AutomatonParser20;
 /**
  * @author christiansilvano
  */
@@ -90,22 +93,36 @@ public final class IOCoordinator{
 		}
 		ps.println("</model>");
 		ps.closeWrappedPrintStream();
-		//4 - close the file.
-		//5 - Return true if the operation was a success, otherwise return false.
 	}
 
 	//Get the "type" of the model in file and ask the plugin that manage this
 	//kind of "type" to load the DES.
 	public DESModel load(File file) throws IOException
 	{
+		//try to deal with files from IDES ver 2.0
+		if(isFileVer20(file))
+		{
+			AutomatonParser20 parser20=new AutomatonParser20();
+			DESModel model=parser20.parse(file);
+			if(model==null||!"".equals(parser20.getParsingErrors()))
+			{
+				throw new FileLoadException(parser20.getParsingErrors(),model);
+			}
+			return model;
+		}
+		
+		// set when FileLoadException is encountered in loadData or loadMeta
+		String errorMsg="";
+		boolean errorEncountered=false;
+		
 		DESModel returnModel = null;
-		XmlParser xmlParser = new XmlParser();
+		TagRecovery xmlParser = new TagRecovery();
 		String type = xmlParser.getType(file);
 		Set<String> metaTags = xmlParser.getMetaTags(file);
 		//System.out.println(type);
 		if(type == null)
 		{
-			return null;
+			throw new FileLoadException(Hub.string("xmlParsingDefNotFound"));
 		}
 
 		//Create a FileInputStream with "file"
@@ -117,14 +134,25 @@ public final class IOCoordinator{
 		FileIOPlugin plugin = IOPluginManager.getInstance().getDataLoader(type);
 		if(plugin == null)
 		{
-			return null;
+			throw new FileLoadException(Hub.string("pluginNotFoundFile"));
 		}
 		DataProtector dp = new DataProtector(br);
 		InputStream dataStream = dp.getXmlContent("data", file);
-		returnModel = plugin.loadData(dataStream, file.getParentFile());
-		if(returnModel == null)
+		try
 		{
-			return null;
+			returnModel = plugin.loadData(dataStream, file.getParentFile());
+		}catch(FileLoadException e)
+		{
+			if(e.getPartialModel()==null)
+			{
+				throw e;
+			}
+			else
+			{
+				errorEncountered=true;
+				errorMsg+=e.getMessage();
+				returnModel=e.getPartialModel();
+			}
 		}
 		//LOADING METADATA TO THE MODEL:
 		Iterator<String> mIt = metaTags.iterator();
@@ -135,17 +163,25 @@ public final class IOCoordinator{
 			//Get a string with the "tag" for the current meta section 
 			String meta = mIt.next();
 			//Get all the plugins which loads metadata from the pair: (type, meta)
-			Set<FileIOPlugin>plugins = IOPluginManager.getInstance().getMetLoaders(type, meta);
-			if(plugins == null)
+			Set<FileIOPlugin>plugins = IOPluginManager.getInstance().getMetaLoaders(type, meta);
+			if(plugins.size()==0)
 			{
-				// for the metadata: meta
+				errorEncountered=true;
+				errorMsg+=Hub.string("pluginNotFoundFile")+"\n";
 			}else{
 				//Make every plugin load its metadata
 				Iterator<FileIOPlugin> pIt = plugins.iterator();
 				while(pIt.hasNext())
 				{
 					FileIOPlugin p = pIt.next();
-					p.loadMeta(metaStream, returnModel);
+					try
+					{
+						p.loadMeta(metaStream, returnModel);
+					}catch(FileLoadException e)
+					{
+						errorEncountered=true;
+						errorMsg+=e.getMessage();
+					}
 				}
 			}
 		}
@@ -155,6 +191,10 @@ public final class IOCoordinator{
 		{
 			returnModel.setName(ParsingToolbox.removeFileType(file.getName()));
 			returnModel.setAnnotation(Annotable.FILE,file);
+		}
+		if(errorEncountered)
+		{
+			throw new FileLoadException(errorMsg,returnModel);
 		}
 		return returnModel;
 	}
@@ -188,9 +228,10 @@ public final class IOCoordinator{
 			{
 
 			}
-			while(!parseFinished)
+			int currentChar=0;
+			while(!parseFinished&&currentChar>-1)
 			{
-				int currentChar = -1;
+				currentChar = -1;
 				try{
 					//Read the current byte
 					currentChar = head.read();
@@ -301,29 +342,26 @@ public final class IOCoordinator{
 		}
 	}
 
-	private class XmlParser extends AbstractParser{
+	private class TagRecovery extends AbstractParser{
 		Set<String> metaData = new HashSet<String>();	
 		protected static final String ATTRIBUTE_TYPE = "type", ATTRIBUTE_TAG = "tag";
-		protected static final String NOTHING = "nothing";		
-		private String dataType = new String();
-		private Set<String> metaTags = new HashSet<String>();
+		private String dataType = null;
+		private Set<String> metaTags = null;
 
-		public XmlParser()
+		public TagRecovery()
 		{
-			dataType = NOTHING;
-
 			//Initialize parser:
 			try {
 				xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 				xmlReader.setContentHandler(this);
 			} catch (ParserConfigurationException pce) {
-				System.err
-				.println("AbstractParser: could not configure parser, message: "
-						+ pce.getMessage());
+//				System.err
+//				.println("AbstractParser: could not configure parser, message: "
+//						+ pce.getMessage());
 			} catch (SAXException se) {
-				System.err
-				.println("AbstractParser: could not do something, message: "
-						+ se.getMessage());
+//				System.err
+//				.println("AbstractParser: could not do something, message: "
+//						+ se.getMessage());
 			}
 
 		}
@@ -333,16 +371,16 @@ public final class IOCoordinator{
 				xmlReader.parse(new InputSource(new FileInputStream(file)));
 			}
 			catch(FileNotFoundException fnfe){
-				parsingErrors += file.getName() + ": " + fnfe.getMessage() + "\n";
+				parsingErrors += fnfe.getMessage() + "\n";
 			}
 			catch(IOException ioe){
-				parsingErrors += file.getName() + ": " + ioe.getMessage() + "\n";
+				parsingErrors += ioe.getMessage() + "\n";
 			}
 			catch(SAXException saxe){
-				parsingErrors += file.getName() + ": " + saxe.getMessage() + "\n";
+				parsingErrors += saxe.getMessage() + "\n";
 			}
 			catch(NullPointerException npe){
-				parsingErrors += file.getName() + ": " + npe.getMessage() + "\n";
+				parsingErrors += npe.getMessage() + "\n";
 			}
 
 		}
@@ -360,27 +398,16 @@ public final class IOCoordinator{
 
 		private String getType(File file)
 		{
+			dataType=null;
 			parse(file);
-			String returnString = dataType;
-			metaTags.clear();
-			dataType = NOTHING;
-			if(returnString == NOTHING)
-			{
-				return null;
-			}
-			return returnString;
+			return dataType;
 		}
 
 		private Set<String> getMetaTags(File file)
 		{
+			metaTags=new HashSet<String>();
 			parse(file);
-			Set<String> returnSet = metaTags;
-			dataType = NOTHING;
-			if(metaTags.size() == 0)
-			{
-				return null;
-			}
-			return returnSet;
+			return metaTags;
 		}
 	}
 
@@ -409,6 +436,19 @@ public final class IOCoordinator{
 		default:
 			//more than one plugin hanging
 		}
+	}
+	
+	protected boolean isFileVer20(File file) throws IOException
+	{
+		BufferedReader in=new BufferedReader(new FileReader(file));
+		in.readLine();
+		String line=in.readLine();
+		in.close();
+		if(line!=null && line.startsWith("<automaton>"))
+		{
+			return true;
+		}
+		return false;
 	}
 }
 

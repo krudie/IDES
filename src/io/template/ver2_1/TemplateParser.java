@@ -2,7 +2,6 @@ package io.template.ver2_1;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
-import io.fsa.ver2_1.AutomatonParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +31,7 @@ import model.template.ver2_1.Link;
 import model.template.ver2_1.Module;
 import model.template.ver2_1.TemplateDesign;
 
+import pluggable.io.IOCoordinator;
 import presentation.PresentationManager;
 import presentation.template.BlockLayout;
 import presentation.template.Template;
@@ -196,13 +196,11 @@ public class TemplateParser {
 					{
 						throw new RuntimeException(Hub.string("missingFiles"));
 					}
-			    	AutomatonParser ap = new AutomatonParser();
 					FSAModel fsa;
 			    	String errors="";
 			    	try
 			    	{
-			    		fsa = ap.parse(fsaFile);
-			    		errors=ap.getParsingErrors();
+			    		fsa = (FSAModel)IOCoordinator.getInstance().load(fsaFile);
 			    	}catch(Exception e)
 			    	{
 			    		throw new RuntimeException(Hub.string("cantLoadTemplate")+" "+errors);

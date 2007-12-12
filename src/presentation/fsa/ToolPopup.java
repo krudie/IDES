@@ -59,7 +59,7 @@ public class ToolPopup extends JPopupMenu {
 		add(miMove);
 		add(new JPopupMenu.Separator());
 		add(miAlign);
-		add(miShowGrid);
+//		add(miShowGrid);
 		PopupListener popListener = new PopupListener();
 		addPopupMenuListener(popListener);
 	}

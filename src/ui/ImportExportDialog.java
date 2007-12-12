@@ -5,7 +5,6 @@ package ui;
 
 import main.Annotable;
 import io.IOUtilities;
-import io.fsa.ver2_1.FileOperations;
 
 import java.awt.Cursor;
 import java.awt.Dimension;

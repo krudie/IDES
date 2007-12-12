@@ -4,6 +4,8 @@
 package pluggable.io;
 import model.DESModel;
 
+import io.FileLoadException;
+
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.File;
@@ -45,13 +47,13 @@ public interface FileIOPlugin {
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(InputStream stream, File fileDir);
+	public DESModel loadData(InputStream stream, File fileDir) throws FileLoadException;
 	
 	/**
 	 * Loads metadata from the file
 	 * @param file
 	 */
-	void loadMeta(InputStream stream, DESModel model);
+	void loadMeta(InputStream stream, DESModel model) throws FileLoadException;
 	
 	/**
 	 * Save metaData to the file according to model.

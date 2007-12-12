@@ -2,7 +2,6 @@ package io.template.ver2_1;
 
 import io.IOUtilities;
 import io.ParsingToolbox;
-import io.fsa.ver2_1.AutomatonParser;
 import io.fsa.ver2_1.AutomatonParser20;
 
 import java.io.BufferedReader;

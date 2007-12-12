@@ -3,8 +3,6 @@
  */
 package ui;
 
-import io.fsa.ver2_1.FileOperations;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;

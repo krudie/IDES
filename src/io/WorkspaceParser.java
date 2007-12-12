@@ -17,7 +17,7 @@ import org.xml.sax.SAXException;
  * @author Kristian Edlund
  *
  */
-public class WorkspaceParser extends AbstractFileParser {
+public class WorkspaceParser extends AbstractParser {
 
 	protected static final String ELEMENT_WORKSPACE = "workspace",
 	ELEMENT_MODEL = "model";

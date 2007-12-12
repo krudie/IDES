@@ -3,8 +3,6 @@
  */
 package ui;
 
-import io.fsa.ver2_1.FileOperations;
-
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;

@@ -3,7 +3,8 @@
  */
 package io.fsa.ver2_1;
 
-import io.AbstractFileParser;
+import io.AbstractParser;
+import io.FileLoadException;
 import io.HeadTailInputStream;
 
 import java.awt.geom.CubicCurve2D;
@@ -175,36 +176,40 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(InputStream f, File fileDir)
+	public DESModel loadData(InputStream f, File fileDir) throws FileLoadException
 	{
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<data>" + System.getProperty("line.separator")).getBytes();
 		HeadTailInputStream dataField = new HeadTailInputStream(f,FILE_HEADER,"</data>".getBytes());
 		FSAModel model = null;
-		String errors="";
 		//Parse body:	
 		AutomatonParser parser = new AutomatonParser();
 //		parser.printStream(dataField);
 		model = ModelManager.createModel(FSAModel.class);
 		model = parser.parseData(dataField);
 
-		if(model == null || !"".equals(errors))
+		if(model == null || !"".equals(parser.getParsingErrors()))
 		{
-			return null;
+			throw new FileLoadException(parser.getParsingErrors(),model);
 		}
-		return model;//(DESModel)a;
+		return model;
 	}
 
 	/**
 	 * Loads metadata from the file
 	 * @param file
 	 */
-	public void loadMeta(InputStream stream, DESModel model)
+	public void loadMeta(InputStream stream, DESModel model) throws FileLoadException
 	{		
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<meta>" + System.getProperty("line.separator")).getBytes();
 		HeadTailInputStream metaField = new HeadTailInputStream(stream,FILE_HEADER,"</meta>".getBytes());
 
 		AutomatonParser parser = new AutomatonParser();
 		parser.parseMeta(metaField, model);
+		
+		if(!"".equals(parser.getParsingErrors()))
+		{
+			throw new FileLoadException(parser.getParsingErrors());
+		}
 	}
 
 	/**
@@ -343,7 +348,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 	}
 
-	public class AutomatonParser extends AbstractFileParser{  
+	public class AutomatonParser extends AbstractParser{  
 		boolean settingName = false;
 		String tmpName = "";
 
@@ -391,16 +396,16 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				xmlReader.parse(new InputSource(stream));
 			}
 			catch(FileNotFoundException fnfe){
-
+				parsingErrors+=fnfe.getMessage()+"\n";
 			}
 			catch(IOException ioe){
-
+				parsingErrors+=ioe.getMessage()+"\n";
 			}
 			catch(SAXException saxe){
-
+				parsingErrors+=saxe.getMessage()+"\n";
 			}
 			catch(NullPointerException npe){
-
+				parsingErrors+=npe.getMessage()+"\n";
 			}
 			return model;
 		}
@@ -411,11 +416,14 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 			try{
 				tags.add(qName);
-				CURRENT_PARSING_ELEMENT = tags.get(1);
+				if(tags.size()>1)
+				{
+					CURRENT_PARSING_ELEMENT = tags.get(1);
+				}
 			}
 			catch(Exception e)
 			{
-
+				parsingErrors+=e.getMessage()+"\n";
 			}
 
 			if(parsingData)
@@ -449,7 +457,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			
 			if(!qName.equals(tags.get(tags.size() -1)))
 			{
-				Hub.displayAlert(Hub.string("errorsParsingXMLFileL2"));
+				parsingErrors+=Hub.string("xmlParsingBadFormat")+"\n";
 			}else{
 				tags.remove(tags.remove(tags.size()-1));
 				CURRENT_PARSING_ELEMENT="";
@@ -463,9 +471,16 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		 * @see org.xml.sax.ContentHandler#endDocument()
 		 */
 		public void endDocument(){
+			
+			if(tags.size()>0)
+			{
+				parsingErrors+=Hub.string("xmlParsingBadFormat")+"\n";
+			}
+			
 			parsingData = false;
 			parsingMeta = false;
 		}
+		
 		/**
 		 * Debug function. Prints the content of the stream.
 		 * @param dataSection
@@ -507,18 +522,23 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					model.add(tmpState);
 				}
 
-				if(CURRENT_PARSING_ELEMENT == TRANSITION)
+				else if(CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
 					tmpTransition = (Transition)getModelElement(atts, CURRENT_PARSING_ELEMENT);
 					model.add(tmpTransition);
 				}
 
-				if(CURRENT_PARSING_ELEMENT == EVENT)
+				else if(CURRENT_PARSING_ELEMENT == EVENT)
 				{
 					tmpEvent = (Event)getModelElement(atts, CURRENT_PARSING_ELEMENT);
 					model.add(tmpEvent);
 				}
 
+				else
+				{
+					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+				}
+				break;
 				//////////////////////////////////////////////
 			case SUBTAG:			
 				if(qName.equals(NAME))
@@ -528,6 +548,8 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				}else{
 					settingName = false;
 				}
+				
+				break;
 				//////////////////////////////////////////////
 			case SUBSUBTAG:
 				if(CURRENT_PARSING_ELEMENT == STATE)
@@ -537,22 +559,35 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						tmpState.setInitial(true);
 					}
 
-					if(qName.equals(MARKED))
+					else if(qName.equals(MARKED))
 					{
 						tmpState.setMarked(true);
 					}
+					else
+					{
+						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					}
 				}
-				if(CURRENT_PARSING_ELEMENT == EVENT)
+				else if(CURRENT_PARSING_ELEMENT == EVENT)
 				{
 					if(qName.equals(OBSERVABLE))
 					{
 						tmpEvent.setObservable(true);
 					}
-					if(qName.equals(CONTROLLABLE))
+					else if(qName.equals(CONTROLLABLE))
 					{
 						tmpEvent.setControllable(true);
 					}
+					else
+					{
+						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					}
 				}
+				else
+				{
+					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+				}
+				break;
 			}
 
 		}
@@ -650,6 +685,12 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					model.setAnnotation(Annotable.LAYOUT,gl);
 				}
 				
+				else
+				{
+					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+				}
+				
+				break;
 			case SUBTAG: //FIRST LEVEL AFTER THE MAIN TAG
 				if(CURRENT_PARSING_ELEMENT == STATE)
 				{
@@ -661,14 +702,19 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						layout.setText(tmpState.getName());
 					}
 
-					if(qName.equals(ARROW))
+					else if(qName.equals(ARROW))
 					{
 						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
 						layout.setArrow(new Point2D.Float(Float.parseFloat(atts.getValue(COORD_X))  , Float.parseFloat(atts.getValue(COORD_Y))));
 					}
+					
+					else
+					{
+						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					}
 				}
 
-				if(CURRENT_PARSING_ELEMENT == TRANSITION)
+				else if(CURRENT_PARSING_ELEMENT == TRANSITION)
 				{	
 					//Setting the layout for the edge:
 					if(qName.equals(BEZIER))
@@ -694,7 +740,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					}
 
 					//Setting the label for the edge:
-					if(qName.equals(LABEL))
+					else if(qName.equals(LABEL))
 					{	
 						FSAEvent e = tmpTransition.getEvent();
 						if(e!=null)
@@ -712,7 +758,19 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 							}
 						}
 					}
+					
+					else
+					{
+						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					}
 				}
+				
+				else
+				{
+					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+				}
+
+				break;
 			}
 		}
 
@@ -730,16 +788,16 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 				xmlReader.parse(new InputSource(stream));
 			}
 			catch(FileNotFoundException fnfe){
-
+				parsingErrors+=fnfe.getMessage()+"\n";
 			}
 			catch(IOException ioe){
-
+				parsingErrors+=ioe.getMessage()+"\n";
 			}
 			catch(SAXException saxe){
-
+				parsingErrors+=saxe.getMessage()+"\n";
 			}
 			catch(NullPointerException npe){
-
+				parsingErrors+=npe.getMessage()+"\n";
 			}
 		}
 		/**
@@ -777,31 +835,34 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					eventN = -1;
 				}
 
-				Iterator<FSAState> sIt = model.getStateIterator();
+//				Iterator<FSAState> sIt = model.getStateIterator();
 				FSAState src = null, dst = null;
-				while(sIt.hasNext())
-				{
-					FSAState s = sIt.next();
-					if(s.getId() == sourceN)
-					{
-						src = s;
-					}
-
-					if(s.getId() == targetN)
-					{
-						dst = s;
-					}
-				} 		
-				Iterator<FSAEvent> eIt = model.getEventIterator();
+				src=model.getState(sourceN);
+				dst=model.getState(targetN);
+//				while(sIt.hasNext())
+//				{
+//					FSAState s = sIt.next();
+//					if(s.getId() == sourceN)
+//					{
+//						src = s;
+//					}
+//
+//					if(s.getId() == targetN)
+//					{
+//						dst = s;
+//					}
+//				} 		
+//				Iterator<FSAEvent> eIt = model.getEventIterator();
 				FSAEvent event = null;
-				while(eIt.hasNext())
-				{
-					FSAEvent e = eIt.next();
-					if(e.getId() == eventN)
-					{
-						event = e;
-					}
-				}
+				event=model.getEvent(eventN);
+//				while(eIt.hasNext())
+//				{
+//					FSAEvent e = eIt.next();
+//					if(e.getId() == eventN)
+//					{
+//						event = e;
+//					}
+//				}
 				if(event != null)
 				{
 					return new Transition(id, src, dst, event);
@@ -811,6 +872,9 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					return new Transition(id,src,dst);
 				}
 			}
+			
+			parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+			
 			return null;
 		} 
 		

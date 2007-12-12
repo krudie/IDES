@@ -3,7 +3,6 @@ package presentation.template;
 import io.IOUtilities;
 import io.ParsingToolbox;
 //import io.fsa.ver2_1.AutomatonParser;
-import io.fsa.ver2_1.FileOperations;
 //import io.fsa.ver2_1.XMLexporter;
 import io.template.ver2_1.PLCExporter;
 

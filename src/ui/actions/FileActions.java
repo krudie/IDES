@@ -5,7 +5,6 @@ import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ctct.CTCTException;
 import io.ctct.LL_CTCT_Command;
-import io.fsa.ver2_1.FileOperations;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Cursor;
@@ -86,7 +85,7 @@ public class FileActions {
 		public void actionPerformed(ActionEvent e)
 		{
 //			Open a window for the user to choose the file to open:
-			io.CommonActions.load();
+			io.CommonActions.open();
 		}
 	}
 	public static class SaveAction extends AbstractAction{
@@ -102,7 +101,7 @@ public class FileActions {
 		
 		public void actionPerformed(ActionEvent e)
 		{
-			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), null);
+			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), (File)Hub.getWorkspace().getActiveModel().getAnnotation(Annotable.FILE));
 		}
 	}
 	

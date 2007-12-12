@@ -1,5 +1,8 @@
 package io;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -19,6 +22,25 @@ public class AbstractParser implements ContentHandler {
     protected String parsingErrors = "";
 
     protected XMLReader xmlReader;
+
+    
+    /**
+     * constructs an abstract file parser.
+     */
+    public AbstractParser() {
+        try {
+            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            xmlReader.setContentHandler(this);
+        } catch (ParserConfigurationException pce) {
+            System.err
+                    .println("AbstractParser: could not configure parser, message: "
+                            + pce.getMessage());
+        } catch (SAXException se) {
+            System.err
+                    .println("AbstractParser: could not do something, message: "
+                            + se.getMessage());
+        }
+    }
 
     /**
      * Returns the errors that occured during the last parse.
