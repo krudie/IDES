@@ -201,6 +201,10 @@ public class GraphLabel extends GraphElement {
 		((Graphics2D)g).setStroke(GraphicalLayout.DASHED_STROKE);
 			
 		Rectangle bounds = bounds();
+		bounds.x=bounds.x-2;
+		bounds.y=bounds.y-2;
+		bounds.width=bounds.width+4;
+		bounds.height=bounds.height+4;
 		((Graphics2D)g).draw(bounds);	// TODO draw border for free labels too
 		
 		// FIXME only show for edge labels

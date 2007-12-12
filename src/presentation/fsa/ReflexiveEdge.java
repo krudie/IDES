@@ -198,8 +198,8 @@ public class ReflexiveEdge extends BezierEdge {
 
 		Point2D.Float edgeP1 = getSourceEndPoint();
 		Point2D.Float edgeP2 = getTargetEndPoint();
-		Point2D.Float edgeCTRL1 = getCTRL1();
-		Point2D.Float edgeCTRL2 = getCTRL2();
+		Point2D.Float edgeCTRL1 = getVisibleCTRL1();
+		Point2D.Float edgeCTRL2 = getVisibleCTRL2();
 
 		// Make sure this node is contained within the selection box
 		if (! (selectionBox.contains(edgeP1) && selectionBox.contains(edgeP2)

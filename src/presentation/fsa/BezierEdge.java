@@ -368,18 +368,50 @@ public class BezierEdge extends Edge {
 		}		
 	}
 	
+	/**
+	 * Get point of visible curve.
+	 * @return
+	 */
 	public Point2D.Float getP1() {
 		return new Point2D.Float((float)getBezierLayout().getCurve().getX1(), (float)getBezierLayout().getCurve().getY1());
 	}
 
+	/**
+	 * Get point of visible curve.
+	 * @return
+	 */
 	public Point2D.Float getP2() {
 		return new Point2D.Float((float)getBezierLayout().getCurve().getX2(), (float)getBezierLayout().getCurve().getY2());
 	}
 	
+	/**
+	 * Get point of visible curve.
+	 * @return
+	 */
+	public Point2D.Float getVisibleCTRL1() {
+		return new Point2D.Float((float)getBezierLayout().getVisibleCurve().getCtrlX1(), (float)getBezierLayout().getVisibleCurve().getCtrlY1());		
+	}
+
+	/**
+	 * Get point of complete curve.
+	 * @return
+	 */
 	public Point2D.Float getCTRL1() {
 		return new Point2D.Float((float)getBezierLayout().getCurve().getCtrlX1(), (float)getBezierLayout().getCurve().getCtrlY1());		
 	}
 
+	/**
+	 * Get point of visible curve.
+	 * @return
+	 */
+	public Point2D.Float getVisibleCTRL2() {
+		return new Point2D.Float((float)getBezierLayout().getVisibleCurve().getCtrlX2(), (float)getBezierLayout().getVisibleCurve().getCtrlY2());		
+	}
+
+	/**
+	 * Get point of complete curve.
+	 * @return
+	 */
 	public Point2D.Float getCTRL2() {
 		return new Point2D.Float((float)getBezierLayout().getCurve().getCtrlX2(), (float)getBezierLayout().getCurve().getCtrlY2());		
 	}
@@ -474,8 +506,8 @@ public class BezierEdge extends Edge {
 		
 		Point2D.Float edgeP1 = getSourceEndPoint();
 		Point2D.Float edgeP2 = getTargetEndPoint();
-		Point2D.Float edgeCTRL1 = getCTRL1();
-		Point2D.Float edgeCTRL2 = getCTRL2();
+		Point2D.Float edgeCTRL1 = getVisibleCTRL1();
+		Point2D.Float edgeCTRL2 = getVisibleCTRL2();
 		BezierLayout edgeLayout = (BezierLayout) getBezierLayout();
 
 		// Make sure this node is contained within the selection box
