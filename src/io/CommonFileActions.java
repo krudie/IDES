@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -278,7 +279,7 @@ public class CommonFileActions {
 		}
 		fc.setDialogTitle(Hub.string("exportTitle"));
 		fc.setSelectedFile(new File(model.getName()));
-		Iterator<ImportExportPlugin> pluginIt = IOPluginManager.getInstance().getExporters().iterator();
+		Iterator<ImportExportPlugin> pluginIt = IOPluginManager.getInstance().getExporters(model.getModelDescriptor().getPreferredModelInterface()).iterator();
 		while(pluginIt.hasNext())
 		{
 			ImportExportPlugin p = pluginIt.next();
@@ -304,7 +305,16 @@ public class CommonFileActions {
 				break;
 			file=fc.getSelectedFile();
 			String extension = ParsingToolbox.getFileType(file.getName());
-			String extPlugin = IOPluginManager.getInstance().getExporters(fc.getFileFilter().getDescription()).iterator().next().getFileExtension();
+			String extPlugin="";
+			Set<ImportExportPlugin> plugins=IOPluginManager.getInstance().getExporters(model.getModelDescriptor().getPreferredModelInterface());
+			for(ImportExportPlugin p:plugins)
+			{
+				if(p.getDescription().equals(fc.getFileFilter().getDescription()))
+				{
+					extPlugin=p.getFileExtension();
+					break;
+				}
+			}
 			//If the user doesn't select a file with an extension, IDES will automatically put an
 			//extension for the file, based on a plugin which exports the model.
 			if(extension.equals(""))

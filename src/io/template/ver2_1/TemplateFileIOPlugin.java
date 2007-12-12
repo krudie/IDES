@@ -39,15 +39,11 @@ import java.util.Iterator;
  */
 public class TemplateFileIOPlugin implements FileIOPlugin{
 	
-	public Set<String> getMetaTags(String type)
+	public Set<String> getMetaTags()
 	{
-		if(type.equals("TemplateDesign"))
-		{
-			Set<String> returnSet = new HashSet<String>();
-			returnSet.add("layout");
-			return returnSet;	
-		}
-		return null;
+		Set<String> returnSet = new HashSet<String>();
+		returnSet.add("layout");
+		return returnSet;	
 	}
 	
 	public String getIOTypeDescriptor()
@@ -81,8 +77,8 @@ public class TemplateFileIOPlugin implements FileIOPlugin{
 	{
 		//The FSA model is capable of saving metaData
 		IOPluginManager.getInstance().registerDataLoader(this ,"TemplateDesign");
-		IOPluginManager.getInstance().registerDataSaver(this, "TemplateDesign");
-		IOPluginManager.getInstance().registerMetaSaver(this, "TemplateDesign", "layout");
+//		IOPluginManager.getInstance().registerDataSaver(this, "TemplateDesign");
+//		IOPluginManager.getInstance().registerMetaSaver(this, "TemplateDesign", "layout");
 		IOPluginManager.getInstance().registerMetaLoader(this, "TemplateDesign", "layout");
 	}
 	

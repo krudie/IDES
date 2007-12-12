@@ -30,7 +30,7 @@ public interface FileIOPlugin {
 	 * @param type, a string with the data "type" e.g.: "FSA", "TemplateDesign"
 	 * @return a set of "tags"
 	 */
-	public Set<String> getMetaTags(String type);
+	public Set<String> getMetaTags();
 	
 	/**
 	 * Saves its data in <code>file</code> according to a <code>model</code>.

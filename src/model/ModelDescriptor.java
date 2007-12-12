@@ -41,9 +41,6 @@ public interface ModelDescriptor {
 	 */
 	public String getTypeDescription();
 	
-	
-	public String getIOTypeDescription();
-	
 	/**
 	 * Returns an small image (icon) which can be displayed
 	 * to the user to identify the model type.

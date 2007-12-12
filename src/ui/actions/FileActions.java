@@ -41,7 +41,6 @@ import ui.NewModelDialog;
 import ui.OperationDialog;
 import ui.SaveDialog;
 import pluggable.io.IOCoordinator;
-import ui.ImportExportDialog;
 ;/**
  * @author Lenko Grigorov
  */

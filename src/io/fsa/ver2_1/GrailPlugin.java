@@ -29,29 +29,12 @@ import io.IOUtilities;
 public class GrailPlugin implements ImportExportPlugin{
 	
 	
-	private String description = IOUtilities.GRAIL_DESCRIPTOR;
-	private String ext = IOUtilities.FM_FILE_EXT;
+	private String description = "Grail+";
+	private String ext = "fm";
 	
 	public String getFileExtension(){
 		return ext;
 	}
-	//Singleton instance:
-	private static GrailPlugin instance = null;
-	private GrailPlugin()
-	{
-		this.initializeImportExport();
-	}
-	
-	
-	public static GrailPlugin getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new GrailPlugin();
-		}
-		return instance;
-	}
-	
 	
 	/**
 	 * Registers itself to the IOPluginManager
@@ -59,8 +42,8 @@ public class GrailPlugin implements ImportExportPlugin{
 	 */
 	public void initializeImportExport()
 	{
-		IOPluginManager.getInstance().registerExport(this, IOUtilities.GRAIL_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
-		IOPluginManager.getInstance().registerImport(this, IOUtilities.GRAIL_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
+		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
+		IOPluginManager.getInstance().registerImport(this, description);
 	}
 	
 	/**

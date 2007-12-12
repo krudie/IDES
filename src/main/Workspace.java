@@ -145,7 +145,17 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		systems.add(model);
 		Toolset ts = PresentationManager.getToolset(model.getModelDescriptor().getPreferredModelInterface());
 		//TODO Check the efficiency of the wrapModel function
+		boolean latexOn=LatexManager.isLatexEnabled();
+		if(latexOn)
+		{
+			//disable Latex so model is wrapped without rendering 
+			LatexManager.setLatexEnabled(false);
+		}
 		LayoutShell ls = ts.wrapModel(model);
+		if(latexOn)
+		{
+			LatexManager.setLatexEnabled(true);
+		}
 		graphs.add(ls);
 		
 		fireModelCollectionChanged(new WorkspaceMessage(WorkspaceMessage.MODEL, 

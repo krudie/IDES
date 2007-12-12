@@ -29,31 +29,16 @@ import services.latex.LatexManager;
  */
 public class LatexPlugin implements ImportExportPlugin{
 
-	private String description = IOUtilities.LATEX_DESCRIPTOR;
-	private String ext = IOUtilities.LATEX_FILE_EXT;
-//	Singleton instance:
-	private static LatexPlugin instance = null;
-	private LatexPlugin()
-	{
-		this.initializeImportExport();
-	}
+	private String description = "LaTeX (PSTricks)";
+	private String ext = "tex";
 
-
-	public static LatexPlugin getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new LatexPlugin();
-		}
-		return instance;
-	}
 	/**
 	 * Registers itself to the IOPluginManager
 	 *
 	 */
 	public void initializeImportExport()
 	{
-		IOPluginManager.getInstance().registerExport(this, IOUtilities.EPS_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
+		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
 	}
 	/**
 	 * Unregisters itself from the IOPluginManager

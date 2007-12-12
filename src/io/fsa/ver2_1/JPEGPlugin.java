@@ -27,10 +27,10 @@ import presentation.fsa.FSAGraph;
  * @author christiansilvano
  *
  */
-public class PNGPlugin implements ImportExportPlugin {
+public class JPEGPlugin implements ImportExportPlugin {
 
-	protected String description = "PNG image";
-	protected String ext = "png";
+	protected String description = "JPEG image";
+	protected String ext = "jpg";
 	
 	protected final static int BORDER_SIZE=10;
 
@@ -91,7 +91,7 @@ public class PNGPlugin implements ImportExportPlugin {
         g2D.dispose();
         try
         {
-        	ImageIO.write(image,"png",dst);
+        	ImageIO.write(image,"jpg",dst);
         }catch(IOException e)
         {
         	throw new FormatTranslationException(e);

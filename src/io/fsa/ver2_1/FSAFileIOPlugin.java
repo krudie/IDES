@@ -52,38 +52,21 @@ import org.xml.sax.SAXException;
  * @author christiansilvano
  *
  */
-public class FSAFileIOPlugin implements FileIOPlugin{    
-	public Set<String> getMetaTags(String type)
+public class FSAFileIOPlugin implements FileIOPlugin{  
+	
+	protected final static String MODEL_TYPE="FSA";
+	protected final static String META_TAG="layout";	
+	
+	public Set<String> getMetaTags()
 	{
-		if(type.equals("FSA"))
-		{
-			Set<String> returnSet = new HashSet<String>();
-			returnSet.add("layout");
-			return returnSet;	
-		}
-		return null;
+		Set<String> tags=new HashSet<String>();
+		tags.add(META_TAG);
+		return tags;
 	}
 
 	public String getIOTypeDescriptor()
 	{
-		return "FSA";
-	}
-
-	//Singleton instance:
-	private static FSAFileIOPlugin instance = null;
-	private FSAFileIOPlugin()
-	{
-		this.initializeFileIO();
-	}
-
-
-	public static FSAFileIOPlugin getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new FSAFileIOPlugin();
-		}
-		return instance;
+		return MODEL_TYPE;
 	}
 
 	/**
@@ -92,10 +75,10 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	 */
 	public void initializeFileIO()
 	{
-		IOPluginManager.getInstance().registerDataLoader(this ,"FSA");
-		IOPluginManager.getInstance().registerDataSaver(this, "FSA");
-		IOPluginManager.getInstance().registerMetaSaver(this, "FSA", "layout");
-		IOPluginManager.getInstance().registerMetaLoader(this, "FSA", "layout");
+		IOPluginManager.getInstance().registerDataLoader(this ,MODEL_TYPE);
+		IOPluginManager.getInstance().registerDataSaver(this, FSAModel.class);
+		IOPluginManager.getInstance().registerMetaSaver(this, FSAModel.class);
+		IOPluginManager.getInstance().registerMetaLoader(this, MODEL_TYPE, META_TAG);
 	}
 
 
@@ -138,7 +121,7 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	{
 		//stream will be an OutputStream.
 		//it will need to be converted to PrintStream(UTF-8).
-		if(type.equals("FSA") & tag.equals("layout"))
+		if(type.equals(MODEL_TYPE) & tag.equals(META_TAG))
 		{
 			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();

@@ -53,16 +53,16 @@ public final class IOCoordinator{
 
 	public void save(DESModel model, File file) throws IOException
 	{	
-		//Read the dataType from the plugin modelDescriptor
-		String type = model.getModelDescriptor().getIOTypeDescription();
-
 		//Get the plugin capable of saving a model of the type "type"
 		//Currently there must be just one data saver for a model type.
-		FileIOPlugin dataSaver = IOPluginManager.getInstance().getDataSaver(type);
+		FileIOPlugin dataSaver = IOPluginManager.getInstance().getDataSaver(model.getModelDescriptor().getPreferredModelInterface());
+
+		//Read the dataType from the plugin modelDescriptor
+		String type = dataSaver.getIOTypeDescriptor();
 
 		//Get all the plugins capable of saving the metaTags for ""type""
 		//There can be several different meta savers for a specific data type.
-		Set<FileIOPlugin> metaSavers = IOPluginManager.getInstance().getMetaSavers(type);
+		Set<FileIOPlugin> metaSavers = IOPluginManager.getInstance().getMetaSavers(model.getModelDescriptor().getPreferredModelInterface());
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 
 		//Open  ""file"" and start writing the header of the IDES file format
@@ -81,7 +81,7 @@ public final class IOCoordinator{
 		while(metaIt.hasNext())
 		{
 			FileIOPlugin plugin = metaIt.next();
-			Iterator<String> tags = plugin.getMetaTags(type).iterator();
+			Iterator<String> tags = plugin.getMetaTags().iterator();
 			while(tags.hasNext())
 			{
 				String tag = tags.next();
@@ -162,26 +162,20 @@ public final class IOCoordinator{
 			//Get a string with the "tag" for the current meta section 
 			String meta = mIt.next();
 			//Get all the plugins which loads metadata from the pair: (type, meta)
-			Set<FileIOPlugin>plugins = IOPluginManager.getInstance().getMetaLoaders(type, meta);
-			if(plugins.size()==0)
+			FileIOPlugin metaPlugin = IOPluginManager.getInstance().getMetaLoaders(type, meta);
+			if(metaPlugin==null)
 			{
 				errorEncountered=true;
 				errorMsg+=Hub.string("pluginNotFoundFile")+"\n";
 			}else{
-				//Make every plugin load its metadata
-				Iterator<FileIOPlugin> pIt = plugins.iterator();
-				while(pIt.hasNext())
-				{
-					FileIOPlugin p = pIt.next();
 					try
 					{
-						p.loadMeta(metaStream, returnModel);
+						metaPlugin.loadMeta(metaStream, returnModel);
 					}catch(FileLoadException e)
 					{
 						errorEncountered=true;
 						errorMsg+=e.getMessage();
 					}
-				}
 			}
 		}
 		br.close();
@@ -412,8 +406,8 @@ public final class IOCoordinator{
 
 	public DESModel importFile(File src, String description) throws IOException
 	{
-		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getImporters(description);
-		if(plugins.size()<1)
+		ImportExportPlugin plugin = IOPluginManager.getInstance().getImporter(description);
+		if(plugin==null)
 		{
 			throw new FormatTranslationException(Hub.string("pluginNotFoundFile"));
 		}
@@ -421,7 +415,6 @@ public final class IOCoordinator{
 		File dst = File.createTempFile("IDESimport", IOUtilities.MODEL_FILE_EXT);
 		try
 		{
-			ImportExportPlugin plugin = plugins.iterator().next();
 			plugin.importFile(src, dst);
 			model=load(dst);
 			model.removeAnnotation(Annotable.FILE);
@@ -449,8 +442,17 @@ public final class IOCoordinator{
 		{
 			throw new FormatTranslationException(Hub.string("internalError"));
 		}
-		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getExporters(description);
-		if(plugins.size()<1)
+		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getExporters(model.getModelDescriptor().getPreferredModelInterface());
+		ImportExportPlugin plugin=null;
+		for(ImportExportPlugin p:plugins)
+		{
+			if(p.getDescription().equals(description))
+			{
+				plugin=p;
+				break;
+			}
+		}
+		if(plugin==null)
 		{
 			throw new FormatTranslationException(Hub.string("pluginNotFoundFile"));
 		}
@@ -458,7 +460,6 @@ public final class IOCoordinator{
 		try
 		{
 			save(model, src);
-			ImportExportPlugin plugin = plugins.iterator().next();
 			plugin.exportFile(src, dst);
 		}
 		finally

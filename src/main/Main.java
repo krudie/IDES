@@ -4,7 +4,9 @@ import io.fsa.ver2_1.EPSPlugin;
 import io.fsa.ver2_1.FSAFileIOPlugin;
 import io.fsa.ver2_1.GrailPlugin;
 import io.fsa.ver2_1.GraphExporter;
+import io.fsa.ver2_1.JPEGPlugin;
 import io.fsa.ver2_1.LatexPlugin;
+import io.fsa.ver2_1.PNGPlugin;
 import io.fsa.ver2_1.TCTPlugin;
 
 
@@ -68,15 +70,17 @@ public class Main {
 	private static void initializePlugins()
 	{
 		//Input/Output plugins:
-		FSAFileIOPlugin.getInstance().initializeFileIO();
+		new FSAFileIOPlugin().initializeFileIO();
 		//The template design is disabled for this version of IDES:
 		//		TemplateFileIOPlugin.getInstance().initializeFileIO();
 
 		//Import/Export plugins:
-		GrailPlugin.getInstance().initializeImportExport();
-		TCTPlugin.getInstance().initializeImportExport();
-		EPSPlugin.getInstance().initializeImportExport();
-		LatexPlugin.getInstance().initializeImportExport();
+		new GrailPlugin().initializeImportExport();
+		new TCTPlugin().initializeImportExport();
+		new EPSPlugin().initializeImportExport();
+		new LatexPlugin().initializeImportExport();
+		new PNGPlugin().initializeImportExport();
+		new JPEGPlugin().initializeImportExport();
 	}
 
 	/**

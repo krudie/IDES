@@ -19,22 +19,7 @@ import main.Hub;
  * @author Lenko Grigorov
  */
 public class IOUtilities {
-	/**
-	 * Descriptors for DES file types
-	 */
-	public static final String GRAIL_DESCRIPTOR="GRAIL";
-	public static final String TCT_DESCRIPTOR="TCT";
-	public static final String EPS_DESCRIPTOR="EPS";
-	public static final String LATEX_DESCRIPTOR="LaTeX (PSTricks)";
-	
-	
-	
-	/**
-	 * Descriptor for DES models
-	 */
-	public static final String FSA_DESCRIPTOR="FSA";
-	public static final String TEMPLATE_DESIGN_DESCRIPTOR="TemplateDesign";
-	
+
 	/**
 	 * Extension for workspace files.
 	 */
@@ -43,22 +28,6 @@ public class IOUtilities {
 	 * Extension for model files.
 	 */
 	public static final String MODEL_FILE_EXT="xmd";
-	/**
-	 * Extension for LaTeX files.
-	 */
-	public static final String LATEX_FILE_EXT="tex";
-	/**
-	 * Extension for EPS files.
-	 */
-	public static final String EPS_FILE_EXT="eps";
-	/**
-	 * Extension for Grail+ files.
-	 */
-	public static final String FM_FILE_EXT="fm";
-	/**
-	 * Extension for TCT files.
-	 */
-	public static final String TCT_FILE_EXT="des";
 	
 	/**
      * Method for getting a UTF-8 printstream wrapped around a file

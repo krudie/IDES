@@ -30,32 +30,16 @@ import services.latex.LatexRenderException;
  *
  */
 public class EPSPlugin implements ImportExportPlugin{
-	private String description = IOUtilities.EPS_DESCRIPTOR;
-	private String ext = IOUtilities.EPS_FILE_EXT;
-//	Singleton instance:
-	private static EPSPlugin instance = null;
-	private EPSPlugin()
-	{
-		this.initializeImportExport();
-	}
-	
-	
-	public static EPSPlugin getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new EPSPlugin();
-		}
-		return instance;
-	}
-	
+	private String description = "EPS";
+	private String ext = "eps";
+
 	/**
 	 * Registers itself to the IOPluginManager
 	 *
 	 */
 	public void initializeImportExport()
 	{
-		IOPluginManager.getInstance().registerExport(this, IOUtilities.EPS_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
+		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
 	}
 	/**
 	 * Unregisters itself from the IOPluginManager

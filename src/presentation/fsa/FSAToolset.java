@@ -201,17 +201,7 @@ public class FSAToolset implements Toolset {
 	public LayoutShell wrapModel(DESModel model) throws UnsupportedModelException {
 		if(!(model instanceof FSAModel))
 			throw new UnsupportedModelException();
-		boolean latexOn=LatexManager.isLatexEnabled();
-		if(latexOn)
-		{
-			//disable Latex so model is wrapped without rendering 
-			LatexManager.setLatexEnabled(false);
-		}
 		FSAGraph graph=new FSAGraph((FSAModel)model);
-		if(latexOn)
-		{
-			LatexManager.setLatexEnabled(true);
-		}
 		return graph;
 	}
 

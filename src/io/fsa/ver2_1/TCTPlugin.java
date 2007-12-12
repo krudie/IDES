@@ -29,29 +29,12 @@ import pluggable.io.ImportExportPlugin;
 public class TCTPlugin implements ImportExportPlugin{
 	
 	
-	private String description = IOUtilities.TCT_DESCRIPTOR;
-	private String ext = IOUtilities.TCT_FILE_EXT;
+	private String description = "TCT";
+	private String ext = "des";
 	
 	public String getFileExtension(){
 		return ext;
 	}
-	//Singleton instance:
-	private static TCTPlugin instance = null;
-	private TCTPlugin()
-	{
-		this.initializeImportExport();
-	}
-	
-	
-	public static TCTPlugin getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new TCTPlugin();
-		}
-		return instance;
-	}
-	
 	
 	/**
 	 * Registers itself to the IOPluginManager
@@ -59,8 +42,8 @@ public class TCTPlugin implements ImportExportPlugin{
 	 */
 	public void initializeImportExport()
 	{
-		IOPluginManager.getInstance().registerExport(this, IOUtilities.TCT_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
-		IOPluginManager.getInstance().registerImport(this, IOUtilities.TCT_DESCRIPTOR, IOUtilities.FSA_DESCRIPTOR);
+		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
+		IOPluginManager.getInstance().registerImport(this, description);
 	}
 	
 	/**

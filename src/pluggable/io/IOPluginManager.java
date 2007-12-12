@@ -3,9 +3,13 @@
  */
 package pluggable.io;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.Vector;
 /**
  * @author christiansilvano
@@ -15,21 +19,30 @@ public class IOPluginManager {
 
 //	Singleton instance:
 	private static IOPluginManager instance = null;
-	private Set<PluginDescription> metaSavers = null;
-	private Set<PluginDescription> dataSavers = null;
-	private Set<PluginDescription> dataLoaders = null;
-	private Set <PluginDescription> metaLoaders = null;
-	private Set <PluginDescription> exporters = null;
-	private Set <PluginDescription> importers = null;
+	private Map<Class, Set<FileIOPlugin>> metaSavers = null;
+	private Map<Class, FileIOPlugin> dataSavers = null;
+	private Map<String, FileIOPlugin> dataLoaders = null;
+	private Map<String, Map<String,FileIOPlugin>> metaLoaders = null;
+	private Map<Class, Set<ImportExportPlugin>> exporters = null;
+	private Map<String, ImportExportPlugin> importers = null;
+	
+	protected Comparator<ImportExportPlugin> descriptionComparator=
+	new Comparator<ImportExportPlugin>()
+	{
+		public int compare(ImportExportPlugin o1, ImportExportPlugin o2)
+		{
+			return o1.getDescription().compareTo(o2.getDescription());
+		}
+	};
 	
 	private IOPluginManager()
 	{
-		metaSavers = new HashSet<PluginDescription>();
-		dataSavers = new HashSet<PluginDescription>();
-		metaLoaders = new HashSet<PluginDescription>();
-		dataLoaders = new HashSet<PluginDescription>();
-		importers = new HashSet<PluginDescription>();
-		exporters = new HashSet<PluginDescription>();
+		metaSavers = new HashMap<Class, Set<FileIOPlugin>>();
+		dataSavers = new HashMap<Class, FileIOPlugin>();
+		metaLoaders = new HashMap<String, Map<String,FileIOPlugin>>();
+		dataLoaders = new HashMap<String, FileIOPlugin>();
+		importers = new HashMap<String, ImportExportPlugin>();
+		exporters = new HashMap<Class, Set<ImportExportPlugin>>();
 	}
 		
 	
@@ -47,29 +60,9 @@ public class IOPluginManager {
 	 * @param type - The datatype of the model, e.g.: "FSA" or "TemplateDesign"
 	 * @return
 	 */
-	public FileIOPlugin getDataSaver(String type)
+	public FileIOPlugin getDataSaver(Class type)
 	{
-		Iterator it = dataSavers.iterator();
-		Set<FileIOPlugin> returnSet = new HashSet<FileIOPlugin>();
-		while(it.hasNext())
-		{
-			FileIOPlugin plugin = (FileIOPlugin)((PluginDescription)it.next()).worksWithDataType(type);
-			if(plugin != null)
-			{
-				returnSet.add(plugin);
-			}
-		}
-		
-		switch(returnSet.size()){
-			case 1:
-				return returnSet.iterator().next();
-			case 0:
-				//error: there are no plugins capable of saving this data type
-				return null;
-			default:
-				//error: there are more than one plugin capable of loading the same data type
-				return null;
-			}		
+		return dataSavers.get(type);
 	}
 	
 	/**
@@ -77,25 +70,9 @@ public class IOPluginManager {
 	 * @param type - The datatype of the model, e.g.: "FSA" or "TemplateDesign"
 	 * @return
 	 */
-	public Set<FileIOPlugin> getMetaSavers(String type)
+	public Set<FileIOPlugin> getMetaSavers(Class type)
 	{
-		Iterator it = metaSavers.iterator();
-		Set<FileIOPlugin> returnSet = new HashSet<FileIOPlugin>();
-		while(it.hasNext())
-		{
-			FileIOPlugin plugin = (FileIOPlugin)((PluginDescription)it.next()).worksWithDataType(type);
-			if(plugin != null)
-				returnSet.add(plugin);
-			}
-		
-		
-		switch(returnSet.size()){
-			case 0:
-				//there are no plugins capable of saving metadata for this data type
-				return null;
-			default:
-				return returnSet;
-			}		
+		return metaSavers.get(type);
 	}
 	
 	/**
@@ -104,17 +81,14 @@ public class IOPluginManager {
 	 * @param meta the metadata to be loaded, eg: "layout"
 	 * @return
 	 */
-	public Set<FileIOPlugin> getMetaLoaders(String type, String meta)
+	public FileIOPlugin getMetaLoaders(String type, String meta)
 	{
-		Iterator it = metaLoaders.iterator();
-		Set<FileIOPlugin> returnSet = new HashSet<FileIOPlugin>();
-		while(it.hasNext())
+		Map<String,FileIOPlugin> map=metaLoaders.get(type);
+		if(map==null)
 		{
-			FileIOPlugin plugin = (FileIOPlugin)((PluginDescription)it.next()).worksWithMetaType(type, meta);
-			if(plugin != null)
-				returnSet.add(plugin);
-		}		
-		return returnSet;
+			return null;
+		}
+		return map.get(meta);
 	}
 	
 	/**
@@ -124,27 +98,7 @@ public class IOPluginManager {
 	 */
 	public FileIOPlugin getDataLoader(String type)
 	{
-		Iterator it = dataLoaders.iterator();
-		Set<FileIOPlugin> returnSet = new HashSet<FileIOPlugin>();
-		while(it.hasNext())
-		{
-			FileIOPlugin plugin = (FileIOPlugin)((PluginDescription)it.next()).worksWithDataType(type);
-			if(plugin != null)
-			{
-				returnSet.add(plugin);
-			}
-		}
-		
-		switch(returnSet.size()){
-			case 1:
-				return returnSet.iterator().next();
-			case 0:
-				//error: there are no plugins capable of saving this data type
-				return null;
-			default:
-				//error: there are more than one plugin capable of loading the same data type
-				return null;
-			}	
+		return dataLoaders.get(type);
 	}
 	
 	/**
@@ -156,7 +110,7 @@ public class IOPluginManager {
 	{
 		if(plugin != null)
 		{
-			dataLoaders.add(new PluginDescription(plugin,t,null));
+			dataLoaders.put(t,plugin);
 		}
 	}
 	
@@ -165,11 +119,11 @@ public class IOPluginManager {
 	 * @param plugin
 	 * @param t
 	 */
-	public void registerDataSaver(FileIOPlugin plugin, String t)
+	public void registerDataSaver(FileIOPlugin plugin, Class t)
 	{
 		if(plugin != null)
 		{
-			dataSavers.add(new PluginDescription(plugin,t,null));
+			dataSavers.put(t,plugin);
 		}
 	}
 	
@@ -183,8 +137,13 @@ public class IOPluginManager {
 	{
 		if(plugin != null)
 		{
-			
-			metaLoaders.add(new PluginDescription(plugin, t,m));
+			Map<String,FileIOPlugin> map=metaLoaders.get(t);
+			if(map==null)
+			{
+				map=new HashMap<String, FileIOPlugin>();
+			}
+			map.put(m,plugin);
+			metaLoaders.put(t,map);
 		}
 	}
 	
@@ -194,11 +153,17 @@ public class IOPluginManager {
 	 * @param t
 	 * @param m
 	 */
-	public void registerMetaSaver(FileIOPlugin plugin, String t, String m)
+	public void registerMetaSaver(FileIOPlugin plugin, Class t)
 	{
 		if(plugin != null)
 		{
-			metaSavers.add(new PluginDescription(plugin,t,m));
+			Set<FileIOPlugin> set=metaSavers.get(t);
+			if(set==null)
+			{
+				set=new HashSet<FileIOPlugin>();
+			}
+			set.add(plugin);
+			metaSavers.put(t,set);
 		}
 	}
 	
@@ -212,11 +177,11 @@ public class IOPluginManager {
 	 * @param description
 	 * @param importsTo
 	 */
-	public void registerImport(ImportExportPlugin plugin, String description, String importsTo)
+	public void registerImport(ImportExportPlugin plugin, String description)
 	{
 		if(plugin != null)
 		{
-			importers.add(new PluginDescription(plugin, description, importsTo));
+			importers.put(description,plugin);
 		}
 	}
 	
@@ -230,13 +195,18 @@ public class IOPluginManager {
 	 * @param description
 	 * @param importsTo
 	 */
-	public void registerExport(ImportExportPlugin plugin, String description, String exportsTo)
+	public void registerExport(ImportExportPlugin plugin, Class type)
 	{
 		if(plugin != null)
 		{
-			exporters.add(new PluginDescription(plugin, description, exportsTo));
+			Set<ImportExportPlugin> set=exporters.get(type);
+			if(set==null)
+			{
+				set=new TreeSet<ImportExportPlugin>(descriptionComparator);
+			}
+			set.add(plugin);
+			exporters.put(type,set);
 		}
-		
 	}
 	
 	/**
@@ -246,42 +216,25 @@ public class IOPluginManager {
 	 * @param type
 	 * @return
 	 */
-	public Set<ImportExportPlugin> getExporters(String description)
+	public Set<ImportExportPlugin> getExporters(Class t)
 	{
-		Set<ImportExportPlugin> returnSet= new HashSet<ImportExportPlugin>();
-		Iterator<PluginDescription> it = exporters.iterator();
-		
-		while(it.hasNext())
-		{
-			ImportExportPlugin plugin = it.next().exportToType(description);
-			if( plugin != null)
-			{
-				returnSet.add(plugin);
-			}
-		}
-		return returnSet;
+		return exporters.get(t);
 	}
 	
 	
 	public Set<ImportExportPlugin> getImporters()
 	{
-		Set<ImportExportPlugin> returnSet = new HashSet<ImportExportPlugin>();
-		Iterator<PluginDescription> it = importers.iterator();
-		while(it.hasNext())
-		{
-			returnSet.add((ImportExportPlugin)it.next().plugin);
-		}
-		
+		Set<ImportExportPlugin> returnSet = new TreeSet<ImportExportPlugin>(descriptionComparator);
+		returnSet.addAll(importers.values());
 		return returnSet;
 	}
 	
 	public Set<ImportExportPlugin> getExporters()
 	{
-		Set<ImportExportPlugin> returnSet = new HashSet<ImportExportPlugin>();
-		Iterator<PluginDescription> it = exporters.iterator();
-		while(it.hasNext())
+		Set<ImportExportPlugin> returnSet = new TreeSet<ImportExportPlugin>(descriptionComparator);
+		for(Set<ImportExportPlugin> set:exporters.values())
 		{
-			returnSet.add((ImportExportPlugin)it.next().plugin);
+			returnSet.addAll(set);
 		}
 		return returnSet;
 	}	
@@ -293,91 +246,8 @@ public class IOPluginManager {
 	 * @param type
 	 * @return
 	 */
-	public Set<ImportExportPlugin> getImporters(String descriptor)
+	public ImportExportPlugin getImporter(String description)
 	{
-		Set<ImportExportPlugin> returnSet= new HashSet<ImportExportPlugin>();
-		Iterator<PluginDescription> it = importers.iterator();
-		
-		while(it.hasNext())
-		{
-			ImportExportPlugin plugin = it.next().importFromType(descriptor);
-			if( plugin != null)
-			{
-				returnSet.add(plugin);
-			}
-		}
-		return returnSet;
+		return importers.get(description);
 	}
-	
-	/**
-	 * Auxiliar class to help selecting plugins according to the descriptions passed during
-	 * the plugin registration.
-	 *\TODO refactor this class in order to be easier to maintain
-	 * @author christiansilvano
-	 *
-	 */
-	private class PluginDescription{
-		private String tag;
-		private String type;
-		private Object plugin;
-		
-		public PluginDescription(Object reference, String t, String m)
-		{
-			type = t;
-			tag = m;
-			plugin = reference;
-		}
-		
-		public FileIOPlugin worksWithDataType(String t)
-		{
-			if(t.equals(type))
-			{
-				return (FileIOPlugin)plugin;
-			}
-			return null;
-		}
-		
-		public FileIOPlugin worksWithMetaType(String t, String m)
-		{
-			if(type.equals(t) & tag.equals(m))
-			{
-				return (FileIOPlugin)plugin;
-			}
-			return null;
-		}
-	
-		public ImportExportPlugin importExportTo(String description, String workingType)
-		{
-			if(type.equals(description) & tag.equals(workingType))
-			{
-				return (ImportExportPlugin)plugin;
-			}
-			return null;
-		}
-
-		public ImportExportPlugin exportToType(String description)
-		{
-			if(((ImportExportPlugin)plugin).getDescription().equals(description))
-			{
-				return (ImportExportPlugin)plugin;
-			}
-			return null;
-		}
-		
-		//return the plugin case the "exportExtension" is the same as the one given as paramether
-		//return null, otherwise
-		public ImportExportPlugin importFromType(String description)
-		{
-			if(((ImportExportPlugin)plugin).getDescription().equals(description))
-			{
-				return (ImportExportPlugin)plugin;
-			}
-			return null;
-			
-		}
-		
-	}
-	
-	
-
 }
