@@ -107,12 +107,12 @@ public class ImportExportDialog extends EscapeDialog{
 			public void actionPerformed(ActionEvent ae){
 				if(selectedPlugin !=null)
 				{
-					if(tabbedPane.getSelectedIndex() == 1)
-					{
-						selectedPlugin.exportFile(new File(srcFileExport.getText()), new File(dstFileExport.getText()));
-					}else{
-						selectedPlugin.importFile(new File(srcFileImport.getText()), new File(dstFileImport.getText()));
-					}
+//					if(tabbedPane.getSelectedIndex() == 1)
+//					{
+//						selectedPlugin.exportFile(new File(srcFileExport.getText()), new File(dstFileExport.getText()));
+//					}else{
+//						selectedPlugin.importFile(new File(srcFileImport.getText()), new File(dstFileImport.getText()));
+//					}
 					
 					dispose();
 				}
@@ -291,7 +291,7 @@ public class ImportExportDialog extends EscapeDialog{
 					refreshExportPluginList();
 					exportList.setSelectedIndex(0);
 					if(selectedPlugin!=null){
-						String dst = new String(ParsingToolbox.removeFileType(fc.getSelectedFile().getPath()) + "." + selectedPlugin.getExportExtension());
+						String dst = new String(ParsingToolbox.removeFileType(fc.getSelectedFile().getPath()) + "." + selectedPlugin.getFileExtension());
 						dstFileExport.setText(dst);
 					}else{
 						dstFileExport.setText("");
@@ -352,7 +352,7 @@ public class ImportExportDialog extends EscapeDialog{
 						}
 						if(selectedPlugin != null)
 						{
-							dstFileExport.setText(new String(ParsingToolbox.removeFileType(srcFileExport.getText()) + "." + selectedPlugin.getExportExtension()));
+							dstFileExport.setText(new String(ParsingToolbox.removeFileType(srcFileExport.getText()) + "." + selectedPlugin.getFileExtension()));
 						}
 					}
 				}

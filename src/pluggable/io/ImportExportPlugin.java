@@ -29,14 +29,14 @@ public interface ImportExportPlugin {
 		 * @param src - the source file
 		 * @param dst - the destination
 		 */
-		public void exportFile(File src, File dst);
+		public void exportFile(File src, File dst) throws FormatTranslationException;
 		
 		/**
 		 * Import a file from a different format to the IDES file system
 		 * @param importFile - the source file
 		 * @return
 		 */
-		public void importFile(File src, File dst);
+		public void importFile(File src, File dst) throws FormatTranslationException;
 		
 		
 		/**
@@ -48,5 +48,5 @@ public interface ImportExportPlugin {
 		 * Return a string with the file extension of the exported files. eg.: "png"
 		 * if the plugin exports to png.
 		 */
-		public String getExportExtension();
+		public String getFileExtension();
 }

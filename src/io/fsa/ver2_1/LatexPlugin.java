@@ -12,11 +12,14 @@ import java.io.PrintStream;
 
 
 import main.Hub;
+import model.fsa.FSAModel;
 
 
+import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
+import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 
@@ -66,7 +69,7 @@ public class LatexPlugin implements ImportExportPlugin{
 	 * @param src - the source file
 	 * @param dst - the destination
 	 */
-	public void exportFile(File src, File dst)
+	public void exportFile(File src, File dst) throws FormatTranslationException
 	{
 		if(!LatexManager.isLatexEnabled())
 		{
@@ -77,31 +80,25 @@ public class LatexPlugin implements ImportExportPlugin{
 		// Modifier: Sarah-Jane Whittaker
 		//Comment by Christian: Why don't make the "GraphExporter" return an OutputStream
 		//instead of a String?
+		PrintStream ps=null;
 		try
 		{
-			FSAGraph graphModel = (FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
-			PrintStream ps = new PrintStream(dst);
+	    	FSAModel a=(FSAModel)IOCoordinator.getInstance().load(src);
+			FSAGraph graphModel = (FSAGraph)PresentationManager.getToolset(FSAModel.class).wrapModel(a);
+			ps = new PrintStream(dst);
 			GraphExporter.createPSTricksFileContents(graphModel, ps);
 			ps.close();
 		}catch(IOException e)
 		{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
+    		throw new FormatTranslationException(e);
 		}
-//		if (fileContents == null)
-//		{
-//			return;
-//		}
-//
-//		try
-//		{
-//			latexWriter = new FileWriter(dst);
-//			latexWriter.write(fileContents);
-//			latexWriter.close();
-//		}
-//		catch (IOException fileException)
-//		{
-//			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
-//		}
+    	finally
+    	{
+   			if(ps!=null)
+   			{
+   				ps.close();
+   			}
+    	}
 	}
 
 	/**
@@ -126,7 +123,7 @@ public class LatexPlugin implements ImportExportPlugin{
 	/**
 	 * 
 	 */
-	public String getExportExtension()
+	public String getFileExtension()
 	{
 		return ext;
 	}

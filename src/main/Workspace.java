@@ -1,6 +1,5 @@
 package main;
 
-import io.FileLoadException;
 import io.ParsingToolbox;
 
 import java.awt.Color;
@@ -39,6 +38,7 @@ import model.ModelManager;
 import model.fsa.FSAEventsModel;
 import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
+import pluggable.io.FileLoadException;
 import pluggable.io.IOCoordinator;
 /**
  * The main manager of the open DESModels.
@@ -210,7 +210,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		}
 
 		if( m.needsSave() ){
-			if(!io.CommonActions.handleUnsavedModel(m)){
+			if(!io.CommonFileActions.handleUnsavedModel(m)){
 				return;
 			}
 		}
@@ -493,7 +493,7 @@ public class Workspace extends WorkspacePublisherAdaptor {
 //			io.CommonActions.handleUnsavedModels(unsavedModels);
 			for(DESModel a:unsavedModels)
 			{
-				if(!io.CommonActions.saveAs(a))
+				if(!io.CommonFileActions.saveAs(a))
 					throw new IncompleteWorkspaceDescriptorException();
 			}
 		}

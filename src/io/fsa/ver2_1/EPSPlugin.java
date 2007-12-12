@@ -4,12 +4,14 @@
 package io.fsa.ver2_1;
 
 import io.IOUtilities;
+import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import model.fsa.FSAModel;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -19,6 +21,7 @@ import main.Hub;
 import pluggable.io.IOPluginManager;
 
 import pluggable.io.ImportExportPlugin;
+import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexRenderException;
@@ -68,10 +71,8 @@ public class EPSPlugin implements ImportExportPlugin{
 	 * @param src - the source file
 	 * @param dst - the destination
 	 */
-	public void exportFile(File src, File dst)
+	public void exportFile(File src, File dst) throws FormatTranslationException
 	{
-		if(Hub.getWorkspace().getActiveModel()==null)
-			return;
 		if(!LatexManager.isLatexEnabled())
 		{
 			Hub.displayAlert(Hub.string("enableLatex4Export"));
@@ -80,27 +81,24 @@ public class EPSPlugin implements ImportExportPlugin{
 		// Modified: June 16, 2006
 		// Modifier: Sarah-Jane Whittaker
 		//		FSAModel model = (FSAModel)IOCoordinator.getInstance().load(src);
-		FSAGraph graphModel = (FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
-		String fileContents = GraphExporter.createEPSFileContents(graphModel);
-		//		System.out.println(fileContents);
-		if (fileContents == null)
-		{
-			return;
-		}
-		
 		try
 		{
-			LatexManager.getRenderer().latex2EPS(fileContents,dst);
-		}catch (IOException fileException)
-		{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
-			}
-			catch (LatexRenderException e)
+	    	FSAModel a=(FSAModel)IOCoordinator.getInstance().load(src);
+			FSAGraph graphModel = (FSAGraph)PresentationManager.getToolset(FSAModel.class).wrapModel(a);
+			String fileContents = GraphExporter.createEPSFileContents(graphModel);
+			if (fileContents == null)
 			{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
+				throw new FormatTranslationException(Hub.string("internalError"));
 			}
-
-
+			LatexManager.getRenderer().latex2EPS(fileContents,dst);
+		}catch(IOException e)
+		{
+    		throw new FormatTranslationException(e);
+		}
+		catch (LatexRenderException e)
+		{
+			throw new FormatTranslationException(e);
+		}
 	}
 	
 	/**
@@ -125,7 +123,7 @@ public class EPSPlugin implements ImportExportPlugin{
 	/**
 	 * 
 	 */
-	public String getExportExtension()
+	public String getFileExtension()
 	{
 		return ext;
 	}

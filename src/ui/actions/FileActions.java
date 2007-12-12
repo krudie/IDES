@@ -1,6 +1,6 @@
 package ui.actions;
 
-import io.CommonActions;
+import io.CommonFileActions;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ctct.CTCTException;
@@ -85,7 +85,7 @@ public class FileActions {
 		public void actionPerformed(ActionEvent e)
 		{
 //			Open a window for the user to choose the file to open:
-			io.CommonActions.open();
+			io.CommonFileActions.open();
 		}
 	}
 	public static class SaveAction extends AbstractAction{
@@ -101,7 +101,7 @@ public class FileActions {
 		
 		public void actionPerformed(ActionEvent e)
 		{
-			io.CommonActions.save(Hub.getWorkspace().getActiveModel(), (File)Hub.getWorkspace().getActiveModel().getAnnotation(Annotable.FILE));
+			io.CommonFileActions.save(Hub.getWorkspace().getActiveModel(), (File)Hub.getWorkspace().getActiveModel().getAnnotation(Annotable.FILE));
 		}
 	}
 	
@@ -117,7 +117,7 @@ public class FileActions {
 		}
 		public void actionPerformed(ActionEvent e)
 		{
-			io.CommonActions.saveAs(Hub.getWorkspace().getActiveModel());
+			io.CommonFileActions.saveAs(Hub.getWorkspace().getActiveModel());
 		}
 	}
 	
@@ -144,7 +144,7 @@ public class FileActions {
 				DESModel model=gm.getModel();
 				if( model != null)
 				{
-					io.CommonActions.save(model, (File)model.getAnnotation(Annotable.FILE));
+					io.CommonFileActions.save(model, (File)model.getAnnotation(Annotable.FILE));
 //					Hub.getWorkspace().fireRepaintRequired();
 				}
 			}
@@ -170,7 +170,7 @@ public class FileActions {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
+				if(io.CommonFileActions.saveWorkspace(wd,wd.getFile()))
 					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			catch(NullPointerException e)
@@ -200,7 +200,7 @@ public class FileActions {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(io.CommonActions.saveWorkspaceAs(wd))
+				if(io.CommonFileActions.saveWorkspaceAs(wd))
 					Hub.getWorkspace().setDirty(false);
 			}catch(IncompleteWorkspaceDescriptorException e){}
 			Hub.getMainWindow().setCursor(cursor);
@@ -217,7 +217,7 @@ public class FileActions {
 		
 		public void actionPerformed(ActionEvent e)
 		{
-			io.CommonActions.importModel();
+			io.CommonFileActions.importFile();
 		}
 	}
 
@@ -231,7 +231,7 @@ public class FileActions {
 		
 		public void actionPerformed(ActionEvent e)
 		{
-			io.CommonActions.exportModel();	
+			io.CommonFileActions.export(Hub.getWorkspace().getActiveModel());	
 		}
 	}
 
@@ -266,9 +266,9 @@ public class FileActions {
 		public void actionPerformed(ActionEvent e)
 		{
 			if(Hub.getWorkspace().isDirty())
-				if(!io.CommonActions.handleUnsavedWorkspace())
+				if(!io.CommonFileActions.handleUnsavedWorkspace())
 					return;
-			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(CommonActions.LAST_PATH_SETTING_NAME));
+			JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(CommonFileActions.LAST_PATH_SETTING_NAME));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new IOUtilities.ExtensionFilter(new String[]{IOUtilities.WORKSPACE_FILE_EXT}, Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -276,7 +276,7 @@ public class FileActions {
 			if(retVal == JFileChooser.APPROVE_OPTION){
 				Cursor cursor = Hub.getMainWindow().getCursor();
 				Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				WorkspaceDescriptor wd = io.CommonActions.openWorkspace(fc.getSelectedFile());
+				WorkspaceDescriptor wd = io.CommonFileActions.openWorkspace(fc.getSelectedFile());
 				if(wd != null){
 					Hub.getWorkspace().replaceWorkspace(wd);
 				}

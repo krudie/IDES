@@ -5,7 +5,6 @@ package pluggable.io;
 import main.Annotable;
 import main.Hub;
 import model.DESModel;
-import io.FileLoadException;
 import io.IOUtilities;
 import io.ParsingToolbox;
 import io.ProtectedInputStream;
@@ -411,30 +410,60 @@ public final class IOCoordinator{
 		}
 	}
 
-	public void importFile(File src, File dst, String description) throws IOException
+	public DESModel importFile(File src, String description) throws IOException
 	{
 		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getImporters(description);
-		switch(plugins.size())
+		if(plugins.size()<1)
 		{
-		case 0:
-		case 1:
-			plugins.iterator().next().importFile(src, dst);
-		default:
+			throw new FormatTranslationException(Hub.string("pluginNotFoundFile"));
 		}
+		DESModel model=null;
+		File dst = File.createTempFile("IDESimport", IOUtilities.MODEL_FILE_EXT);
+		try
+		{
+			ImportExportPlugin plugin = plugins.iterator().next();
+			plugin.importFile(src, dst);
+			model=load(dst);
+			model.removeAnnotation(Annotable.FILE);
+			model.setName(ParsingToolbox.removeFileType(src.getName()));
+		}
+		catch(FileLoadException e)
+		{
+			if(e.getPartialModel()!=null)
+			{
+				e.getPartialModel().removeAnnotation(Annotable.FILE);
+				e.getPartialModel().setName(ParsingToolbox.removeFileType(src.getName()));
+			}
+			throw e;
+		}
+		finally
+		{
+			dst.delete();
+		}
+		return model;
 	}
 
-	public void exportFile(File src, File dst, String description) throws IOException
+	public void export(DESModel model, File dst, String description) throws IOException
 	{
-		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getExporters(description);
-		switch(plugins.size())
+		if(model == null)
 		{
-		case 0:
-			//no plugin exporting
-		case 1:
+			throw new FormatTranslationException(Hub.string("internalError"));
+		}
+		Set<ImportExportPlugin> plugins = IOPluginManager.getInstance().getExporters(description);
+		if(plugins.size()<1)
+		{
+			throw new FormatTranslationException(Hub.string("pluginNotFoundFile"));
+		}
+		File src = File.createTempFile("IDESexport", IOUtilities.MODEL_FILE_EXT);
+		try
+		{
+			save(model, src);
 			ImportExportPlugin plugin = plugins.iterator().next();
 			plugin.exportFile(src, dst);
-		default:
-			//more than one plugin hanging
+		}
+		finally
+		{
+			src.delete();
 		}
 	}
 	

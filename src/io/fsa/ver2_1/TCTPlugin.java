@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 
 import main.Hub;
 import model.fsa.FSAModel;
+import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
@@ -31,7 +32,7 @@ public class TCTPlugin implements ImportExportPlugin{
 	private String description = IOUtilities.TCT_DESCRIPTOR;
 	private String ext = IOUtilities.TCT_FILE_EXT;
 	
-	public String getExportExtension(){
+	public String getFileExtension(){
 		return ext;
 	}
 	//Singleton instance:
@@ -76,13 +77,13 @@ public class TCTPlugin implements ImportExportPlugin{
 	 * @param src - the source file
 	 * @param dst - the destination
 	 */
-	public void exportFile(File src, File dst)
+	public void exportFile(File src, File dst) throws FormatTranslationException
 	{    	
 		FSAModel a= null;
 		try{
 			a = (FSAModel)IOCoordinator.getInstance().load(src);
 		}catch(IOException e){
-			Hub.displayAlert(e.getMessage());
+			throw new FormatTranslationException(e);
 		}
     	
 		try
@@ -90,9 +91,9 @@ public class TCTPlugin implements ImportExportPlugin{
 	    	LL_CTCT_Command.GiddesToCTCT(dst.getAbsolutePath(),a,LL_CTCT_Command.em);
 	    	LL_CTCT_Command.em.saveGlobalMap(new File(dst.getParentFile().getAbsolutePath()+File.separator+"global.map"));
 		}
-		catch (CTCTException fileException)
+		catch (CTCTException e)
 		{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath()+"\n"+fileException.getMessage());
+			throw new FormatTranslationException(e);
 		}
 	}
  
@@ -104,28 +105,20 @@ public class TCTPlugin implements ImportExportPlugin{
 	 * @param dst - the destination file
 	 * @return
 	 */
-	public void importFile(File src, File dst)
+	public void importFile(File src, File dst) throws FormatTranslationException
 	{
     	try
     	{
     		FSAModel a=LL_CTCT_Command.CTCTtoGiddes(src.getAbsolutePath(),src.getName().substring(0,src.getName().lastIndexOf(".")));
    			//Save the imported model to <code>dst</code>
-   			try
-   			{
-   				IOCoordinator.getInstance().save(a, dst);
-   			}catch(Exception e)
-   			{
-   				Hub.displayAlert(e.getMessage());
-   			}
+			IOCoordinator.getInstance().save(a, dst);
     	}catch(CTCTException e)
     	{
-    		e.printStackTrace();
-    		Hub.displayAlert(Hub.string("cantParseImport")+src);
+     		throw new FormatTranslationException(e);
     	}
-    	catch(RuntimeException e)
+    	catch(IOException e)
     	{
-    		e.printStackTrace();
-    		Hub.displayAlert(Hub.string("cantParseImport")+src);
+    		throw new FormatTranslationException(e);
     	}
 	}
 	

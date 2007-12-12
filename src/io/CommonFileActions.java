@@ -5,6 +5,8 @@ package io;
 
 import java.awt.Cursor;
 import java.awt.Toolkit;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -24,6 +26,7 @@ import main.WorkspaceMessage;
 import main.WorkspacePublisher;
 import model.DESModel;
 
+import pluggable.io.FileLoadException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
@@ -33,10 +36,10 @@ import ui.SaveDialog;
  * @author christiansilvano
  *
  */
-public class CommonActions {
+public class CommonFileActions {
 	
 	public static final String LAST_PATH_SETTING_NAME="lastUsedPath";
-	public static final String LAST_IMPEX_SETTING_NAME="lastUsedFilterPath";
+	public static final String LAST_IMPEX_SETTING_NAME="lastUsedImpExFilter";
 	
 	public static void open()
 	{		
@@ -101,7 +104,7 @@ public class CommonActions {
 				IOCoordinator.getInstance().save(model, file);
 			}catch(IOException e)
 			{
-				Hub.displayAlert(Hub.string("cantSaveModel") + " " + file.getName() + "\n" + "Message: "+  e.getMessage());
+				Hub.displayAlert(Hub.string("cantSaveModel") + file.getName() + "\n" + e.getMessage());
 				return false;
 			}
 			String name=ParsingToolbox.removeFileType(file.getName());
@@ -177,7 +180,7 @@ public class CommonActions {
 		return false;
 	}
 
-	public static void importModel()
+	public static void importFile()
 	{
 		JFileChooser fc = new JFileChooser(Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("importTitle"));
@@ -187,11 +190,11 @@ public class CommonActions {
 		while(it.hasNext())
 		{
 			ImportExportPlugin plugin = it.next();
-			if(plugin.getExportExtension() == null)
+			if(plugin.getFileExtension() == null)
 			{
-				return;
+				continue;
 			}
-			ext.add(plugin.getExportExtension());
+			ext.add(plugin.getFileExtension());
 			desc.add(plugin.getDescription());
 		}
 		if(ext.size() <= 0)
@@ -199,6 +202,7 @@ public class CommonActions {
 			//NO PLUGINS REGISTERED TO IMPORT!
 			//actually this should never happen since IDES already register some "basic" plugins
 			//in the Main.main() method.
+			Hub.displayAlert(Hub.string("pluginNotFoundImport"));
 			return;
 		}
 		Iterator<String> extIt = ext.iterator();
@@ -211,81 +215,58 @@ public class CommonActions {
 		FileFilter[] f = fc.getChoosableFileFilters();
 		for(int i = 0; i < f.length; i++)
 		{
-			FileFilter last = f[i];
-			if(last.getDescription().equals(lastFilter))
+			if(f[i].getDescription().equals(lastFilter))
 			{
-				fc.setFileFilter(last);
+				fc.setFileFilter(f[i]);
+				break;
 			}
 		}
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int retVal = fc.showOpenDialog(Hub.getMainWindow());
 		if(retVal == JFileChooser.APPROVE_OPTION){
-			Cursor cursor = Hub.getMainWindow().getCursor();
 
-			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			if(Hub.getWorkspace().getModel(ParsingToolbox.removeFileType(fc.getSelectedFile().getName()))!=null)
+			File file = fc.getSelectedFile();
+			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file.getParentFile().getAbsolutePath());
+			Hub.persistentData.setProperty(LAST_IMPEX_SETTING_NAME, fc.getFileFilter().getDescription());
+
+			if(Hub.getWorkspace().getModel(ParsingToolbox.removeFileType(file.getName()))!=null)
 			{
 				Hub.displayAlert(Hub.string("modelAlreadyOpen"));
+				return;
 			}
 
-			//calling IOCoordinator to handle the selected file
-			//It will make the correct plugins load the file):
+			Cursor cursor = Hub.getMainWindow().getCursor();
+			Hub.getMainWindow().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 			DESModel model = null;
-			File file = fc.getSelectedFile();
 			try{
-				String prefix = io.ParsingToolbox.removeFileType(file.getName());
-				//The suffix will be the IDES file format (obviously)
-				String suffix = IOUtilities.MODEL_FILE_EXT;
-				File dst = File.createTempFile("tmp" + prefix, suffix);
-				IOCoordinator.getInstance().importFile(file, dst, fc.getFileFilter().getDescription());
-				if(dst.exists())
-				{
-					model = IOCoordinator.getInstance().load(dst);
-				}
-				if(model != null)
-				{
-					model.setName(prefix);
-					model.removeAnnotation(Annotable.FILE);
-					Hub.getWorkspace().addModel(model);
-					Hub.getWorkspace().setActiveModel(model.getName());
-				}
-				dst.delete();
-			}catch(IOException e)
+				//calling IOCoordinator to handle the selected file
+				//It will make the correct plugins load the file):
+				model=IOCoordinator.getInstance().importFile(file, fc.getFileFilter().getDescription());
+			}catch(Exception e)
 			{
-				Hub.displayAlert(Hub.string("cantParseImport"));
+				if(e instanceof FileLoadException && ((FileLoadException)e).getPartialModel()!=null)
+				{
+					model=((FileLoadException)e).getPartialModel();
+					Hub.displayAlert(Hub.string("problemImport") + file.getName() + "\n" 
+							+ Hub.string("errorsParsingXMLFileL2"));
+				}
+				else
+				{
+					Hub.displayAlert(Hub.string("cantParseImport") + file.getName());					
+				}
+			}
+			if(model != null)
+			{
+				Hub.getWorkspace().addModel(model);
+				Hub.getWorkspace().setActiveModel(model.getName());
 			}
 			Hub.getMainWindow().setCursor(cursor);
-			try
-			{
-				Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file.getParentFile().getAbsolutePath());
-				Hub.persistentData.setProperty(LAST_IMPEX_SETTING_NAME, fc.getFileFilter().getDescription());
-			}catch(NullPointerException e)
-			{
-				//cancel button pressed... that's OK.
-			}
 		}
 	}
 
-	public static void exportModel()
+	public static void export(DESModel model)
 	{		
-		DESModel model = Hub.getWorkspace().getActiveModel();
-		//Src is the file that will be used by the exporter.
-		File src = null;
-		if(model != null)
-		{
-			try{
-				src = File.createTempFile("export", IOUtilities.MODEL_FILE_EXT);
-				IOCoordinator.getInstance().save(model, src);
-			}catch(IOException e)
-			{
-				Hub.displayAlert(Hub.string("ProblemsWhileExporting") + e.getMessage());
-				return;
-			}
-		}else{
-			//The model can't be null
-			return;
-		}
-
 		JFileChooser fc;
 		String path = Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME);
 		if(path == null)
@@ -293,24 +274,24 @@ public class CommonActions {
 			fc=new JFileChooser();
 		}else
 		{
-			fc=new JFileChooser(path);	
+			fc=new JFileChooser(path);
 		}
 		fc.setDialogTitle(Hub.string("exportTitle"));
-		fc.setSelectedFile(new File(path + "/" + model.getName()));
+		fc.setSelectedFile(new File(model.getName()));
 		Iterator<ImportExportPlugin> pluginIt = IOPluginManager.getInstance().getExporters().iterator();
 		while(pluginIt.hasNext())
 		{
 			ImportExportPlugin p = pluginIt.next();
-			fc.addChoosableFileFilter(new IOUtilities.ExtensionFilter(new String[]{p.getExportExtension()}, p.getDescription()));
+			fc.addChoosableFileFilter(new IOUtilities.ExtensionFilter(new String[]{p.getFileExtension()}, p.getDescription()));
 		}
 		String lastFilter = Hub.persistentData.getProperty(LAST_IMPEX_SETTING_NAME);
 		FileFilter[] f = fc.getChoosableFileFilters();
 		for(int i = 0; i < f.length; i++)
 		{
-			FileFilter last = f[i];
-			if(last.getDescription().equals(lastFilter))
+			if(f[i].getDescription().equals(lastFilter))
 			{
-				fc.setFileFilter(last);
+				fc.setFileFilter(f[i]);
+				break;
 			}
 		}
 		int retVal;
@@ -323,7 +304,7 @@ public class CommonActions {
 				break;
 			file=fc.getSelectedFile();
 			String extension = ParsingToolbox.getFileType(file.getName());
-			String extPlugin = IOPluginManager.getInstance().getExporters(fc.getFileFilter().getDescription()).iterator().next().getExportExtension();
+			String extPlugin = IOPluginManager.getInstance().getExporters(fc.getFileFilter().getDescription()).iterator().next().getFileExtension();
 			//If the user doesn't select a file with an extension, IDES will automatically put an
 			//extension for the file, based on a plugin which exports the model.
 			if(extension.equals(""))
@@ -345,23 +326,16 @@ public class CommonActions {
 
 		if(retVal != JFileChooser.CANCEL_OPTION)
 		{
+			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file.getParentFile().getAbsolutePath());
+			Hub.persistentData.setProperty(LAST_IMPEX_SETTING_NAME, fc.getFileFilter().getDescription());
 			try{
-				IOCoordinator.getInstance().exportFile(src, file, fc.getFileFilter().getDescription());
+				IOCoordinator.getInstance().export(model, file, fc.getFileFilter().getDescription());
 			}
 			catch(IOException e)
 			{
-				Hub.displayAlert(Hub.string("problemWhileExporting") + e.getMessage());
+				Hub.displayAlert(Hub.string("problemWhileExporting")+file.getName()+"\n"+e.getMessage());
 			}
 		}
-		try
-		{
-			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file.getParentFile().getAbsolutePath());
-			Hub.persistentData.setProperty(LAST_IMPEX_SETTING_NAME, fc.getFileFilter().getDescription());
-		}catch(NullPointerException e)
-		{
-			//cancel button pressed... that's OK.
-		}
-		src.delete();
 	}
 
 
@@ -386,7 +360,7 @@ public class CommonActions {
 		
 		if(!models.isEmpty())
 		{
-			if(!io.CommonActions.handleUnsavedModels(models))
+			if(!io.CommonFileActions.handleUnsavedModels(models))
 				return false;
 		}
 		PrintStream ps = IOUtilities.getPrintStream(file);
@@ -516,7 +490,7 @@ public class CommonActions {
 			try
 			{
 				WorkspaceDescriptor wd=Hub.getWorkspace().getDescriptor();
-				if(io.CommonActions.saveWorkspace(wd,wd.getFile()))
+				if(io.CommonFileActions.saveWorkspace(wd,wd.getFile()))
 					Hub.getWorkspace().setDirty(false);
 				else
 					return false;

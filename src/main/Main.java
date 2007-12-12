@@ -174,7 +174,7 @@ public class Main {
 	{
 //		This cannot be handled by the io.fsa.ver2_1.handleUnsavedWorkspace
 		if(Hub.getWorkspace().isDirty())
-			if(!io.CommonActions.handleUnsavedWorkspace())
+			if(!io.CommonFileActions.handleUnsavedWorkspace())
 				return;
 		Vector<DESModel> models=new Vector<DESModel>();
 		for(Iterator<DESModel> i=Hub.getWorkspace().getModels();i.hasNext();)
@@ -187,7 +187,7 @@ public class Main {
 		
 		if(!models.isEmpty())
 		{
-			if(!io.CommonActions.handleUnsavedModels(models))
+			if(!io.CommonFileActions.handleUnsavedModels(models))
 				return;
 		}
 		

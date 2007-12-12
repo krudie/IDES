@@ -4,7 +4,6 @@
 package io.fsa.ver2_1;
 
 import io.AbstractParser;
-import io.FileLoadException;
 import io.HeadTailInputStream;
 
 import java.awt.geom.CubicCurve2D;
@@ -33,6 +32,7 @@ import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.io.FileIOPlugin;
+import pluggable.io.FileLoadException;
 import pluggable.io.IOPluginManager;
 import presentation.fsa.BezierLayout;
 

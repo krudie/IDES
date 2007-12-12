@@ -1,4 +1,4 @@
-package io;
+package pluggable.io;
 
 import java.io.IOException;
 

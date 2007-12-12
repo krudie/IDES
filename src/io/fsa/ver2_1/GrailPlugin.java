@@ -15,6 +15,7 @@ import main.Hub;
 import model.ModelManager;
 import model.fsa.FSAModel;
 
+import pluggable.io.FormatTranslationException;
 import pluggable.io.IOPluginManager;
 import pluggable.io.IOCoordinator;
 import pluggable.io.ImportExportPlugin;
@@ -31,7 +32,7 @@ public class GrailPlugin implements ImportExportPlugin{
 	private String description = IOUtilities.GRAIL_DESCRIPTOR;
 	private String ext = IOUtilities.FM_FILE_EXT;
 	
-	public String getExportExtension(){
+	public String getFileExtension(){
 		return ext;
 	}
 	//Singleton instance:
@@ -76,15 +77,14 @@ public class GrailPlugin implements ImportExportPlugin{
 	 * @param src - the source file
 	 * @param dst - the destination
 	 */
-	public void exportFile(File src, File dst)
+	public void exportFile(File src, File dst) throws FormatTranslationException
 	{    	
     	//Loading the model from the file:
     	FSAModel a= null;
     	try{
     		a = (FSAModel)IOCoordinator.getInstance().load(src);
     	}catch(IOException e){
-    		Hub.displayAlert(e.getMessage());
-    		return;
+    		throw new FormatTranslationException(e);
     	}
 
     	//Container for the grail model:
@@ -109,23 +109,25 @@ public class GrailPlugin implements ImportExportPlugin{
     		}
     	}
     	
-		FileWriter latexWriter = null;
-				
-		if (fileContents == null)
-		{
-			return;
-		}
-		
+		FileWriter writer = null;
 		try
 		{
-			latexWriter = new FileWriter(dst);
-			latexWriter.write(fileContents);
-			latexWriter.close();
+			writer = new FileWriter(dst);
+			writer.write(fileContents);
+			writer.close();
 		}
-		catch (IOException fileException)
+		catch (IOException e)
 		{
-			Hub.displayAlert(Hub.string("problemLatexExport")+dst.getPath());
+    		throw new FormatTranslationException(e);
 		}
+    	finally
+    	{
+    		try
+    		{
+    			if(writer!=null)
+    				writer.close();
+    		}catch(java.io.IOException e){}
+    	}
 
 	}
 	
@@ -135,7 +137,7 @@ public class GrailPlugin implements ImportExportPlugin{
 	 * @param importFile - the source file
 	 * @return
 	 */
-	public void importFile(File src, File dst)
+	public void importFile(File src, File dst) throws FormatTranslationException
 	{
     	java.io.BufferedReader in=null;
     	try
@@ -214,13 +216,9 @@ public class GrailPlugin implements ImportExportPlugin{
     		PresentationManager.getToolset(a.getModelDescriptor().getPreferredModelInterface()).wrapModel(a);
 			//Save the model to the selected destination
     		IOCoordinator.getInstance().save(a, dst);
-    	}catch(java.io.IOException e)
+    	}catch(IOException e)
     	{
-    		Hub.displayAlert(Hub.string("cantParseImport")+src);
-    	}
-    	catch(RuntimeException e)
-    	{
-    		Hub.displayAlert(Hub.string("cantParseImport")+src);
+    		throw new FormatTranslationException(e);
     	}
     	finally
     	{
