@@ -10,8 +10,10 @@ public class DESModelMessage {
 	/* the possible events that caused this message to be sent */
 	/** DESModel became dirty (clean to dirty) */
 	public static final int DIRTY = 0;
-	/** Changes to DESModel were saved (dirty ro clean) */
+	/** Changes to DESModel were saved (dirty to clean) */
 	public static final int CLEAN = 1;
+	/** DESModel was renamed */
+	public static final int NAME = 1;	
 
 	/** the publisher that sent this message */
 	private DESModel source;
@@ -26,7 +28,7 @@ public class DESModelMessage {
 	 * Creates a change notification message for DESModels to pass
 	 * to DESModelSubscribers. 
 	 * 
-	 * @param eventType DIRTY or CLEAN
+	 * @param eventType DIRTY or CLEAN or NAME
 	 * @param source message sender
 	 */
 	public DESModelMessage(int eventType, DESModel source) {
@@ -37,7 +39,7 @@ public class DESModelMessage {
 	 * Creates a change notification message for DESModels to pass
 	 * to DESModelSubscribers. 
 	 * 
-	 * @param eventType DIRTY or CLEAN
+	 * @param eventType DIRTY or CLEAN or NAME
 	 * @param source message sender
 	 * @param message a description of the event fired
 	 */

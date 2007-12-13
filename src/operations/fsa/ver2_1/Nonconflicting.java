@@ -13,7 +13,7 @@ import pluggable.operation.OperationManager;
 public class Nonconflicting extends AbstractOperation {
 	
 	public Nonconflicting() {
-		NAME = "Nonconflicting";
+		NAME = "nonconflict";
 		DESCRIPTION = "Determines if" +
 				" the two input automata are nonconflicting.";
 		
@@ -22,8 +22,8 @@ public class Nonconflicting extends AbstractOperation {
 		inputDesc = new String[]{"Finite-state automaton","Finite-state automaton"};
 
 		//WARNING - Ensure that output type and description always match!
-		outputType = new Class[]{Boolean.class, String.class};
-		outputDesc = new String[]{"result", "resultMessage"};
+		outputType = new Class[]{Boolean.class};
+		outputDesc = new String[]{"resultMessage"};
 	}
 
 	/* (non-Javadoc)
@@ -33,13 +33,13 @@ public class Nonconflicting extends AbstractOperation {
 		FSAModel a=(FSAModel)inputs[0];
 		FSAModel b=(FSAModel)inputs[1];
 
-		FSAModel l=(FSAModel)OperationManager.getOperation("Meet").perform(new Object[]{
-			OperationManager.getOperation("Prefix Closure").perform(new Object[]{a})[0],
-			OperationManager.getOperation("Prefix Closure").perform(new Object[]{b})[0]
+		FSAModel l=(FSAModel)OperationManager.getOperation("product").perform(new Object[]{
+			OperationManager.getOperation("prefixclose").perform(new Object[]{a})[0],
+			OperationManager.getOperation("prefixclose").perform(new Object[]{b})[0]
 		})[0];
-		FSAModel r=(FSAModel)OperationManager.getOperation("Prefix Closure").perform(new Object[]{
-				OperationManager.getOperation("Meet").perform(new Object[]{a,b})[0]})[0];
-		boolean equal=((Boolean)OperationManager.getOperation("containment").perform(new Object[]{
+		FSAModel r=(FSAModel)OperationManager.getOperation("prefixclose").perform(new Object[]{
+				OperationManager.getOperation("product").perform(new Object[]{a,b})[0]})[0];
+		boolean equal=((Boolean)OperationManager.getOperation("subset").perform(new Object[]{
 				l,r})[0]).booleanValue();
 		String output;
 		if (equal) {
@@ -48,7 +48,8 @@ public class Nonconflicting extends AbstractOperation {
 		else {
 			output = "The two languages are not nonconflicting.";
 		}
+		outputDesc = new String[]{output};
 		
-		return new Object[]{new Boolean(equal), output};
+		return new Object[]{new Boolean(equal)};
 	}
 }

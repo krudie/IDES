@@ -15,7 +15,7 @@ import pluggable.operation.FilterOperation;
 public class SelfLoop extends AbstractOperation implements FilterOperation {
 
 	public SelfLoop() {
-		NAME = "Self Loop";
+		NAME = "selfloop";
 		DESCRIPTION = "Unknown";
 		
 		//WARNING - Ensure that input type and description always match!	

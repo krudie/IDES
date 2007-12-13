@@ -16,8 +16,9 @@ import pluggable.operation.Operation;
 public class SynchronousProduct extends AbstractOperation {
 
 	public SynchronousProduct() {
-		NAME = "Synchronous Product";
-		DESCRIPTION = "Resultant automaton forces " +
+		NAME = "sync";
+		DESCRIPTION = "Produces the synchronous product of automata (also known as parallel composition). " +
+			"Resultant automaton forces " +
 			"shared events to occur simultaneously, and allows unshared events" +
 			" to interleave.";
 		//WARNING - Ensure that input type and description always match!	

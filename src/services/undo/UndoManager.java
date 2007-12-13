@@ -2,11 +2,15 @@ package services.undo;
 
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.JMenuItem;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 import main.Annotable;
@@ -23,10 +27,12 @@ import main.WorkspaceSubscriber;
  */
 public class UndoManager{
 
+	protected static Vector<AbstractButton> uiElementsUndo=new Vector<AbstractButton>();
+	protected static Vector<AbstractButton> textUIElementsUndo=new Vector<AbstractButton>();
+	protected static Vector<AbstractButton> uiElementsRedo=new Vector<AbstractButton>();
+	protected static Vector<AbstractButton> textUIElementsRedo=new Vector<AbstractButton>();
+
 	protected final static String UNDO_MANAGER="undoManager";
-	
-	protected static JMenuItem undo;
-	protected static JMenuItem redo;
 	
 	//Make the class non-instantiable.
 	private UndoManager()
@@ -46,10 +52,8 @@ public class UndoManager{
 	 * @param redoItem the menu item which will be updated to display the current redoable event.
 	 * This should be the "Redo" menu item in the "Edit" menu.
 	 */
-	public static void init(JMenuItem undoItem, JMenuItem redoItem)
+	public static void init()
 	{
-		undo=undoItem;
-		redo=redoItem;
 		//Subscribing as a WorkspaceSubscriber
 		Hub.getWorkspace().addSubscriber(new WorkspaceSubscriber()
 		{
@@ -106,7 +110,7 @@ public class UndoManager{
 		//If no UndoManager was initialized, create a new instance. 
 		if(currentManager == null)
 		{
-			currentManager=new javax.swing.undo.UndoManager();
+			currentManager=new RobustUndoManager();
 			Hub.getWorkspace().getActiveModel().setAnnotation(UNDO_MANAGER, currentManager);
 		}
 		return currentManager;
@@ -155,24 +159,125 @@ public class UndoManager{
 	protected static void refreshUndoRedo() {
 		if(getActiveUndoManager()==null)
 		{
-			//refreshes the "undo" queue
-			undo.setText(Hub.string("undo"));
-			undo.setEnabled(false);
-			//refreshes the "redo" queue 
-			redo.setText(Hub.string("redo"));
-			redo.setEnabled(false); 
+			//refreshes the "undo" UI elements
+			for(AbstractButton button:uiElementsUndo)
+			{
+				button.setEnabled(false);
+			}
+			for(AbstractButton button:textUIElementsUndo)
+			{
+				button.setText(Hub.string("undo"));
+			}
+			//refreshes the "redo" UI elements
+			for(AbstractButton button:uiElementsRedo)
+			{
+				button.setEnabled(false);
+			}
+			for(AbstractButton button:textUIElementsRedo)
+			{
+				button.setText(Hub.string("redo"));
+			}
 		}
 		else
 		{
-			//refreshes the "undo" queue
-			undo.setText(getActiveUndoManager().getUndoPresentationName());
-			undo.setEnabled(getActiveUndoManager().canUndo());
-			//refreshes the "redo" queue 
-			redo.setText(getActiveUndoManager().getRedoPresentationName());
-			redo.setEnabled(getActiveUndoManager().canRedo());
+			//refreshes the "undo" UI elements
+			for(AbstractButton button:uiElementsUndo)
+			{
+				button.setEnabled(getActiveUndoManager().canUndo());
+			}
+			for(AbstractButton button:textUIElementsUndo)
+			{
+				button.setText(getActiveUndoManager().getUndoPresentationName());
+			}
+			//refreshes the "redo" UI elements
+			for(AbstractButton button:uiElementsRedo)
+			{
+				button.setEnabled(getActiveUndoManager().canRedo());
+			}
+			for(AbstractButton button:textUIElementsRedo)
+			{
+				button.setText(getActiveUndoManager().getRedoPresentationName());
+			}
 		}
 	}
 	
+	/**
+	 * Registers an {@link AbstractButton} to be updated when the undo state
+	 * changes. The text of the UI element will be updated.
+	 * @param element the UI element to be registered for automatic updates
+	 */
+	public static void bindUndo(AbstractButton element)
+	{
+		if(!uiElementsUndo.contains(element))
+		{
+			uiElementsUndo.add(element);
+			if(!textUIElementsUndo.contains(element))
+			{
+				textUIElementsUndo.add(element);
+			}			
+			refreshUndoRedo();
+		}			
+	}
+	
+	/**
+	 * Registers an {@link AbstractButton} to be updated when the undo state
+	 * changes. The text of the UI element will not be updated.
+	 * @param element the UI element to be registered for automatic updates
+	 */
+	public static void bindNoTextUndo(AbstractButton element)
+	{
+		if(!uiElementsUndo.contains(element))
+		{
+			uiElementsUndo.add(element);
+			refreshUndoRedo();
+		}
+	}
+
+	/**
+	 * Registers an {@link AbstractButton} to be updated when the undo state
+	 * changes. The text of the UI element will be updated.
+	 * @param element the UI element to be registered for automatic updates
+	 */
+	public static void bindRedo(AbstractButton element)
+	{
+		if(!uiElementsRedo.contains(element))
+		{
+			uiElementsRedo.add(element);
+			if(!textUIElementsRedo.contains(element))
+			{
+				textUIElementsRedo.add(element);
+			}			
+			refreshUndoRedo();
+		}			
+	}
+	
+	/**
+	 * Registers an {@link AbstractButton} to be updated when the undo state
+	 * changes. The text of the UI element will not be updated.
+	 * @param element the UI element to be registered for automatic updates
+	 */
+	public static void bindNoTextRedo(AbstractButton element)
+	{
+		if(!uiElementsRedo.contains(element))
+		{
+			uiElementsRedo.add(element);
+			refreshUndoRedo();
+		}
+	}
+
+	/**
+	 * Unregisters an {@link AbstractButton} so that it is no longer updated when the
+	 * undo state changes. 
+	 * @param element the UI element to be unregistered from automatic updates
+	 */
+	public static void unbind(AbstractButton element)
+	{
+		uiElementsUndo.remove(element);
+		textUIElementsUndo.remove(element);
+		uiElementsRedo.remove(element);
+		textUIElementsRedo.remove(element);
+	}
+
 	/**Action listener for the Undoable actions, perform the undo action when
 	 * the user press the "Undo" item in the edit menu
 	 */

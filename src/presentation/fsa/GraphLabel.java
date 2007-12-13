@@ -465,8 +465,8 @@ public class GraphLabel extends GraphElement {
 		// Make sure this node is contained within the selection box
 		if (! (selectionBox.contains(labelBounds)))
 		{
-			System.out.println("Label  " + labelBounds 
-				+ " outside bounds " + selectionBox);
+//			System.out.println("Label  " + labelBounds 
+//				+ " outside bounds " + selectionBox);
 			return exportString;
 		}
 		

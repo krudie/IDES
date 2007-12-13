@@ -25,9 +25,9 @@ import pluggable.operation.FilterOperation;
 public class ControlMap extends AbstractOperation implements FilterOperation {
 	
 	public ControlMap() {
-		NAME = "Control Map";
-		DESCRIPTION = "Creates the supervisor with " +
-				"the control map.";
+		NAME = "controlmap";
+		DESCRIPTION = "Produces a supervisor with " +
+				"a control map.";
 		//WARNING - Ensure that input type and description always match!	
 		inputType = new Class[]{FSASupervisor.class,FSAModel.class};
 		inputDesc = new String[]{"Supervisor","Plant"};;

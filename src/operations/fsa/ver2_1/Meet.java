@@ -15,10 +15,10 @@ import model.fsa.ver2_1.Automaton;
 public class Meet extends AbstractOperation {
 	
 	public Meet() {
-		NAME = "Meet";
-		DESCRIPTION = "Also known as parallel" +
-			" composition, meet produces an automaton that accepts the" +
-			" intersection of the languages produced by the given automata.";
+		NAME = "product";
+		DESCRIPTION = "Produces an automaton that accepts the" +
+			" intersection of the languages of the given automata. "+
+			"Also known as intersection or meet.";
 		
 		//WARNING - Ensure that input type and description always match!	
 		inputType = new Class[]{FSAModel.class,FSAModel.class};

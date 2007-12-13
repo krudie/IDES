@@ -94,7 +94,6 @@ public class ToolPopup extends JPopupMenu {
 			MenuElement[] path,
 			MenuSelectionManager manager)
 	{
-		System.out.println("Event");
 	}
 
 

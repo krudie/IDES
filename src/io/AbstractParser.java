@@ -32,12 +32,10 @@ public class AbstractParser implements ContentHandler {
             xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             xmlReader.setContentHandler(this);
         } catch (ParserConfigurationException pce) {
-            System.err
-                    .println("AbstractParser: could not configure parser, message: "
+            throw new RuntimeException("AbstractParser: could not configure parser, message: "
                             + pce.getMessage());
         } catch (SAXException se) {
-            System.err
-                    .println("AbstractParser: could not do something, message: "
+        	throw new RuntimeException("AbstractParser: could not do something, message: "
                             + se.getMessage());
         }
     }

@@ -166,7 +166,6 @@ public class InitialArrow extends Edge {
 	 */
 	@Override
 	public void computeEdge() {
-//		System.out.println("foo");
 		Node target = this.getTargetNode();
 		CircleNodeLayout layout = (CircleNodeLayout)target.getLayout();
 		float currentNodeRadius = layout.getRadius();

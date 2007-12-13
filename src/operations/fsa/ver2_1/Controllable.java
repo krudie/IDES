@@ -13,7 +13,7 @@ import model.fsa.FSAModel;
 public class Controllable extends AbstractOperation {
 
 	public Controllable() {
-		NAME = "Controllable";
+		NAME = "controllable";
 		DESCRIPTION = "Determines if the plant" +
 				" is controllable with respect to the specification.";
 		//WARNING - Ensure that input type and description always match!	
@@ -21,8 +21,8 @@ public class Controllable extends AbstractOperation {
 		inputDesc = new String[]{"Plant","Specification"};
 
 		//WARNING - Ensure that output type and description always match!
-		outputType = new Class[]{Boolean.class,String.class};
-		outputDesc = new String[]{"result", "resultMessage"};
+		outputType = new Class[]{Boolean.class};
+		outputDesc = new String[]{"resultMessage"};
 	}
 
 	/* (non-Javadoc)
@@ -34,7 +34,8 @@ public class Controllable extends AbstractOperation {
 		String resultMessage;
 		if (result) resultMessage = "Plant is controllable with respect to the specification.";
 		else resultMessage = "Plant is not controllable with respect to the specification.";
-		return new Object[]{new Boolean(result), resultMessage};
+		outputDesc = new String[]{resultMessage};
+		return new Object[]{new Boolean(result)};
 	}
 
 }

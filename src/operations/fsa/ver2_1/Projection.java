@@ -15,7 +15,7 @@ import model.fsa.ver2_1.Automaton;
 public class Projection extends AbstractOperation {
 
 	public Projection() {
-		NAME = "Projection";
+		NAME = "project";
 		DESCRIPTION = "Returns a projection" +
 				" of the given automaton such that all unobservable events" +
 				" have been removed.";

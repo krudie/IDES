@@ -1755,6 +1755,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, LayoutShell
 
 		// NOTE See removeTransition and fsaStructureChanged.		
 	}
+	
 	///////////////////////////////////////////////////////////////////////
 
 

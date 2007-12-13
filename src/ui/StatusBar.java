@@ -11,13 +11,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import observer.Subscriber;
-
 import presentation.fsa.FSAGraph;
 
 import main.Hub;
 import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
+import model.DESModelMessage;
+import model.DESModelSubscriber;
 import model.fsa.FSAMessage;
 import model.fsa.FSAModel;
 import model.fsa.FSASubscriber;
@@ -26,7 +26,7 @@ import model.fsa.FSASubscriber;
  *
  * @author Lenko Grigorov
  */
-public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscriber {
+public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscriber, DESModelSubscriber {
 
 	/** label to display the name of the current model with state and transition counts */
 	JLabel statsLabel=new JLabel();
@@ -46,13 +46,15 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 
 	private void refreshActiveModel() {
 		if ( a != null ) {
-			a.removeSubscriber(this);
+			a.removeSubscriber((FSASubscriber)this);
+			a.removeSubscriber((DESModelSubscriber)this);
 		}
 			
 		if ( Hub.getWorkspace().getActiveModel()!= null &&
 				Hub.getWorkspace().getActiveModel() instanceof FSAModel) {		
 			a=(FSAModel)Hub.getWorkspace().getActiveModel();
-			a.addSubscriber(this);			
+			a.addSubscriber((FSASubscriber)this);
+			a.addSubscriber((DESModelSubscriber)this);
 		}
 	
 		refreshStatusLabel();
@@ -119,10 +121,12 @@ public class StatusBar extends JPanel implements FSASubscriber, WorkspaceSubscri
 	 */
 	public void fsaEventSetChanged( FSAMessage message ) {}
 
-	/* (non-Javadoc)
-	 * @see observer.FSASubscriber#fsaSaved()
-	 */
-	public void fsaSaved() {
+	public void saveStatusChanged(DESModelMessage message)
+	{
+	}
+	
+	public void modelNameChanged(DESModelMessage msg)
+	{
 		refreshStatusLabel();		
 	}
 }

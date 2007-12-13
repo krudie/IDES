@@ -16,9 +16,9 @@ import pluggable.operation.Operation;
 public class Trim extends AbstractOperation implements FilterOperation {
 
 	public Trim() {
-		NAME = "Trim";
+		NAME = "trim";
 		DESCRIPTION = "Removes all states that are not" +
-		"both reachable and coreachable.";
+		"both accessible and coaccessible.";
 		
 		//WARNING - Ensure that input type and description always match!	
 		inputType = new Class[]{FSAModel.class};

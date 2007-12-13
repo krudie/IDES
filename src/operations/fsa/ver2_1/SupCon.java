@@ -21,7 +21,7 @@ import pluggable.operation.OperationManager;
 public class SupCon extends AbstractOperation {
 
 	public SupCon() {
-		NAME = "SupCon";
+		NAME = "supcon";
 		DESCRIPTION = "Returns an automaton that generates the supremal" +
 				" controllable sublanguage of the plant with respect to the" +
 				" given specification.";
@@ -41,7 +41,7 @@ public class SupCon extends AbstractOperation {
 	public Object[] perform(Object[] inputs) {
 		FSAModel a=ModelManager.createModel(FSAModel.class,"none");
 		SuperVisory.supC((FSAModel)inputs[0],(FSAModel)inputs[1],a);
-		FilterOperation fo=OperationManager.getFilterOperation("Control Map");
+		FilterOperation fo=new ControlMap();
 		fo.filter(new Object[]{a,inputs[0]});
 		return new Object[]{a};
 	}

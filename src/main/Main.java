@@ -50,6 +50,7 @@ import model.fsa.ver2_1.Automaton;
 import services.General;
 import services.cache.Cache;
 import services.latex.LatexManager;
+import services.undo.UndoManager;
 import ui.MainWindow;
 import ui.SaveDialog;
 import pluggable.io.*;
@@ -94,7 +95,8 @@ public class Main {
 		//set up global exception handler
 		// TODO uncomment this line before shipping.  Default exception handler
 		// disabled for debugging. -- CLM
-		//Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		
 		//load resource with strings used in the program
 		try
 		{
@@ -117,6 +119,7 @@ public class Main {
 		}
 
 		Cache.init();
+		UndoManager.init();
 
 		try {
 			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
@@ -153,7 +156,7 @@ public class Main {
 		OperationManager.register(new SupCon());
 		OperationManager.register(new Containment());
 		OperationManager.register(new Nonconflicting());
-		OperationManager.register(new ControlMap());
+//		OperationManager.register(new ControlMap());
 		OperationManager.register(new LocalModular());
 		OperationManager.register(new SupRed());
 		OperationManager.register(new MultiAgentProductFSA());

@@ -21,7 +21,7 @@ import pluggable.operation.Operation;
 public class SupRed extends AbstractOperation {
 
 	public SupRed() {
-		NAME = "Supervisor Reduction (Grail)";
+		NAME = "supred-grail";
 		DESCRIPTION = "Returns a reduced supervisor (experimental). " +
 				" Requires that \"fsasupred.exe\" from Grail be" +
 				" present in the folder where IDES is installed.";

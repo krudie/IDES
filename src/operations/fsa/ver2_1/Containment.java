@@ -20,7 +20,7 @@ import pluggable.operation.OperationManager;
 public class Containment extends AbstractOperation {
 
 	public Containment() {
-		NAME = "Containment";
+		NAME = "subset";
 		DESCRIPTION = "Determines if the given sublanguage is contained within the " +
 				"given superlanguage.";
 		//WARNING - Ensure that input type and description always match!	
@@ -28,8 +28,8 @@ public class Containment extends AbstractOperation {
 		inputDesc = new String[]{"Sublanguage","Superlanguage"};
 
 		//WARNING - Ensure that output type and description always match!
-		outputType = new Class[]{Boolean.class,String.class};
-		outputDesc = new String[]{"result", "resultMessage"};
+		outputType = new Class[]{Boolean.class};
+		outputDesc = new String[]{"resultMessage"};
 	}
 
 	/* (non-Javadoc)
@@ -39,8 +39,8 @@ public class Containment extends AbstractOperation {
 		FSAModel a=(FSAModel)inputs[0];
 		FSAModel b=(FSAModel)inputs[1];
 		
-		a=(FSAModel)OperationManager.getOperation("Trim").perform(new Object[]{a})[0];
-		b=(FSAModel)OperationManager.getOperation("Trim").perform(new Object[]{b})[0];
+		a=(FSAModel)OperationManager.getOperation("trim").perform(new Object[]{a})[0];
+		b=(FSAModel)OperationManager.getOperation("trim").perform(new Object[]{b})[0];
 		
         LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
     	Set<String> pairs=new HashSet<String>(); 
@@ -94,8 +94,9 @@ public class Containment extends AbstractOperation {
 		String resultMessage = "";
 		if (contained) resultMessage = "Sublanguage is contained in superlanguage.";
 		else resultMessage = "Sublanguage is not contained in superlanguage.";
+		outputDesc = new String[]{resultMessage};
 		
-		return new Object[]{new Boolean(contained), resultMessage};
+		return new Object[]{new Boolean(contained)};
 	}
 
 }

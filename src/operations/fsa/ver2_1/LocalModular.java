@@ -9,7 +9,7 @@ import pluggable.operation.OperationManager;
 public class LocalModular extends AbstractOperation {
 
 	public LocalModular() {
-		NAME = "Local Modular";
+		NAME = "localmodular";
 		DESCRIPTION = "Determines if the languages" +
 				" produced by the two automata are locally modular."; 
 		//WARNING - Ensure that input type and description always match!	
@@ -17,8 +17,8 @@ public class LocalModular extends AbstractOperation {
 		inputDesc = new String[]{"Finite-state automaton","Finite-state automaton"};
 
 		//WARNING - Ensure that output type and description always match!
-		outputType = new Class[]{Boolean.class, String.class};
-		outputDesc = new String[]{"result", "resultMessage"};
+		outputType = new Class[]{Boolean.class};
+		outputDesc = new String[]{"resultMessage"};
 	}
 
 	/* (non-Javadoc)
@@ -30,8 +30,8 @@ public class LocalModular extends AbstractOperation {
 		{
 			models.add((FSAModel)inputs[i]);
 		}
-		Operation prefix=OperationManager.getOperation("prefix closure");
-		Operation sync=OperationManager.getOperation("synchronous product");
+		Operation prefix=OperationManager.getOperation("prefixclose");
+		Operation sync=OperationManager.getOperation("sync");
 		Vector<FSAModel> pModels=new Vector<FSAModel>();
 		for(FSAModel m:models)
 		{
@@ -48,14 +48,14 @@ public class LocalModular extends AbstractOperation {
 		{
 			r=(FSAModel)sync.perform(new Object[]{r,pModels.elementAt(i)})[0];
 		}
-		boolean equal=((Boolean)OperationManager.getOperation("containment").perform(new Object[]{
+		boolean equal=((Boolean)OperationManager.getOperation("subset").perform(new Object[]{
 				r,l})[0]).booleanValue();
 		
 		String resultMessage = "";
 		if (equal) resultMessage = "The two automata are locally modular.";
 		else resultMessage = "The two automata are not locally modular.";
-		
-		return new Object[]{new Boolean(equal), resultMessage};
+		outputDesc = new String[]{resultMessage};
+		return new Object[]{new Boolean(equal)};
 	}
 
 }

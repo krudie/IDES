@@ -15,7 +15,7 @@ import pluggable.operation.FilterOperation;
 public class Coaccessible extends AbstractOperation implements FilterOperation {
 
 	public Coaccessible() {
-		NAME = "Coaccessible";
+		NAME = "coaccessible";
 		DESCRIPTION = "Removes all states from which " +
 				"a marked state cannot be reached.";
 		

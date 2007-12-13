@@ -29,7 +29,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.undo.CompoundEdit;
 
-import observer.Subscriber;
 import presentation.LayoutShell;
 import presentation.Presentation;
 import presentation.fsa.actions.AbstractGraphAction;
@@ -534,14 +533,6 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 	 */
 	public void fsaEventSetChanged(FSAMessage message) {
 		refreshEventTable();		
-	}
-
-	/* (non-Javadoc)
-	 * @see observer.FSASubscriber#fsaSaved()
-	 */
-	public void fsaSaved() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/**

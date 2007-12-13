@@ -118,6 +118,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 	
 	public static void showAndLabel(GraphDrawingView gdv,FSAGraph gm, Node node)
 	{
+		gdv.startUIInteraction();
 		SingleLineNodeLabellingDialog.gm=gm;
 		n=node;
 		Point p=new Point((int)node.getLayout().getLocation().x,
@@ -132,6 +133,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog {
 		if(!hasOurListener)
 			area.addFocusListener(commitOnFocusLost);
 		area.setText(label);
+		area.selectAll();
 		if(gdv==null)
 		{
 			return;

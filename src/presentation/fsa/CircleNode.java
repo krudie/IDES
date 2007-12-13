@@ -262,9 +262,9 @@ public class CircleNode extends Node {
 		// Make sure this node is contained within the selection box
 		if (! selectionBox.contains(squareBounds))
 		{
-			System.out.println("Node " + squareBounds 
-				+ " (Radius " + radius * 2
-				+ ") outside bounds " + selectionBox);
+//			System.out.println("Node " + squareBounds 
+//				+ " (Radius " + radius * 2
+//				+ ") outside bounds " + selectionBox);
 			return exportString;
 		}
 		

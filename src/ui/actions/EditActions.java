@@ -1,9 +1,164 @@
 package ui.actions;
 
+import io.IOUtilities;
+
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
+
+import presentation.fsa.FSAGraph;
+import presentation.fsa.GraphElement;
+import presentation.fsa.GraphLabel;
+import presentation.fsa.Node;
+import services.undo.UndoManager;
+
+import main.Annotable;
+import main.Hub;
+import model.DESModel;
+import model.ModelManager;
+import model.fsa.FSAModel;
 
 public class EditActions {
+	public static class RenameAction extends AbstractAction{
+	
+		protected class UndoableRename extends AbstractUndoableEdit
+		{
+			protected String name=null;
+			protected String originalName=null;
+			protected DESModel model=null;
+			
+			public UndoableRename(DESModel model, String name)
+			{
+				this.model=model;
+				this.name=name;
+			}
+			
+			public void undo() throws CannotUndoException {
+				if(originalName==null)
+				{
+					throw new CannotUndoException();
+				}
+				name=model.getName();
+				if(!exerciseRename(originalName))
+				{
+					throw new CannotUndoException();
+				}
+				originalName=null;
+			}
 
+			public void redo() throws CannotRedoException {
+				if(name==null)
+				{
+					throw new CannotRedoException();
+				}
+				originalName=model.getName();
+				if(!exerciseRename(name))
+				{
+					throw new CannotRedoException();
+				}
+				name=null;
+			}
+			
+			protected boolean exerciseRename(String newName)
+			{
+				if(model.hasAnnotation(Annotable.FILE))
+				{
+					File oldFile=(File)model.getAnnotation(Annotable.FILE);
+					File newFile=new File(oldFile.getParentFile().getAbsolutePath()+File.separator+newName+'.'+IOUtilities.MODEL_FILE_EXT);
+					if(newFile.exists())
+					{
+						int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+								Hub.string("fileExistAsk1")+newFile.getPath()+Hub.string("fileExistAsk2"),
+								Hub.string("renameModelTitle"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						if(choice!=JOptionPane.YES_OPTION)
+						{
+							return false;
+						}
+						if(!newFile.delete())
+						{
+							return false;
+						}
+					}
+					if(!oldFile.renameTo(newFile))
+					{
+						return false;
+					}
+					model.setAnnotation(Annotable.FILE, newFile);
+				}
+				model.setName(newName);
+				return true;
+			}
+
+			public boolean canUndo() {
+				return originalName!=null;
+			}
+
+			public boolean canRedo() {
+				return name!=null;
+			}
+
+			/**
+			 * Returns the name that should be displayed besides the Undo/Redo menu items, so the user knows
+			 * which action will be undone/redone.
+			 */
+			public String getPresentationName() {
+				return Hub.string("undoRenameModel");
+			}
+		}
+		
+		public RenameAction()
+		{
+			super(Hub.string("comRename"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintRename"));
+		}
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			DESModel model=Hub.getWorkspace().getActiveModel();
+			Box labels=Box.createVerticalBox();
+			labels.add(new JLabel(Hub.string("enterNewModelNameL1")));
+			labels.add(Box.createRigidArea(new Dimension(0,5)));
+			labels.add(new JLabel(Hub.string("enterNewModelNameL2")));
+			labels.add(Box.createRigidArea(new Dimension(0,5)));
+			String newName="";
+			while("".equals(newName))
+			{
+				newName=(String)JOptionPane.showInputDialog(Hub.getMainWindow(),
+					labels,
+					Hub.string("renameModelTitle"),
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					null,
+					model.getName());
+				if(newName==null||model.getName().equals(newName))
+				{
+					return;
+				}
+				if("".equals(newName))
+				{
+					Hub.displayAlert(Hub.string("enterNonEmptyLabel"));
+				}
+			}
+			UndoableEdit edit=new UndoableRename(model,newName);
+			try
+			{
+				edit.redo();
+				UndoManager.addEdit(edit);
+			}catch(CannotRedoException ex)
+			{
+				Hub.displayAlert(Hub.string("renameFailed"));
+			}
+		}
+	}
 }

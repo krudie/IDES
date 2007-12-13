@@ -352,7 +352,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			try {
 				g2D.draw(selectionArea);
 			} catch (Exception e) {
-				System.out.println(selectionArea.toString());
+				throw new RuntimeException(selectionArea.toString());
 			}
 		}
 		// TODO: CHRISTIAN
@@ -365,6 +365,13 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 
 	// Mouse events
 	public void mouseClicked(MouseEvent arg0) {
+		
+		if(uiInteraction)
+		{
+			uiInteraction=false;
+			return;
+		}
+		
 		arg0 = transformMouseCoords(arg0);
 		FSAGraph g = super.getGraphModel();
 		if (g.isAvoidLayoutDrawing()) {
@@ -384,6 +391,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	}
 
 	public void mousePressed(MouseEvent arg0) {
+
+		if(uiInteraction)
+		{
+			return;
+		}
+
 		arg0 = transformMouseCoords(arg0);
 		FSAGraph g = super.getGraphModel();
 		if (g.isAvoidLayoutDrawing()) {
@@ -399,6 +412,13 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	}
 
 	public void mouseReleased(MouseEvent arg0) {
+
+		if(uiInteraction)
+		{
+			uiInteraction=false;
+			return;
+		}
+
 		arg0 = transformMouseCoords(arg0);
 		FSAGraph g = super.getGraphModel();
 
@@ -423,6 +443,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	}
 
 	public void mouseDragged(MouseEvent arg0) {
+
+		if(uiInteraction)
+		{
+			return;
+		}
+
 		FSAGraph g = super.getGraphModel();
 		if (g.isAvoidLayoutDrawing()) {
 			return;
@@ -433,6 +459,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
+
+		if(uiInteraction)
+		{
+			return;
+		}
+
 		arg0 = transformMouseCoords(arg0);
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}
@@ -458,15 +490,34 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	// FIXME move all key listening to the main window since it seems events
 	// don't make it this far...
 	public void keyTyped(KeyEvent arg0) {
+
+		if(uiInteraction)
+		{
+			uiInteraction=false;
+			return;
+		}
+
 		drawingTools[currentTool].handleKeyTyped(arg0);
 	}
 
 	public void keyPressed(KeyEvent arg0) {
-		drawingTools[currentTool].handleKeyPressed(arg0);
 
+		if(uiInteraction)
+		{
+			return;
+		}
+
+		drawingTools[currentTool].handleKeyPressed(arg0);
 	}
 
 	public void keyReleased(KeyEvent arg0) {
+
+		if(uiInteraction)
+		{
+			uiInteraction=false;
+			return;
+		}
+
 		drawingTools[currentTool].handleKeyReleased(arg0);
 	}
 
@@ -474,13 +525,20 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	 * Deselects and un-highlights the set of selected elements.
 	 */
 	public void clearCurrentSelection() {
+		
+		boolean anythingCleared=selectedGroup.size()>0;
+		
 		selectedGroup.setSelected(false);
 		selectedGroup.setHighlighted(false);
 		selectedGroup.clear();
 		selectionArea.setSize(0, 0);
-		// Notify the subscribers that the layout was changed (selection colors)
-		// so they can repaint the graphs.
-		this.graphModel.commitLayoutModified();
+		
+		if(anythingCleared)
+		{
+			// Notify the subscribers that the layout was changed (selection colors)
+			// so they can repaint the graphs.
+			this.graphModel.commitLayoutModified();
+		}
 	}
 
 	/**
@@ -732,10 +790,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			setShowGrid(false);
 			((MainWindow) Hub.getMainWindow()).getZoomControl().setZoom(1);
 		}
+		uiInteraction=false;
 	}
 
 	public void release()
 	{
+		clearCurrentSelection();
 		if(graphModel!=null)
 		{
 			canvasSettings=new CanvasSettings();
@@ -745,5 +805,12 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			graphModel.setAnnotation(CANVAS_SETTINGS, canvasSettings);
 		}
 		super.release();
+	}
+	
+	protected boolean uiInteraction=false;
+	
+	public void startUIInteraction()
+	{
+		uiInteraction=true;
 	}
 }

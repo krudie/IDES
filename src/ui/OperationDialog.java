@@ -18,6 +18,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -153,11 +154,11 @@ public class OperationDialog extends EscapeDialog {
 						inputModels[i]=Hub.getWorkspace().getModel(inputs.elementAt(i).getSelectedItem().toString());
 					Object[] outputs=op.perform(inputModels);
 					String[] outputDesc = op.getDescriptionOfOutputs().clone();
-					boolean closeWindow = true;
+					boolean closeWindow = false;
 					
 					for(int i=0; i<outputs.length; ++i){
 						if (outputs[i] instanceof Boolean) {
-							//op.get
+							JOptionPane.showMessageDialog(Hub.getMainWindow(), outputDesc[i], Hub.string("result"), JOptionPane.PLAIN_MESSAGE);
 						}
 						else if (outputs[i] instanceof FSAModel) {
 							FSAModel fsa=(FSAModel)outputs[i];
@@ -169,9 +170,7 @@ public class OperationDialog extends EscapeDialog {
 						}
 						else
 						{
-							//should never be reached
-							Hub.displayAlert(Hub.string("Error: Can't interpret output of type: " + outputDesc[i]));
-							closeWindow = true;
+							Hub.displayAlert(Hub.string("cantInterpretOutput"));
 						}
 					}
 					if (closeWindow) onEscapeEvent();

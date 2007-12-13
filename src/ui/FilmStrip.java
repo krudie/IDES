@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,6 +16,8 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -33,6 +36,7 @@ import presentation.fsa.FSAGraph;
 //import presentation.fsa.GraphView;
 import presentation.fsa.FSAGraphMessage;
 import presentation.fsa.FSAGraphSubscriber;
+import ui.actions.EditActions;
 
 /**
  * A panel of graph thumbnail views to navigate among multiple automata 
@@ -81,25 +85,35 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	 * The current graph model is rendered with a highlighted border.
 	 * Dirty models are shown with name decorated by an asterisk. 
 	 */
-	private void buildThumbnailBox() {
+	private void buildThumbnailBoxes() {
 		thumbnailBox.removeAll();
 		graphPanels.clear();
+		int selectedIdx=-1;
 		for( int i=0;i<views.size();++i ) {
 			JComponent gv=views.get(i).getGUI();
-			Thumbnail p=new Thumbnail(new BorderLayout());
+			Thumbnail p=new Thumbnail(this,new BorderLayout());
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE,THUMBNAIL_SIZE));
 			p.add(gv);
+			p.setToolTipText(views.get(i).getLayoutShell().getModel().getName());
+			p.addMouseListener(this);
+			p.addMouseMotionListener(this);
 
 			if(views.get(i).getLayoutShell().getModel().equals(Hub.getWorkspace().getActiveModel())) {
 				p.setBorder(new TitledBorder(SELECTED_BORDER," "+getDecoratedName(views.get(i).getLayoutShell())));
+				selectedIdx=i;
 			} else {
 				p.setBorder(new TitledBorder(PLAIN_BORDER," "+getDecoratedName(views.get(i).getLayoutShell())));
 			}
 			graphPanels.put(views.get(i).getLayoutShell(), p);
 			thumbnailBox.add(p);
 			thumbnailBox.add(Box.createRigidArea(new Dimension(SPACER_SIZE,0)));
+		}
+		if(selectedIdx>-1)
+		{
+			//TODO this is much like a hack
+			scrollRectToVisible(new Rectangle((selectedIdx)*(THUMBNAIL_SIZE+SPACER_SIZE),0,THUMBNAIL_SIZE,0));
 		}
 	}
 
@@ -128,8 +142,6 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 				((DESModelPublisher)gv.getLayoutShell().getModel()).removeSubscriber(this);
 			}
 			gv.setTrackModel(false);
-			gv.getGUI().removeMouseListener(this);
-			gv.getGUI().removeMouseMotionListener(this);
 			views.remove(gv);
 			gv.release();
 		}
@@ -142,8 +154,6 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 				{
 					((DESModelPublisher)gv.getLayoutShell().getModel()).addSubscriber(this);
 				}
-				gv.getGUI().addMouseListener(this);
-				gv.getGUI().addMouseMotionListener(this);
 				views.insertElementAt(gv,i);
 			}
 		}
@@ -156,19 +166,26 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	 * @param arg0
 	 */
 	public void mouseClicked(MouseEvent arg0) {
-		if( !(arg0.getSource() instanceof Presentation) ) {
+		if( !(arg0.getSource() instanceof Thumbnail) ) {
 			return;
 		}
-		Presentation gv=(Presentation)arg0.getSource();
-		if(!gv.getLayoutShell().getModel().getName().equals(Hub.getWorkspace().getActiveModelName()))
-			Hub.getWorkspace().setActiveModel(gv.getLayoutShell().getModel().getName());
+		Presentation gv=((Thumbnail)arg0.getSource()).getPresentation();
+		if(arg0.getClickCount()<2)
+		{
+			if(!gv.getLayoutShell().getModel().getName().equals(Hub.getWorkspace().getActiveModelName()))
+				Hub.getWorkspace().setActiveModel(gv.getLayoutShell().getModel().getName());
+		}
+		else
+		{
+			new EditActions.RenameAction().actionPerformed(null);
+		}
 	}
 
 	public void mousePressed(MouseEvent arg0) {	}
 
 	public void mouseReleased(MouseEvent arg0) { }
 
-	public void mouseEntered(MouseEvent arg0) { }
+	public void mouseEntered(MouseEvent arg0) {	}
 
 	public void mouseExited(MouseEvent arg0) {
 		if (!this.getBounds().contains(arg0.getPoint())) {
@@ -202,22 +219,26 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	 */
 	public void mouseMoved(MouseEvent arg0) {
 		Thumbnail current = null;
-		if (arg0.getSource() != this) {
-			current = graphPanels.get(( (Presentation)arg0.getSource() ).getLayoutShell());
-		} else {
-			int thumbnailIndex = arg0.getPoint().x / (THUMBNAIL_SIZE+SPACER_SIZE);
-			arg0.getPoint().x -= (THUMBNAIL_SIZE+SPACER_SIZE) * thumbnailIndex;
-			current = graphPanels.get(views.elementAt(thumbnailIndex).getLayoutShell());
-		}
-		current.handleMouseEntered(arg0);
-		if (!(current.equals(underMouse))) {
-			underMouse = current;
-			for (Thumbnail t : graphPanels.values()) {
-				if (!t.equals(current)) {
-					t.handleMouseExited(arg0);
-				}
+		for(Thumbnail t:graphPanels.values())
+		{
+			if(t.contains(SwingUtilities.convertPoint(arg0.getComponent(),arg0.getPoint(),t)))
+			{
+				current=t;
+				break;
 			}
 		}
+		if(underMouse!=null)
+		{
+			if(underMouse!=current)
+			{
+				underMouse.handleMouseExited(arg0);
+			}
+		}
+		if(current!=null)
+		{
+			current.handleMouseEntered(arg0);
+		}
+		underMouse=current;
 	}
 
 	/* (non-Javadoc)
@@ -227,7 +248,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 		if(message.getEventType() == WorkspaceMessage.ADD 
 				|| message.getEventType() == WorkspaceMessage.REMOVE) {
 			refreshViews();
-			buildThumbnailBox();
+			buildThumbnailBoxes();
 			invalidate();
 			Hub.getMainWindow().validate();
 
@@ -244,7 +265,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message) {
-		buildThumbnailBox();
+		buildThumbnailBoxes();
 		invalidate();
 		Hub.getMainWindow().validate();
 	}
@@ -261,36 +282,15 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber, MouseListe
 
 	public void saveStatusChanged(DESModelMessage message)
 	{
-		buildThumbnailBox();
+		buildThumbnailBoxes();
 		invalidate();
 		Hub.getMainWindow().validate();		
 	}
-
-	//No longer needed?
-//	/**
-//	* Refresh the title on the current graph view.
-//	* 
-//	* @see observer.FSAGraphSubscriber#fsmGraphChanged(observer.FSAGraphMessage)
-//	*/
-//	public void fsmGraphChanged(FSAGraphMessage message) {
-//	buildThumbnailBox();
-//	/* A more efficient way
-//	JPanel panel = graphPanels.get(message.getSource());
-//	if(panel != null){
-//	TitledBorder border = (TitledBorder)panel.getBorder();
-//	border.setTitle(" "+message.getSource().getDecoratedName());	
-//	panel.invalidate();
-//	panel.repaint();
-//	invalidate();
-//	Hub.getMainWindow().validate();
-//	}*/
-//	}
-
-//	/* (non-Javadoc)
-//	* NOTE Thumbnails don't need to respond to selection events. 
-//	* @see observer.FSAGraphSubscriber#fsmGraphSelectionChanged(observer.FSAGraphMessage)
-//	*/
-//	public void fsmGraphSelectionChanged(FSAGraphMessage message) {}
-
-
+	
+	public void modelNameChanged(DESModelMessage message)
+	{
+		buildThumbnailBoxes();
+		invalidate();
+		Hub.getMainWindow().validate();		
+	}
 }

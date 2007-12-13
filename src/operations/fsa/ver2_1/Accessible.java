@@ -15,7 +15,7 @@ import pluggable.operation.FilterOperation;
 public class Accessible extends AbstractOperation implements FilterOperation {
 
 	public Accessible() {
-		NAME = "Accessible";
+		NAME = "accessible";
 		DESCRIPTION = "Removes all states" +
 				" that are not reachable from the initial state.";
 		

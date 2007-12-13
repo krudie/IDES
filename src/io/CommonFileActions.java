@@ -364,7 +364,7 @@ public class CommonFileActions {
 		{
 		
 			DESModel m=i.next();
-			if( m.needsSave() )
+			if( m.needsSave() || !m.hasAnnotation(Annotable.FILE))
 					models.add(m);
 		}
 		

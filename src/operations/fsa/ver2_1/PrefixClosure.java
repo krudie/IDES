@@ -15,7 +15,7 @@ import pluggable.operation.FilterOperation;
 public class PrefixClosure extends AbstractOperation implements FilterOperation {
 	
 	public PrefixClosure() {
-		NAME = "Prefix Closure";
+		NAME = "prefixclose";
 		DESCRIPTION = "Creates an automaton that " +
 				"generates the prefix closure of the language accepted by the " +
 				"input automaton.";

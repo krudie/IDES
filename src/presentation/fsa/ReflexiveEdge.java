@@ -205,11 +205,11 @@ public class ReflexiveEdge extends BezierEdge {
 		if (! (selectionBox.contains(edgeP1) && selectionBox.contains(edgeP2)
 				&& selectionBox.contains(edgeCTRL1) && selectionBox.contains(edgeCTRL2)))
 		{
-			System.out.println("Self-loop " + edgeP1 + " "
-					+ edgeP2 + " "
-					+ edgeCTRL1 + " "
-					+ edgeCTRL2 + " "
-					+ " outside bounds " + selectionBox);
+//			System.out.println("Self-loop " + edgeP1 + " "
+//					+ edgeP2 + " "
+//					+ edgeCTRL1 + " "
+//					+ edgeCTRL2 + " "
+//					+ " outside bounds " + selectionBox);
 			return exportString;
 		}
 
@@ -390,8 +390,15 @@ public class ReflexiveEdge extends BezierEdge {
 		 * Refreshes the position of this handler based on location of midpoint of edge. 
 		 */
 		public void refresh(){
-			int d = 2*RADIUS;			
-			anchor = new Ellipse2D.Double(((ReflexiveEdge)getEdge()).getMidpoint().getX() - RADIUS, ((ReflexiveEdge)getEdge()).getMidpoint().getY() - d, d, d);
+			int d = 2*RADIUS;
+			Point2D midpoint=((ReflexiveEdge)getEdge()).getMidpoint();
+			Point2D endpoint=((ReflexiveEdge)getEdge()).getBezierLayout().getCurve().getP1();
+			midpoint=Geometry.translate(midpoint, -endpoint.getX(), -endpoint.getY());
+			double len=Geometry.norm(midpoint);
+			midpoint=Geometry.scale(midpoint, (len+RADIUS)/len);
+			midpoint=Geometry.translate(midpoint, endpoint.getX(), endpoint.getY());
+			anchor = new Ellipse2D.Double(midpoint.getX() - RADIUS, midpoint.getY() - RADIUS, d, d);
+//			anchor = new Ellipse2D.Double(((ReflexiveEdge)getEdge()).getMidpoint().getX() - RADIUS, ((ReflexiveEdge)getEdge()).getMidpoint().getY() - d, d, d);
 			setNeedsRefresh(false);
 		}
 

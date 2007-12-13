@@ -7,7 +7,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -20,6 +23,7 @@ import java.util.Vector;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -97,6 +101,14 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		Workspace.instance().addSubscriber(this); // subscribe to
 		// notifications from the
 		// workspace
+		
+		addComponentListener(new ComponentAdapter()
+		{
+			public void componentResized(ComponentEvent e)
+			{
+				arrangeViews();
+			}
+		});
 
 //		FileOperations.loadCommandManager("commands.xml");
 
@@ -187,6 +199,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	Action latexAction;
 	Action optionsAction;
 	Action aboutAction;
+	Action renameAction;
 	
 	private void setupActions()
 	{
@@ -205,6 +218,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		exitAction=new FileActions.ExitAction();
 		undoAction=new UndoManager.UndoAction();
 		redoAction=new UndoManager.RedoAction();
+		renameAction=new EditActions.RenameAction();
 		operationsAction=new OperationsActions.ShowDialogAction();
 		latexAction=new services.latex.UseLatexAction();
 		optionsAction=new OptionsActions.MoreOptionsAction();
@@ -218,6 +232,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		disabledOnNoProject.add(exportAction);
 		disabledOnNoProject.add(undoAction);
 		disabledOnNoProject.add(redoAction);
+		disabledOnNoProject.add(renameAction);
 	}
 	
 	private void createAndAddMenuBar() {
@@ -287,18 +302,24 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		
 		//Initializing the menu items for the "editMenu"
 		JMenuItem undo = new JMenuItem(Hub.string("undo"));
+		undo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/edit_undo.gif"))));
 		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		undo.setToolTipText(Hub.string("comHintUndo"));
 		undo.addActionListener(undoAction);
-		//CommandManager_new.getInstance().setUndoMenu(undo);
 		JMenuItem redo = new JMenuItem(Hub.string("redo"));
+		redo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/edit_redo.gif"))));
 		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		redo.setToolTipText(Hub.string("comHintRedo"));
 		redo.addActionListener(redoAction);
-		//CommandManager_new.getInstance().setRedoAction(redo);
-		//Initialize the undo manager
-		UndoManager.init(undo, redo);
+		//Bind to the undo manager
+		UndoManager.bindUndo(undo);
+		UndoManager.bindRedo(redo);
 		//Adding the menu items to the "editMenu"
+		JMenuItem rename=new JMenuItem(renameAction);
 		editMenu.add(undo);
 		editMenu.add(redo);
+		editMenu.addSeparator();
+		editMenu.add(rename);
 
 		//adding the menu items to the "operationsMenu"
 		operationsMenu.add(operationsAction);
@@ -337,6 +358,20 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 		toolbar.add(wopenAction);
 		toolbar.add(wsaveAction);
 		toolbar.addSeparator();
+		JButton undo = new JButton();
+		undo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/edit_undo.gif"))));
+		undo.setToolTipText(Hub.string("comHintUndo"));
+		undo.addActionListener(undoAction);
+		JButton redo = new JButton();
+		redo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub.getResource("images/icons/edit_redo.gif"))));
+		redo.setToolTipText(Hub.string("comHintRedo"));
+		redo.addActionListener(redoAction);
+		toolbar.add(undo);
+		toolbar.add(redo);
+		//Bind to the undo manager
+		UndoManager.bindNoTextUndo(undo);
+		UndoManager.bindNoTextRedo(redo);
+		toolbar.addSeparator();
 //		toolbar.add(new GraphCommands.SelectTool());
 //		toolbar.add(new GraphCommands.CreateTool());
 //		toolbar.add(new GraphCommands.MoveTool());
@@ -370,7 +405,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber {
 	{
 		getContentPane().remove(toolbar);
 		JToolBar newToolbar=new JToolBar();
-		for(int i=0;i<8;++i)
+		for(int i=0;i<11;++i)
 		{
 			// once you add a button to another bar, it's removed from the previous bar
 			newToolbar.add(toolbar.getComponentAtIndex(0));

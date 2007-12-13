@@ -50,7 +50,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.CompoundEdit;
 
-import observer.Subscriber;
 import presentation.fsa.actions.EdgeActions;
 import presentation.fsa.actions.GraphActions;
 
@@ -226,19 +225,19 @@ public class EdgeLabellingDialog extends EscapeDialog {
 				String symbol = textField.getText();
 				if("".equals(symbol))
 					return;
+
 				// Select the first event in the lists for which symbol
 				// is a prefix
-				int i = listAvailableEvents.indexOfFirstElementWithPrefix(symbol);
+
+				int i = listAssignedEvents.indexOfFirstElementWithPrefix(symbol);
+				if(i > -1){
+					listAssignedEvents.setSelectedIndex(i);
+				}
+				
+				i = listAvailableEvents.indexOfFirstElementWithPrefix(symbol);
 				if(i > -1){
 					listAvailableEvents.setSelectedIndex(i);
 				}
-				
-//Christian: This code was causing the bug #57
-//It was selecting events on the wrong list, reacting events names given by the user.
-//				i = listAssignedEvents.indexOfFirstElementWithPrefix(symbol);
-//				if(i > -1){
-//					listAssignedEvents.setSelectedIndex(i);
-//				}
 			}			
 		});
 		createBox.add(textField);

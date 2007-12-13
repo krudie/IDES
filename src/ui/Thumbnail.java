@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.LayoutManager;
@@ -10,6 +11,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.UIManager;
@@ -40,7 +42,7 @@ public class Thumbnail extends JPanel {
 	/**
 	 * @param layout
 	 */
-	public Thumbnail(LayoutManager layout) {
+	public Thumbnail(FilmStrip parent, LayoutManager layout) {
 		super(layout);
 		closeButton = new JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE));
 		
@@ -56,11 +58,14 @@ public class Thumbnail extends JPanel {
 //		}
 		
 		closeButton.addActionListener(closeButtonListener);
+		closeButton.addMouseListener(parent);
+
 		add(closeButton);
 		closeButton.setVisible(false);
 	}
 
 	public void handleMouseEntered(MouseEvent arg0) {
+		closeButton.setBounds(this.getWidth()-cbWidth-1,0,cbWidth,cbHeight);
 		closeButton.setVisible(true);
 	}
 	
@@ -68,17 +73,16 @@ public class Thumbnail extends JPanel {
 		closeButton.setVisible(false);
 	}
 	
-	protected void paintChildren(Graphics g)
-	{
-		super.paintChildren(g);
-		closeButton.setBounds(this.getWidth()-cbWidth-1,0,cbWidth,cbHeight);
-	}
-
 	public Component add(Component gv) {
 		if (gv instanceof Presentation) {
 			view = (Presentation) gv;
 		}
 		return super.add(gv);
+	}
+	
+	public Presentation getPresentation()
+	{
+		return view;
 	}
 	
 	public String getGraphModelName() {

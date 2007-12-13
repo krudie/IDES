@@ -180,14 +180,16 @@ public class BezierEdge extends Edge {
 		
 	    // rotate to align with end of curve
 	    double rho = Geometry.angleFrom(ArrowHead.axis, unitArrowDir);
-		at.setToRotation(rho);		
-		g2d.transform(at);
-		g2d.setStroke(GraphicalLayout.FINE_STROKE);
-		g2d.draw(arrowHead);
-		g2d.fill(arrowHead);
-		
-		at.setToRotation(-rho);
-		g2d.transform(at);
+	    if(!Double.isNaN(rho))
+	    {
+	    	at.setToRotation(rho);	
+	    	g2d.transform(at);
+	    	g2d.setStroke(GraphicalLayout.FINE_STROKE);
+	    	g2d.draw(arrowHead);
+	    	g2d.fill(arrowHead);
+	    	at.setToRotation(-rho);
+	    	g2d.transform(at);
+	    }
 		at.setToTranslation(-basePt.getX(), -basePt.getY());		
 		g2d.transform(at);
 
@@ -514,11 +516,11 @@ public class BezierEdge extends Edge {
 		if (! (selectionBox.contains(edgeP1) && selectionBox.contains(edgeP2)
 			&& selectionBox.contains(edgeCTRL1) && selectionBox.contains(edgeCTRL2)))
 		{
-			System.out.println("Edge " + edgeP1 + " "
-				+ edgeP2 + " "
-				+ edgeCTRL1 + " "
-				+ edgeCTRL2 + " "
-				+ " outside bounds " + selectionBox);
+//			System.out.println("Edge " + edgeP1 + " "
+//				+ edgeP2 + " "
+//				+ edgeCTRL1 + " "
+//				+ edgeCTRL2 + " "
+//				+ " outside bounds " + selectionBox);
 			return exportString;
 		}
 		

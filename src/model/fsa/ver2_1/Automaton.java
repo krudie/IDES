@@ -306,7 +306,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable, FSASupe
 	 * @see model.fsa.ver2_1.FSAModel#setName(java.lang.String)
 	 */
 	public void setName(String name){
-		this.name = name; 
+		this.name = name;
+		DESModelMessage message=new DESModelMessage(DESModelMessage.NAME,this);
+		for(DESModelSubscriber s : mwSubscribers)	{
+			s.modelNameChanged(message);
+		}
 		this.metadataChanged();
 	}
 

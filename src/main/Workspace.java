@@ -500,12 +500,8 @@ public class Workspace extends WorkspacePublisherAdaptor {
 		if(!unsavedModels.isEmpty())
 		{
 			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
-//			io.CommonActions.handleUnsavedModels(unsavedModels);
-			for(DESModel a:unsavedModels)
-			{
-				if(!io.CommonFileActions.saveAs(a))
-					throw new IncompleteWorkspaceDescriptorException();
-			}
+			if(!io.CommonFileActions.handleUnsavedModels(unsavedModels))
+				throw new IncompleteWorkspaceDescriptorException();
 		}
 		for(int counter=0; counter<systems.size(); ++counter)
 		{

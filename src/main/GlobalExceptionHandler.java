@@ -114,7 +114,7 @@ public class GlobalExceptionHandler extends JDialog implements UncaughtException
 		//The file will be saved on the IDES main folder.
 		String logMessage = messageArea.getText();
 		SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-		String logFilename = "log_" + dataFormat.format(new Date()) + ".log";
+		String logFilename = "IDES_" + dataFormat.format(new Date()) + ".log";
 		try{
 			PrintStream ps = new PrintStream(new FileOutputStream(logFilename));
 			ps.print(logMessage);

@@ -37,8 +37,8 @@ public class TextTool extends DrawingTool {
 			return;
 		}
 		// get current selection
-		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){			
-			new UIActions.TextAction(ContextAdaptorHack.context.getSelectedElement()).execute();			
+		if(ContextAdaptorHack.context.updateCurrentSelection(me.getPoint())){
+			new UIActions.TextAction(ContextAdaptorHack.context.getSelectedElement()).execute();
 		}else{
 			// if nothing selected
 			// create a free label
