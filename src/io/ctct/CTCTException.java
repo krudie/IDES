@@ -1,9 +1,14 @@
 package io.ctct;
 
-import java.lang.*;
+public class CTCTException extends Exception
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1624357604684102120L;
 
-public class CTCTException extends Exception {
-  public CTCTException(String s) {
-    super(s);
-  }
+	public CTCTException(String s)
+	{
+		super(s);
+	}
 }

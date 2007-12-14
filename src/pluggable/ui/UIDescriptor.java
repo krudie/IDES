@@ -6,13 +6,21 @@ import javax.swing.JToolBar;
 
 import presentation.Presentation;
 
-public interface UIDescriptor {
+public interface UIDescriptor
+{
 	public Presentation[] getMainPanePresentations();
+
 	public Presentation[] getLeftPanePresentations();
+
 	public Presentation[] getRightPanePresentations();
+
 	public JMenu[] getMenus();
+
 	public JToolBar getToolbar();
+
 	public JComponent getStatusBar();
+
 	public JMenu getPopupMenu();
+
 	public boolean showZoomControl();
 }

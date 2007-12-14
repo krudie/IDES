@@ -11,15 +11,17 @@ import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import presentation.CubicParamCurve2D;
-import presentation.fsa.CircleNodeLayout;
-import presentation.fsa.GraphLayout;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.Vector;
+
 import main.Annotable;
 import main.Hub;
 import model.DESModel;
@@ -31,35 +33,32 @@ import model.fsa.FSATransition;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
-import pluggable.io.FileIOPlugin;
-import pluggable.io.FileLoadException;
-import pluggable.io.IOPluginManager;
-import presentation.fsa.BezierLayout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import pluggable.io.FileIOPlugin;
+import pluggable.io.FileLoadException;
+import pluggable.io.IOPluginManager;
+import presentation.CubicParamCurve2D;
+import presentation.fsa.BezierLayout;
+import presentation.fsa.CircleNodeLayout;
+import presentation.fsa.GraphLayout;
 
 /**
  * @author christiansilvano
- *
  */
-public class FSAFileIOPlugin implements FileIOPlugin{  
-	
-	protected final static String MODEL_TYPE="FSA";
-	protected final static String META_TAG="layout";	
-	
+public class FSAFileIOPlugin implements FileIOPlugin
+{
+
+	protected final static String MODEL_TYPE = "FSA";
+
+	protected final static String META_TAG = "layout";
+
 	public Set<String> getMetaTags()
 	{
-		Set<String> tags=new HashSet<String>();
+		Set<String> tags = new HashSet<String>();
 		tags.add(META_TAG);
 		return tags;
 	}
@@ -75,37 +74,55 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 	 */
 	public void initializeFileIO()
 	{
-		IOPluginManager.getInstance().registerDataLoader(this ,MODEL_TYPE);
+		IOPluginManager.getInstance().registerDataLoader(this, MODEL_TYPE);
 		IOPluginManager.getInstance().registerDataSaver(this, FSAModel.class);
 		IOPluginManager.getInstance().registerMetaSaver(this, FSAModel.class);
-		IOPluginManager.getInstance().registerMetaLoader(this, MODEL_TYPE, META_TAG);
+		IOPluginManager.getInstance().registerMetaLoader(this,
+				MODEL_TYPE,
+				META_TAG);
 	}
-
 
 	/**
 	 * Saves its data in <code>file</code> according to a <code>model</code>.
-	 * @param file the file to save the data in.
-	 * @param model the model to be saved in the file.
-	 * @param fileDirectory path to the file, so auxiliar files can be created.
+	 * 
+	 * @param file
+	 *            the file to save the data in.
+	 * @param model
+	 *            the model to be saved in the file.
+	 * @param fileDirectory
+	 *            path to the file, so auxiliar files can be created.
 	 */
-	public boolean saveData(PrintStream stream, DESModel model, File fileDirectory)
+	public boolean saveData(PrintStream stream, DESModel model,
+			File fileDirectory)
 	{
 		ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
-		try{
-			while(si.hasNext()){
-				XMLExporter.stateToXML((State)si.next(), stream, XMLExporter.INDENT);            
+		try
+		{
+			while (si.hasNext())
+			{
+				XMLExporter.stateToXML((State)si.next(),
+						stream,
+						XMLExporter.INDENT);
 			}
 
 			ListIterator<FSAEvent> ei = ((FSAModel)model).getEventIterator();
-			while(ei.hasNext()){
-				XMLExporter.eventToXML((Event)ei.next(),stream, XMLExporter.INDENT);
+			while (ei.hasNext())
+			{
+				XMLExporter.eventToXML((Event)ei.next(),
+						stream,
+						XMLExporter.INDENT);
 			}
 
-			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
-			while(ti.hasNext()){
-				XMLExporter.transitionToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
+			ListIterator<FSATransition> ti = ((FSAModel)model)
+					.getTransitionIterator();
+			while (ti.hasNext())
+			{
+				XMLExporter.transitionToXML((Transition)ti.next(),
+						stream,
+						XMLExporter.INDENT);
 			}
-		}catch(Exception e)
+		}
+		catch (Exception e)
 		{
 			return false;
 		}
@@ -114,39 +131,50 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 	/**
 	 * Save metaData to the file, according to model.
+	 * 
 	 * @param file
 	 * @param model
 	 */
-	public boolean saveMeta(PrintStream stream, DESModel model, String type, String tag)
+	public boolean saveMeta(PrintStream stream, DESModel model, String type,
+			String tag)
 	{
-		//stream will be an OutputStream.
-		//it will need to be converted to PrintStream(UTF-8).
-		if(type.equals(MODEL_TYPE) & tag.equals(META_TAG))
+		// stream will be an OutputStream.
+		// it will need to be converted to PrintStream(UTF-8).
+		if (type.equals(MODEL_TYPE) & tag.equals(META_TAG))
 		{
 			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
-			ListIterator<FSATransition> ti = ((FSAModel)model).getTransitionIterator();
-			//TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
-			stream.println("\t<font size=\""+ 12+"\"/>");
-			
-			GraphLayout layout=(GraphLayout)model.getAnnotation(Annotable.LAYOUT);
-			if(layout!=null)
+			ListIterator<FSATransition> ti = ((FSAModel)model)
+					.getTransitionIterator();
+			// TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
+			stream.println("\t<font size=\"" + 12 + "\"/>");
+
+			GraphLayout layout = (GraphLayout)model
+					.getAnnotation(Annotable.LAYOUT);
+			if (layout != null)
 			{
-				stream.println("\t<layout uniformnodes=\""+layout.getUseUniformRadius().get()+"\"/>");
-			}
-			
-			si = ((FSAModel)model).getStateIterator();
-			while(si.hasNext())
-			{
-				XMLExporter.stateLayoutToXML((State)si.next(), stream, XMLExporter.INDENT);            
+				stream.println("\t<layout uniformnodes=\""
+						+ layout.getUseUniformRadius().get() + "\"/>");
 			}
 
-			//Save the transitions
-			ti = ((FSAModel)model).getTransitionIterator();
-//			//Create a hashmap to store the transition layouts, this information is used for the "groups" creation.
-//			HashMap<Integer,BezierLayout> bezierCurves = new HashMap<Integer,BezierLayout>();
-			while(ti.hasNext())
+			si = ((FSAModel)model).getStateIterator();
+			while (si.hasNext())
 			{
-				XMLExporter.transitionLayoutToXML((Transition)ti.next(),stream, XMLExporter.INDENT);
+				XMLExporter.stateLayoutToXML((State)si.next(),
+						stream,
+						XMLExporter.INDENT);
+			}
+
+			// Save the transitions
+			ti = ((FSAModel)model).getTransitionIterator();
+			// //Create a hashmap to store the transition layouts, this
+			// information is used for the "groups" creation.
+			// HashMap<Integer,BezierLayout> bezierCurves = new
+			// HashMap<Integer,BezierLayout>();
+			while (ti.hasNext())
+			{
+				XMLExporter.transitionLayoutToXML((Transition)ti.next(),
+						stream,
+						XMLExporter.INDENT);
 			}
 			return true;
 		}
@@ -155,41 +183,55 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 	/**
 	 * Loads data from the file.
+	 * 
 	 * @param file
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(InputStream f, File fileDir) throws FileLoadException
+	public DESModel loadData(InputStream f, File fileDir)
+			throws FileLoadException
 	{
-		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<data>" + System.getProperty("line.separator")).getBytes();
-		HeadTailInputStream dataField = new HeadTailInputStream(f,FILE_HEADER,"</data>".getBytes());
+		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+				+ System.getProperty("line.separator") + "<data>" + System
+				.getProperty("line.separator")).getBytes();
+		HeadTailInputStream dataField = new HeadTailInputStream(
+				f,
+				FILE_HEADER,
+				"</data>".getBytes());
 		FSAModel model = null;
-		//Parse body:	
+		// Parse body:
 		AutomatonParser parser = new AutomatonParser();
-//		parser.printStream(dataField);
+		// parser.printStream(dataField);
 		model = ModelManager.createModel(FSAModel.class);
 		model = parser.parseData(dataField);
 
-		if(model == null || !"".equals(parser.getParsingErrors()))
+		if (model == null || !"".equals(parser.getParsingErrors()))
 		{
-			throw new FileLoadException(parser.getParsingErrors(),model);
+			throw new FileLoadException(parser.getParsingErrors(), model);
 		}
 		return model;
 	}
 
 	/**
 	 * Loads metadata from the file
+	 * 
 	 * @param file
 	 */
-	public void loadMeta(InputStream stream, DESModel model) throws FileLoadException
-	{		
-		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<meta>" + System.getProperty("line.separator")).getBytes();
-		HeadTailInputStream metaField = new HeadTailInputStream(stream,FILE_HEADER,"</meta>".getBytes());
+	public void loadMeta(InputStream stream, DESModel model)
+			throws FileLoadException
+	{
+		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+				+ System.getProperty("line.separator") + "<meta>" + System
+				.getProperty("line.separator")).getBytes();
+		HeadTailInputStream metaField = new HeadTailInputStream(
+				stream,
+				FILE_HEADER,
+				"</meta>".getBytes());
 
 		AutomatonParser parser = new AutomatonParser();
 		parser.parseMeta(metaField, model);
-		
-		if(!"".equals(parser.getParsingErrors()))
+
+		if (!"".equals(parser.getParsingErrors()))
 		{
 			throw new FileLoadException(parser.getParsingErrors());
 		}
@@ -197,275 +239,390 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 	/**
 	 * Unsubscribe itself from the IOIE_PluginManager
-	 *
 	 */
 	public void unload()
 	{
 
 	}
 
-
-	private static class XMLExporter{
-		private static final String INDENT =  "\t";
+	private static class XMLExporter
+	{
+		private static final String INDENT = "\t";
 
 		/**
 		 * prints a state in xml
-		 * @param s the state to convert 
-		 * @param ps the printstream to print to 
-		 * @param indent the indentation to be used in the file
-		 */ 
-		private static void stateToXML(State s, PrintStream ps,String indent){
+		 * 
+		 * @param s
+		 *            the state to convert
+		 * @param ps
+		 *            the printstream to print to
+		 * @param indent
+		 *            the indentation to be used in the file
+		 */
+		private static void stateToXML(State s, PrintStream ps, String indent)
+		{
 			ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
 
-			if(!(s.isInitial() | s.isMarked()))
+			if (!(s.isInitial() | s.isMarked()))
 			{
 				ps.println(indent + indent + "<properties/>");
-			}else{
+			}
+			else
+			{
 				ps.println(indent + indent + "<properties>");
-				if(s.isInitial())
+				if (s.isInitial())
 				{
 					ps.println(indent + indent + indent + "<initial />");
 				}
-				if(s.isMarked())
+				if (s.isMarked())
 				{
 					ps.println(indent + indent + indent + "<marked />");
 				}
 				ps.println(indent + indent + "</properties>");
 			}
 
-			if(s.getName() != null)
+			if (s.getName() != null)
 			{
-				ps.println(indent + indent + "<name>" + s.getName() + "</name>");
-			}else{
+				ps
+						.println(indent + indent + "<name>" + s.getName()
+								+ "</name>");
+			}
+			else
+			{
 				ps.println(indent + indent + "<name />");
 			}
 
 			ps.println(indent + "</state>");
 		}
+
 		/**
 		 * prints an event in xml
-		 * @param e the event to convert 
-		 * @param ps the printstream to print to 
-		 * @param indent the indentation to be used in the file
-		 */ 
-		private static void eventToXML(Event e, PrintStream ps, String indent){
-			if(e.getSymbol() == "" & !(e.isObservable() | e.isControllable())){
+		 * 
+		 * @param e
+		 *            the event to convert
+		 * @param ps
+		 *            the printstream to print to
+		 * @param indent
+		 *            the indentation to be used in the file
+		 */
+		private static void eventToXML(Event e, PrintStream ps, String indent)
+		{
+			if (e.getSymbol() == "" & !(e.isObservable() | e.isControllable()))
+			{
 				ps.println(indent + "<event" + " id=\"" + e.getId() + "\" />");
 			}
-			else{
+			else
+			{
 				ps.println(indent + "<event" + " id=\"" + e.getId() + "\">");
-				if(!(e.isControllable() | e.isObservable()))
+				if (!(e.isControllable() | e.isObservable()))
 				{
 					ps.println(indent + indent + "<properties />");
-				}else{
+				}
+				else
+				{
 					ps.println(indent + indent + "<properties>");
-					if(e.isControllable())
+					if (e.isControllable())
 					{
-						ps.println(indent + indent + indent + "<controllable />");
+						ps.println(indent + indent + indent
+								+ "<controllable />");
 					}
-					if(e.isObservable())
+					if (e.isObservable())
 					{
 						ps.println(indent + indent + indent + "<observable />");
 					}
 					ps.println(indent + indent + "</properties>");
 				}
-				if(e.getSymbol() != null)
+				if (e.getSymbol() != null)
 				{
-					ps.println(indent + indent + "<name>" + e.getSymbol() + "</name>");
-				}else{
+					ps.println(indent + indent + "<name>" + e.getSymbol()
+							+ "</name>");
+				}
+				else
+				{
 					ps.println(indent + indent + "<name />");
 				}
 				ps.println(indent + "</event>");
 			}
 		}
+
 		/**
 		 * prints a transition in xml
-		 * @param t the transition to convert 
-		 * @param ps the printstream to print to 
-		 * @param indent the indentation to be used in the file
-		 */ 
-		private static void transitionToXML(Transition t, PrintStream ps, String indent){
-			ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + " source=\""
-					+ t.getSource().getId() + "\"" + " target=\"" + t.getTarget().getId() + "\""
+		 * 
+		 * @param t
+		 *            the transition to convert
+		 * @param ps
+		 *            the printstream to print to
+		 * @param indent
+		 *            the indentation to be used in the file
+		 */
+		private static void transitionToXML(Transition t, PrintStream ps,
+				String indent)
+		{
+			ps.println(indent
+					+ "<transition"
+					+ " id=\""
+					+ t.getId()
+					+ "\""
+					+ " source=\""
+					+ t.getSource().getId()
+					+ "\""
+					+ " target=\""
+					+ t.getTarget().getId()
+					+ "\""
 
-					+ ((t.getEvent() != null) ? " event=\"" + t.getEvent().getId() + "\"" : "") + ">");
-			ps.println(indent + "</transition>");			
+					+ ((t.getEvent() != null) ? " event=\""
+							+ t.getEvent().getId() + "\"" : "") + ">");
+			ps.println(indent + "</transition>");
 		}
 
 		/**
 		 * prints a state in xml
-		 * @param s the state to convert 
-		 * @param ps the printstream to print to 
-		 * @param indent the indentation to be used in the file
-		 */ 
-		private static void stateLayoutToXML(State s, PrintStream ps,String indent){
-			CircleNodeLayout c = (CircleNodeLayout)s.getAnnotation(Annotable.LAYOUT);
-			if(c != null)
+		 * 
+		 * @param s
+		 *            the state to convert
+		 * @param ps
+		 *            the printstream to print to
+		 * @param indent
+		 *            the indentation to be used in the file
+		 */
+		private static void stateLayoutToXML(State s, PrintStream ps,
+				String indent)
+		{
+			CircleNodeLayout c = (CircleNodeLayout)s
+					.getAnnotation(Annotable.LAYOUT);
+			if (c != null)
 			{
 				ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
-				ps.println(indent + indent + "<circle r=\"" + String.valueOf(c.getRadius()) + "\" x=\"" + String.valueOf(c.getLocation().x) + "\" y=\"" + String.valueOf(c.getLocation().y) + "\" />");
-				ps.println(indent + indent + "<arrow x=\"" + String.valueOf(c.getArrow().x) + "\" y=\"" + String.valueOf(c.getArrow().y) + "\" />");
+				ps.println(indent + indent + "<circle r=\""
+						+ String.valueOf(c.getRadius()) + "\" x=\""
+						+ String.valueOf(c.getLocation().x) + "\" y=\""
+						+ String.valueOf(c.getLocation().y) + "\" />");
+				ps.println(indent + indent + "<arrow x=\""
+						+ String.valueOf(c.getArrow().x) + "\" y=\""
+						+ String.valueOf(c.getArrow().y) + "\" />");
 				ps.println(indent + "</state>");
 			}
-		}  
+		}
 
 		/**
 		 * prints a transition in xml
-		 * @param t the transition to convert 
-		 * @param ps the printstream to print to 
-		 * @param indent the indentation to be used in the file
-		 */ 
-		private static void transitionLayoutToXML(Transition t, PrintStream ps, String indent){
+		 * 
+		 * @param t
+		 *            the transition to convert
+		 * @param ps
+		 *            the printstream to print to
+		 * @param indent
+		 *            the indentation to be used in the file
+		 */
+		private static void transitionLayoutToXML(Transition t, PrintStream ps,
+				String indent)
+		{
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
-			if(l!= null)
+			if (l != null)
 			{
 				CubicParamCurve2D curve = l.getCurve();
-				ps.println(indent + "<transition" + " id=\"" + t.getId() + "\"" + (l.getGroup() != BezierLayout.UNGROUPPED?" group=\"" + l.getGroup() + "\"":"")+ ">");
-				ps.println(indent + indent + "<bezier x1=\"" + curve.getX1() +"\" y1=\"" + curve.getY1() + "\" x2=\"" + 
-						curve.getX2() + "\" y2=\"" + curve.getY2() + "\" ctrlx1=\"" + curve.getCtrlX1() + "\" ctrly1=\"" + curve.getCtrlY1() + "\" ctrlx2=\"" + 
-						curve.getCtrlX2() + "\" ctrly2=\"" + curve.getCtrlY2() + "\" />");
-				ps.println(indent + indent + "<label x=\"" + l.getLabelOffset().x + "\" y=\"" + l.getLabelOffset().y +"\" />");
+				ps
+						.println(indent
+								+ "<transition"
+								+ " id=\""
+								+ t.getId()
+								+ "\""
+								+ (l.getGroup() != BezierLayout.UNGROUPPED ? " group=\""
+										+ l.getGroup() + "\""
+										: "") + ">");
+				ps.println(indent + indent + "<bezier x1=\"" + curve.getX1()
+						+ "\" y1=\"" + curve.getY1() + "\" x2=\""
+						+ curve.getX2() + "\" y2=\"" + curve.getY2()
+						+ "\" ctrlx1=\"" + curve.getCtrlX1() + "\" ctrly1=\""
+						+ curve.getCtrlY1() + "\" ctrlx2=\""
+						+ curve.getCtrlX2() + "\" ctrly2=\""
+						+ curve.getCtrlY2() + "\" />");
+				ps.println(indent + indent + "<label x=\""
+						+ l.getLabelOffset().x + "\" y=\""
+						+ l.getLabelOffset().y + "\" />");
 				ps.println(indent + "</transition>");
 			}
 		}
 
 	}
 
-	public class AutomatonParser extends AbstractParser{  
+	public class AutomatonParser extends AbstractParser
+	{
 		boolean settingName = false;
+
 		String tmpName = "";
 
-		//Sometimes a model element needs to be stored so it can receive different informations at different
-		//times during the parse.
+		// Sometimes a model element needs to be stored so it can receive
+		// different informations at different
+		// times during the parse.
 		private FSAModel model;
-		private State tmpState;
-		private Transition tmpTransition;
-		private Event tmpEvent;
-		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long,BezierLayout>();
-		//Constants representing names of xml tags and subtags
-		protected final String INITIAL="initial", MARKED="marked",OBSERVABLE="observable", 
-		CONTROLLABLE="controllable",NAME="name", ID="id", CIRCLE="circle",RADIUS="r", COORD_X="x", 
-		COORD_Y="y", BEZIER="bezier", X1="x1", Y1="y1", X2="x2", Y2="y2", CTRLX1="ctrlx1", CTRLY1="ctrly1",
-		CTRLX2="ctrlx2", CTRLY2="ctrly2", SOURCE="source", TARGET="target",STATE = "state", 
-		EVENT = "event", TRANSITION="transition", FONT = "font",  LABEL="label", ARROW="arrow", GROUP_ID="group",
-		LAYOUT="layout", UNIFORM_NODES="uniformnodes";
 
-		//Auxiliar attributes: "Actions" to be developed by the parser
-		//Tells some parseDataElements and parseMetaElements whether they are
-		//parsing main tags or subtags
-		protected final int MAINTAG = 2, SUBTAG = 3, SUBSUBTAG=4, SUBSUBSUBTAG=5; //,,, 
-		private String CURRENT_PARSING_ELEMENT="";
+		private State tmpState;
+
+		private Transition tmpTransition;
+
+		private Event tmpEvent;
+
+		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long, BezierLayout>();
+
+		// Constants representing names of xml tags and subtags
+		protected final String INITIAL = "initial", MARKED = "marked",
+				OBSERVABLE = "observable", CONTROLLABLE = "controllable",
+				NAME = "name", ID = "id", CIRCLE = "circle", RADIUS = "r",
+				COORD_X = "x", COORD_Y = "y", BEZIER = "bezier", X1 = "x1",
+				Y1 = "y1", X2 = "x2", Y2 = "y2", CTRLX1 = "ctrlx1",
+				CTRLY1 = "ctrly1", CTRLX2 = "ctrlx2", CTRLY2 = "ctrly2",
+				SOURCE = "source", TARGET = "target", STATE = "state",
+				EVENT = "event", TRANSITION = "transition", FONT = "font",
+				LABEL = "label", ARROW = "arrow", GROUP_ID = "group",
+				LAYOUT = "layout", UNIFORM_NODES = "uniformnodes";
+
+		// Auxiliar attributes: "Actions" to be developed by the parser
+		// Tells some parseDataElements and parseMetaElements whether they are
+		// parsing main tags or subtags
+		protected final int MAINTAG = 2, SUBTAG = 3, SUBSUBTAG = 4,
+				SUBSUBSUBTAG = 5; // ,,,
+
+		private String CURRENT_PARSING_ELEMENT = "";
 
 		boolean parsingData = false;
+
 		boolean parsingMeta = false;
 
-		//Chain to store the strings meaning all the xml tags being processed.
-		//The order is from the most important xml tag, to the less importants (MAINTAG->SUBTAG->SUBSUBTAG...)
+		// Chain to store the strings meaning all the xml tags being processed.
+		// The order is from the most important xml tag, to the less importants
+		// (MAINTAG->SUBTAG->SUBSUBTAG...)
 		public Vector<String> tags = new Vector<String>();
-
 
 		/**
 		 * creates an automatonParser.
 		 */
-		public AutomatonParser(){
-			super();			
+		public AutomatonParser()
+		{
+			super();
 		}
 
-		public FSAModel parseData(InputStream stream){
+		public FSAModel parseData(InputStream stream)
+		{
 			parsingData = true;
 			parsingErrors = "";
 			model = ModelManager.createModel(FSAModel.class);
-			try{
+			try
+			{
 				xmlReader.parse(new InputSource(stream));
 			}
-			catch(FileNotFoundException fnfe){
-				parsingErrors+=fnfe.getMessage()+"\n";
+			catch (FileNotFoundException fnfe)
+			{
+				parsingErrors += fnfe.getMessage() + "\n";
 			}
-			catch(IOException ioe){
-				parsingErrors+=ioe.getMessage()+"\n";
+			catch (IOException ioe)
+			{
+				parsingErrors += ioe.getMessage() + "\n";
 			}
-			catch(SAXException saxe){
-				parsingErrors+=saxe.getMessage()+"\n";
+			catch (SAXException saxe)
+			{
+				parsingErrors += saxe.getMessage() + "\n";
 			}
-			catch(NullPointerException npe){
-				parsingErrors+=npe.getMessage()+"\n";
+			catch (NullPointerException npe)
+			{
+				parsingErrors += npe.getMessage() + "\n";
 			}
 			return model;
 		}
-		/**
-		 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-		 */
-		public void startElement(String uri, String localName, String qName, Attributes atts){
 
-			try{
+		/**
+		 * @see org.xml.sax.ContentHandler#startElement(java.lang.String,
+		 *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
+		 */
+		@Override
+		public void startElement(String uri, String localName, String qName,
+				Attributes atts)
+		{
+
+			try
+			{
 				tags.add(qName);
-				if(tags.size()>1)
+				if (tags.size() > 1)
 				{
 					CURRENT_PARSING_ELEMENT = tags.get(1);
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				parsingErrors+=e.getMessage()+"\n";
+				parsingErrors += e.getMessage() + "\n";
 			}
 
-			if(parsingData)
+			if (parsingData)
 			{
-				parseDataElements(qName,atts);
+				parseDataElements(qName, atts);
 			}
 
-			if(parsingMeta)
+			if (parsingMeta)
 			{
-				parseMetaElements(qName,atts);
+				parseMetaElements(qName, atts);
 			}
 		}
+
 		/**
-		 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+		 * @see org.xml.sax.ContentHandler#endElement(java.lang.String,
+		 *      java.lang.String, java.lang.String)
 		 */
-		public void endElement(String uri, String localName, String qName){
-			if(qName.equals(NAME)&&settingName)
+		@Override
+		public void endElement(String uri, String localName, String qName)
+		{
+			if (qName.equals(NAME) && settingName)
 			{
-				if(CURRENT_PARSING_ELEMENT == STATE)
+				if (CURRENT_PARSING_ELEMENT == STATE)
 				{
 					tmpState.setName(tmpName);
 				}
-				if(CURRENT_PARSING_ELEMENT == EVENT)
+				if (CURRENT_PARSING_ELEMENT == EVENT)
 				{
 					tmpEvent.setSymbol(tmpName);
 				}
-				//reset name parsing
-				settingName=false;
-				tmpName="";
+				// reset name parsing
+				settingName = false;
+				tmpName = "";
 			}
-			
-			if(!qName.equals(tags.get(tags.size() -1)))
+
+			if (!qName.equals(tags.get(tags.size() - 1)))
 			{
-				parsingErrors+=Hub.string("xmlParsingBadFormat")+"\n";
-			}else{
-				tags.remove(tags.remove(tags.size()-1));
-				CURRENT_PARSING_ELEMENT="";
+				parsingErrors += Hub.string("xmlParsingBadFormat") + "\n";
 			}
-		} 
+			else
+			{
+				tags.remove(tags.remove(tags.size() - 1));
+				CURRENT_PARSING_ELEMENT = "";
+			}
+		}
+
 		/**
 		 * @see org.xml.sax.ContentHandler#startDocument()
 		 */
-		public void startDocument(){}
+		@Override
+		public void startDocument()
+		{
+		}
+
 		/**
 		 * @see org.xml.sax.ContentHandler#endDocument()
 		 */
-		public void endDocument(){
-			
-			if(tags.size()>0)
+		@Override
+		public void endDocument()
+		{
+
+			if (tags.size() > 0)
 			{
-				parsingErrors+=Hub.string("xmlParsingBadFormat")+"\n";
+				parsingErrors += Hub.string("xmlParsingBadFormat") + "\n";
 			}
-			
+
 			parsingData = false;
 			parsingMeta = false;
 		}
-		
+
 		/**
 		 * Debug function. Prints the content of the stream.
+		 * 
 		 * @param dataSection
 		 */
 		public void printInputStream(InputStream stream)
@@ -473,102 +630,120 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 			String body = "";
 			try
 			{
-				BufferedReader head = new BufferedReader(new InputStreamReader(stream));        	
-				String line = head.readLine();	        	
-				//Process the file (Add States, Events and Transitions to the model):
-				while(line != null)
+				BufferedReader head = new BufferedReader(new InputStreamReader(
+						stream));
+				String line = head.readLine();
+				// Process the file (Add States, Events and Transitions to the
+				// model):
+				while (line != null)
 				{
 					body += line;
-					body += System.getProperty("line.separator"); 
+					body += System.getProperty("line.separator");
 					line = head.readLine();
 				}
 				head.close();
-			}catch(IOException e)
+			}
+			catch (IOException e)
 			{
 				Hub.displayAlert("Error: " + e.getMessage());
 			}
 		}
+
 		/**
-		 * Parses XML information and builds a FSAModels based on the content given by the IOCoordinator
-		 * @param qName name of the current XML tag being processed.
-		 * @param atts the attributes of the XML tag, ex: <tag at1="value1" at2="value2" />, where at1 and at2 are the attributes 
-		 * @param action, tells witch parsing action needs to be performed. Currently supports: "start" and "end"
+		 * Parses XML information and builds a FSAModels based on the content
+		 * given by the IOCoordinator
+		 * 
+		 * @param qName
+		 *            name of the current XML tag being processed.
+		 * @param atts
+		 *            the attributes of the XML tag, ex: <tag at1="value1"
+		 *            at2="value2" />, where at1 and at2 are the attributes
+		 * @param action,
+		 *            tells witch parsing action needs to be performed.
+		 *            Currently supports: "start" and "end"
 		 */
 		public void parseDataElements(String qName, Attributes atts)
 		{
-			switch(tags.size())
+			switch (tags.size())
 			{
 			case MAINTAG:
-				if(CURRENT_PARSING_ELEMENT == STATE)
+				if (CURRENT_PARSING_ELEMENT == STATE)
 				{
-					tmpState = (State)getModelElement(atts, CURRENT_PARSING_ELEMENT);
+					tmpState = (State)getModelElement(atts,
+							CURRENT_PARSING_ELEMENT);
 					model.add(tmpState);
 				}
 
-				else if(CURRENT_PARSING_ELEMENT == TRANSITION)
+				else if (CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
-					tmpTransition = (Transition)getModelElement(atts, CURRENT_PARSING_ELEMENT);
+					tmpTransition = (Transition)getModelElement(atts,
+							CURRENT_PARSING_ELEMENT);
 					model.add(tmpTransition);
 				}
 
-				else if(CURRENT_PARSING_ELEMENT == EVENT)
+				else if (CURRENT_PARSING_ELEMENT == EVENT)
 				{
-					tmpEvent = (Event)getModelElement(atts, CURRENT_PARSING_ELEMENT);
+					tmpEvent = (Event)getModelElement(atts,
+							CURRENT_PARSING_ELEMENT);
 					model.add(tmpEvent);
 				}
 
 				else
 				{
-					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					parsingErrors += Hub.string("xmlParsingUnrecogized") + "\n";
 				}
 				break;
-				//////////////////////////////////////////////
-			case SUBTAG:			
-				if(qName.equals(NAME))
-				{    	
+			// ////////////////////////////////////////////
+			case SUBTAG:
+				if (qName.equals(NAME))
+				{
 					settingName = true;
-					tmpName="";
-				}else{
+					tmpName = "";
+				}
+				else
+				{
 					settingName = false;
 				}
-				
+
 				break;
-				//////////////////////////////////////////////
+			// ////////////////////////////////////////////
 			case SUBSUBTAG:
-				if(CURRENT_PARSING_ELEMENT == STATE)
+				if (CURRENT_PARSING_ELEMENT == STATE)
 				{
-					if(qName.equals(INITIAL))
+					if (qName.equals(INITIAL))
 					{
 						tmpState.setInitial(true);
 					}
 
-					else if(qName.equals(MARKED))
+					else if (qName.equals(MARKED))
 					{
 						tmpState.setMarked(true);
 					}
 					else
 					{
-						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+						parsingErrors += Hub.string("xmlParsingUnrecogized")
+								+ "\n";
 					}
 				}
-				else if(CURRENT_PARSING_ELEMENT == EVENT)
+				else if (CURRENT_PARSING_ELEMENT == EVENT)
 				{
-					if(qName.equals(OBSERVABLE))
+					if (qName.equals(OBSERVABLE))
 					{
 						tmpEvent.setObservable(true);
 					}
-					else if(qName.equals(CONTROLLABLE))
+					else if (qName.equals(CONTROLLABLE))
 					{
 						tmpEvent.setControllable(true);
 					}
 					else
 					{
-						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+						parsingErrors += Hub.string("xmlParsingUnrecogized")
+								+ "\n";
 					}
 				}
 				else
 				{
-					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					parsingErrors += Hub.string("xmlParsingUnrecogized") + "\n";
 				}
 				break;
 			}
@@ -577,22 +752,23 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 
 		public void parseMetaElements(String qName, Attributes atts)
 		{
-			//THIS STRUCTURE CAN BE USED TO PARSE A XML TAG IN ANY SUB-LEVEL
-			//The sublevel is identified by the class constants: MAINTAG, SUBTAG, SUBSUBTAG, etc, 
-			//which are integers with value meaning the sublevel of the tag.
-			switch(tags.size())
+			// THIS STRUCTURE CAN BE USED TO PARSE A XML TAG IN ANY SUB-LEVEL
+			// The sublevel is identified by the class constants: MAINTAG,
+			// SUBTAG, SUBSUBTAG, etc,
+			// which are integers with value meaning the sublevel of the tag.
+			switch (tags.size())
 			{
-			case MAINTAG://MAINTAG
-				if(CURRENT_PARSING_ELEMENT == STATE)
+			case MAINTAG:// MAINTAG
+				if (CURRENT_PARSING_ELEMENT == STATE)
 				{
 					long id = Long.parseLong(atts.getValue(ID));
 					FSAState s = null;
-					//Select the state referred by <code>id</code>
+					// Select the state referred by <code>id</code>
 					Iterator<FSAState> sIt = model.getStateIterator();
-					while(sIt.hasNext())
+					while (sIt.hasNext())
 					{
 						FSAState tmpS = sIt.next();
-						if(tmpS.getId() == id)
+						if (tmpS.getId() == id)
 						{
 							s = tmpS;
 							break;
@@ -603,25 +779,27 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					tmpState = (State)s;
 				}
 
-				else if(CURRENT_PARSING_ELEMENT == TRANSITION)
+				else if (CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
 					long id = Long.parseLong(atts.getValue(ID));
 					long groupId = -1;
-					try{
-						groupId = Long.parseLong(atts.getValue(GROUP_ID));
-					}catch(Exception e)
+					try
 					{
-						//The transition is ungrouped.
-						//It will have its own layout.
+						groupId = Long.parseLong(atts.getValue(GROUP_ID));
+					}
+					catch (Exception e)
+					{
+						// The transition is ungrouped.
+						// It will have its own layout.
 					}
 
 					FSATransition transition = null;
-					//Select the transition referred by id
+					// Select the transition referred by id
 					Iterator<FSATransition> tIt = model.getTransitionIterator();
-					while(tIt.hasNext())
+					while (tIt.hasNext())
 					{
 						FSATransition t = tIt.next();
-						if(t.getId() == id)
+						if (t.getId() == id)
 						{
 							transition = t;
 							break;
@@ -629,79 +807,90 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 					}
 
 					BezierLayout l = null;
-					if(groupId == -1)//The transition has no group
+					if (groupId == -1)// The transition has no group
 					{
-						//If the transition has no group, create a layout to represent it:
+						// If the transition has no group, create a layout to
+						// represent it:
 						l = new BezierLayout();
-					}else
+					}
+					else
 					{
-						//The transition have a group.
-						//Use the groupLayout stored in "bezierCurves"
-						//Create a layout it if it still does not exist.
-						l  = bezierCurves.get(groupId);
-						if(l == null)
+						// The transition have a group.
+						// Use the groupLayout stored in "bezierCurves"
+						// Create a layout it if it still does not exist.
+						l = bezierCurves.get(groupId);
+						if (l == null)
 						{
-							//Create the layout:
+							// Create the layout:
 							l = new BezierLayout();
 							bezierCurves.put(groupId, l);
 						}
-					}	
+					}
 					l.setGroup(groupId);
 					transition.setAnnotation(Annotable.LAYOUT, l);
 					tmpTransition = (Transition)transition;
 				}
 
-				else if(CURRENT_PARSING_ELEMENT == FONT)
+				else if (CURRENT_PARSING_ELEMENT == FONT)
 				{
 
 				}
-				
-				else if(CURRENT_PARSING_ELEMENT == LAYOUT)
+
+				else if (CURRENT_PARSING_ELEMENT == LAYOUT)
 				{
-					String uniformNodes=atts.getValue(UNIFORM_NODES);
-					if(uniformNodes==null)
+					String uniformNodes = atts.getValue(UNIFORM_NODES);
+					if (uniformNodes == null)
 					{
-						uniformNodes="false";
+						uniformNodes = "false";
 					}
-					GraphLayout gl=new GraphLayout();
-					gl.getUseUniformRadius().set(Boolean.parseBoolean(uniformNodes));
-					model.setAnnotation(Annotable.LAYOUT,gl);
+					GraphLayout gl = new GraphLayout();
+					gl.getUseUniformRadius().set(Boolean
+							.parseBoolean(uniformNodes));
+					model.setAnnotation(Annotable.LAYOUT, gl);
 				}
-				
+
 				else
 				{
-					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					parsingErrors += Hub.string("xmlParsingUnrecogized") + "\n";
 				}
-				
+
 				break;
-			case SUBTAG: //FIRST LEVEL AFTER THE MAIN TAG
-				if(CURRENT_PARSING_ELEMENT == STATE)
+			case SUBTAG: // FIRST LEVEL AFTER THE MAIN TAG
+				if (CURRENT_PARSING_ELEMENT == STATE)
 				{
-					if(qName.equals(CIRCLE))
+					if (qName.equals(CIRCLE))
 					{
-						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
-						layout.setRadius(Float.parseFloat(atts.getValue(RADIUS)));
-						layout.setLocation(Float.parseFloat(atts.getValue(COORD_X)),Float.parseFloat(atts.getValue(COORD_Y)));				
+						CircleNodeLayout layout = (CircleNodeLayout)tmpState
+								.getAnnotation(Annotable.LAYOUT);
+						layout.setRadius(Float
+								.parseFloat(atts.getValue(RADIUS)));
+						layout.setLocation(Float.parseFloat(atts
+								.getValue(COORD_X)), Float.parseFloat(atts
+								.getValue(COORD_Y)));
 						layout.setText(tmpState.getName());
 					}
 
-					else if(qName.equals(ARROW))
+					else if (qName.equals(ARROW))
 					{
-						CircleNodeLayout layout = (CircleNodeLayout)tmpState.getAnnotation(Annotable.LAYOUT);
-						layout.setArrow(new Point2D.Float(Float.parseFloat(atts.getValue(COORD_X))  , Float.parseFloat(atts.getValue(COORD_Y))));
+						CircleNodeLayout layout = (CircleNodeLayout)tmpState
+								.getAnnotation(Annotable.LAYOUT);
+						layout.setArrow(new Point2D.Float(Float.parseFloat(atts
+								.getValue(COORD_X)), Float.parseFloat(atts
+								.getValue(COORD_Y))));
 					}
-					
+
 					else
 					{
-						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+						parsingErrors += Hub.string("xmlParsingUnrecogized")
+								+ "\n";
 					}
 				}
 
-				else if(CURRENT_PARSING_ELEMENT == TRANSITION)
-				{	
-					//Setting the layout for the edge:
-					if(qName.equals(BEZIER))
-					{   
+				else if (CURRENT_PARSING_ELEMENT == TRANSITION)
+				{
+					// Setting the layout for the edge:
+					if (qName.equals(BEZIER))
+					{
 						float x1 = Float.parseFloat(atts.getValue(X1));
 						float x2 = Float.parseFloat(atts.getValue(X2));
 						float y1 = Float.parseFloat(atts.getValue(Y1));
@@ -710,47 +899,65 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 						float ctrly1 = Float.parseFloat(atts.getValue(CTRLY1));
 						float ctrlx2;
 						float ctrly2;
-						try{
+						try
+						{
 							ctrlx2 = Float.parseFloat(atts.getValue(CTRLX2));
 							ctrly2 = Float.parseFloat(atts.getValue(CTRLY2));
-						}catch(Exception e){
+						}
+						catch (Exception e)
+						{
 							ctrlx2 = ctrlx1;
 							ctrly2 = ctrly1;
-						}			
-						//Get the annotation BezierLayout, and set the curve paramethers 
-						BezierLayout l = (BezierLayout)tmpTransition.getAnnotation(Annotable.LAYOUT);
-						l.setCurve(new CubicCurve2D.Float(x1,y1,ctrlx1,ctrly1,ctrlx2,ctrly2,x2,y2));							
+						}
+						// Get the annotation BezierLayout, and set the curve
+						// paramethers
+						BezierLayout l = (BezierLayout)tmpTransition
+								.getAnnotation(Annotable.LAYOUT);
+						l.setCurve(new CubicCurve2D.Float(
+								x1,
+								y1,
+								ctrlx1,
+								ctrly1,
+								ctrlx2,
+								ctrly2,
+								x2,
+								y2));
 					}
 
-					//Setting the label for the edge:
-					else if(qName.equals(LABEL))
-					{	
+					// Setting the label for the edge:
+					else if (qName.equals(LABEL))
+					{
 						FSAEvent e = tmpTransition.getEvent();
-						if(e!=null)
+						if (e != null)
 						{
-							BezierLayout layout = (BezierLayout)tmpTransition.getAnnotation(Annotable.LAYOUT);
-							if(e.getSymbol()!="")
+							BezierLayout layout = (BezierLayout)tmpTransition
+									.getAnnotation(Annotable.LAYOUT);
+							if (e.getSymbol() != "")
 							{
-//								System.out.println("Adding " + e.getSymbol() + " to " + layout);
-								//Add eventName to the edgeLayout:
+								// System.out.println("Adding " + e.getSymbol()
+								// + " to " + layout);
+								// Add eventName to the edgeLayout:
 								Point2D.Float offset = new Point2D.Float();
-								offset.setLocation(Float.parseFloat(atts.getValue(COORD_X)), Float.parseFloat(atts.getValue(COORD_Y)));
-								layout.setLabelOffset(offset);	
+								offset.setLocation(Float.parseFloat(atts
+										.getValue(COORD_X)), Float
+										.parseFloat(atts.getValue(COORD_Y)));
+								layout.setLabelOffset(offset);
 								layout.addEventName(e.getSymbol());
-//								System.out.println(layout.getEventNames());
+								// System.out.println(layout.getEventNames());
 							}
 						}
 					}
-					
+
 					else
 					{
-						parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+						parsingErrors += Hub.string("xmlParsingUnrecogized")
+								+ "\n";
 					}
 				}
-				
+
 				else
 				{
-					parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
+					parsingErrors += Hub.string("xmlParsingUnrecogized") + "\n";
 				}
 
 				break;
@@ -758,8 +965,9 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		}
 
 		/**
-		 * Sets annotations for all the model elements in <code>model</code> based on the informations
-		 * contained in <code>stream</code>
+		 * Sets annotations for all the model elements in <code>model</code>
+		 * based on the informations contained in <code>stream</code>
+		 * 
 		 * @param stream
 		 * @param model
 		 */
@@ -767,108 +975,120 @@ public class FSAFileIOPlugin implements FileIOPlugin{
 		{
 			parsingMeta = true;
 			this.model = (FSAModel)model;
-			try{
+			try
+			{
 				xmlReader.parse(new InputSource(stream));
 			}
-			catch(FileNotFoundException fnfe){
-				parsingErrors+=fnfe.getMessage()+"\n";
+			catch (FileNotFoundException fnfe)
+			{
+				parsingErrors += fnfe.getMessage() + "\n";
 			}
-			catch(IOException ioe){
-				parsingErrors+=ioe.getMessage()+"\n";
+			catch (IOException ioe)
+			{
+				parsingErrors += ioe.getMessage() + "\n";
 			}
-			catch(SAXException saxe){
-				parsingErrors+=saxe.getMessage()+"\n";
+			catch (SAXException saxe)
+			{
+				parsingErrors += saxe.getMessage() + "\n";
 			}
-			catch(NullPointerException npe){
-				parsingErrors+=npe.getMessage()+"\n";
+			catch (NullPointerException npe)
+			{
+				parsingErrors += npe.getMessage() + "\n";
 			}
 		}
+
 		/**
-		 * Create either a State, Event or Transition based on the given atts. Since it returns an Object, the function 
-		 * is expandable to return any model element which may be created in the future.
+		 * Create either a State, Event or Transition based on the given atts.
+		 * Since it returns an Object, the function is expandable to return any
+		 * model element which may be created in the future.
+		 * 
 		 * @param atts
 		 * @param parsingElement
 		 * @return
 		 */
 		public Object getModelElement(Attributes atts, String parsingElement)
 		{
-			if(parsingElement == STATE)
+			if (parsingElement == STATE)
 			{
 				long id = Long.parseLong(atts.getValue(ID));
-				State s =  new State(id);
+				State s = new State(id);
 				return s;
 			}
 
-			if(parsingElement == EVENT)
+			if (parsingElement == EVENT)
 			{
-				long id = Long.parseLong(atts.getValue(ID)); 	
+				long id = Long.parseLong(atts.getValue(ID));
 				return new Event(id);
 			}
 
-			if(parsingElement == TRANSITION)
+			if (parsingElement == TRANSITION)
 			{
-				long id = Long.parseLong(atts.getValue(ID)); 
+				long id = Long.parseLong(atts.getValue(ID));
 				long sourceN = Long.parseLong(atts.getValue(SOURCE));
 				long targetN = Long.parseLong(atts.getValue(TARGET));
 				long eventN;
-				try{
+				try
+				{
 					eventN = Long.parseLong(atts.getValue(EVENT));
-				}catch(NumberFormatException e)
+				}
+				catch (NumberFormatException e)
 				{
 					eventN = -1;
 				}
 
-//				Iterator<FSAState> sIt = model.getStateIterator();
+				// Iterator<FSAState> sIt = model.getStateIterator();
 				FSAState src = null, dst = null;
-				src=model.getState(sourceN);
-				dst=model.getState(targetN);
-//				while(sIt.hasNext())
-//				{
-//					FSAState s = sIt.next();
-//					if(s.getId() == sourceN)
-//					{
-//						src = s;
-//					}
-//
-//					if(s.getId() == targetN)
-//					{
-//						dst = s;
-//					}
-//				} 		
-//				Iterator<FSAEvent> eIt = model.getEventIterator();
+				src = model.getState(sourceN);
+				dst = model.getState(targetN);
+				// while(sIt.hasNext())
+				// {
+				// FSAState s = sIt.next();
+				// if(s.getId() == sourceN)
+				// {
+				// src = s;
+				// }
+				//
+				// if(s.getId() == targetN)
+				// {
+				// dst = s;
+				// }
+				// }
+				// Iterator<FSAEvent> eIt = model.getEventIterator();
 				FSAEvent event = null;
-				event=model.getEvent(eventN);
-//				while(eIt.hasNext())
-//				{
-//					FSAEvent e = eIt.next();
-//					if(e.getId() == eventN)
-//					{
-//						event = e;
-//					}
-//				}
-				if(event != null)
+				event = model.getEvent(eventN);
+				// while(eIt.hasNext())
+				// {
+				// FSAEvent e = eIt.next();
+				// if(e.getId() == eventN)
+				// {
+				// event = e;
+				// }
+				// }
+				if (event != null)
 				{
 					return new Transition(id, src, dst, event);
 				}
 				else
 				{
-					return new Transition(id,src,dst);
+					return new Transition(id, src, dst);
 				}
 			}
-			
-			parsingErrors+=Hub.string("xmlParsingUnrecogized")+"\n";
-			
+
+			parsingErrors += Hub.string("xmlParsingUnrecogized") + "\n";
+
 			return null;
-		} 
-		
+		}
+
+		@Override
 		public void characters(char buf[], int offset, int len)
-		throws SAXException
+				throws SAXException
 		{
-			if(parsingData)
+			if (parsingData)
 			{
-				//Get the value between the tags <name> and </name>
-				//The same code can be used to get values between different XML tags
-				if(settingName == true)
+				// Get the value between the tags <name> and </name>
+				// The same code can be used to get values between different XML
+				// tags
+				if (settingName == true)
 				{
 					StringBuffer tst = new StringBuffer();
 					tst.append(buf, offset, len);

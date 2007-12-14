@@ -5,7 +5,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -24,231 +23,300 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.undo.CompoundEdit;
 
+import main.Hub;
+import model.fsa.FSAEvent;
+import model.fsa.FSAMessage;
+import model.fsa.FSAModel;
+import model.fsa.FSASubscriber;
+import pluggable.ui.Toolset;
 import presentation.LayoutShell;
 import presentation.Presentation;
 import presentation.fsa.actions.AbstractGraphAction;
 import presentation.fsa.actions.GraphActions;
 import services.undo.UndoManager;
 
-import main.Hub;
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
-import model.fsa.FSAEvent;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSAPublisher;
-import model.fsa.FSAPublisherAdaptor;
-import model.fsa.FSASubscriber;
-import model.fsa.ver2_1.Automaton;
-import model.fsa.ver2_1.Event;
-
 /**
  * TODO Comment
  * 
  * @author Lenko Grigorov
  */
-public class EventView extends JPanel implements Presentation, FSASubscriber, ActionListener {
+public class EventView extends JPanel implements Presentation, FSASubscriber,
+		ActionListener
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2367112927663456004L;
 
 	protected class EventTableModel extends AbstractTableModel
 	{
-		private FSAModel a=null;
-		private Vector<FSAEvent> events=null;
-		private Vector<Boolean> controllable=null;
-		private Vector<Boolean> observable=null;
-		private final String[] columnNames = {
-			Hub.string("eventNameHeading"),
-			Hub.string("controllableHeading"),
-			Hub.string("observableHeading")
-			};
-		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5090988012338223505L;
+
+		private FSAModel a = null;
+
+		private Vector<FSAEvent> events = null;
+
+		private Vector<Boolean> controllable = null;
+
+		private Vector<Boolean> observable = null;
+
+		private final String[] columnNames = { Hub.string("eventNameHeading"),
+				Hub.string("controllableHeading"),
+				Hub.string("observableHeading") };
+
 		public EventTableModel()
 		{
-			events=new Vector<FSAEvent>();
-			controllable=new Vector<Boolean>();
-			observable=new Vector<Boolean>();
+			events = new Vector<FSAEvent>();
+			controllable = new Vector<Boolean>();
+			observable = new Vector<Boolean>();
 
 		}
-		
+
 		public EventTableModel(FSAModel a)
 		{
-			events=new Vector<FSAEvent>();
-			controllable=new Vector<Boolean>();
-			observable=new Vector<Boolean>();
-			this.a=a;
-			for(Iterator<FSAEvent> i=a.getEventIterator();i.hasNext();)
+			events = new Vector<FSAEvent>();
+			controllable = new Vector<Boolean>();
+			observable = new Vector<Boolean>();
+			this.a = a;
+			for (Iterator<FSAEvent> i = a.getEventIterator(); i.hasNext();)
 			{
 				events.add(i.next());
 			}
-			Collections.sort(events,new Comparator<FSAEvent>(){
+			Collections.sort(events, new Comparator<FSAEvent>()
+			{
 				public int compare(FSAEvent event1, FSAEvent event2)
 				{
 					return event1.getSymbol().compareTo(event2.getSymbol());
 				}
 			});
-			for(int i=0;i<events.size();++i)
+			for (int i = 0; i < events.size(); ++i)
 			{
-				if(events.elementAt(i).isControllable())
+				if (events.elementAt(i).isControllable())
+				{
 					controllable.add(new Boolean(true));
+				}
 				else
+				{
 					controllable.add(new Boolean(false));
-				if(events.elementAt(i).isObservable())
+				}
+				if (events.elementAt(i).isObservable())
+				{
 					observable.add(new Boolean(true));
+				}
 				else
+				{
 					observable.add(new Boolean(false));
+				}
 			}
 		}
-		
-	    public String getColumnName(int col) {
-	        return columnNames[col].toString();
-	    }
-	    
-	    public int getRowCount() { return events.size(); }
-	    public int getColumnCount() { return columnNames.length; }
-	    public Object getValueAt(int row, int col) {
-	    	if(col==0)
-	    	{
-	    		return events.elementAt(row).getSymbol();
-	    	}
-	    	else if(col==1)
-	    	{
-	    		return controllable.elementAt(row);
-	    	}
-	    	else
-	    	{
-	    		return observable.elementAt(row);	    		
-	    	}
-	    }
 
-	    public boolean isCellEditable(int row, int col) { return true; }
-	    
-	    /**
-	     * Sets symbol, observable or controllable properties of the event
-	     * at the given row to the given value.
-	     */
-	    public void setValueAt(Object value, int row, int col) {
-	    	long eventId=0;
-	    	if(col==0)
-	    	{
-	    		if("".equals((String)value))
-	    		{
-	    			Toolkit.getDefaultToolkit().beep();
-	    			return;
-	    		}
-	    		eventId=events.elementAt(row).getId();
-	    		FSAEvent existingEvent=closestEvent((String)value);
-	    		if(((String)value).equals(existingEvent.getSymbol()))
-	    		{
-	    			Toolkit.getDefaultToolkit().beep();
-	    			return;
-	    		}
-	    		
-	    		new GraphActions.ModifyEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),events.elementAt(row),
-	    				(String)value,events.elementAt(row).isControllable(),events.elementAt(row).isObservable()).execute();
-//	    		events.elementAt(row).setSymbol((String)value);
+		@Override
+		public String getColumnName(int col)
+		{
+			return columnNames[col].toString();
+		}
 
-	    	}
-	    	else if(col==1)
-	    	{
-	    		new GraphActions.ModifyEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),events.elementAt(row),
-	    				events.elementAt(row).getSymbol(),(Boolean)value,events.elementAt(row).isObservable()).execute();
-	    		
-//	    		events.elementAt(row).setControllable(((Boolean)value).booleanValue());
-	    		controllable.removeElementAt(row);
-	    		controllable.insertElementAt((Boolean)value, row);
-	    	}
-	    	else
-	    	{
-	    		new GraphActions.ModifyEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),events.elementAt(row),
-	    				events.elementAt(row).getSymbol(),events.elementAt(row).isControllable(),(Boolean)value).execute();	    		
-//	    		events.elementAt(row).setObservable(((Boolean)value).booleanValue());
-	    		observable.removeElementAt(row);
-	    		observable.insertElementAt((Boolean)value, row);	    		
-	    	}
-	    		    		
-//	    	((FSAPublisher)a).fireFSAEventSetChanged(new FSAMessage(FSAMessage.MODIFY,
-//	    			FSAMessage.EVENT, events.elementAt(row).getId(), a));			
-	    	
-	    	if(col==0)
-	    	{
-				Collections.sort(events,new Comparator<FSAEvent>(){
+		public int getRowCount()
+		{
+			return events.size();
+		}
+
+		public int getColumnCount()
+		{
+			return columnNames.length;
+		}
+
+		public Object getValueAt(int row, int col)
+		{
+			if (col == 0)
+			{
+				return events.elementAt(row).getSymbol();
+			}
+			else if (col == 1)
+			{
+				return controllable.elementAt(row);
+			}
+			else
+			{
+				return observable.elementAt(row);
+			}
+		}
+
+		@Override
+		public boolean isCellEditable(int row, int col)
+		{
+			return true;
+		}
+
+		/**
+		 * Sets symbol, observable or controllable properties of the event at
+		 * the given row to the given value.
+		 */
+		@Override
+		public void setValueAt(Object value, int row, int col)
+		{
+			long eventId = 0;
+			if (col == 0)
+			{
+				if ("".equals(value))
+				{
+					Toolkit.getDefaultToolkit().beep();
+					return;
+				}
+				eventId = events.elementAt(row).getId();
+				FSAEvent existingEvent = closestEvent((String)value);
+				if (((String)value).equals(existingEvent.getSymbol()))
+				{
+					Toolkit.getDefaultToolkit().beep();
+					return;
+				}
+
+				new GraphActions.ModifyEventAction((FSAGraph)Hub
+						.getWorkspace().getActiveLayoutShell(), events
+						.elementAt(row), (String)value, events
+						.elementAt(row).isControllable(), events
+						.elementAt(row).isObservable()).execute();
+				// events.elementAt(row).setSymbol((String)value);
+
+			}
+			else if (col == 1)
+			{
+				new GraphActions.ModifyEventAction(
+						(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+						events.elementAt(row),
+						events.elementAt(row).getSymbol(),
+						(Boolean)value,
+						events.elementAt(row).isObservable()).execute();
+
+				// events.elementAt(row).setControllable(((Boolean)value).booleanValue());
+				controllable.removeElementAt(row);
+				controllable.insertElementAt((Boolean)value, row);
+			}
+			else
+			{
+				new GraphActions.ModifyEventAction(
+						(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+						events.elementAt(row),
+						events.elementAt(row).getSymbol(),
+						events.elementAt(row).isControllable(),
+						(Boolean)value).execute();
+				// events.elementAt(row).setObservable(((Boolean)value).booleanValue());
+				observable.removeElementAt(row);
+				observable.insertElementAt((Boolean)value, row);
+			}
+
+			// ((FSAPublisher)a).fireFSAEventSetChanged(new
+			// FSAMessage(FSAMessage.MODIFY,
+			// FSAMessage.EVENT, events.elementAt(row).getId(), a));
+
+			if (col == 0)
+			{
+				Collections.sort(events, new Comparator<FSAEvent>()
+				{
 					public int compare(FSAEvent event1, FSAEvent event2)
 					{
 						return event1.getSymbol().compareTo(event2.getSymbol());
 					}
 				});
 				fireTableDataChanged();
-				int newIdx=events.indexOf(a.getEvent(eventId));
-				table.setRowSelectionInterval(newIdx,newIdx);
-				table.scrollRectToVisible(table.getCellRect(newIdx,0,false));
-	    	}
-	    	else
-	    		fireTableCellUpdated(row, col);
-	    }
-	    
-        public Class getColumnClass(int c) {
-        	if(c==0)
-        	{
-        		return String.class;
-        	}
-        	else
-        	{
-        		return Boolean.class;
-        	}
-        }
-        
-        public FSAEvent closestEvent(String symbol)
-        {
-        	FSAEvent retVal=null;
-        	if(!events.isEmpty())
-        		retVal=events.firstElement();
-        	for(FSAEvent event:events)
-        	{
-        		if(event.getSymbol().compareTo(symbol)>0)
-        			break;
-        		retVal=event;
-        	}
-        	return retVal;
-        }
-        
-        public FSAEvent getEventAt(int idx)
-        {
-        	return events.elementAt(idx);
-        }
+				int newIdx = events.indexOf(a.getEvent(eventId));
+				table.setRowSelectionInterval(newIdx, newIdx);
+				table.scrollRectToVisible(table.getCellRect(newIdx, 0, false));
+			}
+			else
+			{
+				fireTableCellUpdated(row, col);
+			}
+		}
+
+		@Override
+		public Class<?> getColumnClass(int c)
+		{
+			if (c == 0)
+			{
+				return String.class;
+			}
+			else
+			{
+				return Boolean.class;
+			}
+		}
+
+		public FSAEvent closestEvent(String symbol)
+		{
+			FSAEvent retVal = null;
+			if (!events.isEmpty())
+			{
+				retVal = events.firstElement();
+			}
+			for (FSAEvent event : events)
+			{
+				if (event.getSymbol().compareTo(symbol) > 0)
+				{
+					break;
+				}
+				retVal = event;
+			}
+			return retVal;
+		}
+
+		public FSAEvent getEventAt(int idx)
+		{
+			return events.elementAt(idx);
+		}
 	}
-	
+
 	/**
 	 * The listener for the user pressing the <code>Delete</code> key.
 	 */
 	protected Action deleteListener = new AbstractAction()
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4695140088632822674L;
+
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			int[] rows=table.getSelectedRows();
-			if(rows.length>0)
+			int[] rows = table.getSelectedRows();
+			if (rows.length > 0)
 			{
-				int choice=JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("confirmDeleteEvents"),Hub.string("deleteEventsTitle"),
+				int choice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
+						Hub.string("confirmDeleteEvents"),
+						Hub.string("deleteEventsTitle"),
 						JOptionPane.YES_NO_CANCEL_OPTION);
-				if(choice!=JOptionPane.YES_OPTION)
+				if (choice != JOptionPane.YES_OPTION)
+				{
 					return;
+				}
 			}
-			FSAEvent[] delEvents=new FSAEvent[rows.length];
-			for(int i=0;i<rows.length;++i)
+			FSAEvent[] delEvents = new FSAEvent[rows.length];
+			for (int i = 0; i < rows.length; ++i)
 			{
-				delEvents[i]=((EventTableModel)table.getModel()).getEventAt(rows[i]);
+				delEvents[i] = ((EventTableModel)table.getModel())
+						.getEventAt(rows[i]);
 			}
 			// FIXME EventView should be initialized with the layout shell
-			FSAGraph graph=(FSAGraph)Hub.getWorkspace().getActiveLayoutShell();
-			CompoundEdit allEdits=new CompoundEdit();
-			for(int i=0;i<delEvents.length;++i)
+			FSAGraph graph = (FSAGraph)Hub
+					.getWorkspace().getActiveLayoutShell();
+			CompoundEdit allEdits = new CompoundEdit();
+			for (int i = 0; i < delEvents.length; ++i)
 			{
-				AbstractGraphAction deleteEvent=new GraphActions.RemoveEventAction(allEdits,graph,delEvents[i]);
-				if(i!=0&&i==delEvents.length-1)
+				AbstractGraphAction deleteEvent = new GraphActions.RemoveEventAction(
+						allEdits,
+						graph,
+						delEvents[i]);
+				if (i != 0 && i == delEvents.length - 1)
 				{
 					deleteEvent.setLastOfMultiple(true);
 				}
@@ -265,79 +333,102 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 	 * The listener for the user decides to add a new event.
 	 */
 	protected Action createListener = new AbstractAction()
-	{	
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6505713526778596223L;
+
 		public void actionPerformed(ActionEvent actionEvent)
-		{		
-			if(!(actionEvent.getSource() instanceof JButton))
+		{
+			if (!(actionEvent.getSource() instanceof JButton))
 			{
 				createButton.doClick();
 				return;
 			}
-			FSAModel a=(FSAModel)Hub.getWorkspace().getActiveModel();
-			if(a==null||"".equals(eventNameField.getText()))
-				return;
-			
-			//FIXME EventView has to be initialized with a layoutshell
-			String eventName=eventNameField.getText();
-			new GraphActions.CreateEventAction((FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),eventName, controllableCBox.isSelected(), observableCBox.isSelected()).execute();
-			
-			int rows=table.getModel().getRowCount();
-			for(int i=0;i<rows;++i)
+			FSAModel a = (FSAModel)Hub.getWorkspace().getActiveModel();
+			if (a == null || "".equals(eventNameField.getText()))
 			{
-				if(((String)table.getModel().getValueAt(i,0)).equals(eventName))
+				return;
+			}
+
+			// FIXME EventView has to be initialized with a layoutshell
+			String eventName = eventNameField.getText();
+			new GraphActions.CreateEventAction(
+					(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+					eventName,
+					controllableCBox.isSelected(),
+					observableCBox.isSelected()).execute();
+
+			int rows = table.getModel().getRowCount();
+			for (int i = 0; i < rows; ++i)
+			{
+				if (((String)table.getModel().getValueAt(i, 0))
+						.equals(eventName))
 				{
-					table.setRowSelectionInterval(i,i);
-					table.scrollRectToVisible(table.getCellRect(i,0,false));
+					table.setRowSelectionInterval(i, i);
+					table.scrollRectToVisible(table.getCellRect(i, 0, false));
 					break;
 				}
 			}
 			eventNameField.requestFocus();
 		}
 	};
-	
+
 	protected JTable table;
+
 	protected JTextField eventNameField;
+
 	protected JCheckBox controllableCBox;
+
 	protected JCheckBox observableCBox;
+
 	protected JButton createButton;
+
 	protected JButton deleteButton;
-//	private FSAModel lastModel=null;
+
+	// private FSAModel lastModel=null;
 	protected FSAGraph graph;
-	
+
 	public EventView(FSAGraph g)
 	{
 		super();
-		graph=g;
-		Box mainBox=Box.createVerticalBox();
-		Box createBox=Box.createHorizontalBox();
-		
-		eventNameField=new JTextField();
-		eventNameField.setMaximumSize(new Dimension(eventNameField.getMaximumSize().width,
+		graph = g;
+		Box mainBox = Box.createVerticalBox();
+		Box createBox = Box.createHorizontalBox();
+
+		eventNameField = new JTextField();
+		eventNameField.setMaximumSize(new Dimension(
+				eventNameField.getMaximumSize().width,
 				eventNameField.getPreferredSize().height));
-		DocumentListener al=new DocumentListener()
+		DocumentListener al = new DocumentListener()
 		{
 			public void changedUpdate(DocumentEvent e)
 			{
 				configStuff(eventNameField.getText());
 			}
+
 			public void insertUpdate(DocumentEvent e)
 			{
 				configStuff(eventNameField.getText());
 			}
+
 			public void removeUpdate(DocumentEvent e)
 			{
 				configStuff(eventNameField.getText());
 			}
+
 			private void configStuff(String s)
 			{
-				FSAEvent event=((EventTableModel)table.getModel()).closestEvent(s);
-				if(event!=null&&event.getSymbol().equals(s))
+				FSAEvent event = ((EventTableModel)table.getModel())
+						.closestEvent(s);
+				if (event != null && event.getSymbol().equals(s))
 				{
 					createButton.setEnabled(false);
 					controllableCBox.setEnabled(false);
-					//controllableCBox.setSelected(event.isControllable());
+					// controllableCBox.setSelected(event.isControllable());
 					observableCBox.setEnabled(false);
-					//observableCBox.setSelected(event.isObservable());
+					// observableCBox.setSelected(event.isObservable());
 				}
 				else if ("".equals(s))
 				{
@@ -351,73 +442,85 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 					controllableCBox.setEnabled(true);
 					observableCBox.setEnabled(true);
 				}
-				int rows=table.getModel().getRowCount();
-				for(int i=0;i<rows;++i)
+				int rows = table.getModel().getRowCount();
+				for (int i = 0; i < rows; ++i)
 				{
-					if(((String)table.getModel().getValueAt(i,0)).equals(event.getSymbol()))
+					if (((String)table.getModel().getValueAt(i, 0))
+							.equals(event.getSymbol()))
 					{
-						table.setRowSelectionInterval(i,i);
-						table.scrollRectToVisible(table.getCellRect(i,0,false));
+						table.setRowSelectionInterval(i, i);
+						table.scrollRectToVisible(table
+								.getCellRect(i, 0, false));
 						break;
 					}
 				}
 			}
 		};
 		eventNameField.getDocument().addDocumentListener(al);
-		eventNameField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0),this);
-		eventNameField.getActionMap().put(this,createListener);
+		eventNameField
+				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), this);
+		eventNameField.getActionMap().put(this, createListener);
 		createBox.add(eventNameField);
-		
-		controllableCBox=new JCheckBox(Hub.string("controllable"));
+
+		controllableCBox = new JCheckBox(Hub.string("controllable"));
 		controllableCBox.setSelected(true);
 		createBox.add(controllableCBox);
-		observableCBox=new JCheckBox(Hub.string("observable"));
+		observableCBox = new JCheckBox(Hub.string("observable"));
 		observableCBox.setSelected(true);
 		createBox.add(observableCBox);
-		
-		createButton=new JButton(Hub.string("add"));
-		createButton.setPreferredSize(new Dimension(createButton.getPreferredSize().width,
+
+		createButton = new JButton(Hub.string("add"));
+		createButton.setPreferredSize(new Dimension(
+				createButton.getPreferredSize().width,
 				eventNameField.getPreferredSize().height));
 		createButton.addActionListener(createListener);
 		createBox.add(createButton);
-		createBox.setBorder(BorderFactory.createTitledBorder(Hub.string("addNewEvent")));//.createEmptyBorder(5,5,5,5));
-		//Box borderPane=Box.createHorizontalBox();
-		//borderPane.setBorder(BorderFactory.createLineBorder(this.getForeground()));
-		//borderPane.add(createBox);
+		createBox.setBorder(BorderFactory.createTitledBorder(Hub
+				.string("addNewEvent")));// .createEmptyBorder(5,5,5,5));
+		// Box borderPane=Box.createHorizontalBox();
+		// borderPane.setBorder(BorderFactory.createLineBorder(this.getForeground()));
+		// borderPane.add(createBox);
 		mainBox.add(createBox);
-		
-		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
 
-		table=new JTable(new EventTableModel());
-		table.setPreferredScrollableViewportSize(new Dimension(
-				table.getPreferredScrollableViewportSize().width,
-				200));
-		table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),this);
-		table.getActionMap().put(this,deleteListener);
-		mainBox.add(new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-		
-		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
+		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		Box deleteBox=Box.createHorizontalBox();
+		table = new JTable(new EventTableModel());
+		table.setPreferredScrollableViewportSize(new Dimension(table
+				.getPreferredScrollableViewportSize().width, 200));
+		table
+				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), this);
+		table.getActionMap().put(this, deleteListener);
+		mainBox.add(new JScrollPane(
+				table,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+
+		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		Box deleteBox = Box.createHorizontalBox();
 		deleteBox.add(Box.createHorizontalGlue());
-		//deleteBox.add(new JLabel(Hub.string("deleteSelectedEvents")));
-		deleteButton=new JButton(Hub.string("delete"));
+		// deleteBox.add(new JLabel(Hub.string("deleteSelectedEvents")));
+		deleteButton = new JButton(Hub.string("delete"));
 		deleteButton.addActionListener(deleteListener);
 		deleteBox.add(deleteButton);
-		deleteBox.setBorder(BorderFactory.createTitledBorder(Hub.string("deleteSelectedEvents")));//.createEmptyBorder(5,5,5,5));
+		deleteBox.setBorder(BorderFactory.createTitledBorder(Hub
+				.string("deleteSelectedEvents")));// .createEmptyBorder(5,5,5,5));
 		mainBox.add(deleteBox);
 
 		add(mainBox);
 		refreshEventTable();
 		setTrackModel(true);
-		
-		if(graph.isAvoidLayoutDrawing())
+
+		if (graph.isAvoidLayoutDrawing())
 		{
 			this.setEnabled(false);
 		}
 	}
-	
-	//Allow or disallow the user to add new events on the model
+
+	// Allow or disallow the user to add new events on the model
+	@Override
 	public void setEnabled(boolean b)
 	{
 		super.setEnabled(b);
@@ -427,168 +530,181 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 		observableCBox.setEnabled(b);
 		eventNameField.setEnabled(b);
 	}
-	
+
 	private void refreshEventTable()
 	{
-		
+
 		eventNameField.setText("");
 		// CLM: these controls should be disabled whenever eventNameField
 		// is empty
 		createButton.setEnabled(false);
-//		if(Hub.getWorkspace().getActiveModel()==null ||
-//				!(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
-//		{
-//			table.setModel(new EventTableModel());
-//			deleteButton.setEnabled(false);
-//			eventNameField.setEnabled(false);
-//			table.setEnabled(false);
-//			if(lastModel!=null)
-//			{
-//				lastModel.removeSubscriber(this);
-//				lastModel=null;
-//			}
-//		}
-//		else
-//		{
-//			FSAModel model=(FSAModel)Hub.getWorkspace().getActiveModel();
-			table.setModel(new EventTableModel(graph.getModel()));
-			//CLM: these should be enabled iff eventNameField is nonempty
-			//createButton.setEnabled(true);
-			//controllableCBox.setEnabled(true);
-			//observableCBox.setEnabled(true);
-			
-			if (table.getRowCount() == 0)
-				{
-					deleteButton.setEnabled(false);
-				}
-			else
-				{
-					deleteButton.setEnabled(true);
-				}
-			eventNameField.setEnabled(true);
-			table.setEnabled(true);
-			
-//			if(!model.equals(lastModel))
-//			{
-//				if(lastModel!=null)
-//					lastModel.removeSubscriber(this);
-//				lastModel=model;
-//				lastModel.addSubscriber(this);
-//			}
-//		}	
+		// if(Hub.getWorkspace().getActiveModel()==null ||
+		// !(Hub.getWorkspace().getActiveModel() instanceof FSAModel))
+		// {
+		// table.setModel(new EventTableModel());
+		// deleteButton.setEnabled(false);
+		// eventNameField.setEnabled(false);
+		// table.setEnabled(false);
+		// if(lastModel!=null)
+		// {
+		// lastModel.removeSubscriber(this);
+		// lastModel=null;
+		// }
+		// }
+		// else
+		// {
+		// FSAModel model=(FSAModel)Hub.getWorkspace().getActiveModel();
+		table.setModel(new EventTableModel(graph.getModel()));
+		// CLM: these should be enabled iff eventNameField is nonempty
+		// createButton.setEnabled(true);
+		// controllableCBox.setEnabled(true);
+		// observableCBox.setEnabled(true);
 
+		if (table.getRowCount() == 0)
+		{
+			deleteButton.setEnabled(false);
+		}
+		else
+		{
+			deleteButton.setEnabled(true);
+		}
+		eventNameField.setEnabled(true);
+		table.setEnabled(true);
 
-			
-		
+		// if(!model.equals(lastModel))
+		// {
+		// if(lastModel!=null)
+		// lastModel.removeSubscriber(this);
+		// lastModel=model;
+		// lastModel.addSubscriber(this);
+		// }
+		// }
+
 	}
-//	
-//	/**
-//	 * TODO remove this method when no longer extends Publisher
-//	 */
-//	public void update()
-//	{
-//		refreshEventTable();
-//	}
-//	
-	public void actionPerformed(ActionEvent e){}
 
-	/* (non-Javadoc)
+	//	
+	// /**
+	// * TODO remove this method when no longer extends Publisher
+	// */
+	// public void update()
+	// {
+	// refreshEventTable();
+	// }
+	//	
+	public void actionPerformed(ActionEvent e)
+	{
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
 	 */
-//	public void modelCollectionChanged(WorkspaceMessage message) {
-//		// ??? Can I ignore the notification if the model was modified (e.g. renamed)?
-//		refreshEventTable();		
-//	}
-
-	/* (non-Javadoc)
+	// public void modelCollectionChanged(WorkspaceMessage message) {
+	// // ??? Can I ignore the notification if the model was modified (e.g.
+	// renamed)?
+	// refreshEventTable();
+	// }
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-//	public void repaintRequired(WorkspaceMessage message) {}
-	
+	// public void repaintRequired(WorkspaceMessage message) {}
 	/**
 	 * Makes the Event tab visible or invisible
 	 * 
-	 * @param b flag indicating visibility status
+	 * @param b
+	 *            flag indicating visibility status
 	 */
+	@Override
 	public void setVisible(boolean b)
 	{
 		super.setVisible(b);
 		eventNameField.requestFocus();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
-//	public void modelSwitched(WorkspaceMessage message) {
-//		refreshEventTable();		
-//	}
-
-	/* (non-Javadoc)
+	// public void modelSwitched(WorkspaceMessage message) {
+	// refreshEventTable();
+	// }
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
-	public void fsaStructureChanged(FSAMessage message) {}
+	public void fsaStructureChanged(FSAMessage message)
+	{
+	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
-	public void fsaEventSetChanged(FSAMessage message) {
-		refreshEventTable();		
+	public void fsaEventSetChanged(FSAMessage message)
+	{
+		refreshEventTable();
 	}
-	
+
 	/**
-	 * Returns the {@link JComponent} in which the
-	 * {@link LayoutShell} is rendered. This method
-	 * can be called by IDES directly or through a
-	 * {@link Toolset}. 
-	 * @return the {@link JComponent} in which the
-	 * {@link LayoutShell} is rendered
+	 * Returns the {@link JComponent} in which the {@link LayoutShell} is
+	 * rendered. This method can be called by IDES directly or through a
+	 * {@link Toolset}.
+	 * 
+	 * @return the {@link JComponent} in which the {@link LayoutShell} is
+	 *         rendered
 	 */
 	public JComponent getGUI()
 	{
 		return this;
 	}
-	
+
 	/**
-	 * Returns the {@link LayoutShell} which is rendered
-	 * by this presentation.
-	 * @return the {@link LayoutShell} which is rendered
-	 * by this presentation
+	 * Returns the {@link LayoutShell} which is rendered by this presentation.
+	 * 
+	 * @return the {@link LayoutShell} which is rendered by this presentation
 	 */
 	public LayoutShell getLayoutShell()
 	{
 		return graph;
 	}
-	
+
 	/**
-	 * Sets if changes in the {@link LayoutShell} have to be
-	 * tracked by this presentation or not.
-	 * <p> The implementation of this method is optional.
-	 * Some presentations may always track changes
-	 * (especially if the presentations allows modifications
-	 * to the underlying {@link LayoutShell}). Some
-	 * presentations may always ignore changes. 
-	 * @param b if <code>true</code>, the presentation
-	 * should register with the underlying {@link LayoutShell}
-	 * to track changes and update itself dynamically. If
-	 * <code>false</code>, the presentation should unregister
-	 * itself with the underlying {@link LayoutShell} and
-	 * ignore any changes to it.
+	 * Sets if changes in the {@link LayoutShell} have to be tracked by this
+	 * presentation or not.
+	 * <p>
+	 * The implementation of this method is optional. Some presentations may
+	 * always track changes (especially if the presentations allows
+	 * modifications to the underlying {@link LayoutShell}). Some presentations
+	 * may always ignore changes.
+	 * 
+	 * @param b
+	 *            if <code>true</code>, the presentation should register with
+	 *            the underlying {@link LayoutShell} to track changes and update
+	 *            itself dynamically. If <code>false</code>, the presentation
+	 *            should unregister itself with the underlying
+	 *            {@link LayoutShell} and ignore any changes to it.
 	 */
 	public void setTrackModel(boolean b)
 	{
-		if(b)
+		if (b)
 		{
-			FSASubscriber[] listeners=graph.getModel().getFSASubscribers();
-			boolean found=false;
-			for(int i=0;i<listeners.length;++i)
+			FSASubscriber[] listeners = graph.getModel().getFSASubscribers();
+			boolean found = false;
+			for (int i = 0; i < listeners.length; ++i)
 			{
-				if(listeners[i]==this)
+				if (listeners[i] == this)
 				{
-					found=true;
+					found = true;
 					break;
 				}
 			}
-			if(!found)
+			if (!found)
 			{
 				graph.getModel().addSubscriber(this);
 			}
@@ -596,22 +712,24 @@ public class EventView extends JPanel implements Presentation, FSASubscriber, Ac
 		else
 		{
 			graph.getModel().removeSubscriber(this);
-		}		
+		}
 	}
-	
+
 	/**
-	 * Detach from the underlying {@link LayoutShell} and
-	 * releases any resources used to present it.
-	 * For example, the presentation should unsubscribe from
+	 * Detach from the underlying {@link LayoutShell} and releases any resources
+	 * used to present it. For example, the presentation should unsubscribe from
 	 * listening to changes in the {@link LayoutShell}.
-	 * <p>Once this method is called, the behavior of the
-	 * presentation should no longer be considered deterministic.
+	 * <p>
+	 * Once this method is called, the behavior of the presentation should no
+	 * longer be considered deterministic.
 	 */
 	public void release()
 	{
 		setTrackModel(false);
 	}
-	
-	public void forceRepaint(){}
-	
+
+	public void forceRepaint()
+	{
+	}
+
 }

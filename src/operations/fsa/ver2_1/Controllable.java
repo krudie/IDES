@@ -6,36 +6,48 @@ package operations.fsa.ver2_1;
 import model.fsa.FSAModel;
 
 /**
- *
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Controllable extends AbstractOperation {
+public class Controllable extends AbstractOperation
+{
 
-	public Controllable() {
+	public Controllable()
+	{
 		NAME = "controllable";
-		DESCRIPTION = "Determines if the plant" +
-				" is controllable with respect to the specification.";
-		//WARNING - Ensure that input type and description always match!	
-		inputType = new Class[]{FSAModel.class,FSAModel.class};
-		inputDesc = new String[]{"Plant","Specification"};
+		DESCRIPTION = "Determines if the plant"
+				+ " is controllable with respect to the specification.";
+		// WARNING - Ensure that input type and description always match!
+		inputType = new Class[] { FSAModel.class, FSAModel.class };
+		inputDesc = new String[] { "Plant", "Specification" };
 
-		//WARNING - Ensure that output type and description always match!
-		outputType = new Class[]{Boolean.class};
-		outputDesc = new String[]{"resultMessage"};
+		// WARNING - Ensure that output type and description always match!
+		outputType = new Class[] { Boolean.class };
+		outputDesc = new String[] { "resultMessage" };
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
-	public Object[] perform(Object[] inputs) {
+	@Override
+	public Object[] perform(Object[] inputs)
+	{
 
-		boolean result = SuperVisory.controllable((FSAModel)inputs[0],(FSAModel)inputs[1]);
+		boolean result = SuperVisory.controllable((FSAModel)inputs[0],
+				(FSAModel)inputs[1]);
 		String resultMessage;
-		if (result) resultMessage = "Plant is controllable with respect to the specification.";
-		else resultMessage = "Plant is not controllable with respect to the specification.";
-		outputDesc = new String[]{resultMessage};
-		return new Object[]{new Boolean(result)};
+		if (result)
+		{
+			resultMessage = "Plant is controllable with respect to the specification.";
+		}
+		else
+		{
+			resultMessage = "Plant is not controllable with respect to the specification.";
+		}
+		outputDesc = new String[] { resultMessage };
+		return new Object[] { new Boolean(result) };
 	}
 
 }

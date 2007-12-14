@@ -1,11 +1,9 @@
 package operations.fsa.ver2_1;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import model.ModelManager;
@@ -15,177 +13,210 @@ import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSASupervisor;
 import model.fsa.FSATransition;
-import model.fsa.ver2_1.Automaton;
-import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
-import model.fsa.ver2_1.Transition;
 import pluggable.operation.FilterOperation;
 
-public class ControlMap extends AbstractOperation implements FilterOperation {
-	
-	public ControlMap() {
-		NAME = "controlmap";
-		DESCRIPTION = "Produces a supervisor with " +
-				"a control map.";
-		//WARNING - Ensure that input type and description always match!	
-		inputType = new Class[]{FSASupervisor.class,FSAModel.class};
-		inputDesc = new String[]{"Supervisor","Plant"};;
+public class ControlMap extends AbstractOperation implements FilterOperation
+{
 
-		//WARNING - Ensure that output type and description always match!
-		outputType = new Class[]{FSAModel.class};
-		outputDesc = new String[]{"Finite-state Automaton"};
+	public ControlMap()
+	{
+		NAME = "controlmap";
+		DESCRIPTION = "Produces a supervisor with " + "a control map.";
+		// WARNING - Ensure that input type and description always match!
+		inputType = new Class[] { FSASupervisor.class, FSAModel.class };
+		inputDesc = new String[] { "Supervisor", "Plant" };
+		;
+
+		// WARNING - Ensure that output type and description always match!
+		outputType = new Class[] { FSAModel.class };
+		outputDesc = new String[] { "Finite-state Automaton" };
 	}
 
 	/**
 	 * To be used to store the ids of pairs of states
 	 */
-	protected static Map<String,Long> pairIds=new TreeMap<String,Long>(); 
+	protected static Map<String, Long> pairIds = new TreeMap<String, Long>();
 
-	public Object[] filter(Object[] inputs) {
-		FSASupervisor supervisor=(FSASupervisor)inputs[0];
-//		Unary.buildStateCompositionOfClone((Automaton)supervisor);
-		FSAModel plant=(FSAModel)inputs[1];
-		
-		FSAModel product=ModelManager.createModel(FSAModel.class,"temp");
+	public Object[] filter(Object[] inputs)
+	{
+		FSASupervisor supervisor = (FSASupervisor)inputs[0];
+		// Unary.buildStateCompositionOfClone((Automaton)supervisor);
+		FSAModel plant = (FSAModel)inputs[1];
 
-        // find initial states, mark them as reached and add them to the que
-        FSAState[] initial = new FSAState[2];
-        long stateNumber = 0;
-        LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
+		FSAModel product = ModelManager.createModel(FSAModel.class, "temp");
 
-        Iterator<FSAState> sia = plant.getStateIterator();
-        while(sia.hasNext()){
-            initial[0] = sia.next();
-            if(initial[0].isInitial()){
-                Iterator<FSAState> sib = supervisor.getStateIterator();
-                while(sib.hasNext()){
-                    initial[1] = sib.next();
-                    if(initial[1].isInitial()){
-                        searchList.add(initial.clone());
-                        product.add(makeState(initial,stateNumber));
-                        setStateId(initial, stateNumber++);
-                    }
-                }
-            }
-        }
+		// find initial states, mark them as reached and add them to the que
+		FSAState[] initial = new FSAState[2];
+		long stateNumber = 0;
+		LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
 
-        // accessibility. All accessible states are added to product.
-        // Transitions are only traversible if they can be traversed from both
-        // states in sa
-        // firing the same event, i.e., the intersection of the transitions
-        // originating from the two
-        // states are the transitions of state in product.
-        FSAState[] s = new FSAState[2];
-        while(!searchList.isEmpty()){
-            FSAState[] sa = searchList.removeFirst();
+		Iterator<FSAState> sia = plant.getStateIterator();
+		while (sia.hasNext())
+		{
+			initial[0] = sia.next();
+			if (initial[0].isInitial())
+			{
+				Iterator<FSAState> sib = supervisor.getStateIterator();
+				while (sib.hasNext())
+				{
+					initial[1] = sib.next();
+					if (initial[1].isInitial())
+					{
+						searchList.add(initial.clone());
+						product.add(makeState(initial, stateNumber));
+						setStateId(initial, stateNumber++);
+					}
+				}
+			}
+		}
 
-            ListIterator<FSATransition> sti0 = sa[0].getOutgoingTransitionsListIterator();
-            while(sti0.hasNext()){
-                FSATransition t0 = sti0.next();
-                ListIterator<FSATransition> sti1 = sa[1].getOutgoingTransitionsListIterator();
-                FSAEvent notMatched=t0.getEvent();
-                while(sti1.hasNext()){
-                    FSATransition t1 = sti1.next();
-                    if((t0.getEvent() == null && t1.getEvent() == null) || (t0.getEvent() != null
-                            && t1.getEvent() != null && t0.getEvent().equals(t1.getEvent()))){
+		// accessibility. All accessible states are added to product.
+		// Transitions are only traversible if they can be traversed from both
+		// states in sa
+		// firing the same event, i.e., the intersection of the transitions
+		// originating from the two
+		// states are the transitions of state in product.
+		FSAState[] s = new FSAState[2];
+		while (!searchList.isEmpty())
+		{
+			FSAState[] sa = searchList.removeFirst();
 
-                        s[0] = (State)t0.getTarget();
-                        s[1] = (State)t1.getTarget();
+			ListIterator<FSATransition> sti0 = sa[0]
+					.getOutgoingTransitionsListIterator();
+			while (sti0.hasNext())
+			{
+				FSATransition t0 = sti0.next();
+				ListIterator<FSATransition> sti1 = sa[1]
+						.getOutgoingTransitionsListIterator();
+				FSAEvent notMatched = t0.getEvent();
+				while (sti1.hasNext())
+				{
+					FSATransition t1 = sti1.next();
+					if ((t0.getEvent() == null && t1.getEvent() == null)
+							|| (t0.getEvent() != null && t1.getEvent() != null && t0
+									.getEvent().equals(t1.getEvent())))
+					{
 
-                        long id = getStateId(s);
-                        if(id == -1){
-                            State target = makeState(s, stateNumber);
-                            product.add(target);
-                            setStateId(s, stateNumber++);
-                            searchList.add(s.clone());
-                        }
-                        notMatched=null;
-                    }
-                }
-                if(supervisor.getDisabledEvents(sa[1])==null)
-                {
-                	//TODO EventSet should not be created directly, use modelmanager
-                	supervisor.setDisabledEvents(sa[1], new EventSet());
-                }
-                if(notMatched!=null)
-                {
-                	FSAEventSet de=supervisor.getDisabledEvents(sa[1]);
-                	de.add(notMatched);
-                	supervisor.setDisabledEvents(sa[1], de);
-                }
-            }
-        }
+						s[0] = t0.getTarget();
+						s[1] = t1.getTarget();
 
-        pairIds.clear();
-		
-        //TODO the block below is only for debugging
-//		for(Iterator<FSAState> i=supervisor.getStateIterator();i.hasNext();)
-//		{
-//			System.out.println(supervisor.getDisabledEvents(i.next()).toString());
-//		}
-		      
-		return new Object[]{supervisor};
-	}
-	
-    /**
-     * Private function for making a new state from a stateset
-     * @param s the stateset to make a new state from
-     * @param stateNumber the id of the new state
-     * @return the newly created state
-     */
-    private static State makeState(FSAState[] s, long stateNumber){
-        State state = new State(stateNumber);
-//        SubElement name = new SubElement("name");
-//        name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
-//                + s[1].getSubElement("name").getChars() + ")");
-//        state.addSubElement(name);
+						long id = getStateId(s);
+						if (id == -1)
+						{
+							State target = makeState(s, stateNumber);
+							product.add(target);
+							setStateId(s, stateNumber++);
+							searchList.add(s.clone());
+						}
+						notMatched = null;
+					}
+				}
+				if (supervisor.getDisabledEvents(sa[1]) == null)
+				{
+					// TODO EventSet should not be created directly, use
+					// modelmanager
+					supervisor.setDisabledEvents(sa[1], new EventSet());
+				}
+				if (notMatched != null)
+				{
+					FSAEventSet de = supervisor.getDisabledEvents(sa[1]);
+					de.add(notMatched);
+					supervisor.setDisabledEvents(sa[1], de);
+				}
+			}
+		}
 
-//        SubElement properties = new SubElement("properties");
+		pairIds.clear();
 
-        state.setStateCompositionList(
-        		new long[]{s[0].getId(),s[1].getId()});
-        
-        if(s[0].isInitial() && s[1].isInitial())
-        	state.setInitial(true);
+		// TODO the block below is only for debugging
+		// for(Iterator<FSAState> i=supervisor.getStateIterator();i.hasNext();)
+		// {
+		// System.out.println(supervisor.getDisabledEvents(i.next()).toString());
+		// }
 
-        if(s[0].isMarked() && s[1].isMarked())
-        	state.setMarked(true);
-        return state;
-    }
-
-    /**
-     * set the stateid for a set of states 
-     * @param s the stateset
-     * @param stateId the id to set
-     */
-    private static void setStateId(FSAState[] s, long stateId){
-    	pairIds.put(""+s[0].getId()+","+s[1].getId(),new Long(stateId));
-    }
-
-    /**
-     * Gets the id from a set of states
-     * 
-     * @param s the stateset
-     * @return the id of the stateset
-     */
-    private static long getStateId(FSAState[] s){
-    	String key=""+s[0].getId()+","+s[1].getId();
-        if(pairIds.containsKey(key))
-            return pairIds.get(key).longValue();
-        return -1;
-    }
-
-	public int[] getInputOutputIndexes() {
-		return new int[]{0};
+		return new Object[] { supervisor };
 	}
 
-	public Object[] perform(Object[] inputs) {
-		FSAModel supervisor=((FSAModel)inputs[0]).clone();
-//		Unary.buildStateCompositionOfClone((Automaton)supervisor);
-		FSAModel plant=(FSAModel)inputs[1];
-		filter(new Object[]{supervisor,plant});
-		return new Object[]{supervisor};
+	/**
+	 * Private function for making a new state from a stateset
+	 * 
+	 * @param s
+	 *            the stateset to make a new state from
+	 * @param stateNumber
+	 *            the id of the new state
+	 * @return the newly created state
+	 */
+	private static State makeState(FSAState[] s, long stateNumber)
+	{
+		State state = new State(stateNumber);
+		// SubElement name = new SubElement("name");
+		// name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
+		// + s[1].getSubElement("name").getChars() + ")");
+		// state.addSubElement(name);
+
+		// SubElement properties = new SubElement("properties");
+
+		state
+				.setStateCompositionList(new long[] { s[0].getId(),
+						s[1].getId() });
+
+		if (s[0].isInitial() && s[1].isInitial())
+		{
+			state.setInitial(true);
+		}
+
+		if (s[0].isMarked() && s[1].isMarked())
+		{
+			state.setMarked(true);
+		}
+		return state;
+	}
+
+	/**
+	 * set the stateid for a set of states
+	 * 
+	 * @param s
+	 *            the stateset
+	 * @param stateId
+	 *            the id to set
+	 */
+	private static void setStateId(FSAState[] s, long stateId)
+	{
+		pairIds.put("" + s[0].getId() + "," + s[1].getId(), new Long(stateId));
+	}
+
+	/**
+	 * Gets the id from a set of states
+	 * 
+	 * @param s
+	 *            the stateset
+	 * @return the id of the stateset
+	 */
+	private static long getStateId(FSAState[] s)
+	{
+		String key = "" + s[0].getId() + "," + s[1].getId();
+		if (pairIds.containsKey(key))
+		{
+			return pairIds.get(key).longValue();
+		}
+		return -1;
+	}
+
+	public int[] getInputOutputIndexes()
+	{
+		return new int[] { 0 };
+	}
+
+	@Override
+	public Object[] perform(Object[] inputs)
+	{
+		FSAModel supervisor = ((FSAModel)inputs[0]).clone();
+		// Unary.buildStateCompositionOfClone((Automaton)supervisor);
+		FSAModel plant = (FSAModel)inputs[1];
+		filter(new Object[] { supervisor, plant });
+		return new Object[] { supervisor };
 	}
 
 }

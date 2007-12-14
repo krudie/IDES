@@ -1,11 +1,14 @@
 package ui;
 
-public class UILayout {
+public class UILayout
+{
 	public int activeMainTab;
+
 	public int activeRightTab;
-	public UILayout(int mainTabIdx,int rightTabIdx)
+
+	public UILayout(int mainTabIdx, int rightTabIdx)
 	{
-		activeMainTab=mainTabIdx;
-		activeRightTab=rightTabIdx;
+		activeMainTab = mainTabIdx;
+		activeRightTab = rightTabIdx;
 	}
 }

@@ -1,19 +1,18 @@
 package model;
 
-import model.DESModelSubscriber;
-
-public interface DESModelPublisher {
+public interface DESModelPublisher
+{
 	/**
-	 * Attaches the given subscriber to this publisher.
-	 * The given subscriber will receive notifications of changes from this publisher.
+	 * Attaches the given subscriber to this publisher. The given subscriber
+	 * will receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
 	 */
 	public void addSubscriber(DESModelSubscriber subscriber);
-	
+
 	/**
-	 * Removes the given subscriber to this publisher.
-	 * The given subscriber will no longer receive notifications of changes from this publisher.
+	 * Removes the given subscriber to this publisher. The given subscriber will
+	 * no longer receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
 	 */
@@ -21,6 +20,7 @@ public interface DESModelPublisher {
 
 	/**
 	 * Returns all current subscribers to this publisher.
+	 * 
 	 * @return all current subscribers to this publisher
 	 */
 	public DESModelSubscriber[] getDESModelSubscribers();

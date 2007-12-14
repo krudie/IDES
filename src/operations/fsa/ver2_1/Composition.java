@@ -1,4 +1,3 @@
-
 package operations.fsa.ver2_1;
 
 import java.util.Collections;
@@ -17,651 +16,834 @@ import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSAState;
 import model.fsa.FSATransition;
-import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 
-
 /**
- * This class contains methods for composing new automata from existing automata.
- * @author Kristian Edlund 
+ * This class contains methods for composing new automata from existing
+ * automata.
+ * 
+ * @author Kristian Edlund
  * @author Axel Gottlieb Michelsen
  * @author Lenko Grigorov
  * @author Chris Dragert
  */
-public class Composition{
-	
+public class Composition
+{
+
 	/**
 	 * To be used to store the ids of pairs of states
 	 */
-	protected static Map<String,Long> pairIds=new TreeMap<String,Long>(); 
+	protected static Map<String, Long> pairIds = new TreeMap<String, Long>();
 
-    /**
-     * Takes multiple automata and makes the product of them all
-     * 
-     * @param automata an array of automata
-     * @param name The name of the end product
-     * @return The result of the product
-     */
-    public static FSAModel product(FSAModel[] automata, String name){
+	/**
+	 * Takes multiple automata and makes the product of them all
+	 * 
+	 * @param automata
+	 *            an array of automata
+	 * @param name
+	 *            The name of the end product
+	 * @return The result of the product
+	 */
+	public static FSAModel product(FSAModel[] automata, String name)
+	{
 
-        if(automata.length < 2) return null;
+		if (automata.length < 2)
+		{
+			return null;
+		}
 
-        FSAModel prevAnswer = ModelManager.createModel(FSAModel.class,"temp");
-        FSAModel newAnswer;
+		FSAModel prevAnswer = ModelManager.createModel(FSAModel.class, "temp");
+		FSAModel newAnswer;
 
-        product(automata[0], automata[1], prevAnswer);
+		product(automata[0], automata[1], prevAnswer);
 
-        for(int i = 2; i < automata.length; i++){
-            newAnswer = ModelManager.createModel(FSAModel.class,"temp");
-            product(prevAnswer, automata[i], newAnswer);
+		for (int i = 2; i < automata.length; i++)
+		{
+			newAnswer = ModelManager.createModel(FSAModel.class, "temp");
+			product(prevAnswer, automata[i], newAnswer);
 
-            prevAnswer = newAnswer;
-        }
-        prevAnswer.setName(name);
-        return prevAnswer;
-    }
+			prevAnswer = newAnswer;
+		}
+		prevAnswer.setName(name);
+		return prevAnswer;
+	}
 
-    /**
-     * Computes the shuffle product of the two automata a and b.
-     * 
-     * @param a an automaton
-     * @param b an automaton
-     * @param shuffle the accesible product of a and b.
-     */
-    public static void shuffle(FSAModel a, FSAModel b, FSAModel shuffle){
-    	shuffle.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId(), b.getId()});
-    
-    	//the event set for the shuffle is the union of the two event sets
-    	//get all the events from 'a' first.
-    	ListIterator<FSAEvent> eventIterator = a.getEventIterator();
-    	while(eventIterator.hasNext()){
-    		//add the current event from 'a' to shuffle
-    		shuffle.add(new Event(eventIterator.next()));
-    	}
-    	
-    	//now get the events from b
-    	eventIterator = b.getEventIterator();
-    	while(eventIterator.hasNext()){
-    		//need to test each event to prevent duplications
-    		FSAEvent testEvent = eventIterator.next();
-    		//add the event if it isn't already in the event list
-    		if (!shuffle.getEventSet().contains(testEvent)) {
-    			shuffle.add(new Event(testEvent));
-    		}
-    	}
-    	
-    	//any 
-    	
-    	
-    	
-    
-    	
-    	//garbage line included as a breakpoint	
-    	int x = 1;
-    }
-    
-    
-    
-    /**
-     * Computes the accessible product of the two automata a and b.
-     * 
-     * @param a an automaton
-     * @param b an automaton
-     * @param product the accesible product of a and b.
-     */
-    public static void product(FSAModel a, FSAModel b, FSAModel product){
-    	
-    	product.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId(),b.getId()});
+	/**
+	 * Computes the shuffle product of the two automata a and b.
+	 * 
+	 * @param a
+	 *            an automaton
+	 * @param b
+	 *            an automaton
+	 * @param shuffle
+	 *            the accesible product of a and b.
+	 */
+	public static void shuffle(FSAModel a, FSAModel b, FSAModel shuffle)
+	{
+		shuffle.setAnnotation(Annotable.COMPOSED_OF, new String[] { a.getId(),
+				b.getId() });
 
-    	//long eventid = 0;
-    	
-        // Add the intersection between the eventsets as the products eventset.
-        ListIterator<FSAEvent> eventsa = a.getEventIterator();
-        while(eventsa.hasNext()){
-            FSAEvent eventa = eventsa.next();
-            ListIterator<FSAEvent> eventsb = b.getEventIterator();
-            while(eventsb.hasNext()){
-                FSAEvent eventb = eventsb.next();
-                if(eventa.equals(eventb))
-                {
-                    //TODO: is this right? Does the new event have the same
-                    // properties as the old event?
-                    Event event = new Event(eventa);
-                    //event.setId(eventid++);
-                    product.add(event);
-                    break;
-                }
-            }
-        }
+		// the event set for the shuffle is the union of the two event sets
+		// get all the events from 'a' first.
+		ListIterator<FSAEvent> eventIterator = a.getEventIterator();
+		while (eventIterator.hasNext())
+		{
+			// add the current event from 'a' to shuffle
+			shuffle.add(new Event(eventIterator.next()));
+		}
 
-        // find initial states, mark them as reached and add them to the que
-        FSAState[] initial = new FSAState[2];
-        long stateNumber = 0;
-        LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
+		// now get the events from b
+		eventIterator = b.getEventIterator();
+		while (eventIterator.hasNext())
+		{
+			// need to test each event to prevent duplications
+			FSAEvent testEvent = eventIterator.next();
+			// add the event if it isn't already in the event list
+			if (!shuffle.getEventSet().contains(testEvent))
+			{
+				shuffle.add(new Event(testEvent));
+			}
+		}
+	}
 
-        Iterator<FSAState> sia = a.getStateIterator();
-        while(sia.hasNext()){
-            initial[0] = sia.next();
-            if(initial[0].isInitial()){
-                Iterator<FSAState> sib = b.getStateIterator();
-                while(sib.hasNext()){
-                    initial[1] = sib.next();
-                    if(initial[1].isInitial()){
-                        searchList.add(initial.clone());
-                        product.add(makeState(initial,stateNumber));
-                        setStateId(initial, stateNumber++);
-                    }
-                }
-            }
-        }
+	/**
+	 * Computes the accessible product of the two automata a and b.
+	 * 
+	 * @param a
+	 *            an automaton
+	 * @param b
+	 *            an automaton
+	 * @param product
+	 *            the accesible product of a and b.
+	 */
+	public static void product(FSAModel a, FSAModel b, FSAModel product)
+	{
 
-        // accessibility. All accessible states are added to product.
-        // Transitions are only traversible if they can be traversed from both
-        // states in sa
-        // firing the same event, i.e., the intersection of the transitions
-        // originating from the two
-        // states are the transitions of state in product.
-        long transitionNumber = 0;
-        FSAState[] s = new FSAState[2];
-        while(!searchList.isEmpty()){
-            FSAState[] sa = searchList.removeFirst();
-            FSAState source = product.getState(getStateId(sa));
+		product.setAnnotation(Annotable.COMPOSED_OF, new String[] { a.getId(),
+				b.getId() });
 
-            ListIterator<FSATransition> sti0 = sa[0].getOutgoingTransitionsListIterator();
-            while(sti0.hasNext()){
-                FSATransition t0 = sti0.next();
-                ListIterator<FSATransition> sti1 = sa[1].getOutgoingTransitionsListIterator();
-                while(sti1.hasNext()){
-                    FSATransition t1 = sti1.next();
-                    if((t0.getEvent() == null && t1.getEvent() == null) || (t0.getEvent() != null
-                            && t1.getEvent() != null && t0.getEvent().equals(t1.getEvent()))){
+		// long eventid = 0;
 
-                        FSAEvent event = (t0.getEvent() == null) ? null : product.getEvent(t0
-                                .getEvent().getId());
+		// Add the intersection between the eventsets as the products eventset.
+		ListIterator<FSAEvent> eventsa = a.getEventIterator();
+		while (eventsa.hasNext())
+		{
+			FSAEvent eventa = eventsa.next();
+			ListIterator<FSAEvent> eventsb = b.getEventIterator();
+			while (eventsb.hasNext())
+			{
+				FSAEvent eventb = eventsb.next();
+				if (eventa.equals(eventb))
+				{
+					// TODO: is this right? Does the new event have the same
+					// properties as the old event?
+					Event event = new Event(eventa);
+					// event.setId(eventid++);
+					product.add(event);
+					break;
+				}
+			}
+		}
 
-                        s[0] = (State)t0.getTarget();
-                        s[1] = (State)t1.getTarget();
+		// find initial states, mark them as reached and add them to the que
+		FSAState[] initial = new FSAState[2];
+		long stateNumber = 0;
+		LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
 
-                        long id = getStateId(s);
-                        if(id != -1){
-                            product.add(new Transition(transitionNumber++, source, product
-                                    .getState(id), event));
-                        }
-                        else{
-                            State target = makeState(s, stateNumber);
-                            product.add(target);
-                            product.add(new Transition(transitionNumber++, source, target, event));
-                            setStateId(s, stateNumber++);
-                            searchList.add(s.clone());
-                        }
-                    }
-                }
-            }
-        }
+		Iterator<FSAState> sia = a.getStateIterator();
+		while (sia.hasNext())
+		{
+			initial[0] = sia.next();
+			if (initial[0].isInitial())
+			{
+				Iterator<FSAState> sib = b.getStateIterator();
+				while (sib.hasNext())
+				{
+					initial[1] = sib.next();
+					if (initial[1].isInitial())
+					{
+						searchList.add(initial.clone());
+						product.add(makeState(initial, stateNumber));
+						setStateId(initial, stateNumber++);
+					}
+				}
+			}
+		}
 
-        pairIds.clear();
-    }
+		// accessibility. All accessible states are added to product.
+		// Transitions are only traversible if they can be traversed from both
+		// states in sa
+		// firing the same event, i.e., the intersection of the transitions
+		// originating from the two
+		// states are the transitions of state in product.
+		long transitionNumber = 0;
+		FSAState[] s = new FSAState[2];
+		while (!searchList.isEmpty())
+		{
+			FSAState[] sa = searchList.removeFirst();
+			FSAState source = product.getState(getStateId(sa));
 
-    /**
-     * Takes multiple automata and makes the product of them all
-     * 
-     * @param automata an array of automata
-     * @param name The name of the end product of the parallel composition
-     * @return The result of the parallel composition
-     */
-    public static FSAModel parallel(FSAModel[] automata, String name){
+			ListIterator<FSATransition> sti0 = sa[0]
+					.getOutgoingTransitionsListIterator();
+			while (sti0.hasNext())
+			{
+				FSATransition t0 = sti0.next();
+				ListIterator<FSATransition> sti1 = sa[1]
+						.getOutgoingTransitionsListIterator();
+				while (sti1.hasNext())
+				{
+					FSATransition t1 = sti1.next();
+					if ((t0.getEvent() == null && t1.getEvent() == null)
+							|| (t0.getEvent() != null && t1.getEvent() != null && t0
+									.getEvent().equals(t1.getEvent())))
+					{
 
-        if(automata.length < 2) return null;
+						FSAEvent event = (t0.getEvent() == null) ? null
+								: product.getEvent(t0.getEvent().getId());
 
-        FSAModel prevAnswer = ModelManager.createModel(FSAModel.class,"temp");
-        FSAModel newAnswer;
+						s[0] = t0.getTarget();
+						s[1] = t1.getTarget();
 
-        parallel(automata[0], automata[1], prevAnswer);
+						long id = getStateId(s);
+						if (id != -1)
+						{
+							product.add(new Transition(
+									transitionNumber++,
+									source,
+									product.getState(id),
+									event));
+						}
+						else
+						{
+							State target = makeState(s, stateNumber);
+							product.add(target);
+							product.add(new Transition(
+									transitionNumber++,
+									source,
+									target,
+									event));
+							setStateId(s, stateNumber++);
+							searchList.add(s.clone());
+						}
+					}
+				}
+			}
+		}
 
-        for(int i = 2; i < automata.length; i++){
-            newAnswer = ModelManager.createModel(FSAModel.class,"temp");
-            parallel(prevAnswer, automata[i], newAnswer);
-            prevAnswer = newAnswer;
-        }
-        prevAnswer.setName(name);
-        return prevAnswer;
-    }
+		pairIds.clear();
+	}
 
-    /**
-     * Computes the accessible parallel composition of the two automata a and b.
-     * 
-     * @param a an automaton
-     * @param b an automaton
-     * @param parallel a pointer to the result for the accesible parallel product of a and b.
-     */
-    public static void parallel(FSAModel a, FSAModel b, FSAModel parallel){
+	/**
+	 * Takes multiple automata and makes the product of them all
+	 * 
+	 * @param automata
+	 *            an array of automata
+	 * @param name
+	 *            The name of the end product of the parallel composition
+	 * @return The result of the parallel composition
+	 */
+	public static FSAModel parallel(FSAModel[] automata, String name)
+	{
 
-    	parallel.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId(),b.getId()});
+		if (automata.length < 2)
+		{
+			return null;
+		}
 
-    	// Add the union of the eventsets as the parallel compositions eventset.
-        // mark all events in the intersection as being in the intersection.
-        long eventid = 0;
-        
-        //key=event from original automata,value=correpsponding new event in result
-        HashMap<FSAEvent,Event> events=new HashMap<FSAEvent,Event>();
-        //key=new event,value=the two original events that intersect
-        HashSet<Event> intersection=new HashSet<Event>();
+		FSAModel prevAnswer = ModelManager.createModel(FSAModel.class, "temp");
+		FSAModel newAnswer;
 
-        ListIterator<FSAEvent> it = a.getEventIterator();
-        while(it.hasNext()){
-            FSAEvent event = it.next();
-            Event temp = new Event(event);
-            temp.setId(eventid++);
-            parallel.add(temp);
-            events.put(event,temp);
-        }
+		parallel(automata[0], automata[1], prevAnswer);
 
-        it = b.getEventIterator();
-        while(it.hasNext()){
-            FSAEvent eventb = it.next();
-            FSAEvent eventa = getId(eventb, a);
-            if(eventa==null){
-                Event temp = new Event(eventb);
-                temp.setId(eventid++);
-                parallel.add(temp);
-                events.put(eventb,temp);
-            }
-            else{
-            	Event e=events.get(eventa);
-            	intersection.add(e);
-            	events.put(eventb,e);
-            }
-        }
+		for (int i = 2; i < automata.length; i++)
+		{
+			newAnswer = ModelManager.createModel(FSAModel.class, "temp");
+			parallel(prevAnswer, automata[i], newAnswer);
+			prevAnswer = newAnswer;
+		}
+		prevAnswer.setName(name);
+		return prevAnswer;
+	}
 
-        // find initial states, mark them as reached and add them to the que
-        FSAState[] initial = new FSAState[2];
-        long stateNumber = 0;
-        LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
+	/**
+	 * Computes the accessible parallel composition of the two automata a and b.
+	 * 
+	 * @param a
+	 *            an automaton
+	 * @param b
+	 *            an automaton
+	 * @param parallel
+	 *            a pointer to the result for the accesible parallel product of
+	 *            a and b.
+	 */
+	public static void parallel(FSAModel a, FSAModel b, FSAModel parallel)
+	{
 
-        Iterator<FSAState> sia = a.getStateIterator();
-        while(sia.hasNext()){
-            initial[0] = sia.next();
-            if(initial[0].isInitial()){
-                Iterator<FSAState> sib = b.getStateIterator();
-                while(sib.hasNext()){
-                    initial[1] = sib.next();
-                    if(initial[1].isInitial()){
-                        searchList.add(initial.clone());
-                        parallel.add(makeState(initial, stateNumber));
-                        setStateId(initial, stateNumber++);
-                    }
-                }
-            }
-        }
+		parallel.setAnnotation(Annotable.COMPOSED_OF, new String[] { a.getId(),
+				b.getId() });
 
-        // accessibility. All accessible states are added to parallel.
-        // Transitions are traversible if they can be traversed from both
-        // states in sa firing the same event, i.e., the intersection of the
-        // transitions
-        // originating from the two
-        // states are the transitions of state in product, or if the event
-        // firing the transition isn't in the intersection between E_a and E_b.
-        long transitionNumber = 0;
-        FSAState[] s = new FSAState[2];
-        while(!searchList.isEmpty()){
-            FSAState[] sa = searchList.removeFirst();
-            FSAState source = parallel.getState(getStateId(sa));
+		// Add the union of the eventsets as the parallel compositions eventset.
+		// mark all events in the intersection as being in the intersection.
+		long eventid = 0;
 
-            // add all transitions in sa[0] and sa[1] that
-            // aren't in the intersection between E_a and E_b
-            for(int i = 0; i < 2; i++){
-                ListIterator<FSATransition> stli = sa[i].getOutgoingTransitionsListIterator();
-                while(stli.hasNext()){
-                    FSATransition t = stli.next();
-                    if(t.getEvent() == null || !intersection.contains(events.get(t.getEvent()))){
-                        Event event = (t.getEvent() == null) ? null : events.get(t.getEvent());
+		// key=event from original automata,value=correpsponding new event in
+		// result
+		HashMap<FSAEvent, Event> events = new HashMap<FSAEvent, Event>();
+		// key=new event,value=the two original events that intersect
+		HashSet<Event> intersection = new HashSet<Event>();
 
-                        s[(i + 1) % 2] = sa[(i + 1) % 2];
-                        s[i] = t.getTarget();
+		ListIterator<FSAEvent> it = a.getEventIterator();
+		while (it.hasNext())
+		{
+			FSAEvent event = it.next();
+			Event temp = new Event(event);
+			temp.setId(eventid++);
+			parallel.add(temp);
+			events.put(event, temp);
+		}
 
-                        long id = getStateId(s);
-                        if(id != -1){
-                            parallel.add(new Transition(transitionNumber++, source, parallel
-                                    .getState(id), event));
-                        }
-                        else{
-                            State target = makeState(s, stateNumber);
-                            parallel.add(target);
-                            parallel.add(new Transition(transitionNumber++, source, target, event));
-                            setStateId(s, stateNumber++);
-                            searchList.add(s.clone());
-                        }
-                    }
-                }
-            }
+		it = b.getEventIterator();
+		while (it.hasNext())
+		{
+			FSAEvent eventb = it.next();
+			FSAEvent eventa = getId(eventb, a);
+			if (eventa == null)
+			{
+				Event temp = new Event(eventb);
+				temp.setId(eventid++);
+				parallel.add(temp);
+				events.put(eventb, temp);
+			}
+			else
+			{
+				Event e = events.get(eventa);
+				intersection.add(e);
+				events.put(eventb, e);
+			}
+		}
 
-            ListIterator<FSATransition> sti0 = sa[0].getOutgoingTransitionsListIterator();
-            while(sti0.hasNext()){
-                FSATransition t0 = sti0.next();
-                if(t0.getEvent() != null && !intersection.contains(events.get(t0.getEvent()))) continue;
-                ListIterator<FSATransition> sti1 = sa[1].getOutgoingTransitionsListIterator();
-                while(sti1.hasNext()){
-                    FSATransition t1 = sti1.next();
-                    if(t1.getEvent() != null && !intersection.contains(events.get(t1.getEvent()))) continue;
-                    //System.out.println(""+t0.getEvent()+", "+t1.getEvent()+". "+)
-                    if((t0.getEvent() == null && t1.getEvent() == null) || (t0.getEvent() != null
-                            && t1.getEvent() != null && t0.getEvent().equals(t1.getEvent()))){
+		// find initial states, mark them as reached and add them to the que
+		FSAState[] initial = new FSAState[2];
+		long stateNumber = 0;
+		LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
 
-                        Event event = (t0.getEvent() == null) ? null : events.get(t0.getEvent());
+		Iterator<FSAState> sia = a.getStateIterator();
+		while (sia.hasNext())
+		{
+			initial[0] = sia.next();
+			if (initial[0].isInitial())
+			{
+				Iterator<FSAState> sib = b.getStateIterator();
+				while (sib.hasNext())
+				{
+					initial[1] = sib.next();
+					if (initial[1].isInitial())
+					{
+						searchList.add(initial.clone());
+						parallel.add(makeState(initial, stateNumber));
+						setStateId(initial, stateNumber++);
+					}
+				}
+			}
+		}
 
-                        s[0] = t0.getTarget();
-                        s[1] = t1.getTarget();
+		// accessibility. All accessible states are added to parallel.
+		// Transitions are traversible if they can be traversed from both
+		// states in sa firing the same event, i.e., the intersection of the
+		// transitions
+		// originating from the two
+		// states are the transitions of state in product, or if the event
+		// firing the transition isn't in the intersection between E_a and E_b.
+		long transitionNumber = 0;
+		FSAState[] s = new FSAState[2];
+		while (!searchList.isEmpty())
+		{
+			FSAState[] sa = searchList.removeFirst();
+			FSAState source = parallel.getState(getStateId(sa));
 
-                        long id = getStateId(s);
-                        if(id != -1){
-                            parallel.add(new Transition(transitionNumber++, source, parallel
-                                    .getState(id), event));
-                        }
-                        else{
-                            State target = makeState(s, stateNumber);
-                            parallel.add(target);
-                            parallel.add(new Transition(transitionNumber++, source, target, event));
-                            setStateId(s, stateNumber++);
-                            searchList.add(s.clone());
-                        }
-                    }
-                }
-            }
-        }
-        
-        pairIds.clear();
-    }
+			// add all transitions in sa[0] and sa[1] that
+			// aren't in the intersection between E_a and E_b
+			for (int i = 0; i < 2; i++)
+			{
+				ListIterator<FSATransition> stli = sa[i]
+						.getOutgoingTransitionsListIterator();
+				while (stli.hasNext())
+				{
+					FSATransition t = stli.next();
+					if (t.getEvent() == null
+							|| !intersection.contains(events.get(t.getEvent())))
+					{
+						Event event = (t.getEvent() == null) ? null : events
+								.get(t.getEvent());
 
-    /**
-     * Computes an observer for the non-deterministic automaton P(a), i.e., the
-     * automaton where all unobservable events have been replaced with the empty
-     * event, epsilon.
-     * 
-     * @param a a non-deterministic automaton
-     * @param observer the output, a deterministic observer of the automaton a.
-     */
-    public static void observer(FSAModel a, FSAModel observer){
-    	
-    	observer.setAnnotation(Annotable.COMPOSED_OF, new String[]{a.getId()});
+						s[(i + 1) % 2] = sa[(i + 1) % 2];
+						s[i] = t.getTarget();
 
-    	//long eventid=0;
-    	
-    	ListIterator<FSAEvent> eli = a.getEventIterator();
-        while(eli.hasNext()){
-            FSAEvent e = eli.next();
-            if(e.isObservable())
-            {
-            	Event event=new Event(e);
-            	//event.setId(eventid++);
-            	observer.add(event);
-            }
-        }
+						long id = getStateId(s);
+						if (id != -1)
+						{
+							parallel.add(new Transition(
+									transitionNumber++,
+									source,
+									parallel.getState(id),
+									event));
+						}
+						else
+						{
+							State target = makeState(s, stateNumber);
+							parallel.add(target);
+							parallel.add(new Transition(
+									transitionNumber++,
+									source,
+									target,
+									event));
+							setStateId(s, stateNumber++);
+							searchList.add(s.clone());
+						}
+					}
+				}
+			}
 
-        LinkedList<LinkedList<FSAState>> searchList = new LinkedList<LinkedList<FSAState>>();
-        long id = 0, transitionid = 0;
+			ListIterator<FSATransition> sti0 = sa[0]
+					.getOutgoingTransitionsListIterator();
+			while (sti0.hasNext())
+			{
+				FSATransition t0 = sti0.next();
+				if (t0.getEvent() != null
+						&& !intersection.contains(events.get(t0.getEvent())))
+				{
+					continue;
+				}
+				ListIterator<FSATransition> sti1 = sa[1]
+						.getOutgoingTransitionsListIterator();
+				while (sti1.hasNext())
+				{
+					FSATransition t1 = sti1.next();
+					if (t1.getEvent() != null
+							&& !intersection
+									.contains(events.get(t1.getEvent())))
+					{
+						continue;
+					}
+					// System.out.println(""+t0.getEvent()+", "+t1.getEvent()+".
+					// "+)
+					if ((t0.getEvent() == null && t1.getEvent() == null)
+							|| (t0.getEvent() != null && t1.getEvent() != null && t0
+									.getEvent().equals(t1.getEvent())))
+					{
 
-        // find initial states, mark them as reached and add them to the
-        // searchlist
-        LinkedList<FSAState> states = new LinkedList<FSAState>();
-        Iterator<FSAState> sia = a.getStateIterator();
-        while(sia.hasNext()){
-            FSAState initial = sia.next();
-            if(initial.isInitial()){
-                states.add(initial);
-            }
-        }
-        if(states.size() == 0) return;
-        unobservableReach(states);
-        sort(states);
-        State rState = makeState(states, id, true);
-        setIn(states, id++);
+						Event event = (t0.getEvent() == null) ? null : events
+								.get(t0.getEvent());
 
-        observer.add(rState);
-        searchList.add(states);
-        State target, source;
+						s[0] = t0.getTarget();
+						s[1] = t1.getTarget();
 
-        states = new LinkedList<FSAState>();
+						long id = getStateId(s);
+						if (id != -1)
+						{
+							parallel.add(new Transition(
+									transitionNumber++,
+									source,
+									parallel.getState(id),
+									event));
+						}
+						else
+						{
+							State target = makeState(s, stateNumber);
+							parallel.add(target);
+							parallel.add(new Transition(
+									transitionNumber++,
+									source,
+									target,
+									event));
+							setStateId(s, stateNumber++);
+							searchList.add(s.clone());
+						}
+					}
+				}
+			}
+		}
 
-        // find the accesible states in the observer.
-        while(!searchList.isEmpty()){
-            LinkedList<FSAState> sourceList = searchList.remove();
-            source = (State)observer.getState(isIn(sourceList));
-            eli = a.getEventIterator();
-            while(eli.hasNext()){
-                FSAEvent event = eli.next();
-                if(!event.isObservable()) continue;
-                ListIterator<FSAState> sli = sourceList.listIterator();
-                while(sli.hasNext()){
-                    FSAState s = sli.next();
-                    ListIterator<FSATransition> tli = s.getOutgoingTransitionsListIterator();
-                    while(tli.hasNext()){
-                        FSATransition t = tli.next();
-                        if(t.getEvent().equals(event) && !states.contains(t.getTarget())){
-                            states.add(t.getTarget());
-                        }
-                    }
-                }
-                if(!states.isEmpty()){
-                    unobservableReach(states);
-                    sort(states);
-                    long stateid = isIn(states);
-                    if(stateid < 0){
-                        target = makeState(states, id, false);
-                        setIn(states, id++);
-                        observer.add(target);
-                        searchList.add(states);
-                    }
-                    else {
-                    	target = (State)observer.getState(stateid);
-                    }
-                    event = (event == null) ? null : observer.getEvent(event.getId());
-                    Transition t = new Transition(transitionid++, source, target, event);
-                    observer.add(t);
-                    states = new LinkedList<FSAState>();
-                }
-            }
-        }
+		pairIds.clear();
+	}
 
-        pairIds.clear();
-    }
+	/**
+	 * Computes an observer for the non-deterministic automaton P(a), i.e., the
+	 * automaton where all unobservable events have been replaced with the empty
+	 * event, epsilon.
+	 * 
+	 * @param a
+	 *            a non-deterministic automaton
+	 * @param observer
+	 *            the output, a deterministic observer of the automaton a.
+	 */
+	public static void observer(FSAModel a, FSAModel observer)
+	{
 
-    /**
-     * Private function  to check if a stateset is in the observer
-     * @param sll the stateset to check
-     * @return null if it is not in, else returns the id of the observer state 
-     */
-    private static long isIn(LinkedList<FSAState> sll){
-    	Long id=pairIds.get(id(sll));
-    	if(id==null)
-    		return -1;
-    	else
-    		return id.longValue();
-    }
+		observer.setAnnotation(Annotable.COMPOSED_OF,
+				new String[] { a.getId() });
 
-    /**
-     * private function for setting an in subelement a state
-     * @param sll the stateset to set a new id in
-     * @param n the new id
-     */
-    private static void setIn(LinkedList<FSAState> sll, long n){
-    	pairIds.put(id(sll),new Long(n));
-    }
+		// long eventid=0;
 
-    /**
-     * Makes a string of the ides in a stateset
-     * @param sll the stateset to compile a string from
-     * @return the id string . seperated
-     */
-    private static String id(LinkedList<FSAState> sll){
-        ListIterator<FSAState> sli = sll.listIterator();
-        String name = "";
-        while(sli.hasNext()){
-            name += sli.next().getId() + ".";
-        }
-        return name;
-    }
+		ListIterator<FSAEvent> eli = a.getEventIterator();
+		while (eli.hasNext())
+		{
+			FSAEvent e = eli.next();
+			if (e.isObservable())
+			{
+				Event event = new Event(e);
+				// event.setId(eventid++);
+				observer.add(event);
+			}
+		}
 
-    /**
-     * Private function for making a new state from a stateset
-     * 
-     * @param sll the state set to make a new state from
-     * @param id the id it should use for the new state
-     * @param initial sets the state as initial if needed
-     * @return the newly created state
-     */
-    private static State makeState(LinkedList<FSAState> sll, long id, boolean initial){
-        ListIterator<FSAState> sli = sll.listIterator();
-        FSAState s;
-        State rs;
-        boolean marked = false;
-        int cId=0;
-        long[] compositionIds=new long[sll.size()];
+		LinkedList<LinkedList<FSAState>> searchList = new LinkedList<LinkedList<FSAState>>();
+		long id = 0, transitionid = 0;
 
-        while(sli.hasNext()){
-            s = sli.next();
-            marked |= s.isMarked();
-            compositionIds[cId++]=s.getId();
-        }
+		// find initial states, mark them as reached and add them to the
+		// searchlist
+		LinkedList<FSAState> states = new LinkedList<FSAState>();
+		Iterator<FSAState> sia = a.getStateIterator();
+		while (sia.hasNext())
+		{
+			FSAState initial = sia.next();
+			if (initial.isInitial())
+			{
+				states.add(initial);
+			}
+		}
+		if (states.size() == 0)
+		{
+			return;
+		}
+		unobservableReach(states);
+		sort(states);
+		State rState = makeState(states, id, true);
+		setIn(states, id++);
 
-        rs = new State(id);
-        rs.setMarked(marked);
-        rs.setInitial(initial);
-        rs.setStateCompositionList(compositionIds);
-        return rs;
-    }
+		observer.add(rState);
+		searchList.add(states);
+		State target, source;
 
-    /**
-     * Sorting algorithm for sorting a list of states after id.
-     * Right now it uses bublesort
-     * @param sll the list of states to sort
-     */
-    private static void sort(LinkedList<FSAState> sll){
-    	Collections.sort(sll,new Comparator<FSAState>()
-    			{
-    				public int compare(FSAState s1, FSAState s2)
-    				{
-    					return (int)Math.signum(s1.getId()-s2.getId());
-    				}
-    			});
-//        if(sll.size() < 2)
-//        ;
-//        else if(sll.size() == 2){
-//            FSAState s1 = sll.getFirst();
-//            FSAState s2 = sll.getLast();
-//            if(s1.getId() <= s2.getId()) return;
-//            else{
-//                sll.clear();
-//                sll.addFirst(s2);
-//                sll.addLast(s1);
-//            }
-//        }
-//        else{
-//            LinkedList<State> l1 = new LinkedList<State>(sll.subList(0, sll.size() / 2));
-//            LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size() / 2, sll.size()));
-//            sort(l1);
-//            sort(l2);
-//            sll.clear();
-//            while(!l1.isEmpty() || !l2.isEmpty()){
-//                if(l1.isEmpty()) sll.addLast(l2.removeFirst());
-//                else if(l2.isEmpty()) sll.addLast(l1.removeFirst());
-//                else if(l1.peek().getId() <= l2.peek().getId()) sll.addLast(l1.removeFirst());
-//                else sll.addLast(l2.removeFirst());
-//            }
-//        }
-    }
+		states = new LinkedList<FSAState>();
 
-    /**
-     * calculates the unoberservable reach for a stateset
-     * 
-     * @param sll the stateset to use.
-     */
-    private static void unobservableReach(LinkedList<FSAState> sll){
-        ListIterator<FSAState> sli = sll.listIterator();
-        HashSet<FSAState> reached=new HashSet<FSAState>();
-        while(sli.hasNext()){
-            reached.add(sli.next());
-        }
-        sli = sll.listIterator();
-        while(sli.hasNext()){
-            FSAState s = sli.next();
-            ListIterator<FSATransition> stli = s.getOutgoingTransitionsListIterator();
-            while(stli.hasNext()){
-                FSATransition t = stli.next();
-                if((t.getEvent() == null || !t.getEvent().isObservable())
-                        && !reached.contains(t.getTarget())){
-                    reached.add(t.getTarget());
-                    sli.add(t.getTarget());
-                    sli.previous();
-                }
-            }
-        }
-    }
+		// find the accesible states in the observer.
+		while (!searchList.isEmpty())
+		{
+			LinkedList<FSAState> sourceList = searchList.remove();
+			source = (State)observer.getState(isIn(sourceList));
+			eli = a.getEventIterator();
+			while (eli.hasNext())
+			{
+				FSAEvent event = eli.next();
+				if (!event.isObservable())
+				{
+					continue;
+				}
+				ListIterator<FSAState> sli = sourceList.listIterator();
+				while (sli.hasNext())
+				{
+					FSAState s = sli.next();
+					ListIterator<FSATransition> tli = s
+							.getOutgoingTransitionsListIterator();
+					while (tli.hasNext())
+					{
+						FSATransition t = tli.next();
+						if (t.getEvent().equals(event)
+								&& !states.contains(t.getTarget()))
+						{
+							states.add(t.getTarget());
+						}
+					}
+				}
+				if (!states.isEmpty())
+				{
+					unobservableReach(states);
+					sort(states);
+					long stateid = isIn(states);
+					if (stateid < 0)
+					{
+						target = makeState(states, id, false);
+						setIn(states, id++);
+						observer.add(target);
+						searchList.add(states);
+					}
+					else
+					{
+						target = (State)observer.getState(stateid);
+					}
+					event = (event == null) ? null : observer.getEvent(event
+							.getId());
+					Transition t = new Transition(
+							transitionid++,
+							source,
+							target,
+							event);
+					observer.add(t);
+					states = new LinkedList<FSAState>();
+				}
+			}
+		}
 
-    /**
-     * Gets the id for an event in another automaton. It is used for finding an event id based on the event name.
-     * 
-     * @param e the event to search for
-     * @param a the automaton to search in
-     * @return returns -1 if it couldn't find the event, else returns the id of the event in automaton a
-     */
-    private static FSAEvent getId(FSAEvent e, FSAModel a){
-        ListIterator eli = a.getEventIterator();
-        while(eli.hasNext()){
-            FSAEvent temp = (FSAEvent)eli.next();
-            if(temp.equals(e)){
-                return temp;
-            }
-        }
-        return null;
-    }
+		pairIds.clear();
+	}
 
-    /**
-     * Private function for making a new state from a stateset
-     * @param s the stateset to make a new state from
-     * @param stateNumber the id of the new state
-     * @return the newly created state
-     */
-    private static State makeState(FSAState[] s, long stateNumber){
-        State state = new State(stateNumber);
-//        SubElement name = new SubElement("name");
-//        name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
-//                + s[1].getSubElement("name").getChars() + ")");
-//        state.addSubElement(name);
+	/**
+	 * Private function to check if a stateset is in the observer
+	 * 
+	 * @param sll
+	 *            the stateset to check
+	 * @return null if it is not in, else returns the id of the observer state
+	 */
+	private static long isIn(LinkedList<FSAState> sll)
+	{
+		Long id = pairIds.get(id(sll));
+		if (id == null)
+		{
+			return -1;
+		}
+		else
+		{
+			return id.longValue();
+		}
+	}
 
-//        SubElement properties = new SubElement("properties");
+	/**
+	 * private function for setting an in subelement a state
+	 * 
+	 * @param sll
+	 *            the stateset to set a new id in
+	 * @param n
+	 *            the new id
+	 */
+	private static void setIn(LinkedList<FSAState> sll, long n)
+	{
+		pairIds.put(id(sll), new Long(n));
+	}
 
-        //state.setName("{" + s[0].getName() + "," + s[1].getName() + "}");
-        state.setStateCompositionList(new long[]{s[0].getId(),s[1].getId()});
-        
-        if(s[0].isInitial() && s[1].isInitial())
-        	state.setInitial(true);
+	/**
+	 * Makes a string of the ides in a stateset
+	 * 
+	 * @param sll
+	 *            the stateset to compile a string from
+	 * @return the id string . seperated
+	 */
+	private static String id(LinkedList<FSAState> sll)
+	{
+		ListIterator<FSAState> sli = sll.listIterator();
+		String name = "";
+		while (sli.hasNext())
+		{
+			name += sli.next().getId() + ".";
+		}
+		return name;
+	}
 
-        if(s[0].isMarked() && s[1].isMarked())
-        	state.setMarked(true);
-        return state;
-    }
+	/**
+	 * Private function for making a new state from a stateset
+	 * 
+	 * @param sll
+	 *            the state set to make a new state from
+	 * @param id
+	 *            the id it should use for the new state
+	 * @param initial
+	 *            sets the state as initial if needed
+	 * @return the newly created state
+	 */
+	private static State makeState(LinkedList<FSAState> sll, long id,
+			boolean initial)
+	{
+		ListIterator<FSAState> sli = sll.listIterator();
+		FSAState s;
+		State rs;
+		boolean marked = false;
+		int cId = 0;
+		long[] compositionIds = new long[sll.size()];
 
-    /**
-     * set the stateid for a set of states 
-     * @param s the stateset
-     * @param stateId the id to set
-     */
-    private static void setStateId(FSAState[] s, long stateId){
-    	pairIds.put(""+s[0].getId()+","+s[1].getId(),new Long(stateId));
-    }
+		while (sli.hasNext())
+		{
+			s = sli.next();
+			marked |= s.isMarked();
+			compositionIds[cId++] = s.getId();
+		}
 
-    /**
-     * Gets the id from a set of states
-     * 
-     * @param s the stateset
-     * @return the id of the stateset
-     */
-    private static long getStateId(FSAState[] s){
-    	String key=""+s[0].getId()+","+s[1].getId();
-        if(pairIds.containsKey(key))
-            return pairIds.get(key).longValue();
-        return -1;
-    }
+		rs = new State(id);
+		rs.setMarked(marked);
+		rs.setInitial(initial);
+		rs.setStateCompositionList(compositionIds);
+		return rs;
+	}
+
+	/**
+	 * Sorting algorithm for sorting a list of states after id. Right now it
+	 * uses bublesort
+	 * 
+	 * @param sll
+	 *            the list of states to sort
+	 */
+	private static void sort(LinkedList<FSAState> sll)
+	{
+		Collections.sort(sll, new Comparator<FSAState>()
+		{
+			public int compare(FSAState s1, FSAState s2)
+			{
+				return (int)Math.signum(s1.getId() - s2.getId());
+			}
+		});
+		// if(sll.size() < 2)
+		// ;
+		// else if(sll.size() == 2){
+		// FSAState s1 = sll.getFirst();
+		// FSAState s2 = sll.getLast();
+		// if(s1.getId() <= s2.getId()) return;
+		// else{
+		// sll.clear();
+		// sll.addFirst(s2);
+		// sll.addLast(s1);
+		// }
+		// }
+		// else{
+		// LinkedList<State> l1 = new LinkedList<State>(sll.subList(0,
+		// sll.size() / 2));
+		// LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size() /
+		// 2, sll.size()));
+		// sort(l1);
+		// sort(l2);
+		// sll.clear();
+		// while(!l1.isEmpty() || !l2.isEmpty()){
+		// if(l1.isEmpty()) sll.addLast(l2.removeFirst());
+		// else if(l2.isEmpty()) sll.addLast(l1.removeFirst());
+		// else if(l1.peek().getId() <= l2.peek().getId())
+		// sll.addLast(l1.removeFirst());
+		// else sll.addLast(l2.removeFirst());
+		// }
+		// }
+	}
+
+	/**
+	 * calculates the unoberservable reach for a stateset
+	 * 
+	 * @param sll
+	 *            the stateset to use.
+	 */
+	private static void unobservableReach(LinkedList<FSAState> sll)
+	{
+		ListIterator<FSAState> sli = sll.listIterator();
+		HashSet<FSAState> reached = new HashSet<FSAState>();
+		while (sli.hasNext())
+		{
+			reached.add(sli.next());
+		}
+		sli = sll.listIterator();
+		while (sli.hasNext())
+		{
+			FSAState s = sli.next();
+			ListIterator<FSATransition> stli = s
+					.getOutgoingTransitionsListIterator();
+			while (stli.hasNext())
+			{
+				FSATransition t = stli.next();
+				if ((t.getEvent() == null || !t.getEvent().isObservable())
+						&& !reached.contains(t.getTarget()))
+				{
+					reached.add(t.getTarget());
+					sli.add(t.getTarget());
+					sli.previous();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets the id for an event in another automaton. It is used for finding an
+	 * event id based on the event name.
+	 * 
+	 * @param e
+	 *            the event to search for
+	 * @param a
+	 *            the automaton to search in
+	 * @return returns -1 if it couldn't find the event, else returns the id of
+	 *         the event in automaton a
+	 */
+	private static FSAEvent getId(FSAEvent e, FSAModel a)
+	{
+		ListIterator eli = a.getEventIterator();
+		while (eli.hasNext())
+		{
+			FSAEvent temp = (FSAEvent)eli.next();
+			if (temp.equals(e))
+			{
+				return temp;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Private function for making a new state from a stateset
+	 * 
+	 * @param s
+	 *            the stateset to make a new state from
+	 * @param stateNumber
+	 *            the id of the new state
+	 * @return the newly created state
+	 */
+	private static State makeState(FSAState[] s, long stateNumber)
+	{
+		State state = new State(stateNumber);
+		// SubElement name = new SubElement("name");
+		// name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
+		// + s[1].getSubElement("name").getChars() + ")");
+		// state.addSubElement(name);
+
+		// SubElement properties = new SubElement("properties");
+
+		// state.setName("{" + s[0].getName() + "," + s[1].getName() + "}");
+		state
+				.setStateCompositionList(new long[] { s[0].getId(),
+						s[1].getId() });
+
+		if (s[0].isInitial() && s[1].isInitial())
+		{
+			state.setInitial(true);
+		}
+
+		if (s[0].isMarked() && s[1].isMarked())
+		{
+			state.setMarked(true);
+		}
+		return state;
+	}
+
+	/**
+	 * set the stateid for a set of states
+	 * 
+	 * @param s
+	 *            the stateset
+	 * @param stateId
+	 *            the id to set
+	 */
+	private static void setStateId(FSAState[] s, long stateId)
+	{
+		pairIds.put("" + s[0].getId() + "," + s[1].getId(), new Long(stateId));
+	}
+
+	/**
+	 * Gets the id from a set of states
+	 * 
+	 * @param s
+	 *            the stateset
+	 * @return the id of the stateset
+	 */
+	private static long getStateId(FSAState[] s)
+	{
+		String key = "" + s[0].getId() + "," + s[1].getId();
+		if (pairIds.containsKey(key))
+		{
+			return pairIds.get(key).longValue();
+		}
+		return -1;
+	}
 }

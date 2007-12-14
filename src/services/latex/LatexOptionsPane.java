@@ -13,33 +13,34 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import main.Hub;
-
 import pluggable.ui.OptionsPane;
 
 /**
- * Implements the {@link pluggable.ui.OptionsPane} for the LaTeX rendering options.
- * @see pluggable.ui.OptionsPane
+ * Implements the {@link pluggable.ui.OptionsPane} for the LaTeX rendering
+ * options.
  * 
+ * @see pluggable.ui.OptionsPane
  * @author Lenko Grigorov
- *
  */
-public class LatexOptionsPane implements OptionsPane {
+public class LatexOptionsPane implements OptionsPane
+{
 
 	/**
 	 * The pane with the options controls.
 	 */
-	JPanel pane=null;
-	
+	JPanel pane = null;
+
 	/**
 	 * Text field with the path to the <code>latex</code> and
 	 * <code>dvips</code> executables.
 	 */
 	protected JTextField latexPath;
+
 	/**
 	 * Text field with the path to the GhostScript executable file.
 	 */
 	protected JTextField gsPath;
-	
+
 	/**
 	 * Returns the title of the LaTeX options section.
 	 */
@@ -47,96 +48,102 @@ public class LatexOptionsPane implements OptionsPane {
 	{
 		return Hub.string("latexOptionsTitle");
 	}
-	
-	/**
-	 * Constructs (if necessary) and returns the {@link javax.swing.JPanel}
-	 * with the options controls.
-	 */
-	public JPanel getPane() {
-		
-		if(pane!=null)
-			return pane;
 
-		pane=new JPanel();
-		pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
-		
-		//latex
-		JLabel latexPathLabel=new JLabel(Hub.string("latexPathLabel"));
-		Box latexLabelBox=Box.createHorizontalBox();
+	/**
+	 * Constructs (if necessary) and returns the {@link javax.swing.JPanel} with
+	 * the options controls.
+	 */
+	public JPanel getPane()
+	{
+
+		if (pane != null)
+		{
+			return pane;
+		}
+
+		pane = new JPanel();
+		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+
+		// latex
+		JLabel latexPathLabel = new JLabel(Hub.string("latexPathLabel"));
+		Box latexLabelBox = Box.createHorizontalBox();
 		latexLabelBox.add(latexPathLabel);
 		latexLabelBox.add(Box.createHorizontalGlue());
-		latexPath=new JTextField(LatexManager.getLatexPath(),30);
-		latexPath.setMaximumSize(new Dimension(latexPath.getMaximumSize().width,
+		latexPath = new JTextField(LatexManager.getLatexPath(), 30);
+		latexPath.setMaximumSize(new Dimension(
+				latexPath.getMaximumSize().width,
 				latexPath.getPreferredSize().height));
-		JButton latexBrowse=new JButton(Hub.string("browseDirectory"));
-		latexBrowse.setPreferredSize(new Dimension(latexPath.getPreferredSize().height,
+		JButton latexBrowse = new JButton(Hub.string("browseDirectory"));
+		latexBrowse.setPreferredSize(new Dimension(
+				latexPath.getPreferredSize().height,
 				latexPath.getPreferredSize().height));
-		latexBrowse.addActionListener(
-				new ActionListener()
+		latexBrowse.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				JFileChooser fc = new JFileChooser();
+				fc.setDialogTitle(Hub.string("latexBrowseTitle"));
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int r = fc.showDialog(pane.getParent(), Hub.string("select"));
+				if (r == JFileChooser.APPROVE_OPTION)
 				{
-					public void actionPerformed(ActionEvent e)
+					try
 					{
-						JFileChooser fc=new JFileChooser();
-						fc.setDialogTitle(Hub.string("latexBrowseTitle"));
-						fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-						int r=fc.showDialog(pane.getParent(),Hub.string("select"));
-						if(r==JFileChooser.APPROVE_OPTION)
-						{
-							try
-							{
-								latexPath.setText(fc.getSelectedFile().getCanonicalPath());
-							}catch(java.io.IOException ex)
-							{
-								Hub.displayAlert(Hub.string("cantParsePath"));
-							}
-						}
-						
+						latexPath.setText(fc
+								.getSelectedFile().getCanonicalPath());
+					}
+					catch (java.io.IOException ex)
+					{
+						Hub.displayAlert(Hub.string("cantParsePath"));
 					}
 				}
-		);
-		Box latexPathBox=Box.createHorizontalBox();
+
+			}
+		});
+		Box latexPathBox = Box.createHorizontalBox();
 		latexPathBox.add(latexPath);
 		latexPathBox.add(latexBrowse);
 		pane.add(latexLabelBox);
 		pane.add(latexPathBox);
-		
-		pane.add(Box.createRigidArea(new Dimension(0,5)));
-		
-		//ghostscript
-		JLabel gsPathLabel=new JLabel(Hub.string("gsPathLabel"));
-		Box gsLabelBox=Box.createHorizontalBox();
+
+		pane.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		// ghostscript
+		JLabel gsPathLabel = new JLabel(Hub.string("gsPathLabel"));
+		Box gsLabelBox = Box.createHorizontalBox();
 		gsLabelBox.add(gsPathLabel);
 		gsLabelBox.add(Box.createHorizontalGlue());
-		gsPath=new JTextField(LatexManager.getGSPath(),30);
-		gsPath.setMaximumSize(new Dimension(gsPath.getMaximumSize().width,
+		gsPath = new JTextField(LatexManager.getGSPath(), 30);
+		gsPath.setMaximumSize(new Dimension(
+				gsPath.getMaximumSize().width,
 				gsPath.getPreferredSize().height));
-		JButton gsBrowse=new JButton(Hub.string("browseDirectory"));
-		gsBrowse.setPreferredSize(new Dimension(gsPath.getPreferredSize().height,
+		JButton gsBrowse = new JButton(Hub.string("browseDirectory"));
+		gsBrowse.setPreferredSize(new Dimension(
+				gsPath.getPreferredSize().height,
 				gsPath.getPreferredSize().height));
-		gsBrowse.addActionListener(
-				new ActionListener()
+		gsBrowse.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				JFileChooser fc = new JFileChooser();
+				fc.setDialogTitle(Hub.string("gsBrowseTitle"));
+				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int r = fc.showDialog(pane.getParent(), Hub.string("select"));
+				if (r == JFileChooser.APPROVE_OPTION)
 				{
-					public void actionPerformed(ActionEvent e)
+					try
 					{
-						JFileChooser fc=new JFileChooser();
-						fc.setDialogTitle(Hub.string("gsBrowseTitle"));
-						fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-						int r=fc.showDialog(pane.getParent(),Hub.string("select"));
-						if(r==JFileChooser.APPROVE_OPTION)
-						{
-							try
-							{
-								gsPath.setText(fc.getSelectedFile().getCanonicalPath());
-							}catch(java.io.IOException ex)
-							{
-								Hub.displayAlert(Hub.string("cantParsePath"));
-							}
-						}
-						
+						gsPath.setText(fc.getSelectedFile().getCanonicalPath());
+					}
+					catch (java.io.IOException ex)
+					{
+						Hub.displayAlert(Hub.string("cantParsePath"));
 					}
 				}
-		);
-		Box gsPathBox=Box.createHorizontalBox();
+
+			}
+		});
+		Box gsPathBox = Box.createHorizontalBox();
 		gsPathBox.add(gsPath);
 		gsPathBox.add(gsBrowse);
 		pane.add(gsLabelBox);
@@ -147,9 +154,12 @@ public class LatexOptionsPane implements OptionsPane {
 	/**
 	 * Resets all options controls on the options pane.
 	 */
-	public void resetOptions() {
-		if(pane==null)
+	public void resetOptions()
+	{
+		if (pane == null)
+		{
 			return;
+		}
 		latexPath.setText(LatexManager.getLatexPath());
 		gsPath.setText(LatexManager.getGSPath());
 	}
@@ -157,9 +167,12 @@ public class LatexOptionsPane implements OptionsPane {
 	/**
 	 * Commits the changes to the LaTeX settings.
 	 */
-	public void commitOptions() {
-		if(pane==null)
+	public void commitOptions()
+	{
+		if (pane == null)
+		{
 			return;
+		}
 		LatexManager.setLatexPath(latexPath.getText());
 		LatexManager.setGSPath(gsPath.getText());
 	}
@@ -169,10 +182,12 @@ public class LatexOptionsPane implements OptionsPane {
 	 */
 	public void disposePane()
 	{
-		if(pane==null)
+		if (pane == null)
+		{
 			return;
-		latexPath=null;
-		gsPath=null;
-		pane=null;
+		}
+		latexPath = null;
+		gsPath = null;
+		pane = null;
 	}
 }

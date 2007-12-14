@@ -1,14 +1,10 @@
 package ui;
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -26,162 +22,183 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 
 import main.Hub;
 import model.ModelDescriptor;
 import model.ModelManager;
-
 import util.EscapeDialog;
 
 /**
- * The dialog box that lets the user choose what type of
- * DES model they want to create.
+ * The dialog box that lets the user choose what type of DES model they want to
+ * create.
  * 
  * @author Lenko Grigorov
  */
-public class NewModelDialog extends EscapeDialog {
+public class NewModelDialog extends EscapeDialog
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6889329115830481003L;
 
 	protected JList modelList;
+
 	protected ModelDescriptor[] modelDescriptors;
-	private ModelDescriptor selectedMD=null;
-	private static int lastIdx=0;
-	
-	
+
+	private ModelDescriptor selectedMD = null;
+
+	private static int lastIdx = 0;
+
 	/**
-	 * Creates a new "New model type" dialog box and
-	 * fills it with all the registered model types.
-	 * @see ModelManager#registerModel(ModelDescriptor)   
+	 * Creates a new "New model type" dialog box and fills it with all the
+	 * registered model types.
+	 * 
+	 * @see ModelManager#registerModel(ModelDescriptor)
 	 */
-	public NewModelDialog() throws HeadlessException {
-		super(Hub.getMainWindow(),Hub.string("newModelTitle"),true);
-		addWindowListener(new WindowAdapter() {
-		    public void windowClosing(WindowEvent e) {
-		    	onEscapeEvent();
-		    }
+	public NewModelDialog() throws HeadlessException
+	{
+		super(Hub.getMainWindow(), Hub.string("newModelTitle"), true);
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				onEscapeEvent();
+			}
 		});
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		SelectModelListener sml=new SelectModelListener();
-		
-		Box mainBox=Box.createVerticalBox();
-		
-		Box titleBox=Box.createHorizontalBox();
+		SelectModelListener sml = new SelectModelListener();
+
+		Box mainBox = Box.createVerticalBox();
+
+		Box titleBox = Box.createHorizontalBox();
 		titleBox.add(new JLabel(Hub.string("newModelDescription")));
 		titleBox.add(Box.createHorizontalGlue());
 		mainBox.add(titleBox);
-		
-		mainBox.add(Box.createRigidArea(new Dimension(0,5)));
-		
-		Vector<Component> items=new Vector<Component>();
-		modelDescriptors=ModelManager.getAllModels();
-		for(int i=0;i<modelDescriptors.length;++i)
+
+		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		Vector<Component> items = new Vector<Component>();
+		modelDescriptors = ModelManager.getAllModels();
+		for (int i = 0; i < modelDescriptors.length; ++i)
 		{
-			Box vbox=Box.createVerticalBox();
-			JLabel l=new JLabel(new ImageIcon(modelDescriptors[i].getIcon()));
+			Box vbox = Box.createVerticalBox();
+			JLabel l = new JLabel(new ImageIcon(modelDescriptors[i].getIcon()));
 			l.setAlignmentX(Component.CENTER_ALIGNMENT);
 			vbox.add(l);
-			l=new JLabel(modelDescriptors[i].getTypeDescription());
+			l = new JLabel(modelDescriptors[i].getTypeDescription());
 			l.setAlignmentX(Component.CENTER_ALIGNMENT);
 			vbox.add(l);
 			items.add(vbox);
 		}
-		modelList=new JList(items);
+		modelList = new JList(items);
 		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
 		modelList.setVisibleRowCount(1);
 		modelList.setCellRenderer(new ComponentCellRenderer());
 		modelList.addMouseListener(sml);
-		if(items.size()<=lastIdx)
-			lastIdx=0;
-		if(items.size()>0)
+		if (items.size() <= lastIdx)
+		{
+			lastIdx = 0;
+		}
+		if (items.size() > 0)
 		{
 			modelList.setSelectedIndex(lastIdx);
 			modelList.ensureIndexIsVisible(lastIdx);
 		}
-		JScrollPane sp=new JScrollPane(modelList);
-		sp.setPreferredSize(new Dimension(400,75));
+		JScrollPane sp = new JScrollPane(modelList);
+		sp.setPreferredSize(new Dimension(400, 75));
 		mainBox.add(sp);
-		
-		JButton OKButton=new JButton(Hub.string("OK"));
+
+		JButton OKButton = new JButton(Hub.string("OK"));
 		OKButton.addActionListener(sml);
 		getRootPane().setDefaultButton(OKButton);
 
-		JButton cancelButton=new JButton(Hub.string("cancel"));
-		cancelButton.addActionListener(
-				new ActionListener()
-				{
-					public void actionPerformed(ActionEvent e)
-					{
-						onEscapeEvent();
-					}
-				});
-		
+		JButton cancelButton = new JButton(Hub.string("cancel"));
+		cancelButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				onEscapeEvent();
+			}
+		});
+
 		JPanel p = new JPanel(new FlowLayout());
-		p.add(OKButton);		
+		p.add(OKButton);
 		p.add(cancelButton);
 		mainBox.add(p);
-		
-		mainBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+
+		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getContentPane().add(mainBox);
 		pack();
 
-		OKButton.setPreferredSize(new Dimension(
-				Math.max(OKButton.getWidth(),cancelButton.getWidth()),OKButton.getHeight()));
+		OKButton.setPreferredSize(new Dimension(Math.max(OKButton.getWidth(),
+				cancelButton.getWidth()), OKButton.getHeight()));
 		OKButton.invalidate();
-		cancelButton.setPreferredSize(new Dimension(
-				Math.max(OKButton.getWidth(),cancelButton.getWidth()),cancelButton.getHeight()));
+		cancelButton
+				.setPreferredSize(new Dimension(Math.max(OKButton.getWidth(),
+						cancelButton.getWidth()), cancelButton.getHeight()));
 		cancelButton.invalidate();
 	}
 
 	/**
-	 * Opens the dialog box and returns the selection made by
-	 * the user.
-	 * @return the type of DES model selected by the user;
-	 * <code>null</code> if no model was selected (e.g., the
-	 * user cancelled the dialog box)
+	 * Opens the dialog box and returns the selection made by the user.
+	 * 
+	 * @return the type of DES model selected by the user; <code>null</code>
+	 *         if no model was selected (e.g., the user cancelled the dialog
+	 *         box)
 	 */
 	public ModelDescriptor selectModel()
 	{
-		selectedMD=null;
+		selectedMD = null;
 		setVisible(true);
 		return selectedMD;
 	}
-	
+
 	/**
 	 * Called when the user presses the <code>Escape</code> key.
 	 */
+	@Override
 	protected void onEscapeEvent()
 	{
-		dispose();		
+		dispose();
 	}
-	
-	private class SelectModelListener extends MouseAdapter implements ActionListener{
 
-		/* (non-Javadoc)
+	private class SelectModelListener extends MouseAdapter implements
+			ActionListener
+	{
+
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
-		public void actionPerformed(ActionEvent arg0) {
+		public void actionPerformed(ActionEvent arg0)
+		{
 			Component selected = (Component)modelList.getSelectedValue();
-			if(selected != null){
-				selectedMD=modelDescriptors[modelList.getSelectedIndex()];
-				lastIdx=modelList.getSelectedIndex();
+			if (selected != null)
+			{
+				selectedMD = modelDescriptors[modelList.getSelectedIndex()];
+				lastIdx = modelList.getSelectedIndex();
 				onEscapeEvent();
 			}
 		}
-		
+
+		@Override
 		public void mouseClicked(MouseEvent e)
 		{
-			if(e.getClickCount()>1&&!modelList.isSelectionEmpty())
+			if (e.getClickCount() > 1 && !modelList.isSelectionEmpty())
 			{
 				Component selected = (Component)modelList.getSelectedValue();
-				int idx=modelList.getSelectedIndex();
-				Point m=e.getPoint();
-				m.x-=modelList.getCellBounds(idx, idx).x;
-				m.y-=modelList.getCellBounds(idx, idx).y;
-				if(selected.getParent().getBounds().contains(m))
+				int idx = modelList.getSelectedIndex();
+				Point m = e.getPoint();
+				m.x -= modelList.getCellBounds(idx, idx).x;
+				m.y -= modelList.getCellBounds(idx, idx).y;
+				if (selected.getParent().getBounds().contains(m))
 				{
-					actionPerformed(new ActionEvent(modelList,0,""));
+					actionPerformed(new ActionEvent(modelList, 0, ""));
 				}
 			}
 		}

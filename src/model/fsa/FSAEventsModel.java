@@ -8,46 +8,46 @@ import java.util.Set;
  * 
  * @author Helen Bretzke
  */
-public interface FSAEventsModel {
+public interface FSAEventsModel
+{
 
 	/**
-	 * Returns the global event set; all events in 
-	 * all models in the workspace.
+	 * Returns the global event set; all events in all models in the workspace.
 	 * 
 	 * @return set of events in the global alphabet
 	 */
 	public Set getGlobalEvents();
-	
+
 	/**
-	 * Returns the set of events local to the given fsa. 
+	 * Returns the set of events local to the given fsa.
 	 * 
-	 * @param fsa the fsa for which to retrieve events
+	 * @param fsa
+	 *            the fsa for which to retrieve events
 	 * @return set of events in the global alphabet
-	 */ 
+	 */
 	public Set getLocalEvents(FSAModel fsa);
-	
+
 	/**
-	 * Adds the given event to the global alphabet. 
+	 * Adds the given event to the global alphabet.
 	 * 
-	 * @param e the event to be added
+	 * @param e
+	 *            the event to be added
 	 */
 	public void addGlobalEvent(FSAEvent e);
-	
+
 	/**
-	 * Adds all events local to the given fsa to the
-	 * set of global events. 
+	 * Adds all events local to the given fsa to the set of global events.
 	 * 
-	 * @param fsa the model from which to add events 
+	 * @param fsa
+	 *            the model from which to add events
 	 */
 	public void addLocalEvents(FSAModel fsa);
-	
+
 	/**
-	 * Removes any events from the global alphabet that do not appear 
-	 * in any of the local alphabets.
-	 * 
-	 * WARNING: use with extreme caution; should have a flag set in any constructor
-	 * to prevent frivolous use of this method.	 
+	 * Removes any events from the global alphabet that do not appear in any of
+	 * the local alphabets. WARNING: use with extreme caution; should have a
+	 * flag set in any constructor to prevent frivolous use of this method.
 	 */
-	public void pruneGlobalEvents();  
-	
+	public void pruneGlobalEvents();
+
 }
