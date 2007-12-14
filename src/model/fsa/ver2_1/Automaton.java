@@ -330,6 +330,10 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 */
 	public void setName(String name)
 	{
+		if (this.name != null && this.name.equals(name))
+		{
+			return;
+		}
 		this.name = name;
 		DESModelMessage message = new DESModelMessage(
 				DESModelMessage.NAME,
