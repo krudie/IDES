@@ -23,11 +23,11 @@ public class Containment extends AbstractOperation
 	public Containment()
 	{
 		NAME = "subset";
-		DESCRIPTION = "Determines if the given sublanguage is contained within the "
-				+ "given superlanguage.";
+		DESCRIPTION = "Determines if the given candidate sublanguage is contained within the "
+				+ "given candidate superlanguage.";
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class, FSAModel.class };
-		inputDesc = new String[] { "Sublanguage", "Superlanguage" };
+		inputDesc = new String[] { "Candidate sublanguage", "Candidate superlanguage" };
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { Boolean.class };

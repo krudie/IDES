@@ -23,7 +23,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 	public MultiAgentProductFSA()
 	{
 		NAME = "maproduct-fsa";
-		DESCRIPTION = "Computes the multi-agent product of scalar automata. The result is as a scalar automaton.";
+		DESCRIPTION = "Computes the multi-agent product of scalar automata. The result is a scalar automaton.";
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class };
 		inputDesc = new String[] { "Finite-state automaton" };

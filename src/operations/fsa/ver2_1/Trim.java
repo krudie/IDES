@@ -17,7 +17,7 @@ public class Trim extends AbstractOperation implements FilterOperation
 	{
 		NAME = "trim";
 		DESCRIPTION = "Removes all states that are not"
-				+ "both accessible and coaccessible.";
+				+ " both accessible and coaccessible.";
 
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class };
