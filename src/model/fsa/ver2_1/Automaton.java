@@ -350,7 +350,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getStateCount()
 	 */
-	public int getStateCount()
+	public long getStateCount()
 	{
 		return states.size();
 	}
@@ -360,12 +360,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getTransitionCount()
 	 */
-	public int getTransitionCount()
+	public long getTransitionCount()
 	{
 		return transitions.size();
 	}
 
-	public int getEventCount()
+	public long getEventCount()
 	{
 		return events.size();
 	}

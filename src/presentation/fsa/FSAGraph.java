@@ -132,7 +132,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 		edgeLabels = new HashMap<Long, GraphLabel>();
 		freeLabels = new HashMap<Long, GraphLabel>();
 
-		int statesCounter = fsa.getStateCount();
+		long statesCounter = fsa.getStateCount();
 
 		avoidLayoutDrawing = (statesCounter > 100 ? true : false);
 

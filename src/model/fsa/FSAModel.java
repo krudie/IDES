@@ -18,17 +18,17 @@ public interface FSAModel extends DESModel, FSAPublisher
 	/**
 	 * @return the number of states in the automaton
 	 */
-	public abstract int getStateCount();
+	public abstract long getStateCount();
 
 	/**
 	 * @return the number of transitions in the automaton
 	 */
-	public abstract int getTransitionCount();
+	public abstract long getTransitionCount();
 
 	/**
 	 * @return the number of events in the automaton
 	 */
-	public abstract int getEventCount();
+	public abstract long getEventCount();
 
 	/**
 	 * removes the state from the automaton and all transitions leading to the
