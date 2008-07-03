@@ -171,6 +171,7 @@ public class CommonFileActions
 			File file = null;
 			do
 			{
+				fcDone = true;
 				retVal = fc.showSaveDialog(Hub.getMainWindow());
 				if (retVal != JFileChooser.APPROVE_OPTION)
 				{
@@ -357,6 +358,7 @@ public class CommonFileActions
 		File file = null;
 		do
 		{
+			fcDone = true;
 			retVal = fc.showSaveDialog(Hub.getMainWindow());
 			if (retVal != JFileChooser.APPROVE_OPTION)
 			{
@@ -512,6 +514,7 @@ public class CommonFileActions
 		File file = null;
 		do
 		{
+			fcDone = true;
 			retVal = fc.showSaveDialog(Hub.getMainWindow());
 			if (retVal != JFileChooser.APPROVE_OPTION)
 			{
@@ -710,6 +713,7 @@ public class CommonFileActions
 				File file = null;
 				do
 				{
+					fcDone = true;
 					retVal = fc.showSaveDialog(Hub.getMainWindow());
 					if (retVal != JFileChooser.APPROVE_OPTION)
 					{
