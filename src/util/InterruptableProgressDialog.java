@@ -36,6 +36,8 @@ public abstract class InterruptableProgressDialog extends EscapeDialog
 		implements Runnable
 {
 
+	private static final long serialVersionUID = -37342748827455631L;
+
 	/**
 	 * The default width of the options dialog
 	 */

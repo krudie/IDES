@@ -10,7 +10,7 @@ import model.fsa.FSAEvent;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event implements model.fsa.FSAEvent, Comparable
+public class Event implements model.fsa.FSAEvent, Comparable<FSAEvent>
 {
 	private long id;
 
@@ -148,7 +148,7 @@ public class Event implements model.fsa.FSAEvent, Comparable
 	 * 
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
-	public int compareTo(Object arg0)
+	public int compareTo(FSAEvent arg0)
 	{
 		return getSymbol().compareTo(((Event)arg0).getSymbol());
 	}

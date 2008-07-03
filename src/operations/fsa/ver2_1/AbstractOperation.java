@@ -25,12 +25,12 @@ public abstract class AbstractOperation implements Operation
 	protected String DESCRIPTION;
 
 	// WARNING - Ensure that input type and description always match!
-	protected Class[] inputType;
+	protected Class<?>[] inputType;
 
 	protected String[] inputDesc;
 
 	// WARNING - Ensure that output type and description always match!
-	protected Class[] outputType;
+	protected Class<?>[] outputType;
 
 	protected String[] outputDesc;
 
@@ -60,10 +60,10 @@ public abstract class AbstractOperation implements Operation
 	}
 
 	/**
-	 * Nuber of inputs for the operation. If it can handle an unbounded number
+	 * Number of inputs for the operation. If it can handle an unbounded number
 	 * of inputs, return -1.
 	 * 
-	 * @return nuber of inputs for the operation; -1 if unbounded
+	 * @return number of inputs for the operation; -1 if unbounded
 	 */
 	public int getNumberOfInputs()
 	{
@@ -86,7 +86,7 @@ public abstract class AbstractOperation implements Operation
 	 * @see #getNumberOfInputs()
 	 * @see #getDescriptionOfInputs()
 	 */
-	public Class[] getTypeOfInputs()
+	public Class<?>[] getTypeOfInputs()
 	{
 		return inputType;
 	}
@@ -110,9 +110,9 @@ public abstract class AbstractOperation implements Operation
 	}
 
 	/**
-	 * Nuber of outputs from the operation.
+	 * Number of outputs from the operation.
 	 * 
-	 * @return nuber of outputs from the operation
+	 * @return number of outputs from the operation
 	 */
 	public int getNumberOfOutputs()
 	{
@@ -130,7 +130,7 @@ public abstract class AbstractOperation implements Operation
 	 * @see #getNumberOfOutputs()
 	 * @see #getDescriptionOfOutputs()
 	 */
-	public Class[] getTypeOfOutputs()
+	public Class<?>[] getTypeOfOutputs()
 	{
 		return outputType;
 	}

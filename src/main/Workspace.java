@@ -668,7 +668,7 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		Vector<T> models = new Vector<T>();
 		for (DESModel m : systems)
 		{
-			Class[] ifaces = m.getModelDescriptor().getModelInterfaces();
+			Class<?>[] ifaces = m.getModelDescriptor().getModelInterfaces();
 			for (int i = 0; i < ifaces.length; ++i)
 			{
 				if (ifaces[i].equals(type))
@@ -699,7 +699,7 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		return activePresentations;
 	}
 
-	public Collection<Presentation> getPresentationsOfType(Class type)
+	public Collection<Presentation> getPresentationsOfType(Class<?> type)
 	{
 		Vector<Presentation> ps = new Vector<Presentation>();
 		for (Presentation p : activePresentations)

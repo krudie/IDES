@@ -19,15 +19,15 @@ public class IOPluginManager
 	// Singleton instance:
 	private static IOPluginManager instance = null;
 
-	private Map<Class, Set<FileIOPlugin>> metaSavers = null;
+	private Map<Class<?>, Set<FileIOPlugin>> metaSavers = null;
 
-	private Map<Class, FileIOPlugin> dataSavers = null;
+	private Map<Class<?>, FileIOPlugin> dataSavers = null;
 
 	private Map<String, FileIOPlugin> dataLoaders = null;
 
 	private Map<String, Map<String, FileIOPlugin>> metaLoaders = null;
 
-	private Map<Class, Set<ImportExportPlugin>> exporters = null;
+	private Map<Class<?>, Set<ImportExportPlugin>> exporters = null;
 
 	private Map<String, ImportExportPlugin> importers = null;
 
@@ -41,12 +41,12 @@ public class IOPluginManager
 
 	private IOPluginManager()
 	{
-		metaSavers = new HashMap<Class, Set<FileIOPlugin>>();
-		dataSavers = new HashMap<Class, FileIOPlugin>();
+		metaSavers = new HashMap<Class<?>, Set<FileIOPlugin>>();
+		dataSavers = new HashMap<Class<?>, FileIOPlugin>();
 		metaLoaders = new HashMap<String, Map<String, FileIOPlugin>>();
 		dataLoaders = new HashMap<String, FileIOPlugin>();
 		importers = new HashMap<String, ImportExportPlugin>();
-		exporters = new HashMap<Class, Set<ImportExportPlugin>>();
+		exporters = new HashMap<Class<?>, Set<ImportExportPlugin>>();
 	}
 
 	public static IOPluginManager getInstance()
@@ -65,7 +65,7 @@ public class IOPluginManager
 	 *            The datatype of the model, e.g.: "FSA" or "TemplateDesign"
 	 * @return
 	 */
-	public FileIOPlugin getDataSaver(Class type)
+	public FileIOPlugin getDataSaver(Class<?> type)
 	{
 		return dataSavers.get(type);
 	}
@@ -75,7 +75,7 @@ public class IOPluginManager
 	 * @param type - The datatype of the model, e.g.: "FSA" or "TemplateDesign"
 	 * @return
 	 */
-	public Set<FileIOPlugin> getMetaSavers(Class type)
+	public Set<FileIOPlugin> getMetaSavers(Class<?> type)
 	{
 		return metaSavers.get(type);
 	}
@@ -130,7 +130,7 @@ public class IOPluginManager
 	 * @param plugin
 	 * @param t
 	 */
-	public void registerDataSaver(FileIOPlugin plugin, Class t)
+	public void registerDataSaver(FileIOPlugin plugin, Class<?> t)
 	{
 		if (plugin != null)
 		{
@@ -168,7 +168,7 @@ public class IOPluginManager
 	 * @param t
 	 * @param m
 	 */
-	public void registerMetaSaver(FileIOPlugin plugin, Class t)
+	public void registerMetaSaver(FileIOPlugin plugin, Class<?> t)
 	{
 		if (plugin != null)
 		{
@@ -213,7 +213,7 @@ public class IOPluginManager
 	 * @param description
 	 * @param importsTo
 	 */
-	public void registerExport(ImportExportPlugin plugin, Class type)
+	public void registerExport(ImportExportPlugin plugin, Class<?> type)
 	{
 		if (plugin != null)
 		{
@@ -236,7 +236,7 @@ public class IOPluginManager
 	 * @param type
 	 * @return
 	 */
-	public Set<ImportExportPlugin> getExporters(Class t)
+	public Set<ImportExportPlugin> getExporters(Class<?> t)
 	{
 		return exporters.get(t);
 	}

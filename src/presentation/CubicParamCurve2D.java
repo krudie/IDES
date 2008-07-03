@@ -22,6 +22,8 @@ import java.awt.geom.Point2D;
 public class CubicParamCurve2D extends CubicCurve2D.Float
 {
 
+	private static final long serialVersionUID = 2275044234810964347L;
+
 	/**
 	 * Constructs and initializes a CubicCurve with coordinates (0, 0, 0, 0, 0,
 	 * 0).

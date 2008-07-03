@@ -22,7 +22,7 @@ public class SelectionGroup extends GraphElement
 	public SelectionGroup copy()
 	{
 		SelectionGroup copy = new SelectionGroup();
-		Iterator children = children();
+		Iterator<GraphElement> children = children();
 		while (children.hasNext())
 		{
 			copy.insert((GraphElement)children.next());

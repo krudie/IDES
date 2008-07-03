@@ -73,12 +73,12 @@ public class TemplateDesign implements TemplateModel
 			return "TemplateDesign";
 		}
 
-		public Class[] getModelInterfaces()
+		public Class<?>[] getModelInterfaces()
 		{
 			return new Class[] { TemplateModel.class };
 		}
 
-		public Class getPreferredModelInterface()
+		public Class<?> getPreferredModelInterface()
 		{
 			return TemplateModel.class;
 		}

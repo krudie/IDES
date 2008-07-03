@@ -22,7 +22,7 @@ public interface ModelDescriptor
 	 * 
 	 * @return all DES model interfaces this model implements
 	 */
-	public Class[] getModelInterfaces();
+	public Class<?>[] getModelInterfaces();
 
 	/**
 	 * Returns the "main" DES model interface to be used with the model. For
@@ -32,7 +32,7 @@ public interface ModelDescriptor
 	 * 
 	 * @return the interface for the main purpose of the model
 	 */
-	public Class getPreferredModelInterface();
+	public Class<?> getPreferredModelInterface();
 
 	/**
 	 * Returns a huma-readable description of the type of the model. For

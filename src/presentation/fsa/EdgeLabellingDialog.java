@@ -504,7 +504,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 			FSAEvent e = events.next();
 			if (!listAssignedEvents.getContents().contains(e))
 			{
-				listAvailableEvents.insertElement((Comparable)e);
+				listAvailableEvents.insertElement(e);
 			}
 		}
 		textField.setText("");
@@ -644,7 +644,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 			return (DefaultListModel)getModel();
 		}
 
-		void insertElement(Comparable o)
+		void insertElement(Comparable<?> o)
 		{
 			int i = findInsertionPoint(o);
 			getContents().insertElementAt(o, i);
@@ -741,11 +741,11 @@ public class EdgeLabellingDialog extends EscapeDialog
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{
-			Object selected = listAssignedEvents.getSelectedValue();
+			FSAEvent selected = (FSAEvent)listAssignedEvents.getSelectedValue();
 			if (selected != null)
 			{
 				listAssignedEvents.removeElement(selected);
-				listAvailableEvents.insertElement((Comparable)selected);
+				listAvailableEvents.insertElement(selected);
 				textField.setText("");
 			}
 		}

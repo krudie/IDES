@@ -129,7 +129,7 @@ TemplateSubscriber, Annotable
 		return model;
 	}
 
-	public Class getModelInterface()
+	public Class<?> getModelInterface()
 	{
 		return TemplateModel.class;
 	}

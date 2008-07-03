@@ -769,7 +769,7 @@ public class Composition
 	 */
 	private static FSAEvent getId(FSAEvent e, FSAModel a)
 	{
-		ListIterator eli = a.getEventIterator();
+		ListIterator<FSAEvent> eli = a.getEventIterator();
 		while (eli.hasNext())
 		{
 			FSAEvent temp = (FSAEvent)eli.next();

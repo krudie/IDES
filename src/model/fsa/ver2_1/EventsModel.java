@@ -15,13 +15,13 @@ import model.fsa.FSAModel;
 public class EventsModel implements FSAEventsModel
 {
 
-	public Set getGlobalEvents()
+	public Set<FSAEvent> getGlobalEvents()
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Set getLocalEvents(FSAModel fsa)
+	public Set<FSAEvent> getLocalEvents(FSAModel fsa)
 	{
 		// TODO Auto-generated method stub
 		return null;

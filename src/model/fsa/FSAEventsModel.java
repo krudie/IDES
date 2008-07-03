@@ -16,7 +16,7 @@ public interface FSAEventsModel
 	 * 
 	 * @return set of events in the global alphabet
 	 */
-	public Set getGlobalEvents();
+	public Set<FSAEvent> getGlobalEvents();
 
 	/**
 	 * Returns the set of events local to the given fsa.
@@ -25,7 +25,7 @@ public interface FSAEventsModel
 	 *            the fsa for which to retrieve events
 	 * @return set of events in the global alphabet
 	 */
-	public Set getLocalEvents(FSAModel fsa);
+	public Set<FSAEvent> getLocalEvents(FSAModel fsa);
 
 	/**
 	 * Adds the given event to the global alphabet.

@@ -125,12 +125,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	protected static class AutomatonDescriptor implements ModelDescriptor
 	{
-		public Class[] getModelInterfaces()
+		public Class<?>[] getModelInterfaces()
 		{
 			return new Class[] { FSAModel.class, FSASupervisor.class };
 		}
 
-		public Class getPreferredModelInterface()
+		public Class<?> getPreferredModelInterface()
 		{
 			return FSAModel.class;
 		}

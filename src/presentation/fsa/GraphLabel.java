@@ -31,7 +31,7 @@ import util.BentoBox;
 /**
  * @author helen bretzke
  */
-@SuppressWarnings("serial")
+
 public class GraphLabel extends GraphElement
 {
 	// SJW - The bounds should be calculated on the fly

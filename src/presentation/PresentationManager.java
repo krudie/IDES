@@ -29,7 +29,7 @@ public class PresentationManager
 	 * {@link DESModel} interface and the value is the corresponding
 	 * {@link Toolset}.
 	 */
-	protected static Hashtable<Class, Toolset> class2Toolset = new Hashtable<Class, Toolset>();
+	protected static Hashtable<Class<?>, Toolset> class2Toolset = new Hashtable<Class<?>, Toolset>();
 
 	/**
 	 * Returns the {@link Toolset} registered for the given {@link DESModel}
@@ -41,7 +41,7 @@ public class PresentationManager
 	 *         interface; <code>null</code> if no {@link Toolset} is
 	 *         registered for this interface
 	 */
-	public static Toolset getToolset(Class modelType)
+	public static Toolset getToolset(Class<?> modelType)
 	{
 		return class2Toolset.get(modelType);
 	}
@@ -57,7 +57,7 @@ public class PresentationManager
 	 *            interface
 	 */
 	// TODO discover the type of toolset through reflection mechanisms
-	public static void registerToolset(Class modelType, Toolset ts)
+	public static void registerToolset(Class<?> modelType, Toolset ts)
 	{
 		class2Toolset.put(modelType, ts);
 	}

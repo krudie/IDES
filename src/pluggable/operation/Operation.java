@@ -54,7 +54,7 @@ public interface Operation
 	 * @see #getNumberOfInputs()
 	 * @see #getDescriptionOfInputs()
 	 */
-	public abstract Class[] getTypeOfInputs();
+	public abstract Class<?>[] getTypeOfInputs();
 
 	/**
 	 * User-readable and understandable description for each input argument. If
@@ -89,7 +89,7 @@ public interface Operation
 	 * @see #getNumberOfOutputs()
 	 * @see #getDescriptionOfOutputs()
 	 */
-	public abstract Class[] getTypeOfOutputs();
+	public abstract Class<?>[] getTypeOfOutputs();
 
 	/**
 	 * User-readable and understandable description for each output argument.

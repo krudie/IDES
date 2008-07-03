@@ -303,7 +303,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 		return fsa;
 	}
 
-	public Class getModelInterface()
+	public Class<?> getModelInterface()
 	{
 		return FSAModel.class;
 	}

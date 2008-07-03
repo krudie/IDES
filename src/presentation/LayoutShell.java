@@ -35,7 +35,7 @@ public interface LayoutShell
 	 * @return the interface used by the shell to interact with the wrapped
 	 *         {@link DESModel}.
 	 */
-	public Class getModelInterface();
+	public Class<?> getModelInterface();
 
 	/**
 	 * Releases any resources used to wrap the model. For example, the shell

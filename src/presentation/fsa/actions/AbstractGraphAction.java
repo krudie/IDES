@@ -11,6 +11,8 @@ import services.undo.UndoManager;
 public abstract class AbstractGraphAction extends AbstractAction
 {
 
+	private static final long serialVersionUID = 8575309066575932944L;
+
 	protected CompoundEdit parentEdit = null;
 
 	protected boolean usePluralDescription = false;

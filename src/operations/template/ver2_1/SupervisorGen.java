@@ -68,12 +68,12 @@ public class SupervisorGen implements Operation
 		return 2;
 	}
 
-	public Class[] getTypeOfInputs()
+	public Class<?>[] getTypeOfInputs()
 	{
 		return new Class[] { TemplateModel.class };
 	}
 
-	public Class[] getTypeOfOutputs()
+	public Class<?>[] getTypeOfOutputs()
 	{
 		// TODO Auto-generated method stub
 		return null;

@@ -132,7 +132,7 @@ public class CircleNode extends Node
 		}
 
 		// only calls draw on all of the outgoing edges
-		Iterator c = children();
+		Iterator<GraphElement> c = children();
 		while (c.hasNext())
 		{
 			try
@@ -371,7 +371,7 @@ public class CircleNode extends Node
 	@Override
 	public Iterator<Edge> adjacentEdges()
 	{
-		Iterator children = children();
+		Iterator<GraphElement> children = children();
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		while (children.hasNext())
 		{

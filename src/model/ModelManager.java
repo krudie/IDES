@@ -27,7 +27,7 @@ public class ModelManager
 	 * 
 	 * @see #registerModel(ModelDescriptor)
 	 */
-	protected static Hashtable<Class, Set<ModelDescriptor>> class2Model = new Hashtable<Class, Set<ModelDescriptor>>();
+	protected static Hashtable<Class<?>, Set<ModelDescriptor>> class2Model = new Hashtable<Class<?>, Set<ModelDescriptor>>();
 
 	/**
 	 * Creates and returns a DES model for the supplied interface, with the
@@ -78,7 +78,7 @@ public class ModelManager
 	 * @return the model descriptors of all models that implement the interface
 	 * @see #getAllModels()
 	 */
-	public static ModelDescriptor[] getModelsForInterface(Class iface)
+	public static ModelDescriptor[] getModelsForInterface(Class<?> iface)
 	{
 		return class2Model.get(iface).toArray(new ModelDescriptor[0]);
 	}
@@ -117,7 +117,7 @@ public class ModelManager
 	 */
 	public static void registerModel(ModelDescriptor md)
 	{
-		Class[] ifaces = md.getModelInterfaces();
+		Class<?>[] ifaces = md.getModelInterfaces();
 		for (int i = 0; i < ifaces.length; ++i)
 		{
 			Set<ModelDescriptor> set;

@@ -952,7 +952,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 
 		if (eventNames != null)
 		{
-			Iterator iter = eventNames.iterator();
+			Iterator<String> iter = eventNames.iterator();
 			while (iter.hasNext())
 			{
 				s += (String)iter.next();
