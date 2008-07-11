@@ -4,6 +4,9 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -32,6 +35,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -44,6 +48,7 @@ import pluggable.ui.UIDescriptor;
 import presentation.Presentation;
 import presentation.fsa.ContextAdaptorHack;
 import services.latex.LatexManager;
+import services.notice.NoticeBoard;
 import services.undo.UndoManager;
 import ui.actions.EditActions;
 import ui.actions.FileActions;
@@ -117,7 +122,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 		createAndAddMainPane();
 
 		// TODO add graph spec, latex and eps views to the state model
-		getContentPane().add(new StatusBar(), BorderLayout.SOUTH);
+		statusBar=new StatusBar();
+		getContentPane().add(statusBar, BorderLayout.SOUTH);
 
 		setupActions();
 		createAndAddMenuBar();
@@ -164,9 +170,12 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 				{
 					return;
 				}
-				Hub.getWorkspace().getActiveModel().setAnnotation(UI_SETTINGS,
+				if(Hub.getWorkspace().getActiveModel()!=null)
+				{
+					Hub.getWorkspace().getActiveModel().setAnnotation(UI_SETTINGS,
 						new UILayout(tabbedViews.getSelectedIndex(), rightViews
 								.getSelectedIndex()));
+				}
 			}
 		};
 		tabbedViews = new JTabbedPane();
@@ -475,12 +484,11 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 
 	private JSplitPane tabsAndRight;
 
-	// private GraphDrawingView drawingBoard;
-	private FilmStrip filmStrip; // thumbnails of graphs for all open
-
-	// machines in the workspace
+	private FilmStrip filmStrip; // thumbnails of graphs for all open machines in the workspace
 
 	private JToolBar toolbar;
+	
+	private StatusBar statusBar;
 
 	public FilmStrip getFilmStrip()
 	{
@@ -548,6 +556,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 	 */
 	private void reconfigureUI()
 	{
+		rightViews.add(NoticeBoard.instance().getName(),NoticeBoard.instance());
 		if (Hub.getWorkspace().getActiveModel() == null)
 		{
 			zoom.setEnabled(false);
@@ -613,6 +622,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 		Hub.persistentData.setInt("mainWindowHeight", r.height);
 		Hub.persistentData.setInt("mainWindowPosX", r.x);
 		Hub.persistentData.setInt("mainWindowPosY", r.y);
+		storeDividerLocations();
 		super.dispose();
 	}
 
@@ -626,7 +636,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 		return rightViews;
 	}
 
-	public void aboutToRearrangeViews()
+	protected void storeDividerLocations()
 	{
 		if (rightViews.getComponentCount() != 0)
 		{
@@ -637,6 +647,11 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 					/ (tabsAndRight.getMaximumDividerLocation() - tabsAndRight
 							.getMinimumDividerLocation())));
 		}
+	}
+	
+	public void aboutToRearrangeViews()
+	{
+		storeDividerLocations();
 	}
 
 	public void arrangeViews()
@@ -653,5 +668,36 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 					* (tabsAndRight.getMaximumDividerLocation() - tabsAndRight
 							.getMinimumDividerLocation())));
 		}
+	}
+	
+	public void activateRightTab(String title)
+	{
+		class TabActivator implements Runnable
+		{
+			private String title;
+			public TabActivator(String title)
+			{
+				this.title=title;
+			}
+			public void run()
+			{
+				int idx=-1;
+				for(int i=0;i<rightViews.getTabCount();++i)
+				{
+					if(rightViews.getTitleAt(i).equals(title))
+					{
+						idx=i;
+						break;
+					}
+				}
+				rightViews.setSelectedIndex(idx);
+			}
+		}
+		SwingUtilities.invokeLater(new TabActivator(title));
+	}
+	
+	public StatusBar getStatusBar()
+	{
+		return statusBar;
 	}
 }

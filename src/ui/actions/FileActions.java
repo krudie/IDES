@@ -22,6 +22,7 @@ import model.DESModel;
 import model.ModelManager;
 import model.fsa.FSAModel;
 import presentation.LayoutShell;
+import services.notice.NoticeManager;
 
 /**
  * @author Lenko Grigorov

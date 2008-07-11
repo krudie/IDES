@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import services.notice.NoticePopup;
+
 import main.Hub;
 import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
@@ -49,7 +51,6 @@ public class StatusBar extends JPanel implements FSASubscriber,
 		add(Box.createRigidArea(new Dimension(5, 0)));
 		add(statsLabel);
 		add(Box.createHorizontalGlue());
-		// add(labelBox);
 	}
 
 	private void refreshActiveModel()

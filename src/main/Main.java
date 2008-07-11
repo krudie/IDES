@@ -40,6 +40,8 @@ import presentation.PresentationManager;
 import presentation.fsa.FSAToolset;
 import services.cache.Cache;
 import services.latex.LatexManager;
+import services.notice.NoticeManager;
+import services.notice.NoticePopup;
 import services.undo.UndoManager;
 import ui.MainWindow;
 
@@ -86,7 +88,7 @@ public class Main
 		// set up global exception handler
 		// TODO uncomment this line before shipping. Default exception handler
 		// disabled for debugging. -- CLM
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+//		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 
 		// load resource with strings used in the program
 		try
@@ -113,9 +115,6 @@ public class Main
 			System.exit(3);
 		}
 
-		Cache.init();
-		UndoManager.init();
-
 		try
 		{
 			if (UIManager.getSystemLookAndFeelClassName() == "com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
@@ -135,6 +134,11 @@ public class Main
 		// DEBUG: remove eventually
 		// for(Object o:UIManager.getLookAndFeelDefaults().keySet())
 		// System.out.println(o.toString());
+
+
+		Cache.init();
+		UndoManager.init();
+		NoticeManager.init();
 
 		// setup main window
 		Hub.setMainWindow(new MainWindow());
@@ -167,6 +171,7 @@ public class Main
 
 		// setup stuff that needs the main window
 		LatexManager.init();
+		NoticePopup.init();
 
 		FSAModel fsa = ModelManager.createModel(FSAModel.class, Hub
 				.string("newModelName"));
@@ -211,6 +216,8 @@ public class Main
 		}
 
 		// store settings
+		NoticePopup.cleanup();
+		NoticeManager.cleanup();
 		Cache.close();
 		Hub.getMainWindow().dispose();
 		Hub.storePersistentData();
