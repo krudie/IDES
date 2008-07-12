@@ -13,7 +13,7 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
-import presentation.PresentationManager;
+import pluggable.ui.ToolsetManager;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 
@@ -68,7 +68,7 @@ public class LatexPlugin implements ImportExportPlugin
 		try
 		{
 			FSAModel a = (FSAModel)IOCoordinator.getInstance().load(src);
-			FSAGraph graphModel = (FSAGraph)PresentationManager
+			FSAGraph graphModel = (FSAGraph)ToolsetManager
 					.getToolset(FSAModel.class).wrapModel(a);
 			ps = new PrintStream(dst);
 			GraphExporter.createPSTricksFileContents(graphModel, ps);

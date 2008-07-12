@@ -117,8 +117,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			gridToggle.set(b);
 			if (b)
 			{
-				MainWindow mw = (MainWindow)Hub.getMainWindow();
-				mw.getZoomControl().setZoom(1);
+				Hub.getUIShell().getZoomControl().setZoom(1);
 			}
 			invalidate();
 			Hub.getWorkspace().fireRepaintRequired();
@@ -342,7 +341,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			scrollRectToVisible(canvasSettings.viewport);
 			canvasSettings = null;
 		}
-		scaleFactor = ((MainWindow)Hub.getMainWindow())
+		scaleFactor = Hub.getUIShell()
 				.getZoomControl().getZoom();
 		if (scaleFactor != 1)
 		{
@@ -887,13 +886,13 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		if (canvasSettings != null)
 		{
 			setShowGrid(canvasSettings.gridOn);
-			((MainWindow)Hub.getMainWindow())
+			Hub.getUIShell()
 					.getZoomControl().setZoom(canvasSettings.zoom);
 		}
 		else
 		{
 			setShowGrid(false);
-			((MainWindow)Hub.getMainWindow()).getZoomControl().setZoom(1);
+			Hub.getUIShell().getZoomControl().setZoom(1);
 		}
 		uiInteraction = false;
 	}

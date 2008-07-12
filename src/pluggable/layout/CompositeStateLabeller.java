@@ -24,7 +24,7 @@ public class CompositeStateLabeller
 					.getAnnotation(Annotable.COMPOSED_OF)).length];
 			for (int i = 0; i < gs.length; ++i)
 			{
-				DESModel m = Hub.getWorkspace().getModelById(((String[])fsa
+				DESModel m = Hub.getWorkspace().getModel(((String[])fsa
 						.getAnnotation(Annotable.COMPOSED_OF))[i]);
 				if (m == null || !(m instanceof FSAModel))
 				{
@@ -58,7 +58,7 @@ public class CompositeStateLabeller
 		}
 		else if (((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length == 1)
 		{
-			DESModel m = Hub.getWorkspace().getModelById(((String[])fsa
+			DESModel m = Hub.getWorkspace().getModel(((String[])fsa
 					.getAnnotation(Annotable.COMPOSED_OF))[0]);
 			if (m == null || !(m instanceof FSAModel))
 			{

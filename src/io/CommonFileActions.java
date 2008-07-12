@@ -333,7 +333,7 @@ public class CommonFileActions
 		fc.setSelectedFile(new File(model.getName()));
 		Iterator<ImportExportPlugin> pluginIt = IOPluginManager
 				.getInstance().getExporters(model
-						.getModelDescriptor().getPreferredModelInterface())
+						.getModelType().getMainInterface())
 				.iterator();
 		while (pluginIt.hasNext())
 		{
@@ -369,7 +369,7 @@ public class CommonFileActions
 			String extPlugin = "";
 			Set<ImportExportPlugin> plugins = IOPluginManager
 					.getInstance().getExporters(model
-							.getModelDescriptor().getPreferredModelInterface());
+							.getModelType().getMainInterface());
 			for (ImportExportPlugin p : plugins)
 			{
 				if (p.getDescription().equals(fc

@@ -7,6 +7,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -41,6 +43,7 @@ import javax.swing.event.ChangeListener;
 
 import main.Hub;
 import main.Main;
+import main.UIShell;
 import main.Workspace;
 import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
@@ -63,7 +66,7 @@ import ui.actions.OptionsActions;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class MainWindow extends JFrame implements WorkspaceSubscriber
+public class MainWindow extends JFrame implements WorkspaceSubscriber,UIShell
 {
 
 	/**
@@ -536,7 +539,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 	 * 
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 	}
 
@@ -556,6 +559,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 	 */
 	private void reconfigureUI()
 	{
+		tabbedViews.removeAll();
+		rightViews.removeAll();
 		rightViews.add(NoticeBoard.instance().getName(),NoticeBoard.instance());
 		if (Hub.getWorkspace().getActiveModel() == null)
 		{
@@ -626,30 +631,19 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 		super.dispose();
 	}
 
-	public JTabbedPane getMainPane()
-	{
-		return tabbedViews;
-	}
-
-	public JTabbedPane getRightPane()
-	{
-		return rightViews;
-	}
-
 	protected void storeDividerLocations()
 	{
 		if (rightViews.getComponentCount() != 0)
 		{
+			Point p=new Point(tabsAndRight.getDividerLocation(),0);
+			p=SwingUtilities.convertPoint(tabsAndRight,p,this);
 			// apply Math.ceil to avoid "creeping" of the divider
 			Hub.persistentData.setInt("rightViewExt", (int)Math.ceil(1000
-					* (float)(tabsAndRight.getDividerLocation() - tabsAndRight
-							.getMinimumDividerLocation())
-					/ (tabsAndRight.getMaximumDividerLocation() - tabsAndRight
-							.getMinimumDividerLocation())));
+					* (float)(p.x)/getWidth()));
 		}
 	}
 	
-	public void aboutToRearrangeViews()
+	public void aboutToRearrangeWorkspace()
 	{
 		storeDividerLocations();
 	}
@@ -663,13 +657,32 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 		else
 		{
 			float ext = Hub.persistentData.getInt("rightViewExt", 750) / 1000f;
-			tabsAndRight.setDividerLocation((int)(tabsAndRight
-					.getMinimumDividerLocation() + ext
-					* (tabsAndRight.getMaximumDividerLocation() - tabsAndRight
-							.getMinimumDividerLocation())));
+			Point p=new Point((int)(ext*getWidth()),0);
+			p=SwingUtilities.convertPoint(this,p,tabsAndRight);
+			tabsAndRight.setDividerLocation(p.x);
 		}
 	}
 	
+	public void activateNotices()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				int idx=-1;
+				for(int i=0;i<rightViews.getTabCount();++i)
+				{
+					if(rightViews.getTitleAt(i).equals(Hub.string("noticeTab")))
+					{
+						idx=i;
+						break;
+					}
+				}
+				rightViews.setSelectedIndex(idx);				
+			}
+		});
+	}
+
 	public void activateRightTab(String title)
 	{
 		class TabActivator implements Runnable
@@ -699,5 +712,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber
 	public StatusBar getStatusBar()
 	{
 		return statusBar;
+	}
+	
+	public Frame getWindow()
+	{
+		return this;
 	}
 }

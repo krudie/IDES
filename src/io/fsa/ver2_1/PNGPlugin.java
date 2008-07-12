@@ -21,8 +21,8 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
+import pluggable.ui.ToolsetManager;
 import presentation.GraphicalLayout;
-import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
 
 /**
@@ -83,7 +83,7 @@ public class PNGPlugin implements ImportExportPlugin
 		boolean useFrame = Hub.persistentData
 				.getBoolean(GraphExporter.STR_EXPORT_PROP_USE_FRAME);
 
-		FSAGraph graph = (FSAGraph)PresentationManager
+		FSAGraph graph = (FSAGraph)ToolsetManager
 				.getToolset(FSAModel.class).wrapModel(a);
 		Rectangle bounds = graph.getBounds(false);
 		if (bounds.height == 0 || bounds.width == 0)

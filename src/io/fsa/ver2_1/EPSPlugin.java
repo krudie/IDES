@@ -12,7 +12,7 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
-import presentation.PresentationManager;
+import pluggable.ui.ToolsetManager;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 import services.latex.LatexRenderException;
@@ -64,7 +64,7 @@ public class EPSPlugin implements ImportExportPlugin
 		try
 		{
 			FSAModel a = (FSAModel)IOCoordinator.getInstance().load(src);
-			FSAGraph graphModel = (FSAGraph)PresentationManager
+			FSAGraph graphModel = (FSAGraph)ToolsetManager
 					.getToolset(FSAModel.class).wrapModel(a);
 			String fileContents = GraphExporter
 					.createEPSFileContents(graphModel);

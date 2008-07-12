@@ -3,6 +3,7 @@ package presentation.template;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
@@ -146,7 +147,7 @@ public class BlockLayout extends GraphicalLayout
 
 	protected void recomputeBounds()
 	{
-		JFrame mainWindow = Hub.getMainWindow();
+		Frame mainWindow = Hub.getMainWindow();
 		Graphics mainGraphics = mainWindow.getGraphics();
 		FontMetrics mainMetrics = mainGraphics.getFontMetrics(font);
 		textOffX = -mainMetrics.stringWidth(getText()) / 2f;

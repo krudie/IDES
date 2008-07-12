@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Point;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -14,6 +15,7 @@ import java.util.ResourceBundle;
 import javax.swing.JFrame;
 
 import pluggable.ui.OptionsPane;
+import ui.MainWindow;
 import ui.OptionsWindow;
 
 /**
@@ -54,9 +56,9 @@ public class Hub
 	/**
 	 * The main window of the application.
 	 * 
-	 * @see #setMainWindow(JFrame)
+	 * @see #setUIShell(UIShell)
 	 */
-	private static JFrame mainWindow = null;
+	private static UIShell mainWindow = null;
 
 	/**
 	 * Gets from the resource bundle {@link #stringResource} the string which
@@ -171,13 +173,13 @@ public class Hub
 	}
 
 	/**
-	 * Sets the main window (JFrame) of the application so that it is accessible
+	 * Sets the main window of the application so that it is accessible
 	 * to other parts of the software.
 	 * 
 	 * @param window
 	 *            the main window
 	 */
-	static void setMainWindow(JFrame window)
+	static void setUIShell(UIShell window)
 	{
 		mainWindow = window;
 	}
@@ -187,7 +189,17 @@ public class Hub
 	 * 
 	 * @return the main window
 	 */
-	public static JFrame getMainWindow()
+	public static Frame getMainWindow()
+	{
+		return mainWindow.getWindow();
+	}
+
+	/**
+	 * Gets the UI services provided by the main window of the application.
+	 * 
+	 * @return the UI services of the main window
+	 */
+	public static UIShell getUIShell()
 	{
 		return mainWindow;
 	}

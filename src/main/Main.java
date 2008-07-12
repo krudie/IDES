@@ -36,7 +36,7 @@ import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
 import operations.fsa.ver2_1.Trim;
 import pluggable.operation.OperationManager;
-import presentation.PresentationManager;
+import pluggable.ui.ToolsetManager;
 import presentation.fsa.FSAToolset;
 import services.cache.Cache;
 import services.latex.LatexManager;
@@ -141,7 +141,7 @@ public class Main
 		NoticeManager.init();
 
 		// setup main window
-		Hub.setMainWindow(new MainWindow());
+		Hub.setUIShell(new MainWindow());
 
 		// TODO: move operation inits to the plugin manager eventually
 		// /TODO: move the initialization of the plugins to the plugin manager
@@ -152,7 +152,7 @@ public class Main
 		// PresentationManager.registerToolset(TemplateModel.class, new
 		// TemplateToolset());
 		ModelManager.registerModel(Automaton.myDescriptor);
-		PresentationManager.registerToolset(FSAModel.class, new FSAToolset());
+		ToolsetManager.registerToolset(FSAModel.class, new FSAToolset());
 		OperationManager.register(new Meet());
 		OperationManager.register(new SynchronousProduct());
 		OperationManager.register(new Projection());

@@ -4,9 +4,9 @@
 package main;
 
 /**
- * Message sent by <code>WorkspacePublisher<code>s to classes that implement 
- * WorkspaceSubscriber i.e. that subscribe to change notifications
- * from a workspace containing multiple discrete event system models.
+ * Message sent by {@link Workspace} to classes that implement 
+ * {@link WorkspaceSubscriber} i.e. that subscribe to change notifications
+ * from the workspace containing multiple discrete event system models.
  * 
  * @author Helen Bretzke
  */
@@ -22,74 +22,46 @@ public class WorkspaceMessage
 
 	public static final int MODIFY = 2;
 
-	/**
-	 * If changes occurred in the display or an opened model.
-	 */
-	public static final int DISPLAY = 0;
-
-	public static final int MODEL = 1;
-
-	/**
-	 * Indicates the model type or general DISPLAY has been changed. TODO need a
-	 * better name for this field
-	 */
-	private int type;
-
-	/** ID of the model changed; does not apply to display changes */
-	private String idString;
+	/** Name of the model changed, if a specific model */
+	private String modelName;
 
 	/** the type of workspace event that occurred */
 	private int eventType;
-
-	/** the publisher that sent this message */
-	private WorkspacePublisher source;
 
 	/** a description of the event fired */
 	private String messageText;
 
 	/**
-	 * Creates a change notification message for the given model type, model id,
-	 * event type, source and descriptive text.
+	 * Creates a change notification message for the given model,
+	 * event type and descriptive text.
 	 * 
-	 * @param type
-	 *            MODEL or DISPLAY
-	 * @param id
-	 *            the model's id, ignored if display changed
+	 * @param name
+	 *            the model's name
 	 * @param eventType
 	 *            ADD, REMOVE or MODIFY
-	 * @param source
-	 *            sender of notification
 	 * @param messageText
 	 *            descriptive message as a string
 	 */
-	public WorkspaceMessage(int type, String id, int eventType,
-			WorkspacePublisher source, String messageText)
+	public WorkspaceMessage(String name, int eventType, String messageText)
 	{
 		super();
-		this.type = type;
-		this.idString = id;
+		this.modelName = name;
 		this.eventType = eventType;
-		this.source = source;
 		this.messageText = messageText;
 	}
 
 	/**
-	 * Creates a change notification message for the given model type, model id,
-	 * event type, and source. Descriptive text is blank.
+	 * Creates a change notification message for the given model and
+	 * event type. Descriptive text is blank.
 	 * 
-	 * @param type
-	 *            MODEL or DISPLAY
-	 * @param id
-	 *            the model's id, ignored if display changed
+	 * @param name
+	 *            the model's name
 	 * @param eventType
 	 *            ADD, REMOVE or MODIFY
-	 * @param source
-	 *            sender of notification
 	 */
-	public WorkspaceMessage(int type, String id, int eventType,
-			WorkspacePublisher source)
+	public WorkspaceMessage(String name, int eventType)
 	{
-		this(type, id, eventType, source, "");
+		this(name, eventType, "");
 	}
 
 	/**
@@ -103,13 +75,13 @@ public class WorkspaceMessage
 	}
 
 	/**
-	 * Returns the id of the model that was changed.
+	 * Returns the name of the model that was changed.
 	 * 
-	 * @return the id of the model that was changed
+	 * @return the name of the model that was changed
 	 */
-	public String getIdString()
+	public String getModelName()
 	{
-		return idString;
+		return modelName;
 	}
 
 	/**
@@ -121,26 +93,4 @@ public class WorkspaceMessage
 	{
 		return messageText;
 	}
-
-	/**
-	 * Returns the workspace publisher that sent this message.
-	 * 
-	 * @return the workspace publisher that sent this message
-	 */
-	public WorkspacePublisher getSource()
-	{
-		return source;
-	}
-
-	/**
-	 * Returns the type of entity that was changed; either model type or
-	 * display.
-	 * 
-	 * @return the type of entity that was changed by the event
-	 */
-	public int getType()
-	{
-		return type;
-	}
-
 }

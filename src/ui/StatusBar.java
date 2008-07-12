@@ -103,7 +103,7 @@ public class StatusBar extends JPanel implements FSASubscriber,
 	 * 
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 	}
 
@@ -159,5 +159,9 @@ public class StatusBar extends JPanel implements FSASubscriber,
 	public void modelNameChanged(DESModelMessage msg)
 	{
 		refreshStatusLabel();
+	}
+
+	public void aboutToRearrangeWorkspace()
+	{
 	}
 }

@@ -19,10 +19,10 @@ import model.DESModelSubscriber;
 import pluggable.io.FileLoadException;
 import pluggable.io.IOCoordinator;
 import pluggable.ui.Toolset;
+import pluggable.ui.ToolsetManager;
 import pluggable.ui.UIDescriptor;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.PresentationManager;
 import services.latex.LatexManager;
 import ui.MainWindow;
 
@@ -31,8 +31,7 @@ import ui.MainWindow;
  * 
  * @author Lenko Grigorov
  */
-public class Workspace extends WorkspacePublisherAdaptor implements
-		DESModelSubscriber
+public class Workspace implements DESModelSubscriber
 {
 
 	// needed for special handling of first (automatic) add and first
@@ -114,10 +113,8 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		graphs.add(g);
 
 		fireModelCollectionChanged(new WorkspaceMessage(
-				WorkspaceMessage.MODEL,
-				g.getModel().getId(),
-				WorkspaceMessage.ADD,
-				this));
+				g.getModel().getName(),
+				WorkspaceMessage.ADD));
 
 		// setActiveModel(systems.elementAt(systems.size()-1).getName());
 
@@ -160,8 +157,8 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		Hub.getMainWindow().setCursor(Cursor
 				.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		systems.add(model);
-		Toolset ts = PresentationManager.getToolset(model
-				.getModelDescriptor().getPreferredModelInterface());
+		Toolset ts = ToolsetManager.getToolset(model
+				.getModelType().getMainInterface());
 		// TODO Check the efficiency of the wrapModel function
 		boolean latexOn = LatexManager.isLatexEnabled();
 		if (latexOn)
@@ -177,10 +174,8 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		graphs.add(ls);
 
 		fireModelCollectionChanged(new WorkspaceMessage(
-				WorkspaceMessage.MODEL,
-				model.getId(),
-				WorkspaceMessage.ADD,
-				this));
+				model.getName(),
+				WorkspaceMessage.ADD));
 		model.modelSaved();
 		if (countAdd != 0)
 		{
@@ -210,30 +205,6 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 			return null;
 		}
 		return systems.elementAt(idx);
-	}
-
-	public DESModel getModelById(String id)
-	{
-		for (int i = 0; i < systems.size(); ++i)
-		{
-			if (systems.elementAt(i).getId().equals(id))
-			{
-				return systems.elementAt(i);
-			}
-		}
-		return null;
-	}
-
-	public LayoutShell getLayoutShellById(String id)
-	{
-		for (int i = 0; i < systems.size(); ++i)
-		{
-			if (systems.elementAt(i).getId().equals(id))
-			{
-				return graphs.elementAt(i);
-			}
-		}
-		return null;
 	}
 
 	public LayoutShell getLayoutShell(String name)
@@ -313,10 +284,8 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		}
 
 		fireModelCollectionChanged(new WorkspaceMessage(
-				WorkspaceMessage.MODEL,
-				fsa.getId(),
-				WorkspaceMessage.REMOVE,
-				this));
+				fsa.getName(),
+				WorkspaceMessage.REMOVE));
 
 		dirty = true;
 	}
@@ -360,10 +329,6 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 	 */
 	protected void releaseEditPanes()
 	{
-		// FIXME the obtainment of the tabbed pane is ugly
-		JTabbedPane tabs = ((MainWindow)Hub.getMainWindow()).getMainPane();
-		tabs.removeAll();
-		((MainWindow)Hub.getMainWindow()).getRightPane().removeAll();
 		for (Presentation p : activePresentations)
 		{
 			p.release();
@@ -379,7 +344,7 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 	 */
 	public void setActiveModel(String name)
 	{
-		((MainWindow)Hub.getMainWindow()).aboutToRearrangeViews();
+		fireAboutToRearrangeWorkspace();
 		releaseEditPanes();
 		if (name == null)
 		{
@@ -388,13 +353,10 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		else
 		{
 			activeModelIdx = getModelIndex(name);
-			// // FIXME the obtainment of the tabbed pane is ugly
-			// JTabbedPane tabs=((MainWindow)Hub.getMainWindow()).getMainPane();
-			// JTabbedPane
-			// right=((MainWindow)Hub.getMainWindow()).getRightPane();
-			Toolset ts = PresentationManager.getToolset(systems
-					.elementAt(activeModelIdx).getModelDescriptor()
-					.getPreferredModelInterface());
+
+			Toolset ts = ToolsetManager.getToolset(systems
+					.elementAt(activeModelIdx).getModelType()
+					.getMainInterface());
 			activeUID = ts.getUIElements(getActiveLayoutShell());
 			activePresentations = new LinkedList<Presentation>();
 			Presentation[] ps = activeUID.getMainPanePresentations();
@@ -403,25 +365,17 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 			{
 				activePresentations.add(ps[i]);
 			}
-			// for(Presentation p:activePresentations)
-			// {
-			// tabs.add(p.getName(),p.getGUI());
-			// }
+
 			ps = activeUID.getRightPanePresentations();
 			for (int i = 0; i < ps.length; ++i)
 			{
-				// right.add(ps[i].getName(),ps[i].getGUI());
 				activePresentations.add(ps[i]);
 			}
-			// }
-			// ((MainWindow)Hub.getMainWindow()).arrangeViews();
 		}
 		// TODO change name to fsa.id for consistency with add and remove
 		fireModelSwitched(new WorkspaceMessage(
-				WorkspaceMessage.MODEL,
 				name,
-				WorkspaceMessage.MODIFY,
-				this));
+				WorkspaceMessage.MODIFY));
 	}
 
 	/**
@@ -543,16 +497,11 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 				}
 			}
 		}
-		// Hey LENKO! what is the nature of this change? Everything appears to
-		// have changed...
 		fireModelCollectionChanged(new WorkspaceMessage(
-				WorkspaceMessage.MODEL,
-				"everything changed?",
-				WorkspaceMessage.MODIFY,
-				this));
+				"",
+				WorkspaceMessage.MODIFY));
 
 		setActiveModel(selectedModel);
-		// notifyAllSubscribers();
 		setDirty(false);
 	}
 
@@ -668,7 +617,7 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		Vector<T> models = new Vector<T>();
 		for (DESModel m : systems)
 		{
-			Class<?>[] ifaces = m.getModelDescriptor().getModelInterfaces();
+			Class<?>[] ifaces = m.getModelType().getModelInterfaces();
 			for (int i = 0; i < ifaces.length; ++i)
 			{
 				if (ifaces[i].equals(type))
@@ -712,12 +661,6 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		return ps;
 	}
 
-	@Override
-	public void fireRepaintRequired()
-	{
-		super.fireRepaintRequired();
-	}
-
 	public void saveStatusChanged(DESModelMessage message)
 	{
 
@@ -727,4 +670,84 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 	{
 		setDirty(true);
 	}
+	
+	// List of subscribers to be notified of change events
+	private ArrayList<WorkspaceSubscriber> subscribers =new ArrayList<WorkspaceSubscriber>();
+
+	/**
+	 * Attaches the given subscriber to this publisher. The given subscriber
+	 * will receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void addSubscriber(WorkspaceSubscriber subscriber)
+	{
+		subscribers.add(subscriber);
+	}
+
+	/**
+	 * Removes the given subscriber to this publisher. The given subscriber will
+	 * no longer receive notifications of changes from this publisher.
+	 * 
+	 * @param subscriber
+	 */
+	public void removeSubscriber(WorkspaceSubscriber subscriber)
+	{
+		subscribers.remove(subscriber);
+	}
+
+	/**
+	 * Sends a notification to subscribers that a repaint is required due to
+	 * changes to the display options
+	 * such as Zoom, or toggling show grid, LaTeX rendering, UniformNode size
+	 * etc.
+	 */
+	public void fireRepaintRequired()
+	{
+		for (WorkspaceSubscriber s : subscribers)
+		{
+			s.repaintRequired();
+		}
+	}
+
+	/**
+	 * Sends notification to subscribers when a DES model is created or opened
+	 * (added), closed (removed) etc.
+	 * 
+	 * @param message
+	 */
+	protected void fireModelCollectionChanged(WorkspaceMessage message)
+	{
+		for (WorkspaceSubscriber s : subscribers)
+		{
+			s.modelCollectionChanged(message);
+		}
+	}
+
+	/**
+	 * Sends notification to subscribers that a new model has become the active model
+	 * in the workspace.
+	 * 
+	 * @param message
+	 */
+	protected void fireModelSwitched(WorkspaceMessage message)
+	{
+		for (WorkspaceSubscriber s : subscribers)
+		{
+			s.modelSwitched(message);
+		}
+	}
+
+	/**
+	 * Sends notification to subscribers that the the layout of the workspace is about to
+	 * change (e.g., a new model is about to become the active model).
+	 */
+	public void fireAboutToRearrangeWorkspace()
+	{
+		for( WorkspaceSubscriber s : subscribers )
+		{
+			s.aboutToRearrangeWorkspace();
+		}
+	}
+
 }

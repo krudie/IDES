@@ -61,7 +61,7 @@ public final class IOCoordinator
 		// Currently there must be just one data saver for a model type.
 		FileIOPlugin dataSaver = IOPluginManager
 				.getInstance().getDataSaver(model
-						.getModelDescriptor().getPreferredModelInterface());
+						.getModelType().getMainInterface());
 
 		// Read the dataType from the plugin modelDescriptor
 		String type = dataSaver.getIOTypeDescriptor();
@@ -70,7 +70,7 @@ public final class IOCoordinator
 		// There can be several different meta savers for a specific data type.
 		Set<FileIOPlugin> metaSavers = IOPluginManager
 				.getInstance().getMetaSavers(model
-						.getModelDescriptor().getPreferredModelInterface());
+						.getModelType().getMainInterface());
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 
 		// Open ""file"" and start writing the header of the IDES file format
@@ -78,7 +78,7 @@ public final class IOCoordinator
 		ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		ps.println("<model version=\"2.1\" type=\"" + type + "\" id=\""
-				+ model.getId() + "\">");
+				+ model.getName() + "\">");
 		ps.println("<data>");
 
 		// Make the dataSaver plugin save the data information on the
@@ -516,7 +516,7 @@ public final class IOCoordinator
 		}
 		Set<ImportExportPlugin> plugins = IOPluginManager
 				.getInstance().getExporters(model
-						.getModelDescriptor().getPreferredModelInterface());
+						.getModelType().getMainInterface());
 		ImportExportPlugin plugin = null;
 		for (ImportExportPlugin p : plugins)
 		{

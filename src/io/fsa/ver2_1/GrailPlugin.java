@@ -14,7 +14,7 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
-import presentation.PresentationManager;
+import pluggable.ui.ToolsetManager;
 
 /**
  * @author christiansilvano
@@ -219,9 +219,9 @@ public class GrailPlugin implements ImportExportPlugin
 				}
 			}
 			// Create an automatic layout given the imported method
-			PresentationManager
+			ToolsetManager
 					.getToolset(a
-							.getModelDescriptor().getPreferredModelInterface())
+							.getModelType().getMainInterface())
 					.wrapModel(a);
 			// Save the model to the selected destination
 			IOCoordinator.getInstance().save(a, dst);

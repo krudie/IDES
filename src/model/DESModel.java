@@ -14,15 +14,6 @@ import services.General;
  */
 public interface DESModel extends Annotable, DESModelPublisher
 {
-
-	/**
-	 * Returns the ID of the model.
-	 * 
-	 * @return the ID of the model
-	 * @see General#getRandomId()
-	 */
-	public String getId();
-
 	/**
 	 * Sets the display name of the model.
 	 * 
@@ -39,11 +30,11 @@ public interface DESModel extends Annotable, DESModelPublisher
 	public abstract String getName();
 
 	/**
-	 * Returns the model descriptor for the model.
+	 * Returns the model type.
 	 * 
-	 * @return the model descriptor for the model
+	 * @return the model type
 	 */
-	public ModelDescriptor getModelDescriptor();
+	public DESModelType getModelType();
 
 	/**
 	 * Notifies the model that some associated metadata has been changed.

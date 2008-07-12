@@ -15,7 +15,7 @@ import java.util.TreeSet;
 import main.Hub;
 import model.DESModel;
 import model.DESModelSubscriber;
-import model.ModelDescriptor;
+import model.DESModelType;
 import model.fsa.FSAEvent;
 import model.template.TemplateChannel;
 import model.template.TemplateLink;
@@ -65,7 +65,7 @@ public class TemplateDesign implements TemplateModel
 
 	protected Map<String, String> plcCode = new HashMap<String, String>();
 
-	protected static class DesignDescriptor implements ModelDescriptor
+	protected static class DesignDescriptor implements DESModelType
 	{
 
 		public String getIOTypeDescription()
@@ -78,12 +78,12 @@ public class TemplateDesign implements TemplateModel
 			return new Class[] { TemplateModel.class };
 		}
 
-		public Class<?> getPreferredModelInterface()
+		public Class<?> getMainInterface()
 		{
 			return TemplateModel.class;
 		}
 
-		public String getTypeDescription()
+		public String getDescription()
 		{
 			return "Template Design";
 		}
@@ -110,7 +110,7 @@ public class TemplateDesign implements TemplateModel
 		}
 	}
 
-	public static final ModelDescriptor myDescriptor = new DesignDescriptor();
+	public static final DESModelType myDescriptor = new DesignDescriptor();
 
 	protected String id = "";
 
@@ -367,7 +367,7 @@ public class TemplateDesign implements TemplateModel
 		return id;
 	}
 
-	public ModelDescriptor getModelDescriptor()
+	public DESModelType getModelType()
 	{
 		return myDescriptor;
 	}

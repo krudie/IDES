@@ -1,9 +1,9 @@
-package presentation;
+package pluggable.ui;
 
 import java.util.Hashtable;
 
 import model.DESModel;
-import pluggable.ui.Toolset;
+import presentation.LayoutShell;
 
 /**
  * Manager of the {@link Toolset}s available to IDES. A plug-in which wants to
@@ -21,7 +21,7 @@ import pluggable.ui.Toolset;
  * @see Toolset#wrapModel(model.DESModel)
  * @author Lenko Grigorov
  */
-public class PresentationManager
+public class ToolsetManager
 {
 
 	/**

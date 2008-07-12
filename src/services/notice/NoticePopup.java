@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -199,8 +200,8 @@ public class NoticePopup extends JDialog implements WindowListener, ComponentLis
 	 */
 	protected void alignWindow()
 	{
-		JFrame win=Hub.getMainWindow();
-		setLocation(win.getX()+win.getWidth()-win.getInsets().right-getWidth(),win.getY()+win.getHeight()-win.getInsets().bottom-((MainWindow)Hub.getMainWindow()).getStatusBar().getHeight()-getHeight());
+		Frame win=Hub.getMainWindow();
+		setLocation(win.getX()+win.getWidth()-win.getInsets().right-getWidth(),win.getY()+win.getHeight()-win.getInsets().bottom-Hub.getUIShell().getStatusBar().getHeight()-getHeight());
 	}
 	
 	/**
@@ -387,7 +388,7 @@ public class NoticePopup extends JDialog implements WindowListener, ComponentLis
 		instance().update();
 		if(!(arg0.getSource() instanceof JButton))
 		{
-			((MainWindow)Hub.getMainWindow()).activateRightTab(Hub.string("noticeTab"));
+			Hub.getUIShell().activateNotices();
 		}
 	}
 

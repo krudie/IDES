@@ -37,7 +37,7 @@ public class Unary
 
 		// set Annotation for labelling purposes
 		automaton.setAnnotation(Annotable.COMPOSED_OF, new String[] { automaton
-				.getId() });
+				.getName() });
 
 		LinkedList<FSAState> searchList = new LinkedList<FSAState>();
 		// find initial states, mark them as reached and add them to the queue

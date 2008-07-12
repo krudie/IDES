@@ -3,7 +3,6 @@ package pluggable.ui;
 import model.DESModel;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.PresentationManager;
 
 /**
  * For a given type of {@link DESModel}, an implementation of the interface
@@ -14,11 +13,11 @@ import presentation.PresentationManager;
  * {@link LayoutShell}s so that they can be visualized.
  * <p>
  * To handle a given {@link DESModel} type, one needs to register the toolset
- * with {@link PresentationManager#registerToolset(Class, Toolset)}. Then, IDES
- * will use {@link PresentationManager#getToolset(Class)} to get the toolset
+ * with {@link ToolsetManager#registerToolset(Class, Toolset)}. Then, IDES
+ * will use {@link ToolsetManager#getToolset(Class)} to get the toolset
  * when needed.
  * 
- * @see PresentationManager#registerToolset(Class, Toolset)
+ * @see ToolsetManager#registerToolset(Class, Toolset)
  * @see #wrapModel(DESModel)
  * @see LayoutShell
  * @author Lenko Grigorov

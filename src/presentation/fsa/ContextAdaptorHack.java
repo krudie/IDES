@@ -25,13 +25,17 @@ public class ContextAdaptorHack implements WorkspaceSubscriber
 		// context=empty;
 	}
 
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 		if (context != null)
 		{
 			context.repaint();
 			context.revalidate();
 		}
+	}
+
+	public void aboutToRearrangeWorkspace()
+	{
 	}
 
 }

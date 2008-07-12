@@ -24,7 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import main.Hub;
-import model.ModelDescriptor;
+import model.DESModelType;
 import model.ModelManager;
 import util.EscapeDialog;
 
@@ -44,9 +44,9 @@ public class NewModelDialog extends EscapeDialog
 
 	protected JList modelList;
 
-	protected ModelDescriptor[] modelDescriptors;
+	protected DESModelType[] modelDescriptors;
 
-	private ModelDescriptor selectedMD = null;
+	private DESModelType selectedMD = null;
 
 	private static int lastIdx = 0;
 
@@ -54,7 +54,7 @@ public class NewModelDialog extends EscapeDialog
 	 * Creates a new "New model type" dialog box and fills it with all the
 	 * registered model types.
 	 * 
-	 * @see ModelManager#registerModel(ModelDescriptor)
+	 * @see ModelManager#registerModel(DESModelType)
 	 */
 	public NewModelDialog() throws HeadlessException
 	{
@@ -81,14 +81,14 @@ public class NewModelDialog extends EscapeDialog
 		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		Vector<Component> items = new Vector<Component>();
-		modelDescriptors = ModelManager.getAllModels();
+		modelDescriptors = ModelManager.getAllTypes();
 		for (int i = 0; i < modelDescriptors.length; ++i)
 		{
 			Box vbox = Box.createVerticalBox();
 			JLabel l = new JLabel(new ImageIcon(modelDescriptors[i].getIcon()));
 			l.setAlignmentX(Component.CENTER_ALIGNMENT);
 			vbox.add(l);
-			l = new JLabel(modelDescriptors[i].getTypeDescription());
+			l = new JLabel(modelDescriptors[i].getDescription());
 			l.setAlignmentX(Component.CENTER_ALIGNMENT);
 			vbox.add(l);
 			items.add(vbox);
@@ -150,7 +150,7 @@ public class NewModelDialog extends EscapeDialog
 	 *         if no model was selected (e.g., the user cancelled the dialog
 	 *         box)
 	 */
-	public ModelDescriptor selectModel()
+	public DESModelType selectModel()
 	{
 		selectedMD = null;
 		setVisible(true);

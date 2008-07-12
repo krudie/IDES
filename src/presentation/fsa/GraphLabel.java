@@ -4,6 +4,7 @@ import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -609,7 +610,7 @@ public class GraphLabel extends GraphElement
 	 */
 	public void updateMetrics()
 	{
-		JFrame mainWindow = Hub.getMainWindow();
+		Frame mainWindow = Hub.getMainWindow();
 		Graphics mainGraphics = mainWindow.getGraphics();
 		FontMetrics mainMetrics = mainGraphics.getFontMetrics(font);
 		updateMetrics(mainMetrics);

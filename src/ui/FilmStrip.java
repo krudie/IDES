@@ -27,9 +27,9 @@ import main.WorkspaceSubscriber;
 import model.DESModelMessage;
 import model.DESModelPublisher;
 import model.DESModelSubscriber;
+import pluggable.ui.ToolsetManager;
 import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.PresentationManager;
 import ui.actions.EditActions;
 
 /**
@@ -178,7 +178,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 			if (views.size() <= i
 					|| !views.elementAt(i).getLayoutShell().equals(gm))
 			{
-				Presentation gv = PresentationManager.getToolset(gm
+				Presentation gv = ToolsetManager.getToolset(gm
 						.getModelInterface()).getModelThumbnail(gm, 10, 10);
 				if (gv.getLayoutShell().getModel() instanceof DESModelPublisher)
 				{
@@ -332,7 +332,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 	 * 
 	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 		for (Presentation gv : views)
 		{
@@ -352,5 +352,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		buildThumbnailBoxes();
 		invalidate();
 		Hub.getMainWindow().validate();
+	}
+
+	public void aboutToRearrangeWorkspace()
+	{
 	}
 }

@@ -93,12 +93,13 @@ public class UndoManager
 			 * Notifies this subscriber that a change requiring a repaint has
 			 * occurred in a <code>WorkspacePublisher</code> to which I have
 			 * subscribed.
-			 * 
-			 * @param message
-			 *            details of the change notification
 			 */
-			public void repaintRequired(WorkspaceMessage message)
+			public void repaintRequired()
 			{ /* NOTE not used here */
+			}
+
+			public void aboutToRearrangeWorkspace()
+			{
 			}
 		});
 	}

@@ -5,7 +5,7 @@ package main;
 
 /**
  * Implemented by classes that wish to receive change notifications from
- * <code>WorkspacePublisher</code>s.
+ * the {@link Workspace}.
  * 
  * @author Helen Bretzke
  */
@@ -14,8 +14,8 @@ public interface WorkspaceSubscriber
 
 	/**
 	 * Notifies this subscriber that a model collection change (a DES model is
-	 * created or opened (added), closed (removed) or renamed) has occurred in a
-	 * <code>WorkspacePublisher</code> to which I have subscribed.
+	 * created or opened (added) or closed (removed), etc.) has occurred in
+	 * the workspace.
 	 * 
 	 * @param message
 	 *            details of the change notification
@@ -24,22 +24,22 @@ public interface WorkspaceSubscriber
 
 	/**
 	 * Notifies this subscriber that a change requiring a repaint has occurred
-	 * in a <code>WorkspacePublisher</code> to which I have subscribed.
-	 * 
-	 * @param message
-	 *            details of the change notification
+	 * in the workspace.
 	 */
-	/* NOTE ignore param except possibly for the source field */
-	public void repaintRequired(WorkspaceMessage message);
+	public void repaintRequired();
 
 	/**
-	 * Notifies this subscriber that a the model type has been switched (the
-	 * type of active model has changed e.g. from FSA to petri net) in a
-	 * <code>WorkspacePublisher</code> to which I have subscribed.
+	 * Notifies this subscriber that a new model has become the active model in the workspace.
 	 * 
 	 * @param message
 	 *            details of the change notification
 	 */
 	public void modelSwitched(WorkspaceMessage message);
-
+	
+	
+	/**
+	 * Notifies this subscriber that the layout of the workspace is about to
+	 * change (e.g., a new model is about to become the active model).
+	 */
+	public void aboutToRearrangeWorkspace();
 }
