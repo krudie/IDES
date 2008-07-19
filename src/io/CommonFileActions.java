@@ -441,15 +441,6 @@ public class CommonFileActions
 	public static boolean saveWorkspace(WorkspaceDescriptor wd, File file)
 	{
 		Vector<DESModel> models = new Vector<DESModel>();
-		for (Iterator<DESModel> i = Hub.getWorkspace().getModels(); i.hasNext();)
-		{
-
-			DESModel m = i.next();
-			if (m.needsSave() || !m.hasAnnotation(Annotable.FILE))
-			{
-				models.add(m);
-			}
-		}
 
 		if (!models.isEmpty())
 		{
@@ -628,7 +619,11 @@ public class CommonFileActions
 		{
 			try
 			{
-				WorkspaceDescriptor wd = Hub.getWorkspace().getDescriptor();
+				WorkspaceDescriptor wd = getWorkspaceDescriptor();
+				if (wd == null)
+				{
+					return false;
+				}
 				if (io.CommonFileActions.saveWorkspace(wd, wd.getFile()))
 				{
 					Hub.getWorkspace().setDirty(false);
@@ -640,10 +635,52 @@ public class CommonFileActions
 			}
 			catch (IncompleteWorkspaceDescriptorException e)
 			{
+				Hub.displayAlert(Hub.string("notAllUnsavedSaved"));
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Attempts to get a workspace descriptor. If this fails, asks the user to
+	 * save all unsaved models and attempts to get the descriptor again.
+	 * 
+	 * @return a descriptor of the workspace, or <code>null</code> if the
+	 *         operation was cancelled by the user
+	 * @throws IncompleteWorkspaceDescriptorException
+	 *             if the user chooses not to save all new models in the
+	 *             workspace
+	 */
+	public static WorkspaceDescriptor getWorkspaceDescriptor()
+			throws IncompleteWorkspaceDescriptorException
+	{
+		WorkspaceDescriptor wd = null;
+		try
+		{
+			wd = Hub.getWorkspace().getDescriptor();
+		}
+		catch (IncompleteWorkspaceDescriptorException e)
+		{
+			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
+			Vector<DESModel> unsavedModels = new Vector<DESModel>(e
+					.getNeverSavedModels());
+			Iterator<DESModel> it = Hub.getWorkspace().getModels();
+			while (it.hasNext())
+			{
+				DESModel model = it.next();
+				if (model.needsSave() && !unsavedModels.contains(model))
+				{
+					unsavedModels.add(model);
+				}
+			}
+			if (!io.CommonFileActions.handleUnsavedModels(unsavedModels))
+			{
+				return null;
+			}
+			wd = Hub.getWorkspace().getDescriptor();
+		}
+		return wd;
 	}
 
 	/**

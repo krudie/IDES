@@ -561,7 +561,8 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 	 * 
 	 * @return descriptor of the current workspace
 	 * @throws IncompleteWorkspaceDescriptorException
-	 *             when the descriptor can't be created due to unsaved models
+	 *             when the descriptor can't be created due to new unsaved
+	 *             models
 	 */
 	public WorkspaceDescriptor getDescriptor()
 			throws IncompleteWorkspaceDescriptorException
@@ -582,7 +583,7 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 		while (i.hasNext())
 		{
 			DESModel a = i.next();
-			if ((File)a.getAnnotation(Annotable.FILE) == null)
+			if (!a.hasAnnotation(Annotable.FILE))
 			{
 				unsavedModels.add(a);
 			}
@@ -590,12 +591,9 @@ public class Workspace extends WorkspacePublisherAdaptor implements
 
 		if (!unsavedModels.isEmpty())
 		{
-			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
-			if (!io.CommonFileActions.handleUnsavedModels(unsavedModels))
-			{
-				throw new IncompleteWorkspaceDescriptorException();
-			}
+			throw new IncompleteWorkspaceDescriptorException(unsavedModels);
 		}
+
 		for (int counter = 0; counter < systems.size(); ++counter)
 		{
 			DESModel a = systems.elementAt(counter);
