@@ -88,7 +88,8 @@ public class Main
 		// set up global exception handler
 		// TODO uncomment this line before shipping. Default exception handler
 		// disabled for debugging. -- CLM
-//		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		// Thread.setDefaultUncaughtExceptionHandler(new
+		// GlobalExceptionHandler());
 
 		// load resource with strings used in the program
 		try
@@ -135,13 +136,12 @@ public class Main
 		// for(Object o:UIManager.getLookAndFeelDefaults().keySet())
 		// System.out.println(o.toString());
 
-
 		Cache.init();
 		UndoManager.init();
 		NoticeManager.init();
 
 		// setup main window
-		Hub.setUIShell(new MainWindow());
+		Hub.setUserInterface(new MainWindow());
 
 		// TODO: move operation inits to the plugin manager eventually
 		// /TODO: move the initialization of the plugins to the plugin manager
@@ -171,7 +171,6 @@ public class Main
 
 		// setup stuff that needs the main window
 		LatexManager.init();
-		NoticePopup.init();
 
 		FSAModel fsa = ModelManager.createModel(FSAModel.class, Hub
 				.string("newModelName"));
@@ -181,6 +180,7 @@ public class Main
 
 		// go live!
 		Hub.getMainWindow().setVisible(true);
+		NoticePopup.init();
 	}
 
 	/**
@@ -214,6 +214,8 @@ public class Main
 				return;
 			}
 		}
+
+		Hub.getWorkspace().setActiveModel(null);
 
 		// store settings
 		NoticePopup.cleanup();

@@ -13,15 +13,29 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
+ * Provides some methods useful when rendering LaTeX elements.
+ * 
  * @author Lenko Grigorov
  */
 public class LatexUtils
 {
 
+	/**
+	 * Prevent instantiation.
+	 */
 	private LatexUtils()
 	{
 	}
 
+	/**
+	 * Renders a string into a PNG image.
+	 * 
+	 * @param s
+	 *            the string to be rendered
+	 * @return an array of bytes containing the PNG image
+	 * @throws LatexRenderException
+	 *             when LaTeX rendering fails
+	 */
 	public static byte[] labelStringToImageBytes(String s)
 			throws LatexRenderException
 	{

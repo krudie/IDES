@@ -24,10 +24,10 @@ public interface ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException;
@@ -35,8 +35,8 @@ public interface ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)

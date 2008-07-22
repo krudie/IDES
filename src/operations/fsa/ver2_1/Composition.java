@@ -82,8 +82,8 @@ public class Composition
 	 */
 	public static void shuffle(FSAModel a, FSAModel b, FSAModel shuffle)
 	{
-		shuffle.setAnnotation(Annotable.COMPOSED_OF, new String[] { a.getName(),
-				b.getName() });
+		shuffle.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+				a.getName(), b.getName() });
 
 		// the event set for the shuffle is the union of the two event sets
 		// get all the events from 'a' first.
@@ -121,8 +121,8 @@ public class Composition
 	public static void product(FSAModel a, FSAModel b, FSAModel product)
 	{
 
-		product.setAnnotation(Annotable.COMPOSED_OF, new String[] { a.getName(),
-				b.getName() });
+		product.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+				a.getName(), b.getName() });
 
 		// long eventid = 0;
 
@@ -281,8 +281,8 @@ public class Composition
 	public static void parallel(FSAModel a, FSAModel b, FSAModel parallel)
 	{
 
-		parallel.setAnnotation(Annotable.COMPOSED_OF, new String[] { a.getName(),
-				b.getName() });
+		parallel.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+				a.getName(), b.getName() });
 
 		// Add the union of the eventsets as the parallel compositions eventset.
 		// mark all events in the intersection as being in the intersection.
@@ -482,8 +482,8 @@ public class Composition
 	public static void observer(FSAModel a, FSAModel observer)
 	{
 
-		observer.setAnnotation(Annotable.COMPOSED_OF,
-				new String[] { a.getName() });
+		observer.setAnnotation(Annotable.COMPOSED_OF, new String[] { a
+				.getName() });
 
 		// long eventid=0;
 

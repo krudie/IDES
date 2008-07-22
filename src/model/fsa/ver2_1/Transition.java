@@ -56,8 +56,7 @@ public class Transition implements model.fsa.FSATransition
 	 * @param key
 	 *            key for the annotation
 	 * @return if there is no annotation for the given key, returns
-	 *         <code>null</code>, otherwise returns the annotation for the
-	 *         key
+	 *         <code>null</code>, otherwise returns the annotation for the key
 	 */
 	public Object getAnnotation(String key)
 	{

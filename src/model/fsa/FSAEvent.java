@@ -7,7 +7,7 @@ import model.DESEvent;
  * 
  * @author Helen Bretzke
  */
-public interface FSAEvent extends DESEvent,Comparable<FSAEvent>
+public interface FSAEvent extends DESEvent, Comparable<FSAEvent>
 {
 
 	/**

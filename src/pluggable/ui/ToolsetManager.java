@@ -3,22 +3,18 @@ package pluggable.ui;
 import java.util.Hashtable;
 
 import model.DESModel;
-import presentation.LayoutShell;
+import model.fsa.FSAModel;
 
 /**
  * Manager of the {@link Toolset}s available to IDES. A plug-in which wants to
- * provide the GUI elements for a specific type of {@link DESModel} should
- * register itself for this specific {@link DESModel} interface. When the user
- * creates a new model or opens a model of this type, IDES will use the
- * registered {@link Toolset} to obtain the relevant GUI elements.
- * <p>
- * IDES will also use the {@link Toolset} registered for a specific
- * {@link DESModel} type to obtain {@link LayoutShell}s of {@link DESModel}s
- * of this type.
+ * provide the GUI elements for a specific {@link DESModel} perspective, e.g.,
+ * {@link FSAModel}, should register itself for this specific perspective. When
+ * the user creates a new model or opens a model, IDES will use the registered
+ * {@link Toolset} for the model's "main" perspective to obtain the relevant GUI
+ * elements.
  * 
  * @see Toolset
  * @see #registerToolset(Class, Toolset)
- * @see Toolset#wrapModel(model.DESModel)
  * @author Lenko Grigorov
  */
 public class ToolsetManager
@@ -26,39 +22,55 @@ public class ToolsetManager
 
 	/**
 	 * The table with the registered {@link Toolset}s. The key is a
-	 * {@link DESModel} interface and the value is the corresponding
+	 * {@link DESModel} perspective and the value is the corresponding
 	 * {@link Toolset}.
 	 */
 	protected static Hashtable<Class<?>, Toolset> class2Toolset = new Hashtable<Class<?>, Toolset>();
 
 	/**
-	 * Returns the {@link Toolset} registered for the given {@link DESModel}
-	 * interface.
+	 * Returns the {@link Toolset} registered for the "main" perspective of the
+	 * given {@link DESModel}.
 	 * 
-	 * @param modelType
+	 * @param model
 	 *            the {@link DESModel} for which a {@link Toolset} is needed
-	 * @return the {@link Toolset} registered for the given {@link DESModel}
-	 *         interface; <code>null</code> if no {@link Toolset} is
-	 *         registered for this interface
+	 * @return the {@link Toolset} registered for the "main" perspective of the
+	 *         given {@link DESModel}; <code>null</code> if no {@link Toolset}
+	 *         is registered for this perspective
 	 */
-	public static Toolset getToolset(Class<?> modelType)
+	public static Toolset getToolset(DESModel model)
 	{
-		return class2Toolset.get(modelType);
+		return class2Toolset.get(model.getModelType().getMainPerspective());
 	}
 
 	/**
-	 * Registers a {@link Toolset} to handle a specific type of {@link DESModel}.
+	 * Returns the {@link Toolset} registered for the given {@link DESModel}
+	 * perspective.
 	 * 
-	 * @param modelType
-	 *            the {@link DESModel} interface which will be handled by the
+	 * @param perspective
+	 *            the {@link DESModel} perspective for which a {@link Toolset}
+	 *            is needed
+	 * @return the {@link Toolset} registered for the given {@link DESModel}
+	 *         perspective; <code>null</code> if no {@link Toolset} is
+	 *         registered for this perspective
+	 */
+	public static Toolset getToolset(Class<?> perspective)
+	{
+		return class2Toolset.get(perspective);
+	}
+
+	/**
+	 * Registers a {@link Toolset} to handle a specific kind of {@link DESModel}
+	 * perspective.
+	 * 
+	 * @param perspective
+	 *            the {@link DESModel} perspective which will be handled by the
 	 *            {@link Toolset}
 	 * @param ts
 	 *            the {@link Toolset} to handle the given {@link DESModel}
-	 *            interface
+	 *            perspective
 	 */
-	// TODO discover the type of toolset through reflection mechanisms
-	public static void registerToolset(Class<?> modelType, Toolset ts)
+	public static void registerToolset(Class<?> perspective, Toolset ts)
 	{
-		class2Toolset.put(modelType, ts);
+		class2Toolset.put(perspective, ts);
 	}
 }

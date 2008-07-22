@@ -227,8 +227,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 			 * if(other instanceof ReflexiveLayout || this instanceof
 			 * ReflexiveLayout){ System.out.println(other.getText() + " " +
 			 * other.getLabelOffset() + " " + other.curve);
-			 * System.out.println(this.getText() + " " + this.getLabelOffset() + " " +
-			 * this.curve); System.out.println(); }
+			 * System.out.println(this.getText() + " " + this.getLabelOffset() +
+			 * " " + this.curve); System.out.println(); }
 			 */
 
 			return other.curve.equals(this.curve)
@@ -255,8 +255,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 
 	/**
 	 * Returns an array of 4 control points for a straight, directed edge from
-	 * <code>s</code>, the layout for the source node to <code>t</code>,
-	 * the layout for the target node. Precondition: must call
+	 * <code>s</code>, the layout for the source node to <code>t</code>, the
+	 * layout for the target node. Precondition: must call
 	 * updateAnglesAndScalars() before calling this method to ensure that the
 	 * curve shape is in sync.
 	 * 
@@ -424,8 +424,13 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 			angle2 = Geometry.angleFrom(p2p1, p2c2);
 		}
 		else
+		// reflexive edge
 		{
-			// FIXME do what? set to defaults?
+			s1 = Geometry.norm(p1c1); // arbitrary value
+			s2 = s1;
+			angle1 = -Geometry.angleFrom(p1c1, p2c2) / 2; // angle from edge
+															// axis
+			angle2 = -angle1;
 		}
 		// }
 
@@ -496,6 +501,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 	{
 		this.curve = cubicCurve;
 		updateAnglesAndScalars();
+		setDirty(true);
 	}
 
 	/**
@@ -517,6 +523,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 				cubicCurve.x2,
 				cubicCurve.y2);
 		updateAnglesAndScalars();
+		setDirty(true);
 	}
 
 	/**

@@ -4,9 +4,9 @@
 package main;
 
 /**
- * Message sent by {@link Workspace} to classes that implement 
- * {@link WorkspaceSubscriber} i.e. that subscribe to change notifications
- * from the workspace containing multiple discrete event system models.
+ * Message sent by {@link Workspace} to classes that implement
+ * {@link WorkspaceSubscriber} i.e. that subscribe to change notifications from
+ * the workspace containing multiple discrete event system models.
  * 
  * @author Helen Bretzke
  */
@@ -32,8 +32,8 @@ public class WorkspaceMessage
 	private String messageText;
 
 	/**
-	 * Creates a change notification message for the given model,
-	 * event type and descriptive text.
+	 * Creates a change notification message for the given model, event type and
+	 * descriptive text.
 	 * 
 	 * @param name
 	 *            the model's name
@@ -51,8 +51,8 @@ public class WorkspaceMessage
 	}
 
 	/**
-	 * Creates a change notification message for the given model and
-	 * event type. Descriptive text is blank.
+	 * Creates a change notification message for the given model and event type.
+	 * Descriptive text is blank.
 	 * 
 	 * @param name
 	 *            the model's name

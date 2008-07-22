@@ -106,11 +106,11 @@ public abstract class Edge extends GraphElement
 
 	/**
 	 * Computes an approximation to the point where this edge intersects the
-	 * boundary of <code>node</code>. Returns the first point between
-	 * midpoint of the edge and centre of Node with given type where this edge
-	 * intersects the boundary of <code>node</code>, null if no intersection
-	 * exists. NOTE more than one intersection is possible (e.g. reflexive edges
-	 * and curved edges with multiple crossings).
+	 * boundary of <code>node</code>. Returns the first point between midpoint
+	 * of the edge and centre of Node with given type where this edge intersects
+	 * the boundary of <code>node</code>, null if no intersection exists. NOTE
+	 * more than one intersection is possible (e.g. reflexive edges and curved
+	 * edges with multiple crossings).
 	 * 
 	 * @param node
 	 * @param type
@@ -185,8 +185,7 @@ public abstract class Edge extends GraphElement
 
 	/**
 	 * Returns true iff this edge has at least one transition fired by an
-	 * uncontrollable event or if all transitions have <code>null</code>
-	 * events.
+	 * uncontrollable event or if all transitions have <code>null</code> events.
 	 * 
 	 * @return true iff this edge has at least one transition fired by an
 	 *         uncontrollable event or if all transitions have <code>null</code>

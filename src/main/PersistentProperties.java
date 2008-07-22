@@ -3,8 +3,8 @@ package main;
 import java.util.Properties;
 
 /**
- * A convenience wrapper of {@link java.util.Properties}. It provides methods
- * to get and set properties of types other than String. However, the underlying
+ * A convenience wrapper of {@link java.util.Properties}. It provides methods to
+ * get and set properties of types other than String. However, the underlying
  * implementation uses strings to store the actual properties.
  * 
  * @author Lenko Grigorov

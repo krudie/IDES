@@ -88,8 +88,9 @@ public class NodePopup extends JPopupMenu
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent)
+		 * @see
+		 * javax.swing.event.PopupMenuListener#popupMenuWillBecomeInvisible(
+		 * javax.swing.event.PopupMenuEvent)
 		 */
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0)
 		{

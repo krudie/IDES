@@ -48,9 +48,8 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMousePressed(java.awt.event.MouseEvent)
-	 *      TODO refactor logic
+	 * TODO refactor logic
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m)
@@ -162,7 +161,6 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMouseDragged(java.awt.event.MouseEvent)
 	 */
 	@Override
@@ -195,7 +193,6 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMouseReleased(java.awt.event.MouseEvent)
 	 */
 	@Override
@@ -229,7 +226,6 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMouseClicked(java.awt.event.MouseEvent)
 	 */
 	// @Override

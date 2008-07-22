@@ -15,9 +15,9 @@ import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import model.DESModel;
 import model.fsa.FSAEvent;
 import model.template.TemplateModule;
-import presentation.LayoutShell;
 import presentation.Presentation;
 
 public class CodeChooser extends JPanel implements Presentation,
@@ -62,11 +62,6 @@ public class CodeChooser extends JPanel implements Presentation,
 	public JComponent getGUI()
 	{
 		return this;
-	}
-
-	public LayoutShell getLayoutShell()
-	{
-		return graph;
 	}
 
 	public void setTrackModel(boolean b)
@@ -157,5 +152,11 @@ public class CodeChooser extends JPanel implements Presentation,
 
 	public void forceRepaint()
 	{
+	}
+
+	public DESModel getModel()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

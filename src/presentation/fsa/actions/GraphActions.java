@@ -14,6 +14,7 @@ import javax.swing.undo.UndoableEdit;
 
 import main.Hub;
 import model.fsa.FSAEvent;
+import model.fsa.FSAModel;
 import model.fsa.FSATransition;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
@@ -183,15 +184,15 @@ public class GraphActions
 
 		protected boolean observable;
 
-		protected FSAGraph graph;
+		protected FSAModel model;
 
-		public ModifyEventAction(FSAGraph graph, FSAEvent event,
+		public ModifyEventAction(FSAModel model, FSAEvent event,
 				String eventName, boolean controllable, boolean observable)
 		{
-			this(null, graph, event, eventName, controllable, observable);
+			this(null, model, event, eventName, controllable, observable);
 		}
 
-		public ModifyEventAction(CompoundEdit parentEdit, FSAGraph graph,
+		public ModifyEventAction(CompoundEdit parentEdit, FSAModel model,
 				FSAEvent event, String eventName, boolean controllable,
 				boolean observable)
 		{
@@ -200,15 +201,15 @@ public class GraphActions
 			this.eventName = eventName;
 			this.controllable = controllable;
 			this.observable = observable;
-			this.graph = graph;
+			this.model = model;
 		}
 
 		public void actionPerformed(ActionEvent event)
 		{
-			if (graph != null)
+			if (model != null)
 			{
 				GraphUndoableEdits.UndoableModifyEvent action = new GraphUndoableEdits.UndoableModifyEvent(
-						graph,
+						model,
 						this.event,
 						eventName,
 						controllable,

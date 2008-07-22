@@ -61,8 +61,8 @@ public class IOPluginManager
 	/**
 	 * Return a plugin which saves data
 	 * 
-	 * @param type -
-	 *            The datatype of the model, e.g.: "FSA" or "TemplateDesign"
+	 * @param type
+	 *            - The datatype of the model, e.g.: "FSA" or "TemplateDesign"
 	 * @return
 	 */
 	public FileIOPlugin getDataSaver(Class<?> type)
@@ -72,7 +72,9 @@ public class IOPluginManager
 
 	/**
 	 * Return all the plugins which saves metadata for <code>type</type>
-	 * @param type - The datatype of the model, e.g.: "FSA" or "TemplateDesign"
+	 * 
+	 * @param type
+	 *            - The datatype of the model, e.g.: "FSA" or "TemplateDesign"
 	 * @return
 	 */
 	public Set<FileIOPlugin> getMetaSavers(Class<?> type)
@@ -184,10 +186,10 @@ public class IOPluginManager
 
 	/**
 	 * Registers a plugin that imports a model from a kind given at
-	 * <code>description</code> to the format described by :<code>importsTo</code>
-	 * An example of utilization of this method would be:
-	 * <code>registerImport(reference, "GRAIL", "FSA")</code>, the
-	 * registration of a plugin which imports a grail file to a FSA IDES file.
+	 * <code>description</code> to the format described by :
+	 * <code>importsTo</code> An example of utilization of this method would be:
+	 * <code>registerImport(reference, "GRAIL", "FSA")</code>, the registration
+	 * of a plugin which imports a grail file to a FSA IDES file.
 	 * 
 	 * @param plugin
 	 * @param description
@@ -203,11 +205,10 @@ public class IOPluginManager
 
 	/**
 	 * Registers a plugin that exports a model from a IDES model given by
-	 * <code>description</code> to the format described by :<code>exportsTo</code>
-	 * An example of utilization of this method would be:
-	 * <code>registerExport(reference, "FSA", "GRAIL")</code>, the
-	 * registration of a plugin which exports a FSA IDES file to the Grail
-	 * format.
+	 * <code>description</code> to the format described by :
+	 * <code>exportsTo</code> An example of utilization of this method would be:
+	 * <code>registerExport(reference, "FSA", "GRAIL")</code>, the registration
+	 * of a plugin which exports a FSA IDES file to the Grail format.
 	 * 
 	 * @param plugin
 	 * @param description
@@ -230,8 +231,8 @@ public class IOPluginManager
 	/**
 	 * Returns a set of plugins which exports a model described by
 	 * <code>type</code> to a different format. Example of utilization:
-	 * <code>getExporters("FSA")</code> returns a set with references to
-	 * plugins that exports from "FSA" to a different format.
+	 * <code>getExporters("FSA")</code> returns a set with references to plugins
+	 * that exports from "FSA" to a different format.
 	 * 
 	 * @param type
 	 * @return
@@ -263,8 +264,8 @@ public class IOPluginManager
 	/**
 	 * Returns a set of plugins which imports from model described by
 	 * <code>type</code> to the IDES format. Example of utilization:
-	 * <code>getImporters(".fm")</code> returns a set with references to
-	 * plugins that import from ".fm" files (Grail) to the IDES format.
+	 * <code>getImporters(".fm")</code> returns a set with references to plugins
+	 * that import from ".fm" files (Grail) to the IDES format.
 	 * 
 	 * @param type
 	 * @return

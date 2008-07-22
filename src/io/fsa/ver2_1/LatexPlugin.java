@@ -13,7 +13,6 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
-import pluggable.ui.ToolsetManager;
 import presentation.fsa.FSAGraph;
 import services.latex.LatexManager;
 
@@ -46,10 +45,10 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
@@ -68,8 +67,9 @@ public class LatexPlugin implements ImportExportPlugin
 		try
 		{
 			FSAModel a = (FSAModel)IOCoordinator.getInstance().load(src);
-			FSAGraph graphModel = (FSAGraph)ToolsetManager
-					.getToolset(FSAModel.class).wrapModel(a);
+
+			FSAGraph graphModel = GraphExportHelper.wrapRecomputeShift(a);
+
 			ps = new PrintStream(dst);
 			GraphExporter.createPSTricksFileContents(graphModel, ps);
 			ps.close();
@@ -90,8 +90,8 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public File importFile(File importFile)
@@ -118,8 +118,8 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)

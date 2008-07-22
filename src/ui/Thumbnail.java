@@ -56,7 +56,8 @@ public class Thumbnail extends JPanel
 		// if (UIManager.getSystemLookAndFeelClassName() ==
 		// "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
 		// closeButton = new
-		// JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE));
+		//JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE))
+		// ;
 		// } else {
 		// Icon cbIcon = UIManager.getIcon("InternalFrame.closeIcon");
 		// cbWidth = cbIcon.getIconWidth();
@@ -102,6 +103,6 @@ public class Thumbnail extends JPanel
 
 	public String getGraphModelName()
 	{
-		return view.getLayoutShell().getModel().getName();
+		return view.getModel().getName();
 	}
 }

@@ -16,7 +16,6 @@ import model.fsa.FSAEvent;
 import model.fsa.FSAEventSet;
 import presentation.template.DesignDrawingView;
 import presentation.template.GraphBlock;
-import presentation.template.TemplateGraph;
 
 public class LinkTool extends DrawingTool implements ActionListener
 {
@@ -72,7 +71,7 @@ public class LinkTool extends DrawingTool implements ActionListener
 
 	private GraphBlock leftBlock;
 
-	private FSAEvent leftEvent;
+	// private FSAEvent leftEvent;
 
 	private boolean isLinking = false;
 
@@ -154,12 +153,12 @@ public class LinkTool extends DrawingTool implements ActionListener
 		{
 			return;
 		}
-		FSAEvent event = null;
+		// FSAEvent event = null;
 		for (FSAEvent e : block.getBlock().getFSA().getEventSet())
 		{
 			if (ae.getActionCommand().equals(e.getSymbol()))
 			{
-				event = e;
+				// event = e;
 				break;
 			}
 		}
@@ -167,15 +166,15 @@ public class LinkTool extends DrawingTool implements ActionListener
 		{
 			isLinking = true;
 			leftBlock = block;
-			leftEvent = event;
+			// leftEvent = event;
 		}
 		else
 		{
 			cancelLink();
-			((TemplateGraph)context.getLayoutShell()).createLink(leftBlock,
-					leftEvent,
-					block,
-					event);
+			// ((TemplateGraph)context.getLayoutShell()).createLink(leftBlock,
+			// leftEvent,
+			// block,
+			// event);
 		}
 	}
 

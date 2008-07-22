@@ -6,11 +6,9 @@ import javax.swing.JToolBar;
 
 import main.Hub;
 import model.DESModel;
-import model.template.TemplateModel;
 import pluggable.ui.Toolset;
 import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
-import presentation.LayoutShell;
 import presentation.Presentation;
 
 public class TemplateToolset implements Toolset
@@ -77,42 +75,40 @@ public class TemplateToolset implements Toolset
 			return null;
 		}
 
-		public boolean showZoomControl()
+		public boolean supportsZoom()
+		{
+			return false;
+		}
+
+		public boolean supportsLaTeX()
 		{
 			return false;
 		}
 
 	}
 
-	public UIDescriptor getUIElements(LayoutShell mw)
+	public UIDescriptor getUIElements(DESModel model)
 	{
-		if (!(mw instanceof TemplateGraph))
+		if (!(model instanceof TemplateGraph))
 		{
 			throw new UnsupportedModelException();
 		}
-		return new TemplateUIDescriptor((TemplateGraph)mw);
+		return new TemplateUIDescriptor((TemplateGraph)model);
 	}
 
-	public Presentation getModelThumbnail(LayoutShell mw, int width, int height)
+	public Presentation getModelThumbnail(DESModel model, int width, int height)
 	{
-		if (!(mw instanceof TemplateGraph))
+		if (!(model instanceof TemplateGraph))
 		{
 			throw new UnsupportedModelException();
 		}
-		return new DesignView((TemplateGraph)mw);
+		return new DesignView((TemplateGraph)model);
 	}
 
-	public LayoutShell wrapModel(DESModel model)
+	public UIDescriptor getUI(DESModel model)
 	{
-		if (!(model instanceof TemplateModel))
-		{
-			throw new UnsupportedModelException();
-		}
-		if (library == null)
-		{
-			library = new TemplateLibrary();
-		}
-		return new TemplateGraph((TemplateModel)model, library);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

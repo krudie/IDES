@@ -12,10 +12,7 @@ import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import javax.swing.JFrame;
-
 import pluggable.ui.OptionsPane;
-import ui.MainWindow;
 import ui.OptionsWindow;
 
 /**
@@ -43,8 +40,8 @@ public class Hub
 	 * strings to appear in IDES (FIXME: save for the commmands which are
 	 * managed by an external library?). The native IDES bundle occupies the
 	 * first element of the array. Plugins register their own bundles with
-	 * {@link #addResouceBundle(ResourceBundle)}; these bundles get added to
-	 * the array. The strings are accessible through the {@link #string(String)}
+	 * {@link #addResouceBundle(ResourceBundle)}; these bundles get added to the
+	 * array. The strings are accessible through the {@link #string(String)}
 	 * method which scans all elements of the array. For examples of use, see
 	 * {@link #storePersistentData()}.
 	 * 
@@ -56,9 +53,9 @@ public class Hub
 	/**
 	 * The main window of the application.
 	 * 
-	 * @see #setUIShell(UIShell)
+	 * @see #setUserInterface(UserInterface)
 	 */
-	private static UIShell mainWindow = null;
+	private static UserInterface mainWindow = null;
 
 	/**
 	 * Gets from the resource bundle {@link #stringResource} the string which
@@ -109,8 +106,8 @@ public class Hub
 	}
 
 	/**
-	 * Loads the settings from the file <code>settings.ini</code> into the
-	 * list of settings {@link #persistentData}.
+	 * Loads the settings from the file <code>settings.ini</code> into the list
+	 * of settings {@link #persistentData}.
 	 * 
 	 * @throws IOException
 	 * @see #persistentData
@@ -173,19 +170,19 @@ public class Hub
 	}
 
 	/**
-	 * Sets the main window of the application so that it is accessible
-	 * to other parts of the software.
+	 * Sets the main UI of IDES so that it is accessible to other parts of the
+	 * software.
 	 * 
 	 * @param window
-	 *            the main window
+	 *            the main UI of IDES
 	 */
-	static void setUIShell(UIShell window)
+	static void setUserInterface(UserInterface window)
 	{
 		mainWindow = window;
 	}
 
 	/**
-	 * Gets the main window of the application.
+	 * Gets the main window of IDES.
 	 * 
 	 * @return the main window
 	 */
@@ -195,11 +192,11 @@ public class Hub
 	}
 
 	/**
-	 * Gets the UI services provided by the main window of the application.
+	 * Gets the main UI of IDES.
 	 * 
-	 * @return the UI services of the main window
+	 * @return the main UI of IDES
 	 */
-	public static UIShell getUIShell()
+	public static UserInterface getUserInterface()
 	{
 		return mainWindow;
 	}

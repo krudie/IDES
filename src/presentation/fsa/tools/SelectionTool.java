@@ -46,7 +46,7 @@ public class SelectionTool extends DrawingTool
 	}
 
 	@Override
-	/**
+	/*
 	 * Stretch the selection rectangle.
 	 */
 	public void handleMouseDragged(MouseEvent me)
@@ -106,7 +106,7 @@ public class SelectionTool extends DrawingTool
 	}
 
 	@Override
-	/**
+	/*
 	 * Handle mouse down events by preparing for a drag.
 	 */
 	public void handleMousePressed(MouseEvent me)
@@ -161,7 +161,7 @@ public class SelectionTool extends DrawingTool
 	}
 
 	@Override
-	/**
+	/*
 	 * On mouse up, select or toggle the items under the mouse or in the
 	 * selection rectangle.
 	 */

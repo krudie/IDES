@@ -26,9 +26,8 @@ import model.template.TemplateModel;
 import model.template.TemplateModule;
 import model.template.TemplateSubscriber;
 import model.template.ver2_1.Link;
-import presentation.LayoutShell;
 
-public class TemplateGraph implements LayoutShell, /* DESModelPublisher, */
+public class TemplateGraph implements /* DESModelPublisher, */
 TemplateSubscriber, Annotable
 {
 
@@ -69,8 +68,7 @@ TemplateSubscriber, Annotable
 	 * @param key
 	 *            key for the annotation
 	 * @return if there is no annotation for the given key, returns
-	 *         <code>null</code>, otherwise returns the annotation for the
-	 *         key
+	 *         <code>null</code>, otherwise returns the annotation for the key
 	 */
 	public Object getAnnotation(String key)
 	{

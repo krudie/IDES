@@ -27,8 +27,9 @@ import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.layout.LayoutManager;
-import presentation.LayoutShell;
+import presentation.Presentation;
 import services.latex.LatexManager;
+import services.latex.LatexPresentation;
 import util.BooleanUIBinder;
 
 /**
@@ -41,8 +42,7 @@ import util.BooleanUIBinder;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class FSAGraph extends GraphElement implements FSASubscriber,
-		LayoutShell, Annotable
+public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 {
 	private long bezierLayoutFreeGroup = 0;
 
@@ -84,6 +84,23 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	{
 		return ((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
 				.getUseUniformRadius();
+	}
+
+	protected Set<Presentation> hooks = new HashSet<Presentation>();
+
+	public int hookCount()
+	{
+		return hooks.size();
+	}
+
+	public void addHook(Presentation p)
+	{
+		hooks.add(p);
+	}
+
+	public void removeHook(Presentation p)
+	{
+		hooks.remove(p);
 	}
 
 	/**
@@ -176,7 +193,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 			{
 				s.setName(String.valueOf(s.getId()));
 			}
-			wrapState(s, new Point2D.Float(0, 0));// (float)Math.random()*200,(float)Math.random()*200));
+			wrapState(s, new Point2D.Float(0, 0));// (float)Math.random()*200,(
+													// float
+													// )Math.random()*200));
 			stateGroups.clear();
 			Iterator<FSATransition> j = s.getOutgoingTransitionsListIterator();
 
@@ -303,11 +322,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 		return fsa;
 	}
 
-	public Class<?> getModelInterface()
-	{
-		return FSAModel.class;
-	}
-
 	/**
 	 * Returns the set of all nodes in the graph.
 	 * 
@@ -344,9 +358,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	}
 
 	/**
-	 * Builds this graph from the elements in <code>fsa</code>. TODO Build
-	 * this graph in LayoutDataParser Build free labels (those not associated
-	 * with elements of the automaton). Replace the intersection lists with a
+	 * Builds this graph from the elements in <code>fsa</code>. TODO Build this
+	 * graph in LayoutDataParser Build free labels (those not associated with
+	 * elements of the automaton). Replace the intersection lists with a
 	 * quadtree.
 	 */
 	private void initializeGraph()
@@ -389,7 +403,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 				s.setName(l.getText());
 			}
 			// Create a new node
-			CircleNode node = new CircleNode(s, l);
+			CircleNode node = new CircleNode(s, l, false);
 			long id = s.getId();
 			nodes.put(id, node);
 			if (s.isInitial())
@@ -674,7 +688,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 		return set;
 	}
 
-	// ///////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
+	// /
 
 	/**
 	 * Creates a new node with centre at the given point and a adds a new state
@@ -842,8 +857,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	}
 
 	/**
-	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
-	 * and a adds a new transition to the automaton.
+	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>. and
+	 * a adds a new transition to the automaton.
 	 * 
 	 * @param n1
 	 *            source node
@@ -1043,8 +1058,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	}
 
 	/**
-	 * Assigns the set of events to <code>edge</code>, removes any events
-	 * from edge that are not in the given list and commits any changes to the
+	 * Assigns the set of events to <code>edge</code>, removes any events from
+	 * edge that are not in the given list and commits any changes to the
 	 * LayoutData (MetaData).
 	 * 
 	 * @param events
@@ -1503,6 +1518,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	 */
 	public Rectangle getBounds(boolean initAtZeroZero)
 	{
+		if (needsRefresh())
+		{
+			refresh();
+		}
+
 		Rectangle graphBounds = initAtZeroZero ? new Rectangle()
 				: getElementBounds();
 
@@ -1577,6 +1597,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	 */
 	protected SelectionGroup getElementsContainedBy(Rectangle rectangle)
 	{
+		if (needsRefresh())
+		{
+			refresh();
+		}
 
 		// NOTE that the order in which the element maps are checked is
 		// important.
@@ -1629,6 +1653,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	 */
 	protected GraphElement getElementIntersectedBy(Point2D p)
 	{
+		if (needsRefresh())
+		{
+			refresh();
+		}
+
 		// NOTE the order in which the element maps are checked is important.
 
 		// The element selected
@@ -1698,6 +1727,25 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 		}
 
 		return el;
+	}
+
+	public boolean isRenderingOn()
+	{
+		if (!LatexManager.isLatexEnabled())
+		{
+			return false;
+		}
+		for (Presentation p : hooks)
+		{
+			if (p instanceof LatexPresentation)
+			{
+				if (((LatexPresentation)p).isAllowedRendering())
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// //////////////////////////////////////////////////////////////////////
@@ -1777,7 +1825,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSASubscriber#fsaPersistenceChanged(observer.FSAMessage)
 	 */
 	// public void fsaSaved() {
@@ -1791,7 +1838,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	// }
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message)
@@ -1942,7 +1988,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	// for(int i=0;i<gs.length;++i)
 	// {
 	// FSAGraph
-	// g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[i]);
+	// g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.
+	// getAnnotation(Annotable.COMPOSED_OF))[i]);
 	// if(g==null)
 	// return;
 	// gs[i]=g;
@@ -1954,13 +2001,17 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	// String label="(";
 	// for(int i=0;i<gs.length-1;++i)
 	// {
-	// if(!"".equals(gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()))
+	// if(!"".equals(gs[i].getNode(s.getStateCompositionList()[i]).getLabel().
+	// getText()))
 	// emptyLabel=false;
-	// label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+	//label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+
+	// ",";
 	// }
-	// if(!"".equals(gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()))
+	//if(!"".equals(gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length
+	// -1]).getLabel().getText()))
 	// emptyLabel=false;
-	// label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).getLabel().getText()+")";
+	// label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).
+	// getLabel().getText()+")";
 	// if(!emptyLabel)
 	// {
 	// n.getLayout().setText(label);
@@ -1981,7 +2032,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	// else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
 	// {
 	// FSAGraph
-	// g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF))[0]);
+	// g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.
+	// getAnnotation(Annotable.COMPOSED_OF))[0]);
 	// if(g==null)
 	// return;
 	// for(Node n:nodes.values())
@@ -1992,8 +2044,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	// {
 	// label="(";
 	// for(int i=0;i<s.getStateCompositionList().length-1;++i)
-	// label+=g.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
-	// label+=g.getNode(s.getStateCompositionList()[s.getStateCompositionList().length-1]).getLabel().getText()+")";
+	//label+=g.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
+	// label+=g.getNode(s.getStateCompositionList()[s.getStateCompositionList().
+	// length-1]).getLabel().getText()+")";
 	// }
 	// else if(s.getStateCompositionList().length>0)
 	// label=g.getNode(s.getStateCompositionList()[0]).getLabel().getText();
@@ -2133,24 +2186,39 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	{
 		if (!this.avoidLayoutDrawing)
 		{
+			if (needsRefresh())
+			{
+				refresh();
+			}
 			super.draw(g);
 		}
 	}
 
 	public void forceLayoutDisplay()
 	{
-		boolean latexOn = LatexManager.isLatexEnabled();
-		if (latexOn)
-		{
-			// disable Latex so model is wrapped without rendering
-			LatexManager.setLatexEnabled(false);
-		}
 		Cursor backupCursor = Hub.getMainWindow().getCursor();
 		Hub.getMainWindow().setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		try
 		{
+			for (Presentation p : hooks)
+			{
+				if (p instanceof LatexPresentation)
+				{
+					((LatexPresentation)p).setAllowedRendering(false);
+				}
+			}
 			initializeGraph();
-			this.avoidLayoutDrawing = false;
+			avoidLayoutDrawing = false;
+			if (LatexManager.isLatexEnabled())
+			{
+				for (Presentation p : hooks)
+				{
+					if (p instanceof LatexPresentation)
+					{
+						LatexManager.prerenderAndRepaint((LatexPresentation)p);
+					}
+				}
+			}
 		}
 		catch (RuntimeException e)
 		{
@@ -2159,10 +2227,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 		finally
 		{
 			Hub.getMainWindow().setCursor(backupCursor);
-		}
-		if (latexOn)
-		{
-			LatexManager.setLatexEnabled(true);
 		}
 		this.getBounds(true);
 	}
@@ -2202,8 +2266,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	 * Set if rendered labels have to be drawn.
 	 * 
 	 * @param b
-	 *            <code>true</code> to draw rendered labels;
-	 *            <code>false</code> not to
+	 *            <code>true</code> to draw rendered labels; <code>false</code>
+	 *            not to
 	 */
 	public void setDrawRenderedLabels(boolean b)
 	{
@@ -2214,8 +2278,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber,
 	 * Returns if rendered labels have to be drawn. To be used by graph labels
 	 * to determine whether to draw or not.
 	 * 
-	 * @return <code>true</code> to draw rendered labels; <code>false</code>
-	 *         not to
+	 * @return <code>true</code> to draw rendered labels; <code>false</code> not
+	 *         to
 	 */
 	public boolean isDrawRenderedLabels()
 	{

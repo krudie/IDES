@@ -112,11 +112,13 @@ public class BlockLabellingDialog extends EscapeDialog
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		area = new JTextField(WIDTH);
 		// Object
-		// actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+		// actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.
+		// getKeyStroke(KeyEvent.VK_ENTER,0));
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke
 				.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				this);
-		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
+		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(
+		// KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
 		area.getActionMap().put(this, commitListener);
 		// JScrollPane sPane=new JScrollPane(area);
 		mainBox.add(area);

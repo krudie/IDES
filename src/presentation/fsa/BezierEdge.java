@@ -74,8 +74,8 @@ public class BezierEdge extends Edge
 
 	/**
 	 * Creates a new directed Bezier edge from <code>source</code> to
-	 * <code>target</code> with the given layout data and representing the
-	 * given transition. Precondition: layout is not null
+	 * <code>target</code> with the given layout data and representing the given
+	 * transition. Precondition: layout is not null
 	 * 
 	 * @param layout
 	 *            the layout data
@@ -272,7 +272,8 @@ public class BezierEdge extends Edge
 					TARGET_NODE);
 			((BezierLayout)getLayout()).setTargetT(tTarget);
 		}
-		// ///////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////
+		// /////////
 		if (!isSelected())
 		{
 			getHandler().setVisible(false);
@@ -570,7 +571,6 @@ public class BezierEdge extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.GraphElement#translate(float, float)
 	 */
 	@Override
@@ -761,7 +761,6 @@ public class BezierEdge extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#isMovable(int)
 	 */
 	@Override
@@ -797,8 +796,8 @@ public class BezierEdge extends Edge
 	}
 
 	/**
-	 * Computes this curve as a straight, directed edge from <code>s</code>,
-	 * the layout for the source node to <code>endPoint</code>.
+	 * Computes this curve as a straight, directed edge from <code>s</code>, the
+	 * layout for the source node to <code>endPoint</code>.
 	 * 
 	 * @param s
 	 *            layout for source node
@@ -812,8 +811,8 @@ public class BezierEdge extends Edge
 
 	/**
 	 * Computes this curve as a straight, directed edge from the source node
-	 * with layout data <code>nL1</code>, to the target node having layout
-	 * data <code>nL2</code>.
+	 * with layout data <code>nL1</code>, to the target node having layout data
+	 * <code>nL2</code>.
 	 * 
 	 * @param nL1
 	 *            the layout data for the source node
@@ -827,9 +826,8 @@ public class BezierEdge extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#computeEdge(presentation.fsa.Node,
-	 *      presentation.fsa.Node)
+	 * presentation.fsa.Node)
 	 */
 	@Override
 	public void computeEdge()
@@ -856,7 +854,6 @@ public class BezierEdge extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#straighten()
 	 */
 	@Override
@@ -900,7 +897,8 @@ public class BezierEdge extends Edge
 	}
 
 	/**
-	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node,
+	 * @see 
+	 *      presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node,
 	 *      int type)
 	 */
 	@Override
@@ -1025,7 +1023,6 @@ public class BezierEdge extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#getSourceEndPoint()
 	 */
 	@Override
@@ -1036,7 +1033,6 @@ public class BezierEdge extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#getTargetEndPoint()
 	 */
 	@Override

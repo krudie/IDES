@@ -22,5 +22,5 @@ public interface UIDescriptor
 
 	public JMenu getPopupMenu();
 
-	public boolean showZoomControl();
+	public boolean supportsZoom();
 }

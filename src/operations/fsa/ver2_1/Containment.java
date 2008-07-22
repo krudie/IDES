@@ -27,7 +27,8 @@ public class Containment extends AbstractOperation
 				+ "given candidate superlanguage.";
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class, FSAModel.class };
-		inputDesc = new String[] { "Candidate sublanguage", "Candidate superlanguage" };
+		inputDesc = new String[] { "Candidate sublanguage",
+				"Candidate superlanguage" };
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { Boolean.class };
@@ -36,7 +37,6 @@ public class Containment extends AbstractOperation
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	@Override

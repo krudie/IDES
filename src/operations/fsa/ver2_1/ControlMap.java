@@ -133,7 +133,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 		// TODO the block below is only for debugging
 		// for(Iterator<FSAState> i=supervisor.getStateIterator();i.hasNext();)
 		// {
-		// System.out.println(supervisor.getDisabledEvents(i.next()).toString());
+		//System.out.println(supervisor.getDisabledEvents(i.next()).toString());
 		// }
 
 		return new Object[] { supervisor };

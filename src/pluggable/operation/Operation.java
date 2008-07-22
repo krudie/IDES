@@ -40,15 +40,16 @@ public interface Operation
 
 	/**
 	 * Class types of the inputs. If the inputs are unbounded, the last supplied
-	 * class type will be assumed for all inputs with a higher index. E.g., if {<code>Boolean</code>,<code>FSAModel</code>}
-	 * are supplied, the first input will be <code>Boolean</code> and all
-	 * remaining inputs are assumed to be of type <code>FSAModel</code>. This
-	 * type extension is applied only when the number of inputs is unbounded
-	 * (i.e., when {@link #getNumberOfInputs()} returns -1).
+	 * class type will be assumed for all inputs with a higher index. E.g., if {
+	 * <code>Boolean</code>,<code>FSAModel</code> are supplied, the first input
+	 * will be <code>Boolean</code> and all remaining inputs are assumed to be
+	 * of type <code>FSAModel</code>. This type extension is applied only when
+	 * the number of inputs is unbounded (i.e., when
+	 * {@link #getNumberOfInputs()} returns -1).
 	 * <p>
 	 * Whenever possible, please use the general interfaces from the package
-	 * <code>model.*</code> (such as <code>FSAModel</code>) instead of
-	 * specific implementations.
+	 * <code>model.*</code> (such as <code>FSAModel</code>) instead of specific
+	 * implementations.
 	 * 
 	 * @return class types of the inputs
 	 * @see #getNumberOfInputs()
@@ -59,12 +60,12 @@ public interface Operation
 	/**
 	 * User-readable and understandable description for each input argument. If
 	 * the inputs are unbounded, the last supplied description will be assumed
-	 * for all inputs with a higher index. E.g., if {<code>"String 1"</code>,<code>"String 2"</code>}
-	 * are supplied, the first input will be described to the user as
-	 * <code>"String 1"</code> and all remaining inputs will be described as
-	 * <code>"String 2"</code>. This type extension is applied only when the
-	 * number of inputs is unbounded (i.e., when {@link #getNumberOfInputs()}
-	 * returns -1).
+	 * for all inputs with a higher index. E.g., if {<code>"String 1"</code>,
+	 * <code>"String 2"</code> are supplied, the first input will be described
+	 * to the user as <code>"String 1"</code> and all remaining inputs will be
+	 * described as <code>"String 2"</code>. This type extension is applied only
+	 * when the number of inputs is unbounded (i.e., when
+	 * {@link #getNumberOfInputs()} returns -1).
 	 * 
 	 * @return user-readable descriptions of the inputs
 	 * @see #getNumberOfInputs()
@@ -82,8 +83,8 @@ public interface Operation
 	 * Class types of the outputs.
 	 * <p>
 	 * Whenever possible, please use the general interfaces from the package
-	 * <code>model.*</code> (such as <code>FSAModel</code>) instead of
-	 * specific implementations.
+	 * <code>model.*</code> (such as <code>FSAModel</code>) instead of specific
+	 * implementations.
 	 * 
 	 * @return class types of the inputs
 	 * @see #getNumberOfOutputs()

@@ -14,11 +14,9 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import main.Hub;
-import presentation.template.BlockLabellingDialog;
 import presentation.template.DesignDrawingView;
 import presentation.template.GraphBlock;
 import presentation.template.GraphLink;
-import presentation.template.TemplateGraph;
 
 public class SelectionTool extends DrawingTool
 {
@@ -71,16 +69,16 @@ public class SelectionTool extends DrawingTool
 		{
 			context.clearSelection();
 			dragSelection = false;
-			for (GraphBlock b : ((TemplateGraph)context.getLayoutShell())
-					.getBlocks())
-			{
-				if (b.bounds().contains(m.getPoint()))
-				{
-					updateDragDisplay(new Rectangle(m.getPoint()));
-					dragSelection = true;
-					break;
-				}
-			}
+			// for (GraphBlock b : ((TemplateGraph)context.getLayoutShell())
+			// .getBlocks())
+			// {
+			// if (b.bounds().contains(m.getPoint()))
+			// {
+			// updateDragDisplay(new Rectangle(m.getPoint()));
+			// dragSelection = true;
+			// break;
+			// }
+			// }
 		}
 		else
 		{
@@ -144,8 +142,8 @@ public class SelectionTool extends DrawingTool
 					{
 						if (delBlock != null)
 						{
-							((TemplateGraph)context.getLayoutShell())
-									.remove(delBlock);
+							// ((TemplateGraph)context.getLayoutShell())
+							// .remove(delBlock);
 							delBlock = null;
 							promptOn = false;
 						}
@@ -218,8 +216,8 @@ public class SelectionTool extends DrawingTool
 					{
 						if (delLink != null)
 						{
-							((TemplateGraph)context.getLayoutShell())
-									.remove(delLink);
+							// ((TemplateGraph)context.getLayoutShell())
+							// .remove(delLink);
 							delLink = null;
 							promptOn = false;
 						}
@@ -269,10 +267,10 @@ public class SelectionTool extends DrawingTool
 			if (selected != null)
 			{
 				promptOn = true;
-				BlockLabellingDialog.showAndLabel(context,
-						(TemplateGraph)context.getLayoutShell(),
-						selected,
-						this);
+				// BlockLabellingDialog.showAndLabel(context,
+				// (TemplateGraph)context.getLayoutShell(),
+				// selected,
+				// this);
 			}
 		}
 	}
@@ -297,16 +295,16 @@ public class SelectionTool extends DrawingTool
 	protected void updateDragDisplay(Rectangle selectionArea)
 	{
 		context.clearSelection();
-		for (GraphBlock b : ((TemplateGraph)context.getLayoutShell())
-				.getBlocks())
-		{
-			// second condition is for cases when area has dimensions 0
-			if (selectionArea.intersects(b.bounds())
-					|| b.bounds().contains(selectionArea.getLocation()))
-			{
-				context.addToSelection(b);
-			}
-		}
+		// for (GraphBlock b : ((TemplateGraph)context.getLayoutShell())
+		// .getBlocks())
+		// {
+		// // second condition is for cases when area has dimensions 0
+		// if (selectionArea.intersects(b.bounds())
+		// || b.bounds().contains(selectionArea.getLocation()))
+		// {
+		// context.addToSelection(b);
+		// }
+		// }
 		context.setSelectionArea(selectionArea);
 	}
 }

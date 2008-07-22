@@ -345,6 +345,7 @@ public class TemplateParser
 					+ e.getMessage());
 		}
 
-		return model;// (TemplateGraph)PresentationManager.getToolset(TemplateModel.class).wrapModel(model);
+		return model;// (TemplateGraph)PresentationManager.getToolset(
+						// TemplateModel.class).wrapModel(model);
 	}
 }

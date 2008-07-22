@@ -19,17 +19,16 @@ import presentation.fsa.Node;
  * button), an AbstractAction will be encapsulating an UndoableAction that knows
  * how to undo/redo the action to be done. So everytime an action that can be
  * undone is started, two steps will be executed: 1- One
- * <code>AbstractAction</code> executes an <action>UndoableAction</action>
- * that can redo\/undo the result of the action. 2- The
- * <code>AbstractAction</code> then, notifies the UndoManager in the
- * CommandManager about a performed action. One of the reasons for making the
- * UndoableAction being called by an AbstractAction is the fact that by doing
- * this, one AbstractAction could encapsulate several UndoableActions making
- * then a "composite" UndoableAction. Also it is simpler (in my opinion
- * (Christian)), to have to simpler classes one to create an UndoableAction and
- * talk to the CommandManager, and other which is the UndoableAction itself.
- * Having everything in just one class would make this class be too big and more
- * difficult to write.
+ * <code>AbstractAction</code> executes an <action>UndoableAction</action> that
+ * can redo\/undo the result of the action. 2- The <code>AbstractAction</code>
+ * then, notifies the UndoManager in the CommandManager about a performed
+ * action. One of the reasons for making the UndoableAction being called by an
+ * AbstractAction is the fact that by doing this, one AbstractAction could
+ * encapsulate several UndoableActions making then a "composite" UndoableAction.
+ * Also it is simpler (in my opinion (Christian)), to have to simpler classes
+ * one to create an UndoableAction and talk to the CommandManager, and other
+ * which is the UndoableAction itself. Having everything in just one class would
+ * make this class be too big and more difficult to write.
  * 
  * @author Christian Silvano
  */

@@ -369,9 +369,8 @@ public class CreationTool extends DrawingTool
 	}
 
 	/**
-	 * Creates and returns an Edge with source node <code>n1</code>,
-	 * undefined target node, and terminating at the centre of node
-	 * <code>n1</code>.
+	 * Creates and returns an Edge with source node <code>n1</code>, undefined
+	 * target node, and terminating at the centre of node <code>n1</code>.
 	 * 
 	 * @param n1
 	 *            source node

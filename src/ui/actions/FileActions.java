@@ -21,8 +21,6 @@ import main.WorkspaceDescriptor;
 import model.DESModel;
 import model.ModelManager;
 import model.fsa.FSAModel;
-import presentation.LayoutShell;
-import services.notice.NoticeManager;
 
 /**
  * @author Lenko Grigorov
@@ -161,12 +159,10 @@ public class FileActions
 			Hub.getMainWindow().setCursor(Cursor
 					.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-			Iterator<LayoutShell> iterator = Hub
-					.getWorkspace().getLayoutShells();
+			Iterator<DESModel> iterator = Hub.getWorkspace().getModels();
 			while (iterator.hasNext())
 			{
-				LayoutShell gm = iterator.next();
-				DESModel model = gm.getModel();
+				DESModel model = iterator.next();
 				if (model != null)
 				{
 					io.CommonFileActions.save(model, (File)model
@@ -203,14 +199,19 @@ public class FileActions
 					.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			try
 			{
-				WorkspaceDescriptor wd = Hub.getWorkspace().getDescriptor();
-				if (io.CommonFileActions.saveWorkspace(wd, wd.getFile()))
+				WorkspaceDescriptor wd = CommonFileActions
+						.getWorkspaceDescriptor();
+				if (wd != null)
 				{
-					Hub.getWorkspace().setDirty(false);
+					if (io.CommonFileActions.saveWorkspace(wd, wd.getFile()))
+					{
+						Hub.getWorkspace().setDirty(false);
+					}
 				}
 			}
 			catch (IncompleteWorkspaceDescriptorException e)
 			{
+				Hub.displayAlert(Hub.string("notAllUnsavedSaved"));
 			}
 			catch (NullPointerException e)
 			{
@@ -246,14 +247,19 @@ public class FileActions
 					.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			try
 			{
-				WorkspaceDescriptor wd = Hub.getWorkspace().getDescriptor();
-				if (io.CommonFileActions.saveWorkspaceAs(wd))
+				WorkspaceDescriptor wd = CommonFileActions
+						.getWorkspaceDescriptor();
+				if (wd != null)
 				{
-					Hub.getWorkspace().setDirty(false);
+					if (io.CommonFileActions.saveWorkspaceAs(wd))
+					{
+						Hub.getWorkspace().setDirty(false);
+					}
 				}
 			}
 			catch (IncompleteWorkspaceDescriptorException e)
 			{
+				Hub.displayAlert(Hub.string("notAllUnsavedSaved"));
 			}
 			Hub.getMainWindow().setCursor(cursor);
 		}

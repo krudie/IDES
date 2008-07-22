@@ -125,12 +125,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	protected static class AutomatonDescriptor implements DESModelType
 	{
-		public Class<?>[] getModelInterfaces()
+		public Class<?>[] getModelPerspectives()
 		{
 			return new Class[] { FSAModel.class, FSASupervisor.class };
 		}
 
-		public Class<?> getMainInterface()
+		public Class<?> getMainPerspective()
 		{
 			return FSAModel.class;
 		}
@@ -295,7 +295,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getName()
 	 */
 	public String getName()
@@ -315,7 +314,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#setName(java.lang.String)
 	 */
 	public void setName(String name)
@@ -337,7 +335,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getStateCount()
 	 */
 	public long getStateCount()
@@ -347,7 +344,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getTransitionCount()
 	 */
 	public long getTransitionCount()
@@ -386,7 +382,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#add(model.fsa.FSAState)
 	 */
 	public void add(FSAState s)
@@ -404,7 +399,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#remove(model.fsa.FSAState)
 	 */
 	public void remove(FSAState s)
@@ -437,7 +431,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getStateIterator()
 	 */
 	public ListIterator<FSAState> getStateIterator()
@@ -447,7 +440,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getState(int)
 	 */
 	public FSAState getState(long id)
@@ -466,7 +458,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#add(model.fsa.FSATransition)
 	 */
 	public void add(FSATransition t)
@@ -486,7 +477,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#remove(model.fsa.FSATransition)
 	 */
 	public void remove(FSATransition t)
@@ -503,7 +493,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getTransition(int)
 	 */
 	public FSATransition getTransition(long id)
@@ -522,7 +511,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getTransitionIterator()
 	 */
 	public ListIterator<FSATransition> getTransitionIterator()
@@ -532,7 +520,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#add(model.fsa.FSAEvent)
 	 */
 	public void add(FSAEvent e)
@@ -590,7 +577,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getEventIterator()
 	 */
 	public ListIterator<FSAEvent> getEventIterator()
@@ -608,7 +594,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getEvent(int)
 	 */
 	public FSAEvent getEvent(long id)
@@ -1086,8 +1071,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * 
 	 * @param state
 	 *            state of the supervisor
-	 * @return the events disabled at a given state; or <code>null</code> if
-	 *         the control map is undefined
+	 * @return the events disabled at a given state; or <code>null</code> if the
+	 *         control map is undefined
 	 */
 	public FSAEventSet getDisabledEvents(FSAState state)
 	{

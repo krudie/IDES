@@ -157,7 +157,7 @@ public class NodeLabellingDialog extends EscapeDialog
 				.getLayout().getLocation().y);
 		instance();
 		me.pack();
-		String label = node.getLabel().getLayout().getText();
+		String label = node.getLabel().getText();
 		boolean hasOurListener = false;
 		for (int i = 0; i < area.getFocusListeners().length; ++i)
 		{

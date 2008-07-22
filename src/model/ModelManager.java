@@ -7,9 +7,11 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
+import model.fsa.FSAModel;
+
 /**
- * The manager of model types available to IDES. This allows for custom model types
- * implemented by plugins.
+ * The manager of model types available to IDES. This allows for custom model
+ * types implemented by plugins.
  * 
  * @see DESModelType
  * @see #registerModel(DESModelType)
@@ -19,75 +21,74 @@ public class ModelManager
 {
 
 	/**
-	 * Index of all registered {@link DESModelType}s. The key is the DES
-	 * model interface implemented by the model type. The value is the set of the
-	 * model types of all models implementing the given interface. Note
-	 * that if a model type implements a number of interfaces, its model type
-	 * will be included in the set for each one of these interfaces.
+	 * Index of all registered {@link DESModelType}s. The key is a DES model
+	 * perspective. The value is the set of the model types implementing the
+	 * given perspective. Note that if a model type implements a number of
+	 * perspectives, its model type will be included in the set for each one of
+	 * these perspectives.
 	 * 
 	 * @see #registerModel(DESModelType)
 	 */
-	protected static Hashtable<Class<?>, Set<DESModelType>> class2Model = new Hashtable<Class<?>, Set<DESModelType>>();
+	protected static Hashtable<Class<?>, Set<DESModelType>> class2Type = new Hashtable<Class<?>, Set<DESModelType>>();
 
 	/**
-	 * Creates and returns a DES model for the supplied interface, with the
-	 * given display name.
+	 * Creates and returns a DES model for the supplied perspective, e.g.,
+	 * {@link FSAModel}, with the given display name.
 	 * 
-	 * @param iface
-	 *            the interface for which a model has to be created
+	 * @param perspective
+	 *            the perspective for which a model has to be created
 	 * @param name
 	 *            the display name for the new model
-	 * @return a new DES model for the given interface. If no model was
-	 *         registered for this interface, returns <code>null</code>.
+	 * @return a new DES model for the given perspective. If no model was
+	 *         registered for this perspective, returns <code>null</code>.
 	 * @see #createModel(Class)
 	 */
-	public static <T> T createModel(Class<T> iface, String name)
+	public static <T> T createModel(Class<T> perspective, String name)
 	{
-		Set<DESModelType> s = class2Model.get(iface);
+		Set<DESModelType> s = class2Type.get(perspective);
 		if (s.isEmpty())
 		{
 			return null;
 		}
 		else
 		{
-			return iface.cast(s.iterator().next().createModel(name));
+			return perspective.cast(s.iterator().next().createModel(name));
 		}
 	}
 
 	/**
-	 * Creates and returns a DES model for the supplied interface, with an empty
-	 * display name.
+	 * Creates and returns a DES model for the supplied perspective, e.g.,
+	 * {@link FSAModel}, with an empty display name.
 	 * 
-	 * @param iface
-	 *            the interface for which a model has to be created
-	 * @return a new DES model for the given interface. If no model was
-	 *         registered for this interface, returns <code>null</code>.
+	 * @param perspective
+	 *            the perspectivee for which a model has to be created
+	 * @return a new DES model for the given perspective. If no model was
+	 *         registered for this perspective, returns <code>null</code>.
 	 * @see #createModel(Class, String)
 	 */
-	public static <T> T createModel(Class<T> iface)
+	public static <T> T createModel(Class<T> perspective)
 	{
-		return createModel(iface, "");
+		return createModel(perspective, "");
 	}
 
 	/**
-	 * Returns all model types that implement the given
-	 * interface.
+	 * Returns all model types that implement the given perspective.
 	 * 
-	 * @param iface
-	 *            the interface for which model types should be returned
-	 * @return the model types that implement the interface
+	 * @param perspective
+	 *            the perspective for which model types should be returned
+	 * @return the model types that implement the perspective
 	 * @see #getAllTypes()
 	 */
-	public static DESModelType[] getModelsForInterface(Class<?> iface)
+	public static DESModelType[] getModelsForPerspective(Class<?> perspective)
 	{
-		return class2Model.get(iface).toArray(new DESModelType[0]);
+		return class2Type.get(perspective).toArray(new DESModelType[0]);
 	}
 
 	/**
 	 * Returns all model types registered with the manager.
 	 * 
 	 * @return all model types registerd with the manager
-	 * @see #getModelsForInterface(Class)
+	 * @see #getModelsForPerspective(Class)
 	 */
 	public static DESModelType[] getAllTypes()
 	{
@@ -100,7 +101,7 @@ public class ModelManager
 								.getDescription());
 					}
 				});
-		for (Enumeration<Set<DESModelType>> i = class2Model.elements(); i
+		for (Enumeration<Set<DESModelType>> i = class2Type.elements(); i
 				.hasMoreElements();)
 		{
 			all.addAll(i.nextElement());
@@ -117,20 +118,20 @@ public class ModelManager
 	 */
 	public static void registerModel(DESModelType mt)
 	{
-		Class<?>[] ifaces = mt.getModelInterfaces();
-		for (int i = 0; i < ifaces.length; ++i)
+		Class<?>[] perspectives = mt.getModelPerspectives();
+		for (int i = 0; i < perspectives.length; ++i)
 		{
 			Set<DESModelType> set;
-			if (class2Model.containsKey(ifaces[i]))
+			if (class2Type.containsKey(perspectives[i]))
 			{
-				set = class2Model.get(ifaces[i]);
+				set = class2Type.get(perspectives[i]);
 			}
 			else
 			{
 				set = new HashSet<DESModelType>();
 			}
 			set.add(mt);
-			class2Model.put(ifaces[i], set);
+			class2Type.put(perspectives[i], set);
 		}
 	}
 }

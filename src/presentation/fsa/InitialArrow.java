@@ -161,7 +161,10 @@ public class InitialArrow extends Edge
 
 		// Compute the direction and location of the arrow head
 		AffineTransform at = new AffineTransform();
-		Point2D.Float unitArrowDir = Geometry.unit(direction); // Geometry.unitDirectionVector(line.getP1(),
+		Point2D.Float unitArrowDir = Geometry.unit(direction); // Geometry.
+																// unitDirectionVector
+																// (
+																// line.getP1(),
 		// line.getP2());
 		Point2D.Float tEndPt = getTargetEndPoint();
 
@@ -275,7 +278,6 @@ public class InitialArrow extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#getSourceEndPoint()
 	 */
 	@Override
@@ -287,7 +289,6 @@ public class InitialArrow extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#getTargetEndPoint()
 	 */
 	@Override
@@ -296,7 +297,9 @@ public class InitialArrow extends Edge
 		return targetPoint;
 	}
 
-	/** the only valid pointType for method setPoint : starting point of the line */
+	/**
+	 * the only valid pointType for method setPoint : starting point of the line
+	 */
 	public static final int P1 = 0;
 
 	/**
@@ -340,9 +343,9 @@ public class InitialArrow extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node,
-	 *      int)
+	 * @see
+	 * presentation.fsa.Edge#intersectionWithBoundary(presentation.fsa.Node,
+	 * int)
 	 */
 	@Override
 	public Point2D.Float intersectionWithBoundary(Node node, int type)
@@ -377,7 +380,8 @@ public class InitialArrow extends Edge
 			// at presentation.fsa.GraphElement.translate(GraphElement.java:160)
 			// at ui.tools.MovementTool.handleMouseDragged(MovementTool.java:56)
 			// at
-			// presentation.fsa.GraphDrawingView.mouseDragged(GraphDrawingView.java:282)
+			// presentation.fsa.GraphDrawingView.mouseDragged(GraphDrawingView.
+			// java:282)
 			// TEMP SOLUTION: reset arrow
 			direction = new Point2D.Float((float)(minShaftLength * -1), 0f);
 			return Geometry.add(getLocation(), Geometry.scale(direction, -1));
@@ -408,7 +412,6 @@ public class InitialArrow extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#isMovable(int)
 	 */
 	@Override
@@ -444,7 +447,6 @@ public class InitialArrow extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#isStraight()
 	 */
 	@Override
@@ -455,7 +457,6 @@ public class InitialArrow extends Edge
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#straighten()
 	 */
 	@Override
@@ -477,7 +478,6 @@ public class InitialArrow extends Edge
 	/*
 	 * TODO ask SJW what she needs to export to LaTeX and eps. Sarah: OK, I've
 	 * been in and I'm working on it. (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Edge#createExportString(java.awt.Rectangle, int)
 	 */
 	@Override
@@ -541,7 +541,7 @@ public class InitialArrow extends Edge
 			if (edge.getTargetNode().equals(edge.getSourceNode()))
 			{
 				currentDirVector = Geometry.subtract(target.getLocation(),
-						((ReflexiveEdge)edge).getMidpoint());
+						((ReflexiveEdge)edge).getHandleLocation());
 				float currentAngle = (float)Geometry
 						.angleFrom(currentDirVector, new Point2D.Float(-1, 0));
 				angles.add(currentAngle);

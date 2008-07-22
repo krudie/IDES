@@ -3,11 +3,10 @@ package model;
 import java.awt.Image;
 
 import model.fsa.FSAModel;
-import services.General;
 
 /**
- * Descriptor for a DES model type. A plugin wishing to implement a new DES model
- * type should implement this interface and the register it with the
+ * Descriptor for a DES model type. A plugin wishing to implement a new DES
+ * model type should implement this interface and the register it with the
  * {@link ModelManager}.
  * 
  * @see ModelManager#registerModel(DESModelType)
@@ -16,29 +15,29 @@ import services.General;
 public interface DESModelType
 {
 	/**
-	 * Returns all the DES model interfaces models of this type implement. For example,
-	 * if the type implements an FSA, it should return {@link FSAModel}. Custom
-	 * interfaces can be returned as well.
+	 * Returns all the DES model perspectives which models of this type
+	 * implement. For example, if the type implements an FSA, it should return
+	 * {@link FSAModel}. Custom perspectives can be returned as well.
 	 * 
-	 * @return all DES model interfaces models of this type implement
+	 * @return all DES model perspectives which models of this type implement
 	 */
-	public Class<?>[] getModelInterfaces();
+	public Class<?>[] getModelPerspectives();
 
 	/**
-	 * Returns the "main" DES model interface to be used with models of this type. For
-	 * example, if the model of an FSA provides an EventSet interface for access
-	 * to its event set, this method should return {@link FSAModel} since this
-	 * is the main purpose of the model.
+	 * Returns the "main" perspective of models of this type. For example, if
+	 * the model of an FSA also provides an EventSet perspective for access to
+	 * its event set, this method should return the {@link FSAModel} perspective
+	 * since this is the main perspective of the model.
 	 * 
-	 * @return the interface for the main purpose of models of this type
+	 * @return the perspective for the main purpose of models of this type
 	 */
-	public Class<?> getMainInterface();
+	public Class<?> getMainPerspective();
 
 	/**
-	 * Returns a human-readable description of this type of model. For
-	 * example, <code>"Petri net"</code>.
+	 * Returns a human-readable description of this type of model. For example,
+	 * <code>"Petri net"</code>.
 	 * 
-	 * @return human readable description of the model type
+	 * @return human-readable description of the model type
 	 */
 	public String getDescription();
 

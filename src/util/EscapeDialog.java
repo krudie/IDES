@@ -15,9 +15,9 @@ import javax.swing.KeyStroke;
 
 /**
  * A class which extends {@link javax.swing.JDialog} with the capability to
- * handle the event of the user pressing the <code>Escape</code> key. Instead
- * of subclassing {@link javax.swing.JDialog}, subclass {@link EscapeDialog}
- * and override {@link #onEscapeEvent()}.
+ * handle the event of the user pressing the <code>Escape</code> key. Instead of
+ * subclassing {@link javax.swing.JDialog}, subclass {@link EscapeDialog} and
+ * override {@link #onEscapeEvent()}.
  * 
  * @see #onEscapeEvent()
  * @see javax.swing.JDialog
@@ -95,8 +95,8 @@ public class EscapeDialog extends JDialog
 
 	/**
 	 * Creates a modal or non-modal dialog without a title and with the
-	 * specified owner {@link java.awt.Frame}. If owner is <code>null</code>,
-	 * a shared, hidden frame will be set as the owner of the dialog.
+	 * specified owner {@link java.awt.Frame}. If owner is <code>null</code>, a
+	 * shared, hidden frame will be set as the owner of the dialog.
 	 * <p>
 	 * This constructor sets the component's locale property to the value
 	 * returned by {@link javax.swing.JComponent#getDefaultLocale()}.
@@ -120,8 +120,8 @@ public class EscapeDialog extends JDialog
 
 	/**
 	 * Creates a non-modal dialog with the specified title and with the
-	 * specified owner {@link java.awt.Frame}. If owner is <code>null</code>,
-	 * a shared, hidden frame will be set as the owner of the dialog.
+	 * specified owner {@link java.awt.Frame}. If owner is <code>null</code>, a
+	 * shared, hidden frame will be set as the owner of the dialog.
 	 * <p>
 	 * This constructor sets the component's locale property to the value
 	 * returned by {@link javax.swing.JComponent#getDefaultLocale()}.
@@ -144,8 +144,8 @@ public class EscapeDialog extends JDialog
 
 	/**
 	 * Creates a modal or non-modal dialog with the specified title and the
-	 * specified owner {@link java.awt.Frame}. If owner is <code>null</code>,
-	 * a shared, hidden frame will be set as the owner of this dialog. All
+	 * specified owner {@link java.awt.Frame}. If owner is <code>null</code>, a
+	 * shared, hidden frame will be set as the owner of this dialog. All
 	 * constructors defer to this one.
 	 * <p>
 	 * NOTE: Any popup components ({@link javax.swing.JComboBox},
@@ -195,8 +195,8 @@ public class EscapeDialog extends JDialog
 	 *            windows to be active at the same time
 	 * @param gc
 	 *            the {@link java.awt.GraphicsConfiguration} of the target
-	 *            screen device. If <code>gc</code> is <code>null</code>,
-	 *            the same {@link java.awt.GraphicsConfiguration} as the owning
+	 *            screen device. If <code>gc</code> is <code>null</code>, the
+	 *            same {@link java.awt.GraphicsConfiguration} as the owning
 	 *            {@link java.awt.Frame} is used.
 	 * @see java.awt.GraphicsEnvironment#isHeadless()
 	 * @see javax.swing.JComponent#getDefaultLocale()
@@ -327,8 +327,8 @@ public class EscapeDialog extends JDialog
 	 *            windows to be active at the same time
 	 * @param gc
 	 *            the {@link java.awt.GraphicsConfiguration} of the target
-	 *            screen device. If <code>gc</code> is <code>null</code>,
-	 *            the same {@link java.awt.GraphicsConfiguration} as the owning
+	 *            screen device. If <code>gc</code> is <code>null</code>, the
+	 *            same {@link java.awt.GraphicsConfiguration} as the owning
 	 *            {@link java.awt.Dialog} is used.
 	 * @throws HeadlessException
 	 *             if {@link java.awt.GraphicsEnvironment#isHeadless()} returns
@@ -345,8 +345,7 @@ public class EscapeDialog extends JDialog
 
 	/**
 	 * Called by the constructor to bind {@link #escapeListener} with the
-	 * {@link #rootPane} so that the <code>Escape</code> key can be
-	 * intercepted.
+	 * {@link #rootPane} so that the <code>Escape</code> key can be intercepted.
 	 * 
 	 * @see #escapeListener
 	 */

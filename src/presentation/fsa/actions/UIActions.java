@@ -238,9 +238,8 @@ public class UIActions
 						.abortEdge();
 			}
 			selection = context.getSelectedGroup();
-			new GraphActions.RemoveAction(
-					(FSAGraph)context.getLayoutShell(),
-					selection).execute();
+			new GraphActions.RemoveAction(context.getGraphModel(), selection)
+					.execute();
 			context.setTool(context.getPreferredTool());
 		}
 
@@ -340,7 +339,7 @@ public class UIActions
 					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 							edge);
 					// new EdgeCommands.CreateEventCommand(,edge).execute();
-					// EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+					//EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 					// edge);
 					// TODO accumulate set of edits that were performed in the
 					// edge
@@ -353,8 +352,9 @@ public class UIActions
 					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 							edge);
 					// new
-					// EdgeCommands.CreateEventCommand(ContextAdaptorHack.context,edge).execute();
-					// EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+					//EdgeCommands.CreateEventCommand(ContextAdaptorHack.context
+					// ,edge).execute();
+					//EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 					// edge);
 				}
 				else
@@ -363,8 +363,8 @@ public class UIActions
 					// implementing
 					// saving and loading free labels to file.
 					/*
-					 * presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel(
-					 * context.getGraphModel(), (GraphLabel)element);
+					 * presentation.fsa.SingleLineFreeLabellingDialog.showAndLabel
+					 * ( context.getGraphModel(), (GraphLabel)element);
 					 */
 				}
 				ContextAdaptorHack.context.repaint();

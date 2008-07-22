@@ -35,6 +35,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import main.Hub;
+import model.DESModel;
 import model.fsa.FSAEventSet;
 import model.fsa.FSAModel;
 import model.fsa.FSASupervisor;
@@ -53,9 +54,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
-import presentation.LayoutShell;
 import presentation.Presentation;
-import presentation.fsa.FSAGraph;
 import services.General;
 import util.StupidSetWrapper;
 
@@ -202,12 +201,12 @@ public class TemplateLibrary implements Presentation, KeyListener
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				Collection<FSASupervisor> sups = getSups();
-				for (FSASupervisor sup : sups)
-				{
-					FSAGraph g = new FSAGraph(sup);
-					Hub.getWorkspace().addLayoutShell(g);
-				}
+				// Collection<FSASupervisor> sups = getSups();
+				// for (FSASupervisor sup : sups)
+				// {
+				// // FSAGraph g = new FSAGraph(sup);
+				// // Hub.getWorkspace().addLayoutShell(g);
+				// }
 			}
 		});
 		extraBox.add(supconBut);
@@ -297,11 +296,6 @@ public class TemplateLibrary implements Presentation, KeyListener
 		return gui;
 	}
 
-	public LayoutShell getLayoutShell()
-	{
-		return null;
-	}
-
 	public String getName()
 	{
 		return Hub.string("templateLibrary");
@@ -336,7 +330,8 @@ public class TemplateLibrary implements Presentation, KeyListener
 		// try
 		// {
 		// fsa = ap.parse(new
-		// File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities.MODEL_FILE_EXT));
+		//File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities
+		// .MODEL_FILE_EXT));
 		// errors=ap.getParsingErrors();
 		// }catch(Exception e)
 		// {
@@ -373,7 +368,8 @@ public class TemplateLibrary implements Presentation, KeyListener
 		// try
 		// {
 		// fsa = ap.parse(new
-		// File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities.MODEL_FILE_EXT));
+		//File(TEMPLATES_DIR+File.separator+selected.getFSAName()+"."+IOUtilities
+		// .MODEL_FILE_EXT));
 		// errors=ap.getParsingErrors();
 		// }catch(Exception e)
 		// {
@@ -397,7 +393,8 @@ public class TemplateLibrary implements Presentation, KeyListener
 		// try
 		// {
 		// fsa = ap.parse(new
-		// File(TEMPLATES_DIR+File.separator+name+"."+IOUtilities.MODEL_FILE_EXT));
+		//File(TEMPLATES_DIR+File.separator+name+"."+IOUtilities.MODEL_FILE_EXT)
+		// );
 		// errors=ap.getParsingErrors();
 		// }catch(Exception e)
 		// {
@@ -742,5 +739,11 @@ public class TemplateLibrary implements Presentation, KeyListener
 	// }
 	public void forceRepaint()
 	{
+	}
+
+	public DESModel getModel()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -323,7 +323,7 @@ public class CubicParamCurve2D extends CubicCurve2D.Float
 	 * Returns the coefficients for the parametric equation of this 2D cubic
 	 * curve.
 	 * 
-	 * @return {a_x, b_x, c_x a_y, b_y, c_y}
+	 * @return a_x, b_x, c_x a_y, b_y, c_y}
 	 */
 	public float[][] getCoefficients()
 	{
@@ -348,8 +348,8 @@ public class CubicParamCurve2D extends CubicCurve2D.Float
 	}
 
 	/**
-	 * Returns true iff this curve has the same control points as <code>o</code>.
-	 * Precondition: <code>o</code> is a <code>CubicCurve2D</code>
+	 * Returns true iff this curve has the same control points as <code>o</code>
+	 * . Precondition: <code>o</code> is a <code>CubicCurve2D</code>
 	 * 
 	 * @return true iff this curve has the same control points as <code>o</code>
 	 */

@@ -24,7 +24,6 @@ public class PrefuseLayouter
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.layout.FSMLayouter#layout(presentation.fsa.FSMGraph)
 	 */
 	// public void layout(FSMGraph graph) {
@@ -52,7 +51,7 @@ public class PrefuseLayouter
 	// prefuse.data.Node n=i.next();
 	// VisualItem vn=v.getVisualItem("graph",n);
 	// CircleNode gn=(CircleNode)BridgeMapper.nodeMapInverse.get(n);
-	// //vn.setBounds(vn.getX()-gn.getRadius(),vn.getY()-gn.getRadius(),200,200);
+	////vn.setBounds(vn.getX()-gn.getRadius(),vn.getY()-gn.getRadius(),200,200);
 	// // vn.setX(0);
 	// // vn.setStartX(-200);
 	// // vn.setEndX(200);
@@ -80,7 +79,8 @@ public class PrefuseLayouter
 	// System.out.println(""+vn.getBounds()+","+vn.getX()+","+vn.getY()+",
 	// "+gn.bounds()+","+gn.getLocation());
 	// }
-	// //graph.translate((float)-v.getBounds("graph").getX(),(float)-v.getBounds("graph").getY());
+	////graph.translate((float)-v.getBounds("graph").getX(),(float)-v.getBounds(
+	// "graph").getY());
 	// System.out.println("foo");
 	// }
 }

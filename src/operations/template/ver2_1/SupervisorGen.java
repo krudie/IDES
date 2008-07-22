@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import main.Hub;
 import model.fsa.FSAEvent;
 import model.fsa.FSAModel;
 import model.fsa.FSASupervisor;
@@ -165,7 +164,7 @@ public class SupervisorGen implements Operation
 			}
 			FSAGraph g = new FSAGraph(product);
 			g.setName("sync " + c.getFSA().getName());
-			Hub.getWorkspace().addLayoutShell(g);
+			// Hub.getWorkspace().addLayoutShell(g);
 			// TreeSets are used so that the events are compared
 			// according to their labels (symbols)
 			Set<FSAEvent> diff = new TreeSet<FSAEvent>();
@@ -186,7 +185,7 @@ public class SupervisorGen implements Operation
 					c.getFSA(), new StupidSetWrapper(diff) })[0];
 			g = new FSAGraph(csl);
 			g.setName("selfloop " + csl.getName());
-			Hub.getWorkspace().addLayoutShell(g);
+			// Hub.getWorkspace().addLayoutShell(g);
 			SupCon supcon = new SupCon();
 			FSAModel sup = (FSAModel)supcon
 					.perform(new Object[] { product, csl })[0];

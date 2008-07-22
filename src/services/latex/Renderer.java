@@ -182,12 +182,12 @@ public class Renderer
 	}
 
 	/**
-	 * Create a new <code>Renderer</code> which will use the provided paths
-	 * when calling LaTeX, dvips and GhostScript.
+	 * Create a new <code>Renderer</code> which will use the provided paths when
+	 * calling LaTeX, dvips and GhostScript.
 	 * 
 	 * @param latexPath
-	 *            the path to <code>latex</code> and <code>dvips</code>
-	 *            (e.g., "c:\texmf\miktex\bin")
+	 *            the path to <code>latex</code> and <code>dvips</code> (e.g.,
+	 *            "c:\texmf\miktex\bin")
 	 * @param gsPath
 	 *            the path to <code>gswin32c</code> (e.g., "c:\gs\gs8.14\bin")
 	 * @return a new <code>Renderer</code> which will use the provided paths
@@ -272,8 +272,8 @@ public class Renderer
 	 * @param s
 	 *            LaTeX code (the code goes in the body of a LaTeX document)
 	 * @param header
-	 *            LaTeX environment setup, such as <code>usepackage</code>
-	 *            (the code goes before the body of a LaTeX document)
+	 *            LaTeX environment setup, such as <code>usepackage</code> (the
+	 *            code goes before the body of a LaTeX document)
 	 * @param f
 	 *            file where to save image. If the file exists, its content will
 	 *            be overwritten.
@@ -313,8 +313,8 @@ public class Renderer
 	 * @param s
 	 *            LaTeX code (the code goes in the body of a LaTeX document)
 	 * @param header
-	 *            LaTeX environment setup, such as <code>usepackage</code>
-	 *            (the code goes before the body of a LaTeX document)
+	 *            LaTeX environment setup, such as <code>usepackage</code> (the
+	 *            code goes before the body of a LaTeX document)
 	 * @param out
 	 *            stream where to output image. The stream will not be closed.
 	 * @return the image which was saved in the file
@@ -598,8 +598,8 @@ public class Renderer
 	 * @param s
 	 *            LaTeX code (the code goes in the body of a LaTeX document)
 	 * @param header
-	 *            LaTeX environment setup, such as <code>usepackage</code>
-	 *            (the code goes before the body of a LaTeX document)
+	 *            LaTeX environment setup, such as <code>usepackage</code> (the
+	 *            code goes before the body of a LaTeX document)
 	 * @return the image with the rendition
 	 * @throws IOException
 	 *             if there was a problem with the IO

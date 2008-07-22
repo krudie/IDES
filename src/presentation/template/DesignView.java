@@ -13,9 +13,9 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 
 import main.Hub;
+import model.DESModel;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
-import presentation.LayoutShell;
 import presentation.Presentation;
 
 public class DesignView extends JComponent implements Presentation,
@@ -52,17 +52,13 @@ public class DesignView extends JComponent implements Presentation,
 	{
 		return Hub.getMainWindow().getSize();
 		// return new
-		// Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
+		//Dimension((int)((graphBounds.width+GRAPH_BORDER_THICKNESS)*scaleFactor
+		// ),(int)((graphBounds.height+GRAPH_BORDER_THICKNESS)*scaleFactor));
 	}
 
 	public JComponent getGUI()
 	{
 		return this;
-	}
-
-	public LayoutShell getLayoutShell()
-	{
-		return graph;
 	}
 
 	public void setTrackModel(boolean b)
@@ -193,8 +189,10 @@ public class DesignView extends JComponent implements Presentation,
 			// System.out.println(slope);
 			// System.out.println(disp);
 			// System.out.println(r);
-			// System.out.println(graph.getLayout(l.getLink().getBlockLeft()).getLocation());
-			// System.out.println(graph.getLayout(l.getLink().getBlockRight()).getLocation());
+			// System.out.println(graph.getLayout(l.getLink().getBlockLeft()).
+			// getLocation());
+			// System.out.println(graph.getLayout(l.getLink().getBlockRight()).
+			// getLocation());
 			// System.out.println(
 			// ""+r.getMinX()+","+(r.getMinX()*slope+disp)+"||"+
 			// r.getMaxX()+","+(r.getMaxX()*slope+disp)+"||"+
@@ -215,5 +213,11 @@ public class DesignView extends JComponent implements Presentation,
 
 	public void forceRepaint()
 	{
+	}
+
+	public DESModel getModel()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -14,8 +14,8 @@ public interface FSASupervisor extends FSAModel
 	 * 
 	 * @param state
 	 *            state of the supervisor
-	 * @return the events disabled at a given state; or <code>null</code> if
-	 *         the control map is undefined
+	 * @return the events disabled at a given state; or <code>null</code> if the
+	 *         control map is undefined
 	 */
 	public FSAEventSet getDisabledEvents(FSAState state);
 

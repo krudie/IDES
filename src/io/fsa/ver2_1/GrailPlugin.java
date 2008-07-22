@@ -14,7 +14,6 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
-import pluggable.ui.ToolsetManager;
 
 /**
  * @author christiansilvano
@@ -50,10 +49,10 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
@@ -127,8 +126,8 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)
@@ -218,11 +217,8 @@ public class GrailPlugin implements ImportExportPlugin
 					tCount++;
 				}
 			}
-			// Create an automatic layout given the imported method
-			ToolsetManager
-					.getToolset(a
-							.getModelType().getMainInterface())
-					.wrapModel(a);
+			// // Create an automatic layout given the imported method
+			// new GraphView(a);
 			// Save the model to the selected destination
 			IOCoordinator.getInstance().save(a, dst);
 		}

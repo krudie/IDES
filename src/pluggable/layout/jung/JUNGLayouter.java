@@ -32,7 +32,6 @@ public class JUNGLayouter implements FSALayouter
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.layout.FSMLayouter#layout(presentation.fsa.FSMGraph)
 	 */
 	public void layout(FSAGraph graph)

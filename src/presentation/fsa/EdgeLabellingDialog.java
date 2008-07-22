@@ -66,6 +66,8 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	private static EdgeLabellingDialog dialog;
 
+	private static GraphView presentation;
+
 	protected CompoundEdit allEdits;
 
 	public static void initialize(JComponent parent, EventsModel eventsModel)
@@ -80,12 +82,13 @@ public class EdgeLabellingDialog extends EscapeDialog
 	 * @param e
 	 *            the edge to be labelled
 	 */
-	public static void showDialog(JComponent view, Edge e)
+	public static void showDialog(GraphView view, Edge e)
 	{
 		if (dialog == null)
 		{
 			initialize(view, null);
 		}
+		presentation = view;
 		dialog.allEdits = new CompoundEdit();
 		dialog.checkControllable.setSelected(dialog.cbCState);
 		dialog.checkObservable.setSelected(dialog.cbOState);
@@ -137,7 +140,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 				// Workspace
 				new GraphActions.CreateEventAction(
 						allEdits,
-						(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+						presentation.getGraphModel(),
 						textField.getText(),
 						checkControllable.isSelected(),
 						checkObservable.isSelected(),
@@ -699,8 +702,9 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 * @see
+		 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
+		 * )
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{
@@ -736,8 +740,9 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 * @see
+		 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
+		 * )
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{
@@ -765,8 +770,9 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 * @see
+		 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
+		 * )
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{
@@ -783,13 +789,16 @@ public class EdgeLabellingDialog extends EscapeDialog
 				events.add((FSAEvent)contents[i]);
 			}
 			// FIXME use passed FSAGraph rather than take current from Workspace
-			new EdgeActions.LabelAction(allEdits, (FSAGraph)Hub
-					.getWorkspace().getActiveLayoutShell(), edge, events)
-					.execute();
+			new EdgeActions.LabelAction(
+					allEdits,
+					presentation.getGraphModel(),
+					edge,
+					events).execute();
 			allEdits.end();
 			UndoManager.addEdit(allEdits);
 
-			// ((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).replaceEventsOnEdge(events,
+			// ((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).
+			// replaceEventsOnEdge(events,
 			// edge);
 
 			if (arg0.getSource().equals(buttonOK))

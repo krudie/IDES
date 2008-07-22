@@ -48,8 +48,8 @@ public class EventWrapper implements Event
 	 * 
 	 * @param o
 	 *            another object
-	 * @return true iff <code>o</code> is of type Event and has the same
-	 *         SYMBOL as this Event.
+	 * @return true iff <code>o</code> is of type Event and has the same SYMBOL
+	 *         as this Event.
 	 */
 	@Override
 	public boolean equals(Object o)

@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import services.notice.NoticePopup;
-
 import main.Hub;
 import main.WorkspaceMessage;
 import main.WorkspaceSubscriber;
@@ -90,8 +88,9 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage
+	 * )
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message)
 	{
@@ -100,8 +99,8 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
 	public void repaintRequired()
 	{
@@ -109,8 +108,8 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message)
 	{
@@ -127,7 +126,6 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message)
@@ -145,7 +143,6 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsaEventSetChanged(FSAMessage message)

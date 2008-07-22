@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import javax.swing.JTabbedPane;
-
 import model.DESModel;
 import model.DESModelMessage;
 import model.DESModelSubscriber;
@@ -21,10 +19,9 @@ import pluggable.io.IOCoordinator;
 import pluggable.ui.Toolset;
 import pluggable.ui.ToolsetManager;
 import pluggable.ui.UIDescriptor;
-import presentation.LayoutShell;
 import presentation.Presentation;
 import services.latex.LatexManager;
-import ui.MainWindow;
+import services.latex.LatexPresentation;
 
 /**
  * The main manager of the open DESModels.
@@ -34,34 +31,62 @@ import ui.MainWindow;
 public class Workspace implements DESModelSubscriber
 {
 
-	// needed for special handling of first (automatic) add and first
-	// (user-initated) add
+	/**
+	 * needed for special handling of first (automatic) add and first
+	 * (user-initated) add
+	 */
 	private long countAdd = 0;
 
-	private boolean dirty = false; // dirty bit
+	/**
+	 * dirty bit
+	 */
+	private boolean dirty = false;
 
+	/**
+	 * Name of the workspace, derived from the file name where the workspace is
+	 * saved.
+	 */
 	private String name;
 
+	/**
+	 * The file where the workspace is saved (if at all).
+	 */
 	private File myFile = null;
 
-	// index of the currently active DESModel
+	/**
+	 * index of the currently active DESModel
+	 */
 	private int activeModelIdx;
 
+	/**
+	 * The {@link UIDescriptor} for the currently active model.
+	 */
 	protected UIDescriptor activeUID;
 
 	// TODO A model of global events set (alphabet) and all local alphabets
 	// private FSAEventsModel eventsModel;
 
-	// maps name of each model to the abstract DES model,
-	// graph representation and metadata respectively.
+	/**
+	 * List of the models opened in the workspace.
+	 */
 	private Vector<DESModel> systems;
 
-	private Vector<LayoutShell> graphs;
-
+	/**
+	 * pointer to instance
+	 */
 	static Workspace me;
 
+	/**
+	 * A list of the presentations forming the UI for the currently active
+	 * {@link DESModel}.
+	 */
 	protected LinkedList<Presentation> activePresentations = new LinkedList<Presentation>();
 
+	/**
+	 * Get the instance of the workspace.
+	 * 
+	 * @return the singleton instance of the workspace
+	 */
 	public static Workspace instance()
 	{
 		if (me == null)
@@ -71,58 +96,15 @@ public class Workspace implements DESModelSubscriber
 		return me;
 	}
 
+	/**
+	 * Initializes the workspace.
+	 */
 	protected Workspace()
 	{
 		activeModelIdx = -1;
 		systems = new Vector<DESModel>();
-		graphs = new Vector<LayoutShell>();
 		name = Hub.string("newModelName");
 		// eventsModel = new EventsModel();
-	}
-
-	public void addLayoutShell(LayoutShell g)
-	{
-		// Remove initial Untitled graph if it has not been modified
-		if (countAdd == 1 && getActiveLayoutShell() != null
-				&& !getActiveModel().needsSave())
-		{
-			removeModel(getActiveLayoutShell().getModel().getName());
-		}
-
-		if (getModel(g.getModel().getName()) != null)
-		{
-			int i = 1;
-			while (getModel(g.getModel().getName() + " (" + i + ")") != null)
-			{
-				++i;
-			}
-			g.getModel().setName(g.getModel().getName() + " (" + i + ")");
-		}
-
-		g.getModel().addSubscriber(this);
-
-		systems.add(g.getModel());
-
-		// CHRISTIAN - the following code was commented for being metadata
-		// related
-		// if(g instanceof FSAGraph)
-		// metadata.add(((FSAGraph)g).getMeta());
-		// else
-		// metadata.add(new
-		// FSAGraph(ModelManager.createModel(FSAModel.class)).getMeta());
-		graphs.add(g);
-
-		fireModelCollectionChanged(new WorkspaceMessage(
-				g.getModel().getName(),
-				WorkspaceMessage.ADD));
-
-		// setActiveModel(systems.elementAt(systems.size()-1).getName());
-
-		if (countAdd != 0)
-		{
-			dirty = true;
-		}
-		countAdd++;
 	}
 
 	/**
@@ -134,11 +116,11 @@ public class Workspace implements DESModelSubscriber
 	public void addModel(DESModel model)
 	{
 		// Remove initial Untitled model if it is empty
-		if (countAdd == 1 && getActiveLayoutShell() != null
+		if (countAdd == 1 && getActiveModel() != null
 				&& !getActiveModel().needsSave()
 				&& getActiveModel().getAnnotation(Annotable.FILE) == null)
 		{
-			removeModel(getActiveLayoutShell().getModel().getName());
+			removeModel(getActiveModel().getName());
 		}
 
 		if (getModel(model.getName()) != null)
@@ -157,22 +139,6 @@ public class Workspace implements DESModelSubscriber
 		Hub.getMainWindow().setCursor(Cursor
 				.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		systems.add(model);
-		Toolset ts = ToolsetManager.getToolset(model
-				.getModelType().getMainInterface());
-		// TODO Check the efficiency of the wrapModel function
-		boolean latexOn = LatexManager.isLatexEnabled();
-		if (latexOn)
-		{
-			// disable Latex so model is wrapped without rendering
-			LatexManager.setLatexEnabled(false);
-		}
-		LayoutShell ls = ts.wrapModel(model);
-		if (latexOn)
-		{
-			LatexManager.setLatexEnabled(true);
-		}
-		graphs.add(ls);
-
 		fireModelCollectionChanged(new WorkspaceMessage(
 				model.getName(),
 				WorkspaceMessage.ADD));
@@ -185,6 +151,15 @@ public class Workspace implements DESModelSubscriber
 		countAdd++;
 	}
 
+	/**
+	 * Returns the index in the list of open models of the model with the given
+	 * name.
+	 * 
+	 * @param name
+	 *            name of the model
+	 * @return the index of the model in the list of open models if the name
+	 *         matches an open model; -1 otherwise
+	 */
 	protected int getModelIndex(String name)
 	{
 		for (int i = 0; i < systems.size(); ++i)
@@ -197,6 +172,14 @@ public class Workspace implements DESModelSubscriber
 		return -1;
 	}
 
+	/**
+	 * Finds a model open in the workspace by name.
+	 * 
+	 * @param name
+	 *            the name of the model
+	 * @return the model if it is among the models open in the workspace;
+	 *         <code>null</code> otherwise
+	 */
 	public DESModel getModel(String name)
 	{
 		int idx = getModelIndex(name);
@@ -207,21 +190,29 @@ public class Workspace implements DESModelSubscriber
 		return systems.elementAt(idx);
 	}
 
-	public LayoutShell getLayoutShell(String name)
-	{
-		int idx = getModelIndex(name);
-		if (idx < 0)
-		{
-			return null;
-		}
-		return graphs.elementAt(idx);
-	}
-
+	/**
+	 * Check if the workspace contains a model with the given name.
+	 * 
+	 * @param name
+	 *            the name of the model
+	 * @return <code>true</code> if the workspace contains a model with the
+	 *         given name; <code>false</code> otherwise
+	 */
 	public boolean hasModel(String name)
 	{
 		return getModel(name) != null;
 	}
 
+	/**
+	 * Removes a model from the workspace. If the workspace does not contain a
+	 * model with the given name, the method does nothing. If the currently
+	 * active model is removed, the next model in the workspace becomes active,
+	 * unless it is the last model in the list in which case the previous model
+	 * in the workspace becomes active.
+	 * 
+	 * @param name
+	 *            the name of the model to remove
+	 */
 	public void removeModel(String name)
 	{
 		DESModel m = this.getModel(name);
@@ -261,22 +252,12 @@ public class Workspace implements DESModelSubscriber
 			else
 			{
 				setActiveModel(null);
-				// // TODO change name to fsa.id for consistency with add and
-				// remove
-				// fireModelSwitched(new
-				// WorkspaceMessage(WorkspaceMessage.MODEL,
-				// name,
-				// WorkspaceMessage.REMOVE,
-				// this));
 			}
 		}
 
 		DESModel fsa = systems.get(idx);
 
-		graphs.elementAt(idx).release();
 		systems.removeElementAt(idx);
-		// metadata.removeElementAt(idx);
-		graphs.removeElementAt(idx);
 
 		if (activeModelIdx > idx)
 		{
@@ -295,6 +276,12 @@ public class Workspace implements DESModelSubscriber
 	// return null;
 	// }
 
+	/**
+	 * Returns the name of the model currently active in the workspace.
+	 * 
+	 * @return the name of the model currently active in the workspace; or an
+	 *         empty string if there is no model in the workspace
+	 */
 	public String getActiveModelName()
 	{
 		if (activeModelIdx < 0)
@@ -304,6 +291,12 @@ public class Workspace implements DESModelSubscriber
 		return systems.elementAt(activeModelIdx).getName();
 	}
 
+	/**
+	 * Returns the model currently active in the workspace.
+	 * 
+	 * @return the model currently active in the workspace; or <code>null</code>
+	 *         if there is no model in the workspace
+	 */
 	public DESModel getActiveModel()
 	{
 		if (activeModelIdx < 0)
@@ -313,6 +306,14 @@ public class Workspace implements DESModelSubscriber
 		return systems.elementAt(activeModelIdx);
 	}
 
+	/**
+	 * Returns the {@link UIDescriptor} with the UI elements for the currently
+	 * active model.
+	 * 
+	 * @return the {@link UIDescriptor} with the UI elements for the currently
+	 *         active model; or <code>null</code> if there is no model in the
+	 *         workspace
+	 */
 	public UIDescriptor getActiveUID()
 	{
 		if (activeModelIdx < 0)
@@ -323,29 +324,38 @@ public class Workspace implements DESModelSubscriber
 	}
 
 	/**
-	 * Remove all tabs from the main pane of IDES. Release the currently active
-	 * {@link LayoutShell} from all presentations displayed in the tabs. Dispose
-	 * of the presentations.
+	 * Dispose of all presentations currently in the workspace.
 	 */
-	protected void releaseEditPanes()
+	protected void releasePresentations()
 	{
 		for (Presentation p : activePresentations)
 		{
+			if (p instanceof LatexPresentation)
+			{
+				LatexManager.removeLatexPresentation((LatexPresentation)p);
+			}
 			p.release();
 		}
 		activePresentations = new LinkedList<Presentation>();
 	}
 
 	/**
-	 * Sets the active model to the FSAModel with the given name. FIXME Should
-	 * be using unique ID.
+	 * Sets the active model to the {@link DESModel} with the given name. If the
+	 * workspace does not contain a model with the given name, the method does
+	 * nothing. If the name is <code>null</code>, no model becomes active.
 	 * 
 	 * @param name
+	 *            the name of the model to become active; or <code>null</code>
+	 *            if no model should become active
 	 */
 	public void setActiveModel(String name)
 	{
+		if (name != null && getModelIndex(name) < 0)
+		{
+			return;
+		}
 		fireAboutToRearrangeWorkspace();
-		releaseEditPanes();
+		releasePresentations();
 		if (name == null)
 		{
 			activeModelIdx = -1;
@@ -356,8 +366,10 @@ public class Workspace implements DESModelSubscriber
 
 			Toolset ts = ToolsetManager.getToolset(systems
 					.elementAt(activeModelIdx).getModelType()
-					.getMainInterface());
-			activeUID = ts.getUIElements(getActiveLayoutShell());
+					.getMainPerspective());
+
+			activeUID = ts.getUIElements(systems.elementAt(activeModelIdx));
+
 			activePresentations = new LinkedList<Presentation>();
 			Presentation[] ps = activeUID.getMainPanePresentations();
 
@@ -371,29 +383,23 @@ public class Workspace implements DESModelSubscriber
 			{
 				activePresentations.add(ps[i]);
 			}
+			for (Presentation p : activePresentations)
+			{
+				if (p instanceof LatexPresentation)
+				{
+					LatexManager.addLatexPresentation((LatexPresentation)p);
+				}
+			}
 		}
-		// TODO change name to fsa.id for consistency with add and remove
-		fireModelSwitched(new WorkspaceMessage(
-				name,
-				WorkspaceMessage.MODIFY));
+
+		fireModelSwitched(new WorkspaceMessage(Hub
+				.getWorkspace().getActiveModelName(), WorkspaceMessage.MODIFY));
 	}
 
 	/**
-	 * @return an iterator of all graph models in this workspace
-	 */
-	public Iterator<LayoutShell> getLayoutShells()
-	{
-		ArrayList<LayoutShell> g = new ArrayList<LayoutShell>();
-		Iterator<LayoutShell> iter = graphs.iterator();
-		while (iter.hasNext())
-		{
-			g.add(iter.next());
-		}
-		return g.iterator();
-	}
-
-	/**
-	 * @return an iterator of all automata in this workspace
+	 * Returns an iterator of all {@link DESModel}s in this workspace.
+	 * 
+	 * @return an iterator of all {@link DESModel}s in this workspace
 	 */
 	public Iterator<DESModel> getModels()
 	{
@@ -406,33 +412,48 @@ public class Workspace implements DESModelSubscriber
 		return g.iterator();
 	}
 
+	/**
+	 * Returns if the workspace is dirty (it has been changed since the last
+	 * save).
+	 * 
+	 * @return the dirty flag of the workspace
+	 */
 	public boolean isDirty()
 	{
 		return dirty;
 	}
 
+	/**
+	 * Sets the dirty flag of the workspace (i.e., whether it has been changed
+	 * since the last save).
+	 * 
+	 * @param state
+	 *            the new dirty flag of the workspace
+	 */
 	public void setDirty(boolean state)
 	{
 		dirty = state;
 	}
 
+	/**
+	 * Returns the name of the workspace.
+	 * 
+	 * @return the name of the workspace
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * Check if there are models open in the workspace.
+	 * 
+	 * @return <code>true</code> if there is at least one model in the
+	 *         workspace; <code>false</code> otherwise
+	 */
 	public boolean isEmpty()
 	{
 		return systems.isEmpty();
-	}
-
-	public LayoutShell getActiveLayoutShell()
-	{
-		if (activeModelIdx < 0)
-		{
-			return null;
-		}
-		return graphs.elementAt(activeModelIdx);
 	}
 
 	/**
@@ -510,7 +531,8 @@ public class Workspace implements DESModelSubscriber
 	 * 
 	 * @return descriptor of the current workspace
 	 * @throws IncompleteWorkspaceDescriptorException
-	 *             when the descriptor can't be created due to unsaved models
+	 *             when the descriptor can't be created due to new unsaved
+	 *             models
 	 */
 	public WorkspaceDescriptor getDescriptor()
 			throws IncompleteWorkspaceDescriptorException
@@ -531,7 +553,7 @@ public class Workspace implements DESModelSubscriber
 		while (i.hasNext())
 		{
 			DESModel a = i.next();
-			if ((File)a.getAnnotation(Annotable.FILE) == null)
+			if (!a.hasAnnotation(Annotable.FILE))
 			{
 				unsavedModels.add(a);
 			}
@@ -539,23 +561,15 @@ public class Workspace implements DESModelSubscriber
 
 		if (!unsavedModels.isEmpty())
 		{
-			Hub.displayAlert(Hub.string("firstSaveUnsaved"));
-			if (!io.CommonFileActions.handleUnsavedModels(unsavedModels))
-			{
-				throw new IncompleteWorkspaceDescriptorException();
-			}
+			throw new IncompleteWorkspaceDescriptorException(unsavedModels);
 		}
+
 		for (int counter = 0; counter < systems.size(); ++counter)
 		{
 			DESModel a = systems.elementAt(counter);
-			// try
-			// {
 			wd.insertModel(((File)a.getAnnotation(Annotable.FILE)).getName(),
 					counter);
-			// }catch(NullPointerException e)
-			// {
-			// throw new IncompleteWorkspaceDescriptorException();
-			// }
+
 			if (a.getName().equals(getActiveModelName()))
 			{
 				wd.setSelectedModel(counter);
@@ -578,30 +592,6 @@ public class Workspace implements DESModelSubscriber
 		name = myFile.getName();
 	}
 
-	// /**
-	// * TODO: fix this
-	// * @return the top-left corner of the drawing area
-	// */
-	// public Point getDrawingBoardDisplacement()
-	// {
-	// return ((MainWindow)Hub.getMainWindow()).getDrawingBoardDisplacement();
-	// }
-
-	// /**
-	// * TODO: fix this
-	// * @return the background color of the drawing area
-	// */
-	// public Color getDrawingBoardBGColor()
-	// {
-	// return ((MainWindow)Hub.getMainWindow()).getDrawingBoardBGColor();
-	// }
-
-	// //TODO this should return an interface, not GDV
-	// public presentation.fsa.GraphDrawingView getDrawingBoard()
-	// {
-	// return ((MainWindow)Hub.getMainWindow()).getDrawingBoard();
-	// }
-
 	/**
 	 * Get the number of models in the workspace
 	 * 
@@ -617,7 +607,7 @@ public class Workspace implements DESModelSubscriber
 		Vector<T> models = new Vector<T>();
 		for (DESModel m : systems)
 		{
-			Class<?>[] ifaces = m.getModelType().getModelInterfaces();
+			Class<?>[] ifaces = m.getModelType().getModelPerspectives();
 			for (int i = 0; i < ifaces.length; ++i)
 			{
 				if (ifaces[i].equals(type))
@@ -630,32 +620,37 @@ public class Workspace implements DESModelSubscriber
 		return models;
 	}
 
-	public <T> Collection<T> getLayoutShellsOfType(Class<T> type)
-	{
-		Vector<T> wraps = new Vector<T>();
-		for (LayoutShell m : graphs)
-		{
-			if (m.getClass().equals(type))
-			{
-				wraps.add(type.cast(m));
-			}
-		}
-		return wraps;
-	}
-
+	/**
+	 * Returns the set of presentations used as the UI for the currently active
+	 * model.
+	 * 
+	 * @return the set of presentations used as the UI for the currently active
+	 *         model
+	 */
 	public Collection<Presentation> getPresentations()
 	{
 		return activePresentations;
 	}
 
-	public Collection<Presentation> getPresentationsOfType(Class<?> type)
+	/**
+	 * Selects the presentation of the given type from the set of all
+	 * presentations used as the UI for the currently active model.
+	 * 
+	 * @param <T>
+	 *            the type of presentation to be selected
+	 * @param type
+	 *            the class type of presentation to be selected
+	 * @return the subset of presentations of the given type, from all
+	 *         presentations used as the UI for the currently active model
+	 */
+	public <T> Collection<T> getPresentationsOfType(Class<T> type)
 	{
-		Vector<Presentation> ps = new Vector<Presentation>();
+		Vector<T> ps = new Vector<T>();
 		for (Presentation p : activePresentations)
 		{
-			if (p.getClass().equals(type))
+			if (type.isInstance(p))
 			{
-				ps.add(p);
+				ps.add(type.cast(p));
 			}
 		}
 		return ps;
@@ -663,22 +658,24 @@ public class Workspace implements DESModelSubscriber
 
 	public void saveStatusChanged(DESModelMessage message)
 	{
-
 	}
 
 	public void modelNameChanged(DESModelMessage message)
 	{
 		setDirty(true);
 	}
-	
-	// List of subscribers to be notified of change events
-	private ArrayList<WorkspaceSubscriber> subscribers =new ArrayList<WorkspaceSubscriber>();
+
+	/**
+	 * List of subscribers to be notified of change events
+	 */
+	private ArrayList<WorkspaceSubscriber> subscribers = new ArrayList<WorkspaceSubscriber>();
 
 	/**
 	 * Attaches the given subscriber to this publisher. The given subscriber
 	 * will receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
+	 *            subscriber to be attached
 	 */
 	public void addSubscriber(WorkspaceSubscriber subscriber)
 	{
@@ -690,6 +687,7 @@ public class Workspace implements DESModelSubscriber
 	 * no longer receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
+	 *            subscriber to be removed
 	 */
 	public void removeSubscriber(WorkspaceSubscriber subscriber)
 	{
@@ -698,9 +696,8 @@ public class Workspace implements DESModelSubscriber
 
 	/**
 	 * Sends a notification to subscribers that a repaint is required due to
-	 * changes to the display options
-	 * such as Zoom, or toggling show grid, LaTeX rendering, UniformNode size
-	 * etc.
+	 * changes to the display options such as Zoom, or toggling show grid, LaTeX
+	 * rendering, UniformNode size etc.
 	 */
 	public void fireRepaintRequired()
 	{
@@ -725,8 +722,8 @@ public class Workspace implements DESModelSubscriber
 	}
 
 	/**
-	 * Sends notification to subscribers that a new model has become the active model
-	 * in the workspace.
+	 * Sends notification to subscribers that a new model has become the active
+	 * model in the workspace.
 	 * 
 	 * @param message
 	 */
@@ -739,12 +736,12 @@ public class Workspace implements DESModelSubscriber
 	}
 
 	/**
-	 * Sends notification to subscribers that the the layout of the workspace is about to
-	 * change (e.g., a new model is about to become the active model).
+	 * Sends notification to subscribers that the the layout of the workspace is
+	 * about to change (e.g., a new model is about to become the active model).
 	 */
 	public void fireAboutToRearrangeWorkspace()
 	{
-		for( WorkspaceSubscriber s : subscribers )
+		for (WorkspaceSubscriber s : subscribers)
 		{
 			s.aboutToRearrangeWorkspace();
 		}

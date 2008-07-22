@@ -28,8 +28,8 @@ public interface FileIOPlugin
 	/**
 	 * Returns a list of meta data "tags" for a given data "type"
 	 * 
-	 * @param type,
-	 *            a string with the data "type" e.g.: "FSA", "TemplateDesign"
+	 * @param type
+	 *            , a string with the data "type" e.g.: "FSA", "TemplateDesign"
 	 * @return a set of "tags"
 	 */
 	public Set<String> getMetaTags();

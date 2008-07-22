@@ -49,10 +49,10 @@ public class TCTPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
@@ -85,10 +85,10 @@ public class TCTPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination file
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination file
 	 * @return
 	 */
 	public void importFile(File src, File dst)

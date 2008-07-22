@@ -23,8 +23,8 @@ public interface FSAState extends DESElement
 	/**
 	 * Sets an annotation for the name of the state
 	 * 
-	 * @param name,
-	 *            the name for the String
+	 * @param name
+	 *            , the name for the String
 	 */
 	public abstract void setName(String name);
 

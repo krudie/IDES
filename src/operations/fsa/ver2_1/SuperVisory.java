@@ -98,11 +98,11 @@ public class SuperVisory
 				}
 			}
 			// Step 2.2
-			long stateCount=result.getStateCount();
+			long stateCount = result.getStateCount();
 			Unary.trim(result);
-			if(result.getStateCount()!=stateCount)
+			if (result.getStateCount() != stateCount)
 			{
-				changed=true;
+				changed = true;
 			}
 		}
 	}

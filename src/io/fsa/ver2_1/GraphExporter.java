@@ -7,7 +7,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import main.Hub;
-import main.Workspace;
 import pluggable.ui.OptionsPane;
 import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
@@ -140,9 +139,12 @@ public class GraphExporter
 	// /////////////////////////////////////////////////////////////////
 
 	/**
-	 * Creates a LaTeX document which contains a PSTricks figure of the current
-	 * model
+	 * Creates a LaTeX document which contains a PSTricks figure of a model
 	 * 
+	 * @param graphModel
+	 *            the graph of the model
+	 * @param ps
+	 *            the stream where the document has to be output
 	 * @return LaTeX document containing a PSTricks description of the current
 	 *         model
 	 */
@@ -162,16 +164,7 @@ public class GraphExporter
 				.getBoolean(STR_EXPORT_PROP_USE_FRAME);
 
 		// Step #3 - Figure out the dimensions
-		// If there's a selection box, then use that, otherwise make
-		// a box that holds eveything
-		// if (there is a selection)
-		// {
-		// exportBounds = selection;
-		// }
-		// else
-		// {
 		exportBounds = graphModel.getBounds(false);
-		// }
 
 		// Step #3.5 - Add a border to the export bounds
 		/*
@@ -201,66 +194,56 @@ public class GraphExporter
 		}
 		scale = BentoBox.roundDouble(scale, 2);
 
-		// Step #4 - Begin with the basic sclaing, picture boundary
+		// Step #4 - Begin with the basic scaling, picture boundary
 		// and frame information
 		ps.print("\\scalebox{" + scale + "}\n" + "{\n" + "\\psset{unit=1pt}\n");
 
 		// Step #5 - Get the PSTricks figure
-		ps.print(createPSPicture(exportBounds, useFrame));
+		ps.print(createPSPicture(graphModel, exportBounds, useFrame));
 
-		// Step #6 - End the pciture and add the commented LaTeX
+		// Step #6 - End the picture and add the commented LaTeX
 		// document declaration
 		ps.print(STR_PSTRICKS_END_FIGURE
 				+ STR_PSTRICKS_COMMENTED_DOC_DECLARATION);
 	}
 
 	/**
-	 * Generate PSTricks description of the current model
+	 * Generate PSTricks description of a model
 	 * 
+	 * @param graphModel
+	 *            the graph of the model
 	 * @param exportBounds
 	 *            the boundaries of the figure
 	 * @param useFrame
 	 *            whether a frame should be added around the figure
 	 * @return PSTricks code describing the current model
 	 */
-	public static String createPSPicture(Rectangle exportBounds,
-			boolean useFrame)
+	public static String createPSPicture(FSAGraph graphModel,
+			Rectangle exportBounds, boolean useFrame)
 	{
-		Workspace workspace = null;
-		FSAGraph graphModel = null;
-
 		CircleNode[] nodeArray = null;
 		Edge[] edgeArray = null;
 		GraphLabel[] freelabelArray = null;
 
-		// Step #1 - Get the GraphModel
-		workspace = Workspace.instance();
-		if (workspace.getActiveLayoutShell() == null
-				|| !(workspace.getActiveLayoutShell() instanceof FSAGraph))
-		{
-			return null;
-		}
-		graphModel = (FSAGraph)workspace.getActiveLayoutShell();
-
-		// Step #2 - Get the Nodes, Edges and Labels
+		// Step #1 - Get the Nodes, Edges and Labels
 		nodeArray = graphModel.getNodes().toArray(new CircleNode[0]);
 		edgeArray = graphModel.getEdges().toArray(new Edge[0]);
 		freelabelArray = graphModel.getFreeLabels().toArray(new GraphLabel[0]);
 
-		// Step #3 - Initialize the pspicture environment and set linewidth to 1
+		// Step #2 - Initialize the pspicture environment and set linewidth to 1
 		// pt
 		String contentsString = "\\begin{pspicture}(0,0)(" + exportBounds.width
 				+ "," + exportBounds.height + ")\n"
 				+ "  \\psset{linewidth=1pt}\n";
 
-		// Step #4 - Create frame if needed
+		// Step #3 - Create frame if needed
 		if (useFrame)
 		{
 			contentsString += "  \\psframe(0,0)(" + exportBounds.width + ","
 					+ exportBounds.height + ")\n\n";
 		}
 
-		// Step #5 - Add the node information
+		// Step #4 - Add the node information
 		for (int i = 0; i < nodeArray.length; i++)
 		{
 			contentsString += nodeArray[i].createExportString(exportBounds,
@@ -268,7 +251,7 @@ public class GraphExporter
 		}
 		contentsString += "\n";
 
-		// Step #6 - Add the edge data
+		// Step #5 - Add the edge data
 		for (int i = 0; i < edgeArray.length; i++)
 		{
 			contentsString += edgeArray[i].createExportString(exportBounds,
@@ -276,7 +259,7 @@ public class GraphExporter
 		}
 		contentsString += "\n";
 
-		// Step #7 - Add the label data
+		// Step #6 - Add the label data
 		for (int i = 0; i < freelabelArray.length; i++)
 		{
 			contentsString += freelabelArray[i]
@@ -284,7 +267,7 @@ public class GraphExporter
 		}
 		contentsString += "\n";
 
-		// Step #8 - Close the pspicture environment
+		// Step #7 - Close the pspicture environment
 		contentsString += "\\end{pspicture}\n";
 
 		return contentsString;
@@ -312,16 +295,7 @@ public class GraphExporter
 		}
 
 		// Step #3 - Figure out the dimensions
-		// If there's a selection box, then use that, otherwise make
-		// a box that holds eveything
-		// if (there is a selection)
-		// {
-		// exportBounds = selection;
-		// }
-		// else
-		// {
 		exportBounds = graphModel.getBounds(false);
-		// }
 
 		// Step #3.5 - Add a border to the export bounds
 		/*
@@ -353,16 +327,16 @@ public class GraphExporter
 		}
 		scale = BentoBox.roundDouble(scale, 2);
 
-		// Step #4 - Begin with the basic sclaing, picture boundary
+		// Step #4 - Begin with the basic scaling, picture boundary
 		// and frame information
 		contentsString += "\\begin{document}\n" + "\\scalebox{" + scale + "}\n"
 				+ "{\n" + "\\psset{unit=1pt}\n";
 
 		// Step #5 - Get the PSTricks figure
-		contentsString += createPSPicture(exportBounds, useFrame);
+		contentsString += createPSPicture(graphModel, exportBounds, useFrame);
 
 		contentsString += "}\n";
-		// Step #6 - End the pciture and add the commented LaTeX
+		// Step #6 - End the picture and add the commented LaTeX
 		// document declaration
 		contentsString += STR_EPS_END_DOC + STR_EPS_COMMENTED_DOC_DECLARATION;
 
@@ -380,24 +354,25 @@ public class GraphExporter
 	/*
 	 * private static ExportBounds determineExportBounds(Node[] nodeArray,
 	 * Edge[] edgeArray, GraphLabel labelArray[]) { ExportBounds exportBounds =
-	 * new ExportBounds(); NodeLayout nodeLayout = null; Point2D.Float location =
-	 * null; Rectangle initialArrowBounds = null; Rectangle labelBounds = null;
-	 * int i = 0; FSAState nodeState = null; Float tempRadius = null; double
-	 * tempX = 0; double tempY = 0; int radius = 0; int nodeX = 0; int nodeY =
-	 * 0; // Start with the nodes for (i = 0; i < nodeArray.length; i++) {
-	 * nodeLayout = nodeArray[i].getLayout(); location =
-	 * nodeLayout.getLocation(); nodeState = nodeArray[i].getState(); tempRadius =
-	 * new Float(nodeLayout.getRadius()); radius = tempRadius.intValue(); tempX =
-	 * location.getX(); tempY = location.getY(); // If the node is initial, take
-	 * into account the initial // arrow if (nodeState.isInitial()) {
-	 * initialArrowBounds = nodeArray[i].getInitialArrowBounds(); tempX =
+	 * new ExportBounds(); NodeLayout nodeLayout = null; Point2D.Float location
+	 * = null; Rectangle initialArrowBounds = null; Rectangle labelBounds =
+	 * null; int i = 0; FSAState nodeState = null; Float tempRadius = null;
+	 * double tempX = 0; double tempY = 0; int radius = 0; int nodeX = 0; int
+	 * nodeY = 0; // Start with the nodes for (i = 0; i < nodeArray.length; i++)
+	 * { nodeLayout = nodeArray[i].getLayout(); location =
+	 * nodeLayout.getLocation(); nodeState = nodeArray[i].getState(); tempRadius
+	 * = new Float(nodeLayout.getRadius()); radius = tempRadius.intValue();
+	 * tempX = location.getX(); tempY = location.getY(); // If the node is
+	 * initial, take into account the initial // arrow if
+	 * (nodeState.isInitial()) { initialArrowBounds =
+	 * nodeArray[i].getInitialArrowBounds(); tempX =
 	 * (initialArrowBounds.getMinX() < tempX) ? initialArrowBounds.getMinX() :
 	 * tempX; tempY = (initialArrowBounds.getMinY() < tempY) ?
 	 * initialArrowBounds.getMinY() : tempY; } nodeX = (int) tempX; nodeY =
 	 * (int) tempY; // Node location is at the centre of the circle
 	 * exportBounds.checkXOffset(nodeX - radius);
-	 * exportBounds.checkYOffset(nodeY - radius); exportBounds.checkWidth(nodeX +
-	 * radius); exportBounds.checkHeight(nodeY + radius); } for (i = 0; i <
+	 * exportBounds.checkYOffset(nodeY - radius); exportBounds.checkWidth(nodeX
+	 * + radius); exportBounds.checkHeight(nodeY + radius); } for (i = 0; i <
 	 * edgeArray.length; i++) {
 	 * exportBounds.checkRectangle(edgeArray[i].getCurveBounds()); // TODO: Get
 	 * better edge label bounds!!!

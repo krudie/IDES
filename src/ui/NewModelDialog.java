@@ -146,9 +146,8 @@ public class NewModelDialog extends EscapeDialog
 	/**
 	 * Opens the dialog box and returns the selection made by the user.
 	 * 
-	 * @return the type of DES model selected by the user; <code>null</code>
-	 *         if no model was selected (e.g., the user cancelled the dialog
-	 *         box)
+	 * @return the type of DES model selected by the user; <code>null</code> if
+	 *         no model was selected (e.g., the user cancelled the dialog box)
 	 */
 	public DESModelType selectModel()
 	{
@@ -172,8 +171,9 @@ public class NewModelDialog extends EscapeDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 * @see
+		 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
+		 * )
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{

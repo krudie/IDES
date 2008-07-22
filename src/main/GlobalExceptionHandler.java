@@ -108,9 +108,9 @@ public class GlobalExceptionHandler extends JDialog implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread,
-	 *      java.lang.Throwable)
+	 * @see
+	 * java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang
+	 * .Thread, java.lang.Throwable)
 	 */
 	public void uncaughtException(Thread arg0, Throwable arg1)
 	{

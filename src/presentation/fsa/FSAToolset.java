@@ -17,7 +17,6 @@ import model.fsa.FSAModel;
 import pluggable.ui.Toolset;
 import pluggable.ui.UIDescriptor;
 import pluggable.ui.UnsupportedModelException;
-import presentation.LayoutShell;
 import presentation.Presentation;
 import presentation.fsa.actions.GraphActions;
 import presentation.fsa.actions.UIActions;
@@ -31,7 +30,6 @@ import util.BooleanUIBinder;
  */
 public class FSAToolset implements Toolset
 {
-
 	protected static class FSAUIDescriptor implements UIDescriptor
 	{
 		protected FSAGraph shell;
@@ -60,15 +58,16 @@ public class FSAToolset implements Toolset
 
 		private static JButton alignButton = new JButton();
 
-		public FSAUIDescriptor(FSAGraph ls)
+		public FSAUIDescriptor(FSAModel model)
 		{
-			shell = ls;
 			views = new Presentation[2];
-			GraphDrawingView drawingBoard = new GraphDrawingView(gridBinder);
+			GraphDrawingView drawingBoard = new GraphDrawingView(
+					model,
+					gridBinder);
 			gridAction = new UIActions.ShowGridAction(drawingBoard);
 			alignAction = drawingBoard.getAlignAction();
-			drawingBoard.setGraphModel(shell);
 			drawingBoard.setName(Hub.string("graph"));
+			shell = drawingBoard.getGraphModel();
 			views[0] = drawingBoard;
 			views[1] = new EventView(shell);
 			((EventView)views[1]).setName(Hub.string("events"));
@@ -182,46 +181,61 @@ public class FSAToolset implements Toolset
 			return null;
 		}
 
-		public boolean showZoomControl()
+		public boolean supportsZoom()
 		{
 			return true;
 		}
 	}
 
-	public UIDescriptor getUIElements(LayoutShell mw)
+	public UIDescriptor getUIElements(DESModel model)
 	{
-		if (!(mw instanceof FSAGraph))
+		if (!(model instanceof FSAModel))
 		{
 			throw new UnsupportedModelException();
 		}
-		return new FSAUIDescriptor((FSAGraph)mw);
+		return new FSAUIDescriptor((FSAModel)model);
 	}
 
-	public Presentation getModelThumbnail(LayoutShell mw, int width, int height)
-			throws UnsupportedModelException
-	{
-		if (!(mw instanceof FSAGraph))
-		{
-			throw new UnsupportedModelException();
-		}
-		GraphView gv = new GraphView((FSAGraph)mw);
-		return gv;
-	}
-
-	/**
-	 * If the parameter is a {@link FSAModel}, wraps it inside a
-	 * {@link FSAGraph}.
-	 */
-	public LayoutShell wrapModel(DESModel model)
+	public Presentation getModelThumbnail(DESModel model, int width, int height)
 			throws UnsupportedModelException
 	{
 		if (!(model instanceof FSAModel))
 		{
 			throw new UnsupportedModelException();
 		}
-		FSAGraph graph = new FSAGraph((FSAModel)model);
-		return graph;
+		GraphView gv = new GraphView((FSAModel)model);
+		return gv;
 	}
+
+	// public FSAGraph retrieveGraph(FSAModel model)
+	// {
+	// FSAGraph graph;
+	// if(model.hasAnnotation(FSA_LAYOUT))
+	// {
+	// graph=(FSAGraph)model.getAnnotation(FSA_LAYOUT);
+	// }
+	// else
+	// {
+	// graph = new FSAGraph(model);
+	// model.setAnnotation(FSA_LAYOUT, graph);
+	// }
+	// return graph;
+	// }
+
+	// /**
+	// * If the parameter is a {@link FSAModel}, wraps it inside a
+	// * {@link FSAGraph}.
+	// */
+	// public LayoutShell wrapModel(DESModel model)
+	// throws UnsupportedModelException
+	// {
+	// if (!(model instanceof FSAModel))
+	// {
+	// throw new UnsupportedModelException();
+	// }
+	// FSAGraph graph = new FSAGraph((FSAModel)model);
+	// return graph;
+	// }
 
 	/**
 	 * Gets the current graph drawing view. FIXME This method is a quick-fix and
@@ -232,7 +246,7 @@ public class FSAToolset implements Toolset
 	 */
 	public static GraphDrawingView getCurrentBoard()
 	{
-		Collection<Presentation> ps = Hub
+		Collection<GraphDrawingView> ps = Hub
 				.getWorkspace().getPresentationsOfType(GraphDrawingView.class);
 		if (ps.size() < 1)
 		{
@@ -240,7 +254,7 @@ public class FSAToolset implements Toolset
 		}
 		else
 		{
-			return (GraphDrawingView)ps.iterator().next();
+			return ps.iterator().next();
 		}
 	}
 }

@@ -5,9 +5,9 @@ import java.util.Vector;
 import javax.swing.AbstractButton;
 
 /**
- * A class that binds UI elements ({@link AbstractButton}s) to a Boolean
- * value. Whenever the value changes, all bound elements will be updated to
- * reflect the new value.
+ * A class that binds UI elements ({@link AbstractButton}s) to a Boolean value.
+ * Whenever the value changes, all bound elements will be updated to reflect the
+ * new value.
  * 
  * @author Lenko Grigorov
  */

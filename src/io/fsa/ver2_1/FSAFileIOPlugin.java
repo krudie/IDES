@@ -658,8 +658,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param atts
 		 *            the attributes of the XML tag, ex: <tag at1="value1"
 		 *            at2="value2" />, where at1 and at2 are the attributes
-		 * @param action,
-		 *            tells witch parsing action needs to be performed.
+		 * @param action
+		 *            , tells witch parsing action needs to be performed.
 		 *            Currently supports: "start" and "end"
 		 */
 		public void parseDataElements(String qName, Attributes atts)

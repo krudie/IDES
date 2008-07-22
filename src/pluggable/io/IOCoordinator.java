@@ -61,7 +61,7 @@ public final class IOCoordinator
 		// Currently there must be just one data saver for a model type.
 		FileIOPlugin dataSaver = IOPluginManager
 				.getInstance().getDataSaver(model
-						.getModelType().getMainInterface());
+						.getModelType().getMainPerspective());
 
 		// Read the dataType from the plugin modelDescriptor
 		String type = dataSaver.getIOTypeDescriptor();
@@ -70,7 +70,7 @@ public final class IOCoordinator
 		// There can be several different meta savers for a specific data type.
 		Set<FileIOPlugin> metaSavers = IOPluginManager
 				.getInstance().getMetaSavers(model
-						.getModelType().getMainInterface());
+						.getModelType().getMainPerspective());
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 
 		// Open ""file"" and start writing the header of the IDES file format
@@ -227,10 +227,10 @@ public final class IOCoordinator
 		 * "INFORMATION<tag>CONTENT</tag>INFORMATION", would return an
 		 * InputStream with the content "INFORMATION" inside <code>file</code>.
 		 * 
-		 * @param tag ,
-		 *            the tag from which the information will be got from.
-		 * @param f ,
-		 *            a File countaining the information.
+		 * @param tag
+		 *            , the tag from which the information will be got from.
+		 * @param f
+		 *            , a File countaining the information.
 		 */
 		public InputStream getXmlContent(String tag, File file)
 		{
@@ -516,7 +516,7 @@ public final class IOCoordinator
 		}
 		Set<ImportExportPlugin> plugins = IOPluginManager
 				.getInstance().getExporters(model
-						.getModelType().getMainInterface());
+						.getModelType().getMainPerspective());
 		ImportExportPlugin plugin = null;
 		for (ImportExportPlugin p : plugins)
 		{

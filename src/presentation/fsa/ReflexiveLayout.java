@@ -1,7 +1,6 @@
 package presentation.fsa;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -33,7 +32,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	/*
 	 * Index of midpoint used as handle to modify the curve position.
 	 */
-	public static final int MIDPOINT = 4;
+	public static final int HANDLEPOINT = 4;
 
 	// /////////////////////////////////////////////////////////////////////////
 	/**
@@ -46,8 +45,8 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 		out.writeDouble(axis.getX());
 		out.writeDouble(axis.getY());
 
-		out.writeDouble(midpoint.getX());
-		out.writeDouble(midpoint.getY());
+		// out.writeDouble(midpoint.getX());
+		// out.writeDouble(midpoint.getY());
 
 		out.writeFloat(minAxisLength);
 	}
@@ -60,7 +59,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 			ClassNotFoundException
 	{
 		axis = new Point2D.Double(in.readDouble(), in.readDouble());
-		midpoint = new Point2D.Double(in.readDouble(), in.readDouble());
+		// midpoint = new Point2D.Double(in.readDouble(), in.readDouble());
 		minAxisLength = in.readFloat();
 	}
 
@@ -84,7 +83,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	// is the axis around which a symmetrical arc is drawn.
 	private Point2D axis;
 
-	private Point2D midpoint;
+	// private Point2D midpoint;
 
 	// //////////////////////////////////////////////////////
 
@@ -109,14 +108,25 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	{
 		minAxisLength = source.bounds().height;
 		setEdge(edge);
-		Point2D temp = Geometry.midpoint(bLayout.getCurve());
-		setPoint(new Point2D.Float((float)temp.getX(), (float)temp.getY()),
-				MIDPOINT);
-		setCurve(bLayout.getCurve());
-		setEventNames(bLayout.getEventNames());
-		setLabelOffset(bLayout.getLabelOffset());
-		setGroup(bLayout.getGroup());
-		initializeShape();
+		if (bLayout != null)
+		{
+			setCurve(bLayout.getCurve());
+			setEventNames(bLayout.getEventNames());
+			setLabelOffset(bLayout.getLabelOffset());
+			setGroup(bLayout.getGroup());
+		}
+		else
+		{
+			axis = computeBestDirection(source);
+			axis = Geometry.scale(axis, minAxisLength / Geometry.norm(axis));
+			setCurve(curveFromAxis());
+		}
+		axis = axisFromCurve();
+		// Point2D temp = Geometry.midpoint(bLayout.getCurve());
+		// setPoint(new Point2D.Float((float)temp.getX(), (float)temp.getY()),
+		// MIDPOINT);
+		// setCurve(bLayout.getCurve());
+		// initializeShape();
 	}
 
 	/**
@@ -125,43 +135,85 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	 */
 	public ReflexiveLayout(Node source, ReflexiveEdge edge)
 	{
-		minAxisLength = source.bounds().height;
-		setEdge(edge);
-		initializeShape();
+		this(source, edge, null);
+		// minAxisLength = source.bounds().height;
+		// setEdge(edge);
+		// initializeShape();
 	}
 
 	/**
 	 * @return the midpoint of the curve.
 	 */
-	public Point2D getMidpoint()
+	public Point2D getHandleLocation()
 	{
-		return midpoint;
+		Point2D.Float p = new Point2D.Float();
+		if (getEdge() != null)
+		{
+			p = getEdge().getSourceNode().getLocation();
+		}
+		return Geometry.add(axis, p);
 	}
 
-	/**
-	 * FIXME Problem: using fixed scalars and angles causes midpoint of computed
-	 * curve to drift away from midpoint set by user. If the curve has already
-	 * been loaded from a file, compute the correct axis, angles and scalars to
-	 * correctly reproduce the curve.
-	 */
-	public void initializeShape()
+	// /**
+	// * FIXME Problem: using fixed scalars and angles causes midpoint of
+	// computed
+	// * curve to drift away from midpoint set by user. If the curve has already
+	// * been loaded from a file, compute the correct axis, angles and scalars
+	// to
+	// * correctly reproduce the curve.
+	// */
+	// public void initializeShape()
+	// {
+	// angle1 = -DEFAULT_ANGLE;
+	// angle2 = DEFAULT_ANGLE;
+	// s1 = DEFAULT_SCALAR;
+	// s2 = s1;
+	// if (getEdge() == null)
+	// {
+	// return;
+	// }
+	// Float centrePoint = getEdge().getSourceNode().getLocation();
+	// // setPoint(centrePoint, P1);
+	// // setPoint(centrePoint, P2);
+	// // Point2D.Float v1 = Geometry.rotate(axis, angle1);
+	// // Point2D.Float v2 = Geometry.rotate(axis, angle2);
+	// // setPoint(Geometry.add(centrePoint, Geometry.scale(v1, s1)), CTRL1);
+	// // setPoint(Geometry.add(centrePoint, Geometry.scale(v2, s2)), CTRL2);
+	// System.err.println(curve);
+	// if (midpoint == null)
+	// {
+	// setPoint(Geometry.add(centrePoint, Geometry
+	// .scale(new Point2D.Float(0, -1), minAxisLength)), MIDPOINT);
+	// }
+	// }
+
+	protected Point2D axisFromCurve()
 	{
-		angle1 = -DEFAULT_ANGLE;
-		angle2 = DEFAULT_ANGLE;
-		s1 = DEFAULT_SCALAR;
-		s2 = s1;
-		if (getEdge() == null)
+		return Geometry.rotate(Geometry.scale(Geometry.subtract(curve
+				.getCtrlP1(), curve.getP1()), 1 / DEFAULT_SCALAR),
+				DEFAULT_ANGLE);
+	}
+
+	protected CubicParamCurve2D curveFromAxis()
+	{
+		Point2D.Float p = new Point2D.Float();
+		if (getEdge() != null)
 		{
-			return;
+			p = getEdge().getSourceNode().getLocation();
 		}
-		Float centrePoint = getEdge().getSourceNode().getLocation();
-		setPoint(centrePoint, P1);
-		setPoint(centrePoint, P2);
-		if (midpoint == null)
-		{
-			setPoint(Geometry.add(centrePoint, Geometry
-					.scale(new Point2D.Float(0, -1), minAxisLength)), MIDPOINT);
-		}
+		Point2D.Float ctrl1 = Geometry.add(Geometry.rotate(Geometry.scale(axis,
+				DEFAULT_SCALAR), -DEFAULT_ANGLE), p);
+		Point2D.Float ctrl2 = Geometry.add(Geometry.rotate(Geometry.scale(axis,
+				DEFAULT_SCALAR), DEFAULT_ANGLE), p);
+		return new CubicParamCurve2D(
+				p.x,
+				p.y,
+				ctrl1.x,
+				ctrl1.y,
+				ctrl2.x,
+				ctrl2.y,
+				p.x,
+				p.y);
 	}
 
 	/**
@@ -186,35 +238,37 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 		{
 			return;
 		}
-		Node sourceNode = edge.getSourceNode();
-		Point2D nodeLocation = sourceNode.getLocation();
+		// Node sourceNode = edge.getSourceNode();
+		// Point2D nodeLocation = sourceNode.getLocation();
 
 		// In case the node change its size, recalculate the midpoint position
 		// by increasing value of the minAxisLength.
-		float currentNodeRadius = ((CircleNodeLayout)sourceNode.getLayout())
-				.getRadius();
+		float currentNodeRadius = ((CircleNodeLayout)getEdge()
+				.getSourceNode().getLayout()).getRadius();
+		// System.err.println(""+currentNodeRadius+" "+edge.lastNodeRadius);
 		float factor = currentNodeRadius / edge.lastNodeRadius;
 		if (factor != 1)
 		{
-			minAxisLength *= factor;
+			minAxisLength = getEdge().getSourceNode().bounds().height;
 			axis = Geometry.scale(axis, factor);
 		}
 		edge.lastNodeRadius = currentNodeRadius;
 
-		// Setting midpoint according to the axis:
-		midpoint.setLocation(nodeLocation.getX() + axis.getX(), nodeLocation
-				.getY()
-				+ axis.getY());
-		setPoint(midpoint, MIDPOINT);
-		// Setting the Bezier control points based on the axis:
-		Point2D.Float v1 = Geometry.rotate(axis, angle1);
-		Point2D.Float v2 = Geometry.rotate(axis, angle2);
-		// Setting center of the edge
-		setPoint(nodeLocation, P1);
-		setPoint(nodeLocation, P2);
-		// Setting the control points
-		setPoint(Geometry.add(nodeLocation, Geometry.scale(v1, s1)), CTRL1);
-		setPoint(Geometry.add(nodeLocation, Geometry.scale(v2, s2)), CTRL2);
+		setCurve(curveFromAxis());
+		// // Setting midpoint according to the axis:
+		// midpoint.setLocation(nodeLocation.getX() + axis.getX(), nodeLocation
+		// .getY()
+		// + axis.getY());
+		// setPoint(midpoint, MIDPOINT);
+		// // Setting the Bezier control points based on the axis:
+		// Point2D.Float v1 = Geometry.rotate(axis, angle1);
+		// Point2D.Float v2 = Geometry.rotate(axis, angle2);
+		// // Setting center of the edge
+		// setPoint(nodeLocation, P1);
+		// setPoint(nodeLocation, P2);
+		// // Setting the control points
+		// setPoint(Geometry.add(nodeLocation, Geometry.scale(v1, s1)), CTRL1);
+		// setPoint(Geometry.add(nodeLocation, Geometry.scale(v2, s2)), CTRL2);
 		setDirty(true);
 	}
 
@@ -228,54 +282,74 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	@Override
 	public void setPoint(Point2D point, int index)
 	{
-		float x = (float)point.getX();
-		float y = (float)point.getY();
-		switch (index)
+		// float x = (float)point.getX();
+		// float y = (float)point.getY();
+		// switch (index)
+		// {
+		// case MIDPOINT:
+		// Float centrePoint;
+		// // System.out.println(getEdge());
+		//
+		// centrePoint = getEdge().getSourceNode().getLocation();
+		// axis = Geometry.subtract(point, centrePoint);
+		// double norm = Geometry.norm(axis);
+		// if (norm < minAxisLength)
+		// {
+		// // snap to arc minimum distance from border of node
+		// axis = Geometry.scale(axis, minAxisLength / norm);
+		// midpoint = Geometry.add(centrePoint, axis);
+		// }
+		// else
+		// {
+		// midpoint = new Point2D.Float(x, y);
+		// }
+		// // computeCurve();
+		// // TODO set midpoint after computing curve...
+		// // midpoint = Geometry.midpoint(getCurve());
+		// System.err.println("midpoint "+midpoint+" "+axis+" "+getCurve());
+		// // try{throw new RuntimeException();}catch(Exception
+		// e){e.printStackTrace();}
+		// setLocation((float)midpoint.getX(), (float)midpoint.getY());
+		// // setDirty(true);
+		// break;
+		// case P1:
+		// curve.x1 = x;
+		// curve.y1 = y;
+		// break;
+		// case P2:
+		// curve.x2 = x;
+		// curve.y2 = y;
+		// break;
+		// case CTRL1:
+		// curve.ctrlx1 = x;
+		// curve.ctrly1 = y;
+		// break;
+		// case CTRL2:
+		// curve.ctrlx2 = x;
+		// curve.ctrly2 = y;
+		// break;
+		// default:
+		// throw new IllegalArgumentException("Invalid control point index: "
+		// + index);
+		// }
+		//
+		if (index == HANDLEPOINT)
 		{
-		case MIDPOINT:
-			Float centrePoint;
-			// System.out.println(getEdge());
-
-			centrePoint = getEdge().getSourceNode().getLocation();
+			Point2D.Float centrePoint = new Point2D.Float();
+			if (getEdge() != null)
+			{
+				centrePoint = getEdge().getSourceNode().getLocation();
+			}
 			axis = Geometry.subtract(point, centrePoint);
 			double norm = Geometry.norm(axis);
 			if (norm < minAxisLength)
 			{
 				// snap to arc minimum distance from border of node
 				axis = Geometry.scale(axis, minAxisLength / norm);
-				midpoint = Geometry.add(centrePoint, axis);
 			}
-			else
-			{
-				midpoint = new Point2D.Float(x, y);
-			}
-			// computeCurve();
-			// TODO set midpoint after computing curve...
-			midpoint = Geometry.midpoint(getCurve());
-			setLocation((float)midpoint.getX(), (float)midpoint.getY());
-			// setDirty(true);
-			break;
-		case P1:
-			curve.x1 = x;
-			curve.y1 = y;
-			break;
-		case P2:
-			curve.x2 = x;
-			curve.y2 = y;
-			break;
-		case CTRL1:
-			curve.ctrlx1 = x;
-			curve.ctrly1 = y;
-			break;
-		case CTRL2:
-			curve.ctrlx2 = x;
-			curve.ctrly2 = y;
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid control point index: "
-					+ index);
+			setCurve(curveFromAxis());
+			setDirty(true);
 		}
-
 	}
 
 	/**
@@ -297,7 +371,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 			if (edge.getTargetNode().equals(edge.getSourceNode()))
 			{
 				currentDirVector = Geometry.subtract(target.getLocation(),
-						((ReflexiveEdge)edge).getMidpoint());
+						((ReflexiveEdge)edge).getHandleLocation());
 				float currentAngle = (float)Geometry
 						.angleFrom(currentDirVector, new Point2D.Float(-1, 0));
 				angles.add(currentAngle);
@@ -365,7 +439,8 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 
 	public void resetPosition(Node node)
 	{
-		axis = computeBestDirection(node);
+		axis = Geometry.scale(computeBestDirection(node), minAxisLength
+				/ Geometry.norm(axis));
 	}
 
 	/**
@@ -394,6 +469,8 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	public void setAxis(Point2D newAxis)
 	{
 		axis.setLocation(newAxis.getX(), newAxis.getY());
+		setCurve(curveFromAxis());
+		setDirty(true);
 	}
 
 	/**
@@ -403,7 +480,8 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	 * @param o
 	 *            the other layout to be compared
 	 * @return true iff <code>o</code> is an instance of ReflexiveLayout and
-	 *         this layout has the same curve and label offset as <code>o</code>.
+	 *         this layout has the same curve and label offset as <code>o</code>
+	 *         .
 	 */
 	/*
 	 * public boolean equals(Object o) { Won't work since need to use this to

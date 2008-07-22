@@ -11,6 +11,7 @@ import javax.swing.undo.CannotUndoException;
 import main.Hub;
 import model.fsa.FSAEvent;
 import model.fsa.FSAMessage;
+import model.fsa.FSAModel;
 import model.fsa.FSATransition;
 import presentation.GraphicalLayout;
 import presentation.fsa.Edge;
@@ -544,12 +545,12 @@ public class GraphUndoableEdits
 
 		protected boolean alternateObservable;
 
-		protected FSAGraph graph;
+		protected FSAModel model;
 
-		public UndoableModifyEvent(FSAGraph graph, FSAEvent event,
+		public UndoableModifyEvent(FSAModel model, FSAEvent event,
 				String newName, boolean newControllable, boolean newObservable)
 		{
-			this.graph = graph;
+			this.model = model;
 			this.event = event;
 			alternateName = newName;
 			alternateControllable = newControllable;
@@ -587,11 +588,11 @@ public class GraphUndoableEdits
 			alternateName = prevName;
 			alternateControllable = prevControllable;
 			alternateObservable = prevObservable;
-			graph.getModel().fireFSAEventSetChanged(new FSAMessage(
+			model.fireFSAEventSetChanged(new FSAMessage(
 					FSAMessage.MODIFY,
 					FSAMessage.EVENT,
 					event.getId(),
-					graph.getModel()));
+					model));
 		}
 
 		@Override

@@ -21,7 +21,6 @@ import pluggable.io.FormatTranslationException;
 import pluggable.io.IOCoordinator;
 import pluggable.io.IOPluginManager;
 import pluggable.io.ImportExportPlugin;
-import pluggable.ui.ToolsetManager;
 import presentation.GraphicalLayout;
 import presentation.fsa.FSAGraph;
 
@@ -61,10 +60,10 @@ public class JPEGPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
@@ -83,8 +82,8 @@ public class JPEGPlugin implements ImportExportPlugin
 		boolean useFrame = Hub.persistentData
 				.getBoolean(GraphExporter.STR_EXPORT_PROP_USE_FRAME);
 
-		FSAGraph graph = (FSAGraph)ToolsetManager
-				.getToolset(FSAModel.class).wrapModel(a);
+		FSAGraph graph = GraphExportHelper.wrapRecomputeShift(a);
+
 		Rectangle bounds = graph.getBounds(false);
 		if (bounds.height == 0 || bounds.width == 0)
 		{
@@ -129,8 +128,8 @@ public class JPEGPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)

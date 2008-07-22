@@ -31,8 +31,8 @@ public class LatexOptionsPane implements OptionsPane
 	JPanel pane = null;
 
 	/**
-	 * Text field with the path to the <code>latex</code> and
-	 * <code>dvips</code> executables.
+	 * Text field with the path to the <code>latex</code> and <code>dvips</code>
+	 * executables.
 	 */
 	protected JTextField latexPath;
 

@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import main.Hub;
 import presentation.template.DesignDrawingView;
 import presentation.template.GraphBlock;
-import presentation.template.TemplateGraph;
 
 public class MovementTool extends DrawingTool
 {
@@ -48,8 +47,8 @@ public class MovementTool extends DrawingTool
 	@Override
 	public void handleMouseReleased(MouseEvent m)
 	{
-		((TemplateGraph)context.getLayoutShell()).commitRelocate(context
-				.getSelection());
+		// ((TemplateGraph)context.getLayoutShell()).commitRelocate(context
+		// .getSelection());
 		context.setTool(DesignDrawingView.SELECTION_TOOL);
 	}
 }

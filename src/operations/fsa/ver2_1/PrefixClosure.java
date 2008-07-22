@@ -31,7 +31,6 @@ public class PrefixClosure extends AbstractOperation implements FilterOperation
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	@Override
