@@ -133,6 +133,9 @@ public class NewModelDialog extends EscapeDialog
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getContentPane().add(mainBox);
 		pack();
+		Point location = Hub.getCenteredLocationForDialog(new Dimension(
+				getWidth(),getHeight()));
+		setLocation(location.x, location.y);
 
 		OKButton.setPreferredSize(new Dimension(Math.max(OKButton.getWidth(),
 				cancelButton.getWidth()), OKButton.getHeight()));

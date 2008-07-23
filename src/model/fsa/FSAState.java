@@ -12,7 +12,6 @@ import model.DESElement;
  */
 public interface FSAState extends DESElement
 {
-
 	/**
 	 * Gets the name of the state
 	 * 

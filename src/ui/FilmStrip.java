@@ -103,6 +103,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		{
 			JComponent gv = views.get(i).getGUI();
 			Thumbnail p = new Thumbnail(this, new BorderLayout());
+			p.setPresentation(views.get(i));
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE, THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE, THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE, THUMBNAIL_SIZE));
@@ -209,6 +210,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		Presentation gv = ((Thumbnail)arg0.getSource()).getPresentation();
 		if (arg0.getClickCount() < 2)
 		{
+			gv.getModel();
 			if (!gv.getModel().getName().equals(Hub
 					.getWorkspace().getActiveModelName()))
 			{

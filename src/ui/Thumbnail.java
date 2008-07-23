@@ -1,6 +1,5 @@
 package ui;
 
-import java.awt.Component;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -86,19 +85,14 @@ public class Thumbnail extends JPanel
 		closeButton.setVisible(false);
 	}
 
-	@Override
-	public Component add(Component gv)
-	{
-		if (gv instanceof Presentation)
-		{
-			view = (Presentation)gv;
-		}
-		return super.add(gv);
-	}
-
 	public Presentation getPresentation()
 	{
 		return view;
+	}
+	
+	public void setPresentation(Presentation p)
+	{
+		view=p;
 	}
 
 	public String getGraphModelName()

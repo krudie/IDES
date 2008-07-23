@@ -9,7 +9,6 @@ import model.DESEvent;
  */
 public interface FSAEvent extends DESEvent, Comparable<FSAEvent>
 {
-
 	/**
 	 * Returns true iff this event's controllable property is set to true.
 	 * 

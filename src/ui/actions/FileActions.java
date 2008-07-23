@@ -19,8 +19,8 @@ import main.IncompleteWorkspaceDescriptorException;
 import main.Main;
 import main.WorkspaceDescriptor;
 import model.DESModel;
-import model.ModelManager;
-import model.fsa.FSAModel;
+import model.DESModelType;
+import ui.NewModelDialog;
 
 /**
  * @author Lenko Grigorov
@@ -52,8 +52,14 @@ public class FileActions
 
 		public void actionPerformed(ActionEvent e)
 		{
-			DESModel des = ModelManager.createModel(FSAModel.class);
-			des.setName(Hub.string("newModelName") + "-" + Count++);
+			DESModelType type=new NewModelDialog().selectModel();
+			if(type==null)
+			{
+				return;
+			}
+			DESModel des=type.createModel(Hub.string("newModelName") + "-" + Count++);
+//			DESModel des = ModelManager.createModel(FSAModel.class);
+//			des.setName(Hub.string("newModelName") + "-" + Count++);
 			Hub.getWorkspace().addModel(des);
 			Hub.getWorkspace().setActiveModel(des.getName());
 		}

@@ -43,6 +43,9 @@ import services.latex.LatexManager;
 import services.notice.NoticeManager;
 import services.notice.NoticePopup;
 import services.undo.UndoManager;
+import template.model.TemplateModel;
+import template.model.v3.TemplateDesign;
+import template.presentation.TemplateToolset;
 import ui.MainWindow;
 
 // import io.template.ver2_1.TemplateFileIOPlugin;
@@ -61,6 +64,15 @@ public class Main
 
 	private static void initializePlugins()
 	{
+		// Resources
+		Hub.addResouceBundle(ResourceBundle.getBundle("templates"));
+		
+		// Models
+		ModelManager.registerModel(TemplateDesign.myDescriptor);
+		
+		// Toolsets
+		ToolsetManager.registerToolset(TemplateModel.class, new TemplateToolset());
+		
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initializeFileIO();
 		// The template design is disabled for this version of IDES:
