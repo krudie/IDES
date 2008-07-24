@@ -1,5 +1,7 @@
 package services.notice;
 
+import ides.api.core.Hub;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -25,11 +27,9 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.metal.MetalIconFactory;
 
-import main.Hub;
-
 /**
  * The UI element displaying the pop-up balloon when new notices are posted with
- * {@link NoticeManager}. The balloon is actually always visible but has 0
+ * {@link NoticeBackend}. The balloon is actually always visible but has 0
  * dimensions when there are no messages to display. "Always on" is necessary to
  * prevent stealing the focus of the main window when the balloon is made
  * visible.
@@ -214,7 +214,8 @@ public class NoticePopup extends JDialog implements WindowListener,
 		setLocation(win.getX() + win.getWidth() - win.getInsets().right
 				- getWidth(), win.getY() + win.getHeight()
 				- win.getInsets().bottom
-				- Hub.getUserInterface().getStatusBar().getHeight() - getHeight());
+				- Hub.getUserInterface().getStatusBar().getHeight()
+				- getHeight());
 	}
 
 	/**
@@ -348,7 +349,7 @@ public class NoticePopup extends JDialog implements WindowListener,
 		{
 			public void run()
 			{
-				Vector<Notice> notices = NoticeManager.getNotices();
+				Vector<Notice> notices = NoticeBackend.instance().getNotices();
 				remove(panel);
 				model.removeAllElements();
 				for (int i = notices.size() - 1; i >= 0; --i)

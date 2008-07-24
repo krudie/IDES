@@ -3,18 +3,18 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.latex.LatexRenderException;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import io.IOCoordinator;
+
 import java.io.File;
 import java.io.IOException;
 
-import main.Hub;
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
 import presentation.fsa.FSAGraph;
-import services.latex.LatexManager;
-import services.latex.LatexRenderException;
 
 /**
  * @author christiansilvano
@@ -28,9 +28,9 @@ public class EPSPlugin implements ImportExportPlugin
 	/**
 	 * Registers itself to the IOPluginManager
 	 */
-	public void initializeImportExport()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
+		IOPluginManager.instance().registerExport(this, FSAModel.class);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class EPSPlugin implements ImportExportPlugin
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
 	{
-		if (!LatexManager.isLatexEnabled())
+		if (!Hub.getLatexManager().isLatexEnabled())
 		{
 			Hub.displayAlert(Hub.string("enableLatex4Export"));
 			return;
@@ -73,7 +73,7 @@ public class EPSPlugin implements ImportExportPlugin
 				throw new FormatTranslationException(Hub
 						.string("internalError"));
 			}
-			LatexManager.getRenderer().latex2EPS(fileContents, dst);
+			Hub.getLatexManager().getRenderer().latex2EPS(fileContents, dst);
 		}
 		catch (IOException e)
 		{
@@ -100,7 +100,7 @@ public class EPSPlugin implements ImportExportPlugin
 	/**
 	 * Return a human readable description of the plugin
 	 */
-	public String getDescription()
+	public String getFileDescription()
 	{
 		return description;
 	}
@@ -111,5 +111,30 @@ public class EPSPlugin implements ImportExportPlugin
 	public String getFileExtension()
 	{
 		return ext;
+	}
+
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "EPS export";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
 	}
 }

@@ -1,5 +1,11 @@
 package presentation.fsa.actions;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSATransition;
+
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Vector;
@@ -8,11 +14,6 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import main.Hub;
-import model.fsa.FSAEvent;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSATransition;
 import presentation.GraphicalLayout;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;

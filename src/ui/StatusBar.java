@@ -3,6 +3,15 @@
  */
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.core.WorkspaceMessage;
+import ides.api.core.WorkspaceSubscriber;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSASubscriber;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelSubscriber;
+
 import java.awt.Dimension;
 
 import javax.swing.Box;
@@ -10,15 +19,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
-
-import main.Hub;
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
-import model.DESModelMessage;
-import model.DESModelSubscriber;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSASubscriber;
 
 /**
  * @author Lenko Grigorov

@@ -1,5 +1,7 @@
 package presentation.fsa.tools;
 
+import ides.api.core.Hub;
+
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -9,7 +11,6 @@ import java.awt.geom.Point2D.Float;
 
 import javax.swing.undo.CompoundEdit;
 
-import main.Hub;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNode;
@@ -21,7 +22,6 @@ import presentation.fsa.Node;
 import presentation.fsa.ReflexiveEdge;
 import presentation.fsa.actions.GraphActions;
 import presentation.fsa.actions.GraphUndoableEdits;
-import services.undo.UndoManager;
 
 /**
  * Creates nodes and edges by drawing with mouse in a GraphDrawingView context.
@@ -343,7 +343,7 @@ public class CreationTool extends DrawingTool
 		allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub
 				.string("undoCreateElements")));
 		allEdits.end();
-		UndoManager.addEdit(allEdits);
+		Hub.getUndoManager().addEdit(allEdits);
 		// IDEA Don't keep a copy of the temp edge in this class, just use the
 		// get and set in context.
 		// TODO call abortEdge here and have it do all the work (duplicate code

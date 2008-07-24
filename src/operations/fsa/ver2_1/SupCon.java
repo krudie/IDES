@@ -3,9 +3,9 @@
  */
 package operations.fsa.ver2_1;
 
-import model.ModelManager;
-import model.fsa.FSAModel;
-import pluggable.operation.FilterOperation;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.FilterOperation;
 
 /**
  * @author Lenko Grigorov
@@ -37,7 +37,8 @@ public class SupCon extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-		FSAModel a = ModelManager.createModel(FSAModel.class, "none");
+		FSAModel a = ModelManager
+				.instance().createModel(FSAModel.class, "none");
 		SuperVisory.supC((FSAModel)inputs[0], (FSAModel)inputs[1], a);
 		FilterOperation fo = new ControlMap();
 		fo.filter(new Object[] { a, inputs[0] });

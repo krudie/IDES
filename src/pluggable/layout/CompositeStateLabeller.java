@@ -1,12 +1,13 @@
 package pluggable.layout;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.plugin.model.DESModel;
+
 import java.util.Iterator;
 
-import main.Annotable;
-import main.Hub;
-import model.DESModel;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
 import model.fsa.ver2_1.State;
 
 public class CompositeStateLabeller

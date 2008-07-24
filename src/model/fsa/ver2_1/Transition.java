@@ -1,9 +1,9 @@
 package model.fsa.ver2_1;
 
-import java.util.Hashtable;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAState;
 
-import model.fsa.FSAEvent;
-import model.fsa.FSAState;
+import java.util.Hashtable;
 
 // import io.fsa.ver2_1.SubElementContainer;
 
@@ -13,7 +13,7 @@ import model.fsa.FSAState;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Transition implements model.fsa.FSATransition
+public class Transition implements ides.api.model.fsa.FSATransition
 {
 
 	private FSAState sourceS, targetS;

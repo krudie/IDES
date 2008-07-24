@@ -3,12 +3,12 @@ package model.fsa.ver2_1;
 // import io.fsa.ver2_1.SubElement;
 // import io.fsa.ver2_1.SubElementContainer;
 
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.ListIterator;
-
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 
 /**
  * Model of a state in a finite state automaton.
@@ -18,7 +18,7 @@ import model.fsa.FSATransition;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class State implements model.fsa.FSAState
+public class State implements ides.api.model.fsa.FSAState
 {
 	public static final String NAME = "name", INITIAL = "initial",
 			MARKED = "marked";

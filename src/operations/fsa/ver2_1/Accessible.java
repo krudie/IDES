@@ -3,8 +3,8 @@
  */
 package operations.fsa.ver2_1;
 
-import model.fsa.FSAModel;
-import pluggable.operation.FilterOperation;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.operation.FilterOperation;
 
 /**
  * @author Lenko Grigorov

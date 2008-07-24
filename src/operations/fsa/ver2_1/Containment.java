@@ -3,15 +3,15 @@
  */
 package operations.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.operation.OperationManager;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
-import pluggable.operation.OperationManager;
 
 /**
  * @author Lenko Grigorov
@@ -46,9 +46,9 @@ public class Containment extends AbstractOperation
 		FSAModel b = (FSAModel)inputs[1];
 
 		a = (FSAModel)OperationManager
-				.getOperation("trim").perform(new Object[] { a })[0];
+				.instance().getOperation("trim").perform(new Object[] { a })[0];
 		b = (FSAModel)OperationManager
-				.getOperation("trim").perform(new Object[] { b })[0];
+				.instance().getOperation("trim").perform(new Object[] { b })[0];
 
 		LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
 		Set<String> pairs = new HashSet<String>();

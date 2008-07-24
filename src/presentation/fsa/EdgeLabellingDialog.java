@@ -1,5 +1,10 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSATransition;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -37,16 +42,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.CompoundEdit;
 
-import main.Hub;
-import main.Workspace;
-import model.fsa.FSAEvent;
-import model.fsa.FSAModel;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Event;
-import model.fsa.ver2_1.EventsModel;
 import presentation.fsa.actions.EdgeActions;
 import presentation.fsa.actions.GraphActions;
-import services.undo.UndoManager;
 import util.EscapeDialog;
 
 /**
@@ -70,10 +68,10 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	protected CompoundEdit allEdits;
 
-	public static void initialize(JComponent parent, EventsModel eventsModel)
+	public static void initialize(JComponent parent)
 	{
 		Frame f = JOptionPane.getFrameForComponent(parent);
-		dialog = new EdgeLabellingDialog(f, eventsModel);
+		dialog = new EdgeLabellingDialog(f);
 	}
 
 	/**
@@ -86,7 +84,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 	{
 		if (dialog == null)
 		{
-			initialize(view, null);
+			initialize(view);
 		}
 		presentation = view;
 		dialog.allEdits = new CompoundEdit();
@@ -100,7 +98,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	private EdgeLabellingDialog()
 	{
-		this(null, new EventsModel());
+		this(null);
 	}
 
 	/**
@@ -164,7 +162,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 		}
 	};
 
-	private EdgeLabellingDialog(Frame owner, EventsModel eventsModel)
+	private EdgeLabellingDialog(Frame owner)
 	{
 		super(owner, "Assign events to edge", true);
 		addWindowListener(new WindowAdapter()
@@ -499,8 +497,8 @@ public class EdgeLabellingDialog extends EscapeDialog
 	public void updateOnlyAvailable()
 	{
 		listAvailableEvents.removeAll();
-		Iterator<FSAEvent> events = ((FSAModel)Workspace
-				.instance().getActiveModel()).getEventIterator();
+		Iterator<FSAEvent> events = ((FSAModel)Hub
+				.getWorkspace().getActiveModel()).getEventIterator();
 
 		while (events.hasNext())
 		{
@@ -795,7 +793,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 					edge,
 					events).execute();
 			allEdits.end();
-			UndoManager.addEdit(allEdits);
+			Hub.getUndoManager().addEdit(allEdits);
 
 			// ((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).
 			// replaceEventsOnEdge(events,

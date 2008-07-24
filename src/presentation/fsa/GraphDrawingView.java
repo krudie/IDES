@@ -1,5 +1,8 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -29,8 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 
-import main.Hub;
-import model.fsa.FSAModel;
 import presentation.GraphicalLayout;
 import presentation.fsa.actions.UIActions;
 import presentation.fsa.tools.CreationTool;
@@ -887,7 +888,9 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		if (canvasSettings != null)
 		{
 			setShowGrid(canvasSettings.gridOn);
-			Hub.getUserInterface().getZoomControl().setZoom(canvasSettings.zoom);
+			Hub
+					.getUserInterface().getZoomControl()
+					.setZoom(canvasSettings.zoom);
 		}
 		else
 		{

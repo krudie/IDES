@@ -1,8 +1,8 @@
 package model.fsa.ver2_1;
 
-import java.util.Hashtable;
+import ides.api.model.fsa.FSAEvent;
 
-import model.fsa.FSAEvent;
+import java.util.Hashtable;
 
 /**
  * Represents an event in an automaton.
@@ -10,7 +10,7 @@ import model.fsa.FSAEvent;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event implements model.fsa.FSAEvent, Comparable<FSAEvent>
+public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 {
 	private long id;
 

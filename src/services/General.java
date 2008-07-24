@@ -3,10 +3,10 @@
  */
 package services;
 
-import java.util.Iterator;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
 
-import main.Hub;
-import model.fsa.FSAModel;
+import java.util.Iterator;
 
 import org.apache.commons.codec.digest.DigestUtils;
 

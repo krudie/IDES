@@ -3,13 +3,14 @@
  */
 package ui;
 
+import ides.api.core.Hub;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 
-import main.Hub;
 import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
 

@@ -1,11 +1,12 @@
 package operations.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
+
 import java.util.ListIterator;
 
-import model.ModelManager;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.State;
 
 /**
@@ -120,7 +121,8 @@ public class SuperVisory
 	{
 		// This function is very similar to supC besides that it will only run
 		// trough the automaton once to see if anyhitng should be cut of.
-		FSAModel result = ModelManager.createModel(FSAModel.class, "");
+		FSAModel result = ModelManager.instance().createModel(FSAModel.class,
+				"");
 
 		supCProduct(plant, legal, result);
 

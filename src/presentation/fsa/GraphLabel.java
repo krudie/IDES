@@ -1,5 +1,10 @@
 package presentation.fsa;
 
+import ides.api.cache.NotInCacheException;
+import ides.api.core.Hub;
+import ides.api.latex.LatexElement;
+import ides.api.latex.LatexRenderException;
+import ides.api.latex.LatexUtils;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Font;
@@ -18,15 +23,8 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
-import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
-import services.cache.Cache;
-import services.cache.NotInCacheException;
-import services.latex.LatexElement;
-import services.latex.LatexManager;
-import services.latex.LatexRenderException;
-import services.latex.LatexUtils;
 import util.BentoBox;
 
 /**
@@ -112,7 +110,7 @@ public class GraphLabel extends GraphElement implements LatexElement
 			}
 		}
 
-		if (LatexManager.isLatexEnabled())
+		if (Hub.getLatexManager().isLatexEnabled())
 		{
 			if (!visible || "".equals(getText()) || rendered == null)
 			{
@@ -326,7 +324,7 @@ public class GraphLabel extends GraphElement implements LatexElement
 			labelBounds.y = (int)getLayout().getLocation().y;
 		}
 
-		if (LatexManager.isLatexEnabled())
+		if (Hub.getLatexManager().isLatexEnabled())
 		{
 			if (rendered != null)
 			{
@@ -434,7 +432,7 @@ public class GraphLabel extends GraphElement implements LatexElement
 				}
 				catch (LatexRenderException e)
 				{
-					LatexManager.handleRenderingProblem();
+					Hub.getLatexManager().handleRenderingProblem();
 					rendered = null;
 				}
 			}
@@ -479,12 +477,12 @@ public class GraphLabel extends GraphElement implements LatexElement
 		byte[] data = null;
 		try
 		{
-			data = (byte[])Cache.get(getClass().getName() + label);
+			data = (byte[])Hub.getCache().get(getClass().getName() + label);
 		}
 		catch (NotInCacheException e)
 		{
 			data = LatexUtils.labelStringToImageBytes(label);
-			Cache.put(getClass().getName() + label, data);
+			Hub.getCache().put(getClass().getName() + label, data);
 		}
 		try
 		{
@@ -634,6 +632,6 @@ public class GraphLabel extends GraphElement implements LatexElement
 
 	public static float getLatexFontSize()
 	{
-		return LatexManager.getFontSize();
+		return Hub.getLatexManager().getFontSize();
 	}
 }

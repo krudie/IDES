@@ -1,5 +1,7 @@
 package services.notice;
 
+import ides.api.core.Hub;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
@@ -16,10 +18,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import main.Hub;
-
 /**
- * The UI element which displays the notices posted at {@link NoticeManager}.
+ * The UI element which displays the notices posted at {@link NoticeBackend}.
  * 
  * @author Lenko Grigorov
  */
@@ -159,7 +159,7 @@ public class NoticeBoard extends JScrollPane implements MouseListener,
 		{
 			public void run()
 			{
-				Vector<Notice> notices = NoticeManager.getNotices();
+				Vector<Notice> notices = NoticeBackend.instance().getNotices();
 				mainBox.removeAll();
 				for (Notice n : notices)
 				{

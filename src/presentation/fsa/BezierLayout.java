@@ -429,7 +429,7 @@ public class BezierLayout extends GraphicalLayout implements Serializable
 			s1 = Geometry.norm(p1c1); // arbitrary value
 			s2 = s1;
 			angle1 = -Geometry.angleFrom(p1c1, p2c2) / 2; // angle from edge
-															// axis
+			// axis
 			angle2 = -angle1;
 		}
 		// }

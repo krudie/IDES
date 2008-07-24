@@ -1,10 +1,11 @@
 package ui.actions;
 
+import ides.api.core.Hub;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import main.Hub;
 import ui.OptionsWindow;
 
 /**

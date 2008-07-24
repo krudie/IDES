@@ -3,6 +3,13 @@
  */
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.core.UserInterface;
+import ides.api.core.WorkspaceMessage;
+import ides.api.core.WorkspaceSubscriber;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.UIDescriptor;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Point;
@@ -38,18 +45,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import main.Hub;
 import main.Main;
-import main.UserInterface;
-import main.Workspace;
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
-import pluggable.ui.UIDescriptor;
-import presentation.Presentation;
 import presentation.fsa.ContextAdaptorHack;
-import services.latex.LatexManager;
+import services.latex.LatexBackend;
 import services.notice.NoticeBoard;
-import services.undo.UndoManager;
 import ui.actions.EditActions;
 import ui.actions.FileActions;
 import ui.actions.HelpActions;
@@ -63,7 +62,8 @@ import ui.actions.OptionsActions;
  * @author Helen Bretzke
  * @author Lenko Grigorov
  */
-public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInterface
+public class MainWindow extends JFrame implements WorkspaceSubscriber,
+		UserInterface
 {
 
 	/**
@@ -101,7 +101,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif"))
 				.getImage());
-		Workspace.instance().addSubscriber(this); // subscribe to
+		Hub.getWorkspace().addSubscriber(this); // subscribe to
 		// notifications from the
 		// workspace
 
@@ -133,10 +133,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 
 		// get the stored window size information and ensure it falls within
 		// the current display
-		int width = Hub.persistentData.getInt("mainWindowWidth");
-		int height = Hub.persistentData.getInt("mainWindowHeight");
-		int x = Hub.persistentData.getInt("mainWindowPosX");
-		int y = Hub.persistentData.getInt("mainWindowPosY");
+		int width = Hub.getPersistentData().getInt("mainWindowWidth");
+		int height = Hub.getPersistentData().getInt("mainWindowHeight");
+		int x = Hub.getPersistentData().getInt("mainWindowPosX");
+		int y = Hub.getPersistentData().getInt("mainWindowPosY");
 
 		// ensure that the stored dimensions fit on our display
 		Rectangle gcRect = this.getGraphicsConfiguration().getBounds();
@@ -256,8 +256,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 		importAction = new FileActions.ImportAction();
 		exportAction = new FileActions.ExportAction();
 		exitAction = new FileActions.ExitAction();
-		undoAction = new UndoManager.UndoAction();
-		redoAction = new UndoManager.RedoAction();
+		undoAction = Hub.getUndoManager().getUndoAction();
+		redoAction = Hub.getUndoManager().getRedoAction();
 		renameAction = new EditActions.RenameAction();
 		operationsAction = new OperationsActions.ShowDialogAction();
 		latexAction = new services.latex.UseLatexAction();
@@ -358,8 +358,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 		redo.setToolTipText(Hub.string("comHintRedo"));
 		redo.addActionListener(redoAction);
 		// Bind to the undo manager
-		UndoManager.bindUndo(undo);
-		UndoManager.bindRedo(redo);
+		Hub.getUndoManager().bindUndo(undo);
+		Hub.getUndoManager().bindRedo(redo);
 		// Adding the menu items to the "editMenu"
 		JMenuItem rename = new JMenuItem(renameAction);
 		editMenu.add(undo);
@@ -372,7 +372,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 
 		// Initializing the menu items for the "optionsMenu"
 		JCheckBoxMenuItem useLaTeX = new JCheckBoxMenuItem(latexAction);
-		LatexManager.getUIBinder().bind(useLaTeX);
+		LatexBackend.getUIBinder().bind(useLaTeX);
 		JMenuItem moreOptions = new JMenuItem(
 				new OptionsActions.MoreOptionsAction());
 		// adding the menu items to the "optionsMenu"
@@ -418,8 +418,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 		toolbar.add(undo);
 		toolbar.add(redo);
 		// Bind to the undo manager
-		UndoManager.bindNoTextUndo(undo);
-		UndoManager.bindNoTextRedo(redo);
+		Hub.getUndoManager().bindNoTextUndo(undo);
+		Hub.getUndoManager().bindNoTextRedo(redo);
 		toolbar.addSeparator();
 		// toolbar.add(new GraphCommands.SelectTool());
 		// toolbar.add(new GraphCommands.CreateTool());
@@ -488,7 +488,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 	private JSplitPane tabsAndRight;
 
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines
-									// in the workspace
+
+	// in the workspace
 
 	private JToolBar toolbar;
 
@@ -626,10 +627,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 		// TODO look into setting this as a single entry in settings.ini rather
 		// than four
 		Rectangle r = getBounds();
-		Hub.persistentData.setInt("mainWindowWidth", r.width);
-		Hub.persistentData.setInt("mainWindowHeight", r.height);
-		Hub.persistentData.setInt("mainWindowPosX", r.x);
-		Hub.persistentData.setInt("mainWindowPosY", r.y);
+		Hub.getPersistentData().setInt("mainWindowWidth", r.width);
+		Hub.getPersistentData().setInt("mainWindowHeight", r.height);
+		Hub.getPersistentData().setInt("mainWindowPosX", r.x);
+		Hub.getPersistentData().setInt("mainWindowPosY", r.y);
 		storeDividerLocations();
 		super.dispose();
 	}
@@ -641,8 +642,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 			Point p = new Point(tabsAndRight.getDividerLocation(), 0);
 			p = SwingUtilities.convertPoint(tabsAndRight, p, this);
 			// apply Math.ceil to avoid "creeping" of the divider
-			Hub.persistentData.setInt("rightViewExt", (int)Math.ceil(1000
-					* (float)(p.x) / getWidth()));
+			Hub.getPersistentData().setInt("rightViewExt",
+					(int)Math.ceil(1000 * (float)(p.x) / getWidth()));
 		}
 	}
 
@@ -659,7 +660,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber, UserInter
 		}
 		else
 		{
-			float ext = Hub.persistentData.getInt("rightViewExt", 750) / 1000f;
+			float ext = Hub.getPersistentData().getInt("rightViewExt", 750) / 1000f;
 			Point p = new Point((int)(ext * getWidth()), 0);
 			p = SwingUtilities.convertPoint(this, p, tabsAndRight);
 			tabsAndRight.setDividerLocation(p.x);

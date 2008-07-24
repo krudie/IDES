@@ -1,5 +1,8 @@
 package ui.actions;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.plugin.model.DESModel;
 import io.IOUtilities;
 
 import java.awt.Dimension;
@@ -14,11 +17,6 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
-
-import main.Annotable;
-import main.Hub;
-import model.DESModel;
-import services.undo.UndoManager;
 
 public class EditActions
 {
@@ -178,7 +176,7 @@ public class EditActions
 			try
 			{
 				edit.redo();
-				UndoManager.addEdit(edit);
+				Hub.getUndoManager().addEdit(edit);
 			}
 			catch (CannotRedoException ex)
 			{

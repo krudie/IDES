@@ -3,12 +3,13 @@
  */
 package presentation.fsa.tools;
 
+import ides.api.core.Hub;
+
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.ContextAdaptorHack;

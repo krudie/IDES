@@ -1,5 +1,16 @@
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.core.WorkspaceMessage;
+import ides.api.core.WorkspaceSubscriber;
+import ides.api.latex.LatexPresentation;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelPublisher;
+import ides.api.plugin.model.DESModelSubscriber;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.ToolsetManager;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -21,17 +32,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-import main.Hub;
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
-import model.DESModel;
-import model.DESModelMessage;
-import model.DESModelPublisher;
-import model.DESModelSubscriber;
-import pluggable.ui.ToolsetManager;
-import presentation.Presentation;
-import services.latex.LatexManager;
-import services.latex.LatexPresentation;
 import ui.actions.EditActions;
 
 /**
@@ -59,7 +59,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 					.getColor("InternalFrame.borderDarkShadow"), 1);
 
 	private static Thumbnail underMouse; // the last Thumbnail that we had a
-											// mouseMove event above
+
+	// mouseMove event above
 
 	public static final int THUMBNAIL_SIZE = 100;
 
@@ -163,7 +164,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		{
 			if (gv instanceof LatexPresentation)
 			{
-				LatexManager.removeLatexPresentation((LatexPresentation)gv);
+				Hub
+						.getLatexManager()
+						.removeLatexPresentation((LatexPresentation)gv);
 			}
 			if (gv.getModel() instanceof DESModelPublisher)
 			{
@@ -180,7 +183,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 			if (views.size() <= i || !views.elementAt(i).getModel().equals(gm))
 			{
 				Presentation gv = ToolsetManager
-						.getToolset(gm.getModelType().getMainPerspective())
+						.instance().getToolset(gm
+								.getModelType().getMainPerspective())
 						.getModelThumbnail(gm, 10, 10);
 				if (gv.getModel() instanceof DESModelPublisher)
 				{
@@ -188,7 +192,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 				}
 				if (gv instanceof LatexPresentation)
 				{
-					LatexManager.addLatexPresentation((LatexPresentation)gv);
+					Hub
+							.getLatexManager()
+							.addLatexPresentation((LatexPresentation)gv);
 				}
 				views.insertElementAt(gv, i);
 			}

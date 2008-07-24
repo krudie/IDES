@@ -1,5 +1,10 @@
 package io.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
 import io.AbstractParser;
 import io.ParsingToolbox;
 
@@ -8,11 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
@@ -147,8 +147,8 @@ public class AutomatonParser20 extends AbstractParser
 						+ ": encountered wrong start of element in state document.\n";
 				break;
 			}
-			a = ModelManager.createModel(FSAModel.class, ParsingToolbox
-					.removeFileType(file.getName()));
+			a = ModelManager.instance().createModel(FSAModel.class,
+					ParsingToolbox.removeFileType(file.getName()));
 			state = STATE_AUTOMATON;
 			break;
 		case (STATE_AUTOMATON):

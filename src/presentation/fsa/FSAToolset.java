@@ -1,5 +1,13 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.Toolset;
+import ides.api.plugin.presentation.UIDescriptor;
+import ides.api.plugin.presentation.UnsupportedModelException;
+
 import java.util.Collection;
 
 import javax.swing.Action;
@@ -11,13 +19,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-import main.Hub;
-import model.DESModel;
-import model.fsa.FSAModel;
-import pluggable.ui.Toolset;
-import pluggable.ui.UIDescriptor;
-import pluggable.ui.UnsupportedModelException;
-import presentation.Presentation;
 import presentation.fsa.actions.GraphActions;
 import presentation.fsa.actions.UIActions;
 import util.BooleanUIBinder;

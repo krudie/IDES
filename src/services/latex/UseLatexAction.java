@@ -1,10 +1,10 @@
 package services.latex;
 
+import ides.api.core.Hub;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-
-import main.Hub;
 
 /**
  * The class for the "Use LaTeX rendering" menu item.
@@ -33,6 +33,7 @@ public class UseLatexAction extends AbstractAction
 	 */
 	public void actionPerformed(ActionEvent evt)
 	{
-		LatexManager.setLatexEnabled(!LatexManager.isLatexEnabled());
+		LatexBackend.instance().setLatexEnabled(!LatexBackend
+				.instance().isLatexEnabled());
 	}
 }

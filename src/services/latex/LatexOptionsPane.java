@@ -1,5 +1,7 @@
 package services.latex;
 
+import ides.api.core.Hub;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,14 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import main.Hub;
-import pluggable.ui.OptionsPane;
+import ui.OptionsPane;
 
 /**
- * Implements the {@link pluggable.ui.OptionsPane} for the LaTeX rendering
- * options.
+ * Implements the {@link ui.OptionsPane} for the LaTeX rendering options.
  * 
- * @see pluggable.ui.OptionsPane
+ * @see ui.OptionsPane
  * @author Lenko Grigorov
  */
 public class LatexOptionsPane implements OptionsPane
@@ -69,7 +69,7 @@ public class LatexOptionsPane implements OptionsPane
 		Box latexLabelBox = Box.createHorizontalBox();
 		latexLabelBox.add(latexPathLabel);
 		latexLabelBox.add(Box.createHorizontalGlue());
-		latexPath = new JTextField(LatexManager.getLatexPath(), 30);
+		latexPath = new JTextField(LatexBackend.getLatexPath(), 30);
 		latexPath.setMaximumSize(new Dimension(
 				latexPath.getMaximumSize().width,
 				latexPath.getPreferredSize().height));
@@ -113,7 +113,7 @@ public class LatexOptionsPane implements OptionsPane
 		Box gsLabelBox = Box.createHorizontalBox();
 		gsLabelBox.add(gsPathLabel);
 		gsLabelBox.add(Box.createHorizontalGlue());
-		gsPath = new JTextField(LatexManager.getGSPath(), 30);
+		gsPath = new JTextField(LatexBackend.getGSPath(), 30);
 		gsPath.setMaximumSize(new Dimension(
 				gsPath.getMaximumSize().width,
 				gsPath.getPreferredSize().height));
@@ -160,8 +160,8 @@ public class LatexOptionsPane implements OptionsPane
 		{
 			return;
 		}
-		latexPath.setText(LatexManager.getLatexPath());
-		gsPath.setText(LatexManager.getGSPath());
+		latexPath.setText(LatexBackend.getLatexPath());
+		gsPath.setText(LatexBackend.getGSPath());
 	}
 
 	/**
@@ -173,8 +173,8 @@ public class LatexOptionsPane implements OptionsPane
 		{
 			return;
 		}
-		LatexManager.setLatexPath(latexPath.getText());
-		LatexManager.setGSPath(gsPath.getText());
+		LatexBackend.setLatexPath(latexPath.getText());
+		LatexBackend.setGSPath(gsPath.getText());
 	}
 
 	/**

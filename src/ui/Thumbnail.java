@@ -1,5 +1,8 @@
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.plugin.presentation.Presentation;
+
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -9,9 +12,6 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.plaf.metal.MetalIconFactory;
-
-import main.Hub;
-import presentation.Presentation;
 
 /**
  * @author chris mcaloney
@@ -89,10 +89,10 @@ public class Thumbnail extends JPanel
 	{
 		return view;
 	}
-	
+
 	public void setPresentation(Presentation p)
 	{
-		view=p;
+		view = p;
 	}
 
 	public String getGraphModelName()

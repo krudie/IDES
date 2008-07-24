@@ -1,12 +1,13 @@
 package presentation.fsa.actions;
 
+import ides.api.core.Hub;
+
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import presentation.fsa.FSAGraph;
-import services.undo.UndoManager;
 
 public abstract class AbstractGraphAction extends AbstractAction
 {
@@ -44,7 +45,7 @@ public abstract class AbstractGraphAction extends AbstractAction
 		}
 		else
 		{
-			UndoManager.addEdit(edit);
+			Hub.getUndoManager().addEdit(edit);
 		}
 	}
 

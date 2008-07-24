@@ -1,12 +1,13 @@
 package presentation.fsa.actions;
 
+import ides.api.model.fsa.FSAEvent;
+
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-import model.fsa.FSAEvent;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;

@@ -1,5 +1,7 @@
 package presentation.fsa;
 
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSATransition;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Graphics;
@@ -14,8 +16,6 @@ import java.awt.geom.Point2D.Float;
 import java.util.Iterator;
 import java.util.Set;
 
-import model.fsa.FSAEvent;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Transition;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;

@@ -3,7 +3,7 @@
  */
 package operations.fsa.ver2_1;
 
-import model.fsa.FSAModel;
+import ides.api.model.fsa.FSAModel;
 
 /**
  * @author Lenko Grigorov

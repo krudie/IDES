@@ -1,17 +1,18 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Annotable;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAEventSet;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import main.Annotable;
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
@@ -59,7 +60,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 		{
 			return new Object[0];
 		}
-		FSAModel a = ModelManager.createModel(FSAModel.class);
+		FSAModel a = ModelManager.instance().createModel(FSAModel.class);
 		maOrder = inputs.length;
 		FSAState[] initial = new FSAState[maOrder];
 		String[] fsaIds = new String[maOrder];

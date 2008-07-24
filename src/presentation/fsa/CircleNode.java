@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import ides.api.model.fsa.FSAState;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Component;
@@ -13,7 +14,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import model.fsa.FSAState;
 import presentation.GraphicalLayout;
 import util.BentoBox;
 

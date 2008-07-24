@@ -3,6 +3,13 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import io.IOCoordinator;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,12 +22,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import main.Hub;
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
 import presentation.GraphicalLayout;
 import presentation.fsa.FSAGraph;
 
@@ -44,9 +45,9 @@ public class PNGPlugin implements ImportExportPlugin
 	/**
 	 * Registers itself to the IOPluginManager
 	 */
-	public void initializeImportExport()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
+		IOPluginManager.instance().registerExport(this, FSAModel.class);
 	}
 
 	/**
@@ -79,7 +80,8 @@ public class PNGPlugin implements ImportExportPlugin
 			throw new FormatTranslationException(e);
 		}
 
-		boolean useFrame = Hub.persistentData
+		boolean useFrame = Hub
+				.getPersistentData()
 				.getBoolean(GraphExporter.STR_EXPORT_PROP_USE_FRAME);
 
 		FSAGraph graph = GraphExportHelper.wrapRecomputeShift(a);
@@ -140,7 +142,7 @@ public class PNGPlugin implements ImportExportPlugin
 	/**
 	 * Return a human readable description of the plugin
 	 */
-	public String getDescription()
+	public String getFileDescription()
 	{
 		return description;
 	}
@@ -151,5 +153,30 @@ public class PNGPlugin implements ImportExportPlugin
 	public String getFileExtension()
 	{
 		return ext;
+	}
+
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "PNG export";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
 	}
 }

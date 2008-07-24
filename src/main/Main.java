@@ -1,13 +1,11 @@
 package main;
 
-import io.fsa.ver2_1.EPSPlugin;
-import io.fsa.ver2_1.FSAFileIOPlugin;
-import io.fsa.ver2_1.GrailPlugin;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.presentation.ToolsetManager;
 import io.fsa.ver2_1.GraphExporter;
-import io.fsa.ver2_1.JPEGPlugin;
-import io.fsa.ver2_1.LatexPlugin;
-import io.fsa.ver2_1.PNGPlugin;
-import io.fsa.ver2_1.TCTPlugin;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,35 +15,13 @@ import java.util.Vector;
 
 import javax.swing.UIManager;
 
-import model.DESModel;
-import model.ModelManager;
-import model.fsa.FSAModel;
 import model.fsa.ver2_1.Automaton;
-import operations.fsa.ver2_1.Accessible;
-import operations.fsa.ver2_1.Coaccessible;
-import operations.fsa.ver2_1.Containment;
-import operations.fsa.ver2_1.Controllable;
-import operations.fsa.ver2_1.LocalModular;
-import operations.fsa.ver2_1.Meet;
-import operations.fsa.ver2_1.MultiAgentProductFSA;
-import operations.fsa.ver2_1.Nonconflicting;
-import operations.fsa.ver2_1.PrefixClosure;
-import operations.fsa.ver2_1.Projection;
-import operations.fsa.ver2_1.SupCon;
-import operations.fsa.ver2_1.SupRed;
-import operations.fsa.ver2_1.SynchronousProduct;
-import operations.fsa.ver2_1.Trim;
-import pluggable.operation.OperationManager;
-import pluggable.ui.ToolsetManager;
 import presentation.fsa.FSAToolset;
-import services.cache.Cache;
-import services.latex.LatexManager;
-import services.notice.NoticeManager;
+import services.cache.CacheBackend;
+import services.latex.LatexBackend;
+import services.notice.NoticeBackend;
 import services.notice.NoticePopup;
-import services.undo.UndoManager;
-import template.model.TemplateModel;
-import template.model.v3.TemplateDesign;
-import template.presentation.TemplateToolset;
+import services.undo.UndoBackend;
 import ui.MainWindow;
 
 // import io.template.ver2_1.TemplateFileIOPlugin;
@@ -62,37 +38,12 @@ public class Main
 	{
 	}
 
-	private static void initializePlugins()
-	{
-		// Resources
-		Hub.addResouceBundle(ResourceBundle.getBundle("templates"));
-		
-		// Models
-		ModelManager.registerModel(TemplateDesign.myDescriptor);
-		
-		// Toolsets
-		ToolsetManager.registerToolset(TemplateModel.class, new TemplateToolset());
-		
-		// Input/Output plugins:
-		new FSAFileIOPlugin().initializeFileIO();
-		// The template design is disabled for this version of IDES:
-		// TemplateFileIOPlugin.getInstance().initializeFileIO();
-
-		// Import/Export plugins:
-		new GrailPlugin().initializeImportExport();
-		new TCTPlugin().initializeImportExport();
-		new EPSPlugin().initializeImportExport();
-		new LatexPlugin().initializeImportExport();
-		new PNGPlugin().initializeImportExport();
-		new JPEGPlugin().initializeImportExport();
-	}
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args)
 	{
-		// setup other stuff
+		// setup random stuff
 		System.setProperty("org.apache.commons.logging.Log",
 				"org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -120,7 +71,7 @@ public class Main
 		// load settings
 		try
 		{
-			Hub.loadPersistentData();
+			HubBackend.loadPersistentData();
 		}
 		catch (IOException e)
 		{
@@ -148,51 +99,36 @@ public class Main
 		// for(Object o:UIManager.getLookAndFeelDefaults().keySet())
 		// System.out.println(o.toString());
 
-		Cache.init();
-		UndoManager.init();
-		NoticeManager.init();
+		// Register FSA
+		ModelManager.instance().registerModel(Automaton.myDescriptor);
+		ToolsetManager.instance().registerToolset(FSAModel.class,
+				new FSAToolset());
+
+		// setup stuff that doesn't need the main window
+		CacheBackend.init();
+		UndoBackend.init();
+		NoticeBackend.init();
 
 		// setup main window
-		Hub.setUserInterface(new MainWindow());
-
-		// TODO: move operation inits to the plugin manager eventually
-		// /TODO: move the initialization of the plugins to the plugin manager
-		initializePlugins();
-
-		// The template design is disabled for this version of IDES:
-		// ModelManager.registerModel(TemplateDesign.myDescriptor);
-		// PresentationManager.registerToolset(TemplateModel.class, new
-		// TemplateToolset());
-		ModelManager.registerModel(Automaton.myDescriptor);
-		ToolsetManager.registerToolset(FSAModel.class, new FSAToolset());
-		OperationManager.register(new Meet());
-		OperationManager.register(new SynchronousProduct());
-		OperationManager.register(new Projection());
-		OperationManager.register(new Accessible());
-		OperationManager.register(new Coaccessible());
-		OperationManager.register(new Trim());
-		OperationManager.register(new PrefixClosure());
-		OperationManager.register(new Controllable());
-		OperationManager.register(new SupCon());
-		OperationManager.register(new Containment());
-		OperationManager.register(new Nonconflicting());
-		// OperationManager.register(new ControlMap());
-		OperationManager.register(new LocalModular());
-		OperationManager.register(new SupRed());
-		OperationManager.register(new MultiAgentProductFSA());
+		HubBackend.setUserInterface(new MainWindow());
 
 		// setup stuff that needs the main window
-		LatexManager.init();
+		LatexBackend.init();
 
-		FSAModel fsa = ModelManager.createModel(FSAModel.class, Hub
-				.string("newModelName"));
+		FSAModel fsa = ModelManager.instance().createModel(FSAModel.class,
+				Hub.string("newModelName"));
 		Hub.getWorkspace().addModel(fsa);
 		Hub.getWorkspace().setActiveModel(fsa.getName());
 		Hub.registerOptionsPane(new GraphExporter.ExportOptionsPane());
 
 		// go live!
 		Hub.getMainWindow().setVisible(true);
+
+		// setup stuff that needs the main window visible
 		NoticePopup.init();
+
+		// last initialize plugins
+		PluginManager.init();
 	}
 
 	/**
@@ -229,10 +165,11 @@ public class Main
 
 		Hub.getWorkspace().setActiveModel(null);
 
-		// store settings
+		// cleanup
+		PluginManager.cleanup();
 		NoticePopup.cleanup();
-		NoticeManager.cleanup();
-		Cache.close();
+		NoticeBackend.cleanup();
+		CacheBackend.close();
 		Hub.getMainWindow().dispose();
 		Hub.storePersistentData();
 	}

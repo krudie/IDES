@@ -3,6 +3,12 @@
  */
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.operation.Operation;
+import ides.api.plugin.operation.OperationManager;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -28,12 +34,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import main.Hub;
-import model.DESModel;
-import model.fsa.FSAModel;
 import pluggable.layout.CompositeStateLabeller;
-import pluggable.operation.Operation;
-import pluggable.operation.OperationManager;
 import util.EscapeDialog;
 
 /**
@@ -90,7 +91,7 @@ public class OperationDialog extends EscapeDialog
 
 		Vector<String> ops = new Vector<String>();
 		for (Iterator<String> i = OperationManager
-				.getOperationNames().iterator(); i.hasNext();)
+				.instance().getOperationNames().iterator(); i.hasNext();)
 		{
 			ops.add(i.next());
 		}
@@ -106,7 +107,7 @@ public class OperationDialog extends EscapeDialog
 					resetBoxes(inputsBox,
 							outputsBox,
 							descriptionBox,
-							OperationManager.getOperation(opList
+							OperationManager.instance().getOperation(opList
 									.getSelectedValue().toString()));
 				}
 			}
@@ -183,8 +184,9 @@ public class OperationDialog extends EscapeDialog
 				else
 				{
 					// call function to perform selected operation
-					Operation op = OperationManager.getOperation(opList
-							.getSelectedValue().toString());
+					Operation op = OperationManager
+							.instance().getOperation(opList
+									.getSelectedValue().toString());
 					Object[] inputModels = new Object[inputs.size()];
 					for (int i = 0; i < inputs.size(); ++i)
 					{

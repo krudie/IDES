@@ -2,6 +2,22 @@ package model.fsa.ver2_1;
 
 // import io.fsa.ver2_1.SubElement;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAEventSet;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAPublisherAdaptor;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSASupervisor;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelSubscriber;
+import ides.api.plugin.model.DESModelType;
+import ides.api.plugin.model.ModelManager;
+
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
@@ -14,21 +30,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import main.Annotable;
-import main.Hub;
-import model.DESModel;
-import model.DESModelMessage;
-import model.DESModelSubscriber;
-import model.DESModelType;
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSAPublisherAdaptor;
-import model.fsa.FSAState;
-import model.fsa.FSASupervisor;
-import model.fsa.FSATransition;
 import services.General;
 import util.StupidSetWrapper;
 

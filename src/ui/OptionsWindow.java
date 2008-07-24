@@ -1,5 +1,7 @@
 package ui;
 
+import ides.api.core.Hub;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -24,8 +26,6 @@ import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import main.Hub;
-import pluggable.ui.OptionsPane;
 import util.EscapeDialog;
 
 /**
@@ -33,13 +33,13 @@ import util.EscapeDialog;
  * list of sections, where each section displays a different set of controls
  * that let the user modify the appplication settings. Each application module
  * or plugin can register its own section by calling
- * {@link main.Hub#registerOptionsPane(OptionsPane)} and providing an
- * {@link pluggable.ui.OptionsPane} as an argument. The set of controls for the
- * module or plugin have to appear in the {@link javax.swing.JPanel} that is
- * returned by the {@link pluggable.ui.OptionsPane#getPane()} method.
+ * {@link ides.api.core.Hub#registerOptionsPane(OptionsPane)} and providing an
+ * {@link ui.OptionsPane} as an argument. The set of controls for the module or
+ * plugin have to appear in the {@link javax.swing.JPanel} that is returned by
+ * the {@link ui.OptionsPane#getPane()} method.
  * 
- * @see pluggable.ui.OptionsPane
- * @see main.Hub#registerOptionsPane(OptionsPane)
+ * @see ui.OptionsPane
+ * @see ides.api.core.Hub#registerOptionsPane(OptionsPane)
  * @author Lenko Grigorov
  */
 public class OptionsWindow extends EscapeDialog
@@ -67,7 +67,7 @@ public class OptionsWindow extends EscapeDialog
 
 	/**
 	 * The registry which maps a section title to the corresponding
-	 * {@link pluggable.ui.OptionsPane}.
+	 * {@link ui.OptionsPane}.
 	 */
 	protected static Hashtable<String, OptionsPane> optionsRegistry = new Hashtable<String, OptionsPane>();
 
@@ -83,13 +83,13 @@ public class OptionsWindow extends EscapeDialog
 
 	/**
 	 * The {@link javax.swing.JPanel} which holds the controls of a selected
-	 * {@link pluggable.ui.OptionsPane}.
+	 * {@link ui.OptionsPane}.
 	 */
 	protected JPanel optionsHolder;
 
 	/**
 	 * The {@link javax.swing.JPanel} which holds the "Reset" and "Apply"
-	 * buttons displayed underneath a selected {@link pluggable.ui.OptionsPane}.
+	 * buttons displayed underneath a selected {@link ui.OptionsPane}.
 	 */
 	protected JPanel resetCommitPane;
 
@@ -277,12 +277,12 @@ public class OptionsWindow extends EscapeDialog
 
 	/**
 	 * Registers a new section of option controls. Do not call directly. Use
-	 * {@link main.Hub#registerOptionsPane(OptionsPane)} to register option
-	 * panes.
+	 * {@link ides.api.core.Hub#registerOptionsPane(OptionsPane)} to register
+	 * option panes.
 	 * 
 	 * @param pane
-	 *            the {@link pluggable.ui.OptionsPane} which has to be added.
-	 * @see main.Hub#registerOptionsPane(OptionsPane)
+	 *            the {@link ui.OptionsPane} which has to be added.
+	 * @see ides.api.core.Hub#registerOptionsPane(OptionsPane)
 	 */
 	public static void registerOptionsPane(OptionsPane pane)
 	{

@@ -1,10 +1,10 @@
 package services.undo;
 
+import ides.api.core.Hub;
+
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
-
-import main.Hub;
 
 public class RobustUndoManager extends UndoManager
 {

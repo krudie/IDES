@@ -1,15 +1,16 @@
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.latex.LatexElement;
+import ides.api.latex.LatexRenderException;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+
 import javax.swing.undo.CompoundEdit;
 
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphView;
 import presentation.fsa.actions.GraphActions;
-import services.latex.LatexElement;
-import services.latex.LatexManager;
-import services.latex.LatexRenderException;
 
 /**
  * Contains methods useful for the export of graphs of FSAs.
@@ -34,7 +35,7 @@ public class GraphExportHelper
 			throws FormatTranslationException
 	{
 		GraphView g = new GraphView(a);
-		if (LatexManager.isLatexEnabled())
+		if (Hub.getLatexManager().isLatexEnabled())
 		{
 			try
 			{

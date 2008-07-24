@@ -3,15 +3,16 @@
  */
 package operations.fsa.ver2_1;
 
+import ides.api.core.Annotable;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import main.Annotable;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.State;
 
 /**

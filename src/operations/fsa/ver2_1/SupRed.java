@@ -1,5 +1,10 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.ModelManager;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,11 +15,6 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-
-import main.Hub;
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAModel;
 
 public class SupRed extends AbstractOperation
 {
@@ -89,9 +89,10 @@ public class SupRed extends AbstractOperation
 	public static void exportGrail(FSAModel a, File file)
 	{
 		String fileContents = "";
-		for (Iterator<model.fsa.FSAState> i = a.getStateIterator(); i.hasNext();)
+		for (Iterator<ides.api.model.fsa.FSAState> i = a.getStateIterator(); i
+				.hasNext();)
 		{
-			model.fsa.FSAState s = i.next();
+			ides.api.model.fsa.FSAState s = i.next();
 			if (s.isInitial())
 			{
 				fileContents += "(START) |- " + s.getId() + "\n";
@@ -100,10 +101,10 @@ public class SupRed extends AbstractOperation
 			{
 				fileContents += "" + s.getId() + " -| (FINAL)\n";
 			}
-			for (Iterator<model.fsa.FSATransition> j = s
+			for (Iterator<ides.api.model.fsa.FSATransition> j = s
 					.getOutgoingTransitionsListIterator(); j.hasNext();)
 			{
-				model.fsa.FSATransition t = j.next();
+				ides.api.model.fsa.FSATransition t = j.next();
 				fileContents += ""
 						+ s.getId()
 						+ " "
@@ -139,7 +140,8 @@ public class SupRed extends AbstractOperation
 		try
 		{
 			in = new java.io.BufferedReader(new java.io.FileReader(file));
-			a = ModelManager.createModel(FSAModel.class, file.getName());
+			a = ModelManager.instance().createModel(FSAModel.class,
+					file.getName());
 			long tCount = 0;
 			long eCount = 0;
 			java.util.Hashtable<String, Long> events = new java.util.Hashtable<String, Long>();

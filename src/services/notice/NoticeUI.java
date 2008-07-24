@@ -1,5 +1,7 @@
 package services.notice;
 
+import ides.api.core.Hub;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -19,8 +21,6 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.MetalIconFactory;
-
-import main.Hub;
 
 /**
  * The UI element (representation) of a notice. It can have one of two states,
@@ -141,7 +141,7 @@ public class NoticeUI extends JPanel
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				NoticeManager.revoke(notice.id);
+				NoticeBackend.instance().revoke(notice.id);
 			}
 		});
 		tb.setFloatable(false);

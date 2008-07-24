@@ -1,5 +1,12 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Annotable;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,12 +17,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import main.Annotable;
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
@@ -54,14 +55,16 @@ public class Composition
 			return null;
 		}
 
-		FSAModel prevAnswer = ModelManager.createModel(FSAModel.class, "temp");
+		FSAModel prevAnswer = ModelManager
+				.instance().createModel(FSAModel.class, "temp");
 		FSAModel newAnswer;
 
 		product(automata[0], automata[1], prevAnswer);
 
 		for (int i = 2; i < automata.length; i++)
 		{
-			newAnswer = ModelManager.createModel(FSAModel.class, "temp");
+			newAnswer = ModelManager.instance().createModel(FSAModel.class,
+					"temp");
 			product(prevAnswer, automata[i], newAnswer);
 
 			prevAnswer = newAnswer;
@@ -252,14 +255,16 @@ public class Composition
 			return null;
 		}
 
-		FSAModel prevAnswer = ModelManager.createModel(FSAModel.class, "temp");
+		FSAModel prevAnswer = ModelManager
+				.instance().createModel(FSAModel.class, "temp");
 		FSAModel newAnswer;
 
 		parallel(automata[0], automata[1], prevAnswer);
 
 		for (int i = 2; i < automata.length; i++)
 		{
-			newAnswer = ModelManager.createModel(FSAModel.class, "temp");
+			newAnswer = ModelManager.instance().createModel(FSAModel.class,
+					"temp");
 			parallel(prevAnswer, automata[i], newAnswer);
 			prevAnswer = newAnswer;
 		}

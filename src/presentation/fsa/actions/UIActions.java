@@ -1,5 +1,7 @@
 package presentation.fsa.actions;
 
+import ides.api.core.Hub;
+
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -9,7 +11,6 @@ import java.util.Iterator;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
-import main.Hub;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeLabellingDialog;

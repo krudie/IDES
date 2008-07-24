@@ -3,8 +3,8 @@
  */
 package operations.fsa.ver2_1;
 
-import model.ModelManager;
-import model.fsa.FSAModel;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.ModelManager;
 
 /**
  * @author Lenko Grigorov
@@ -37,7 +37,8 @@ public class SynchronousProduct extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-		FSAModel a = ModelManager.createModel(FSAModel.class, "none");
+		FSAModel a = ModelManager
+				.instance().createModel(FSAModel.class, "none");
 		Composition.parallel((FSAModel)inputs[0], (FSAModel)inputs[1], a);
 		return new Object[] { a };
 	}

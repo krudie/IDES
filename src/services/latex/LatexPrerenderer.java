@@ -1,11 +1,15 @@
 package services.latex;
 
+import ides.api.core.Hub;
+import ides.api.latex.LatexElement;
+import ides.api.latex.LatexPresentation;
+import ides.api.latex.LatexRenderException;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import main.Hub;
 import util.InterruptableProgressDialog;
 
 /**
@@ -113,7 +117,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog
 	@Override
 	public void interrupt()
 	{
-		LatexManager.setLatexEnabled(false);
+		LatexBackend.instance().setLatexEnabled(false);
 		cancel = true;
 	}
 
@@ -168,7 +172,7 @@ public class LatexPrerenderer extends InterruptableProgressDialog
 				}
 				catch (LatexRenderException e)
 				{
-					LatexManager.handleRenderingProblem();
+					LatexBackend.instance().handleRenderingProblem();
 					cancel = true;
 					close();
 					return;

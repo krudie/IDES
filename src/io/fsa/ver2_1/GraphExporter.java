@@ -1,17 +1,18 @@
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+
 import java.awt.Rectangle;
 import java.io.PrintStream;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import main.Hub;
-import pluggable.ui.OptionsPane;
 import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphLabel;
+import ui.OptionsPane;
 import util.BentoBox;
 
 /**
@@ -33,8 +34,8 @@ public class GraphExporter
 
 		public void commitOptions()
 		{
-			Hub.persistentData.setBoolean(STR_EXPORT_PROP_USE_FRAME, cbFrame
-					.isSelected());
+			Hub.getPersistentData().setBoolean(STR_EXPORT_PROP_USE_FRAME,
+					cbFrame.isSelected());
 		}
 
 		public void disposePane()
@@ -48,7 +49,8 @@ public class GraphExporter
 			{
 				pane = new JPanel();
 				pane.add(cbFrame);
-				cbFrame.setSelected(Hub.persistentData
+				cbFrame.setSelected(Hub
+						.getPersistentData()
 						.getBoolean(STR_EXPORT_PROP_USE_FRAME));
 			}
 			return pane;
@@ -61,8 +63,8 @@ public class GraphExporter
 
 		public void resetOptions()
 		{
-			cbFrame.setSelected(Hub.persistentData
-					.getBoolean(STR_EXPORT_PROP_USE_FRAME));
+			cbFrame.setSelected(Hub
+					.getPersistentData().getBoolean(STR_EXPORT_PROP_USE_FRAME));
 		}
 	}
 
@@ -160,8 +162,8 @@ public class GraphExporter
 		Rectangle exportBounds = null;
 		int border = 0;
 		double scale = 1;
-		boolean useFrame = Hub.persistentData
-				.getBoolean(STR_EXPORT_PROP_USE_FRAME);
+		boolean useFrame = Hub
+				.getPersistentData().getBoolean(STR_EXPORT_PROP_USE_FRAME);
 
 		// Step #3 - Figure out the dimensions
 		exportBounds = graphModel.getBounds(false);
@@ -285,8 +287,8 @@ public class GraphExporter
 
 		Rectangle exportBounds = null;
 		int border = 0;
-		boolean useFrame = Hub.persistentData
-				.getBoolean(STR_EXPORT_PROP_USE_FRAME);
+		boolean useFrame = Hub
+				.getPersistentData().getBoolean(STR_EXPORT_PROP_USE_FRAME);
 
 		// Step #1 - Get the GraphModel
 		if (!(graphModel instanceof FSAGraph))

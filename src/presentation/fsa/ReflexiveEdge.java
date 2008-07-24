@@ -3,6 +3,7 @@
  */
 package presentation.fsa;
 
+import ides.api.model.fsa.FSATransition;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Color;
@@ -15,7 +16,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Set;
 
-import model.fsa.FSATransition;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;

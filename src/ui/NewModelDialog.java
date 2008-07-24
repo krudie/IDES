@@ -1,5 +1,9 @@
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.plugin.model.DESModelType;
+import ides.api.plugin.model.ModelManager;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -23,9 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import main.Hub;
-import model.DESModelType;
-import model.ModelManager;
 import util.EscapeDialog;
 
 /**
@@ -81,7 +82,7 @@ public class NewModelDialog extends EscapeDialog
 		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		Vector<Component> items = new Vector<Component>();
-		modelDescriptors = ModelManager.getAllTypes();
+		modelDescriptors = ModelManager.instance().getAllTypes();
 		for (int i = 0; i < modelDescriptors.length; ++i)
 		{
 			Box vbox = Box.createVerticalBox();
@@ -134,7 +135,8 @@ public class NewModelDialog extends EscapeDialog
 		getContentPane().add(mainBox);
 		pack();
 		Point location = Hub.getCenteredLocationForDialog(new Dimension(
-				getWidth(),getHeight()));
+				getWidth(),
+				getHeight()));
 		setLocation(location.x, location.y);
 
 		OKButton.setPreferredSize(new Dimension(Math.max(OKButton.getWidth(),

@@ -1,5 +1,7 @@
 package presentation.fsa;
 
+import ides.api.core.Annotable;
+import ides.api.model.fsa.FSATransition;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Component;
@@ -8,8 +10,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import main.Annotable;
-import model.fsa.FSATransition;
 import presentation.GraphicalLayout;
 
 /**

@@ -3,17 +3,17 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import io.IOCoordinator;
 import io.ctct.CTCTException;
 import io.ctct.LL_CTCT_Command;
 
 import java.io.File;
 import java.io.IOException;
-
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
 
 /**
  * @author christiansilvano
@@ -33,10 +33,10 @@ public class TCTPlugin implements ImportExportPlugin
 	/**
 	 * Registers itself to the IOPluginManager
 	 */
-	public void initializeImportExport()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
-		IOPluginManager.getInstance().registerImport(this, description);
+		IOPluginManager.instance().registerExport(this, FSAModel.class);
+		IOPluginManager.instance().registerImport(this);
 	}
 
 	/**
@@ -114,9 +114,33 @@ public class TCTPlugin implements ImportExportPlugin
 	/**
 	 * Return a human readable description of the plugin
 	 */
-	public String getDescription()
+	public String getFileDescription()
 	{
 		return description;
 	}
 
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "TCT import and export";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
+	}
 }

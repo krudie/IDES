@@ -1,5 +1,11 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.latex.LatexElement;
+import ides.api.latex.LatexPresentation;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.presentation.Presentation;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,13 +19,8 @@ import java.util.HashSet;
 import javax.swing.JComponent;
 import javax.swing.undo.CompoundEdit;
 
-import model.fsa.FSAModel;
 import presentation.GraphicalLayout;
-import presentation.Presentation;
 import presentation.fsa.actions.GraphActions;
-import services.latex.LatexElement;
-import services.latex.LatexManager;
-import services.latex.LatexPresentation;
 
 /**
  * The visual display of an FSAGraph. Subscribes and response to change
@@ -213,8 +214,8 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,
 			// set up delayed shift if LaTeX is on
 			if (!graphModel.hasAnnotation(SHIFT_GRAPH_AFTER_PRERENDER))
 			{
-				graphModel.setAnnotation(SHIFT_GRAPH_AFTER_PRERENDER,
-						LatexManager.isLatexEnabled());
+				graphModel.setAnnotation(SHIFT_GRAPH_AFTER_PRERENDER, Hub
+						.getLatexManager().isLatexEnabled());
 			}
 		}
 		else

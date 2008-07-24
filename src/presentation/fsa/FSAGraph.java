@@ -1,5 +1,16 @@
 package presentation.fsa;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.latex.LatexPresentation;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSASubscriber;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.presentation.Presentation;
+
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -14,22 +25,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import main.Annotable;
-import main.Hub;
-import model.fsa.FSAEvent;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSASubscriber;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import pluggable.layout.LayoutManager;
-import presentation.Presentation;
-import services.latex.LatexManager;
-import services.latex.LatexPresentation;
 import util.BooleanUIBinder;
 
 /**
@@ -194,8 +194,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				s.setName(String.valueOf(s.getId()));
 			}
 			wrapState(s, new Point2D.Float(0, 0));// (float)Math.random()*200,(
-													// float
-													// )Math.random()*200));
+			// float
+			// )Math.random()*200));
 			stateGroups.clear();
 			Iterator<FSATransition> j = s.getOutgoingTransitionsListIterator();
 
@@ -1731,7 +1731,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 	public boolean isRenderingOn()
 	{
-		if (!LatexManager.isLatexEnabled())
+		if (!Hub.getLatexManager().isLatexEnabled())
 		{
 			return false;
 		}
@@ -2209,13 +2209,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			}
 			initializeGraph();
 			avoidLayoutDrawing = false;
-			if (LatexManager.isLatexEnabled())
+			if (Hub.getLatexManager().isLatexEnabled())
 			{
 				for (Presentation p : hooks)
 				{
 					if (p instanceof LatexPresentation)
 					{
-						LatexManager.prerenderAndRepaint((LatexPresentation)p);
+						Hub
+								.getLatexManager()
+								.prerenderAndRepaint((LatexPresentation)p);
 					}
 				}
 			}

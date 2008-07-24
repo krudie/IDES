@@ -3,6 +3,8 @@
  */
 package presentation.fsa;
 
+import ides.api.core.Hub;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -25,7 +27,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
-import main.Hub;
 import presentation.fsa.actions.GraphActions;
 import util.EscapeDialog;
 

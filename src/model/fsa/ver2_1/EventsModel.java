@@ -1,10 +1,9 @@
 package model.fsa.ver2_1;
 
-import java.util.Set;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
 
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventsModel;
-import model.fsa.FSAModel;
+import java.util.Set;
 
 /**
  * A model of global events set (alphabet) and all local alphabets. TODO Design

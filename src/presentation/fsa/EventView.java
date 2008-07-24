@@ -1,5 +1,14 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSASubscriber;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.Toolset;
+
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -29,17 +38,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.undo.CompoundEdit;
 
-import main.Hub;
-import model.DESModel;
-import model.fsa.FSAEvent;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSASubscriber;
-import pluggable.ui.Toolset;
-import presentation.Presentation;
 import presentation.fsa.actions.AbstractGraphAction;
 import presentation.fsa.actions.GraphActions;
-import services.undo.UndoManager;
 
 /**
  * TODO Comment
@@ -323,7 +323,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 				deleteEvent.execute();
 			}
 			allEdits.end();
-			UndoManager.addEdit(allEdits);
+			Hub.getUndoManager().addEdit(allEdits);
 			refreshEventTable();
 			eventNameField.requestFocus();
 		}
@@ -505,7 +505,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		deleteBox.add(deleteButton);
 		deleteBox.setBorder(BorderFactory.createTitledBorder(Hub
 				.string("deleteSelectedEvents")));//.createEmptyBorder(5,5,5,5))
-													// ;
+		// ;
 		mainBox.add(deleteBox);
 
 		add(mainBox);

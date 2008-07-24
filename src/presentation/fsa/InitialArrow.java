@@ -162,9 +162,9 @@ public class InitialArrow extends Edge
 		// Compute the direction and location of the arrow head
 		AffineTransform at = new AffineTransform();
 		Point2D.Float unitArrowDir = Geometry.unit(direction); // Geometry.
-																// unitDirectionVector
-																// (
-																// line.getP1(),
+		// unitDirectionVector
+		// (
+		// line.getP1(),
 		// line.getP2());
 		Point2D.Float tEndPt = getTargetEndPoint();
 

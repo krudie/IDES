@@ -3,9 +3,9 @@
  */
 package operations.fsa.ver2_1;
 
-import java.util.Vector;
+import ides.api.plugin.operation.Operation;
 
-import pluggable.operation.Operation;
+import java.util.Vector;
 
 /**
  * @author Chris Dragert This is a helper class for the operations. All
