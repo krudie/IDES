@@ -4,6 +4,7 @@
 package presentation.fsa;
 
 import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -28,7 +29,6 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import presentation.fsa.actions.GraphActions;
-import util.EscapeDialog;
 
 /**
  * @author Lenko Grigorov

@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -63,7 +64,7 @@ public class PluginManager
 
 	protected static Set<Plugin> loadedPlugins = new TreeSet<Plugin>();
 
-	protected static void initHardPlugins()
+	protected static void initInternalPlugins()
 	{
 		// Register FSA operations
 		OperationManager.instance().register(new Meet());
@@ -97,7 +98,7 @@ public class PluginManager
 
 	public static void init()
 	{
-		initHardPlugins();
+		initInternalPlugins();
 
 		Vector<URL> resources = new Vector<URL>();
 		Vector<String> pluginClasses = new Vector<String>();
@@ -287,5 +288,10 @@ public class PluginManager
 		{
 			plugin.unload();
 		}
+	}
+	
+	public static Collection<Plugin> getLoadedPlugins()
+	{
+		return loadedPlugins;
 	}
 }

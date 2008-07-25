@@ -1,6 +1,7 @@
 package io.fsa.ver2_1;
 
 import ides.api.core.Hub;
+import ides.api.core.OptionsPane;
 
 import java.awt.Rectangle;
 import java.io.PrintStream;
@@ -12,7 +13,6 @@ import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.GraphLabel;
-import ui.OptionsPane;
 import util.BentoBox;
 
 /**

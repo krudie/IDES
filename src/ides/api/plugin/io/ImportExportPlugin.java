@@ -3,7 +3,6 @@
  */
 package ides.api.plugin.io;
 
-import ides.api.plugin.Plugin;
 import ides.api.plugin.model.DESModel;
 
 import java.io.File;
@@ -14,20 +13,8 @@ import java.io.File;
  * @author christiansilvano
  * @author Lenko Grigrov
  */
-public interface ImportExportPlugin extends Plugin
+public interface ImportExportPlugin
 {
-
-	/**
-	 * Register with the {@link IOPluginManager} informing whether this plugin
-	 * is "importer" or "exporter".
-	 */
-	public void initialize();
-
-	/**
-	 * Unregister from the {@link IOPluginManager}
-	 */
-	public void unload();
-
 	/**
 	 * Export a {@link DESModel} into a different format. The model is provided
 	 * as an IDES file. It is OK to overwrite the destination as the user's

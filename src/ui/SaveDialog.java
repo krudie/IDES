@@ -2,6 +2,7 @@ package ui;
 
 import ides.api.core.Hub;
 import ides.api.plugin.model.DESModel;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,7 +26,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import util.EscapeDialog;
 
 /**
  * A dialog box which lists unsaved DES models and lets the user choose which

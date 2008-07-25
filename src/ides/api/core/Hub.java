@@ -18,7 +18,6 @@ import services.cache.CacheBackend;
 import services.latex.LatexBackend;
 import services.notice.NoticeBackend;
 import services.undo.UndoBackend;
-import ui.OptionsPane;
 import ui.OptionsWindow;
 
 /**
@@ -144,8 +143,8 @@ public class Hub
 	 * plugin).
 	 * 
 	 * @param pane
-	 *            the {@link ui.OptionsPane} that will be registered
-	 * @see ui.OptionsPane
+	 *            the {@link ides.api.core.OptionsPane} that will be registered
+	 * @see ides.api.core.OptionsPane
 	 * @see ui.OptionsWindow
 	 */
 	public static void registerOptionsPane(OptionsPane pane)
@@ -155,11 +154,11 @@ public class Hub
 
 	/**
 	 * Request that the options dialog box opens up on the screen and shows the
-	 * options for the {@link ui.OptionsPane} with the given title.
+	 * options for the {@link ides.api.core.OptionsPane} with the given title.
 	 * 
 	 * @param title
-	 *            the title of the {@link ui.OptionsPane} to be displayed
-	 * @see ui.OptionsPane
+	 *            the title of the {@link ides.api.core.OptionsPane} to be displayed
+	 * @see ides.api.core.OptionsPane
 	 * @see ui.OptionsWindow
 	 */
 	public static void openOptionsPane(String title)

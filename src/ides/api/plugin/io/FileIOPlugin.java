@@ -3,7 +3,6 @@
  */
 package ides.api.plugin.io;
 
-import ides.api.plugin.Plugin;
 import ides.api.plugin.model.DESModel;
 
 import java.io.File;
@@ -20,15 +19,8 @@ import java.util.Set;
  * @author christiansilvano
  * @author Lenko Grigorov
  */
-public interface FileIOPlugin extends Plugin
+public interface FileIOPlugin
 {
-
-	/**
-	 * Register with the {@link IOPluginManager} informing whether this plugin
-	 * is a "metaSaver", "dataSaver", "metaLoader" or "dataLoader".
-	 */
-	public void initialize();
-
 	/**
 	 * Return the string describing the type of model handled by the plugin.
 	 * This string is matched against the type in IDES model files.
@@ -115,10 +107,5 @@ public interface FileIOPlugin extends Plugin
 	 */
 	public void saveMeta(PrintStream stream, DESModel model, String tag)
 			throws FileSaveException;
-
-	/**
-	 * Unregister from the {@link IOPluginManager}.
-	 */
-	public void unload();
 
 }

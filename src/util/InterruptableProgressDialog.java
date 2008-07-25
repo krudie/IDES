@@ -1,6 +1,7 @@
 package util;
 
 import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Dimension;
 import java.awt.Frame;

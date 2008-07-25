@@ -4,6 +4,7 @@
 package ui;
 
 import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -27,7 +28,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-import util.EscapeDialog;
 
 /**
  * @author Lenko Grigorov

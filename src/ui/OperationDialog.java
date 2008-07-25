@@ -8,6 +8,7 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -35,7 +36,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import pluggable.layout.CompositeStateLabeller;
-import util.EscapeDialog;
 
 /**
  * @author Lenko Grigorov

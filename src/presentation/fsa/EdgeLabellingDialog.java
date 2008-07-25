@@ -4,6 +4,7 @@ import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -45,7 +46,6 @@ import javax.swing.undo.CompoundEdit;
 import model.fsa.ver2_1.Event;
 import presentation.fsa.actions.EdgeActions;
 import presentation.fsa.actions.GraphActions;
-import util.EscapeDialog;
 
 /**
  * Dialog window for assigning multiple events from the global events model to

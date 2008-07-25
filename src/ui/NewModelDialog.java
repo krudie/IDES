@@ -3,6 +3,7 @@ package ui;
 import ides.api.core.Hub;
 import ides.api.plugin.model.DESModelType;
 import ides.api.plugin.model.ModelManager;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -27,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import util.EscapeDialog;
 
 /**
  * The dialog box that lets the user choose what type of DES model they want to

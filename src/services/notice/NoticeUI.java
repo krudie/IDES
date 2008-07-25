@@ -1,6 +1,7 @@
 package services.notice;
 
 import ides.api.core.Hub;
+import ides.api.utilities.ContractableTextArea;
 
 import java.awt.Color;
 import java.awt.Dimension;

@@ -1,4 +1,4 @@
-package util;
+package ides.api.utilities;
 
 import java.awt.Dialog;
 import java.awt.Frame;

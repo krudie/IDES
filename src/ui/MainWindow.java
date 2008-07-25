@@ -236,6 +236,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	Action latexAction;
 
 	Action optionsAction;
+	
+	Action pluginsAction;
 
 	Action aboutAction;
 
@@ -262,6 +264,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		operationsAction = new OperationsActions.ShowDialogAction();
 		latexAction = new services.latex.UseLatexAction();
 		optionsAction = new OptionsActions.MoreOptionsAction();
+		pluginsAction = new HelpActions.PluginsAction();
 		aboutAction = new HelpActions.AboutAction();
 
 		// decide which ones will be disabled when there's no model open
@@ -381,7 +384,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		optionsMenu.add(moreOptions);
 
 		// adding the menu items to the "helpMenu"
+		JMenuItem viewPlugins = new JMenuItem(pluginsAction);
 		JMenuItem aboutIDES = new JMenuItem(aboutAction);
+		helpMenu.add(viewPlugins);
+		helpMenu.addSeparator();
 		helpMenu.add(aboutIDES);
 
 		menuBar = new JMenuBar();

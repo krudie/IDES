@@ -1,6 +1,8 @@
-package ui;
+package ides.api.core;
 
 import javax.swing.JPanel;
+
+import ui.OptionsWindow;
 
 /**
  * The interface for modules that will appear in the Options dialog box. The

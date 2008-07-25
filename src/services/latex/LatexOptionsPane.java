@@ -1,6 +1,7 @@
 package services.latex;
 
 import ides.api.core.Hub;
+import ides.api.core.OptionsPane;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -14,12 +15,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import ui.OptionsPane;
 
 /**
- * Implements the {@link ui.OptionsPane} for the LaTeX rendering options.
+ * Implements the {@link ides.api.core.OptionsPane} for the LaTeX rendering options.
  * 
- * @see ui.OptionsPane
+ * @see ides.api.core.OptionsPane
  * @author Lenko Grigorov
  */
 public class LatexOptionsPane implements OptionsPane

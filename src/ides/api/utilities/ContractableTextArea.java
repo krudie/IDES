@@ -1,4 +1,4 @@
-package services.notice;
+package ides.api.utilities;
 
 import java.awt.Dimension;
 

@@ -4,6 +4,7 @@
 package presentation.fsa;
 
 import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -24,7 +25,6 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import util.EscapeDialog;
 
 /**
  * A dialog window for entering a single line of text and creating a free label
