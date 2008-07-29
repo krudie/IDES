@@ -15,9 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
 /**
- * Implements the {@link ides.api.core.OptionsPane} for the LaTeX rendering options.
+ * Implements the {@link ides.api.core.OptionsPane} for the LaTeX rendering
+ * options.
  * 
  * @see ides.api.core.OptionsPane
  * @author Lenko Grigorov

@@ -289,7 +289,7 @@ public class PluginManager
 			plugin.unload();
 		}
 	}
-	
+
 	public static Collection<Plugin> getLoadedPlugins()
 	{
 		return loadedPlugins;

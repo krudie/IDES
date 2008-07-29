@@ -236,7 +236,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	Action latexAction;
 
 	Action optionsAction;
-	
+
 	Action pluginsAction;
 
 	Action aboutAction;

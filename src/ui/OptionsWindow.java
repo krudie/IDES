@@ -28,16 +28,15 @@ import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-
 /**
  * This is the window of the Options dialog box. It lets the user select from a
  * list of sections, where each section displays a different set of controls
  * that let the user modify the appplication settings. Each application module
  * or plugin can register its own section by calling
  * {@link ides.api.core.Hub#registerOptionsPane(OptionsPane)} and providing an
- * {@link ides.api.core.OptionsPane} as an argument. The set of controls for the module or
- * plugin have to appear in the {@link javax.swing.JPanel} that is returned by
- * the {@link ides.api.core.OptionsPane#getPane()} method.
+ * {@link ides.api.core.OptionsPane} as an argument. The set of controls for the
+ * module or plugin have to appear in the {@link javax.swing.JPanel} that is
+ * returned by the {@link ides.api.core.OptionsPane#getPane()} method.
  * 
  * @see ides.api.core.OptionsPane
  * @see ides.api.core.Hub#registerOptionsPane(OptionsPane)
@@ -90,7 +89,8 @@ public class OptionsWindow extends EscapeDialog
 
 	/**
 	 * The {@link javax.swing.JPanel} which holds the "Reset" and "Apply"
-	 * buttons displayed underneath a selected {@link ides.api.core.OptionsPane}.
+	 * buttons displayed underneath a selected {@link ides.api.core.OptionsPane}
+	 * .
 	 */
 	protected JPanel resetCommitPane;
 

@@ -25,7 +25,6 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-
 /**
  * A dialog window for entering a single line of text and creating a free label
  * (i.e. not associated with any graph element) on the drawing canvas. Commits

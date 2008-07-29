@@ -26,7 +26,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-
 /**
  * A dialog box which lists unsaved DES models and lets the user choose which
  * ones to save.

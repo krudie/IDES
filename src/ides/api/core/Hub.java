@@ -157,7 +157,8 @@ public class Hub
 	 * options for the {@link ides.api.core.OptionsPane} with the given title.
 	 * 
 	 * @param title
-	 *            the title of the {@link ides.api.core.OptionsPane} to be displayed
+	 *            the title of the {@link ides.api.core.OptionsPane} to be
+	 *            displayed
 	 * @see ides.api.core.OptionsPane
 	 * @see ui.OptionsWindow
 	 */

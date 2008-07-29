@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-
 /**
  * The dialog box that lets the user choose what type of DES model they want to
  * create.
