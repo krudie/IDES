@@ -159,7 +159,14 @@ public class PluginsDialog extends EscapeDialog
 		mainBox.setLayout(new BoxLayout(mainBox, BoxLayout.Y_AXIS));
 
 		Box titleBox = Box.createHorizontalBox();
-		titleBox.add(new JLabel(Hub.string("viewPluginsDesc")));
+		if (PluginManager.getLoadedPlugins().isEmpty())
+		{
+			titleBox.add(new JLabel(Hub.string("viewNoPluginsDesc")));
+		}
+		else
+		{
+			titleBox.add(new JLabel(Hub.string("viewPluginsDesc")));
+		}
 		titleBox.add(Box.createHorizontalGlue());
 		mainBox.add(titleBox);
 

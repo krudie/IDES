@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ui;
+package ides.api.ui;
 
 import ides.api.core.Hub;
 

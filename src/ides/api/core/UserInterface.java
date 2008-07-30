@@ -1,10 +1,11 @@
 package ides.api.core;
 
+import ides.api.ui.ZoomControl;
+
 import java.awt.Frame;
 
 import services.notice.NoticeBoard;
 import ui.StatusBar;
-import ui.ZoomControl;
 
 /**
  * Interface for the services provided by the main window interface.

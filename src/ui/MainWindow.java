@@ -9,6 +9,7 @@ import ides.api.core.WorkspaceMessage;
 import ides.api.core.WorkspaceSubscriber;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.UIDescriptor;
+import ides.api.ui.ZoomControl;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
