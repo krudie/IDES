@@ -14,25 +14,23 @@ public class FileSaveException extends IOException
 
 	public FileSaveException()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	public FileSaveException(String arg0)
 	{
 		super(arg0);
-		// TODO Auto-generated constructor stub
 	}
 
 	public FileSaveException(Throwable arg0)
 	{
-		super(arg0);
-		// TODO Auto-generated constructor stub
+		super();
+		initCause(arg0);
 	}
 
 	public FileSaveException(String arg0, Throwable arg1)
 	{
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
+		super(arg0);
+		initCause(arg1);
 	}
 
 }
