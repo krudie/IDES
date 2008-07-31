@@ -716,6 +716,10 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	 */
 	public void fireRepaintRequired()
 	{
+		for(Presentation p:activePresentations)
+		{
+			p.forceRepaint();
+		}
 		for (WorkspaceSubscriber s : subscribers)
 		{
 			s.repaintRequired();

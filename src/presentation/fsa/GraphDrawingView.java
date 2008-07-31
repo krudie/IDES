@@ -897,6 +897,9 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			setShowGrid(false);
 			Hub.getUserInterface().getZoomControl().setZoom(1);
 		}
+		//if the scale factor isn't set properly before adding the GraphView to the
+		//scroll pane, auto-scroll to the position stored in canvas settings won't work
+		scaleFactor = Hub.getUserInterface().getZoomControl().getZoom();
 		uiInteraction = false;
 	}
 
