@@ -235,8 +235,7 @@ public class State implements model.fsa.FSAState
 	 * @param key
 	 *            key for the annotation
 	 * @return if there is no annotation for the given key, returns
-	 *         <code>null</code>, otherwise returns the annotation for the
-	 *         key
+	 *         <code>null</code>, otherwise returns the annotation for the key
 	 */
 	public Object getAnnotation(String key)
 	{
@@ -289,14 +288,18 @@ public class State implements model.fsa.FSAState
 	 */
 	public String getName()
 	{
+		if (getAnnotation(NAME) == null)
+		{
+			setAnnotation(NAME, String.valueOf(getId()));
+		}
 		return (String)getAnnotation(NAME);
 	}
 
 	/**
 	 * Sets an annotation for the name of the state
 	 * 
-	 * @param name,
-	 *            the name for the String
+	 * @param name
+	 *            , the name for the String
 	 */
 	public void setName(String name)
 	{
