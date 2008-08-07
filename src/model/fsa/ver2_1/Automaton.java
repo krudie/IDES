@@ -1,7 +1,5 @@
 package model.fsa.ver2_1;
 
-// import io.fsa.ver2_1.SubElement;
-
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
@@ -22,6 +20,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -251,11 +250,19 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				s.setMarked(tmpState.isMarked());
 				s.setInitial(tmpState.isInitial());
 				s.setName(tmpState.getName());
-				s.setAnnotation(Annotable.LAYOUT, layout);
+				if (layout != null)
+				{
+					s.setAnnotation(Annotable.LAYOUT, layout);
+				}
 				clone.add(s);
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
+				throw new RuntimeException(e);
+			}
+			catch (ClassNotFoundException e)
+			{
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -278,7 +285,10 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				Object layout = objectIS.readObject();
 				is.close();
 				Transition t = new Transition(oldt, source, target);
-				t.setAnnotation(Annotable.LAYOUT, layout);
+				if (layout != null)
+				{
+					t.setAnnotation(Annotable.LAYOUT, layout);
+				}
 				clone.add(t);
 				if (oldt.getEvent() != null)
 				{
@@ -287,8 +297,13 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 					t.setEvent(event);
 				}
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
+				throw new RuntimeException(e);
+			}
+			catch (ClassNotFoundException e)
+			{
+				throw new RuntimeException(e);
 			}
 		}
 		return clone;

@@ -24,10 +24,6 @@ import services.notice.NoticePopup;
 import services.undo.UndoBackend;
 import ui.MainWindow;
 
-// import io.template.ver2_1.TemplateFileIOPlugin;
-// import presentation.template.TemplateToolset;
-// import model.template.TemplateModel;
-// import model.template.ver2_1.TemplateDesign;
 /**
  * @author Lenko Grigorov
  */
@@ -49,10 +45,14 @@ public class Main
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// set up global exception handler
-		// TODO uncomment this line before shipping. Default exception handler
+		// TODO uncomment these lines before shipping. Default exception handler
 		// disabled for debugging. -- CLM
 		// Thread.setDefaultUncaughtExceptionHandler(new
 		// GlobalExceptionHandler());
+		// AWT/Swing Exception handling (changes expected in future Java
+		// releases)
+		// System.setProperty("sun.awt.exception.handler",
+		// GlobalExceptionHandler.class.getName());
 
 		// load resource with strings used in the program
 		try

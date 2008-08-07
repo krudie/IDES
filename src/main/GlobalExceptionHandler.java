@@ -23,17 +23,13 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 /**
  * @author Lenko Grigorov
  */
-public class GlobalExceptionHandler extends JDialog implements
-		UncaughtExceptionHandler
+public class GlobalExceptionHandler implements UncaughtExceptionHandler
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3509293345082828829L;
 
 	private JTextArea messageArea;
@@ -42,10 +38,12 @@ public class GlobalExceptionHandler extends JDialog implements
 
 	private JLabel iconLabel;
 
-	public GlobalExceptionHandler()
+	private JDialog win;
+
+	private void createWindow()
 	{
-		super((java.awt.Frame)null, "Error");
-		addWindowListener(new WindowAdapter()
+		win = new JDialog((java.awt.Frame)null, "Error");
+		win.addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent e)
@@ -53,7 +51,7 @@ public class GlobalExceptionHandler extends JDialog implements
 				quit();
 			}
 		});
-		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		win.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		Box mainBox = Box.createVerticalBox();
 
 		Box messageBox = Box.createHorizontalBox();
@@ -61,7 +59,7 @@ public class GlobalExceptionHandler extends JDialog implements
 		messageBox.add(iconLabel);
 		messageBox.add(Box.createRigidArea(new Dimension(10, 0)));
 		labelArea = new JTextArea(
-				"A serious error occurred in the IDES software.\nYou can check if IDES is still responsive and choose to continue your work.\nIf you press on the quit button, IDES will terminate.");
+				"A serious error occurred in the IDES software.\nYou can choose to continue and check if IDES is still responsive.\nIf you press on the quit button, IDES will terminate.");
 		labelArea.setEditable(false);
 		labelArea.setBackground(mainBox.getBackground());
 		messageBox.add(labelArea);
@@ -102,7 +100,7 @@ public class GlobalExceptionHandler extends JDialog implements
 		buttonBox.add(quitButton);
 		mainBox.add(buttonBox);
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		getContentPane().add(mainBox);
+		win.getContentPane().add(mainBox);
 		// pack();
 	}
 
@@ -114,6 +112,7 @@ public class GlobalExceptionHandler extends JDialog implements
 	 */
 	public void uncaughtException(Thread arg0, Throwable arg1)
 	{
+		createWindow();
 		messageArea.setText("Message: " + arg1.getMessage() + "\n");
 		messageArea.append("Exception in thread \"" + arg0.getName() + "\" "
 				+ arg1.getClass().getName() + "\n");
@@ -122,14 +121,6 @@ public class GlobalExceptionHandler extends JDialog implements
 		{
 			messageArea.append("    at " + elements[i].toString() + "\n");
 		}
-		javax.swing.SwingUtilities.updateComponentTreeUI(this);
-		iconLabel.setIcon(UIManager.getIcon("OptionPane.errorIcon"));
-		labelArea.setBackground(getBackground());
-		labelArea.setFont(new JLabel().getFont());
-		pack();
-		setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - getWidth()) / 2,
-				(Toolkit.getDefaultToolkit().getScreenSize().height - getHeight()) / 2);
-		setVisible(true);
 
 		// Logging the message into a text file that follows the format:
 		// log_|YEAR|MONTH|DAY|HOUR|MIN|SEC|.log
@@ -147,11 +138,36 @@ public class GlobalExceptionHandler extends JDialog implements
 		{
 
 		}
+
+		javax.swing.SwingUtilities.updateComponentTreeUI(win);
+		iconLabel.setIcon(UIManager.getIcon("OptionPane.errorIcon"));
+		labelArea.setBackground(win.getBackground());
+		labelArea.setFont(new JLabel().getFont());
+		win.pack();
+		win
+				.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - win
+						.getWidth()) / 2,
+						(Toolkit.getDefaultToolkit().getScreenSize().height - win
+								.getHeight()) / 2);
+		win.setModal(true);
+		win.setVisible(true);
+		win.dispose();
+	}
+
+	/**
+	 * Handling of AWT/Swing exceptions.
+	 * 
+	 * @param t
+	 *            exception
+	 */
+	public void handle(Throwable t)
+	{
+		uncaughtException(Thread.currentThread(), t);
 	}
 
 	protected void goOn()
 	{
-		setVisible(false);
+		win.setVisible(false);
 	}
 
 	protected void quit()

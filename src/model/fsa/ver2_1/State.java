@@ -1,8 +1,5 @@
 package model.fsa.ver2_1;
 
-// import io.fsa.ver2_1.SubElement;
-// import io.fsa.ver2_1.SubElementContainer;
-
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 
@@ -288,6 +285,10 @@ public class State implements ides.api.model.fsa.FSAState
 	 */
 	public String getName()
 	{
+		if (getAnnotation(NAME) == null)
+		{
+			setAnnotation(NAME, String.valueOf(getId()));
+		}
 		return (String)getAnnotation(NAME);
 	}
 
