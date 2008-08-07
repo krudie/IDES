@@ -108,9 +108,9 @@ public class GlobalExceptionHandler extends JDialog implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread,
-	 *      java.lang.Throwable)
+	 * @see
+	 * java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang
+	 * .Thread, java.lang.Throwable)
 	 */
 	public void uncaughtException(Thread arg0, Throwable arg1)
 	{
@@ -129,6 +129,7 @@ public class GlobalExceptionHandler extends JDialog implements
 		pack();
 		setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - getWidth()) / 2,
 				(Toolkit.getDefaultToolkit().getScreenSize().height - getHeight()) / 2);
+		setModal(true);
 		setVisible(true);
 
 		// Logging the message into a text file that follows the format:
@@ -145,8 +146,18 @@ public class GlobalExceptionHandler extends JDialog implements
 		}
 		catch (Exception e)
 		{
-
 		}
+	}
+
+	/**
+	 * Handling of AWT/Swing exceptions.
+	 * 
+	 * @param t
+	 *            exception
+	 */
+	public void handle(Throwable t)
+	{
+		uncaughtException(Thread.currentThread(), t);
 	}
 
 	protected void goOn()

@@ -84,9 +84,13 @@ public class Main
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
 		// set up global exception handler
-		// TODO uncomment this line before shipping. Default exception handler
+		// TODO uncomment these lines before shipping. Default exception handler
 		// disabled for debugging. -- CLM
 		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		// AWT/Swing Exception handling (changes expected in future Java
+		// releases)
+		System.setProperty("sun.awt.exception.handler",
+				GlobalExceptionHandler.class.getName());
 
 		// load resource with strings used in the program
 		try
