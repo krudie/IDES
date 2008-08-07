@@ -1,12 +1,13 @@
 package presentation.fsa.tools;
 
+import ides.api.core.Hub;
+
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import main.Hub;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.GraphDrawingView;
 import presentation.fsa.actions.GraphActions.MoveAction;

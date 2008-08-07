@@ -1,10 +1,11 @@
 package presentation.fsa.tools;
 
+import ides.api.core.Hub;
+
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 
-import main.Hub;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.actions.UIActions;
 

@@ -1,5 +1,14 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSASubscriber;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.Toolset;
+
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -29,17 +38,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.undo.CompoundEdit;
 
-import main.Hub;
-import model.fsa.FSAEvent;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSASubscriber;
-import pluggable.ui.Toolset;
-import presentation.LayoutShell;
-import presentation.Presentation;
 import presentation.fsa.actions.AbstractGraphAction;
 import presentation.fsa.actions.GraphActions;
-import services.undo.UndoManager;
 
 /**
  * TODO Comment
@@ -181,36 +181,39 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 					return;
 				}
 
-				new GraphActions.ModifyEventAction((FSAGraph)Hub
-						.getWorkspace().getActiveLayoutShell(), events
-						.elementAt(row), (String)value, events
-						.elementAt(row).isControllable(), events
-						.elementAt(row).isObservable()).execute();
+				new GraphActions.ModifyEventAction(
+						a,
+						events.elementAt(row),
+						(String)value,
+						events.elementAt(row).isControllable(),
+						events.elementAt(row).isObservable()).execute();
 				// events.elementAt(row).setSymbol((String)value);
 
 			}
 			else if (col == 1)
 			{
 				new GraphActions.ModifyEventAction(
-						(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+						a,
 						events.elementAt(row),
 						events.elementAt(row).getSymbol(),
 						(Boolean)value,
 						events.elementAt(row).isObservable()).execute();
 
-				// events.elementAt(row).setControllable(((Boolean)value).booleanValue());
+				// events.elementAt(row).setControllable(((Boolean)value).
+				// booleanValue());
 				controllable.removeElementAt(row);
 				controllable.insertElementAt((Boolean)value, row);
 			}
 			else
 			{
 				new GraphActions.ModifyEventAction(
-						(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+						a,
 						events.elementAt(row),
 						events.elementAt(row).getSymbol(),
 						events.elementAt(row).isControllable(),
 						(Boolean)value).execute();
-				// events.elementAt(row).setObservable(((Boolean)value).booleanValue());
+				// events.elementAt(row).setObservable(((Boolean)value).
+				// booleanValue());
 				observable.removeElementAt(row);
 				observable.insertElementAt((Boolean)value, row);
 			}
@@ -306,9 +309,6 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 				delEvents[i] = ((EventTableModel)table.getModel())
 						.getEventAt(rows[i]);
 			}
-			// FIXME EventView should be initialized with the layout shell
-			FSAGraph graph = (FSAGraph)Hub
-					.getWorkspace().getActiveLayoutShell();
 			CompoundEdit allEdits = new CompoundEdit();
 			for (int i = 0; i < delEvents.length; ++i)
 			{
@@ -323,7 +323,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 				deleteEvent.execute();
 			}
 			allEdits.end();
-			UndoManager.addEdit(allEdits);
+			Hub.getUndoManager().addEdit(allEdits);
 			refreshEventTable();
 			eventNameField.requestFocus();
 		}
@@ -351,11 +351,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 			{
 				return;
 			}
-
-			// FIXME EventView has to be initialized with a layoutshell
 			String eventName = eventNameField.getText();
 			new GraphActions.CreateEventAction(
-					(FSAGraph)Hub.getWorkspace().getActiveLayoutShell(),
+					graph,
 					eventName,
 					controllableCBox.isSelected(),
 					observableCBox.isSelected()).execute();
@@ -387,7 +385,6 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 	protected JButton deleteButton;
 
-	// private FSAModel lastModel=null;
 	protected FSAGraph graph;
 
 	public EventView(FSAGraph g)
@@ -479,7 +476,8 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		createBox.setBorder(BorderFactory.createTitledBorder(Hub
 				.string("addNewEvent")));// .createEmptyBorder(5,5,5,5));
 		// Box borderPane=Box.createHorizontalBox();
-		// borderPane.setBorder(BorderFactory.createLineBorder(this.getForeground()));
+		//borderPane.setBorder(BorderFactory.createLineBorder(this.getForeground
+		// ()));
 		// borderPane.add(createBox);
 		mainBox.add(createBox);
 
@@ -506,7 +504,8 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		deleteButton.addActionListener(deleteListener);
 		deleteBox.add(deleteButton);
 		deleteBox.setBorder(BorderFactory.createTitledBorder(Hub
-				.string("deleteSelectedEvents")));// .createEmptyBorder(5,5,5,5));
+				.string("deleteSelectedEvents")));//.createEmptyBorder(5,5,5,5))
+		// ;
 		mainBox.add(deleteBox);
 
 		add(mainBox);
@@ -597,8 +596,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage
+	 * )
 	 */
 	// public void modelCollectionChanged(WorkspaceMessage message) {
 	// // ??? Can I ignore the notification if the model was modified (e.g.
@@ -607,8 +607,8 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 	// }
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
 	// public void repaintRequired(WorkspaceMessage message) {}
 	/**
@@ -626,15 +626,14 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	// public void modelSwitched(WorkspaceMessage message) {
 	// refreshEventTable();
 	// }
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message)
@@ -643,7 +642,6 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsaEventSetChanged(FSAMessage message)
@@ -652,12 +650,10 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 	}
 
 	/**
-	 * Returns the {@link JComponent} in which the {@link LayoutShell} is
-	 * rendered. This method can be called by IDES directly or through a
-	 * {@link Toolset}.
+	 * Returns the {@link JComponent} in which the {@link DESModel} is rendered.
+	 * This method can be called by IDES directly or through a {@link Toolset}.
 	 * 
-	 * @return the {@link JComponent} in which the {@link LayoutShell} is
-	 *         rendered
+	 * @return the {@link JComponent} in which the {@link DESModel} is rendered
 	 */
 	public JComponent getGUI()
 	{
@@ -665,30 +661,20 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 	}
 
 	/**
-	 * Returns the {@link LayoutShell} which is rendered by this presentation.
-	 * 
-	 * @return the {@link LayoutShell} which is rendered by this presentation
-	 */
-	public LayoutShell getLayoutShell()
-	{
-		return graph;
-	}
-
-	/**
-	 * Sets if changes in the {@link LayoutShell} have to be tracked by this
+	 * Sets if changes in the {@link DESModel} have to be tracked by this
 	 * presentation or not.
 	 * <p>
 	 * The implementation of this method is optional. Some presentations may
 	 * always track changes (especially if the presentations allows
-	 * modifications to the underlying {@link LayoutShell}). Some presentations
-	 * may always ignore changes.
+	 * modifications to the underlying {@link DESModel}). Some presentations may
+	 * always ignore changes.
 	 * 
 	 * @param b
 	 *            if <code>true</code>, the presentation should register with
-	 *            the underlying {@link LayoutShell} to track changes and update
+	 *            the underlying {@link DESModel} to track changes and update
 	 *            itself dynamically. If <code>false</code>, the presentation
-	 *            should unregister itself with the underlying
-	 *            {@link LayoutShell} and ignore any changes to it.
+	 *            should unregister itself with the underlying {@link DESModel}
+	 *            and ignore any changes to it.
 	 */
 	public void setTrackModel(boolean b)
 	{
@@ -716,9 +702,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 	}
 
 	/**
-	 * Detach from the underlying {@link LayoutShell} and releases any resources
+	 * Detach from the underlying {@link DESModel} and releases any resources
 	 * used to present it. For example, the presentation should unsubscribe from
-	 * listening to changes in the {@link LayoutShell}.
+	 * listening to changes in the {@link DESModel}.
 	 * <p>
 	 * Once this method is called, the behavior of the presentation should no
 	 * longer be considered deterministic.
@@ -730,6 +716,11 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 	public void forceRepaint()
 	{
+	}
+
+	public DESModel getModel()
+	{
+		return graph.getModel();
 	}
 
 }

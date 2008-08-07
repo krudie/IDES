@@ -1,5 +1,10 @@
 package presentation.fsa.actions;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSATransition;
+
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
@@ -12,9 +17,6 @@ import javax.swing.AbstractAction;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-import main.Hub;
-import model.fsa.FSAEvent;
-import model.fsa.FSATransition;
 import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;
@@ -24,7 +26,6 @@ import presentation.fsa.GraphLabel;
 import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 import presentation.fsa.SelectionGroup;
-import services.undo.UndoManager;
 
 public class GraphActions
 {
@@ -183,15 +184,15 @@ public class GraphActions
 
 		protected boolean observable;
 
-		protected FSAGraph graph;
+		protected FSAModel model;
 
-		public ModifyEventAction(FSAGraph graph, FSAEvent event,
+		public ModifyEventAction(FSAModel model, FSAEvent event,
 				String eventName, boolean controllable, boolean observable)
 		{
-			this(null, graph, event, eventName, controllable, observable);
+			this(null, model, event, eventName, controllable, observable);
 		}
 
-		public ModifyEventAction(CompoundEdit parentEdit, FSAGraph graph,
+		public ModifyEventAction(CompoundEdit parentEdit, FSAModel model,
 				FSAEvent event, String eventName, boolean controllable,
 				boolean observable)
 		{
@@ -200,15 +201,15 @@ public class GraphActions
 			this.eventName = eventName;
 			this.controllable = controllable;
 			this.observable = observable;
-			this.graph = graph;
+			this.model = model;
 		}
 
 		public void actionPerformed(ActionEvent event)
 		{
-			if (graph != null)
+			if (model != null)
 			{
 				GraphUndoableEdits.UndoableModifyEvent action = new GraphUndoableEdits.UndoableModifyEvent(
-						graph,
+						model,
 						this.event,
 						eventName,
 						controllable,
@@ -797,7 +798,7 @@ public class GraphActions
 					}
 					else
 					{
-						UndoManager.addEdit(translation);
+						Hub.getUndoManager().addEdit(translation);
 					}
 				}
 			}

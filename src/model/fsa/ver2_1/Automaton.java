@@ -1,6 +1,20 @@
 package model.fsa.ver2_1;
 
-// import io.fsa.ver2_1.SubElement;
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAEventSet;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAPublisherAdaptor;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSASupervisor;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelSubscriber;
+import ides.api.plugin.model.DESModelType;
+import ides.api.plugin.model.ModelManager;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -15,21 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import main.Annotable;
-import main.Hub;
-import model.DESModel;
-import model.DESModelMessage;
-import model.DESModelSubscriber;
-import model.ModelDescriptor;
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSAPublisherAdaptor;
-import model.fsa.FSAState;
-import model.fsa.FSASupervisor;
-import model.fsa.FSATransition;
 import services.General;
 import util.StupidSetWrapper;
 
@@ -124,14 +123,14 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		this.setNeedsSave(false);
 	}
 
-	protected static class AutomatonDescriptor implements ModelDescriptor
+	protected static class AutomatonDescriptor implements DESModelType
 	{
-		public Class<?>[] getModelInterfaces()
+		public Class<?>[] getModelPerspectives()
 		{
 			return new Class[] { FSAModel.class, FSASupervisor.class };
 		}
 
-		public Class<?> getPreferredModelInterface()
+		public Class<?> getMainPerspective()
 		{
 			return FSAModel.class;
 		}
@@ -141,7 +140,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			return "FSA";
 		}
 
-		public String getTypeDescription()
+		public String getDescription()
 		{
 			return "Finite State Automaton";
 		}
@@ -166,7 +165,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		}
 	}
 
-	public static final ModelDescriptor myDescriptor = new AutomatonDescriptor();
+	public static final DESModelType myDescriptor = new AutomatonDescriptor();
 
 	private LinkedList<FSAState> states;
 
@@ -175,10 +174,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	private LinkedList<FSAEvent> events;
 
 	private String name = null;
-
-	// private File myFile = null;
-
-	protected String id = "";
 
 	protected Hashtable<String, Object> annotations = new Hashtable<String, Object>();
 
@@ -217,7 +212,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		maxStateId = 0;
 		maxTransitionId = 0;
 		maxEventId = 0;
-		id = General.getRandomId();
 	}
 
 	/**
@@ -315,11 +309,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		return clone;
 	}
 
-	public String getId()
-	{
-		return this.getName();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see model.fsa.ver2_1.FSAModel#getName()
@@ -334,7 +323,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	// return this;
 	// }
 
-	public ModelDescriptor getModelDescriptor()
+	public DESModelType getModelType()
 	{
 		return myDescriptor;
 	}

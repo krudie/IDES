@@ -1,12 +1,13 @@
 package pluggable.layout;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.plugin.model.DESModel;
+
 import java.util.Iterator;
 
-import main.Annotable;
-import main.Hub;
-import model.DESModel;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
 import model.fsa.ver2_1.State;
 
 public class CompositeStateLabeller
@@ -24,7 +25,7 @@ public class CompositeStateLabeller
 					.getAnnotation(Annotable.COMPOSED_OF)).length];
 			for (int i = 0; i < gs.length; ++i)
 			{
-				DESModel m = Hub.getWorkspace().getModelById(((String[])fsa
+				DESModel m = Hub.getWorkspace().getModel(((String[])fsa
 						.getAnnotation(Annotable.COMPOSED_OF))[i]);
 				if (m == null || !(m instanceof FSAModel))
 				{
@@ -58,7 +59,7 @@ public class CompositeStateLabeller
 		}
 		else if (((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length == 1)
 		{
-			DESModel m = Hub.getWorkspace().getModelById(((String[])fsa
+			DESModel m = Hub.getWorkspace().getModel(((String[])fsa
 					.getAnnotation(Annotable.COMPOSED_OF))[0]);
 			if (m == null || !(m instanceof FSAModel))
 			{

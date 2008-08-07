@@ -3,6 +3,18 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.io.FileIOPlugin;
+import ides.api.plugin.io.FileLoadException;
+import ides.api.plugin.io.FileSaveException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.ModelManager;
 import io.AbstractParser;
 import io.HeadTailInputStream;
 
@@ -22,14 +34,6 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
 
-import main.Annotable;
-import main.Hub;
-import model.DESModel;
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
@@ -38,9 +42,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import pluggable.io.FileIOPlugin;
-import pluggable.io.FileLoadException;
-import pluggable.io.IOPluginManager;
 import presentation.CubicParamCurve2D;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNodeLayout;
@@ -72,12 +73,12 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * Subscribes itself to the IOIE_PluginManager informing whether this object
 	 * is a "metaSaver", "dataSaver", "metaLoader" or "dataLoader".
 	 */
-	public void initializeFileIO()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerDataLoader(this, MODEL_TYPE);
-		IOPluginManager.getInstance().registerDataSaver(this, FSAModel.class);
-		IOPluginManager.getInstance().registerMetaSaver(this, FSAModel.class);
-		IOPluginManager.getInstance().registerMetaLoader(this,
+		IOPluginManager.instance().registerDataLoader(this, MODEL_TYPE);
+		IOPluginManager.instance().registerDataSaver(this, FSAModel.class);
+		IOPluginManager.instance().registerMetaSaver(this, FSAModel.class);
+		IOPluginManager.instance().registerMetaLoader(this,
 				MODEL_TYPE,
 				META_TAG);
 	}
@@ -92,8 +93,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * @param fileDirectory
 	 *            path to the file, so auxiliar files can be created.
 	 */
-	public boolean saveData(PrintStream stream, DESModel model,
-			File fileDirectory)
+	public void saveData(PrintStream stream, DESModel model, File fileDirectory)
+			throws FileSaveException
 	{
 		ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 		try
@@ -124,9 +125,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		}
 		catch (Exception e)
 		{
-			return false;
+			throw new FileSaveException(e);
 		}
-		return true;
 	}
 
 	/**
@@ -135,50 +135,49 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * @param file
 	 * @param model
 	 */
-	public boolean saveMeta(PrintStream stream, DESModel model, String type,
-			String tag)
+	public void saveMeta(PrintStream stream, DESModel model, String tag)
+			throws FileSaveException
 	{
 		// stream will be an OutputStream.
 		// it will need to be converted to PrintStream(UTF-8).
-		if (type.equals(MODEL_TYPE) & tag.equals(META_TAG))
+		if (!tag.equals(META_TAG))
 		{
-			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
-			ListIterator<FSATransition> ti = ((FSAModel)model)
-					.getTransitionIterator();
-			// TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
-			stream.println("\t<font size=\"" + 12 + "\"/>");
-
-			GraphLayout layout = (GraphLayout)model
-					.getAnnotation(Annotable.LAYOUT);
-			if (layout != null)
-			{
-				stream.println("\t<layout uniformnodes=\""
-						+ layout.getUseUniformRadius().get() + "\"/>");
-			}
-
-			si = ((FSAModel)model).getStateIterator();
-			while (si.hasNext())
-			{
-				XMLExporter.stateLayoutToXML((State)si.next(),
-						stream,
-						XMLExporter.INDENT);
-			}
-
-			// Save the transitions
-			ti = ((FSAModel)model).getTransitionIterator();
-			// //Create a hashmap to store the transition layouts, this
-			// information is used for the "groups" creation.
-			// HashMap<Integer,BezierLayout> bezierCurves = new
-			// HashMap<Integer,BezierLayout>();
-			while (ti.hasNext())
-			{
-				XMLExporter.transitionLayoutToXML((Transition)ti.next(),
-						stream,
-						XMLExporter.INDENT);
-			}
-			return true;
+			throw new FileSaveException(Hub.string("ioUnsupportedMetaTag")
+					+ " [" + tag + "]");
 		}
-		return false;
+		ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
+		ListIterator<FSATransition> ti = ((FSAModel)model)
+				.getTransitionIterator();
+		// TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
+		stream.println("\t<font size=\"" + 12 + "\"/>");
+
+		GraphLayout layout = (GraphLayout)model.getAnnotation(Annotable.LAYOUT);
+		if (layout != null)
+		{
+			stream.println("\t<layout uniformnodes=\""
+					+ layout.getUseUniformRadius().get() + "\"/>");
+		}
+
+		si = ((FSAModel)model).getStateIterator();
+		while (si.hasNext())
+		{
+			XMLExporter.stateLayoutToXML((State)si.next(),
+					stream,
+					XMLExporter.INDENT);
+		}
+
+		// Save the transitions
+		ti = ((FSAModel)model).getTransitionIterator();
+		// //Create a hashmap to store the transition layouts, this
+		// information is used for the "groups" creation.
+		// HashMap<Integer,BezierLayout> bezierCurves = new
+		// HashMap<Integer,BezierLayout>();
+		while (ti.hasNext())
+		{
+			XMLExporter.transitionLayoutToXML((Transition)ti.next(),
+					stream,
+					XMLExporter.INDENT);
+		}
 	}
 
 	/**
@@ -202,7 +201,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		// Parse body:
 		AutomatonParser parser = new AutomatonParser();
 		// parser.printStream(dataField);
-		model = ModelManager.createModel(FSAModel.class);
+		model = ModelManager.instance().createModel(FSAModel.class);
 		model = parser.parseData(dataField);
 
 		if (model == null || !"".equals(parser.getParsingErrors()))
@@ -217,9 +216,14 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * 
 	 * @param file
 	 */
-	public void loadMeta(InputStream stream, DESModel model)
+	public void loadMeta(InputStream stream, DESModel model, String tag)
 			throws FileLoadException
 	{
+		if (!tag.equals(META_TAG))
+		{
+			throw new FileLoadException(Hub.string("ioUnsupportedMetaTag")
+					+ " [" + tag + "]");
+		}
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 				+ System.getProperty("line.separator") + "<meta>" + System
 				.getProperty("line.separator")).getBytes();
@@ -506,7 +510,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		{
 			parsingData = true;
 			parsingErrors = "";
-			model = ModelManager.createModel(FSAModel.class);
+			model = ModelManager.instance().createModel(FSAModel.class);
 			try
 			{
 				xmlReader.parse(new InputSource(stream));
@@ -658,8 +662,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param atts
 		 *            the attributes of the XML tag, ex: <tag at1="value1"
 		 *            at2="value2" />, where at1 and at2 are the attributes
-		 * @param action,
-		 *            tells witch parsing action needs to be performed.
+		 * @param action
+		 *            , tells witch parsing action needs to be performed.
 		 *            Currently supports: "start" and "end"
 		 */
 		public void parseDataElements(String qName, Attributes atts)
@@ -1096,6 +1100,31 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				}
 			}
 		}
+	}
+
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "FSA IO";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
 	}
 
 }

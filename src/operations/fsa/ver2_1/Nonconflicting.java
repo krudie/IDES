@@ -3,8 +3,8 @@
  */
 package operations.fsa.ver2_1;
 
-import model.fsa.FSAModel;
-import pluggable.operation.OperationManager;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.operation.OperationManager;
 
 /**
  * @author Lenko Grigorov
@@ -31,7 +31,6 @@ public class Nonconflicting extends AbstractOperation
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	@Override
@@ -41,20 +40,21 @@ public class Nonconflicting extends AbstractOperation
 		FSAModel b = (FSAModel)inputs[1];
 
 		FSAModel l = (FSAModel)OperationManager
-				.getOperation("product").perform(new Object[] {
+				.instance().getOperation("product").perform(new Object[] {
 						OperationManager
-								.getOperation("prefixclose")
+								.instance().getOperation("prefixclose")
 								.perform(new Object[] { a })[0],
 						OperationManager
-								.getOperation("prefixclose")
+								.instance().getOperation("prefixclose")
 								.perform(new Object[] { b })[0] })[0];
 		FSAModel r = (FSAModel)OperationManager
-				.getOperation("prefixclose")
+				.instance().getOperation("prefixclose")
 				.perform(new Object[] { OperationManager
-						.getOperation("product").perform(new Object[] { a, b })[0] })[0];
+						.instance().getOperation("product")
+						.perform(new Object[] { a, b })[0] })[0];
 		boolean equal = ((Boolean)OperationManager
-				.getOperation("subset").perform(new Object[] { l, r })[0])
-				.booleanValue();
+				.instance().getOperation("subset")
+				.perform(new Object[] { l, r })[0]).booleanValue();
 		String output;
 		if (equal)
 		{

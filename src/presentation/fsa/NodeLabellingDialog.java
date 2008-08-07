@@ -3,6 +3,9 @@
  */
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -25,9 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
-import main.Hub;
 import presentation.fsa.actions.GraphActions;
-import util.EscapeDialog;
 
 /**
  * @author Lenko Grigorov
@@ -157,7 +158,7 @@ public class NodeLabellingDialog extends EscapeDialog
 				.getLayout().getLocation().y);
 		instance();
 		me.pack();
-		String label = node.getLabel().getLayout().getText();
+		String label = node.getLabel().getText();
 		boolean hasOurListener = false;
 		for (int i = 0; i < area.getFocusListeners().length; ++i)
 		{

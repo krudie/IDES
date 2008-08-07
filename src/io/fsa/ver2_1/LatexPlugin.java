@@ -3,19 +3,18 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import io.IOCoordinator;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import main.Hub;
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
-import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
-import services.latex.LatexManager;
 
 /**
  * @author christiansilvano
@@ -30,9 +29,9 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Registers itself to the IOPluginManager
 	 */
-	public void initializeImportExport()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
+		IOPluginManager.instance().registerExport(this, FSAModel.class);
 	}
 
 	/**
@@ -46,15 +45,15 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
 	{
-		if (!LatexManager.isLatexEnabled())
+		if (!Hub.getLatexManager().isLatexEnabled())
 		{
 			Hub.displayAlert(Hub.string("enableLatex4Export"));
 			return;
@@ -68,8 +67,9 @@ public class LatexPlugin implements ImportExportPlugin
 		try
 		{
 			FSAModel a = (FSAModel)IOCoordinator.getInstance().load(src);
-			FSAGraph graphModel = (FSAGraph)PresentationManager
-					.getToolset(FSAModel.class).wrapModel(a);
+
+			FSAGraph graphModel = GraphExportHelper.wrapRecomputeShift(a);
+
 			ps = new PrintStream(dst);
 			GraphExporter.createPSTricksFileContents(graphModel, ps);
 			ps.close();
@@ -90,8 +90,8 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public File importFile(File importFile)
@@ -102,7 +102,7 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Return a human readable description of the plugin
 	 */
-	public String getDescription()
+	public String getFileDescription()
 	{
 		return description;
 	}
@@ -118,12 +118,37 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)
 	{
 
+	}
+
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "PSTricks export";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
 	}
 }

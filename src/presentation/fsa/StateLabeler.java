@@ -3,10 +3,11 @@
  */
 package presentation.fsa;
 
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+
 import java.util.ListIterator;
 
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
 import model.fsa.ver2_1.State;
 
 /**

@@ -1,9 +1,9 @@
 package model.fsa.ver2_1;
 
-import java.util.HashSet;
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAEventSet;
 
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
+import java.util.HashSet;
 
 public class EventSet extends HashSet<FSAEvent> implements FSAEventSet
 {

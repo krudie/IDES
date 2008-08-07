@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="IDES3/IDES3api.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/IDES3/IDES3api.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="/WebAlbum/METAFILE.MF" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin.io"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.latex"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.undo"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.core"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin.operation"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.cache"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.notice"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin.presentation"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.model.fsa"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin.model"/>
+    </selectedElements>
+    <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
+</jardesc>

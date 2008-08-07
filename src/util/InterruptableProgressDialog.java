@@ -1,5 +1,8 @@
 package util;
 
+import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
+
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
@@ -15,8 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-
-import main.Hub;
 
 /**
  * A dialog box with a label, a progress bar and a cancel button. It implements

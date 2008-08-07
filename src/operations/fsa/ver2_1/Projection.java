@@ -3,8 +3,8 @@
  */
 package operations.fsa.ver2_1;
 
-import model.ModelManager;
-import model.fsa.FSAModel;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.ModelManager;
 
 /**
  * @author Lenko Grigorov
@@ -31,13 +31,13 @@ public class Projection extends AbstractOperation
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-		FSAModel a = ModelManager.createModel(FSAModel.class, "none");
+		FSAModel a = ModelManager
+				.instance().createModel(FSAModel.class, "none");
 		Composition.observer((FSAModel)inputs[0], a);
 		return new Object[] { a };
 	}

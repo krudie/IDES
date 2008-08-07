@@ -3,6 +3,13 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import io.IOCoordinator;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,14 +22,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import main.Hub;
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
 import presentation.GraphicalLayout;
-import presentation.PresentationManager;
 import presentation.fsa.FSAGraph;
 
 /**
@@ -45,9 +45,9 @@ public class JPEGPlugin implements ImportExportPlugin
 	/**
 	 * Registers itself to the IOPluginManager
 	 */
-	public void initializeImportExport()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
+		IOPluginManager.instance().registerExport(this, FSAModel.class);
 	}
 
 	/**
@@ -61,10 +61,10 @@ public class JPEGPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
@@ -80,11 +80,12 @@ public class JPEGPlugin implements ImportExportPlugin
 			throw new FormatTranslationException(e);
 		}
 
-		boolean useFrame = Hub.persistentData
+		boolean useFrame = Hub
+				.getPersistentData()
 				.getBoolean(GraphExporter.STR_EXPORT_PROP_USE_FRAME);
 
-		FSAGraph graph = (FSAGraph)PresentationManager
-				.getToolset(FSAModel.class).wrapModel(a);
+		FSAGraph graph = GraphExportHelper.wrapRecomputeShift(a);
+
 		Rectangle bounds = graph.getBounds(false);
 		if (bounds.height == 0 || bounds.width == 0)
 		{
@@ -129,8 +130,8 @@ public class JPEGPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)
@@ -141,7 +142,7 @@ public class JPEGPlugin implements ImportExportPlugin
 	/**
 	 * Return a human readable description of the plugin
 	 */
-	public String getDescription()
+	public String getFileDescription()
 	{
 		return description;
 	}
@@ -152,5 +153,30 @@ public class JPEGPlugin implements ImportExportPlugin
 	public String getFileExtension()
 	{
 		return ext;
+	}
+
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "JPEG export";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
 	}
 }

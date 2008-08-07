@@ -1,21 +1,22 @@
 package operations.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAEventSet;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSASupervisor;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.FilterOperation;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import model.ModelManager;
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
-import model.fsa.FSASupervisor;
-import model.fsa.FSATransition;
 import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
-import pluggable.operation.FilterOperation;
 
 public class ControlMap extends AbstractOperation implements FilterOperation
 {
@@ -45,7 +46,8 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 		// Unary.buildStateCompositionOfClone((Automaton)supervisor);
 		FSAModel plant = (FSAModel)inputs[1];
 
-		FSAModel product = ModelManager.createModel(FSAModel.class, "temp");
+		FSAModel product = ModelManager.instance().createModel(FSAModel.class,
+				"temp");
 
 		// find initial states, mark them as reached and add them to the que
 		FSAState[] initial = new FSAState[2];
@@ -133,7 +135,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 		// TODO the block below is only for debugging
 		// for(Iterator<FSAState> i=supervisor.getStateIterator();i.hasNext();)
 		// {
-		// System.out.println(supervisor.getDisabledEvents(i.next()).toString());
+		//System.out.println(supervisor.getDisabledEvents(i.next()).toString());
 		// }
 
 		return new Object[] { supervisor };

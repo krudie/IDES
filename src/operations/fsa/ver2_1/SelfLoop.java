@@ -1,14 +1,15 @@
 package operations.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAEventSet;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.plugin.operation.FilterOperation;
+
 import java.util.Iterator;
 
-import model.fsa.FSAEvent;
-import model.fsa.FSAEventSet;
-import model.fsa.FSAModel;
-import model.fsa.FSAState;
 import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Transition;
-import pluggable.operation.FilterOperation;
 
 public class SelfLoop extends AbstractOperation implements FilterOperation
 {

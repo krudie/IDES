@@ -1,12 +1,13 @@
 package presentation.fsa.actions;
 
+import ides.api.model.fsa.FSAEvent;
+
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-import model.fsa.FSAEvent;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;
@@ -20,16 +21,16 @@ import presentation.fsa.FSAGraph;
  * knows how to undo/redo the action. The abstract action also reports a manager
  * about an undoable action everytime such an action is taken. So everytime an
  * action that can be undone is executed, two steps follows the user's request:
- * 1- One <code>AbstractAction</code> executes an <action>UndoableAction</action>
- * that can redo\/undo the the desired action. 2- A code inside the
- * AbstractAction, notifies the UndoManager in the CommandManager about a
- * performed undoable action. One of the reasons for making an UndoableAction be
- * called by an AbstractAction (instead of making the action be an
- * AbstractAction AND an UndoableAction) is the fact that by doing this, one
- * AbstractAction could encapsulate several UndoableActions generating a
- * "composite" UndoableAction. So according to the chosen design, every
- * UndoableAction should, in fact, be atomic, so that big undoable actions can
- * be made by composing smaller UndobleActions. It is simpler (in my opinion
+ * 1- One <code>AbstractAction</code> executes an
+ * <action>UndoableAction</action> that can redo\/undo the the desired action.
+ * 2- A code inside the AbstractAction, notifies the UndoManager in the
+ * CommandManager about a performed undoable action. One of the reasons for
+ * making an UndoableAction be called by an AbstractAction (instead of making
+ * the action be an AbstractAction AND an UndoableAction) is the fact that by
+ * doing this, one AbstractAction could encapsulate several UndoableActions
+ * generating a "composite" UndoableAction. So according to the chosen design,
+ * every UndoableAction should, in fact, be atomic, so that big undoable actions
+ * can be made by composing smaller UndobleActions. It is simpler (in my opinion
  * (Christian)), to have always the job done by two simple classes (one to
  * instanciate an UndoableAction and update to the CommandManager about the
  * action, and other being UndoableAction itself rather than having one classe

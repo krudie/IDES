@@ -3,12 +3,13 @@
  */
 package presentation.fsa.tools;
 
+import ides.api.core.Hub;
+
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.ContextAdaptorHack;
@@ -48,9 +49,8 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMousePressed(java.awt.event.MouseEvent)
-	 *      TODO refactor logic
+	 * TODO refactor logic
 	 */
 	@Override
 	public void handleMousePressed(MouseEvent m)
@@ -162,7 +162,6 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMouseDragged(java.awt.event.MouseEvent)
 	 */
 	@Override
@@ -195,7 +194,6 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMouseReleased(java.awt.event.MouseEvent)
 	 */
 	@Override
@@ -229,7 +227,6 @@ public class ModifyEdgeTool extends DrawingTool
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see ui.tools.DrawingTool#handleMouseClicked(java.awt.event.MouseEvent)
 	 */
 	// @Override

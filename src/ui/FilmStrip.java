@@ -1,14 +1,25 @@
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.core.WorkspaceMessage;
+import ides.api.core.WorkspaceSubscriber;
+import ides.api.latex.LatexPresentation;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelPublisher;
+import ides.api.plugin.model.DESModelSubscriber;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.ToolsetManager;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -21,15 +32,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-import main.Hub;
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
-import model.DESModelMessage;
-import model.DESModelPublisher;
-import model.DESModelSubscriber;
-import presentation.LayoutShell;
-import presentation.Presentation;
-import presentation.PresentationManager;
 import ui.actions.EditActions;
 
 /**
@@ -44,7 +46,7 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		MouseListener, MouseMotionListener, DESModelSubscriber
 {
 
-	private HashMap<LayoutShell, Thumbnail> graphPanels = new HashMap<LayoutShell, Thumbnail>();
+	private Set<Thumbnail> thumbnails = new HashSet<Thumbnail>();
 
 	private Vector<Presentation> views = new Vector<Presentation>();
 
@@ -76,15 +78,15 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		addMouseMotionListener(this);
 	}
 
-	protected String getDecoratedName(LayoutShell mw)
+	protected String getDecoratedName(DESModel model)
 	{
-		if (mw.getModel().needsSave())
+		if (model.needsSave())
 		{
-			return "* " + mw.getModel().getName();
+			return "* " + model.getName();
 		}
 		else
 		{
-			return mw.getModel().getName();
+			return model.getName();
 		}
 	}
 
@@ -96,35 +98,34 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 	private void buildThumbnailBoxes()
 	{
 		thumbnailBox.removeAll();
-		graphPanels.clear();
+		thumbnails.clear();
 		int selectedIdx = -1;
 		for (int i = 0; i < views.size(); ++i)
 		{
 			JComponent gv = views.get(i).getGUI();
 			Thumbnail p = new Thumbnail(this, new BorderLayout());
+			p.setPresentation(views.get(i));
 			p.setPreferredSize(new Dimension(THUMBNAIL_SIZE, THUMBNAIL_SIZE));
 			p.setMinimumSize(new Dimension(THUMBNAIL_SIZE, THUMBNAIL_SIZE));
 			p.setMaximumSize(new Dimension(THUMBNAIL_SIZE, THUMBNAIL_SIZE));
 			p.add(gv);
-			p
-					.setToolTipText(views
-							.get(i).getLayoutShell().getModel().getName());
+			p.setToolTipText(views.get(i).getModel().getName());
 			p.addMouseListener(this);
 			p.addMouseMotionListener(this);
 
-			if (views.get(i).getLayoutShell().getModel().equals(Hub
+			if (views.get(i).getModel().equals(Hub
 					.getWorkspace().getActiveModel()))
 			{
 				p.setBorder(new TitledBorder(SELECTED_BORDER, " "
-						+ getDecoratedName(views.get(i).getLayoutShell())));
+						+ getDecoratedName(views.get(i).getModel())));
 				selectedIdx = i;
 			}
 			else
 			{
 				p.setBorder(new TitledBorder(PLAIN_BORDER, " "
-						+ getDecoratedName(views.get(i).getLayoutShell())));
+						+ getDecoratedName(views.get(i).getModel())));
 			}
-			graphPanels.put(views.get(i).getLayoutShell(), p);
+			thumbnails.add(p);
 			thumbnailBox.add(p);
 			thumbnailBox
 					.add(Box.createRigidArea(new Dimension(SPACER_SIZE, 0)));
@@ -143,18 +144,17 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 	 */
 	private void refreshViews()
 	{
-		Vector<LayoutShell> currentModels = new Vector<LayoutShell>();
-		Iterator<LayoutShell> iter = Hub.getWorkspace().getLayoutShells();
+		Vector<DESModel> currentModels = new Vector<DESModel>();
+		Iterator<DESModel> iter = Hub.getWorkspace().getModels();
 		while (iter.hasNext())
 		{
-			LayoutShell gm = iter.next();
-			currentModels.add(gm);
+			currentModels.add(iter.next());
 		}
 
 		HashSet<Presentation> toRemove = new HashSet<Presentation>();
 		for (Presentation gv : views)
 		{
-			if (!currentModels.contains(gv.getLayoutShell()))
+			if (!currentModels.contains(gv.getModel()))
 			{
 				toRemove.add(gv);
 			}
@@ -162,10 +162,15 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 
 		for (Presentation gv : toRemove)
 		{
-			if (gv.getLayoutShell().getModel() instanceof DESModelPublisher)
+			if (gv instanceof LatexPresentation)
 			{
-				((DESModelPublisher)gv.getLayoutShell().getModel())
-						.removeSubscriber(this);
+				Hub
+						.getLatexManager()
+						.removeLatexPresentation((LatexPresentation)gv);
+			}
+			if (gv.getModel() instanceof DESModelPublisher)
+			{
+				((DESModelPublisher)gv.getModel()).removeSubscriber(this);
 			}
 			gv.setTrackModel(false);
 			views.remove(gv);
@@ -174,16 +179,22 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 
 		for (int i = 0; i < currentModels.size(); ++i)
 		{
-			LayoutShell gm = currentModels.elementAt(i);
-			if (views.size() <= i
-					|| !views.elementAt(i).getLayoutShell().equals(gm))
+			DESModel gm = currentModels.elementAt(i);
+			if (views.size() <= i || !views.elementAt(i).getModel().equals(gm))
 			{
-				Presentation gv = PresentationManager.getToolset(gm
-						.getModelInterface()).getModelThumbnail(gm, 10, 10);
-				if (gv.getLayoutShell().getModel() instanceof DESModelPublisher)
+				Presentation gv = ToolsetManager
+						.instance().getToolset(gm
+								.getModelType().getMainPerspective())
+						.getModelThumbnail(gm, 10, 10);
+				if (gv.getModel() instanceof DESModelPublisher)
 				{
-					((DESModelPublisher)gv.getLayoutShell().getModel())
-							.addSubscriber(this);
+					((DESModelPublisher)gv.getModel()).addSubscriber(this);
+				}
+				if (gv instanceof LatexPresentation)
+				{
+					Hub
+							.getLatexManager()
+							.addLatexPresentation((LatexPresentation)gv);
 				}
 				views.insertElementAt(gv, i);
 			}
@@ -205,11 +216,11 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		Presentation gv = ((Thumbnail)arg0.getSource()).getPresentation();
 		if (arg0.getClickCount() < 2)
 		{
-			if (!gv.getLayoutShell().getModel().getName().equals(Hub
+			gv.getModel();
+			if (!gv.getModel().getName().equals(Hub
 					.getWorkspace().getActiveModelName()))
 			{
-				Hub.getWorkspace().setActiveModel(gv
-						.getLayoutShell().getModel().getName());
+				Hub.getWorkspace().setActiveModel(gv.getModel().getName());
 			}
 		}
 		else
@@ -260,13 +271,13 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 	 * subcomponents (the graphview contained in the thumbnail, to be specific),
 	 * but it's starting to look as though using a glasspane is the only way to
 	 * catch them all. --(CLM)
-	 * 
-	 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+	 * @see
+	 * java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
 	 */
 	public void mouseMoved(MouseEvent arg0)
 	{
 		Thumbnail current = null;
-		for (Thumbnail t : graphPanels.values())
+		for (Thumbnail t : thumbnails)
 		{
 			if (t.contains(SwingUtilities.convertPoint(arg0.getComponent(),
 					arg0.getPoint(),
@@ -292,8 +303,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage
+	 * )
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message)
 	{
@@ -317,8 +329,8 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message)
 	{
@@ -329,10 +341,10 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 		for (Presentation gv : views)
 		{
@@ -352,5 +364,9 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		buildThumbnailBoxes();
 		invalidate();
 		Hub.getMainWindow().validate();
+	}
+
+	public void aboutToRearrangeWorkspace()
+	{
 	}
 }

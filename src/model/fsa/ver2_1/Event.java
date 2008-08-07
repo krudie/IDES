@@ -1,8 +1,8 @@
 package model.fsa.ver2_1;
 
-import java.util.Hashtable;
+import ides.api.model.fsa.FSAEvent;
 
-import model.fsa.FSAEvent;
+import java.util.Hashtable;
 
 /**
  * Represents an event in an automaton.
@@ -10,7 +10,7 @@ import model.fsa.FSAEvent;
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event implements model.fsa.FSAEvent, Comparable<FSAEvent>
+public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 {
 	private long id;
 
@@ -145,7 +145,6 @@ public class Event implements model.fsa.FSAEvent, Comparable<FSAEvent>
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
 	public int compareTo(FSAEvent arg0)
@@ -169,8 +168,7 @@ public class Event implements model.fsa.FSAEvent, Comparable<FSAEvent>
 	 * @param key
 	 *            key for the annotation
 	 * @return if there is no annotation for the given key, returns
-	 *         <code>null</code>, otherwise returns the annotation for the
-	 *         key
+	 *         <code>null</code>, otherwise returns the annotation for the key
 	 */
 	public Object getAnnotation(String key)
 	{

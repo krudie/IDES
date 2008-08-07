@@ -3,6 +3,15 @@
  */
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.core.WorkspaceMessage;
+import ides.api.core.WorkspaceSubscriber;
+import ides.api.model.fsa.FSAMessage;
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSASubscriber;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelSubscriber;
+
 import java.awt.Dimension;
 
 import javax.swing.Box;
@@ -10,15 +19,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
-
-import main.Hub;
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
-import model.DESModelMessage;
-import model.DESModelSubscriber;
-import model.fsa.FSAMessage;
-import model.fsa.FSAModel;
-import model.fsa.FSASubscriber;
 
 /**
  * @author Lenko Grigorov
@@ -49,7 +49,6 @@ public class StatusBar extends JPanel implements FSASubscriber,
 		add(Box.createRigidArea(new Dimension(5, 0)));
 		add(statsLabel);
 		add(Box.createHorizontalGlue());
-		// add(labelBox);
 	}
 
 	private void refreshActiveModel()
@@ -89,8 +88,9 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage
+	 * )
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message)
 	{
@@ -99,17 +99,17 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
 	 */
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
+	 * @see
+	 * observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
 	 */
 	public void modelSwitched(WorkspaceMessage message)
 	{
@@ -126,7 +126,6 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message)
@@ -144,7 +143,6 @@ public class StatusBar extends JPanel implements FSASubscriber,
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmEventSetChanged(observer.FSMMessage)
 	 */
 	public void fsaEventSetChanged(FSAMessage message)
@@ -158,5 +156,9 @@ public class StatusBar extends JPanel implements FSASubscriber,
 	public void modelNameChanged(DESModelMessage msg)
 	{
 		refreshStatusLabel();
+	}
+
+	public void aboutToRearrangeWorkspace()
+	{
 	}
 }

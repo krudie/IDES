@@ -3,6 +3,7 @@
  */
 package presentation.fsa;
 
+import ides.api.model.fsa.FSAState;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Rectangle;
@@ -11,7 +12,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
-import model.fsa.FSAState;
 import model.fsa.ver2_1.State;
 
 /**

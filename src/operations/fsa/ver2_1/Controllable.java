@@ -3,7 +3,7 @@
  */
 package operations.fsa.ver2_1;
 
-import model.fsa.FSAModel;
+import ides.api.model.fsa.FSAModel;
 
 /**
  * @author Lenko Grigorov
@@ -28,7 +28,6 @@ public class Controllable extends AbstractOperation
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	@Override

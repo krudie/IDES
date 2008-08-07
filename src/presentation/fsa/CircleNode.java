@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import ides.api.model.fsa.FSAState;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Component;
@@ -13,7 +14,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import model.fsa.FSAState;
 import presentation.GraphicalLayout;
 import util.BentoBox;
 
@@ -44,6 +44,20 @@ public class CircleNode extends Node
 	 */
 	public CircleNode(FSAState s, CircleNodeLayout layout)
 	{
+		this(s, layout, true);
+	}
+
+	/**
+	 * Creates a circular node representing the given state with the given
+	 * graphical layout.
+	 * 
+	 * @param s
+	 *            the state to be represented
+	 * @param layout
+	 *            the graphical layout data for the state
+	 */
+	public CircleNode(FSAState s, CircleNodeLayout layout, boolean redoLayout)
+	{
 		this.state = s;
 		setLayout(layout);
 		label = new GraphLabel("");
@@ -54,7 +68,10 @@ public class CircleNode extends Node
 		{
 			setInitialArrow(new InitialArrow(this));
 		}
-		refresh();
+		if (redoLayout)
+		{
+			refresh();
+		}
 	}
 
 	/**
@@ -432,7 +449,6 @@ public class CircleNode extends Node
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.fsa.Node#getShape()
 	 */
 	@Override

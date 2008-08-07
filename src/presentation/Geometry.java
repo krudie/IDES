@@ -160,8 +160,8 @@ public class Geometry
 	}
 
 	/**
-	 * Returns the unit direction vector from <code>p1</code> to
-	 * <code>p2</code>.
+	 * Returns the unit direction vector from <code>p1</code> to <code>p2</code>
+	 * .
 	 * 
 	 * @param p1
 	 * @param p2
@@ -174,8 +174,8 @@ public class Geometry
 	}
 
 	/**
-	 * Returns the unit direction vector from <code>p1</code> to
-	 * <code>p2</code>.
+	 * Returns the unit direction vector from <code>p1</code> to <code>p2</code>
+	 * .
 	 * 
 	 * @param p1
 	 * @param p2

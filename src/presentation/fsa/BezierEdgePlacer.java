@@ -56,23 +56,23 @@ public class BezierEdgePlacer
 			// straightEdge.getGraph().commitMovement(straightEdge);
 
 		}/*
-			 * else{ // No straight edge if(n % 2 != 0) // Odd # of neighbours { //
-			 * LENKO: Why not use straight position? // For now...
-			 * //edge.computeEdge(); // LATER // find edge at outermost position //
-			 * place new edge symmetric to found edge } // otherwise do nothing
-			 * since edge is already straight by default }
-			 */
+		 * else{ // No straight edge if(n % 2 != 0) // Odd # of neighbours { //
+		 * LENKO: Why not use straight position? // For now...
+		 * //edge.computeEdge(); // LATER // find edge at outermost position //
+		 * place new edge symmetric to found edge } // otherwise do nothing
+		 * since edge is already straight by default }
+		 */
 	}
 
 	/**
 	 * Returns the layout for, and sets <code>edge</code>'s layout to, the
 	 * outermost free position such that the arcs of all edges in
-	 * <code>otherEdges</code> are flatter. NOTE Outermost is defined as
-	 * having the greatest arc in the curve.
+	 * <code>otherEdges</code> are flatter. NOTE Outermost is defined as having
+	 * the greatest arc in the curve.
 	 * 
 	 * @see CubicCurve2D.flatness() ??? Precondition: there is already a
-	 *      straight edge in <code>edges</code>. else why wouldn't we just
-	 *      make a straight edge...
+	 *      straight edge in <code>edges</code>. else why wouldn't we just make
+	 *      a straight edge...
 	 * @param edge
 	 *            the edge to be laid out
 	 * @param otherEdges
@@ -131,8 +131,7 @@ public class BezierEdgePlacer
 	 * @param edges
 	 *            the set of edges
 	 * @return the layout for the outermost non-flat, occupied edge layout among
-	 *         <code>edges</code>. If all edges are flat, returns a flat
-	 *         layout.
+	 *         <code>edges</code>. If all edges are flat, returns a flat layout.
 	 */
 	private static BezierLayout findOutermostTakenPosition(Set<Edge> edges)
 	{
@@ -152,12 +151,11 @@ public class BezierEdgePlacer
 	}
 
 	/**
-	 * Returns true if the one or more endpoints of <code>edge1</code> is
-	 * within a distance threshold of any of the endpoints of an edge in
-	 * <code>edges</code> TODO find a nice-looking minimum comfortable
-	 * distance between endpoints to allow margins for arrow head along node
-	 * boundary or add a parameter to this method. Precondition: edge and edges
-	 * are non-null
+	 * Returns true if the one or more endpoints of <code>edge1</code> is within
+	 * a distance threshold of any of the endpoints of an edge in
+	 * <code>edges</code> TODO find a nice-looking minimum comfortable distance
+	 * between endpoints to allow margins for arrow head along node boundary or
+	 * add a parameter to this method. Precondition: edge and edges are non-null
 	 * 
 	 * @param edge1
 	 *            the edge to be placed
@@ -204,13 +202,13 @@ public class BezierEdgePlacer
 	}
 
 	/**
-	 * Returns the first straight edge found in <code>edges</code>, null if
-	 * no such edge
+	 * Returns the first straight edge found in <code>edges</code>, null if no
+	 * such edge
 	 * 
 	 * @param edges
 	 *            the set of edges to be searched
-	 * @return the first straight edge found in <code>edges</code>, null if
-	 *         no such edge
+	 * @return the first straight edge found in <code>edges</code>, null if no
+	 *         such edge
 	 */
 	private static Edge containsStraightEdge(Set<Edge> edges)
 	{

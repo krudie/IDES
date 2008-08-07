@@ -192,8 +192,8 @@ public class GraphElement implements PresentationElement
 	/**
 	 * Gets the graph to which this element belongs.
 	 * 
-	 * @return the graph to which this element belongs; <code>null</code> if
-	 *         it doesn't belong to a graph.
+	 * @return the graph to which this element belongs; <code>null</code> if it
+	 *         doesn't belong to a graph.
 	 */
 	public FSAGraph getGraph()
 	{
@@ -365,7 +365,6 @@ public class GraphElement implements PresentationElement
 
 	/*
 	 * TODO remove this : prevent outside access to layout object (non-Javadoc)
-	 * 
 	 * @see presentation.PresentationElement#getLayout()
 	 */
 	public GraphicalLayout getLayout()
@@ -375,7 +374,6 @@ public class GraphElement implements PresentationElement
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see presentation.PresentationElement#getLocation()
 	 */
 	public Float getLocation()

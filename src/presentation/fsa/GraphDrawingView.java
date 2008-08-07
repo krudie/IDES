@@ -1,5 +1,8 @@
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -29,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 
-import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.fsa.actions.UIActions;
 import presentation.fsa.tools.CreationTool;
@@ -38,7 +40,6 @@ import presentation.fsa.tools.ModifyEdgeTool;
 import presentation.fsa.tools.MovementTool;
 import presentation.fsa.tools.SelectionTool;
 import presentation.fsa.tools.TextTool;
-import ui.MainWindow;
 import util.BooleanUIBinder;
 
 /**
@@ -117,8 +118,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			gridToggle.set(b);
 			if (b)
 			{
-				MainWindow mw = (MainWindow)Hub.getMainWindow();
-				mw.getZoomControl().setZoom(1);
+				Hub.getUserInterface().getZoomControl().setZoom(1);
 			}
 			invalidate();
 			Hub.getWorkspace().fireRepaintRequired();
@@ -195,7 +195,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 
 	Box largeGraphNotice;
 
-	public GraphDrawingView(BooleanUIBinder gridBinder)
+	public GraphDrawingView(FSAModel model, BooleanUIBinder gridBinder)
 	{
 		super();
 
@@ -266,6 +266,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		add(largeGraphNotice);
 		largeGraphNotice.setVisible(false);
 
+		setGraphModel(retrieveGraph(model));
 		setVisible(true);
 	}
 
@@ -342,8 +343,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			scrollRectToVisible(canvasSettings.viewport);
 			canvasSettings = null;
 		}
-		scaleFactor = ((MainWindow)Hub.getMainWindow())
-				.getZoomControl().getZoom();
+		scaleFactor = Hub.getUserInterface().getZoomControl().getZoom();
 		if (scaleFactor != 1)
 		{
 			setShowGrid(false);
@@ -615,8 +615,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	}
 
 	/**
-	 * Updates the selection group to the element hit by <code>point</code>
-	 * and returns true. If nothing intersected, returns false.
+	 * Updates the selection group to the element hit by <code>point</code> and
+	 * returns true. If nothing intersected, returns false.
 	 * 
 	 * @param point
 	 * @return true iff something hit.
@@ -843,7 +843,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	// }
 	// /* (non-Javadoc)
 	// * @see
-	// observer.WorkspaceSubscriber#modelCollectionChanged(observer.WorkspaceMessage)
+	// observer.WorkspaceSubscriber#modelCollectionChanged(observer.
+	// WorkspaceMessage)
 	// */
 	// public void modelCollectionChanged(WorkspaceMessage message) {
 	// // get the active graph model and update the graph view part of me
@@ -875,7 +876,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	// //repaint();
 	// }
 	@Override
-	public void setGraphModel(FSAGraph graphModel)
+	protected void setGraphModel(FSAGraph graphModel)
 	{
 		super.setGraphModel(graphModel);
 		if (graphModel == null)
@@ -887,14 +888,18 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		if (canvasSettings != null)
 		{
 			setShowGrid(canvasSettings.gridOn);
-			((MainWindow)Hub.getMainWindow())
-					.getZoomControl().setZoom(canvasSettings.zoom);
+			Hub
+					.getUserInterface().getZoomControl()
+					.setZoom(canvasSettings.zoom);
 		}
 		else
 		{
 			setShowGrid(false);
-			((MainWindow)Hub.getMainWindow()).getZoomControl().setZoom(1);
+			Hub.getUserInterface().getZoomControl().setZoom(1);
 		}
+		//if the scale factor isn't set properly before adding the GraphView to the
+		//scroll pane, auto-scroll to the position stored in canvas settings won't work
+		scaleFactor = Hub.getUserInterface().getZoomControl().getZoom();
 		uiInteraction = false;
 	}
 

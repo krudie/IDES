@@ -3,6 +3,14 @@
  */
 package io;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.core.IncompleteWorkspaceDescriptorException;
+import ides.api.plugin.io.FileLoadException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import ides.api.plugin.model.DESModel;
+
 import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.io.File;
@@ -17,15 +25,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import main.Annotable;
-import main.Hub;
-import main.IncompleteWorkspaceDescriptorException;
+import main.WorkspaceBackend;
 import main.WorkspaceDescriptor;
-import model.DESModel;
-import pluggable.io.FileLoadException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
 import ui.SaveDialog;
 
 /**
@@ -40,8 +41,8 @@ public class CommonFileActions
 
 	public static void open()
 	{
-		JFileChooser fc = new JFileChooser(Hub.persistentData
-				.getProperty(LAST_PATH_SETTING_NAME));
+		JFileChooser fc = new JFileChooser(Hub
+				.getPersistentData().getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("openModelTitle"));
 		fc.setFileFilter(new IOUtilities.ExtensionFilter(
 				new String[] { IOUtilities.MODEL_FILE_EXT },
@@ -90,8 +91,8 @@ public class CommonFileActions
 				Hub.getWorkspace().addModel(model);
 				Hub.getWorkspace().setActiveModel(model.getName());
 			}
-			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file
-					.getParent());
+			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+					file.getParent());
 			Hub.getMainWindow().setCursor(cursor);
 		}
 	}
@@ -129,8 +130,8 @@ public class CommonFileActions
 				Hub.getWorkspace().removeModel(name);
 			}
 			model.setName(name);
-			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file
-					.getParentFile().getAbsolutePath());
+			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+					file.getParentFile().getAbsolutePath());
 			model.modelSaved();
 			return true;
 		}
@@ -142,8 +143,8 @@ public class CommonFileActions
 		if (model != null)
 		{
 			JFileChooser fc;
-			String path = Hub.persistentData
-					.getProperty(LAST_PATH_SETTING_NAME);
+			String path = Hub
+					.getPersistentData().getProperty(LAST_PATH_SETTING_NAME);
 			if (path == null)
 			{
 				fc = new JFileChooser();
@@ -217,13 +218,13 @@ public class CommonFileActions
 
 	public static void importFile()
 	{
-		JFileChooser fc = new JFileChooser(Hub.persistentData
-				.getProperty(LAST_PATH_SETTING_NAME));
+		JFileChooser fc = new JFileChooser(Hub
+				.getPersistentData().getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("importTitle"));
 		Vector<String> ext = new Vector<String>();
 		Vector<String> desc = new Vector<String>();
 		Iterator<ImportExportPlugin> it = IOPluginManager
-				.getInstance().getImporters().iterator();
+				.instance().getImporters().iterator();
 		while (it.hasNext())
 		{
 			ImportExportPlugin plugin = it.next();
@@ -232,7 +233,7 @@ public class CommonFileActions
 				continue;
 			}
 			ext.add(plugin.getFileExtension());
-			desc.add(plugin.getDescription());
+			desc.add(plugin.getFileDescription());
 		}
 		if (ext.size() <= 0)
 		{
@@ -251,8 +252,8 @@ public class CommonFileActions
 					new String[] { extIt.next() },
 					descIt.next()));
 		}
-		String lastFilter = Hub.persistentData
-				.getProperty(LAST_IMPEX_SETTING_NAME);
+		String lastFilter = Hub
+				.getPersistentData().getProperty(LAST_IMPEX_SETTING_NAME);
 		FileFilter[] f = fc.getChoosableFileFilters();
 		for (int i = 0; i < f.length; i++)
 		{
@@ -268,10 +269,10 @@ public class CommonFileActions
 		{
 
 			File file = fc.getSelectedFile();
-			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file
-					.getParentFile().getAbsolutePath());
-			Hub.persistentData.setProperty(LAST_IMPEX_SETTING_NAME, fc
-					.getFileFilter().getDescription());
+			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+					file.getParentFile().getAbsolutePath());
+			Hub.getPersistentData().setProperty(LAST_IMPEX_SETTING_NAME,
+					fc.getFileFilter().getDescription());
 
 			if (Hub.getWorkspace().getModel(ParsingToolbox.removeFileType(file
 					.getName())) != null)
@@ -320,7 +321,8 @@ public class CommonFileActions
 	public static void export(DESModel model)
 	{
 		JFileChooser fc;
-		String path = Hub.persistentData.getProperty(LAST_PATH_SETTING_NAME);
+		String path = Hub
+				.getPersistentData().getProperty(LAST_PATH_SETTING_NAME);
 		if (path == null)
 		{
 			fc = new JFileChooser();
@@ -332,18 +334,17 @@ public class CommonFileActions
 		fc.setDialogTitle(Hub.string("exportTitle"));
 		fc.setSelectedFile(new File(model.getName()));
 		Iterator<ImportExportPlugin> pluginIt = IOPluginManager
-				.getInstance().getExporters(model
-						.getModelDescriptor().getPreferredModelInterface())
-				.iterator();
+				.instance().getExporters(model
+						.getModelType().getMainPerspective()).iterator();
 		while (pluginIt.hasNext())
 		{
 			ImportExportPlugin p = pluginIt.next();
 			fc.addChoosableFileFilter(new IOUtilities.ExtensionFilter(
 					new String[] { p.getFileExtension() },
-					p.getDescription()));
+					p.getFileDescription()));
 		}
-		String lastFilter = Hub.persistentData
-				.getProperty(LAST_IMPEX_SETTING_NAME);
+		String lastFilter = Hub
+				.getPersistentData().getProperty(LAST_IMPEX_SETTING_NAME);
 		FileFilter[] f = fc.getChoosableFileFilters();
 		for (int i = 0; i < f.length; i++)
 		{
@@ -368,11 +369,11 @@ public class CommonFileActions
 			String extension = ParsingToolbox.getFileType(file.getName());
 			String extPlugin = "";
 			Set<ImportExportPlugin> plugins = IOPluginManager
-					.getInstance().getExporters(model
-							.getModelDescriptor().getPreferredModelInterface());
+					.instance().getExporters(model
+							.getModelType().getMainPerspective());
 			for (ImportExportPlugin p : plugins)
 			{
-				if (p.getDescription().equals(fc
+				if (p.getFileDescription().equals(fc
 						.getFileFilter().getDescription()))
 				{
 					extPlugin = p.getFileExtension();
@@ -409,10 +410,10 @@ public class CommonFileActions
 
 		if (retVal != JFileChooser.CANCEL_OPTION)
 		{
-			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file
-					.getParentFile().getAbsolutePath());
-			Hub.persistentData.setProperty(LAST_IMPEX_SETTING_NAME, fc
-					.getFileFilter().getDescription());
+			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+					file.getParentFile().getAbsolutePath());
+			Hub.getPersistentData().setProperty(LAST_IMPEX_SETTING_NAME,
+					fc.getFileFilter().getDescription());
 			try
 			{
 				IOCoordinator.getInstance().export(model,
@@ -440,15 +441,6 @@ public class CommonFileActions
 	 */
 	public static boolean saveWorkspace(WorkspaceDescriptor wd, File file)
 	{
-		Vector<DESModel> models = new Vector<DESModel>();
-
-		if (!models.isEmpty())
-		{
-			if (!io.CommonFileActions.handleUnsavedModels(models))
-			{
-				return false;
-			}
-		}
 		PrintStream ps = IOUtilities.getPrintStream(file);
 		if (ps == null)
 		{
@@ -457,9 +449,9 @@ public class CommonFileActions
 		else
 		{
 			workspaceToXML(wd, ps);
-			Hub.getWorkspace().setFile(file);
-			Hub.persistentData.setProperty(LAST_PATH_SETTING_NAME, file
-					.getParent());
+			WorkspaceBackend.instance().setFile(file);
+			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+					file.getParent());
 			return true;
 		}
 	}
@@ -482,8 +474,8 @@ public class CommonFileActions
 		}
 		else
 		{
-			fc = new JFileChooser(Hub.persistentData
-					.getProperty(LAST_PATH_SETTING_NAME));
+			fc = new JFileChooser(Hub
+					.getPersistentData().getProperty(LAST_PATH_SETTING_NAME));
 		}
 
 		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
@@ -565,8 +557,8 @@ public class CommonFileActions
 					+ file.getPath() + "\n"
 					+ Hub.string("errorsParsingXMLFileL2"));
 		}
-		Hub.persistentData
-				.setProperty(LAST_PATH_SETTING_NAME, file.getParent());
+		Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+				file.getParent());
 		return wd;
 	}
 
@@ -658,7 +650,7 @@ public class CommonFileActions
 		WorkspaceDescriptor wd = null;
 		try
 		{
-			wd = Hub.getWorkspace().getDescriptor();
+			wd = WorkspaceBackend.instance().getDescriptor();
 		}
 		catch (IncompleteWorkspaceDescriptorException e)
 		{
@@ -678,7 +670,7 @@ public class CommonFileActions
 			{
 				return null;
 			}
-			wd = Hub.getWorkspace().getDescriptor();
+			wd = WorkspaceBackend.instance().getDescriptor();
 		}
 		return wd;
 	}
@@ -721,7 +713,8 @@ public class CommonFileActions
 			else
 			{
 				JFileChooser fc;
-				String path = Hub.persistentData
+				String path = Hub
+						.getPersistentData()
 						.getProperty(LAST_PATH_SETTING_NAME);
 				if (path == null)
 				{

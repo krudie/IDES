@@ -1,5 +1,10 @@
 package ui.actions;
 
+import ides.api.core.Annotable;
+import ides.api.core.Hub;
+import ides.api.core.IncompleteWorkspaceDescriptorException;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.DESModelType;
 import io.CommonFileActions;
 import io.IOUtilities;
 
@@ -13,15 +18,10 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
-import main.Annotable;
-import main.Hub;
-import main.IncompleteWorkspaceDescriptorException;
 import main.Main;
+import main.WorkspaceBackend;
 import main.WorkspaceDescriptor;
-import model.DESModel;
-import model.ModelManager;
-import model.fsa.FSAModel;
-import presentation.LayoutShell;
+import ui.NewModelDialog;
 
 /**
  * @author Lenko Grigorov
@@ -53,8 +53,15 @@ public class FileActions
 
 		public void actionPerformed(ActionEvent e)
 		{
-			DESModel des = ModelManager.createModel(FSAModel.class);
-			des.setName(Hub.string("newModelName") + "-" + Count++);
+			DESModelType type = new NewModelDialog().selectModel();
+			if (type == null)
+			{
+				return;
+			}
+			DESModel des = type.createModel(Hub.string("newModelName") + "-"
+					+ Count++);
+			// DESModel des = ModelManager.createModel(FSAModel.class);
+			// des.setName(Hub.string("newModelName") + "-" + Count++);
 			Hub.getWorkspace().addModel(des);
 			Hub.getWorkspace().setActiveModel(des.getName());
 		}
@@ -160,12 +167,10 @@ public class FileActions
 			Hub.getMainWindow().setCursor(Cursor
 					.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-			Iterator<LayoutShell> iterator = Hub
-					.getWorkspace().getLayoutShells();
+			Iterator<DESModel> iterator = Hub.getWorkspace().getModels();
 			while (iterator.hasNext())
 			{
-				LayoutShell gm = iterator.next();
-				DESModel model = gm.getModel();
+				DESModel model = iterator.next();
 				if (model != null)
 				{
 					io.CommonFileActions.save(model, (File)model
@@ -360,7 +365,8 @@ public class FileActions
 					return;
 				}
 			}
-			JFileChooser fc = new JFileChooser(Hub.persistentData
+			JFileChooser fc = new JFileChooser(Hub
+					.getPersistentData()
 					.getProperty(CommonFileActions.LAST_PATH_SETTING_NAME));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new IOUtilities.ExtensionFilter(
@@ -377,7 +383,7 @@ public class FileActions
 						.getSelectedFile());
 				if (wd != null)
 				{
-					Hub.getWorkspace().replaceWorkspace(wd);
+					WorkspaceBackend.instance().replaceWorkspace(wd);
 				}
 				Hub.getMainWindow().setCursor(cursor);
 			}

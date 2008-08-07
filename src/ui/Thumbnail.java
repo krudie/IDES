@@ -1,6 +1,8 @@
 package ui;
 
-import java.awt.Component;
+import ides.api.core.Hub;
+import ides.api.plugin.presentation.Presentation;
+
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -10,9 +12,6 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.plaf.metal.MetalIconFactory;
-
-import main.Hub;
-import presentation.Presentation;
 
 /**
  * @author chris mcaloney
@@ -56,7 +55,8 @@ public class Thumbnail extends JPanel
 		// if (UIManager.getSystemLookAndFeelClassName() ==
 		// "com.sun.java.swing.plaf.gtk.GTKLookAndFeel") {
 		// closeButton = new
-		// JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE));
+		//JButton(MetalIconFactory.getInternalFrameCloseIcon(DEFAULT_ICON_SIZE))
+		// ;
 		// } else {
 		// Icon cbIcon = UIManager.getIcon("InternalFrame.closeIcon");
 		// cbWidth = cbIcon.getIconWidth();
@@ -85,23 +85,18 @@ public class Thumbnail extends JPanel
 		closeButton.setVisible(false);
 	}
 
-	@Override
-	public Component add(Component gv)
-	{
-		if (gv instanceof Presentation)
-		{
-			view = (Presentation)gv;
-		}
-		return super.add(gv);
-	}
-
 	public Presentation getPresentation()
 	{
 		return view;
 	}
 
+	public void setPresentation(Presentation p)
+	{
+		view = p;
+	}
+
 	public String getGraphModelName()
 	{
-		return view.getLayoutShell().getModel().getName();
+		return view.getModel().getName();
 	}
 }

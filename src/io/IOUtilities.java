@@ -1,13 +1,13 @@
 package io;
 
+import ides.api.core.Hub;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 
 import javax.swing.filechooser.FileFilter;
-
-import main.Hub;
 
 import org.apache.commons.codec.binary.Base64;
 

@@ -3,6 +3,7 @@
  */
 package presentation.fsa;
 
+import ides.api.model.fsa.FSATransition;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Color;
@@ -15,7 +16,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Set;
 
-import model.fsa.FSATransition;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
@@ -90,9 +90,9 @@ public class ReflexiveEdge extends BezierEdge
 		// }
 		// insertAmong(n);
 		// }
-		((ReflexiveLayout)getLayout()).setAxis(((ReflexiveLayout)getLayout())
-				.computeBestDirection(this.getSourceNode()));
-		computeEdge();
+		// ((ReflexiveLayout)getLayout()).setAxis(((ReflexiveLayout)getLayout())
+		// .computeBestDirection(this.getSourceNode()));
+		// computeEdge();
 	}
 
 	/**
@@ -116,10 +116,12 @@ public class ReflexiveEdge extends BezierEdge
 		double delta = Math.toRadians(2.0);
 		double alpha = 0.0;
 
+		System.out.println("foo");
 		if (!BezierEdgePlacer.tooClose(this, neighbours))
 		{
 			return;
 		}
+		System.out.println("goo");
 
 		/**
 		 * Search for a free space using brute force and ignorance.
@@ -128,9 +130,9 @@ public class ReflexiveEdge extends BezierEdge
 		{
 			((ReflexiveLayout)getLayout()).setAxis(Geometry
 					.rotate(((ReflexiveLayout)getLayout()).getAxis(), delta));
-			setMidpoint(Geometry.add(getSourceNode().getLocation(),
-					((ReflexiveLayout)getLayout()).getAxis()));
-			computeEdge();
+			// setMidpoint(Geometry.add(getSourceNode().getLocation(),
+			// ((ReflexiveLayout)getLayout()).getAxis()));
+			// computeEdge();
 			alpha++;
 		}
 
@@ -158,9 +160,9 @@ public class ReflexiveEdge extends BezierEdge
 	 * 
 	 * @return the midpoint of this edge
 	 */
-	public Point2D getMidpoint()
+	public Point2D getHandleLocation()
 	{
-		return ((ReflexiveLayout)getLayout()).getMidpoint();
+		return ((ReflexiveLayout)getLayout()).getHandleLocation();
 	}
 
 	/**
@@ -437,7 +439,7 @@ public class ReflexiveEdge extends BezierEdge
 		public void refresh()
 		{
 			int d = 2 * RADIUS;
-			Point2D midpoint = ((ReflexiveEdge)getEdge()).getMidpoint();
+			Point2D midpoint = ((ReflexiveEdge)getEdge()).getHandleLocation();
 			Point2D endpoint = ((ReflexiveEdge)getEdge())
 					.getBezierLayout().getCurve().getP1();
 			midpoint = Geometry.translate(midpoint, -endpoint.getX(), -endpoint

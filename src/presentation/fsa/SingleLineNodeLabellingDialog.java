@@ -3,6 +3,9 @@
  */
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -22,9 +25,7 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import main.Hub;
 import presentation.fsa.actions.GraphActions;
-import util.EscapeDialog;
 
 /**
  * @author Lenko Grigorov
@@ -106,11 +107,13 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		area = new JTextField(WIDTH);
 		// Object
-		// actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+		// actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.
+		// getKeyStroke(KeyEvent.VK_ENTER,0));
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke
 				.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				this);
-		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
+		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(
+		// KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
 		area.getActionMap().put(this, enterListener);
 		// JScrollPane sPane=new JScrollPane(area);
 		mainBox.add(area);
@@ -151,7 +154,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog
 				.getLayout().getLocation().y);
 		instance();
 		me.pack();
-		String label = node.getLabel().getLayout().getText();
+		String label = node.getLabel().getText();
 		boolean hasOurListener = false;
 		for (int i = 0; i < area.getFocusListeners().length; ++i)
 		{

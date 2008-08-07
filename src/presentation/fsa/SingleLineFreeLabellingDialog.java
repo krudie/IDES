@@ -3,6 +3,9 @@
  */
 package presentation.fsa;
 
+import ides.api.core.Hub;
+import ides.api.utilities.EscapeDialog;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -21,9 +24,6 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-
-import main.Hub;
-import util.EscapeDialog;
 
 /**
  * A dialog window for entering a single line of text and creating a free label
@@ -106,11 +106,13 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		area = new JTextField(WIDTH);
 		// Object
-		// actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+		// actionKey=area.getInputMap(JComponent.WHEN_FOCUSED).get(KeyStroke.
+		// getKeyStroke(KeyEvent.VK_ENTER,0));
 		area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke
 				.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				this);
-		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
+		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(
+		// KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
 		area.getActionMap().put(this, commitListener);
 		// JScrollPane sPane=new JScrollPane(area);
 		mainBox.add(area);

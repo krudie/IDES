@@ -41,8 +41,8 @@ public class ArrowHead extends Polygon
 	}
 
 	/**
-	 * Construct an ArrowHead shape oriented in direction <code>dir</code>
-	 * with nock located at <code>base</code>.
+	 * Construct an ArrowHead shape oriented in direction <code>dir</code> with
+	 * nock located at <code>base</code>.
 	 * 
 	 * @param dir
 	 *            A unit direction from nock to tip.
@@ -55,8 +55,8 @@ public class ArrowHead extends Polygon
 	}
 
 	/**
-	 * Construct an ArrowHead shape oriented in direction <code>dir</code>
-	 * with nock located at <code>base</code>.
+	 * Construct an ArrowHead shape oriented in direction <code>dir</code> with
+	 * nock located at <code>base</code>.
 	 * 
 	 * @param dir
 	 *            A unit direction from nock to tip.

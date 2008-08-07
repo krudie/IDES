@@ -3,18 +3,18 @@
  */
 package io.fsa.ver2_1;
 
+import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.io.FormatTranslationException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.ImportExportPlugin;
+import ides.api.plugin.model.ModelManager;
+import io.IOCoordinator;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-
-import model.ModelManager;
-import model.fsa.FSAModel;
-import pluggable.io.FormatTranslationException;
-import pluggable.io.IOCoordinator;
-import pluggable.io.IOPluginManager;
-import pluggable.io.ImportExportPlugin;
-import presentation.PresentationManager;
 
 /**
  * @author christiansilvano
@@ -34,10 +34,10 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Registers itself to the IOPluginManager
 	 */
-	public void initializeImportExport()
+	public void initialize()
 	{
-		IOPluginManager.getInstance().registerExport(this, FSAModel.class);
-		IOPluginManager.getInstance().registerImport(this, description);
+		IOPluginManager.instance().registerExport(this, FSAModel.class);
+		IOPluginManager.instance().registerImport(this);
 	}
 
 	/**
@@ -50,10 +50,10 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Exports a file to a different format
 	 * 
-	 * @param src -
-	 *            the source file
-	 * @param dst -
-	 *            the destination
+	 * @param src
+	 *            - the source file
+	 * @param dst
+	 *            - the destination
 	 */
 	public void exportFile(File src, File dst)
 			throws FormatTranslationException
@@ -73,9 +73,10 @@ public class GrailPlugin implements ImportExportPlugin
 		String fileContents = "";
 
 		// Translating the model to the grail format:
-		for (Iterator<model.fsa.FSAState> i = a.getStateIterator(); i.hasNext();)
+		for (Iterator<ides.api.model.fsa.FSAState> i = a.getStateIterator(); i
+				.hasNext();)
 		{
-			model.fsa.FSAState s = i.next();
+			ides.api.model.fsa.FSAState s = i.next();
 			if (s.isInitial())
 			{
 				fileContents += "(START) |- " + s.getId() + "\n";
@@ -84,10 +85,10 @@ public class GrailPlugin implements ImportExportPlugin
 			{
 				fileContents += "" + s.getId() + " -| (FINAL)\n";
 			}
-			for (Iterator<model.fsa.FSATransition> j = s
+			for (Iterator<ides.api.model.fsa.FSATransition> j = s
 					.getOutgoingTransitionsListIterator(); j.hasNext();)
 			{
-				model.fsa.FSATransition t = j.next();
+				ides.api.model.fsa.FSATransition t = j.next();
 				fileContents += ""
 						+ s.getId()
 						+ " "
@@ -127,8 +128,8 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile -
-	 *            the source file
+	 * @param importFile
+	 *            - the source file
 	 * @return
 	 */
 	public void importFile(File src, File dst)
@@ -138,8 +139,8 @@ public class GrailPlugin implements ImportExportPlugin
 		try
 		{
 			in = new java.io.BufferedReader(new java.io.FileReader(src));
-			FSAModel a = ModelManager
-					.createModel(FSAModel.class, src.getName());
+			FSAModel a = ModelManager.instance().createModel(FSAModel.class,
+					src.getName());
 			long tCount = 0;
 			long eCount = 0;
 			java.util.Hashtable<String, Long> events = new java.util.Hashtable<String, Long>();
@@ -218,11 +219,8 @@ public class GrailPlugin implements ImportExportPlugin
 					tCount++;
 				}
 			}
-			// Create an automatic layout given the imported method
-			PresentationManager
-					.getToolset(a
-							.getModelDescriptor().getPreferredModelInterface())
-					.wrapModel(a);
+			// // Create an automatic layout given the imported method
+			// new GraphView(a);
 			// Save the model to the selected destination
 			IOCoordinator.getInstance().save(a, dst);
 		}
@@ -248,9 +246,33 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Return a human readable description of the plugin
 	 */
-	public String getDescription()
+	public String getFileDescription()
 	{
 		return description;
 	}
 
+	public String getCredits()
+	{
+		return Hub.string("DEVELOPERS");
+	}
+
+	public String getDescription()
+	{
+		return "part of IDES";
+	}
+
+	public String getLicense()
+	{
+		return "same as IDES";
+	}
+
+	public String getName()
+	{
+		return "Grail+ import and export";
+	}
+
+	public String getVersion()
+	{
+		return Hub.string("IDES_VER");
+	}
 }

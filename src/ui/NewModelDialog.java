@@ -1,5 +1,10 @@
 package ui;
 
+import ides.api.core.Hub;
+import ides.api.plugin.model.DESModelType;
+import ides.api.plugin.model.ModelManager;
+import ides.api.utilities.EscapeDialog;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -23,11 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
-import main.Hub;
-import model.ModelDescriptor;
-import model.ModelManager;
-import util.EscapeDialog;
-
 /**
  * The dialog box that lets the user choose what type of DES model they want to
  * create.
@@ -44,9 +44,9 @@ public class NewModelDialog extends EscapeDialog
 
 	protected JList modelList;
 
-	protected ModelDescriptor[] modelDescriptors;
+	protected DESModelType[] modelDescriptors;
 
-	private ModelDescriptor selectedMD = null;
+	private DESModelType selectedMD = null;
 
 	private static int lastIdx = 0;
 
@@ -54,7 +54,7 @@ public class NewModelDialog extends EscapeDialog
 	 * Creates a new "New model type" dialog box and fills it with all the
 	 * registered model types.
 	 * 
-	 * @see ModelManager#registerModel(ModelDescriptor)
+	 * @see ModelManager#registerModel(DESModelType)
 	 */
 	public NewModelDialog() throws HeadlessException
 	{
@@ -81,14 +81,14 @@ public class NewModelDialog extends EscapeDialog
 		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		Vector<Component> items = new Vector<Component>();
-		modelDescriptors = ModelManager.getAllModels();
+		modelDescriptors = ModelManager.instance().getAllTypes();
 		for (int i = 0; i < modelDescriptors.length; ++i)
 		{
 			Box vbox = Box.createVerticalBox();
 			JLabel l = new JLabel(new ImageIcon(modelDescriptors[i].getIcon()));
 			l.setAlignmentX(Component.CENTER_ALIGNMENT);
 			vbox.add(l);
-			l = new JLabel(modelDescriptors[i].getTypeDescription());
+			l = new JLabel(modelDescriptors[i].getDescription());
 			l.setAlignmentX(Component.CENTER_ALIGNMENT);
 			vbox.add(l);
 			items.add(vbox);
@@ -133,6 +133,10 @@ public class NewModelDialog extends EscapeDialog
 		mainBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getContentPane().add(mainBox);
 		pack();
+		Point location = Hub.getCenteredLocationForDialog(new Dimension(
+				getWidth(),
+				getHeight()));
+		setLocation(location.x, location.y);
 
 		OKButton.setPreferredSize(new Dimension(Math.max(OKButton.getWidth(),
 				cancelButton.getWidth()), OKButton.getHeight()));
@@ -146,11 +150,10 @@ public class NewModelDialog extends EscapeDialog
 	/**
 	 * Opens the dialog box and returns the selection made by the user.
 	 * 
-	 * @return the type of DES model selected by the user; <code>null</code>
-	 *         if no model was selected (e.g., the user cancelled the dialog
-	 *         box)
+	 * @return the type of DES model selected by the user; <code>null</code> if
+	 *         no model was selected (e.g., the user cancelled the dialog box)
 	 */
-	public ModelDescriptor selectModel()
+	public DESModelType selectModel()
 	{
 		selectedMD = null;
 		setVisible(true);
@@ -172,8 +175,9 @@ public class NewModelDialog extends EscapeDialog
 
 		/*
 		 * (non-Javadoc)
-		 * 
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 * @see
+		 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
+		 * )
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{

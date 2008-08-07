@@ -1,7 +1,7 @@
 package presentation.fsa;
 
-import main.WorkspaceMessage;
-import main.WorkspaceSubscriber;
+import ides.api.core.WorkspaceMessage;
+import ides.api.core.WorkspaceSubscriber;
 
 /**
  * FIXME this class should not exist in the first place. Fix all code to remove
@@ -25,13 +25,17 @@ public class ContextAdaptorHack implements WorkspaceSubscriber
 		// context=empty;
 	}
 
-	public void repaintRequired(WorkspaceMessage message)
+	public void repaintRequired()
 	{
 		if (context != null)
 		{
 			context.repaint();
 			context.revalidate();
 		}
+	}
+
+	public void aboutToRearrangeWorkspace()
+	{
 	}
 
 }

@@ -1,9 +1,15 @@
 package presentation.fsa;
 
+import ides.api.cache.NotInCacheException;
+import ides.api.core.Hub;
+import ides.api.latex.LatexElement;
+import ides.api.latex.LatexRenderException;
+import ides.api.latex.LatexUtils;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -16,23 +22,16 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 
-import main.Hub;
 import presentation.GraphicalLayout;
 import presentation.PresentationElement;
-import services.cache.Cache;
-import services.cache.NotInCacheException;
-import services.latex.LatexManager;
-import services.latex.LatexRenderException;
-import services.latex.LatexUtils;
 import util.BentoBox;
 
 /**
  * @author helen bretzke
  */
 
-public class GraphLabel extends GraphElement
+public class GraphLabel extends GraphElement implements LatexElement
 {
 	// SJW - The bounds should be calculated on the fly
 	// to make sure updates are observed
@@ -59,17 +58,17 @@ public class GraphLabel extends GraphElement
 
 	public GraphLabel(String text)
 	{
-		setLayout(new GraphicalLayout(text));
+		setLayout(new GraphicalLayout());
 		// TODO change to a dynamic value read from a config file and stored in
 		// SystemVariables? ResourceManager?
 		font = new Font("times", Font.ITALIC, 12);
-
+		setText(text);
 	}
 
-	public GraphLabel(GraphicalLayout layout)
-	{
-		setLayout(layout);
-	}
+	// public GraphLabel(GraphicalLayout layout)
+	// {
+	// setLayout(layout);
+	// }
 
 	/**
 	 * @param text
@@ -83,21 +82,21 @@ public class GraphLabel extends GraphElement
 		getLayout().setLocation((float)location.getX(), (float)location.getY());
 	}
 
-	/**
-	 * TODO decide whether the DrawingBoard is a special kind of Glyph.
-	 * 
-	 * @param text
-	 *            string to display in this label
-	 * @param parent
-	 *            glyph in which this label is displayed
-	 * @param location
-	 *            the x,y coordinates of the top left corner of this label
-	 */
-	public GraphLabel(String text, GraphElement parent, Point2D location)
-	{
-		this(text, location);
-		setParent(parent);
-	}
+	// /**
+	// * TODO decide whether the DrawingBoard is a special kind of Glyph.
+	// *
+	// * @param text
+	// * string to display in this label
+	// * @param parent
+	// * glyph in which this label is displayed
+	// * @param location
+	// * the x,y coordinates of the top left corner of this label
+	// */
+	// public GraphLabel(String text, GraphElement parent, Point2D location)
+	// {
+	// this(text, location);
+	// setParent(parent);
+	// }
 
 	@Override
 	public void draw(Graphics g)
@@ -111,21 +110,21 @@ public class GraphLabel extends GraphElement
 			}
 		}
 
-		if (LatexManager.isLatexEnabled())
+		if (Hub.getLatexManager().isLatexEnabled())
 		{
-			if (!visible || "".equals(getLayout().getText()))
+			if (!visible || "".equals(getText()) || rendered == null)
 			{
 				return;
 			}
-			try
-			{
-				renderIfNeeded();
-			}
-			catch (LatexRenderException e)
-			{
-				LatexManager.handleRenderingProblem();
-				return;
-			}
+			// try
+			// {
+			// renderIfNeeded();
+			// }
+			// catch (LatexRenderException e)
+			// {
+			// LatexManager.handleRenderingProblem();
+			// return;
+			// }
 			// SJW - Mod to fiddle with positioning
 			/*
 			 * ((Graphics2D)g).drawImage(rendered, null,
@@ -180,8 +179,8 @@ public class GraphLabel extends GraphElement
 		g.setFont(font);
 		FontMetrics metrics = g.getFontMetrics();
 		/*
-		 * SJW - Adjusted so these values are held in member variables int width =
-		 * metrics.stringWidth( layout.getText() ); int height =
+		 * SJW - Adjusted so these values are held in member variables int width
+		 * = metrics.stringWidth( layout.getText() ); int height =
 		 * metrics.getHeight();
 		 */
 		updateMetrics(metrics);
@@ -197,7 +196,7 @@ public class GraphLabel extends GraphElement
 		int y = BentoBox.convertDoubleToInt(getLayout().getLocation().y
 				+ (textMetricsHeight / DBL_NOT_RENDERED_SCALE_HEIGHT));
 
-		g.drawString(getLayout().getText(), x, y);
+		g.drawString(getText(), x, y);
 	}
 
 	/**
@@ -317,7 +316,7 @@ public class GraphLabel extends GraphElement
 
 		Rectangle labelBounds = new Rectangle();
 
-		if (getLayout().getText().length() == 0)
+		if (getText().length() == 0)
 		{
 			labelBounds.height = 0;
 			labelBounds.width = 0;
@@ -325,7 +324,7 @@ public class GraphLabel extends GraphElement
 			labelBounds.y = (int)getLayout().getLocation().y;
 		}
 
-		if (LatexManager.isLatexEnabled())
+		if (Hub.getLatexManager().isLatexEnabled())
 		{
 			if (rendered != null)
 			{
@@ -420,19 +419,20 @@ public class GraphLabel extends GraphElement
 		{
 			s = "";
 		}
-		if (!s.equals(getLayout().getText()))
+		if (!s.equals(getText()))
 		{
 			getLayout().setText(s);
 			rendered = null;
-			if (LatexManager.isLatexEnabled())
+			FSAGraph graph = getGraph();
+			if (graph != null && graph.isRenderingOn())
 			{
 				try
 				{
-					render();
+					renderIfNeeded();
 				}
 				catch (LatexRenderException e)
 				{
-					LatexManager.handleRenderingProblem();
+					Hub.getLatexManager().handleRenderingProblem();
 					rendered = null;
 				}
 			}
@@ -441,20 +441,20 @@ public class GraphLabel extends GraphElement
 		updateMetrics();
 	}
 
-	public void softSetText(String s)
-	{
-		if (s == null)
-		{
-			s = "";
-		}
-		if (!s.equals(getLayout().getText()))
-		{
-			getLayout().setText(s);
-			rendered = null;
-		}
-		setNeedsRefresh(true);
-		updateMetrics();
-	}
+	// public void softSetText(String s)
+	// {
+	// if (s == null)
+	// {
+	// s = "";
+	// }
+	// if (!s.equals(getLayout().getText()))
+	// {
+	// getLayout().setText(s);
+	// rendered = null;
+	// }
+	// setNeedsRefresh(true);
+	// updateMetrics();
+	// }
 
 	/**
 	 * Renders the label using LaTeX.
@@ -464,10 +464,12 @@ public class GraphLabel extends GraphElement
 	 * @see #rendered
 	 * @see #renderIfNeeded()
 	 */
-	public void render() throws LatexRenderException
+	private void render() throws LatexRenderException
 	{
+		// try{throw new RuntimeException();}catch(Exception
+		// e){e.printStackTrace();}
 		needsRefresh = true;
-		String label = getLayout().getText();
+		String label = getText();
 		if (label == null)
 		{
 			label = "";
@@ -475,12 +477,12 @@ public class GraphLabel extends GraphElement
 		byte[] data = null;
 		try
 		{
-			data = (byte[])Cache.get(getClass().getName() + label);
+			data = (byte[])Hub.getCache().get(getClass().getName() + label);
 		}
 		catch (NotInCacheException e)
 		{
 			data = LatexUtils.labelStringToImageBytes(label);
-			Cache.put(getClass().getName() + label, data);
+			Hub.getCache().put(getClass().getName() + label, data);
 		}
 		try
 		{
@@ -502,10 +504,15 @@ public class GraphLabel extends GraphElement
 	 */
 	public void renderIfNeeded() throws LatexRenderException
 	{
-		if (rendered == null && !getGraph().isAvoidLayoutDrawing())
+		if (needsRendering())
 		{
 			render();
 		}
+	}
+
+	public boolean needsRendering()
+	{
+		return rendered == null && !getGraph().isAvoidLayoutDrawing();
 	}
 
 	/**
@@ -523,7 +530,6 @@ public class GraphLabel extends GraphElement
 	public String createExportString(Rectangle selectionBox, int exportType)
 	{
 		String exportString = "";
-		GraphicalLayout labelLayout = getLayout();
 		Rectangle2D b = bounds();
 		Rectangle labelBounds = new Rectangle(
 				(int)b.getX(),
@@ -532,7 +538,7 @@ public class GraphLabel extends GraphElement
 				(int)b.getHeight());
 
 		// This is taken from Mike Wood - thanks, Mike!!!
-		String safeLabel = labelLayout.getText();
+		String safeLabel = getText();
 		safeLabel = BentoBox.replaceAll(safeLabel, "\\\\"
 				+ BentoBox.STR_ASCII_STANDARD_RETURN, "\\\\ ");
 		safeLabel = BentoBox.replaceAll(safeLabel, "\\\\ "
@@ -609,7 +615,7 @@ public class GraphLabel extends GraphElement
 	 */
 	public void updateMetrics()
 	{
-		JFrame mainWindow = Hub.getMainWindow();
+		Frame mainWindow = Hub.getMainWindow();
 		Graphics mainGraphics = mainWindow.getGraphics();
 		FontMetrics mainMetrics = mainGraphics.getFontMetrics(font);
 		updateMetrics(mainMetrics);
@@ -620,12 +626,12 @@ public class GraphLabel extends GraphElement
 	 */
 	private void updateMetrics(FontMetrics metrics)
 	{
-		textMetricsWidth = metrics.stringWidth(getLayout().getText());
+		textMetricsWidth = metrics.stringWidth(getText());
 		textMetricsHeight = metrics.getHeight();
 	}
 
 	public static float getLatexFontSize()
 	{
-		return LatexManager.getFontSize();
+		return Hub.getLatexManager().getFontSize();
 	}
 }

@@ -1,10 +1,10 @@
 package operations.fsa.ver2_1;
 
-import java.util.Vector;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.operation.Operation;
+import ides.api.plugin.operation.OperationManager;
 
-import model.fsa.FSAModel;
-import pluggable.operation.Operation;
-import pluggable.operation.OperationManager;
+import java.util.Vector;
 
 public class LocalModular extends AbstractOperation
 {
@@ -26,7 +26,6 @@ public class LocalModular extends AbstractOperation
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see pluggable.operation.Operation#perform(java.lang.Object[])
 	 */
 	@Override
@@ -37,8 +36,9 @@ public class LocalModular extends AbstractOperation
 		{
 			models.add((FSAModel)inputs[i]);
 		}
-		Operation prefix = OperationManager.getOperation("prefixclose");
-		Operation sync = OperationManager.getOperation("sync");
+		Operation prefix = OperationManager
+				.instance().getOperation("prefixclose");
+		Operation sync = OperationManager.instance().getOperation("sync");
 		Vector<FSAModel> pModels = new Vector<FSAModel>();
 		for (FSAModel m : models)
 		{
@@ -57,8 +57,8 @@ public class LocalModular extends AbstractOperation
 					.perform(new Object[] { r, pModels.elementAt(i) })[0];
 		}
 		boolean equal = ((Boolean)OperationManager
-				.getOperation("subset").perform(new Object[] { r, l })[0])
-				.booleanValue();
+				.instance().getOperation("subset")
+				.perform(new Object[] { r, l })[0]).booleanValue();
 
 		String resultMessage = "";
 		if (equal)
