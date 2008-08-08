@@ -148,7 +148,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		public Image getIcon()
 		{
 			return Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/model_fsa.gif"));
+					.getIDESResource("images/icons/model_fsa.gif"));
 		}
 
 		// public DESModel createModel(String id)

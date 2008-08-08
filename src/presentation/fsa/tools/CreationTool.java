@@ -62,7 +62,7 @@ public class CreationTool extends DrawingTool
 
 		// FIXME dynamic cursor names in UISettings class
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub
-				.getResource("images/cursors/create.gif")),
+				.getIDESResource("images/cursors/create.gif")),
 				new Point(0, 0),
 				"CREATE_NODES_OR_EDGES");
 	}

@@ -37,7 +37,7 @@ public class SelectionTool extends DrawingTool
 		// context = board;
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub
-				.getResource("images/cursors/modify_.gif")),
+				.getIDESResource("images/cursors/modify_.gif")),
 				new Point(0, 0),
 				"SELECT_NODES_OR_EDGES");
 		d = new Dimension();

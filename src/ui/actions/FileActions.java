@@ -47,7 +47,7 @@ public class FileActions
 		{
 			super(Hub.string("comNewModel"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_new_automaton.gif")));
+					.getIDESResource("images/icons/file_new_automaton.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintNewModel"));
 		}
 
@@ -81,7 +81,7 @@ public class FileActions
 		{
 			super(Hub.string("comOpenModel"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_open_automaton.gif")));
+					.getIDESResource("images/icons/file_open_automaton.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintOpenModel"));
 		}
 
@@ -106,7 +106,7 @@ public class FileActions
 		{
 			super(Hub.string("comSaveModel"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_save_automaton.gif")));
+					.getIDESResource("images/icons/file_save_automaton.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveModel"));
 		}
 
@@ -133,7 +133,7 @@ public class FileActions
 		{
 			super(Hub.string("comSaveAsModel"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_saveas_automaton.gif")));
+					.getIDESResource("images/icons/file_saveas_automaton.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAsModel"));
 		}
 
@@ -157,7 +157,7 @@ public class FileActions
 		{
 			super(Hub.string("comSaveAllModels"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_saveall_automata.gif")));
+					.getIDESResource("images/icons/file_saveall_automata.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAllModels"));
 		}
 
@@ -196,7 +196,7 @@ public class FileActions
 		{
 			super(Hub.string("comSaveWorkspace"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_save_workspace.gif")));
+					.getIDESResource("images/icons/file_save_workspace.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveWorkspace"));
 		}
 
@@ -244,7 +244,7 @@ public class FileActions
 		{
 			super(Hub.string("comSaveAsWorkspace"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_saveas_workspace.gif")));
+					.getIDESResource("images/icons/file_saveas_workspace.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAsWorkspace"));
 		}
 
@@ -327,7 +327,7 @@ public class FileActions
 		{
 			super(Hub.string("comCloseModel"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_close_automaton.gif")));
+					.getIDESResource("images/icons/file_close_automaton.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintCloseModel"));
 		}
 
@@ -352,7 +352,7 @@ public class FileActions
 		{
 			super(Hub.string("comOpenWorkspace"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/file_open_workspace.gif")));
+					.getIDESResource("images/icons/file_open_workspace.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintOpenWorkspace"));
 		}
 

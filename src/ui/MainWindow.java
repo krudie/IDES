@@ -100,7 +100,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			}
 		});
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		setIconImage(new ImageIcon(Hub.getResource(imagePath + "logo.gif"))
+		setIconImage(new ImageIcon(Hub.getIDESResource(imagePath + "logo.gif"))
 				.getImage());
 		Hub.getWorkspace().addSubscriber(this); // subscribe to
 		// notifications from the
@@ -349,14 +349,14 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		// Initializing the menu items for the "editMenu"
 		JMenuItem undo = new JMenuItem(Hub.string("undo"));
 		undo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
-				.getResource("images/icons/edit_undo.gif"))));
+				.getIDESResource("images/icons/edit_undo.gif"))));
 		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 				ActionEvent.CTRL_MASK));
 		undo.setToolTipText(Hub.string("comHintUndo"));
 		undo.addActionListener(undoAction);
 		JMenuItem redo = new JMenuItem(Hub.string("redo"));
 		redo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
-				.getResource("images/icons/edit_redo.gif"))));
+				.getIDESResource("images/icons/edit_redo.gif"))));
 		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
 				ActionEvent.CTRL_MASK));
 		redo.setToolTipText(Hub.string("comHintRedo"));
@@ -414,12 +414,12 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		toolbar.addSeparator();
 		JButton undo = new JButton();
 		undo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
-				.getResource("images/icons/edit_undo.gif"))));
+				.getIDESResource("images/icons/edit_undo.gif"))));
 		undo.setToolTipText(Hub.string("comHintUndo"));
 		undo.addActionListener(undoAction);
 		JButton redo = new JButton();
 		redo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
-				.getResource("images/icons/edit_redo.gif"))));
+				.getIDESResource("images/icons/edit_redo.gif"))));
 		redo.setToolTipText(Hub.string("comHintRedo"));
 		redo.addActionListener(redoAction);
 		toolbar.add(undo);

@@ -73,7 +73,7 @@ public class AboutDialog extends EscapeDialog
 
 		JLabel iconLabel = new JLabel(new ImageIcon(Toolkit
 				.getDefaultToolkit().createImage(Hub
-						.getResource("images/icons/big_logo.gif"))));
+						.getIDESResource("images/icons/big_logo.gif"))));
 		iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainBox.add(iconLabel);
 

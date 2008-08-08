@@ -19,7 +19,7 @@ public class TextTool extends DrawingTool
 		// this.context = context;
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub
-				.getResource("images/cursors/text.gif")),
+				.getIDESResource("images/cursors/text.gif")),
 				new Point(0, 0),
 				"MAKE_LABELS");
 	}

@@ -48,7 +48,7 @@ public class UIActions
 		{
 			super(Hub.string("comGrid"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/view_grid.gif")));
+					.getIDESResource("images/icons/view_grid.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintGrid"));
 			this.gdv = gdv;
 		}
@@ -84,7 +84,7 @@ public class UIActions
 		{
 			super(Hub.string("comCreateTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/graphic_create.gif")));
+					.getIDESResource("images/icons/graphic_create.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintCreateTool"));
 		}
 
@@ -117,7 +117,7 @@ public class UIActions
 		{
 			super(Hub.string("comMoveTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/graphic_move.gif")));
+					.getIDESResource("images/icons/graphic_move.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintMoveTool"));
 		}
 
@@ -152,7 +152,7 @@ public class UIActions
 		{
 			super(Hub.string("comSelectTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/graphic_modify.gif")));
+					.getIDESResource("images/icons/graphic_modify.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSelectTool"));
 		}
 
@@ -188,7 +188,7 @@ public class UIActions
 		{
 			super(Hub.string("comTextTool"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/machine_alpha.gif")));
+					.getIDESResource("images/icons/machine_alpha.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintTextTool"));
 		}
 
@@ -225,7 +225,7 @@ public class UIActions
 		{
 			super(Hub.string("comDelete"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/edit_delete.gif")));
+					.getIDESResource("images/icons/edit_delete.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintDelete"));
 			this.context = context;
 		}
@@ -266,7 +266,7 @@ public class UIActions
 		{
 			super(Hub.string("comLabel"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/machine_alpha.gif")));
+					.getIDESResource("images/icons/machine_alpha.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintLabel"));
 		}
 
@@ -274,7 +274,7 @@ public class UIActions
 		{
 			super(Hub.string("comLabelNode"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/machine_alpha.gif")));
+					.getIDESResource("images/icons/machine_alpha.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintLabelNode"));
 			element = n;
 		}
@@ -283,7 +283,7 @@ public class UIActions
 		{
 			super(Hub.string("comLabelEdge"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/machine_alpha.gif")));
+					.getIDESResource("images/icons/machine_alpha.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintLabelEdge"));
 			element = e;
 		}
@@ -608,7 +608,7 @@ public class UIActions
 		{
 			super(Hub.string("comAlign"), icon);
 			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/graphic_align.gif")));
+					.getIDESResource("images/icons/graphic_align.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintAlign"));
 			this.gdv = gdv;
 		}

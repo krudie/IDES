@@ -42,7 +42,7 @@ public class ModifyEdgeTool extends DrawingTool
 		// this.context = context;
 		this.cursor = Toolkit.getDefaultToolkit().createCustomCursor(Toolkit
 				.getDefaultToolkit().createImage(Hub
-						.getResource("images/cursors/move.gif")),
+						.getIDESResource("images/cursors/move.gif")),
 				new Point(12, 12),
 				"MOVE_EDGE_CONTROLS");
 	}

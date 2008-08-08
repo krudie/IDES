@@ -38,21 +38,21 @@ public class NoticeUI extends JPanel
 	 */
 	public final static Icon ICON_INFO = new ImageIcon(Toolkit
 			.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/notice_info.gif")));
+					.getIDESResource("images/icons/notice_info.gif")));
 
 	/**
 	 * Icon for "warning" notices.
 	 */
 	public final static Icon ICON_WARN = new ImageIcon(Toolkit
 			.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/notice_warn.gif")));
+					.getIDESResource("images/icons/notice_warn.gif")));
 
 	/**
 	 * Icon for "error" notices.
 	 */
 	public final static Icon ICON_ERROR = new ImageIcon(Toolkit
 			.getDefaultToolkit().createImage(Hub
-					.getResource("images/icons/notice_error.gif")));
+					.getIDESResource("images/icons/notice_error.gif")));
 
 	/**
 	 * Highlight color for "info" notices.

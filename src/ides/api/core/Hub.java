@@ -226,15 +226,30 @@ public class Hub
 	}
 
 	/**
-	 * Gets a resource that may be in the JAR file (icons and such).
+	 * Gets a resource from the IDES JAR file (icons and such).
 	 * 
 	 * @param name
 	 *            the name of the resource
 	 * @return URL that points to the resource
 	 */
-	public static URL getResource(String name)
+	public static URL getIDESResource(String name)
 	{
 		return Hub.class.getClassLoader().getResource(name);
+	}
+
+	/**
+	 * Gets a resource from the JAR file of a plugin (icons and such).
+	 * 
+	 * @param context
+	 *            the context for the local resource (e.g., a class from the
+	 *            plugin)
+	 * @param name
+	 *            the name of the resource
+	 * @return URL that points to the resource
+	 */
+	public static URL getLocalResource(Class<?> context, String name)
+	{
+		return context.getClassLoader().getResource(name);
 	}
 
 	/**

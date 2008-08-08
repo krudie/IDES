@@ -23,7 +23,7 @@ public class MovementTool extends DrawingTool
 		// this.cursor = new Cursor(Cursor.MOVE_CURSOR);
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		cursor = toolkit.createCustomCursor(toolkit.createImage(Hub
-				.getResource("images/cursors/move.gif")),
+				.getIDESResource("images/cursors/move.gif")),
 				new Point(12, 12),
 				"MOVE_NODES_OR_LABELS");
 	}
