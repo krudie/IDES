@@ -104,12 +104,13 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		if (needsSave != b)
 		{
 			needsSave = b;
-			DESModelMessage message = new DESModelMessage(
-					needsSave ? DESModelMessage.DIRTY : DESModelMessage.CLEAN,
-					this);
-			for (DESModelSubscriber s : mwSubscribers)
+			for (DESModelSubscriber s : mwSubscribers
+					.toArray(new DESModelSubscriber[] {}))
 			{
-				s.saveStatusChanged(message);
+				s.saveStatusChanged(new DESModelMessage(
+						needsSave ? DESModelMessage.DIRTY
+								: DESModelMessage.CLEAN,
+						this));
 			}
 		}
 
@@ -339,12 +340,10 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			return;
 		}
 		this.name = name;
-		DESModelMessage message = new DESModelMessage(
-				DESModelMessage.NAME,
-				this);
-		for (DESModelSubscriber s : mwSubscribers)
+		for (DESModelSubscriber s : mwSubscribers
+				.toArray(new DESModelSubscriber[] {}))
 		{
-			s.modelNameChanged(message);
+			s.modelNameChanged(new DESModelMessage(DESModelMessage.NAME, this));
 		}
 		this.metadataChanged();
 	}

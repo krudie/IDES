@@ -3,9 +3,11 @@ package services.undo;
 import ides.api.core.Hub;
 import ides.api.core.WorkspaceMessage;
 import ides.api.core.WorkspaceSubscriber;
+import ides.api.plugin.model.DESModel;
 import ides.api.undo.UndoManager;
 
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -111,30 +113,39 @@ public class UndoBackend implements UndoManager
 	}
 
 	/**
-	 * Gets the active UndoManager. Since the active manager is dependent on the
-	 * active model, this method queries the workspace about the name of the
-	 * active model and then access the HasMap for the UndoManager for that
-	 * model. If no manager was initialized before, this method will instantiate
-	 * a new one and then retrieve it.
+	 * Gets the UndoManager for a model. If no manager was initialized before,
+	 * this method will instantiate a new one and then retrieve it.
 	 * 
-	 * @return a reference to the active UndoManager.
+	 * @return a reference to the UndoManager.
 	 */
-	protected static javax.swing.undo.UndoManager getActiveUndoManager()
+	protected static javax.swing.undo.UndoManager getUndoManager(DESModel model)
 	{
-		if (Hub.getWorkspace().getActiveModel() == null)
+		if (model == null)
 		{
 			return null;
 		}
-		javax.swing.undo.UndoManager currentManager = (javax.swing.undo.UndoManager)Hub
-				.getWorkspace().getActiveModel().getAnnotation(UNDO_MANAGER);
-		// If no UndoManager was initialized, create a new instance.
-		if (currentManager == null)
+		boolean modelLoaded = false;
+		for (Iterator<DESModel> i = Hub.getWorkspace().getModels(); i.hasNext();)
 		{
-			currentManager = new RobustUndoManager();
-			Hub.getWorkspace().getActiveModel().setAnnotation(UNDO_MANAGER,
-					currentManager);
+			if (i.next() == model)
+			{
+				modelLoaded = true;
+				break;
+			}
 		}
-		return currentManager;
+		if (!modelLoaded)
+		{
+			return null;
+		}
+		javax.swing.undo.UndoManager manager = (javax.swing.undo.UndoManager)model
+				.getAnnotation(UNDO_MANAGER);
+		// If no UndoManager was initialized, create a new instance.
+		if (manager == null)
+		{
+			manager = new RobustUndoManager();
+			model.setAnnotation(UNDO_MANAGER, manager);
+		}
+		return manager;
 	}
 
 	/**
@@ -143,7 +154,7 @@ public class UndoBackend implements UndoManager
 	 */
 	protected static void refreshUndoRedo()
 	{
-		if (getActiveUndoManager() == null)
+		if (getUndoManager(Hub.getWorkspace().getActiveModel()) == null)
 		{
 			// refreshes the "undo" UI elements
 			for (AbstractButton button : uiElementsUndo)
@@ -169,24 +180,26 @@ public class UndoBackend implements UndoManager
 			// refreshes the "undo" UI elements
 			for (AbstractButton button : uiElementsUndo)
 			{
-				button.setEnabled(getActiveUndoManager().canUndo());
+				button.setEnabled(getUndoManager(Hub
+						.getWorkspace().getActiveModel()).canUndo());
 			}
 			for (AbstractButton button : textUIElementsUndo)
 			{
-				button
-						.setText(getActiveUndoManager()
-								.getUndoPresentationName());
+				button.setText(getUndoManager(Hub
+						.getWorkspace().getActiveModel())
+						.getUndoPresentationName());
 			}
 			// refreshes the "redo" UI elements
 			for (AbstractButton button : uiElementsRedo)
 			{
-				button.setEnabled(getActiveUndoManager().canRedo());
+				button.setEnabled(getUndoManager(Hub
+						.getWorkspace().getActiveModel()).canRedo());
 			}
 			for (AbstractButton button : textUIElementsRedo)
 			{
-				button
-						.setText(getActiveUndoManager()
-								.getRedoPresentationName());
+				button.setText(getUndoManager(Hub
+						.getWorkspace().getActiveModel())
+						.getRedoPresentationName());
 			}
 		}
 	}
@@ -321,7 +334,7 @@ public class UndoBackend implements UndoManager
 	{
 		// Makes the active UndoManager (dependent on the model) undo an
 		// operation.
-		getActiveUndoManager().undo();
+		getUndoManager(Hub.getWorkspace().getActiveModel()).undo();
 		// Refreshes the Undo/Redo queue.
 		refreshUndoRedo();
 	}
@@ -335,7 +348,7 @@ public class UndoBackend implements UndoManager
 	{
 		// Makes the active UndoManager (dependent on the model) redo an
 		// operation.
-		getActiveUndoManager().redo();
+		getUndoManager(Hub.getWorkspace().getActiveModel()).redo();
 		// Refreshes the Undo/Redo queue.
 		refreshUndoRedo();
 	}
@@ -346,10 +359,29 @@ public class UndoBackend implements UndoManager
 	 */
 	public void addEdit(UndoableEdit edit)
 	{
-		// Adds the edit to the active UndoableManager
-		getActiveUndoManager().addEdit(edit);
-		// Refreshes the Undo/Redo queue
-		refreshUndoRedo();
+		addEdit(Hub.getWorkspace().getActiveModel(), edit);
+	}
+
+	/**
+	 * Adds an UndoableEdit to the undo stack of the specified model, if the
+	 * model is loaded in the workspace. If the model is not in the workspace,
+	 * does nothing.
+	 * 
+	 * @param model
+	 *            model in whose undo stack the edit should be added
+	 * @param edit
+	 *            the edit to be added in the undo stack
+	 */
+	public void addEdit(DESModel model, UndoableEdit edit)
+	{
+		javax.swing.undo.UndoManager manager = getUndoManager(model);
+		if (manager != null)
+		{
+			// Adds the edit to the active UndoableManager
+			manager.addEdit(edit);
+			// Refreshes the Undo/Redo queue
+			refreshUndoRedo();
+		}
 	}
 
 	public AbstractAction getUndoAction()

@@ -1,5 +1,7 @@
 package ides.api.undo;
 
+import ides.api.plugin.model.DESModel;
+
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.undo.UndoableEdit;
@@ -15,10 +17,21 @@ import javax.swing.undo.UndoableEdit;
 public interface UndoManager
 {
 	/**
-	 * Adds an UndoableAction to the active manager, the action has to be always
-	 * added to the active model.
+	 * Adds an UndoableEdit to the undo stack of the active model.
 	 */
 	public void addEdit(UndoableEdit edit);
+
+	/**
+	 * Adds an UndoableEdit to the undo stack of the specified model, if the
+	 * model is loaded in the workspace. If the model is not in the workspace,
+	 * does nothing.
+	 * 
+	 * @param model
+	 *            model in whose undo stack the edit should be added
+	 * @param edit
+	 *            the edit to be added in the undo stack
+	 */
+	public void addEdit(DESModel model, UndoableEdit edit);
 
 	/**
 	 * Registers an {@link AbstractButton} to be updated when the undo state
