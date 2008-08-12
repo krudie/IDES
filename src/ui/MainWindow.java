@@ -166,18 +166,38 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		{
 			public void stateChanged(ChangeEvent e)
 			{
-				if ((e.getSource() instanceof JTabbedPane)
-						&& ((JTabbedPane)e.getSource()).getSelectedIndex() < 0)
+				if (Hub.getWorkspace().getActiveModel() == null)
 				{
 					return;
 				}
-				if (Hub.getWorkspace().getActiveModel() != null)
+				if (tabbedViews.getSelectedIndex() >= 0)
 				{
-					Hub
+					UILayout oldLayout = (UILayout)Hub
 							.getWorkspace().getActiveModel()
+							.getAnnotation(UI_SETTINGS);
+					Hub
+							.getWorkspace()
+							.getActiveModel()
 							.setAnnotation(UI_SETTINGS,
 									new UILayout(
 											tabbedViews.getSelectedIndex(),
+											oldLayout != null ? oldLayout.activeRightTab
+													: rightViews
+															.getSelectedIndex()));
+				}
+				if (rightViews.getSelectedIndex() >= 0)
+				{
+					UILayout oldLayout = (UILayout)Hub
+							.getWorkspace().getActiveModel()
+							.getAnnotation(UI_SETTINGS);
+					Hub
+							.getWorkspace()
+							.getActiveModel()
+							.setAnnotation(UI_SETTINGS,
+									new UILayout(
+											oldLayout != null ? oldLayout.activeMainTab
+													: tabbedViews
+															.getSelectedIndex(),
 											rightViews.getSelectedIndex()));
 				}
 			}
