@@ -142,7 +142,7 @@ public class Composition
 				{
 					// TODO: is this right? Does the new event have the same
 					// properties as the old event?
-					Event event = new Event(eventa);
+					FSAEvent event = new Event(eventa);
 					// event.setId(eventid++);
 					product.add(event);
 					break;
@@ -220,7 +220,7 @@ public class Composition
 						}
 						else
 						{
-							State target = makeState(s, stateNumber);
+							FSAState target = makeState(s, stateNumber);
 							product.add(target);
 							product.add(new Transition(
 									transitionNumber++,
@@ -295,15 +295,15 @@ public class Composition
 
 		// key=event from original automata,value=correpsponding new event in
 		// result
-		HashMap<FSAEvent, Event> events = new HashMap<FSAEvent, Event>();
+		HashMap<FSAEvent, FSAEvent> events = new HashMap<FSAEvent, FSAEvent>();
 		// key=new event,value=the two original events that intersect
-		HashSet<Event> intersection = new HashSet<Event>();
+		HashSet<FSAEvent> intersection = new HashSet<FSAEvent>();
 
 		ListIterator<FSAEvent> it = a.getEventIterator();
 		while (it.hasNext())
 		{
 			FSAEvent event = it.next();
-			Event temp = new Event(event);
+			FSAEvent temp = new Event(event);
 			temp.setId(eventid++);
 			parallel.add(temp);
 			events.put(event, temp);
@@ -316,14 +316,14 @@ public class Composition
 			FSAEvent eventa = getId(eventb, a);
 			if (eventa == null)
 			{
-				Event temp = new Event(eventb);
+				FSAEvent temp = new Event(eventb);
 				temp.setId(eventid++);
 				parallel.add(temp);
 				events.put(eventb, temp);
 			}
 			else
 			{
-				Event e = events.get(eventa);
+				FSAEvent e = events.get(eventa);
 				intersection.add(e);
 				events.put(eventb, e);
 			}
@@ -380,7 +380,7 @@ public class Composition
 					if (t.getEvent() == null
 							|| !intersection.contains(events.get(t.getEvent())))
 					{
-						Event event = (t.getEvent() == null) ? null : events
+						FSAEvent event = (t.getEvent() == null) ? null : events
 								.get(t.getEvent());
 
 						s[(i + 1) % 2] = sa[(i + 1) % 2];
@@ -397,7 +397,7 @@ public class Composition
 						}
 						else
 						{
-							State target = makeState(s, stateNumber);
+							FSAState target = makeState(s, stateNumber);
 							parallel.add(target);
 							parallel.add(new Transition(
 									transitionNumber++,
@@ -439,8 +439,8 @@ public class Composition
 									.getEvent().equals(t1.getEvent())))
 					{
 
-						Event event = (t0.getEvent() == null) ? null : events
-								.get(t0.getEvent());
+						FSAEvent event = (t0.getEvent() == null) ? null
+								: events.get(t0.getEvent());
 
 						s[0] = t0.getTarget();
 						s[1] = t1.getTarget();
@@ -456,7 +456,7 @@ public class Composition
 						}
 						else
 						{
-							State target = makeState(s, stateNumber);
+							FSAState target = makeState(s, stateNumber);
 							parallel.add(target);
 							parallel.add(new Transition(
 									transitionNumber++,
@@ -498,7 +498,7 @@ public class Composition
 			FSAEvent e = eli.next();
 			if (e.isObservable())
 			{
-				Event event = new Event(e);
+				FSAEvent event = new Event(e);
 				// event.setId(eventid++);
 				observer.add(event);
 			}
@@ -525,12 +525,12 @@ public class Composition
 		}
 		unobservableReach(states);
 		sort(states);
-		State rState = makeState(states, id, true);
+		FSAState rState = makeState(states, id, true);
 		setIn(states, id++);
 
 		observer.add(rState);
 		searchList.add(states);
-		State target, source;
+		FSAState target, source;
 
 		states = new LinkedList<FSAState>();
 
@@ -538,7 +538,7 @@ public class Composition
 		while (!searchList.isEmpty())
 		{
 			LinkedList<FSAState> sourceList = searchList.remove();
-			source = (State)observer.getState(isIn(sourceList));
+			source = observer.getState(isIn(sourceList));
 			eli = a.getEventIterator();
 			while (eli.hasNext())
 			{
@@ -577,11 +577,11 @@ public class Composition
 					}
 					else
 					{
-						target = (State)observer.getState(stateid);
+						target = observer.getState(stateid);
 					}
 					event = (event == null) ? null : observer.getEvent(event
 							.getId());
-					Transition t = new Transition(
+					FSATransition t = new Transition(
 							transitionid++,
 							source,
 							target,
@@ -657,12 +657,12 @@ public class Composition
 	 *            sets the state as initial if needed
 	 * @return the newly created state
 	 */
-	private static State makeState(LinkedList<FSAState> sll, long id,
+	private static FSAState makeState(LinkedList<FSAState> sll, long id,
 			boolean initial)
 	{
 		ListIterator<FSAState> sli = sll.listIterator();
 		FSAState s;
-		State rs;
+		FSAState rs;
 		boolean marked = false;
 		int cId = 0;
 		long[] compositionIds = new long[sll.size()];
@@ -677,13 +677,12 @@ public class Composition
 		rs = new State(id);
 		rs.setMarked(marked);
 		rs.setInitial(initial);
-		rs.setStateCompositionList(compositionIds);
+		rs.setAnnotation(Annotable.COMPOSED_OF, compositionIds);
 		return rs;
 	}
 
 	/**
-	 * Sorting algorithm for sorting a list of states after id. Right now it
-	 * uses bublesort
+	 * Sorting algorithm for sorting a list of states after id.
 	 * 
 	 * @param sll
 	 *            the list of states to sort
@@ -697,34 +696,6 @@ public class Composition
 				return (int)Math.signum(s1.getId() - s2.getId());
 			}
 		});
-		// if(sll.size() < 2)
-		// ;
-		// else if(sll.size() == 2){
-		// FSAState s1 = sll.getFirst();
-		// FSAState s2 = sll.getLast();
-		// if(s1.getId() <= s2.getId()) return;
-		// else{
-		// sll.clear();
-		// sll.addFirst(s2);
-		// sll.addLast(s1);
-		// }
-		// }
-		// else{
-		// LinkedList<State> l1 = new LinkedList<State>(sll.subList(0,
-		// sll.size() / 2));
-		// LinkedList<State> l2 = new LinkedList<State>(sll.subList(sll.size() /
-		// 2, sll.size()));
-		// sort(l1);
-		// sort(l2);
-		// sll.clear();
-		// while(!l1.isEmpty() || !l2.isEmpty()){
-		// if(l1.isEmpty()) sll.addLast(l2.removeFirst());
-		// else if(l2.isEmpty()) sll.addLast(l1.removeFirst());
-		// else if(l1.peek().getId() <= l2.peek().getId())
-		// sll.addLast(l1.removeFirst());
-		// else sll.addLast(l2.removeFirst());
-		// }
-		// }
 	}
 
 	/**
@@ -795,9 +766,9 @@ public class Composition
 	 *            the id of the new state
 	 * @return the newly created state
 	 */
-	private static State makeState(FSAState[] s, long stateNumber)
+	private static FSAState makeState(FSAState[] s, long stateNumber)
 	{
-		State state = new State(stateNumber);
+		FSAState state = new State(stateNumber);
 		// SubElement name = new SubElement("name");
 		// name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
 		// + s[1].getSubElement("name").getChars() + ")");
@@ -806,9 +777,8 @@ public class Composition
 		// SubElement properties = new SubElement("properties");
 
 		// state.setName("{" + s[0].getName() + "," + s[1].getName() + "}");
-		state
-				.setStateCompositionList(new long[] { s[0].getId(),
-						s[1].getId() });
+		state.setAnnotation(Annotable.COMPOSED_OF, new long[] { s[0].getId(),
+				s[1].getId() });
 
 		if (s[0].isInitial() && s[1].isInitial())
 		{

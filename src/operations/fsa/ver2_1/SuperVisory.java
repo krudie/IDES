@@ -1,13 +1,12 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.ModelManager;
 
 import java.util.ListIterator;
-
-import model.fsa.ver2_1.State;
 
 /**
  * This class contains methods for supervisory control of discrete event
@@ -60,9 +59,10 @@ public class SuperVisory
 			// in that case, delete the state from the result
 			while (si.hasNext())
 			{
-				State s = (State)si.next();
+				FSAState s = si.next();
 
-				FSAState pln = plant.getState(s.getStateCompositionList()[0]);
+				FSAState pln = plant.getState(((long[])s
+						.getAnnotation(Annotable.COMPOSED_OF))[0]);
 				ListIterator<FSATransition> plsti = pln
 						.getOutgoingTransitionsListIterator();
 
@@ -130,9 +130,10 @@ public class SuperVisory
 
 		while (si.hasNext())
 		{
-			State s = (State)si.next();
+			FSAState s = si.next();
 
-			FSAState pln = plant.getState(s.getStateCompositionList()[0]);
+			FSAState pln = plant.getState(((long[])s
+					.getAnnotation(Annotable.COMPOSED_OF))[0]);
 			ListIterator<FSATransition> plsti = pln
 					.getOutgoingTransitionsListIterator();
 
@@ -189,146 +190,5 @@ public class SuperVisory
 		Composition.product(a, b, product);
 		Unary.accessible(product);
 
-		// // Add the intersection between the eventsets as the products
-		// eventset.
-		// ListIterator<FSAEvent> eventsa = a.getEventIterator();
-		// while(eventsa.hasNext()){
-		// FSAEvent eventa = eventsa.next();
-		// ListIterator<FSAEvent> eventsb = b.getEventIterator();
-		// while(eventsb.hasNext()){
-		// Event eventb = (Event) eventsb.next();
-		// if(eventa.getSubElement("name").getChars().equals(
-		// eventb.getSubElement("name").getChars())){
-		// // is this right? Does the new event have the same
-		// // properties as the old event?
-		// Event event = new Event(eventa);
-		// product.add(event);
-		// break;
-		// }
-		// }
-		// }
-		//
-		// // find initial states, mark them as reached and add them to the que
-		// State[] initial = new State[2];
-		// int stateNumber = 0;
-		// LinkedList<State[]> searchList = new LinkedList<State[]>();
-		//
-		// Iterator sia = a.getStateIterator();
-		// while(sia.hasNext()){
-		// initial[0] = (State) sia.next();
-		// if(initial[0].getSubElement("properties").hasSubElement("initial")){
-		// Iterator sib = b.getStateIterator();
-		// while(sib.hasNext()){
-		// initial[1] = (State) sib.next();
-		// if(initial[1].getSubElement("properties").hasSubElement("initial")){
-		// searchList.add(initial.clone());
-		// product.add(makeState(initial, stateNumber));
-		// setStateId(initial, stateNumber++);
-		// }
-		// }
-		// }
-		// }
-		//
-		// // accessibility. All accessible states are added to product.
-		// // Transitions are only traversible if they can be traversed from
-		// both
-		// // states in sa
-		// // firing the same event, i.e., the intersection of the transitions
-		// // originating from the two
-		// // states are the transitions of state in product.
-		// int transitionNumber = 0;
-		// State[] s = new State[2];
-		// while(!searchList.isEmpty()){
-		// State[] sa = searchList.removeFirst();
-		// State source = (State) product.getState(getStateId(sa));
-		//
-		// ListIterator sti0 = sa[0].getSourceTransitionsListIterator();
-		// while(sti0.hasNext()){
-		// Transition t0 = (Transition)sti0.next();
-		// ListIterator sti1 = sa[1].getSourceTransitionsListIterator();
-		// while(sti1.hasNext()){
-		// Transition t1 = (Transition)sti1.next();
-		// if((t0.getEvent() == null && t1.getEvent() == null || (t0.getEvent()
-		// != null
-		// && t1.getEvent() != null && ((SubElementContainer)
-		// t0.getEvent()).getSubElement("name")
-		// .getChars().equals(((SubElementContainer)
-		// t1.getEvent()).getSubElement("name").getChars())))){
-		//
-		// Event event = (Event) ((t0.getEvent() == null) ? null :
-		// product.getEvent(t0
-		// .getEvent().getId()));
-		//
-		// s[0] = (State) t0.getTarget();
-		// s[1] = (State) t1.getTarget();
-		//
-		// int id = getStateId(s);
-		// if(id != -1){
-		// product.add(new Transition(transitionNumber++, source, product
-		// .getState(id), event));
-		// }
-		// else{
-		// State target = makeState(s, stateNumber);
-		// product.add(target);
-		// product.add(new Transition(transitionNumber++, source, target,
-		// event));
-		// setStateId(s, stateNumber++);
-		// searchList.add(s.clone());
-		// }
-		// }
-		// }
-		// }
-		// }
-		// // tidy up the mess I left.
-		// ListIterator sli = a.getStateIterator();
-		// while(sli.hasNext()){
-		// ((SubElementContainer) sli.next()).removeSubElement("searched");
-		// }
 	}
-
-	// /**
-	// * Private function for making a new state from a stateset
-	// *
-	// * @param s
-	// * the stateset to make a new state from
-	// * @param stateNumber
-	// * the id of the new state
-	// * @return the newly created state
-	// */
-	// private static State makeState(FSAState[] s, long stateNumber)
-	// {
-	// State state = new State(stateNumber);
-	//
-	// // SubElement plantID = new SubElement("plantID");
-	// // plantID.setChars("" + s[0].getId());
-	// // state.addSubElement(plantID);
-	//
-	// state
-	// .setStateCompositionList(new long[] { s[0].getId(),
-	// s[1].getId() });
-	//
-	// if (s[0].isInitial() && s[1].isInitial())
-	// {
-	// state.setInitial(true);
-	// }
-	//
-	// if (s[0].isMarked() && s[1].isMarked())
-	// {
-	// state.setMarked(true);
-	// }
-	// return state;
-	// }
-
-	// private static void setStateId(State[] s, long stateId){
-	// pairIds.put(""+s[0].getId()+","+s[1].getId(),new Long(stateId));
-	// }
-	//    
-	//    
-	// private static long getStateId(State[] s){
-	// String key=""+s[0].getId()+","+s[1].getId();
-	// if(pairIds.containsKey(key))
-	// return pairIds.get(key).longValue();
-	// return -1;
-	// }
-
 }

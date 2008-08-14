@@ -28,26 +28,7 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	public Event(long id)
 	{
 		this.id = id;
-		// addSubElement(new SubElement("properties"));
-		// addSubElement(new SubElement("name"));
-	}
-
-	/**
-	 * Constructs an event with all internal variables equal to the event e.
-	 * 
-	 * @param e
-	 *            the event the new event must equal.
-	 */
-	public Event(Event e)
-	{
-		// super(e);
-		this.id = e.id;
-		// addSubElement(new SubElement("properties"));
-		// addSubElement(new SubElement("name"));
-		this.setSymbol(e.getSymbol());
-		this.setControllable(e.isControllable());
-		this.setObservable(e.isObservable());
-		// TODO: also transfer other properties
+		setObservable(true);
 	}
 
 	/**
@@ -59,8 +40,6 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	public Event(FSAEvent e)
 	{
 		this.id = e.getId();
-		// addSubElement(new SubElement("properties"));
-		// addSubElement(new SubElement("name"));
 		this.setSymbol(e.getSymbol());
 		this.setControllable(e.isControllable());
 		this.setObservable(e.isObservable());
@@ -149,7 +128,7 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	 */
 	public int compareTo(FSAEvent arg0)
 	{
-		return getSymbol().compareTo(((Event)arg0).getSymbol());
+		return getSymbol().compareTo(arg0.getSymbol());
 	}
 
 	@Override

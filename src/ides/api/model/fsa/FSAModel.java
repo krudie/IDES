@@ -10,6 +10,42 @@ public interface FSAModel extends DESModel, FSAPublisher
 {
 
 	/**
+	 * Assembles a new state which can be added to the model. The state is not
+	 * automatically added to the model.
+	 * 
+	 * @return a new state
+	 */
+	public abstract FSAState assembleState();
+
+	/**
+	 * Assembles a new event which can be added to the model. The event is not
+	 * automatically added to the model.
+	 * 
+	 * @param symbol
+	 *            the name for the event
+	 * @return a new event with the given name
+	 */
+	public abstract FSAEvent assembleEvent(String symbol);
+
+	/**
+	 * Assembles a new transition which can be added to the model. The
+	 * transition is not automatically added to the model.
+	 * 
+	 * @param origin
+	 *            the id of the source state of the transition
+	 * @param target
+	 *            the id of the target state of the transition
+	 * @param event
+	 *            the id of the event of the transition
+	 * @return a new transition with the given properties
+	 * @throws IllegalArgumentException
+	 *             when the given source, target or event are not part of the
+	 *             model
+	 */
+	public abstract FSATransition assembleTransition(long source, long target,
+			long event);
+
+	/**
 	 * @param s
 	 *            a state that needs to be added.
 	 */

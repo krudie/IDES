@@ -3,6 +3,8 @@ package operations.fsa.ver2_1;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.ModelManager;
 
 import java.io.BufferedReader;
@@ -152,8 +154,7 @@ public class SupRed extends AbstractOperation
 				if (parts[0].startsWith("("))
 				{
 					long sId = Long.parseLong(parts[2]);
-					model.fsa.ver2_1.State s = (model.fsa.ver2_1.State)a
-							.getState(sId);
+					FSAState s = a.getState(sId);
 					if (s == null)
 					{
 						s = new model.fsa.ver2_1.State(sId);
@@ -164,8 +165,7 @@ public class SupRed extends AbstractOperation
 				else if (parts[2].startsWith("("))
 				{
 					long sId = Long.parseLong(parts[0]);
-					model.fsa.ver2_1.State s = (model.fsa.ver2_1.State)a
-							.getState(sId);
+					FSAState s = a.getState(sId);
 					if (s == null)
 					{
 						s = new model.fsa.ver2_1.State(sId);
@@ -176,22 +176,20 @@ public class SupRed extends AbstractOperation
 				else
 				{
 					long sId1 = Long.parseLong(parts[0]);
-					model.fsa.ver2_1.State s1 = (model.fsa.ver2_1.State)a
-							.getState(sId1);
+					FSAState s1 = a.getState(sId1);
 					if (s1 == null)
 					{
 						s1 = new model.fsa.ver2_1.State(sId1);
 						a.add(s1);
 					}
 					long sId2 = Long.parseLong(parts[2]);
-					model.fsa.ver2_1.State s2 = (model.fsa.ver2_1.State)a
-							.getState(sId2);
+					FSAState s2 = a.getState(sId2);
 					if (s2 == null)
 					{
 						s2 = new model.fsa.ver2_1.State(sId2);
 						a.add(s2);
 					}
-					model.fsa.ver2_1.Event e = null;
+					FSAEvent e = null;
 					Long eId = events.get(parts[1]);
 					if (eId == null)
 					{
@@ -205,9 +203,9 @@ public class SupRed extends AbstractOperation
 					}
 					else
 					{
-						e = (model.fsa.ver2_1.Event)a.getEvent(eId.longValue());
+						e = a.getEvent(eId.longValue());
 					}
-					model.fsa.ver2_1.Transition t = new model.fsa.ver2_1.Transition(
+					FSATransition t = new model.fsa.ver2_1.Transition(
 							tCount,
 							s1,
 							s2,

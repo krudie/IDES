@@ -1,5 +1,6 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAEventSet;
 import ides.api.model.fsa.FSAModel;
@@ -107,7 +108,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 						long id = getStateId(s);
 						if (id == -1)
 						{
-							State target = makeState(s, stateNumber);
+							FSAState target = makeState(s, stateNumber);
 							product.add(target);
 							setStateId(s, stateNumber++);
 							searchList.add(s.clone());
@@ -150,19 +151,12 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 	 *            the id of the new state
 	 * @return the newly created state
 	 */
-	private static State makeState(FSAState[] s, long stateNumber)
+	private static FSAState makeState(FSAState[] s, long stateNumber)
 	{
-		State state = new State(stateNumber);
-		// SubElement name = new SubElement("name");
-		// name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
-		// + s[1].getSubElement("name").getChars() + ")");
-		// state.addSubElement(name);
+		FSAState state = new State(stateNumber);
 
-		// SubElement properties = new SubElement("properties");
-
-		state
-				.setStateCompositionList(new long[] { s[0].getId(),
-						s[1].getId() });
+		state.setAnnotation(Annotable.COMPOSED_OF, new long[] { s[0].getId(),
+				s[1].getId() });
 
 		if (s[0].isInitial() && s[1].isInitial())
 		{

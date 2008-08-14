@@ -246,7 +246,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 
 	protected FSAState makeState(FSAState[] states, long id)
 	{
-		State newS = new State(id);
+		FSAState newS = new State(id);
 		boolean isInitial = true;
 		boolean isMarked = true;
 		long[] composedIds = new long[states.length];
@@ -258,7 +258,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 		}
 		newS.setInitial(isInitial);
 		newS.setMarked(isMarked);
-		newS.setStateCompositionList(composedIds);
+		newS.setAnnotation(Annotable.COMPOSED_OF, composedIds);
 		return newS;
 	}
 

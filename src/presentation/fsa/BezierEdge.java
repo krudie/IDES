@@ -16,7 +16,6 @@ import java.awt.geom.Point2D.Float;
 import java.util.Iterator;
 import java.util.Set;
 
-import model.fsa.ver2_1.Transition;
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
@@ -559,7 +558,7 @@ public class BezierEdge extends Edge
 		// }
 	}
 
-	public void removeTransition(Transition t)
+	public void removeTransition(FSATransition t)
 	{
 		super.removeTransition(t);
 		// TODO uncomment after MetaData class is disconnected

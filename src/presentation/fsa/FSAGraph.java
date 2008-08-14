@@ -224,16 +224,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		}
 
 		LayoutManager.getDefaultFSMLayouter().layout(this);
-		// buildIntersectionDS();
-
-		// for(Node n:nodes.values())
-		// {
-		// if(n.getState().isInitial())
-		// {
-		// //Insert the initial arrow among the egdes
-		// edges.put(n.getInitialArrow().getId(), n.getInitialArrow() );
-		// }
-		// }
 
 		// collect all labels on edges
 		for (Edge edge : edges.values())
@@ -241,21 +231,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			edgeLabels.put(edge.getId(), edge.getLabel());
 		}
 
-		// //updating free edge group
-		// Set<Long> setEdges = edges.keySet();
-		// Iterator<Long> it = setEdges.iterator();
-		// while(it.hasNext())
-		// {
-		// try{
-		// Long groupid =
-		// ((BezierLayout)edges.get(it.next()).getLayout()).getGroup();
-		// bezierLayoutFreeGroup = (groupid >
-		// bezierLayoutFreeGroup?groupid:bezierLayoutFreeGroup);
-		// }catch(ClassCastException e){
-		// //No problem... that happened because we can have initial edges
-		// amongst the edges
-		// }
-		// }
 	}
 
 	/**
@@ -284,38 +259,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	{
 		fsa.setName(name);
 	}
-
-	// public String getDecoratedName() {
-	// return ( needsSave ? "* " : "" ) + getName();
-	// }
-
-	// /**
-	// * Sets a flag to indicate that this graph needs to refresh itself
-	// * because it is out of sync with its underlying model or some of its
-	// elements
-	// * are out of sync.
-	// */
-	// public void setNeedsRefresh( boolean b ) {
-	// super.setNeedsRefresh(b);
-	// }
-
-	// /**
-	// * Tells the graph that it needs to be saved to file.
-	// *
-	// * @param b
-	// */
-	// public void setNeedsSave( boolean b ) {
-	// needsSave = b;
-	// }
-
-	// /**
-	// * Returns true iff this graph needs to be saved to file.
-	// *
-	// * @return true iff this graph needs to be saved to file.
-	// */
-	// public boolean needsSave() {
-	// return needsSave;
-	// }
 
 	public FSAModel getModel()
 	{
@@ -536,134 +479,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		refresh();
 	}
 
-	// /**
-	// * @deprecated
-	// * Graph is now built in LayoutDataParser
-	// *
-	// * Returns the directed edge from <code>source</code> to
-	// <code>target</code> if exists.
-	// * Otherwise returns null.
-	// */
-	// private Edge directedEdgeBetween(Node source, Node target){
-	// for(Edge e : edges.values())
-	// {
-	// if(e.getSourceNode() != null && e.getSourceNode().equals(source)
-	// && e.getTargetNode() != null && e.getTargetNode().equals(target)){
-	// return e;
-	// }
-	// }
-	// return null;
-	// }
-	//
-	//
-	// /**
-	// * @deprecated
-	// * TODO wait until automaton is saved before committing
-	// * layout changes.
-	// *
-	// * @param t
-	// * @param layout
-	// */
-	// private void addToLayout(FSATransition t, Edge edge) {
-	// Event event = (Event) t.getEvent();
-	// if(event != null){
-	// edge.addEventName(event.getSymbol());
-	// }
-	// }
-	//
-	// /**
-	// * If <code>p</code> is not contained within the boundary of
-	// <code>e</code>'s source node,
-	// * adds a new node at point <code>p</code> and completes the edge from
-	// * <code>e</code>'s source node to the new node.
-	// *
-	// * @param e the edge to be finished
-	// * @param p the location of the new node
-	// */
-	// public SelectionGroup finishEdgeAndCreateTargetNode(BezierEdge e,
-	// Point2D.Float p) {
-	// if( ! e.getSourceNode().intersects(p) ){
-	// finishEdge( e, createNode(p) );
-	// }
-	// SelectionGroup s = new SelectionGroup();
-	// s.insert(e);
-	// s.insert(e.getTargetNode());
-	// return s;
-	// }
-	//
-	// /**
-	// * Updates the given edge from node <code>n1</code> to node
-	// <code>n2</code>.
-	// * and a adds a new transition to the automaton.
-	// *
-	// * @param e
-	// * @param target
-	// */
-	// public BezierEdge finishEdge(BezierEdge e, CircleNode target) {
-	//
-	// e.setTargetNode(target);
-	// e.computeEdge();
-	//
-	// // Distribute multiple directed edges between same node pair.
-	// // Set<Edge> neighbours = getEdgesBetween(target, e.getSourceNode());
-	// // if( neighbours.size() > 0 ) {
-	// // e.insertAmong(neighbours);
-	// // // TODO commit the layout for modified straight edge (if any)
-	// // }
-	//
-	//
-	// // Preliminary code for arcing a newly created edge around any
-	// obstructing
-	// // nodes.
-	// // Commented out while I work out the kinks. CLM
-	// // if (e.isStraight()) {
-	// // Set<Node> intersections = new HashSet<Node>();
-	// // for (Node n : nodes.values()) {
-	// // if (!n.equals(e.getSourceNode()) && !n.equals(e.getTargetNode())
-	// // && e.getBezierLayout().curve.intersects(n.bounds())) {
-	// // intersections.add(n);
-	// // }
-	// // }
-	// // if (!intersections.isEmpty()) {
-	// // e.arcMore();
-	// // }
-	// // }
-	//
-	// e.insertAmong(getEdgesBetween(target, e.getSourceNode()));
-	//
-	// Transition t = new Transition(fsa.getFreeTransitionId(),
-	// fsa.getState(e.getSourceNode().getId()), fsa.getState(target.getId()));
-	// e.addTransition(t);
-	//
-	// // NOTE must assign transition to edge before inserting edge as children
-	// of end nodes.
-	// e.getSourceNode().insert(e);
-	// target.insert(e);
-	//
-	// // avoid spurious update
-	// fsa.removeSubscriber(this);
-	// fsa.add(t);
-	// fsa.addSubscriber(this);
-	//
-	// // TO BE REMOVED /////////////////////////////
-	// // metaData.setLayoutData(t, e.getBezierLayout());
-	// //Christian: the following line is to set the layout without using
-	// metadata:
-	// t.setAnnotation(Annotable.LAYOUT, e.getBezierLayout());
-	// //////////////////////////////////////////////
-	//
-	// edges.put(e.getId(), e);
-	// edgeLabels.put(e.getId(), e.getLabel());
-	// setNeedsRefresh(true);
-	//
-	// fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.ADD,
-	// FSAGraphMessage.EDGE,
-	// e.getId(),
-	// e.bounds(),
-	// this, ""));
-	// return e;
-	// }
-
 	/**
 	 * @param n1
 	 *            the source or target node
@@ -701,7 +516,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 */
 	public CircleNode createNode(Point2D.Float p)
 	{
-		State s = new State(fsa.getFreeStateId());
+		FSAState s = new State(fsa.getFreeStateId());
 		s.setInitial(false);
 		s.setMarked(false);
 		CircleNodeLayout layout = new CircleNodeLayout(uniformR, p);
@@ -744,7 +559,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			return;
 		}
 
-		State s = (State)node.getState();
+		FSAState s = node.getState();
 		fsa.removeSubscriber(this);
 		fsa.add(s);
 		fsa.addSubscriber(this);
@@ -867,7 +682,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 */
 	public BezierEdge createEdge(Node n1, Node n2)
 	{
-		Transition t = new Transition(fsa.getFreeTransitionId(), fsa
+		FSATransition t = new Transition(fsa.getFreeTransitionId(), fsa
 				.getState(n1.getId()), fsa.getState(n2.getId()));
 		Edge e;
 		if (n1.equals(n2))
@@ -997,12 +812,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			}
 		}
 		// update the state
-		((State)node.getState()).setInitial(b);
+		node.getState().setInitial(b);
 		// tell the node that it must refresh its appearance
 		node.setNeedsRefresh(true);
 
 		// save the arrow to metadata
-		State s = (State)fsa.getState(node.getId());
+		FSAState s = fsa.getState(node.getId());
 		// Set the Layout as an annotation for the model element
 		s.setAnnotation(Annotable.LAYOUT, node.getLayout());
 
@@ -1026,7 +841,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	public void setMarked(Node node, boolean b)
 	{
 		// update the state
-		((State)node.getState()).setMarked(b);
+		node.getState().setMarked(b);
 		// tell node it must refresh its appearance
 		node.setNeedsRefresh(true);
 
@@ -1072,12 +887,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 		List<FSATransition> toAdd = new ArrayList<FSATransition>();
 		List<FSATransition> toRemove = new ArrayList<FSATransition>();
-
-		// // reset the EdgeLayout's event labels
-		// while(trans.hasNext()){
-		// //TODO: remove annotation from the model element
-		// trans.next().removeAnnotation(Annotable.LAYOUT);
-		// }
 
 		Set<FSAEvent> allEvents = new HashSet<FSAEvent>();
 		Set<FSAEvent> newEvents = new HashSet<FSAEvent>();
@@ -1314,7 +1123,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	{
 		// get uniform radius to compare if there was change
 		float originalRadius = uniformR.getRadius();
-		State s = (State)fsa.getState(n.getId());
+		FSAState s = fsa.getState(n.getId());
 		n.getLayout().setText(text);
 		n.getLabel().setText(text);
 		s.setAnnotation(Annotable.LAYOUT, n.getLayout());
@@ -1389,10 +1198,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * @param observable
 	 * @return the new Event
 	 */
-	public Event createAndAddEvent(String symbol, boolean controllable,
+	public FSAEvent createAndAddEvent(String symbol, boolean controllable,
 			boolean observable)
 	{
-		Event event = new Event(fsa.getFreeEventId());
+		FSAEvent event = new Event(fsa.getFreeEventId());
 		event.setSymbol(symbol);
 		event.setControllable(controllable);
 		event.setObservable(observable);
@@ -1400,7 +1209,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return event;
 	}
 
-	public void setControllable(Event event, boolean b)
+	public void setControllable(FSAEvent event, boolean b)
 	{
 		// update the event
 		event.setControllable(b);
@@ -1411,7 +1220,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				fsa));
 	}
 
-	public void setObservable(Event event, boolean b)
+	public void setObservable(FSAEvent event, boolean b)
 	{
 		// update the event
 		event.setObservable(b);
@@ -1969,105 +1778,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		// NOTE See removeTransition and fsaStructureChanged.
 	}
 
-	// /////////////////////////////////////////////////////////////////////
-
-	// /**
-	// * TODO: comment and format
-	// * FIXME: move this to a plugin that reads/writes composition data for
-	// states
-	// * @author Lenko Grigorov
-	// */
-	// public void labelCompositeNodes()
-	// {
-	// if(fsa.getAnnotation(Annotable.COMPOSED_OF)==null)
-	// return;
-	// if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length>1)
-	// {
-	// FSAGraph[] gs=new
-	// FSAGraph[((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length];
-	// for(int i=0;i<gs.length;++i)
-	// {
-	// FSAGraph
-	// g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.
-	// getAnnotation(Annotable.COMPOSED_OF))[i]);
-	// if(g==null)
-	// return;
-	// gs[i]=g;
-	// }
-	// for(Node n:nodes.values())
-	// {
-	// State s=(State)n.getState();
-	// boolean emptyLabel=true;
-	// String label="(";
-	// for(int i=0;i<gs.length-1;++i)
-	// {
-	// if(!"".equals(gs[i].getNode(s.getStateCompositionList()[i]).getLabel().
-	// getText()))
-	// emptyLabel=false;
-	//label+=gs[i].getNode(s.getStateCompositionList()[i]).getLabel().getText()+
-	// ",";
-	// }
-	//if(!"".equals(gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length
-	// -1]).getLabel().getText()))
-	// emptyLabel=false;
-	// label+=gs[gs.length-1].getNode(s.getStateCompositionList()[gs.length-1]).
-	// getLabel().getText()+")";
-	// if(!emptyLabel)
-	// {
-	// n.getLayout().setText(label);
-	// n.getLabel().softSetText(label);
-	// s.setName(label);
-	// ////////////////////////////////////////////////////
-	// s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
-	// /////////////////////////////////////////////////////
-	// setNeedsRefresh(true);
-	// fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
-	// FSAGraphMessage.NODE,
-	// n.getId(),
-	// n.bounds(),
-	// this, ""));
-	// }
-	// }
-	// }
-	// else if(((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length==1)
-	// {
-	// FSAGraph
-	// g=(FSAGraph)Hub.getWorkspace().getLayoutShellById(((String[])fsa.
-	// getAnnotation(Annotable.COMPOSED_OF))[0]);
-	// if(g==null)
-	// return;
-	// for(Node n:nodes.values())
-	// {
-	// State s=(State)n.getState();
-	// String label="";
-	// if(s.getStateCompositionList().length>1)
-	// {
-	// label="(";
-	// for(int i=0;i<s.getStateCompositionList().length-1;++i)
-	//label+=g.getNode(s.getStateCompositionList()[i]).getLabel().getText()+",";
-	// label+=g.getNode(s.getStateCompositionList()[s.getStateCompositionList().
-	// length-1]).getLabel().getText()+")";
-	// }
-	// else if(s.getStateCompositionList().length>0)
-	// label=g.getNode(s.getStateCompositionList()[0]).getLabel().getText();
-	// {
-	// n.getLayout().setText(label);
-	// n.getLabel().softSetText(label);
-	// s.setName(label);
-	// ////////////////////////////////////////////////////
-	// s.setAnnotation(Annotable.LAYOUT, (CircleNodeLayout)n.getLayout());
-	// /////////////////////////////////////////////////////
-	// setNeedsRefresh(true);
-	// fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
-	// FSAGraphMessage.NODE,
-	// n.getId(),
-	// n.bounds(),
-	// this, ""));
-	// }
-	// }
-	// }
-	// }
-
 	/**
 	 * TODO comment and format
 	 * 
@@ -2142,21 +1852,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				selection.bounds(),
 				this,
 				"updating selection"));
-
-		// //Refreshing the nodes
-		// Iterator<Long> nodesIt = nodes.keySet().iterator();
-		// while(nodesIt.hasNext())
-		// {
-		// Long i = nodesIt.next();
-		// Node node = nodes.get(i);
-		// if(node.highlighted || node.selected)
-		// {
-		// fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,
-		// FSAGraphMessage.EDGE,
-		// 0,
-		// node.bounds(),
-		// this, "updating node"));
-		// }
 
 	}
 

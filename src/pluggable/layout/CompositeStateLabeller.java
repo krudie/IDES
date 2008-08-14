@@ -8,8 +8,6 @@ import ides.api.plugin.model.DESModel;
 
 import java.util.Iterator;
 
-import model.fsa.ver2_1.State;
-
 public class CompositeStateLabeller
 {
 
@@ -35,20 +33,21 @@ public class CompositeStateLabeller
 			}
 			for (Iterator<FSAState> si = fsa.getStateIterator(); si.hasNext();)
 			{
-				State s = (State)si.next();
+				FSAState s = si.next();
 				FSAState subState;
 				String label = "(";
 				for (int i = 0; i < gs.length - 1; ++i)
 				{
-					subState = gs[i].getState(s.getStateCompositionList()[i]);
+					subState = gs[i].getState(((long[])s
+							.getAnnotation(Annotable.COMPOSED_OF))[i]);
 					if (subState == null)
 					{
 						return;
 					}
 					label += subState.getName() + ",";
 				}
-				subState = gs[gs.length - 1].getState(s
-						.getStateCompositionList()[gs.length - 1]);
+				subState = gs[gs.length - 1].getState(((long[])s
+						.getAnnotation(Annotable.COMPOSED_OF))[gs.length - 1]);
 				if (subState == null)
 				{
 					return;
@@ -68,33 +67,36 @@ public class CompositeStateLabeller
 			FSAModel g = (FSAModel)m;
 			for (Iterator<FSAState> si = fsa.getStateIterator(); si.hasNext();)
 			{
-				State s = (State)si.next();
+				FSAState s = si.next();
 				String label = "";
-				if (s.getStateCompositionList().length > 1)
+				if (((long[])s.getAnnotation(Annotable.COMPOSED_OF)).length > 1)
 				{
 					label = "(";
 					FSAState subState;
-					for (int i = 0; i < s.getStateCompositionList().length - 1; ++i)
+					for (int i = 0; i < ((long[])s
+							.getAnnotation(Annotable.COMPOSED_OF)).length - 1; ++i)
 					{
-						subState = g.getState(s.getStateCompositionList()[i]);
+						subState = g.getState(((long[])s
+								.getAnnotation(Annotable.COMPOSED_OF))[i]);
 						if (subState == null)
 						{
 							return;
 						}
 						label += subState.getName() + ",";
 					}
-					subState = g.getState(s.getStateCompositionList()[s
-							.getStateCompositionList().length - 1]);
+					subState = g.getState(((long[])s
+							.getAnnotation(Annotable.COMPOSED_OF))[((long[])s
+							.getAnnotation(Annotable.COMPOSED_OF)).length - 1]);
 					if (subState == null)
 					{
 						return;
 					}
 					label += subState.getName() + ")";
 				}
-				else if (s.getStateCompositionList().length > 0)
+				else if (((long[])s.getAnnotation(Annotable.COMPOSED_OF)).length > 0)
 				{
-					FSAState subState = g
-							.getState(s.getStateCompositionList()[0]);
+					FSAState subState = g.getState(((long[])s
+							.getAnnotation(Annotable.COMPOSED_OF))[0]);
 					if (subState == null)
 					{
 						return;

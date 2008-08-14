@@ -43,7 +43,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.CompoundEdit;
 
-import model.fsa.ver2_1.Event;
 import presentation.fsa.actions.EdgeActions;
 import presentation.fsa.actions.GraphActions;
 
@@ -369,7 +368,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 							Object o = listAvailableEvents.getSelectedValue();
 							if (o != null)
 							{
-								selectedEvent = (Event)o;
+								selectedEvent = (FSAEvent)o;
 								listAvailableEvents.setSelectedValue(o, true);
 								if (listAvailableEvents.hasFocus())
 								{
@@ -438,7 +437,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 							Object o = listAssignedEvents.getSelectedValue();
 							if (o != null)
 							{
-								selectedEvent = (Event)o;
+								selectedEvent = (FSAEvent)o;
 								listAssignedEvents.setSelectedValue(o, true);
 								if (listAssignedEvents.hasFocus())
 								{
@@ -555,7 +554,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	private Edge edge;
 
-	private Event selectedEvent;
+	private FSAEvent selectedEvent;
 
 	private boolean inserted = false;
 

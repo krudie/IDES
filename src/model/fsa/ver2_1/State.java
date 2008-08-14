@@ -28,11 +28,6 @@ public class State implements ides.api.model.fsa.FSAState
 
 	private long id;
 
-	// if this state represents the composition of the states of other automata,
-	// this will contain a list the ids of these other states
-	// TODO move to meta info
-	protected long[] composedOf = new long[0];
-
 	// TODO make the state use a common annotation repository
 	protected Hashtable<String, Object> annotations = new Hashtable<String, Object>();
 
@@ -200,30 +195,6 @@ public class State implements ides.api.model.fsa.FSAState
 	public long getId()
 	{
 		return id;
-	}
-
-	/**
-	 * Gets the list of ids of the states of which this state is a composition.
-	 * 
-	 * @return the list of ids of the states of which this state is a
-	 *         composition
-	 */
-	public long[] getStateCompositionList() // TODO move to meta info
-	{
-		return composedOf;
-	}
-
-	/**
-	 * Sets the list of ids of the states of which this state is a composition.
-	 * 
-	 * @param list
-	 *            the list of ids of the states of which this state is a
-	 *            composition
-	 */
-	public void setStateCompositionList(long[] list) // TODO move to meta
-	// info
-	{
-		composedOf = list;
 	}
 
 	/**

@@ -227,7 +227,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		ListIterator<FSAEvent> ei = getEventIterator();
 		while (ei.hasNext())
 		{
-			clone.add(new Event((Event)ei.next()));
+			clone.add(new Event(ei.next()));
 		}
 		// Cloning the states:
 		ListIterator<FSAState> si = getStateIterator();
@@ -246,7 +246,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				ObjectInputStream objectIS = new ObjectInputStream(is);
 				Object layout = objectIS.readObject();
 				is.close();
-				State s = new State(tmpState);
+				FSAState s = new State(tmpState);
 				s.setId(tmpState.getId());
 				s.setMarked(tmpState.isMarked());
 				s.setInitial(tmpState.isInitial());
@@ -271,11 +271,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		ListIterator<FSATransition> ti = getTransitionIterator();
 		while (ti.hasNext())
 		{
-			Transition oldt = (Transition)ti.next();
+			FSATransition oldt = ti.next();
 			try
 			{
-				State source = (State)clone.getState(oldt.getSource().getId());
-				State target = (State)clone.getState(oldt.getTarget().getId());
+				FSAState source = clone.getState(oldt.getSource().getId());
+				FSAState target = clone.getState(oldt.getTarget().getId());
 				ByteArrayOutputStream fo = new ByteArrayOutputStream();
 				ObjectOutputStream so = new ObjectOutputStream(fo);
 				so.writeObject(oldt.getAnnotation(Annotable.LAYOUT));
@@ -285,7 +285,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				ObjectInputStream objectIS = new ObjectInputStream(is);
 				Object layout = objectIS.readObject();
 				is.close();
-				Transition t = new Transition(oldt, source, target);
+				FSATransition t = new Transition(oldt, source, target);
 				if (layout != null)
 				{
 					t.setAnnotation(Annotable.LAYOUT, layout);
@@ -293,7 +293,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				clone.add(t);
 				if (oldt.getEvent() != null)
 				{
-					Event event = new Event((Event)clone.getEvent(oldt
+					FSAEvent event = new Event(clone.getEvent(oldt
 							.getEvent().getId()));
 					t.setEvent(event);
 				}
@@ -393,6 +393,35 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	public long getFreeStateId()
 	{
 		return ++maxStateId;
+	}
+
+	public FSAEvent assembleEvent(String symbol)
+	{
+		FSAEvent event = new Event(getFreeEventId());
+		event.setSymbol(symbol);
+		return event;
+	}
+
+	public FSAState assembleState()
+	{
+		return new State(getFreeStateId());
+	}
+
+	public FSATransition assembleTransition(long source, long target, long event)
+	{
+		FSAState sourceState = getState(source);
+		FSAState targetState = getState(target);
+		FSAEvent transitionEvent = getEvent(event);
+		if (sourceState == null || targetState == null
+				|| transitionEvent == null)
+		{
+			throw new IllegalArgumentException();
+		}
+		return new Transition(
+				getFreeTransitionId(),
+				sourceState,
+				targetState,
+				transitionEvent);
 	}
 
 	/*
@@ -1004,57 +1033,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			eli.add(e);
 		}
 	}
-
-	// /**
-	// * Set the file for this automaton.
-	// * @param f the file
-	// */
-	// public void setFile(File f)
-	// {
-	// myFile=f;
-	// }
-
-	// /**
-	// * Get this automaton's file.
-	// * @return
-	// */
-	// public File getFile()
-	// {
-	// return myFile;
-	// }
-
-	// /**
-	// * Gets the list of ids of the automata of which this automaton is a
-	// composition.
-	// * @return the list of ids of the automata of which this automaton is a
-	// composition
-	// */
-	// public String[] getAutomataCompositionList()
-	// {
-	// return composedOf;
-	// }
-
-	// /**
-	// * Sets the list of ids of the automata of which this automaton is a
-	// composition.
-	// * @param list the list of ids of the automata of which this automaton is
-	// a composition
-	// */
-	// public void setAutomataCompositionList(String[] list)
-	// {
-	// composedOf=list;
-	// }
-
-	// public SubElement getMeta()
-	// {
-	// // return meta;
-	// return null
-	// }
-
-	// public void setMeta(SubElement m)
-	// {
-	// meta=m;
-	// }
 
 	public Object getAnnotation(String key)
 	{

@@ -96,29 +96,25 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	public void saveData(PrintStream stream, DESModel model, File fileDirectory)
 			throws FileSaveException
 	{
-		ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 		try
 		{
+			ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 			while (si.hasNext())
 			{
-				XMLExporter.stateToXML((State)si.next(),
-						stream,
-						XMLExporter.INDENT);
+				XMLExporter.stateToXML(si.next(), stream, XMLExporter.INDENT);
 			}
 
 			ListIterator<FSAEvent> ei = ((FSAModel)model).getEventIterator();
 			while (ei.hasNext())
 			{
-				XMLExporter.eventToXML((Event)ei.next(),
-						stream,
-						XMLExporter.INDENT);
+				XMLExporter.eventToXML(ei.next(), stream, XMLExporter.INDENT);
 			}
 
 			ListIterator<FSATransition> ti = ((FSAModel)model)
 					.getTransitionIterator();
 			while (ti.hasNext())
 			{
-				XMLExporter.transitionToXML((Transition)ti.next(),
+				XMLExporter.transitionToXML(ti.next(),
 						stream,
 						XMLExporter.INDENT);
 			}
@@ -161,9 +157,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		si = ((FSAModel)model).getStateIterator();
 		while (si.hasNext())
 		{
-			XMLExporter.stateLayoutToXML((State)si.next(),
-					stream,
-					XMLExporter.INDENT);
+			XMLExporter.stateLayoutToXML(si.next(), stream, XMLExporter.INDENT);
 		}
 
 		// Save the transitions
@@ -174,7 +168,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		// HashMap<Integer,BezierLayout>();
 		while (ti.hasNext())
 		{
-			XMLExporter.transitionLayoutToXML((Transition)ti.next(),
+			XMLExporter.transitionLayoutToXML(ti.next(),
 					stream,
 					XMLExporter.INDENT);
 		}
@@ -263,7 +257,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void stateToXML(State s, PrintStream ps, String indent)
+		private static void stateToXML(FSAState s, PrintStream ps, String indent)
 		{
 			ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
 
@@ -309,7 +303,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void eventToXML(Event e, PrintStream ps, String indent)
+		private static void eventToXML(FSAEvent e, PrintStream ps, String indent)
 		{
 			if (e.getSymbol() == "" & !(e.isObservable() | e.isControllable()))
 			{
@@ -359,7 +353,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void transitionToXML(Transition t, PrintStream ps,
+		private static void transitionToXML(FSATransition t, PrintStream ps,
 				String indent)
 		{
 			ps.println(indent
@@ -389,7 +383,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void stateLayoutToXML(State s, PrintStream ps,
+		private static void stateLayoutToXML(FSAState s, PrintStream ps,
 				String indent)
 		{
 			CircleNodeLayout c = (CircleNodeLayout)s
@@ -418,8 +412,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void transitionLayoutToXML(Transition t, PrintStream ps,
-				String indent)
+		private static void transitionLayoutToXML(FSATransition t,
+				PrintStream ps, String indent)
 		{
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
 			if (l != null)
@@ -461,11 +455,11 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		// times during the parse.
 		private FSAModel model;
 
-		private State tmpState;
+		private FSAState tmpState;
 
-		private Transition tmpTransition;
+		private FSATransition tmpTransition;
 
-		private Event tmpEvent;
+		private FSAEvent tmpEvent;
 
 		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long, BezierLayout>();
 
@@ -673,21 +667,21 @@ public class FSAFileIOPlugin implements FileIOPlugin
 			case MAINTAG:
 				if (CURRENT_PARSING_ELEMENT == STATE)
 				{
-					tmpState = (State)getModelElement(atts,
+					tmpState = (FSAState)getModelElement(atts,
 							CURRENT_PARSING_ELEMENT);
 					model.add(tmpState);
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == TRANSITION)
 				{
-					tmpTransition = (Transition)getModelElement(atts,
+					tmpTransition = (FSATransition)getModelElement(atts,
 							CURRENT_PARSING_ELEMENT);
 					model.add(tmpTransition);
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == EVENT)
 				{
-					tmpEvent = (Event)getModelElement(atts,
+					tmpEvent = (FSAEvent)getModelElement(atts,
 							CURRENT_PARSING_ELEMENT);
 					model.add(tmpEvent);
 				}
@@ -780,7 +774,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					}
 					CircleNodeLayout tmpCircleNodeLayout = new CircleNodeLayout();
 					s.setAnnotation(Annotable.LAYOUT, tmpCircleNodeLayout);
-					tmpState = (State)s;
+					tmpState = s;
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == TRANSITION)
@@ -832,7 +826,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					}
 					l.setGroup(groupId);
 					transition.setAnnotation(Annotable.LAYOUT, l);
-					tmpTransition = (Transition)transition;
+					tmpTransition = transition;
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == FONT)
@@ -1015,7 +1009,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 			if (parsingElement == STATE)
 			{
 				long id = Long.parseLong(atts.getValue(ID));
-				State s = new State(id);
+				FSAState s = new State(id);
 				return s;
 			}
 

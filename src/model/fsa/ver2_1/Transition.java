@@ -2,6 +2,7 @@ package model.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
 
 import java.util.Hashtable;
 
@@ -128,9 +129,10 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	 * @param e
 	 *            the event this transition fires uppon receival of.
 	 */
-	public Transition(Transition t, FSAState source, FSAState target, Event e)
+	public Transition(FSATransition t, FSAState source, FSAState target,
+			FSAEvent e)
 	{
-		this.id = t.id;
+		this.id = t.getId();
 		this.sourceS = source;
 		this.targetS = target;
 		this.e = e;
@@ -149,9 +151,9 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	 * @param targetS
 	 *            the target state.
 	 */
-	public Transition(Transition t, FSAState sourceS, FSAState targetS)
+	public Transition(FSATransition t, FSAState sourceS, FSAState targetS)
 	{
-		this.id = t.id;
+		this.id = t.getId();
 		this.sourceS = sourceS;
 		this.targetS = targetS;
 	}

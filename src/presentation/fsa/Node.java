@@ -12,8 +12,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
-import model.fsa.ver2_1.State;
-
 /**
  * The graphical representation of a state in a finite state automaton.
  * 
@@ -141,7 +139,7 @@ public abstract class Node extends GraphElement
 		{
 			remove(initialArrow);
 		}
-		((State)getState()).setInitial(b);
+		getState().setInitial(b);
 	}
 
 	/**

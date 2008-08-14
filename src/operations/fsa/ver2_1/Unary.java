@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import model.fsa.ver2_1.State;
-
 /**
  * This class contatins methods for unary operations on automata.
  * 
@@ -131,7 +129,7 @@ public class Unary
 		states = automaton.getStateIterator();
 		while (states.hasNext())
 		{
-			State s = (State)states.next();
+			FSAState s = states.next();
 			if (!coaccessible.contains(s))
 			{
 				states.remove();
@@ -197,8 +195,8 @@ public class Unary
 	{
 		for (Iterator<FSAState> i = clone.getStateIterator(); i.hasNext();)
 		{
-			State s = (State)i.next();
-			s.setStateCompositionList(new long[] { s.getId() });
+			FSAState s = i.next();
+			s.setAnnotation(Annotable.COMPOSED_OF, new long[] { s.getId() });
 		}
 	}
 }
