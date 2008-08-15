@@ -13,6 +13,7 @@ import ides.api.plugin.io.FileIOPlugin;
 import ides.api.plugin.io.FileLoadException;
 import ides.api.plugin.io.FileSaveException;
 import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.UnsupportedVersionException;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.ModelManager;
 import io.AbstractParser;
@@ -181,9 +182,14 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(InputStream f, File fileDir)
+	public DESModel loadData(String version, InputStream f, File fileDir)
 			throws FileLoadException
 	{
+		if (!"2.1".equals(version))
+		{
+			throw new UnsupportedVersionException(Hub
+					.string("errorUnsupportedVersion"));
+		}
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 				+ System.getProperty("line.separator") + "<data>" + System
 				.getProperty("line.separator")).getBytes();
@@ -210,13 +216,18 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * 
 	 * @param file
 	 */
-	public void loadMeta(InputStream stream, DESModel model, String tag)
-			throws FileLoadException
+	public void loadMeta(String version, InputStream stream, DESModel model,
+			String tag) throws FileLoadException
 	{
 		if (!tag.equals(META_TAG))
 		{
 			throw new FileLoadException(Hub.string("ioUnsupportedMetaTag")
 					+ " [" + tag + "]");
+		}
+		if (!"2.1".equals(version))
+		{
+			throw new UnsupportedVersionException(Hub
+					.string("errorUnsupportedVersion"));
 		}
 		byte[] FILE_HEADER = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 				+ System.getProperty("line.separator") + "<meta>" + System
@@ -1119,6 +1130,20 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	public String getVersion()
 	{
 		return Hub.string("IDES_VER");
+	}
+
+	public String getSaveDataVersion()
+	{
+		return "2.1";
+	}
+
+	public String getSaveMetaVersion(String tag)
+	{
+		if (META_TAG.equals(tag))
+		{
+			return "2.1";
+		}
+		return "";
 	}
 
 }

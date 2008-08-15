@@ -31,7 +31,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 * Assembles a new transition which can be added to the model. The
 	 * transition is not automatically added to the model.
 	 * 
-	 * @param origin
+	 * @param source
 	 *            the id of the source state of the transition
 	 * @param target
 	 *            the id of the target state of the transition

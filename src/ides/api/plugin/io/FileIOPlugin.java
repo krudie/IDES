@@ -32,6 +32,15 @@ public interface FileIOPlugin
 	public String getIOTypeDescriptor();
 
 	/**
+	 * Returns the version of the format in which the model data is saved.
+	 * <p>
+	 * This method is relevant only to plugins which save model data.
+	 * 
+	 * @return the version of the format in which the model data is saved
+	 */
+	public String getSaveDataVersion();
+
+	/**
 	 * Returns the set of meta-data "tags" handled by the plugin. These tags are
 	 * matched against the meta-data tags in IDES model files.
 	 * <p>
@@ -40,6 +49,20 @@ public interface FileIOPlugin
 	 * @return the set of meta-data "tags" handled by the plugin
 	 */
 	public Set<String> getMetaTags();
+
+	/**
+	 * Returns the version of the format in which the meta-data section with the
+	 * given "tag" is saved.
+	 * <p>
+	 * This method is relevant only to plugins which save model meta-data.
+	 * 
+	 * @param tag
+	 *            the "tag" for which version information is requested
+	 * @return the version of the format in which the meta-data section with the
+	 *         given "tag" is saved; if the "tag" is not supported by this
+	 *         plugin, the return value is unspecified
+	 */
+	public String getSaveMetaVersion(String tag);
 
 	/**
 	 * Save the description of the DES model into the provided stream. It is
@@ -66,6 +89,8 @@ public interface FileIOPlugin
 	 * The provided directory pointer can be used if the plugin wishes to work
 	 * with additional files in the process of loading.
 	 * 
+	 * @param version
+	 *            the version of the format of the model data
 	 * @param stream
 	 *            stream with the model data
 	 * @param fileDirectory
@@ -74,12 +99,14 @@ public interface FileIOPlugin
 	 * @throws FileLoadException
 	 *             when there is a problem loading the model
 	 */
-	public DESModel loadData(InputStream stream, File fileDirectory)
-			throws FileLoadException;
+	public DESModel loadData(String version, InputStream stream,
+			File fileDirectory) throws FileLoadException;
 
 	/**
 	 * Loads meta-data for a given DES model from a meta-data section.
 	 * 
+	 * @param version
+	 *            the version of the format of the meta-data section
 	 * @param stream
 	 *            stream from where meta-data should be read
 	 * @param model
@@ -89,8 +116,8 @@ public interface FileIOPlugin
 	 * @throws FileLoadException
 	 *             when there is a problem loading the meta-data
 	 */
-	public void loadMeta(InputStream stream, DESModel model, String tag)
-			throws FileLoadException;
+	public void loadMeta(String version, InputStream stream, DESModel model,
+			String tag) throws FileLoadException;
 
 	/**
 	 * Save the meta-data section with the given "tag" for a given DES model. It

@@ -22,11 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
@@ -61,8 +63,9 @@ public final class IOCoordinator
 		FileIOPlugin dataSaver = IOPluginManager.instance().getDataSaver(model
 				.getModelType().getMainPerspective());
 
-		// Read the dataType from the plugin modelDescriptor
+		// Read the dataType and version from the plugin modelDescriptor
 		String type = dataSaver.getIOTypeDescriptor();
+		String version = dataSaver.getSaveDataVersion();
 
 		// Get all the plugins capable of saving the metaTags for ""type""
 		// There can be several different meta savers for a specific data type.
@@ -75,8 +78,8 @@ public final class IOCoordinator
 		WrappedPrintStream ps = null;
 		ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		ps.println("<model version=\"2.1\" type=\"" + type + "\" id=\""
-				+ model.getName() + "\">");
+		ps.println("<model version=\"" + version + "\" type=\"" + type
+				+ "\" id=\"" + model.getName() + "\">");
 		ps.println("<data>");
 
 		// Make the dataSaver plugin save the data information on the
@@ -93,7 +96,8 @@ public final class IOCoordinator
 			while (tags.hasNext())
 			{
 				String tag = tags.next();
-				ps.println("<meta tag=\"" + tag + "\" version=\"2.1\">");
+				ps.println("<meta tag=\"" + tag + "\" version=\""
+						+ plugin.getSaveMetaVersion(tag) + "\">");
 				plugin.saveMeta(ps, model, tag);
 				ps.println("</meta>");
 			}
@@ -123,9 +127,9 @@ public final class IOCoordinator
 		boolean errorEncountered = false;
 
 		DESModel returnModel = null;
-		TagRecovery xmlParser = new TagRecovery();
-		String type = xmlParser.getType(file);
-		Set<String> metaTags = xmlParser.getMetaTags(file);
+		TagRecovery xmlParser = new TagRecovery(file);
+		String type = xmlParser.getType();
+		Set<String> metaTags = xmlParser.getMetaTags();
 		// System.out.println(type);
 		if (type == null)
 		{
@@ -148,7 +152,9 @@ public final class IOCoordinator
 		InputStream dataStream = dp.getXmlContent("data", file);
 		try
 		{
-			returnModel = plugin.loadData(dataStream, file.getParentFile());
+			returnModel = plugin.loadData(xmlParser.getVersion(),
+					dataStream,
+					file.getParentFile());
 		}
 		catch (FileLoadException e)
 		{
@@ -184,7 +190,10 @@ public final class IOCoordinator
 			{
 				try
 				{
-					metaPlugin.loadMeta(metaStream, returnModel, meta);
+					metaPlugin.loadMeta(xmlParser.getMetaVersion(meta),
+							metaStream,
+							returnModel,
+							meta);
 				}
 				catch (FileLoadException e)
 				{
@@ -380,16 +389,23 @@ public final class IOCoordinator
 
 	private class TagRecovery extends AbstractParser
 	{
-		Set<String> metaData = new HashSet<String>();
-
 		protected static final String ATTRIBUTE_TYPE = "type",
-				ATTRIBUTE_TAG = "tag";
+				ATTRIBUTE_TAG = "tag", ATTRIBUTE_VERSION = "version",
+				ELEMENT_MODEL = "model", ELEMENT_META = "meta";
 
-		private String dataType = null;
+		private String dataType = "";
 
-		private Set<String> metaTags = null;
+		private String dataVersion = "";
 
-		public TagRecovery()
+		private Set<String> metaTags = new HashSet<String>();
+
+		private Map<String, String> metaTagsVersions = new HashMap<String, String>();
+
+		private boolean gotModelElement = false;
+
+		private LinkedList<String> metaSectionStack = new LinkedList<String>();
+
+		public TagRecovery(File file)
 		{
 			// Initialize parser:
 			try
@@ -397,21 +413,12 @@ public final class IOCoordinator
 				xmlReader = SAXParserFactory
 						.newInstance().newSAXParser().getXMLReader();
 				xmlReader.setContentHandler(this);
+				parse(file);
 			}
-			catch (ParserConfigurationException pce)
+			catch (Exception e)
 			{
-				// System.err
-				// .println("AbstractParser: could not configure parser,
-				// message: "
-				// + pce.getMessage());
+				throw new RuntimeException(e);
 			}
-			catch (SAXException se)
-			{
-				// System.err
-				// .println("AbstractParser: could not do something, message: "
-				// + se.getMessage());
-			}
-
 		}
 
 		private void parse(File file)
@@ -437,35 +444,77 @@ public final class IOCoordinator
 			{
 				parsingErrors += npe.getMessage() + "\n";
 			}
-
 		}
 
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes atts)
 		{
-			dataType = (atts.getValue(ATTRIBUTE_TYPE) != null ? atts
-					.getValue(ATTRIBUTE_TYPE) : dataType);
-			if (atts.getValue(ATTRIBUTE_TAG) != null)
+			if (!metaSectionStack.isEmpty())
 			{
-				metaTags.add(atts.getValue(ATTRIBUTE_TAG));
+				metaSectionStack.push(qName);
+			}
+			if (metaSectionStack.isEmpty() && ELEMENT_META.equals(qName))
+			{
+				if (atts.getValue(ATTRIBUTE_TAG) != null)
+				{
+					metaTags.add(atts.getValue(ATTRIBUTE_TAG));
+					if (atts.getValue(ATTRIBUTE_VERSION) != null)
+					{
+						metaTagsVersions.put(atts.getValue(ATTRIBUTE_TAG), atts
+								.getValue(ATTRIBUTE_VERSION));
+					}
+					else
+					{
+						metaTagsVersions.put(atts.getValue(ATTRIBUTE_TAG), "");
+					}
+				}
+				metaSectionStack.push(qName);
+			}
+			else if (!gotModelElement && ELEMENT_MODEL.equals(qName))
+			{
+				if (atts.getValue(ATTRIBUTE_TYPE) != null)
+				{
+					dataType = atts.getValue(ATTRIBUTE_TYPE);
+					if (atts.getValue(ATTRIBUTE_VERSION) != null)
+					{
+						dataVersion = atts.getValue(ATTRIBUTE_VERSION);
+					}
+					else
+					{
+						dataVersion = "";
+					}
+					gotModelElement = true;
+				}
 			}
 		}
 
-		// PARSE METHODS:
-
-		private String getType(File file)
+		public void endElement(String uri, String localName, String qName)
 		{
-			dataType = null;
-			parse(file);
+			if (!metaSectionStack.isEmpty())
+			{
+				metaSectionStack.pop();
+			}
+		}
+
+		public String getType()
+		{
 			return dataType;
 		}
 
-		private Set<String> getMetaTags(File file)
+		public String getVersion()
 		{
-			metaTags = new HashSet<String>();
-			parse(file);
-			return metaTags;
+			return dataVersion;
+		}
+
+		public Set<String> getMetaTags()
+		{
+			return new HashSet<String>(metaTags);
+		}
+
+		public String getMetaVersion(String tag)
+		{
+			return metaTagsVersions.get(tag);
 		}
 	}
 
