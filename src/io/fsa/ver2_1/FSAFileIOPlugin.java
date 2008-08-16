@@ -22,7 +22,6 @@ import io.HeadTailInputStream;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,10 +90,10 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 *            the file to save the data in.
 	 * @param model
 	 *            the model to be saved in the file.
-	 * @param fileDirectory
+	 * @param fileName
 	 *            path to the file, so auxiliar files can be created.
 	 */
-	public void saveData(PrintStream stream, DESModel model, File fileDirectory)
+	public void saveData(PrintStream stream, DESModel model, String fileName)
 			throws FileSaveException
 	{
 		try
@@ -182,7 +181,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	 * @param fileDir
 	 * @return
 	 */
-	public DESModel loadData(String version, InputStream f, File fileDir)
+	public DESModel loadData(String version, InputStream f, String fileDir)
 			throws FileLoadException
 	{
 		if (!"2.1".equals(version))

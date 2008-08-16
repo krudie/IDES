@@ -5,7 +5,6 @@ package ides.api.plugin.io;
 
 import ides.api.plugin.model.DESModel;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Set;
@@ -68,39 +67,43 @@ public interface FileIOPlugin
 	 * Save the description of the DES model into the provided stream. It is
 	 * highly recommended that the data conforms to the XML format.
 	 * <p>
-	 * The provided directory pointer can be used if the plugin wishes to work
-	 * with additional files in the process of saving.
+	 * The provided file name can be used if the plugin needs to work with
+	 * additional files in the directory or needs the name of the save file. The
+	 * file name is only for information purposes. All data <b>must</b> be
+	 * written to the provided stream.
 	 * 
 	 * @param stream
 	 *            stream where to write the data
 	 * @param model
 	 *            DES model to save
-	 * @param fileDirectory
-	 *            directory where the model will be saved
+	 * @param fileName
+	 *            absolute path to the file where the model will be saved
 	 * @throws FileSaveException
 	 *             when there is a problem saving the data
 	 */
-	public void saveData(PrintStream stream, DESModel model, File fileDirectory)
+	public void saveData(PrintStream stream, DESModel model, String fileName)
 			throws FileSaveException;
 
 	/**
 	 * Load a DES model from the provided stream.
 	 * <p>
-	 * The provided directory pointer can be used if the plugin wishes to work
-	 * with additional files in the process of loading.
+	 * The provided file name can be used if the plugin needs to work with
+	 * additional files in the directory or needs the name of the loaded file.
+	 * The file name is only for information purposes. All data <b>must</b> be
+	 * read from the provided stream.
 	 * 
 	 * @param version
 	 *            the version of the format of the model data
 	 * @param stream
 	 *            stream with the model data
-	 * @param fileDirectory
-	 *            directory from where the model is loaded
+	 * @param fileName
+	 *            absolute path to the file from where the model is loaded
 	 * @return the loaded model
 	 * @throws FileLoadException
 	 *             when there is a problem loading the model
 	 */
-	public DESModel loadData(String version, InputStream stream,
-			File fileDirectory) throws FileLoadException;
+	public DESModel loadData(String version, InputStream stream, String fileName)
+			throws FileLoadException;
 
 	/**
 	 * Loads meta-data for a given DES model from a meta-data section.

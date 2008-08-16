@@ -3,6 +3,7 @@ package ui.actions;
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.core.IncompleteWorkspaceDescriptorException;
+import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.DESModelType;
 import io.CommonFileActions;
@@ -132,8 +133,11 @@ public class FileActions
 		public SaveAsAction()
 		{
 			super(Hub.string("comSaveAsModel"), icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getIDESResource("images/icons/file_saveas_automaton.gif")));
+			icon
+					.setImage(Toolkit
+							.getDefaultToolkit()
+							.createImage(Hub
+									.getIDESResource("images/icons/file_saveas_automaton.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAsModel"));
 		}
 
@@ -156,8 +160,11 @@ public class FileActions
 		public SaveAllAction()
 		{
 			super(Hub.string("comSaveAllModels"), icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getIDESResource("images/icons/file_saveall_automata.gif")));
+			icon
+					.setImage(Toolkit
+							.getDefaultToolkit()
+							.createImage(Hub
+									.getIDESResource("images/icons/file_saveall_automata.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAllModels"));
 		}
 
@@ -243,8 +250,11 @@ public class FileActions
 		public SaveWorkspaceAsAction()
 		{
 			super(Hub.string("comSaveAsWorkspace"), icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getIDESResource("images/icons/file_saveas_workspace.gif")));
+			icon
+					.setImage(Toolkit
+							.getDefaultToolkit()
+							.createImage(Hub
+									.getIDESResource("images/icons/file_saveas_workspace.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSaveAsWorkspace"));
 		}
 
@@ -370,7 +380,7 @@ public class FileActions
 					.getProperty(CommonFileActions.LAST_PATH_SETTING_NAME));
 			fc.setDialogTitle(Hub.string("openWorkspaceTitle"));
 			fc.setFileFilter(new IOUtilities.ExtensionFilter(
-					new String[] { IOUtilities.WORKSPACE_FILE_EXT },
+					new String[] { IOSubsytem.WORKSPACE_FILE_EXT },
 					Hub.string("workspaceFileDescription")));
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int retVal = fc.showOpenDialog(Hub.getMainWindow());

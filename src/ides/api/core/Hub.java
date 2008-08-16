@@ -3,7 +3,9 @@ package ides.api.core;
 import ides.api.cache.Cache;
 import ides.api.latex.LatexManager;
 import ides.api.notice.NoticeManager;
+import ides.api.plugin.io.IOSubsytem;
 import ides.api.undo.UndoManager;
+import io.IOCoordinator;
 
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -290,5 +292,15 @@ public class Hub
 	public static UndoManager getUndoManager()
 	{
 		return UndoBackend.instance();
+	}
+
+	/**
+	 * Provides access to the IO subsystem of IDES.
+	 * 
+	 * @return the IDES IO subsystem
+	 */
+	public static IOSubsytem getIOSubsystem()
+	{
+		return IOCoordinator.getInstance();
 	}
 }

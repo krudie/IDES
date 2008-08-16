@@ -8,6 +8,7 @@ import ides.api.core.Hub;
 import ides.api.core.IncompleteWorkspaceDescriptorException;
 import ides.api.plugin.io.FileLoadException;
 import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.io.ImportExportPlugin;
 import ides.api.plugin.model.DESModel;
 
@@ -16,6 +17,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -45,7 +47,7 @@ public class CommonFileActions
 				.getPersistentData().getProperty(LAST_PATH_SETTING_NAME));
 		fc.setDialogTitle(Hub.string("openModelTitle"));
 		fc.setFileFilter(new IOUtilities.ExtensionFilter(
-				new String[] { IOUtilities.MODEL_FILE_EXT },
+				new String[] { IOSubsytem.MODEL_FILE_EXT },
 				Hub.string("modelFileDescription")));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int retVal = fc.showOpenDialog(Hub.getMainWindow());
@@ -155,7 +157,7 @@ public class CommonFileActions
 			}
 			fc.setDialogTitle(Hub.string("saveModelTitle"));
 			fc.setFileFilter(new IOUtilities.ExtensionFilter(
-					new String[] { IOUtilities.MODEL_FILE_EXT },
+					new String[] { IOSubsytem.MODEL_FILE_EXT },
 					Hub.string("modelFileDescription")));
 
 			if ((File)model.getAnnotation(Annotable.FILE) != null)
@@ -180,10 +182,10 @@ public class CommonFileActions
 				}
 				file = fc.getSelectedFile();
 				if (!file.getName().toLowerCase().endsWith("."
-						+ IOUtilities.MODEL_FILE_EXT))
+						+ IOSubsytem.MODEL_FILE_EXT))
 				{
 					file = new File(file.getPath() + "."
-							+ IOUtilities.MODEL_FILE_EXT);
+							+ IOSubsytem.MODEL_FILE_EXT);
 				}
 				if (file.exists())
 				{
@@ -333,9 +335,14 @@ public class CommonFileActions
 		}
 		fc.setDialogTitle(Hub.string("exportTitle"));
 		fc.setSelectedFile(new File(model.getName()));
-		Iterator<ImportExportPlugin> pluginIt = IOPluginManager
+		Set<ImportExportPlugin> ieplugins = IOPluginManager
 				.instance().getExporters(model
-						.getModelType().getMainPerspective()).iterator();
+						.getModelType().getMainPerspective());
+		if (ieplugins == null)
+		{
+			ieplugins = new HashSet<ImportExportPlugin>();
+		}
+		Iterator<ImportExportPlugin> pluginIt = ieplugins.iterator();
 		while (pluginIt.hasNext())
 		{
 			ImportExportPlugin p = pluginIt.next();
@@ -371,6 +378,10 @@ public class CommonFileActions
 			Set<ImportExportPlugin> plugins = IOPluginManager
 					.instance().getExporters(model
 							.getModelType().getMainPerspective());
+			if (plugins == null)
+			{
+				plugins = new HashSet<ImportExportPlugin>();
+			}
 			for (ImportExportPlugin p : plugins)
 			{
 				if (p.getFileDescription().equals(fc
@@ -480,7 +491,7 @@ public class CommonFileActions
 
 		fc.setDialogTitle(Hub.string("saveWorkspaceTitle"));
 		fc.setFileFilter(new IOUtilities.ExtensionFilter(
-				new String[] { IOUtilities.WORKSPACE_FILE_EXT },
+				new String[] { IOSubsytem.WORKSPACE_FILE_EXT },
 				Hub.string("workspaceFileDescription")));
 
 		if (wd.getFile() != null)
@@ -505,10 +516,10 @@ public class CommonFileActions
 			}
 			file = fc.getSelectedFile();
 			if (!file.getName().toLowerCase().endsWith("."
-					+ IOUtilities.WORKSPACE_FILE_EXT))
+					+ IOSubsytem.WORKSPACE_FILE_EXT))
 			{
 				file = new File(file.getPath() + "."
-						+ IOUtilities.WORKSPACE_FILE_EXT);
+						+ IOSubsytem.WORKSPACE_FILE_EXT);
 			}
 
 			if (file.exists())
@@ -726,7 +737,7 @@ public class CommonFileActions
 				}
 				fc.setDialogTitle(Hub.string("saveModelTitle"));
 				fc.setFileFilter(new IOUtilities.ExtensionFilter(
-						new String[] { IOUtilities.MODEL_FILE_EXT },
+						new String[] { IOSubsytem.MODEL_FILE_EXT },
 						Hub.string("modelFileDescription")));
 
 				if ((File)m.getAnnotation(Annotable.FILE) != null)
@@ -751,10 +762,10 @@ public class CommonFileActions
 					}
 					file = fc.getSelectedFile();
 					if (!file.getName().toLowerCase().endsWith("."
-							+ IOUtilities.MODEL_FILE_EXT))
+							+ IOSubsytem.MODEL_FILE_EXT))
 					{
 						file = new File(file.getPath() + "."
-								+ IOUtilities.MODEL_FILE_EXT);
+								+ IOSubsytem.MODEL_FILE_EXT);
 					}
 					if (file.exists())
 					{

@@ -20,16 +20,6 @@ public class IOUtilities
 {
 
 	/**
-	 * Extension for workspace files.
-	 */
-	public static final String WORKSPACE_FILE_EXT = "xws";
-
-	/**
-	 * Extension for model files.
-	 */
-	public static final String MODEL_FILE_EXT = "xmd";
-
-	/**
 	 * Method for getting a UTF-8 printstream wrapped around a file
 	 * 
 	 * @param file

@@ -7,8 +7,10 @@ import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.plugin.io.FileIOPlugin;
 import ides.api.plugin.io.FileLoadException;
+import ides.api.plugin.io.FileSaveException;
 import ides.api.plugin.io.FormatTranslationException;
 import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.io.ImportExportPlugin;
 import ides.api.plugin.model.DESModel;
 import io.fsa.ver2_1.AutomatonParser20;
@@ -38,7 +40,7 @@ import org.xml.sax.SAXException;
 /**
  * @author christiansilvano
  */
-public final class IOCoordinator
+public final class IOCoordinator implements IOSubsytem
 {
 	// Singleton instance:
 	private static IOCoordinator instance = null;
@@ -62,6 +64,11 @@ public final class IOCoordinator
 		// Currently there must be just one data saver for a model type.
 		FileIOPlugin dataSaver = IOPluginManager.instance().getDataSaver(model
 				.getModelType().getMainPerspective());
+		if (dataSaver == null)
+		{
+			throw new FileSaveException(Hub.string("errorCannotSaveType")
+					+ model.getModelType().getDescription());
+		}
 
 		// Read the dataType and version from the plugin modelDescriptor
 		String type = dataSaver.getIOTypeDescriptor();
@@ -72,6 +79,10 @@ public final class IOCoordinator
 		Set<FileIOPlugin> metaSavers = IOPluginManager
 				.instance().getMetaSavers(model
 						.getModelType().getMainPerspective());
+		if (metaSavers == null)
+		{
+			metaSavers = new HashSet<FileIOPlugin>();
+		}
 		Iterator<FileIOPlugin> metaIt = metaSavers.iterator();
 
 		// Open ""file"" and start writing the header of the IDES file format
@@ -84,7 +95,7 @@ public final class IOCoordinator
 
 		// Make the dataSaver plugin save the data information on the
 		// file (protect the original content)
-		dataSaver.saveData(ps, model, file.getParentFile());
+		dataSaver.saveData(ps, model, file.getAbsolutePath());
 		// The data information is stored:
 		ps.println("</data>");
 		// 3 - Make the metaSavers one by one save the meta information on the
@@ -154,7 +165,7 @@ public final class IOCoordinator
 		{
 			returnModel = plugin.loadData(xmlParser.getVersion(),
 					dataStream,
-					file.getParentFile());
+					file.getAbsolutePath());
 		}
 		catch (FileLoadException e)
 		{
@@ -528,8 +539,7 @@ public final class IOCoordinator
 					.string("pluginNotFoundFile"));
 		}
 		DESModel model = null;
-		File dst = File
-				.createTempFile("IDESimport", IOUtilities.MODEL_FILE_EXT);
+		File dst = File.createTempFile("IDESimport", IOSubsytem.MODEL_FILE_EXT);
 		try
 		{
 			plugin.importFile(src, dst);
@@ -564,6 +574,10 @@ public final class IOCoordinator
 		Set<ImportExportPlugin> plugins = IOPluginManager
 				.instance().getExporters(model
 						.getModelType().getMainPerspective());
+		if (plugins == null)
+		{
+			plugins = new HashSet<ImportExportPlugin>();
+		}
 		ImportExportPlugin plugin = null;
 		for (ImportExportPlugin p : plugins)
 		{
@@ -578,8 +592,7 @@ public final class IOCoordinator
 			throw new FormatTranslationException(Hub
 					.string("pluginNotFoundFile"));
 		}
-		File src = File
-				.createTempFile("IDESexport", IOUtilities.MODEL_FILE_EXT);
+		File src = File.createTempFile("IDESexport", IOSubsytem.MODEL_FILE_EXT);
 		try
 		{
 			save(model, src);

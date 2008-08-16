@@ -2,8 +2,8 @@ package ui.actions;
 
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
+import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.model.DESModel;
-import io.IOUtilities;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -87,7 +87,7 @@ public class EditActions
 							+ File.separator
 							+ newName
 							+ '.'
-							+ IOUtilities.MODEL_FILE_EXT);
+							+ IOSubsytem.MODEL_FILE_EXT);
 					if (newFile.exists())
 					{
 						int choice = JOptionPane.showConfirmDialog(Hub
