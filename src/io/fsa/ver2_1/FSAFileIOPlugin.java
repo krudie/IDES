@@ -16,8 +16,8 @@ import ides.api.plugin.io.IOPluginManager;
 import ides.api.plugin.io.UnsupportedVersionException;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.ModelManager;
+import ides.api.utilities.HeadTailInputStream;
 import io.AbstractParser;
-import io.HeadTailInputStream;
 
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;

@@ -78,13 +78,13 @@ public class CommonFileActions
 				{
 					model = ((FileLoadException)e).getPartialModel();
 					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
-							+ file.getName() + "\n"
+							+ file.getName() + "\n" + e.getMessage() + "\n"
 							+ Hub.string("errorsParsingXMLFileL2"));
 				}
 				else
 				{
 					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
-							+ file.getName() + "\n"
+							+ file.getName() + "\n" + e.getMessage() + "\n"
 							+ Hub.string("errorsParsingXMLfail"));
 				}
 			}
