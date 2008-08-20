@@ -220,7 +220,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		Iterator<Set<FSATransition>> groupsIter = groups.iterator();
 		while (groupsIter.hasNext())
 		{
-			wrapTransitions(groupsIter.next());
+			wrapTransition(groupsIter.next());
 		}
 
 		LayoutManager.getDefaultFSMLayouter().layout(this);
@@ -728,7 +728,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * @param ts
 	 *            the set of transitions to be wrapped
 	 */
-	public void wrapTransitions(Set<FSATransition> ts)
+	public void wrapTransition(Set<FSATransition> ts)
 	{
 		if (ts.isEmpty())
 		{

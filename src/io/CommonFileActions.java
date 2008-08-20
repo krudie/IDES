@@ -30,6 +30,7 @@ import javax.swing.filechooser.FileFilter;
 import main.WorkspaceBackend;
 import main.WorkspaceDescriptor;
 import ui.SaveDialog;
+import util.GeneralUtils;
 
 /**
  * @author christiansilvano
@@ -78,14 +79,16 @@ public class CommonFileActions
 				{
 					model = ((FileLoadException)e).getPartialModel();
 					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
-							+ file.getName() + "\n" + e.getMessage() + "\n"
-							+ Hub.string("errorsParsingXMLFileL2"));
+							+ file.getName() + "\n"
+							+ GeneralUtils.truncateMessage(e.getMessage())
+							+ "\n" + Hub.string("errorsParsingXMLFileL2"));
 				}
 				else
 				{
 					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
-							+ file.getName() + "\n" + e.getMessage() + "\n"
-							+ Hub.string("errorsParsingXMLfail"));
+							+ file.getName() + "\n"
+							+ GeneralUtils.truncateMessage(e.getMessage())
+							+ "\n" + Hub.string("errorsParsingXMLfail"));
 				}
 			}
 			if (model != null)
@@ -121,20 +124,23 @@ public class CommonFileActions
 			catch (IOException e)
 			{
 				Hub.displayAlert(Hub.string("cantSaveModel") + file.getName()
-						+ "\n" + e.getMessage());
+						+ "\n" + GeneralUtils.truncateMessage(e.getMessage()));
 				return false;
 			}
-			String name = ParsingToolbox.removeFileType(file.getName());
-			model.setAnnotation(Annotable.FILE, file);
-			if (!name.equals(model.getName())
-					&& Hub.getWorkspace().getModel(name) != null)
+			if (model.getParentModel() == null)
 			{
-				Hub.getWorkspace().removeModel(name);
+				String name = ParsingToolbox.removeFileType(file.getName());
+				model.setAnnotation(Annotable.FILE, file);
+				if (!name.equals(model.getName())
+						&& Hub.getWorkspace().getModel(name) != null)
+				{
+					Hub.getWorkspace().removeModel(name);
+				}
+				model.setName(name);
+				model.modelSaved();
 			}
-			model.setName(name);
 			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
 					file.getParentFile().getAbsolutePath());
-			model.modelSaved();
 			return true;
 		}
 		return false;
@@ -303,12 +309,14 @@ public class CommonFileActions
 					model = ((FileLoadException)e).getPartialModel();
 					Hub.displayAlert(Hub.string("problemImport")
 							+ file.getName() + "\n"
-							+ Hub.string("errorsParsingXMLFileL2"));
+							+ GeneralUtils.truncateMessage(e.getMessage())
+							+ "\n" + Hub.string("errorsParsingXMLFileL2"));
 				}
 				else
 				{
 					Hub.displayAlert(Hub.string("cantParseImport")
-							+ file.getName());
+							+ file.getName() + "\n"
+							+ GeneralUtils.truncateMessage(e.getMessage()));
 				}
 			}
 			if (model != null)
@@ -434,7 +442,8 @@ public class CommonFileActions
 			catch (IOException e)
 			{
 				Hub.displayAlert(Hub.string("problemWhileExporting")
-						+ file.getName() + "\n" + e.getMessage());
+						+ file.getName() + "\n"
+						+ GeneralUtils.truncateMessage(e.getMessage()));
 			}
 		}
 	}
@@ -566,7 +575,8 @@ public class CommonFileActions
 		{
 			Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
 					+ file.getPath() + "\n"
-					+ Hub.string("errorsParsingXMLFileL2"));
+					+ GeneralUtils.truncateMessage(wdp.getParsingErrors())
+					+ "\n" + Hub.string("errorsParsingXMLFileL2"));
 		}
 		Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
 				file.getParent());
@@ -584,12 +594,22 @@ public class CommonFileActions
 	private static void workspaceToXML(WorkspaceDescriptor wd, PrintStream ps)
 	{
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		ps.println("<workspace version=\"2.1\">");
-		Vector<String> models = wd.getModels();
+		ps.println("<workspace version=\"3\">");
+		Vector<String[]> models = wd.getModels();
 		for (int i = 0; i < models.size(); ++i)
 		{
-			ps.print("\t<model file=\"" + models.elementAt(i)
-					+ "\" position=\"" + i + "\"");
+			ps.print("\t<model ");
+			String[] info = models.elementAt(i);
+			if (WorkspaceDescriptor.FILE_ID.equals(info[0]))
+			{
+				ps.print("file=\"" + info[1] + "\"");
+			}
+			else if (WorkspaceDescriptor.CHILD_ID.equals(info[0]))
+			{
+				ps.print("parent=\"" + info[1] + "\" " + "childid=\"" + info[2]
+						+ "\"");
+			}
+			ps.print(" position=\"" + i + "\"");
 			if (i == wd.getSelectedModel())
 			{
 				ps.print(" selected=\"true\"");
@@ -672,7 +692,8 @@ public class CommonFileActions
 			while (it.hasNext())
 			{
 				DESModel model = it.next();
-				if (model.needsSave() && !unsavedModels.contains(model))
+				if (model.needsSave() && model.getParentModel() == null
+						&& !unsavedModels.contains(model))
 				{
 					unsavedModels.add(model);
 				}
@@ -717,7 +738,8 @@ public class CommonFileActions
 				{
 					Hub.displayAlert(Hub.string("cantSaveModel") + " "
 							+ m.getAnnotation(Annotable.FILE) + "\n"
-							+ "Message: " + e.getMessage());
+							+ "Message: "
+							+ GeneralUtils.truncateMessage(e.getMessage()));
 					return false;
 				}
 			}
@@ -796,7 +818,7 @@ public class CommonFileActions
 					{
 						Hub.displayAlert(Hub.string("cantSaveModel") + " "
 								+ file.getName() + "\n" + "Message: "
-								+ e.getMessage());
+								+ GeneralUtils.truncateMessage(e.getMessage()));
 						return false;
 					}
 					Hub.getWorkspace().fireRepaintRequired();
@@ -837,7 +859,7 @@ public class CommonFileActions
 					{
 						Hub.displayAlert(Hub.string("cantSaveModel") + " "
 								+ file.getName() + "\n" + "Message: "
-								+ e.getMessage());
+								+ GeneralUtils.truncateMessage(e.getMessage()));
 						return false;
 					}
 				}

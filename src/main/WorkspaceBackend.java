@@ -11,6 +11,7 @@ import ides.api.plugin.io.FileLoadException;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.DESModelMessage;
 import ides.api.plugin.model.DESModelSubscriber;
+import ides.api.plugin.model.ParentModel;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.Toolset;
 import ides.api.plugin.presentation.ToolsetManager;
@@ -26,6 +27,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
+
+import util.GeneralUtils;
 
 /**
  * The main manager of the open DESModels.
@@ -233,7 +236,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 			return;
 		}
 
-		if (m.needsSave())
+		if (m.needsSave() && m.getParentModel() == null)
 		{
 			if (!io.CommonFileActions.handleUnsavedModel(m))
 			{
@@ -242,12 +245,6 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		}
 
 		m.removeSubscriber(this);
-
-		// Assumes that the current model is the same as the one named.
-		// if(getActiveModel()!=null)
-		// {
-		// ((Automaton)getActiveModel()).removeSubscriber(getDrawingBoard());
-		// }
 
 		int idx = getModelIndex(name);
 		if (activeModelIdx == idx)
@@ -266,7 +263,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 			}
 		}
 
-		DESModel fsa = systems.get(idx);
+		DESModel model = systems.get(idx);
 
 		systems.removeElementAt(idx);
 
@@ -276,7 +273,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		}
 
 		fireModelCollectionChanged(new WorkspaceMessage(
-				fsa.getName(),
+				model.getName(),
 				WorkspaceMessage.REMOVE));
 
 		dirty = true;
@@ -494,13 +491,18 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		name = myFile.getName();
 		Hub.getMainWindow().setTitle(Hub.string("IDES_SHORT_NAME") + " "
 				+ Hub.string("IDES_VER") + ": " + name);
-		Vector<String> files = wd.getModels();
+		Vector<String[]> files = wd.getModels();
+		DESModel[] loadedModels = new DESModel[files.size()];
 		int idx = wd.getSelectedModel();
-		String selectedModel = null;
 		for (int i = 0; i < files.size(); ++i)
 		{
 			DESModel model = null;
-			File file = new File(files.elementAt(i));
+			String[] info = files.elementAt(i);
+			if (!WorkspaceDescriptor.FILE_ID.equals(info[0]))
+			{
+				continue;
+			}
+			File file = new File(info[1]);
 			try
 			{
 				model = IOCoordinator.getInstance().load(file);
@@ -513,23 +515,71 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 					model = ((FileLoadException)e).getPartialModel();
 					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
 							+ file.getName() + "\n"
-							+ Hub.string("errorsParsingXMLFileL2"));
+							+ GeneralUtils.truncateMessage(e.getMessage())
+							+ "\n" + Hub.string("errorsParsingXMLFileL2"));
 				}
 				else
 				{
 					Hub.displayAlert(Hub.string("errorsParsingXMLFileL1")
 							+ file.getName() + "\n"
-							+ Hub.string("errorsParsingXMLfail"));
+							+ GeneralUtils.truncateMessage(e.getMessage())
+							+ "\n" + Hub.string("errorsParsingXMLfail"));
 				}
 			}
 			if (model != null)
 			{
 				model.setName(ParsingToolbox.removeFileType(file.getName()));
 				model.setAnnotation(Annotable.FILE, file);
-				Hub.getWorkspace().addModel(model);
-				if (i == idx)
+				loadedModels[i] = model;
+			}
+		}
+		boolean failLoadingChildren = false;
+		for (int i = 0; i < files.size(); ++i)
+		{
+			String[] info = files.elementAt(i);
+			if (!WorkspaceDescriptor.CHILD_ID.equals(info[0]))
+			{
+				continue;
+			}
+			DESModel parent = null;
+			for (DESModel m : loadedModels)
+			{
+				if (m != null && m.getName().equals(info[1]))
 				{
-					selectedModel = model.getName();
+					parent = m;
+					break;
+				}
+			}
+			if (parent == null || !(parent instanceof ParentModel))
+			{
+				failLoadingChildren = true;
+				continue;
+			}
+			DESModel model = ((ParentModel)parent).getChildModel(info[2]);
+			if (model != null)
+			{
+				loadedModels[i] = model;
+			}
+			else
+			{
+				failLoadingChildren = true;
+			}
+		}
+		if (failLoadingChildren)
+		{
+			Hub.displayAlert(Hub.string("cantLoadAllChildren1") + "\n"
+					+ Hub.string("cantLoadAllChildren2"));
+		}
+		String selectedModel = null;
+		for (int i = 0; i < loadedModels.length; ++i)
+		{
+			DESModel m = loadedModels[i];
+			if (m != null)
+			{
+				addModel(m);
+				if (selectedModel == null || i <= idx)
+				{
+					selectedModel = m.getName();
 				}
 			}
 		}
@@ -568,7 +618,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		while (i.hasNext())
 		{
 			DESModel a = i.next();
-			if (!a.hasAnnotation(Annotable.FILE))
+			if (!a.hasAnnotation(Annotable.FILE) && a.getParentModel() == null)
 			{
 				unsavedModels.add(a);
 			}
@@ -582,9 +632,16 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		for (int counter = 0; counter < systems.size(); ++counter)
 		{
 			DESModel a = systems.elementAt(counter);
-			wd.insertModel(((File)a.getAnnotation(Annotable.FILE)).getName(),
-					counter);
-
+			if (a.getParentModel() == null)
+			{
+				wd.insertModel(((File)a.getAnnotation(Annotable.FILE))
+						.getName(), counter);
+			}
+			else
+			{
+				wd.insertModel(a.getParentModel().getName(), a
+						.getParentModel().getChildModelId(a), counter);
+			}
 			if (a.getName().equals(getActiveModelName()))
 			{
 				wd.setSelectedModel(counter);
@@ -716,7 +773,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	 */
 	public void fireRepaintRequired()
 	{
-		for(Presentation p:activePresentations)
+		for (Presentation p : activePresentations)
 		{
 			p.forceRepaint();
 		}

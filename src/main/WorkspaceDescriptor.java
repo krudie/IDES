@@ -8,8 +8,11 @@ import java.util.Vector;
  */
 public class WorkspaceDescriptor
 {
+	public static final String FILE_ID = "file";
 
-	protected Vector<String> models = new Vector<String>();
+	public static final String CHILD_ID = "child";
+
+	protected Vector<String[]> models = new Vector<String[]>();
 
 	protected int selectedModel = 0;
 
@@ -26,10 +29,19 @@ public class WorkspaceDescriptor
 		{
 			idx = 0;
 		}
-		models.insertElementAt(model, idx);
+		models.insertElementAt(new String[] { FILE_ID, model }, idx);
 	}
 
-	public Vector<String> getModels()
+	public void insertModel(String parent, String model, int idx)
+	{
+		if (idx > models.size())
+		{
+			idx = 0;
+		}
+		models.insertElementAt(new String[] { CHILD_ID, parent, model }, idx);
+	}
+
+	public Vector<String[]> getModels()
 	{
 		return models;
 	}

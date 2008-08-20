@@ -225,7 +225,14 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 		}
 		else
 		{
-			new EditActions.RenameAction().actionPerformed(null);
+			if (gv.getModel().getParentModel() == null)
+			{
+				new EditActions.RenameAction().actionPerformed(null);
+			}
+			else
+			{
+				new EditActions.GoToParentAction().actionPerformed(null);
+			}
 		}
 	}
 

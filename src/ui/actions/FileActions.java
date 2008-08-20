@@ -61,8 +61,6 @@ public class FileActions
 			}
 			DESModel des = type.createModel(Hub.string("newModelName") + "-"
 					+ Count++);
-			// DESModel des = ModelManager.createModel(FSAModel.class);
-			// des.setName(Hub.string("newModelName") + "-" + Count++);
 			Hub.getWorkspace().addModel(des);
 			Hub.getWorkspace().setActiveModel(des.getName());
 		}
@@ -178,11 +176,10 @@ public class FileActions
 			while (iterator.hasNext())
 			{
 				DESModel model = iterator.next();
-				if (model != null)
+				if (model.getParentModel() == null)
 				{
 					io.CommonFileActions.save(model, (File)model
 							.getAnnotation(Annotable.FILE));
-					// Hub.getWorkspace().fireRepaintRequired();
 				}
 			}
 			Hub.getMainWindow().setCursor(cursor);

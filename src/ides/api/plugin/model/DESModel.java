@@ -57,4 +57,28 @@ public interface DESModel extends Annotable, DESModelPublisher
 	 *         needs to be saved; <code>false</code> otherwise
 	 */
 	public boolean needsSave();
+
+	/**
+	 * Returns the parent model, if any, of the model.
+	 * <p>
+	 * The parent model of a model is the model which is responsible for the
+	 * maintenance of the child model, e.g., keeping track of changes, saving
+	 * and loading, etc. If a model has a parent model, IDES will treat the
+	 * child model as a temporary "view" into the parent model (e.g., it will
+	 * not ask to save the model on closing, it will not allow renaming of the
+	 * model, etc.)
+	 * 
+	 * @return the parent model of the model; <code>null</code> if there is no
+	 *         parent
+	 */
+	public ParentModel getParentModel();
+
+	/**
+	 * Sets the parent model of the model.
+	 * 
+	 * @param model
+	 *            the parent model for the model
+	 * @see #getParentModel()
+	 */
+	public void setParentModel(ParentModel model);
 }

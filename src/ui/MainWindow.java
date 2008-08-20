@@ -80,7 +80,11 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	private static final int MINIMUM_HEIGHT = 500;
 
-	protected Set<Action> disabledOnNoProject = new HashSet<Action>();
+	protected Set<Action> disabledOnNoModel = new HashSet<Action>();
+
+	protected Set<Action> disabledOnParentModel = new HashSet<Action>();
+
+	protected Set<Action> disableOnNoParentModel = new HashSet<Action>();
 
 	protected JMenuBar menuBar;
 
@@ -264,6 +268,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	Action renameAction;
 
+	Action goToParentAction;
+
 	private void setupActions()
 	{
 		// Create actions
@@ -282,6 +288,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		undoAction = Hub.getUndoManager().getUndoAction();
 		redoAction = Hub.getUndoManager().getRedoAction();
 		renameAction = new EditActions.RenameAction();
+		goToParentAction = new EditActions.GoToParentAction();
 		operationsAction = new OperationsActions.ShowDialogAction();
 		latexAction = new services.latex.UseLatexAction();
 		optionsAction = new OptionsActions.MoreOptionsAction();
@@ -289,14 +296,23 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		aboutAction = new HelpActions.AboutAction();
 
 		// decide which ones will be disabled when there's no model open
-		disabledOnNoProject.add(saveAction);
-		disabledOnNoProject.add(saveasAction);
-		disabledOnNoProject.add(saveallAction);
-		disabledOnNoProject.add(closeAction);
-		disabledOnNoProject.add(exportAction);
-		disabledOnNoProject.add(undoAction);
-		disabledOnNoProject.add(redoAction);
-		disabledOnNoProject.add(renameAction);
+		disabledOnNoModel.add(saveAction);
+		disabledOnNoModel.add(saveasAction);
+		disabledOnNoModel.add(saveallAction);
+		disabledOnNoModel.add(closeAction);
+		disabledOnNoModel.add(exportAction);
+		disabledOnNoModel.add(undoAction);
+		disabledOnNoModel.add(redoAction);
+		disabledOnNoModel.add(renameAction);
+		disabledOnNoModel.add(goToParentAction);
+
+		// decide which ones will be disabled when the active model has a parent
+		// model
+		disabledOnParentModel.add(renameAction);
+		// decide which ones will be hidden when the active model does not have
+		// a parent
+		// model
+		disableOnNoParentModel.add(goToParentAction);
 	}
 
 	private void createAndAddMenuBar()
@@ -390,6 +406,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		editMenu.add(redo);
 		editMenu.addSeparator();
 		editMenu.add(rename);
+		editMenu.add(goToParentAction);
 
 		// adding the menu items to the "operationsMenu"
 		operationsMenu.add(operationsAction);
@@ -448,11 +465,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		Hub.getUndoManager().bindNoTextUndo(undo);
 		Hub.getUndoManager().bindNoTextRedo(redo);
 		toolbar.addSeparator();
-		// toolbar.add(new GraphCommands.SelectTool());
-		// toolbar.add(new GraphCommands.CreateTool());
-		// toolbar.add(new GraphCommands.MoveTool());
-		// toolbar.addSeparator();
-		// toolbar.add(new GraphCommands.AlignTool());
+		toolbar.add(goToParentAction);
 		zoomSelector = Box.createHorizontalBox();// new JPanel();
 		zoomSelector.add(new JLabel(" " + Hub.string("zoom") + ": "));
 		zoomSelector.add(zoom);
@@ -482,7 +495,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	{
 		getContentPane().remove(toolbar);
 		JToolBar newToolbar = new JToolBar();
-		for (int i = 0; i < 11; ++i)
+		for (int i = 0; i < 12; ++i)
 		{
 			// once you add a button to another bar, it's removed from the
 			// previous bar
@@ -593,10 +606,18 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		rightViews.removeAll();
 		rightViews
 				.add(NoticeBoard.instance().getName(), NoticeBoard.instance());
+		for (Action a : disabledOnParentModel)
+		{
+			a.setEnabled(true);
+		}
+		for (Action a : disableOnNoParentModel)
+		{
+			a.setEnabled(false);
+		}
 		if (Hub.getWorkspace().getActiveModel() == null)
 		{
 			zoom.setEnabled(false);
-			for (Action a : disabledOnNoProject)
+			for (Action a : disabledOnNoModel)
 			{
 				a.setEnabled(false);
 			}
@@ -606,9 +627,27 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		else
 		{
 			zoom.setEnabled(true);
-			for (Action a : disabledOnNoProject)
+			for (Action a : disabledOnNoModel)
 			{
 				a.setEnabled(true);
+			}
+			if (Hub.getWorkspace().getActiveModel().getParentModel() != null)
+			{
+				for (Action a : disabledOnParentModel)
+				{
+					a.setEnabled(false);
+				}
+				for (Action a : disableOnNoParentModel)
+				{
+					a.setEnabled(true);
+				}
+			}
+			else
+			{
+				for (Action a : disableOnNoParentModel)
+				{
+					a.setEnabled(false);
+				}
 			}
 			// getting the tabLayout has to be before adding the tabs because it
 			// will be overwritten

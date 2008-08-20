@@ -297,6 +297,10 @@ public class AutomatonParser20 extends AbstractParser
 			{
 				state = STATE_AUTOMATON;
 			}
+			else if (qName.equals("graphic") || qName.equals("circle")
+					|| qName.equals("arrow"))
+			{
+			}
 			else
 			{
 				parsingErrors += file.getName()
@@ -320,6 +324,10 @@ public class AutomatonParser20 extends AbstractParser
 			{
 				state = STATE_STATE;
 			}
+			else if (qName.equals(ELEMENT_INITIAL)
+					|| qName.equals(ELEMENT_MARKED))
+			{
+			}
 			else
 			{
 				parsingErrors += file.getName()
@@ -331,6 +339,10 @@ public class AutomatonParser20 extends AbstractParser
 			{
 				state = STATE_AUTOMATON;
 			}
+			else if (qName.equals("graphic") || qName.equals("bezier")
+					|| qName.equals("label"))
+			{
+			}
 			else
 			{
 				parsingErrors += file.getName()
@@ -341,6 +353,9 @@ public class AutomatonParser20 extends AbstractParser
 			if (qName.equals(ELEMENT_EVENT))
 			{
 				state = STATE_AUTOMATON;
+			}
+			else if (qName.equals("description"))
+			{
 			}
 			else
 			{
@@ -364,6 +379,10 @@ public class AutomatonParser20 extends AbstractParser
 			if (qName.equals(ELEMENT_PROPERTIES))
 			{
 				state = STATE_EVENT;
+			}
+			else if (qName.equals(ELEMENT_CONTROLLABLE)
+					|| qName.equals(ELEMENT_OBSERVABLE))
+			{
 			}
 			else
 			{

@@ -15,6 +15,7 @@ import ides.api.plugin.model.DESModelMessage;
 import ides.api.plugin.model.DESModelSubscriber;
 import ides.api.plugin.model.DESModelType;
 import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.model.ParentModel;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -152,12 +153,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 					.getIDESResource("images/icons/model_fsa.gif"));
 		}
 
-		// public DESModel createModel(String id)
-		// {
-		// Automaton a=new Automaton("");
-		// a.setId(id);
-		// return a;
-		// }
 		public DESModel createModel(String name)
 		{
 			Automaton a = new Automaton(name);
@@ -168,6 +163,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	public static final DESModelType myDescriptor = new AutomatonDescriptor();
 
+	protected ParentModel parent = null;
+
 	private LinkedList<FSAState> states;
 
 	private LinkedList<FSATransition> transitions;
@@ -177,14 +174,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	private String name = null;
 
 	protected Hashtable<String, Object> annotations = new Hashtable<String, Object>();
-
-	// /**
-	// * If this automaton represents the composition of other automata,
-	// * this will contain a list the ids of these other automata.
-	// */
-	// protected String[] composedOf = new String[0];
-
-	// private SubElement meta = null;
 
 	private long maxStateId;
 
@@ -310,6 +299,16 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		return clone;
 	}
 
+	public ParentModel getParentModel()
+	{
+		return parent;
+	}
+
+	public void setParentModel(ParentModel model)
+	{
+		parent = model;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see model.fsa.ver2_1.FSAModel#getName()
@@ -318,11 +317,6 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	{
 		return name;
 	}
-
-	// public FSAModel getFSAModel()
-	// {
-	// return this;
-	// }
 
 	public DESModelType getModelType()
 	{

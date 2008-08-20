@@ -149,7 +149,7 @@ public class Main
 		{
 
 			DESModel m = i.next();
-			if (m.needsSave())
+			if (m.needsSave() && m.getParentModel() == null)
 			{
 				models.add(m);
 			}

@@ -25,6 +25,7 @@ public class WorkspaceParser extends AbstractParser
 
 	protected static final String ATTRIBUTE_POSITION = "position",
 			ATTRIBUTE_SELECTED = "selected", ATTRIBUTE_FILE = "file",
+			ATTRIBUTE_PARENT = "parent", ATTRIBUTE_CHILDID = "childid",
 			ATTRIBUTE_VERSION = "version";
 
 	protected WorkspaceDescriptor workSpace;
@@ -80,7 +81,7 @@ public class WorkspaceParser extends AbstractParser
 		if (state != STATE_IDLE)
 		{
 			parsingErrors += file.getName()
-					+ ": in wrong state at beginning of document.";
+					+ ": in wrong state at beginning of document.\n";
 			return;
 		}
 		state = STATE_DOCUMENT;
@@ -95,7 +96,7 @@ public class WorkspaceParser extends AbstractParser
 		if (state != STATE_DOCUMENT)
 		{
 			parsingErrors += file.getName()
-					+ ": wrong state at end of document.";
+					+ ": wrong state at end of document.\n";
 			return;
 		}
 		state = STATE_IDLE;
@@ -113,13 +114,13 @@ public class WorkspaceParser extends AbstractParser
 		{
 		case STATE_IDLE:
 			parsingErrors += file.getName()
-					+ ": wrong state at beginning of element.";
+					+ ": wrong state at beginning of element.\n";
 			break;
 		case STATE_WORKSPACE:
 			if (!qName.equals(ELEMENT_MODEL))
 			{
 				parsingErrors += file.getName()
-						+ ": encountered wrong element in state workspace.";
+						+ ": encountered wrong element in state workspace.\n";
 
 			}
 			if (atts.getValue(ATTRIBUTE_FILE) != null)
@@ -141,17 +142,42 @@ public class WorkspaceParser extends AbstractParser
 					workSpace.insertModel(file.getParent() + File.separator
 							+ atts.getValue(ATTRIBUTE_FILE), 0);
 					parsingErrors += file.getName()
-							+ ": invalid \'position\' attribute.";
+							+ ": invalid \'position\' attribute.\n";
 				}
 			}
+			else if (atts.getValue(ATTRIBUTE_PARENT) != null
+					&& atts.getValue(ATTRIBUTE_CHILDID) != null)
+			{
+				state = STATE_MODEL;
+				try
+				{
+					workSpace.insertModel(atts.getValue(ATTRIBUTE_PARENT), atts
+							.getValue(ATTRIBUTE_CHILDID), Integer.parseInt(atts
+							.getValue(ATTRIBUTE_POSITION)));
+					if (Boolean.parseBoolean(atts.getValue(ATTRIBUTE_SELECTED)))
+					{
+						workSpace.setSelectedModel(Integer.parseInt(atts
+								.getValue(ATTRIBUTE_POSITION)));
+					}
+				}
+				catch (NumberFormatException e)
+				{
+					workSpace.insertModel(atts.getValue(ATTRIBUTE_PARENT), atts
+							.getValue(ATTRIBUTE_CHILDID), 0);
+					parsingErrors += file.getName()
+							+ ": invalid \'position\' attribute.\n";
+				}
+			}
+
 			break;
 		case STATE_DOCUMENT:
 			if (qName.equals(ELEMENT_WORKSPACE))
 			{
-				if (!"2.1".equals(atts.getValue(ATTRIBUTE_VERSION)))
+				if (!"2.1".equals(atts.getValue(ATTRIBUTE_VERSION))
+						&& !"3".equals(atts.getValue(ATTRIBUTE_VERSION)))
 				{
 					parsingErrors += file.getName()
-							+ ": wrong file format version.";
+							+ ": wrong file format version.\n";
 				}
 				state = STATE_WORKSPACE;
 			}
@@ -218,17 +244,4 @@ public class WorkspaceParser extends AbstractParser
 
 		}
 	}
-
-	/**
-	 * Method used for testing the class
-	 * 
-	 * @param args
-	 *            not used
-	 */
-	// public static void main(String args[]) {
-	// ProjectManager p = new ProjectManager();
-	// p.openProject(new File("/home/agmi02/des/test.xml"));
-	// p.setProjectName("hmm");
-	// p.saveProject("/home/agmi02/des/");
-	// }
 }

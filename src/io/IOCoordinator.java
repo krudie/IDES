@@ -463,7 +463,7 @@ public final class IOCoordinator implements IOSubsytem
 		{
 			if (!metaSectionStack.isEmpty())
 			{
-				metaSectionStack.push(qName);
+				metaSectionStack.addFirst(qName);
 			}
 			if (metaSectionStack.isEmpty() && ELEMENT_META.equals(qName))
 			{
@@ -480,7 +480,7 @@ public final class IOCoordinator implements IOSubsytem
 						metaTagsVersions.put(atts.getValue(ATTRIBUTE_TAG), "");
 					}
 				}
-				metaSectionStack.push(qName);
+				metaSectionStack.addFirst(qName);
 			}
 			else if (!gotModelElement && ELEMENT_MODEL.equals(qName))
 			{
@@ -504,7 +504,7 @@ public final class IOCoordinator implements IOSubsytem
 		{
 			if (!metaSectionStack.isEmpty())
 			{
-				metaSectionStack.pop();
+				metaSectionStack.removeFirst();
 			}
 		}
 

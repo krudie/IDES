@@ -439,8 +439,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 
 	public void resetPosition(Node node)
 	{
-		axis = Geometry.scale(computeBestDirection(node), minAxisLength
-				/ Geometry.norm(axis));
+		axis = Geometry.scale(computeBestDirection(node), Geometry.norm(axis));
 	}
 
 	/**

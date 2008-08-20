@@ -6,11 +6,13 @@ import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.model.DESModel;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -181,6 +183,31 @@ public class EditActions
 			catch (CannotRedoException ex)
 			{
 				Hub.displayAlert(Hub.string("renameFailed"));
+			}
+		}
+	}
+
+	public static class GoToParentAction extends AbstractAction
+	{
+		private static final long serialVersionUID = 8704537876437702968L;
+
+		private static ImageIcon icon = new ImageIcon();
+
+		public GoToParentAction()
+		{
+			super(Hub.string("comGoToParent"), icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
+					.getIDESResource("images/icons/go_parent.gif")));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintGoToParent"));
+		}
+
+		public void actionPerformed(ActionEvent e)
+		{
+			DESModel model = Hub.getWorkspace().getActiveModel();
+			if (model.getParentModel() != null)
+			{
+				Hub.getWorkspace().setActiveModel(model
+						.getParentModel().getName());
 			}
 		}
 	}
