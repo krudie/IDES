@@ -93,6 +93,15 @@ public interface Workspace
 	public void setActiveModel(String name);
 
 	/**
+	 * Makes the specified presentation active in the user interface. If there
+	 * is no presentation with the given name, does nothing.
+	 * 
+	 * @param name
+	 *            the name of the presentation to be made active
+	 */
+	public void setActivePresenttion(String name);
+
+	/**
 	 * Returns an iterator of all {@link DESModel}s in this workspace.
 	 * 
 	 * @return an iterator of all {@link DESModel}s in this workspace

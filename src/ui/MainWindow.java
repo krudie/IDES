@@ -43,8 +43,6 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import main.Main;
 import presentation.fsa.ContextAdaptorHack;
@@ -64,7 +62,7 @@ import ui.actions.OptionsActions;
  * @author Lenko Grigorov
  */
 public class MainWindow extends JFrame implements WorkspaceSubscriber,
-		UserInterface
+		UserInterface, TabbedWindow
 {
 
 	/**
@@ -166,50 +164,9 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	private void createAndAddMainPane()
 	{
 		JPanel mainPane = new JPanel(new BorderLayout());
-		ChangeListener tabIdxRecorder = new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent e)
-			{
-				if (Hub.getWorkspace().getActiveModel() == null)
-				{
-					return;
-				}
-				if (tabbedViews.getSelectedIndex() >= 0)
-				{
-					UILayout oldLayout = (UILayout)Hub
-							.getWorkspace().getActiveModel()
-							.getAnnotation(UI_SETTINGS);
-					Hub
-							.getWorkspace()
-							.getActiveModel()
-							.setAnnotation(UI_SETTINGS,
-									new UILayout(
-											tabbedViews.getSelectedIndex(),
-											oldLayout != null ? oldLayout.activeRightTab
-													: rightViews
-															.getSelectedIndex()));
-				}
-				if (rightViews.getSelectedIndex() >= 0)
-				{
-					UILayout oldLayout = (UILayout)Hub
-							.getWorkspace().getActiveModel()
-							.getAnnotation(UI_SETTINGS);
-					Hub
-							.getWorkspace()
-							.getActiveModel()
-							.setAnnotation(UI_SETTINGS,
-									new UILayout(
-											oldLayout != null ? oldLayout.activeMainTab
-													: tabbedViews
-															.getSelectedIndex(),
-											rightViews.getSelectedIndex()));
-				}
-			}
-		};
 		tabbedViews = new JTabbedPane();
-		tabbedViews.addChangeListener(tabIdxRecorder);
 		rightViews = new JTabbedPane();
-		rightViews.addChangeListener(tabIdxRecorder);
+		leftViews = new JTabbedPane();
 		tabsAndRight = new JSplitPane();
 		tabsAndRight.setLeftComponent(tabbedViews);
 		tabsAndRight.setRightComponent(rightViews);
@@ -525,6 +482,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	private JTabbedPane rightViews;
 
+	private JTabbedPane leftViews;
+
 	private JSplitPane tabsAndRight;
 
 	private FilmStrip filmStrip; // thumbnails of graphs for all open machines
@@ -574,7 +533,6 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	 */
 	public void modelCollectionChanged(WorkspaceMessage message)
 	{
-		// reconfigureUI();
 	}
 
 	/*
@@ -716,6 +674,30 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	public void aboutToRearrangeWorkspace()
 	{
 		storeDividerLocations();
+		if (Hub.getWorkspace().getActiveModel() == null)
+		{
+			return;
+		}
+		if (tabbedViews.getSelectedIndex() >= 0)
+		{
+			UILayout oldLayout = (UILayout)Hub
+					.getWorkspace().getActiveModel().getAnnotation(UI_SETTINGS);
+			Hub.getWorkspace().getActiveModel().setAnnotation(UI_SETTINGS,
+					new UILayout(
+							tabbedViews.getSelectedIndex(),
+							oldLayout != null ? oldLayout.activeRightTab
+									: rightViews.getSelectedIndex()));
+		}
+		if (rightViews.getSelectedIndex() >= 0)
+		{
+			UILayout oldLayout = (UILayout)Hub
+					.getWorkspace().getActiveModel().getAnnotation(UI_SETTINGS);
+			Hub.getWorkspace().getActiveModel().setAnnotation(UI_SETTINGS,
+					new UILayout(oldLayout != null ? oldLayout.activeMainTab
+							: tabbedViews.getSelectedIndex(), rightViews
+							.getSelectedIndex()));
+		}
+
 	}
 
 	public void arrangeViews()
@@ -754,6 +736,34 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		});
 	}
 
+	public void activateMainTab(String title)
+	{
+		class TabActivator implements Runnable
+		{
+			private String title;
+
+			public TabActivator(String title)
+			{
+				this.title = title;
+			}
+
+			public void run()
+			{
+				int idx = tabbedViews.getSelectedIndex();
+				for (int i = 0; i < tabbedViews.getTabCount(); ++i)
+				{
+					if (tabbedViews.getTitleAt(i).equals(title))
+					{
+						idx = i;
+						break;
+					}
+				}
+				tabbedViews.setSelectedIndex(idx);
+			}
+		}
+		SwingUtilities.invokeLater(new TabActivator(title));
+	}
+
 	public void activateRightTab(String title)
 	{
 		class TabActivator implements Runnable
@@ -767,7 +777,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 			public void run()
 			{
-				int idx = -1;
+				int idx = rightViews.getSelectedIndex();
 				for (int i = 0; i < rightViews.getTabCount(); ++i)
 				{
 					if (rightViews.getTitleAt(i).equals(title))
@@ -782,6 +792,34 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		SwingUtilities.invokeLater(new TabActivator(title));
 	}
 
+	public void activateLeftTab(String title)
+	{
+		class TabActivator implements Runnable
+		{
+			private String title;
+
+			public TabActivator(String title)
+			{
+				this.title = title;
+			}
+
+			public void run()
+			{
+				int idx = leftViews.getSelectedIndex();
+				for (int i = 0; i < leftViews.getTabCount(); ++i)
+				{
+					if (leftViews.getTitleAt(i).equals(title))
+					{
+						idx = i;
+						break;
+					}
+				}
+				leftViews.setSelectedIndex(idx);
+			}
+		}
+		SwingUtilities.invokeLater(new TabActivator(title));
+	}
+
 	public StatusBar getStatusBar()
 	{
 		return statusBar;
@@ -790,5 +828,32 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	public Frame getWindow()
 	{
 		return this;
+	}
+
+	public String getActiveLeftTab()
+	{
+		if (leftViews.getSelectedIndex() < 0)
+		{
+			return "";
+		}
+		return leftViews.getTitleAt(leftViews.getSelectedIndex());
+	}
+
+	public String getActiveMainTab()
+	{
+		if (tabbedViews.getSelectedIndex() < 0)
+		{
+			return "";
+		}
+		return tabbedViews.getTitleAt(tabbedViews.getSelectedIndex());
+	}
+
+	public String getActiveRightTab()
+	{
+		if (rightViews.getSelectedIndex() < 0)
+		{
+			return "";
+		}
+		return rightViews.getTitleAt(rightViews.getSelectedIndex());
 	}
 }

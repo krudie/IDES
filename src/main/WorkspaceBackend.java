@@ -823,4 +823,31 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		}
 	}
 
+	public void setActivePresenttion(String name)
+	{
+		for (Presentation p : getActiveUID().getMainPanePresentations())
+		{
+			if (p.getName().equals(name))
+			{
+				HubBackend.getTabbedWindow().activateMainTab(name);
+				return;
+			}
+		}
+		for (Presentation p : getActiveUID().getRightPanePresentations())
+		{
+			if (p.getName().equals(name))
+			{
+				HubBackend.getTabbedWindow().activateRightTab(name);
+				return;
+			}
+		}
+		for (Presentation p : getActiveUID().getLeftPanePresentations())
+		{
+			if (p.getName().equals(name))
+			{
+				HubBackend.getTabbedWindow().activateLeftTab(name);
+				return;
+			}
+		}
+	}
 }

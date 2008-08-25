@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import ui.TabbedWindow;
+
 public class HubBackend
 {
 
@@ -90,9 +92,9 @@ public class HubBackend
 	/**
 	 * The main window of the application.
 	 * 
-	 * @see #setUserInterface(UserInterface)
+	 * @see #setUserInterface(TabbedWindow)
 	 */
-	private static UserInterface mainWindow = null;
+	private static TabbedWindow mainWindow = null;
 
 	/**
 	 * Gets the main UI of IDES.
@@ -111,9 +113,18 @@ public class HubBackend
 	 * @param window
 	 *            the main UI of IDES
 	 */
-	static void setUserInterface(UserInterface window)
+	static void setUserInterface(TabbedWindow window)
 	{
 		mainWindow = window;
 	}
 
+	/**
+	 * Gets the main UI of IDES with access to its tabs.
+	 * 
+	 * @return the main UI with access to its tabs
+	 */
+	static TabbedWindow getTabbedWindow()
+	{
+		return mainWindow;
+	}
 }
