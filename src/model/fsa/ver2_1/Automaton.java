@@ -281,9 +281,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				clone.add(t);
 				if (oldt.getEvent() != null)
 				{
-					FSAEvent event = new Event(clone.getEvent(oldt
-							.getEvent().getId()));
-					t.setEvent(event);
+					t.setEvent(clone.getEvent(oldt.getEvent().getId()));
 				}
 			}
 			catch (IOException e)
