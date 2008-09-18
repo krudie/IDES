@@ -32,4 +32,14 @@ public interface DESEvent extends DESElement
 	 *         properties as this DESEvent.
 	 */
 	public abstract boolean equals(Object o);
+
+	/**
+	 * Returns an integer for the event which can be used for hashing. If
+	 * {@link #equals(Object)} returns <code>true</code> for another DESEvent,
+	 * the {@link #hashCode()} methods for the two events have to return the
+	 * same integer.
+	 * 
+	 * @return an integer for the event which can be used for hashing
+	 */
+	public abstract int hashCode();
 }

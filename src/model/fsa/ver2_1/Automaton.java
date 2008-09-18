@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import services.General;
-import util.StupidSetWrapper;
 
 /**
  * This class is the topmost class in the automaton hierarchy. It serves as the
@@ -627,7 +626,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 */
 	public FSAEventSet getEventSet()
 	{
-		return new StupidSetWrapper(events);
+		return EventSet.wrap(events);
 	}
 
 	/*

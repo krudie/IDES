@@ -141,6 +141,11 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 		return getSymbol().equals(((FSAEvent)o).getSymbol());
 	}
 
+	public int hashCode()
+	{
+		return getSymbol().hashCode();
+	}
+
 	/**
 	 * Returns the annotation for the given key.
 	 * 

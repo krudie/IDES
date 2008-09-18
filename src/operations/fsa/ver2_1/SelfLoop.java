@@ -20,8 +20,8 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 		DESCRIPTION = "Unknown";
 
 		// WARNING - Ensure that input type and description always match!
-		inputType = new Class[] { FSAModel.class };
-		inputDesc = new String[] { "Finite-state automaton" };
+		inputType = new Class[] { FSAModel.class, FSAEventSet.class };
+		inputDesc = new String[] { "Finite-state automaton", "Events to self-loop" };
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
@@ -44,7 +44,7 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 	public Object[] perform(Object[] inputs)
 	{
 		Automaton fsa = (Automaton)((Automaton)inputs[0]).clone();
-		FSAEventSet events = (FSAEventSet)inputs[1];
+		FSAEventSet events = ((FSAEventSet)inputs[1]).copy();
 		for (FSAEvent e : events)
 		{
 			e.setId(fsa.getFreeEventId());
