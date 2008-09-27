@@ -3,16 +3,17 @@
  */
 package io;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
+ * @author Lenko Grigorov
  * @author christiansilvano
  */
-public class ProtectedInputStream extends FileInputStream
+public class ProtectedInputStream extends FilterInputStream
 {
-	long size = -1;
+	long length = -1;
 
 	long counter = 0;
 
@@ -21,49 +22,21 @@ public class ProtectedInputStream extends FileInputStream
 	 * @param off1
 	 * @param s
 	 */
-	public ProtectedInputStream(File f, long off1, long s) throws IOException
+	public ProtectedInputStream(InputStream stream, long offset, long length)
+			throws IOException
 	{
-		super(f);
-		size = s;
-		super.skip(off1);
+		super(stream);
+		stream.skip(offset);
+		this.length = length;
 	}
 
 	@Override
 	public int read() throws IOException
 	{
-		if (counter < size)
+		if (counter < length)
 		{
 			counter++;
-			int r = (char)super.read();
-			return r;
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	@Override
-	public int read(byte[] b, int off, int len) throws IOException
-	{
-		if (counter < size)
-		{
-			counter++;
-			return super.read(b, off, len);
-		}
-		else
-		{
-			return -1;
-		}
-	}
-
-	@Override
-	public int read(byte[] b) throws IOException
-	{
-		if (counter < size)
-		{
-			counter++;
-			return super.read(b);
+			return super.read();
 		}
 		else
 		{
@@ -75,14 +48,13 @@ public class ProtectedInputStream extends FileInputStream
 	public long skip(long n) throws IOException
 	{
 		long skipped = 0;
-		if (counter == size)
+		while (skipped < n)
 		{
-			return -1;
-		}
-		while (counter < size | skipped < n)
-		{
-			read();
-			counter++;
+			int r = read();
+			if (r < 0)
+			{
+				break;
+			}
 			skipped++;
 		}
 		return skipped;
@@ -101,5 +73,15 @@ public class ProtectedInputStream extends FileInputStream
 	public boolean markSupported()
 	{
 		return false;
+	}
+
+	public int available() throws IOException
+	{
+		return Math.min(super.available(), (int)(length - counter));
+	}
+
+	public void close()
+	{
+
 	}
 }

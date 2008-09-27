@@ -1,4 +1,4 @@
-package util;
+package ides.api.utilities;
 
 public class GeneralUtils
 {
@@ -12,6 +12,10 @@ public class GeneralUtils
 	 */
 	public static String truncateMessage(String msg)
 	{
+		if (msg == null)
+		{
+			return null;
+		}
 		String[] lines = msg.split("\n");
 		String ret = "";
 		for (int i = 0; i < Math.min(10, lines.length); ++i)

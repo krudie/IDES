@@ -16,6 +16,7 @@ import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.Toolset;
 import ides.api.plugin.presentation.ToolsetManager;
 import ides.api.plugin.presentation.UIDescriptor;
+import ides.api.utilities.GeneralUtils;
 import io.IOCoordinator;
 import io.ParsingToolbox;
 
@@ -28,7 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import util.GeneralUtils;
 
 /**
  * The main manager of the open DESModels.

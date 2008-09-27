@@ -562,8 +562,6 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	{
 		tabbedViews.removeAll();
 		rightViews.removeAll();
-		rightViews
-				.add(NoticeBoard.instance().getName(), NoticeBoard.instance());
 		for (Action a : disabledOnParentModel)
 		{
 			a.setEnabled(true);
@@ -574,6 +572,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		}
 		if (Hub.getWorkspace().getActiveModel() == null)
 		{
+			rightViews.add(NoticeBoard.instance().getName(), NoticeBoard
+					.instance());
 			zoom.setEnabled(false);
 			for (Action a : disabledOnNoModel)
 			{
@@ -620,6 +620,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			{
 				rightViews.add(p.getName(), p.getGUI());
 			}
+			rightViews.add(NoticeBoard.instance().getName(), NoticeBoard
+					.instance());
 			if (tabLayout != null)
 			{
 				if (tabLayout.activeMainTab > -1

@@ -18,24 +18,13 @@ import io.fsa.ver2_1.AutomatonParser20;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.nio.channels.FileChannel;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * @author christiansilvano
@@ -107,10 +96,14 @@ public final class IOCoordinator implements IOSubsytem
 			while (tags.hasNext())
 			{
 				String tag = tags.next();
-				ps.println("<meta tag=\"" + tag + "\" version=\""
-						+ plugin.getSaveMetaVersion(tag) + "\">");
-				plugin.saveMeta(ps, model, tag);
-				ps.println("</meta>");
+				MetaPrintStream metaps = new MetaPrintStream(ps, "<meta tag=\""
+						+ tag + "\" version=\""
+						+ plugin.getSaveMetaVersion(tag) + "\">\n");
+				plugin.saveMeta(metaps, model, tag);
+				if (metaps.hasOutput())
+				{
+					metaps.println("</meta>");
+				}
 			}
 		}
 		ps.println("</model>");
@@ -138,83 +131,96 @@ public final class IOCoordinator implements IOSubsytem
 		boolean errorEncountered = false;
 
 		DESModel returnModel = null;
-		TagRecovery xmlParser = new TagRecovery(file);
-		String type = xmlParser.getType();
-		Set<String> metaTags = xmlParser.getMetaTags();
-		// System.out.println(type);
-		if (type == null)
-		{
-			throw new FileLoadException(Hub.string("xmlParsingDefNotFound"));
-		}
 
 		// Create a FileInputStream with "file"
 		FileInputStream fis = new FileInputStream(file);
-		// Create a BufferedHeader (to "remember" the last read position in the
-		// FileInputStream)
-		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+		FileChannel fch = fis.getChannel();
 
-		// LOADING DATA TO THE MODEL
-		FileIOPlugin plugin = IOPluginManager.instance().getDataLoader(type);
-		if (plugin == null)
-		{
-			throw new FileLoadException(Hub.string("pluginNotFoundFile"));
-		}
-		DataProtector dp = new DataProtector(br);
-		InputStream dataStream = dp.getXmlContent("data", file);
 		try
 		{
-			returnModel = plugin.loadData(xmlParser.getVersion(),
-					dataStream,
-					file.getAbsolutePath());
-		}
-		catch (FileLoadException e)
-		{
-			if (e.getPartialModel() == null)
+			TagRecovery recovery = new TagRecovery();
+			recovery.parse(fis);
+
+			if (recovery.dataType == null)
 			{
-				throw e;
+				throw new FileLoadException(Hub.string("xmlParsingDefNotFound"));
 			}
-			else
+
+			// LOADING DATA TO THE MODEL
+			FileIOPlugin plugin = IOPluginManager
+					.instance().getDataLoader(recovery.getDataType());
+			if (plugin == null)
 			{
-				errorEncountered = true;
-				errorMsg += e.getMessage();
-				returnModel = e.getPartialModel();
+				throw new FileLoadException(Hub.string("pluginNotFoundFile"));
 			}
-		}
-		// LOADING METADATA TO THE MODEL:
-		Iterator<String> mIt = metaTags.iterator();
-		while (mIt.hasNext())// For each metaTag in the file
-		{
-			// Get a stream countaining the metaInformation
-			InputStream metaStream = dp.getXmlContent("meta", file);
-			// Get a string with the "tag" for the current meta section
-			String meta = mIt.next();
-			// Get all the plugins which loads metadata from the pair: (type,
-			// meta)
-			FileIOPlugin metaPlugin = IOPluginManager
-					.instance().getMetaLoaders(type, meta);
-			if (metaPlugin == null)
+
+			fch.position(recovery.dataOffset);
+			InputStream dataStream = new ProtectedInputStream(fis, 0, recovery
+					.getDataLength());
+			try
 			{
-				errorEncountered = true;
-				errorMsg += Hub.string("pluginNotFoundFile") + "\n";
+				returnModel = plugin.loadData(recovery.getDataVersion(),
+						dataStream,
+						file.getAbsolutePath());
 			}
-			else
+			catch (FileLoadException e)
 			{
-				try
+				if (e.getPartialModel() == null)
 				{
-					metaPlugin.loadMeta(xmlParser.getMetaVersion(meta),
-							metaStream,
-							returnModel,
-							meta);
+					throw e;
 				}
-				catch (FileLoadException e)
+				else
 				{
 					errorEncountered = true;
 					errorMsg += e.getMessage();
+					returnModel = e.getPartialModel();
+				}
+			}
+
+			// LOADING METADATA TO THE MODEL:
+			for (String tag : recovery.getTags())
+			{
+				FileIOPlugin metaPlugin = IOPluginManager
+						.instance().getMetaLoaders(recovery.dataType, tag);
+				if (metaPlugin == null)
+				{
+					errorEncountered = true;
+					errorMsg += Hub.string("pluginNotFoundMeta") + " [" + tag
+							+ "]\n";
+				}
+				else
+				{
+					try
+					{
+						fch.position(recovery.getTagOffset(tag));
+						// Get a stream countaining the metaInformation
+						InputStream metaStream = new ProtectedInputStream(
+								fis,
+								0,
+								recovery.getTagLength(tag));
+						metaPlugin.loadMeta(recovery.getTagVersion(tag),
+								metaStream,
+								returnModel,
+								tag);
+					}
+					catch (FileLoadException e)
+					{
+						errorEncountered = true;
+						errorMsg += e.getMessage();
+					}
 				}
 			}
 		}
-		br.close();
-		fis.close();
+		finally
+		{
+			try
+			{
+				fis.close();
+			}
+			catch (IOException e)
+			{
+			}
+		}
 		if (returnModel != null)
 		{
 			returnModel.setName(ParsingToolbox.removeFileType(file.getName()));
@@ -225,308 +231,6 @@ public final class IOCoordinator implements IOSubsytem
 			throw new FileLoadException(errorMsg, returnModel);
 		}
 		return returnModel;
-	}
-
-	private class DataProtector
-	{
-		private int offset;
-
-		BufferedReader head = null;
-
-		public DataProtector(BufferedReader bh)
-		{
-			offset = 0;
-			head = bh;
-		}
-
-		/**
-		 * Finds the positions of the first and last byte between a "tag" in the
-		 * file, and returns an InputStream created using these positions. E.g.:
-		 * "INFORMATION<tag>CONTENT</tag>INFORMATION", would return an
-		 * InputStream with the content "INFORMATION" inside <code>file</code>.
-		 * 
-		 * @param tag
-		 *            , the tag from which the information will be got from.
-		 * @param f
-		 *            , a File countaining the information.
-		 */
-		public InputStream getXmlContent(String tag, File file)
-		{
-			int startOfTag = 0, endOfTag = 0;
-			Boolean tagStarted = false, parseFinished = false, foundFirst = false;
-			ArrayList<Character> buffer = new ArrayList<Character>(1 + tag
-					.length());
-			try
-			{
-				// Set the head cursor to the position it was at the last time
-				// it was parsed by this class
-				head.reset();
-				head.skip(offset);
-			}
-			catch (IOException e)
-			{
-
-			}
-			int currentChar = 0;
-			while (!parseFinished && currentChar > -1)
-			{
-				currentChar = -1;
-				try
-				{
-					// Read the current byte
-					currentChar = head.read();
-					offset++;
-				}
-				catch (IOException e)
-				{
-					// IOERROR
-				}
-
-				// LOOK FOR THE BEGGINING OF THE TAG
-				if (!foundFirst)
-				{
-					// If a XML tag starting symbol "<" was found, start
-					// buffering the bytes:
-					if (currentChar == (int)(new Character('<')) & !tagStarted)
-					{
-						tagStarted = true;
-						// startOfTag = offset-1;
-					}
-
-					// Buffer the bytes:
-					if (tagStarted)
-					{
-						// If the size of the buffer is less than the needed
-						// size to store ("<" + tag),
-						// keeps buffering
-						if (buffer.size() < tag.length() + "<".length())
-						{
-							if ((char)currentChar == '>')
-							{
-								buffer.clear();
-								tagStarted = false;
-							}
-							else
-							{
-								buffer.add((char)currentChar);
-							}
-						}
-						else
-						{
-							tagStarted = false;
-							String readTag = "";
-							for (int i = 0; i < buffer.size(); i++)
-							{
-								readTag += buffer.get(i);
-							}
-							buffer.clear();
-							if (readTag.equals("<" + tag))
-							{
-								// System.out.println(readTag + ", <" + tag);
-								startOfTag = offset + 1;
-								buffer.clear();
-								foundFirst = true;
-								tagStarted = false;
-							}
-						}
-					}
-
-				}
-				else
-				{// LOOK FOR THE END OF THE TAG
-					// If a XML tag starting symbol "<" was found, start
-					// buffering the bytes:
-					if (currentChar == ('<') & !tagStarted)
-					{
-						tagStarted = true;
-						endOfTag = offset - 1;
-					}
-
-					// Buffer the bytes:
-					if (tagStarted)
-					{
-						// If the size of the buffer is less than the needed
-						// size to store ("<" + tag),
-						// keeps buffering
-						if (buffer.size() < tag.length() + "</".length())
-						{
-							if ((char)currentChar == '>')
-							{
-								buffer.clear();
-								tagStarted = false;
-							}
-							else
-							{
-								buffer.add((char)currentChar);
-							}
-						}
-						else
-						{
-							tagStarted = false;
-							String readTag = "";
-							for (int i = 0; i < buffer.size(); i++)
-							{
-								readTag += buffer.get(i);
-							}
-							buffer.clear();
-							if (readTag.equals("</" + tag))
-							{
-								buffer.clear();
-								parseFinished = true;
-							}
-						}
-					}
-				}
-			}
-			try
-			{
-				// Wrapped FileInputStream with limited access to the file
-				// content.
-				// This InputStream will limit the access to the stream, so the
-				// plugins will just "see" what
-				// regards to them.
-				return new ProtectedInputStream(file, startOfTag, endOfTag
-						- startOfTag);
-			}
-			catch (IOException e)
-			{
-				// This error should not happen, since file is the descriptor
-				// for a file selected by the user,
-				// so it can't not exist.
-				return null;
-			}
-		}
-	}
-
-	private class TagRecovery extends AbstractParser
-	{
-		protected static final String ATTRIBUTE_TYPE = "type",
-				ATTRIBUTE_TAG = "tag", ATTRIBUTE_VERSION = "version",
-				ELEMENT_MODEL = "model", ELEMENT_META = "meta";
-
-		private String dataType = "";
-
-		private String dataVersion = "";
-
-		private Set<String> metaTags = new HashSet<String>();
-
-		private Map<String, String> metaTagsVersions = new HashMap<String, String>();
-
-		private boolean gotModelElement = false;
-
-		private LinkedList<String> metaSectionStack = new LinkedList<String>();
-
-		public TagRecovery(File file)
-		{
-			// Initialize parser:
-			try
-			{
-				xmlReader = SAXParserFactory
-						.newInstance().newSAXParser().getXMLReader();
-				xmlReader.setContentHandler(this);
-				parse(file);
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
-
-		private void parse(File file)
-		{
-			parsingErrors = "";
-			try
-			{
-				xmlReader.parse(new InputSource(new FileInputStream(file)));
-			}
-			catch (FileNotFoundException fnfe)
-			{
-				parsingErrors += fnfe.getMessage() + "\n";
-			}
-			catch (IOException ioe)
-			{
-				parsingErrors += ioe.getMessage() + "\n";
-			}
-			catch (SAXException saxe)
-			{
-				parsingErrors += saxe.getMessage() + "\n";
-			}
-			catch (NullPointerException npe)
-			{
-				parsingErrors += npe.getMessage() + "\n";
-			}
-		}
-
-		@Override
-		public void startElement(String uri, String localName, String qName,
-				Attributes atts)
-		{
-			if (!metaSectionStack.isEmpty())
-			{
-				metaSectionStack.addFirst(qName);
-			}
-			if (metaSectionStack.isEmpty() && ELEMENT_META.equals(qName))
-			{
-				if (atts.getValue(ATTRIBUTE_TAG) != null)
-				{
-					metaTags.add(atts.getValue(ATTRIBUTE_TAG));
-					if (atts.getValue(ATTRIBUTE_VERSION) != null)
-					{
-						metaTagsVersions.put(atts.getValue(ATTRIBUTE_TAG), atts
-								.getValue(ATTRIBUTE_VERSION));
-					}
-					else
-					{
-						metaTagsVersions.put(atts.getValue(ATTRIBUTE_TAG), "");
-					}
-				}
-				metaSectionStack.addFirst(qName);
-			}
-			else if (!gotModelElement && ELEMENT_MODEL.equals(qName))
-			{
-				if (atts.getValue(ATTRIBUTE_TYPE) != null)
-				{
-					dataType = atts.getValue(ATTRIBUTE_TYPE);
-					if (atts.getValue(ATTRIBUTE_VERSION) != null)
-					{
-						dataVersion = atts.getValue(ATTRIBUTE_VERSION);
-					}
-					else
-					{
-						dataVersion = "";
-					}
-					gotModelElement = true;
-				}
-			}
-		}
-
-		public void endElement(String uri, String localName, String qName)
-		{
-			if (!metaSectionStack.isEmpty())
-			{
-				metaSectionStack.removeFirst();
-			}
-		}
-
-		public String getType()
-		{
-			return dataType;
-		}
-
-		public String getVersion()
-		{
-			return dataVersion;
-		}
-
-		public Set<String> getMetaTags()
-		{
-			return new HashSet<String>(metaTags);
-		}
-
-		public String getMetaVersion(String tag)
-		{
-			return metaTagsVersions.get(tag);
-		}
 	}
 
 	public DESModel importFile(File src, String description) throws IOException

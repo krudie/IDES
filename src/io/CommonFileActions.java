@@ -11,6 +11,7 @@ import ides.api.plugin.io.IOPluginManager;
 import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.io.ImportExportPlugin;
 import ides.api.plugin.model.DESModel;
+import ides.api.utilities.GeneralUtils;
 
 import java.awt.Cursor;
 import java.awt.Toolkit;
@@ -30,7 +31,6 @@ import javax.swing.filechooser.FileFilter;
 import main.WorkspaceBackend;
 import main.WorkspaceDescriptor;
 import ui.SaveDialog;
-import util.GeneralUtils;
 
 /**
  * @author christiansilvano
