@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
-
 /**
  * The main manager of the open DESModels.
  * 
@@ -135,6 +134,11 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 				&& getActiveModel().getAnnotation(Annotable.FILE) == null)
 		{
 			removeModel(getActiveModel().getName());
+		}
+
+		if (getModel(model.getName()) == model)
+		{
+			return;
 		}
 
 		if (getModel(model.getName()) != null)
@@ -735,6 +739,25 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	public void modelNameChanged(DESModelMessage message)
 	{
 		setDirty(true);
+		DESModel model = message.getSource();
+		DESModel duplicate = null;
+		for (DESModel m : systems)
+		{
+			if (m != model && m.getName().equals(model.getName()))
+			{
+				duplicate = m;
+				break;
+			}
+		}
+		if (duplicate != null)
+		{
+			int i = 1;
+			while (getModel(model.getName() + " (" + i + ")") != null)
+			{
+				++i;
+			}
+			duplicate.setName(model.getName() + " (" + i + ")");
+		}
 	}
 
 	/**

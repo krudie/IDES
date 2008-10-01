@@ -131,11 +131,6 @@ public class CommonFileActions
 			{
 				String name = ParsingToolbox.removeFileType(file.getName());
 				model.setAnnotation(Annotable.FILE, file);
-				if (!name.equals(model.getName())
-						&& Hub.getWorkspace().getModel(name) != null)
-				{
-					Hub.getWorkspace().removeModel(name);
-				}
 				model.setName(name);
 				model.modelSaved();
 			}
