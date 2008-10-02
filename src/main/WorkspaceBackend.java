@@ -350,6 +350,18 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 			}
 			p.release();
 		}
+		if (activeUID != null)
+		{
+			if (activeUID.getStatusBar() instanceof LatexPresentation)
+			{
+				Hub
+						.getLatexManager()
+						.removeLatexPresentation((LatexPresentation)activeUID
+								.getStatusBar());
+			}
+			activeUID.getStatusBar().release();
+		}
+		activeUID = null;
 		activePresentations = new LinkedList<Presentation>();
 	}
 
@@ -405,6 +417,13 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 							.getLatexManager()
 							.addLatexPresentation((LatexPresentation)p);
 				}
+			}
+			if (activeUID.getStatusBar() instanceof LatexPresentation)
+			{
+				Hub
+						.getLatexManager()
+						.addLatexPresentation((LatexPresentation)activeUID
+								.getStatusBar());
 			}
 		}
 

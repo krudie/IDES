@@ -4,8 +4,9 @@ import ides.api.ui.ZoomControl;
 
 import java.awt.Frame;
 
+import javax.swing.JComponent;
+
 import services.notice.NoticeBoard;
-import ui.StatusBar;
 
 /**
  * Interface for the services provided by the main window interface.
@@ -26,7 +27,7 @@ public interface UserInterface
 	 * 
 	 * @return the status bar of the application
 	 */
-	public StatusBar getStatusBar();
+	public JComponent getStatusBar();
 
 	/**
 	 * Access to the zoom control element.

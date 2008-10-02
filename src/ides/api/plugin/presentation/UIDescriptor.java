@@ -1,6 +1,5 @@
 package ides.api.plugin.presentation;
 
-import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JToolBar;
 
@@ -16,9 +15,7 @@ public interface UIDescriptor
 
 	public JToolBar getToolbar();
 
-	public JComponent getStatusBar();
-
-	public JMenu getPopupMenu();
+	public Presentation getStatusBar();
 
 	public boolean supportsZoom();
 }

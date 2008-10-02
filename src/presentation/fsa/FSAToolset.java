@@ -1,8 +1,12 @@
 package presentation.fsa;
 
 import ides.api.core.Hub;
+import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSASubscriber;
 import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.DESModelMessage;
+import ides.api.plugin.model.DESModelSubscriber;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.Toolset;
 import ides.api.plugin.presentation.UIDescriptor;
@@ -14,6 +18,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
@@ -36,6 +41,8 @@ public class FSAToolset implements Toolset
 		protected FSAGraph shell;
 
 		protected Presentation[] views;
+
+		protected Presentation statusBar;
 
 		protected static JToolBar toolbar = null;
 
@@ -72,6 +79,7 @@ public class FSAToolset implements Toolset
 			views[0] = drawingBoard;
 			views[1] = new EventView(shell);
 			((EventView)views[1]).setName(Hub.string("events"));
+			statusBar = new FSAStatusBar(model);
 		}
 
 		public Presentation[] getMainPanePresentations()
@@ -172,14 +180,9 @@ public class FSAToolset implements Toolset
 			return toolbar;
 		}
 
-		public JComponent getStatusBar()
+		public Presentation getStatusBar()
 		{
-			return null;
-		}
-
-		public JMenu getPopupMenu()
-		{
-			return null;
+			return statusBar;
 		}
 
 		public boolean supportsZoom()
@@ -208,36 +211,6 @@ public class FSAToolset implements Toolset
 		return gv;
 	}
 
-	// public FSAGraph retrieveGraph(FSAModel model)
-	// {
-	// FSAGraph graph;
-	// if(model.hasAnnotation(FSA_LAYOUT))
-	// {
-	// graph=(FSAGraph)model.getAnnotation(FSA_LAYOUT);
-	// }
-	// else
-	// {
-	// graph = new FSAGraph(model);
-	// model.setAnnotation(FSA_LAYOUT, graph);
-	// }
-	// return graph;
-	// }
-
-	// /**
-	// * If the parameter is a {@link FSAModel}, wraps it inside a
-	// * {@link FSAGraph}.
-	// */
-	// public LayoutShell wrapModel(DESModel model)
-	// throws UnsupportedModelException
-	// {
-	// if (!(model instanceof FSAModel))
-	// {
-	// throw new UnsupportedModelException();
-	// }
-	// FSAGraph graph = new FSAGraph((FSAModel)model);
-	// return graph;
-	// }
-
 	/**
 	 * Gets the current graph drawing view. FIXME This method is a quick-fix and
 	 * needs to be removed altogether with the required modifications elsewhere
@@ -256,6 +229,95 @@ public class FSAToolset implements Toolset
 		else
 		{
 			return ps.iterator().next();
+		}
+	}
+
+	protected static class FSAStatusBar extends JLabel implements Presentation,
+			DESModelSubscriber, FSASubscriber
+	{
+		private static final long serialVersionUID = 2106190545829830680L;
+
+		protected FSAModel model;
+
+		private boolean trackModel = true;
+
+		public FSAStatusBar(FSAModel model)
+		{
+			this.model = model;
+			model.addSubscriber((DESModelSubscriber)this);
+			model.addSubscriber((FSASubscriber)this);
+			refresh();
+		}
+
+		public void refresh()
+		{
+			setText(model.getName() + ":  " + +model.getStateCount()
+					+ " states,  " + model.getTransitionCount()
+					+ " transitions");
+		}
+
+		public void modelNameChanged(DESModelMessage message)
+		{
+			refresh();
+		}
+
+		public void saveStatusChanged(DESModelMessage message)
+		{
+		}
+
+		public void fsaEventSetChanged(FSAMessage message)
+		{
+		}
+
+		public void fsaStructureChanged(FSAMessage message)
+		{
+			if ((message.getElementType() == FSAMessage.STATE || message
+					.getElementType() == FSAMessage.TRANSITION)
+					&& (message.getEventType() == FSAMessage.ADD || message
+							.getEventType() == FSAMessage.REMOVE))
+			{
+				refresh();
+			}
+		}
+
+		public void forceRepaint()
+		{
+			refresh();
+			repaint();
+		}
+
+		public JComponent getGUI()
+		{
+			return this;
+		}
+
+		public DESModel getModel()
+		{
+			return model;
+		}
+
+		public void release()
+		{
+			model.removeSubscriber((FSASubscriber)this);
+			model.removeSubscriber((DESModelSubscriber)this);
+		}
+
+		public void setTrackModel(boolean b)
+		{
+			if (trackModel != b)
+			{
+				trackModel = b;
+				if (trackModel)
+				{
+					model.addSubscriber((DESModelSubscriber)this);
+					model.addSubscriber((FSASubscriber)this);
+				}
+				else
+				{
+					model.removeSubscriber((FSASubscriber)this);
+					model.removeSubscriber((DESModelSubscriber)this);
+				}
+			}
 		}
 	}
 }

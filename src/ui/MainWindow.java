@@ -30,6 +30,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -581,6 +582,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			}
 			hotPlugMenus(new JMenu[0]);
 			hotPlugToolbar(new JToolBar(), false);
+			statusBar.setContent(null);
 		}
 		else
 		{
@@ -638,6 +640,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			arrangeViews();
 			hotPlugMenus(uid.getMenus());
 			hotPlugToolbar(uid.getToolbar(), uid.supportsZoom());
+			statusBar.setContent(uid.getStatusBar().getGUI());
 		}
 	}
 
@@ -822,7 +825,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		SwingUtilities.invokeLater(new TabActivator(title));
 	}
 
-	public StatusBar getStatusBar()
+	public JComponent getStatusBar()
 	{
 		return statusBar;
 	}

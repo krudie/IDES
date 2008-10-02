@@ -20,6 +20,10 @@ public interface Toolset
 	/**
 	 * Returns a descriptor of the GUI elements which will be used to display a
 	 * {@link DESModel}.
+	 * <p>
+	 * Each invocation of this method may create a new descriptor and new GUI
+	 * elements. Thus, repeated invocation should be avoided until elements from
+	 * the previous invocations have been disposed.
 	 * 
 	 * @param model
 	 *            the {@link DESModel} to be displayed

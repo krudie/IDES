@@ -24,7 +24,7 @@ import java.util.Collection;
  * The presentation does not render its elements until
  * {@link #setAllowedRendering(boolean)} is called with a <code>true</code>
  * argument (by default, newly instantiated {@link LatexPresentation}s do not
- * render its LaTeX elements).
+ * render their LaTeX elements).
  * <li>IDES requests a list of elements which need LaTeX rendering (
  * {@link #getUnrenderedLatexElements()}).
  * <li>In a separate thread, IDES prerenders all elements from the list. In the
