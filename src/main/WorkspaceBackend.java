@@ -160,7 +160,6 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		fireModelCollectionChanged(new WorkspaceMessage(
 				model.getName(),
 				WorkspaceMessage.ADD));
-		model.modelSaved();
 		if (countAdd != 0)
 		{
 			dirty = true;

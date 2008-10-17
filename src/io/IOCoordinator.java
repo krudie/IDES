@@ -123,6 +123,7 @@ public final class IOCoordinator implements IOSubsytem
 			{
 				throw new FileLoadException(parser20.getParsingErrors(), model);
 			}
+			model.modelSaved();
 			return model;
 		}
 
@@ -225,6 +226,7 @@ public final class IOCoordinator implements IOSubsytem
 		{
 			returnModel.setName(ParsingToolbox.removeFileType(file.getName()));
 			returnModel.setAnnotation(Annotable.FILE, file);
+			returnModel.modelSaved();
 		}
 		if (errorEncountered)
 		{
@@ -250,6 +252,7 @@ public final class IOCoordinator implements IOSubsytem
 			model = load(dst);
 			model.removeAnnotation(Annotable.FILE);
 			model.setName(ParsingToolbox.removeFileType(src.getName()));
+			model.modelSaved();
 		}
 		catch (FileLoadException e)
 		{
@@ -258,6 +261,7 @@ public final class IOCoordinator implements IOSubsytem
 				e.getPartialModel().removeAnnotation(Annotable.FILE);
 				e.getPartialModel().setName(ParsingToolbox.removeFileType(src
 						.getName()));
+				e.getPartialModel().modelSaved();
 			}
 			throw e;
 		}
