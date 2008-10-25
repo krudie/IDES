@@ -3,13 +3,13 @@ package model.fsa.ver2_1;
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
-import ides.api.model.fsa.FSAEventSet;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAPublisherAdaptor;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSASupervisor;
 import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.DESModelMessage;
 import ides.api.plugin.model.DESModelSubscriber;
@@ -622,7 +622,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	/**
 	 * TODO Comment!
 	 */
-	public FSAEventSet getEventSet()
+	public DESEventSet getEventSet()
 	{
 		return EventSet.wrap(events);
 	}
@@ -1058,7 +1058,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * @return the events disabled at a given state; or <code>null</code> if the
 	 *         control map is undefined
 	 */
-	public FSAEventSet getDisabledEvents(FSAState state)
+	public DESEventSet getDisabledEvents(FSAState state)
 	{
 		if (!states.contains(state))
 		{
@@ -1066,7 +1066,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		}
 		else
 		{
-			return (FSAEventSet)state.getAnnotation(Annotable.CONTROL_MAP);
+			return (DESEventSet)state.getAnnotation(Annotable.CONTROL_MAP);
 		}
 	}
 
@@ -1078,7 +1078,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * @param set
 	 *            set of disabled events for this state
 	 */
-	public void setDisabledEvents(FSAState state, FSAEventSet set)
+	public void setDisabledEvents(FSAState state, DESEventSet set)
 	{
 		if (!states.contains(state))
 		{

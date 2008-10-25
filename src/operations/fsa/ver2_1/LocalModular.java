@@ -15,13 +15,17 @@ public class LocalModular extends AbstractOperation
 		DESCRIPTION = "Determines if the languages"
 				+ " produced by the two automata are locally modular.";
 		// WARNING - Ensure that input type and description always match!
-		inputType = new Class[] { FSAModel.class, FSAModel.class };
-		inputDesc = new String[] { "Finite-state automaton",
-				"Finite-state automaton" };
+		inputType = new Class[] { FSAModel.class };
+		inputDesc = new String[] { "Finite-state automata" };
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { Boolean.class };
 		outputDesc = new String[] { "resultMessage" };
+	}
+
+	public int getNumberOfInputs()
+	{
+		return -1;
 	}
 
 	/*

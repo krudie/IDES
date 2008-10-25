@@ -4,7 +4,6 @@
 package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.model.ModelManager;
 
 /**
  * @author Lenko Grigorov
@@ -16,18 +15,22 @@ public class SynchronousProduct extends AbstractOperation
 	public SynchronousProduct()
 	{
 		NAME = "sync";
-		DESCRIPTION = "Produces the synchronous product of automata (also known as parallel composition). "
+		DESCRIPTION = "Computes the synchronous product of automata (also known as parallel composition). "
 				+ "Resultant automaton forces "
 				+ "shared events to occur simultaneously, and allows unshared events"
 				+ " to interleave.";
 		// WARNING - Ensure that input type and description always match!
-		inputType = new Class[] { FSAModel.class, FSAModel.class };
-		inputDesc = new String[] { "Finite-state automaton",
-				"Finite-state automaton" };
+		inputType = new Class[] { FSAModel.class };
+		inputDesc = new String[] { "Finite-state automata" };
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "composedAutomaton" };
+		outputDesc = new String[] { "Composed automata" };
+	}
+
+	public int getNumberOfInputs()
+	{
+		return -1;
 	}
 
 	/*
@@ -37,10 +40,20 @@ public class SynchronousProduct extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-		FSAModel a = ModelManager
-				.instance().createModel(FSAModel.class, "none");
-		Composition.parallel((FSAModel)inputs[0], (FSAModel)inputs[1], a);
-		return new Object[] { a };
+		FSAModel[] models = new FSAModel[inputs.length];
+		for (int i = 0; i < inputs.length; ++i)
+		{
+			if (!(inputs[i] instanceof FSAModel))
+			{
+				throw new IllegalArgumentException();
+			}
+			models[i] = (FSAModel)inputs[i];
+		}
+		return new Object[] { Composition.parallel(models, "none") };
+		// FSAModel a = ModelManager
+		// .instance().createModel(FSAModel.class, "none");
+		// Composition.parallel((FSAModel)inputs[0], (FSAModel)inputs[1], a);
+		// return new Object[] { a };
 	}
 
 }

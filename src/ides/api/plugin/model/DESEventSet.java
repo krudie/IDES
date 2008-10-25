@@ -1,14 +1,8 @@
-/**
- * 
- */
-package ides.api.model.fsa;
+package ides.api.plugin.model;
 
-import java.util.Collection;
+import java.util.Set;
 
-/**
- * @author Lenko Grigorov
- */
-public interface FSAEventSet extends Collection<FSAEvent>
+public interface DESEventSet extends Set<DESEvent>
 {
 	/**
 	 * Produce a (deep) copy of this event set.
@@ -17,7 +11,7 @@ public interface FSAEventSet extends Collection<FSAEvent>
 	 * 
 	 * @return a (deep) copy of this event set
 	 */
-	public FSAEventSet copy();
+	public DESEventSet copy();
 
 	/**
 	 * Produce an event set which contains the intersection of this event set
@@ -30,7 +24,7 @@ public interface FSAEventSet extends Collection<FSAEvent>
 	 *            the event set whose content will be used for the intersection
 	 * @return the intersection of this event set and the given event set
 	 */
-	public FSAEventSet intersect(FSAEventSet set);
+	public DESEventSet intersect(DESEventSet set);
 
 	/**
 	 * Produce an event set which contains the union of this event set and the
@@ -44,7 +38,7 @@ public interface FSAEventSet extends Collection<FSAEvent>
 	 *            the event set whose content will be used for the union
 	 * @return the union of this event set and the given event set
 	 */
-	public FSAEventSet union(FSAEventSet set);
+	public DESEventSet union(DESEventSet set);
 
 	/**
 	 * Produce an event set which contains the events in this event minus the
@@ -58,5 +52,5 @@ public interface FSAEventSet extends Collection<FSAEvent>
 	 * @return a set with the events from this set minus the events in the given
 	 *         set
 	 */
-	public FSAEventSet subtract(FSAEventSet set);
+	public DESEventSet subtract(DESEventSet set);
 }

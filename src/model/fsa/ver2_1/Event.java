@@ -1,6 +1,7 @@
 package model.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAEvent;
+import ides.api.plugin.model.DESEvent;
 
 import java.util.Hashtable;
 
@@ -31,19 +32,44 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 		setObservable(true);
 	}
 
+	// /**
+	// * Constructs an event with all internal variables equal to the event e.
+	// *
+	// * @param e
+	// * the event the new event must equal.
+	// */
+	// public Event(FSAEvent e)
+	// {
+	// this.id = e.getId();
+	// this.setSymbol(e.getSymbol());
+	// this.setControllable(e.isControllable());
+	// this.setObservable(e.isObservable());
+	// // TODO: also transfer other properties
+	// }
+
 	/**
 	 * Constructs an event with all internal variables equal to the event e.
+	 * Properties which are not found in the event assume default values.
 	 * 
 	 * @param e
 	 *            the event the new event must equal.
 	 */
-	public Event(FSAEvent e)
+	public Event(DESEvent e)
 	{
 		this.id = e.getId();
 		this.setSymbol(e.getSymbol());
-		this.setControllable(e.isControllable());
-		this.setObservable(e.isObservable());
-		// TODO: also transfer other properties
+		if (e instanceof FSAEvent)
+		{
+			FSAEvent fsae = (FSAEvent)e;
+			this.setControllable(fsae.isControllable());
+			this.setObservable(fsae.isObservable());
+			// TODO: also transfer other properties
+		}
+		else
+		{
+			this.setControllable(false);
+			this.setObservable(true);
+		}
 	}
 
 	/**
@@ -118,7 +144,7 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 
 	public boolean isObservable()
 	{
-		return (this.getAnnotation(OBSERVABLE) == null ? false : ((Boolean)this
+		return (this.getAnnotation(OBSERVABLE) == null ? true : ((Boolean)this
 				.getAnnotation(OBSERVABLE)).booleanValue());
 	}
 
@@ -134,11 +160,11 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	@Override
 	public boolean equals(Object o)
 	{
-		if (!(o instanceof FSAEvent))
+		if (!(o instanceof DESEvent))
 		{
 			return false;
 		}
-		return getSymbol().equals(((FSAEvent)o).getSymbol());
+		return getSymbol().equals(((DESEvent)o).getSymbol());
 	}
 
 	public int hashCode()

@@ -25,7 +25,7 @@ public class Coaccessible extends AbstractOperation implements FilterOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "Finite-state Automaton" };
+		outputDesc = new String[] { "Co-accessible part of the automaton" };
 	}
 
 	/*

@@ -2,7 +2,6 @@ package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAEvent;
-import ides.api.model.fsa.FSAEventSet;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
@@ -14,12 +13,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import model.fsa.ver2_1.Event;
-import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 
 public class MultiAgentProductFSA extends AbstractOperation
 {
+
+	protected class FSAEventSet extends HashSet<FSAEvent>
+	{
+		private static final long serialVersionUID = -8053527967393272262L;
+	}
 
 	public MultiAgentProductFSA()
 	{
@@ -27,11 +30,11 @@ public class MultiAgentProductFSA extends AbstractOperation
 		DESCRIPTION = "Computes the multi-agent product of scalar automata. The result is a scalar automaton.";
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class };
-		inputDesc = new String[] { "Finite-state automaton" };
+		inputDesc = new String[] { "Finite-state automata" };
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "composedAutomaton" };
+		outputDesc = new String[] { "Multi-agent composition of the automata (scalar)" };
 	}
 
 	@Override
@@ -107,7 +110,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 			FSAEventSet[] eventSets = new FSAEventSet[maOrder];
 			for (int i = 0; i < states.length; ++i)
 			{
-				FSAEventSet eventSet = new EventSet();
+				FSAEventSet eventSet = new FSAEventSet();
 				for (Iterator<FSATransition> ti = states[i]
 						.getOutgoingTransitionsListIterator(); ti.hasNext();)
 				{

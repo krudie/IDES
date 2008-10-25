@@ -2,11 +2,11 @@ package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAEvent;
-import ides.api.model.fsa.FSAEventSet;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSASupervisor;
 import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.FilterOperation;
 
@@ -124,7 +124,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 				}
 				if (notMatched != null)
 				{
-					FSAEventSet de = supervisor.getDisabledEvents(sa[1]);
+					DESEventSet de = supervisor.getDisabledEvents(sa[1]);
 					de.add(notMatched);
 					supervisor.setDisabledEvents(sa[1], de);
 				}

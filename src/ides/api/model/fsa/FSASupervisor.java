@@ -1,5 +1,7 @@
 package ides.api.model.fsa;
 
+import ides.api.plugin.model.DESEventSet;
+
 /**
  * An FSA supervisor is an FSA with a control map.
  * 
@@ -17,7 +19,7 @@ public interface FSASupervisor extends FSAModel
 	 * @return the events disabled at a given state; or <code>null</code> if the
 	 *         control map is undefined
 	 */
-	public FSAEventSet getDisabledEvents(FSAState state);
+	public DESEventSet getDisabledEvents(FSAState state);
 
 	/**
 	 * Sets the events disabled at a given state.
@@ -27,5 +29,5 @@ public interface FSASupervisor extends FSAModel
 	 * @param set
 	 *            set of disabled events for this state
 	 */
-	public void setDisabledEvents(FSAState state, FSAEventSet set);
+	public void setDisabledEvents(FSAState state, DESEventSet set);
 }

@@ -17,7 +17,7 @@ public class SupCon extends AbstractOperation
 	public SupCon()
 	{
 		NAME = "supcon";
-		DESCRIPTION = "Returns an automaton that generates the supremal"
+		DESCRIPTION = "Computes an automaton that generates the supremal"
 				+ " controllable sublanguage of the plant with respect to the"
 				+ " given specification.";
 
@@ -27,7 +27,7 @@ public class SupCon extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "composedAutomaton" };
+		outputDesc = new String[] { "Supervisor" };
 	}
 
 	/*

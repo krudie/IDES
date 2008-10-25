@@ -2,6 +2,7 @@ package ides.api.model.fsa;
 
 // import io.fsa.ver2_1.SubElement;
 
+import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.DESModel;
 
 import java.util.ListIterator;
@@ -123,7 +124,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract ListIterator<FSATransition> getTransitionIterator();
 
 	/**
-	 * Adds an event to the aotumaton.
+	 * Adds an event to the automaton.
 	 * 
 	 * @param e
 	 *            the event that shall be added to the automaton.
@@ -143,7 +144,13 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 */
 	public abstract ListIterator<FSAEvent> getEventIterator();
 
-	public abstract FSAEventSet getEventSet();
+	/**
+	 * Obtains the set of events in the model. If there are no events in the
+	 * model, returns an empty set.
+	 * 
+	 * @return the set of events in the model.
+	 */
+	public abstract DESEventSet getEventSet();
 
 	/**
 	 * searches for the event with the given event id.

@@ -9,6 +9,8 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
+import model.fsa.ver2_1.EventSet;
+
 /**
  * The manager of model types available to IDES. This allows for custom model
  * types implemented by plugins.
@@ -158,5 +160,15 @@ public class ModelManager
 			set.add(mt);
 			class2Type.put(perspectives[i], set);
 		}
+	}
+
+	/**
+	 * Creates an empty event set.
+	 * 
+	 * @return an empty event set
+	 */
+	public DESEventSet createEmptyEventSet()
+	{
+		return new EventSet();
 	}
 }

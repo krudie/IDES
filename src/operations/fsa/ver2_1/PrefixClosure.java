@@ -16,7 +16,7 @@ public class PrefixClosure extends AbstractOperation implements FilterOperation
 	public PrefixClosure()
 	{
 		NAME = "prefixclose";
-		DESCRIPTION = "Creates an automaton that "
+		DESCRIPTION = "Computes an automaton that "
 				+ "generates the prefix closure of the language accepted by the "
 				+ "input automaton.";
 
@@ -26,7 +26,7 @@ public class PrefixClosure extends AbstractOperation implements FilterOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "modifiedAutomaton" };
+		outputDesc = new String[] { "Prefix-closed version of the automaton" };
 	}
 
 	/*

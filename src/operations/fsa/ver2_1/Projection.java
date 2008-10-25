@@ -16,7 +16,7 @@ public class Projection extends AbstractOperation
 	public Projection()
 	{
 		NAME = "project";
-		DESCRIPTION = "Returns a projection"
+		DESCRIPTION = "Computes a projection"
 				+ " of the given automaton such that all unobservable events"
 				+ " have been removed.";
 
@@ -26,7 +26,7 @@ public class Projection extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "modifiedAutomaton" };
+		outputDesc = new String[] { "Projected version of the automaton" };
 	}
 
 	/*

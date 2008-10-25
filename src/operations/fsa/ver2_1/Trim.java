@@ -25,7 +25,7 @@ public class Trim extends AbstractOperation implements FilterOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "modifiedAutomaton" };
+		outputDesc = new String[] { "Trim part of the automaton" };
 	}
 
 	/*

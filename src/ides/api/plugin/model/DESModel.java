@@ -81,4 +81,12 @@ public interface DESModel extends Annotable, DESModelPublisher
 	 * @see #getParentModel()
 	 */
 	public void setParentModel(ParentModel model);
+
+	/**
+	 * Obtains the set of events in the model. If there are no events in the
+	 * model, returns an empty set.
+	 * 
+	 * @return the set of events in the model.
+	 */
+	public DESEventSet getEventSet();
 }

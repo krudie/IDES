@@ -3,8 +3,6 @@
  */
 package ides.api.model.fsa;
 
-import ides.api.plugin.model.DESModel;
-
 /**
  * Message sent to subscribers listening for changes to a FSA.
  * 
@@ -39,18 +37,18 @@ public class FSAMessage
 
 	private int eventType; // the type of event that occurred
 
-	private DESModel source; // the publisher that sent this message
+	private FSAModel source; // the publisher that sent this message
 
 	private String messageText;
 
 	public FSAMessage(int eventType, int elementType, long elementId,
-			DESModel source)
+			FSAModel source)
 	{
 		this(eventType, elementType, elementId, source, "");
 	}
 
 	public FSAMessage(int eventType, int elementType, long elementId,
-			DESModel source, String messageText)
+			FSAModel source, String messageText)
 	{
 		super();
 		this.elementType = elementType;
@@ -75,7 +73,7 @@ public class FSAMessage
 		return eventType;
 	}
 
-	public DESModel getSource()
+	public FSAModel getSource()
 	{
 		return source;
 	}

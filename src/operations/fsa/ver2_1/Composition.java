@@ -50,9 +50,13 @@ public class Composition
 	public static FSAModel product(FSAModel[] automata, String name)
 	{
 
-		if (automata.length < 2)
+		if (automata.length < 1)
 		{
 			return null;
+		}
+		else if (automata.length == 1)
+		{
+			return automata[0].clone();
 		}
 
 		FSAModel prevAnswer = ModelManager
@@ -250,9 +254,13 @@ public class Composition
 	public static FSAModel parallel(FSAModel[] automata, String name)
 	{
 
-		if (automata.length < 2)
+		if (automata.length < 1)
 		{
 			return null;
+		}
+		else if (automata.length == 1)
+		{
+			return automata[0].clone();
 		}
 
 		FSAModel prevAnswer = ModelManager

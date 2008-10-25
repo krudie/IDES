@@ -24,7 +24,7 @@ public class SupRed extends AbstractOperation
 	public SupRed()
 	{
 		NAME = "supred-grail";
-		DESCRIPTION = "Returns a reduced supervisor (experimental). "
+		DESCRIPTION = "Computes a reduced supervisor (experimental). "
 				+ " Requires that \"fsasupred.exe\" from Grail be"
 				+ " present in the folder where IDES is installed.";
 
@@ -34,7 +34,7 @@ public class SupRed extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "modifiedAutomaton" };
+		outputDesc = new String[] { "Reduced supervisor" };
 	}
 
 	/*
@@ -47,8 +47,10 @@ public class SupRed extends AbstractOperation
 		exportGrail((FSAModel)inputs[0], new File("PLT"));
 		exportGrail((FSAModel)inputs[1], new File("SUP"));
 		Set<FSAEvent> unctrl = new TreeSet<FSAEvent>();
-		for (FSAEvent e : ((FSAModel)inputs[1]).getEventSet())
+		for (Iterator<FSAEvent> i = ((FSAModel)inputs[1]).getEventIterator(); i
+				.hasNext();)
 		{
+			FSAEvent e = i.next();
 			if (!e.isControllable())
 			{
 				unctrl.add(e);
@@ -74,8 +76,9 @@ public class SupRed extends AbstractOperation
 			Hub.displayAlert(Hub.string("problemSupRed"));
 		}
 		FSAModel a = importGrail(new File("RED"));
-		for (FSAEvent e : a.getEventSet())
+		for (Iterator<FSAEvent> i = a.getEventIterator(); i.hasNext();)
 		{
+			FSAEvent e = i.next();
 			if (unctrl.contains(e))
 			{
 				e.setControllable(false);
