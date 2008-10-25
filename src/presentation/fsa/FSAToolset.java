@@ -42,6 +42,8 @@ public class FSAToolset implements Toolset
 
 		protected Presentation[] views;
 
+		protected Presentation[] viewsR;
+
 		protected Presentation statusBar;
 
 		protected static JToolBar toolbar = null;
@@ -68,7 +70,8 @@ public class FSAToolset implements Toolset
 
 		public FSAUIDescriptor(FSAModel model)
 		{
-			views = new Presentation[2];
+			views = new Presentation[1];
+			viewsR = new Presentation[1];
 			GraphDrawingView drawingBoard = new GraphDrawingView(
 					model,
 					gridBinder);
@@ -77,8 +80,8 @@ public class FSAToolset implements Toolset
 			drawingBoard.setName(Hub.string("graph"));
 			shell = drawingBoard.getGraphModel();
 			views[0] = drawingBoard;
-			views[1] = new EventView(shell);
-			((EventView)views[1]).setName(Hub.string("events"));
+			viewsR[0] = new EventView(shell);
+			((EventView)viewsR[0]).setName(Hub.string("events"));
 			statusBar = new FSAStatusBar(model);
 		}
 
@@ -94,7 +97,7 @@ public class FSAToolset implements Toolset
 
 		public Presentation[] getRightPanePresentations()
 		{
-			return new Presentation[0];
+			return viewsR;
 		}
 
 		protected void setupActions()

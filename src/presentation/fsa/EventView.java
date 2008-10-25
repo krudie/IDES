@@ -9,6 +9,7 @@ import ides.api.plugin.model.DESModel;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.Toolset;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -36,6 +37,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.undo.CompoundEdit;
 
 import presentation.fsa.actions.AbstractGraphAction;
@@ -375,6 +377,10 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 	protected JTable table;
 
+	private int col1Width;
+
+	private int col2Width;
+
 	protected JTextField eventNameField;
 
 	protected JCheckBox controllableCBox;
@@ -392,7 +398,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		super();
 		graph = g;
 		Box mainBox = Box.createVerticalBox();
-		Box createBox = Box.createHorizontalBox();
+		Box createBox = Box.createVerticalBox();
+		Box createTopBox = Box.createHorizontalBox();
+		Box createBottomBox = Box.createHorizontalBox();
 
 		eventNameField = new JTextField();
 		eventNameField.setMaximumSize(new Dimension(
@@ -458,21 +466,25 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), this);
 		eventNameField.getActionMap().put(this, createListener);
-		createBox.add(eventNameField);
+		createTopBox.add(eventNameField);
 
 		controllableCBox = new JCheckBox(Hub.string("controllable"));
 		controllableCBox.setSelected(true);
-		createBox.add(controllableCBox);
+		createBottomBox.add(controllableCBox);
 		observableCBox = new JCheckBox(Hub.string("observable"));
 		observableCBox.setSelected(true);
-		createBox.add(observableCBox);
+		createBottomBox.add(observableCBox);
+		createBottomBox.add(Box.createHorizontalGlue());
 
 		createButton = new JButton(Hub.string("add"));
 		createButton.setPreferredSize(new Dimension(
 				createButton.getPreferredSize().width,
 				eventNameField.getPreferredSize().height));
 		createButton.addActionListener(createListener);
-		createBox.add(createButton);
+		createTopBox.add(createButton);
+
+		createBox.add(createTopBox);
+		createBox.add(createBottomBox);
 		createBox.setBorder(BorderFactory.createTitledBorder(Hub
 				.string("addNewEvent")));// .createEmptyBorder(5,5,5,5));
 		// Box borderPane=Box.createHorizontalBox();
@@ -484,12 +496,26 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
 		table = new JTable(new EventTableModel());
-		table.setPreferredScrollableViewportSize(new Dimension(table
-				.getPreferredScrollableViewportSize().width, 200));
+		// table.setPreferredScrollableViewportSize(new Dimension(table
+		// .getPreferredScrollableViewportSize().width, 200));
 		table
 				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), this);
 		table.getActionMap().put(this, deleteListener);
+		TableCellRenderer headerRenderer = table
+				.getTableHeader().getDefaultRenderer();
+		col1Width = headerRenderer.getTableCellRendererComponent(null,
+				table.getColumnModel().getColumn(1).getHeaderValue(),
+				false,
+				false,
+				0,
+				0).getPreferredSize().width;
+		col2Width = headerRenderer.getTableCellRendererComponent(null,
+				table.getColumnModel().getColumn(2).getHeaderValue(),
+				false,
+				false,
+				0,
+				0).getPreferredSize().width;
 		mainBox.add(new JScrollPane(
 				table,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -508,6 +534,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		// ;
 		mainBox.add(deleteBox);
 
+		setLayout(new BorderLayout());
 		add(mainBox);
 		refreshEventTable();
 		setTrackModel(true);
@@ -554,6 +581,8 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		// {
 		// FSAModel model=(FSAModel)Hub.getWorkspace().getActiveModel();
 		table.setModel(new EventTableModel(graph.getModel()));
+		table.getColumnModel().getColumn(1).setMaxWidth(col1Width);
+		table.getColumnModel().getColumn(2).setMaxWidth(col2Width);
 		// CLM: these should be enabled iff eventNameField is nonempty
 		// createButton.setEnabled(true);
 		// controllableCBox.setEnabled(true);

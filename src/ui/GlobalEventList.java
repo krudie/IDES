@@ -55,7 +55,6 @@ public class GlobalEventList extends JList
 		super();
 		super.setModel(listModel);
 		super.setCellRenderer(new EventRecordRenderer());
-		boolean oddCounter = true;
 		List<EventRecord> records = new LinkedList<EventRecord>();
 		for (Iterator<DESModel> i = Hub.getWorkspace().getModels(); i.hasNext();)
 		{
@@ -65,18 +64,26 @@ public class GlobalEventList extends JList
 				continue;
 			}
 			DESEventSet events = model.getEventSet();
-			if (!events.isEmpty())
-			{
-				oddCounter = !oddCounter;
-			}
 			for (DESEvent event : events)
 			{
-				EventRecord er = new EventRecord(model, event);
-				er.isOdd = oddCounter;
-				records.add(er);
+				records.add(new EventRecord(model, event));
 			}
 		}
 		Collections.sort(records, eventRecordComparator);
+		if (!records.isEmpty())
+		{
+			boolean oddCounter = false;
+			DESModel prevModel = records.get(0).model;
+			for (EventRecord er : records)
+			{
+				if (er.model != prevModel)
+				{
+					oddCounter = !oddCounter;
+					prevModel = er.model;
+				}
+				er.isOdd = oddCounter;
+			}
+		}
 		for (EventRecord record : records)
 		{
 			listModel.addElement(record);

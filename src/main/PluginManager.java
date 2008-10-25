@@ -38,6 +38,7 @@ import operations.fsa.ver2_1.MultiAgentProductFSA;
 import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.PrefixClosure;
 import operations.fsa.ver2_1.Projection;
+import operations.fsa.ver2_1.SelfLoop;
 import operations.fsa.ver2_1.SupCon;
 import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
@@ -82,6 +83,7 @@ public class PluginManager
 		OperationManager.instance().register(new LocalModular());
 		OperationManager.instance().register(new SupRed());
 		OperationManager.instance().register(new MultiAgentProductFSA());
+		OperationManager.instance().register(new SelfLoop());
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();
