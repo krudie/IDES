@@ -5,6 +5,7 @@ import ides.api.core.Workspace;
 import ides.api.latex.LatexManager;
 import ides.api.latex.LatexPresentation;
 import ides.api.latex.Renderer;
+import ides.api.utilities.GeneralUtils;
 
 import java.io.File;
 import java.util.Collection;
@@ -367,7 +368,8 @@ public class LatexBackend implements LatexManager
 			public void run()
 			{
 				int choice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("renderProblem"),
+						GeneralUtils.JOptionPaneKeyBinder.messageLabel(Hub
+								.string("renderProblem")),
 						Hub.string("renderProblemTitle"),
 						JOptionPane.YES_NO_OPTION);
 				if (choice == JOptionPane.YES_OPTION)

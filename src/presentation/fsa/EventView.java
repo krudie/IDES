@@ -8,6 +8,7 @@ import ides.api.model.fsa.FSASubscriber;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.Toolset;
+import ides.api.utilities.GeneralUtils;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -297,7 +298,8 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 			if (rows.length > 0)
 			{
 				int choice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("confirmDeleteEvents"),
+						GeneralUtils.JOptionPaneKeyBinder.messageLabel(Hub
+								.string("confirmDeleteEvents")),
 						Hub.string("deleteEventsTitle"),
 						JOptionPane.YES_NO_CANCEL_OPTION);
 				if (choice != JOptionPane.YES_OPTION)

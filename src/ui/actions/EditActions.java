@@ -4,6 +4,7 @@ import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.model.DESModel;
+import ides.api.utilities.GeneralUtils;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -94,8 +95,11 @@ public class EditActions
 					{
 						int choice = JOptionPane.showConfirmDialog(Hub
 								.getMainWindow(),
-								Hub.string("fileExistAsk1") + newFile.getPath()
-										+ Hub.string("fileExistAsk2"),
+								GeneralUtils.JOptionPaneKeyBinder
+										.messageLabel(Hub
+												.string("fileExistAsk1")
+												+ newFile.getPath()
+												+ Hub.string("fileExistAsk2")),
 								Hub.string("renameModelTitle"),
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if (choice != JOptionPane.YES_OPTION)

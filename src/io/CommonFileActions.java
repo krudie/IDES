@@ -192,8 +192,10 @@ public class CommonFileActions
 				{
 					int choice = JOptionPane.showConfirmDialog(Hub
 							.getMainWindow(),
-							Hub.string("fileExistAsk1") + file.getPath()
-									+ Hub.string("fileExistAsk2"),
+							GeneralUtils.JOptionPaneKeyBinder.messageLabel(Hub
+									.string("fileExistAsk1")
+									+ file.getPath()
+									+ Hub.string("fileExistAsk2")),
 							Hub.string("saveModelTitle"),
 							JOptionPane.YES_NO_CANCEL_OPTION);
 					fcDone = choice != JOptionPane.NO_OPTION;
@@ -408,11 +410,15 @@ public class CommonFileActions
 			// replaced.
 			if (file.exists())
 			{
-				int choice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("fileExistAsk1") + file.getPath()
-								+ Hub.string("fileExistAsk2"),
-						Hub.string("saveModelTitle"),
-						JOptionPane.YES_NO_CANCEL_OPTION);
+				int choice = JOptionPane
+						.showConfirmDialog(Hub.getMainWindow(),
+								GeneralUtils.JOptionPaneKeyBinder
+										.messageLabel(Hub
+												.string("fileExistAsk1")
+												+ file.getPath()
+												+ Hub.string("fileExistAsk2")),
+								Hub.string("saveModelTitle"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
 				fcDone = choice != JOptionPane.NO_OPTION;
 				if (choice != JOptionPane.YES_OPTION)
 				{
@@ -528,11 +534,15 @@ public class CommonFileActions
 
 			if (file.exists())
 			{
-				int choice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-						Hub.string("fileExistAsk1") + file.getPath()
-								+ Hub.string("fileExistAsk2"),
-						Hub.string("saveWorkspaceTitle"),
-						JOptionPane.YES_NO_CANCEL_OPTION);
+				int choice = JOptionPane
+						.showConfirmDialog(Hub.getMainWindow(),
+								GeneralUtils.JOptionPaneKeyBinder
+										.messageLabel(Hub
+												.string("fileExistAsk1")
+												+ file.getPath()
+												+ Hub.string("fileExistAsk2")),
+								Hub.string("saveWorkspaceTitle"),
+								JOptionPane.YES_NO_CANCEL_OPTION);
 				fcDone = choice != JOptionPane.NO_OPTION;
 				if (choice != JOptionPane.YES_OPTION)
 				{
@@ -622,8 +632,9 @@ public class CommonFileActions
 	public static boolean handleUnsavedWorkspace()
 	{
 		int choice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-				Hub.string("saveChangesAskWorkspace") + "\""
-						+ Hub.getWorkspace().getName() + "\"?",
+				GeneralUtils.JOptionPaneKeyBinder.messageLabel(Hub
+						.string("saveChangesAskWorkspace")
+						+ "\"" + Hub.getWorkspace().getName() + "\"?"),
 				Hub.string("saveChangesWorkspaceTitle"),
 				JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
@@ -712,7 +723,9 @@ public class CommonFileActions
 	public static boolean handleUnsavedModel(DESModel m)
 	{
 		int saveChoice = JOptionPane.showConfirmDialog(Hub.getMainWindow(),
-				Hub.string("saveChangesAskModel") + "\"" + m.getName() + "\"?",
+				GeneralUtils.JOptionPaneKeyBinder.messageLabel(Hub
+						.string("saveChangesAskModel")
+						+ "\"" + m.getName() + "\"?"),
 				Hub.string("saveChangesModelTitle"),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if (saveChoice != JOptionPane.YES_OPTION

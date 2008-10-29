@@ -498,7 +498,20 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			GraphElement selection = this.getSelectedGroup();
 			if (selection != null)
 			{
-				this.graphModel.commitLayoutModified(this.getSelectedElement());
+				this.graphModel
+						.fireFSAGraphSelectionChanged(new FSAGraphMessage(
+								FSAGraphMessage.MODIFY,
+								FSAGraphMessage.SELECTION,
+								-1,
+								selection.bounds(),
+								graphModel,
+								""));
+				// this method used to call
+				//this.graphModel.commitLayoutModified(this.getSelectedElement()
+				// );
+				// I replaced with selectionChanged message but not 100% sure
+				// there won't be side-effects
+				// -- Lenko
 			}
 		}
 	}
@@ -610,7 +623,18 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			// Notify the subscribers that the layout was changed (selection
 			// colors)
 			// so they can repaint the graphs.
-			this.graphModel.commitLayoutModified();
+			this.graphModel.fireFSAGraphSelectionChanged(new FSAGraphMessage(
+					FSAGraphMessage.MODIFY,
+					FSAGraphMessage.SELECTION,
+					-1,
+					graphModel.getBounds(false),
+					graphModel,
+					""));
+			// this method used to call
+			// this.graphModel.commitLayoutModified();
+			// I replaced with selectionChanged message but not 100% sure there
+			// won't be side-effects
+			// -- Lenko
 		}
 	}
 
@@ -820,61 +844,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		return sp;
 	}
 
-	// public void update(){
-	// scaleFactor=((MainWindow)Hub.getMainWindow()).getZoomControl().getZoom();
-	// if(scaleFactor!=1)
-	// setShowGrid(false);
-
-	// // get the active graph model and update the graph view part of me
-	// graphModel = Workspace.instance().getActiveGraphModel();
-	// super.update();
-	// Hub.getMainWindow().validate();
-	// }
-
-	/**
-	 * Override
-	 * 
-	 * @see observer.FSAGraphSubscriber#fsmGraphSelectionChanged(observer.FSAGraphMessage)
-	 */
-	// public void fsmGraphSelectionChanged(FSMGraphMessage message)
-	// {
-	// // ??? Do I need to do anything here ?
-	// // Or is this event always going to be fired from within this class ?
-	// }
-	// /* (non-Javadoc)
-	// * @see
-	// observer.WorkspaceSubscriber#modelCollectionChanged(observer.
-	// WorkspaceMessage)
-	// */
-	// public void modelCollectionChanged(WorkspaceMessage message) {
-	// // get the active graph model and update the graph view part of me
-	// if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
-	// setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
-	// else
-	// setGraphModel(null);
-	// Hub.getMainWindow().validate();
-	// }
-	// /* (non-Javadoc)
-	// * @see
-	// observer.WorkspaceSubscriber#repaintRequired(observer.WorkspaceMessage)
-	// */
-	// public void repaintRequired(WorkspaceMessage message) {
-	// Hub.getMainWindow().validate();
-	// repaint();
-	// }
-	// /* (non-Javadoc)
-	// * @see
-	// observer.WorkspaceSubscriber#modelSwitched(observer.WorkspaceMessage)
-	// */
-	// public void modelSwitched(WorkspaceMessage message) {
-	// // get the active graph model and update the graph view part of me
-	// if(Hub.getWorkspace().getActiveLayoutShell() instanceof FSAGraph)
-	// setGraphModel((FSAGraph)Hub.getWorkspace().getActiveLayoutShell());
-	// else
-	// setGraphModel(null);
-	// Hub.getMainWindow().validate();
-	// //repaint();
-	// }
 	@Override
 	protected void setGraphModel(FSAGraph graphModel)
 	{
@@ -897,8 +866,10 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			setShowGrid(false);
 			Hub.getUserInterface().getZoomControl().setZoom(1);
 		}
-		//if the scale factor isn't set properly before adding the GraphView to the
-		//scroll pane, auto-scroll to the position stored in canvas settings won't work
+		// if the scale factor isn't set properly before adding the GraphView to
+		// the
+		// scroll pane, auto-scroll to the position stored in canvas settings
+		// won't work
 		scaleFactor = Hub.getUserInterface().getZoomControl().getZoom();
 		uiInteraction = false;
 	}

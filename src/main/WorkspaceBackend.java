@@ -818,7 +818,8 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		{
 			p.forceRepaint();
 		}
-		for (WorkspaceSubscriber s : subscribers)
+		for (WorkspaceSubscriber s : subscribers
+				.toArray(new WorkspaceSubscriber[] {}))
 		{
 			s.repaintRequired();
 		}
@@ -832,7 +833,8 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	 */
 	protected void fireModelCollectionChanged(WorkspaceMessage message)
 	{
-		for (WorkspaceSubscriber s : subscribers)
+		for (WorkspaceSubscriber s : subscribers
+				.toArray(new WorkspaceSubscriber[] {}))
 		{
 			s.modelCollectionChanged(message);
 		}
@@ -846,7 +848,8 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	 */
 	protected void fireModelSwitched(WorkspaceMessage message)
 	{
-		for (WorkspaceSubscriber s : subscribers)
+		for (WorkspaceSubscriber s : subscribers
+				.toArray(new WorkspaceSubscriber[] {}))
 		{
 			s.modelSwitched(message);
 		}
@@ -858,13 +861,14 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	 */
 	public void fireAboutToRearrangeWorkspace()
 	{
-		for (WorkspaceSubscriber s : subscribers)
+		for (WorkspaceSubscriber s : subscribers
+				.toArray(new WorkspaceSubscriber[] {}))
 		{
 			s.aboutToRearrangeWorkspace();
 		}
 	}
 
-	public void setActivePresenttion(String name)
+	public void setActivePresentation(String name)
 	{
 		for (Presentation p : getActiveUID().getMainPanePresentations())
 		{

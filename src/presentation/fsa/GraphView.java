@@ -306,6 +306,7 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,
 	 */
 	public void fsaGraphSelectionChanged(FSAGraphMessage message)
 	{
+		refreshView();
 	}
 
 	public void fsaGraphSaveStatusChanged(FSAGraphMessage message)

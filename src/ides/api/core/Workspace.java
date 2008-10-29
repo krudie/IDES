@@ -99,7 +99,7 @@ public interface Workspace
 	 * @param name
 	 *            the name of the presentation to be made active
 	 */
-	public void setActivePresenttion(String name);
+	public void setActivePresentation(String name);
 
 	/**
 	 * Returns an iterator of all {@link DESModel}s in this workspace.
