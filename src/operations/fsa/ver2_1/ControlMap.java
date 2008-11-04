@@ -15,7 +15,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import model.fsa.ver2_1.EventSet;
 import model.fsa.ver2_1.State;
 
 public class ControlMap extends AbstractOperation implements FilterOperation
@@ -117,9 +116,8 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 				}
 				if (supervisor.getDisabledEvents(sa[1]) == null)
 				{
-					// TODO EventSet should not be created directly, use
-					// modelmanager
-					supervisor.setDisabledEvents(sa[1], new EventSet());
+					supervisor.setDisabledEvents(sa[1], ModelManager
+							.instance().createEmptyEventSet());
 				}
 				if (notMatched != null)
 				{

@@ -2,6 +2,9 @@ package presentation.fsa;
 
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSASupervisor;
+import ides.api.plugin.model.DESEvent;
+import ides.api.plugin.model.DESEventSet;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -534,6 +537,10 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		this.setMoving(true);
 	}
 
+	boolean tooltipAlternator = true; // used to alternate shape of the
+
+	// controllability tooltip
+
 	public void mouseMoved(MouseEvent arg0)
 	{
 
@@ -543,6 +550,33 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		}
 
 		arg0 = transformMouseCoords(arg0);
+		Node n = graphModel.getNodeIntersectedBy(arg0.getPoint());
+		setToolTipText(null);
+		if (n != null && graphModel.getModel() instanceof FSASupervisor)
+		{
+			DESEventSet set = ((FSASupervisor)graphModel.getModel())
+					.getDisabledEvents(n.getState());
+			if (set != null)
+			{
+				if (!set.isEmpty())
+				{
+					String disabled = "Disabled events: ";
+					for (DESEvent event : set)
+					{
+						disabled += event.getSymbol() + "; ";
+					}
+					setToolTipText(disabled.substring(0, disabled.length() - 2)
+							+ (tooltipAlternator ? " " : ""));
+					tooltipAlternator = !tooltipAlternator;
+				}
+				else
+				{
+					setToolTipText("No disabled events"
+							+ (tooltipAlternator ? " " : ""));
+					tooltipAlternator = !tooltipAlternator;
+				}
+			}
+		}
 		drawingTools[currentTool].handleMouseMoved(arg0);
 	}
 

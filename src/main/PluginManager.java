@@ -31,6 +31,7 @@ import java.util.Vector;
 import operations.fsa.ver2_1.Accessible;
 import operations.fsa.ver2_1.Coaccessible;
 import operations.fsa.ver2_1.Containment;
+import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
 import operations.fsa.ver2_1.LocalModular;
 import operations.fsa.ver2_1.Meet;
@@ -79,7 +80,7 @@ public class PluginManager
 		OperationManager.instance().register(new SupCon());
 		OperationManager.instance().register(new Containment());
 		OperationManager.instance().register(new Nonconflicting());
-		// OperationManager.instance().register(new ControlMap());
+		OperationManager.instance().register(new ControlMap());
 		OperationManager.instance().register(new LocalModular());
 		OperationManager.instance().register(new SupRed());
 		OperationManager.instance().register(new MultiAgentProductFSA());

@@ -1538,6 +1538,32 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return el;
 	}
 
+	/**
+	 * Computes and returns the node intersected by the given point. If nothing
+	 * hit, returns null.
+	 * 
+	 * @param p
+	 *            the point of intersection
+	 * @return the node intersected by the given point or null if nothing hit.
+	 */
+	protected Node getNodeIntersectedBy(Point2D p)
+	{
+		if (needsRefresh())
+		{
+			refresh();
+		}
+
+		for (Node n : nodes.values())
+		{
+			if (n.intersects(p))
+			{
+				return n;
+			}
+		}
+
+		return null;
+	}
+
 	public boolean isRenderingOn()
 	{
 		if (!Hub.getLatexManager().isLatexEnabled())
