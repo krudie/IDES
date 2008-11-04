@@ -253,15 +253,18 @@ public class MultiAgentProductFSA extends AbstractOperation
 		boolean isInitial = true;
 		boolean isMarked = true;
 		long[] composedIds = new long[states.length];
+		String[] composedNames = new String[states.length];
 		for (int i = 0; i < states.length; ++i)
 		{
 			isInitial &= states[i].isInitial();
 			isMarked &= states[i].isMarked();
 			composedIds[i] = states[i].getId();
+			composedNames[i] = states[i].getName();
 		}
 		newS.setInitial(isInitial);
 		newS.setMarked(isMarked);
 		newS.setAnnotation(Annotable.COMPOSED_OF, composedIds);
+		newS.setAnnotation(Annotable.COMPOSED_OF_NAMES, composedNames);
 		return newS;
 	}
 

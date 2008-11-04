@@ -11,6 +11,7 @@ import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
+import ides.api.presentation.fsa.FSAStateLabeller;
 import ides.api.utilities.EscapeDialog;
 
 import java.awt.Component;
@@ -52,8 +53,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import pluggable.layout.CompositeStateLabeller;
 
 /**
  * @author Lenko Grigorov
@@ -654,7 +653,7 @@ public class OperationDialog extends EscapeDialog
 				String[] outputDesc = op.getDescriptionOfOutputs().clone();
 
 				int j = 0; // separate counter for text field with name of
-							// output DESModel
+				// output DESModel
 				for (int i = 0; i < outputs.length; ++i)
 				{
 					if (outputs[i] instanceof Boolean)
@@ -678,7 +677,8 @@ public class OperationDialog extends EscapeDialog
 						++j;
 						if (model instanceof FSAModel)
 						{
-							CompositeStateLabeller.labelStates((FSAModel)model);
+							FSAStateLabeller
+									.labelCompositeStates((FSAModel)model);
 						}
 						Hub.getWorkspace().addModel(model);
 						Hub.getWorkspace().setActiveModel(model.getName());

@@ -71,6 +71,16 @@ public class Composition
 					"temp");
 			product(prevAnswer, automata[i], newAnswer);
 
+			// fix COMPOSED_OF model names
+			String[] prevModels = (String[])prevAnswer
+					.getAnnotation(Annotable.COMPOSED_OF);
+			String[] newModels = new String[prevModels.length + 1];
+			System.arraycopy(prevModels, 0, newModels, 0, prevModels.length);
+			newModels[newModels.length - 1] = automata[i].getName();
+			newAnswer.setAnnotation(Annotable.COMPOSED_OF, newModels);
+			// fix COMPOSED_OF states
+			flattenComposedOf(prevAnswer, newAnswer);
+
 			prevAnswer = newAnswer;
 		}
 		prevAnswer.setName(name);
@@ -131,8 +141,6 @@ public class Composition
 		product.setAnnotation(Annotable.COMPOSED_OF, new String[] {
 				a.getName(), b.getName() });
 
-		// long eventid = 0;
-
 		// Add the intersection between the eventsets as the products eventset.
 		ListIterator<FSAEvent> eventsa = a.getEventIterator();
 		while (eventsa.hasNext())
@@ -144,10 +152,7 @@ public class Composition
 				FSAEvent eventb = eventsb.next();
 				if (eventa.equals(eventb))
 				{
-					// TODO: is this right? Does the new event have the same
-					// properties as the old event?
 					FSAEvent event = new Event(eventa);
-					// event.setId(eventid++);
 					product.add(event);
 					break;
 				}
@@ -274,6 +279,17 @@ public class Composition
 			newAnswer = ModelManager.instance().createModel(FSAModel.class,
 					"temp");
 			parallel(prevAnswer, automata[i], newAnswer);
+
+			// fix COMPOSED_OF model names
+			String[] prevModels = (String[])prevAnswer
+					.getAnnotation(Annotable.COMPOSED_OF);
+			String[] newModels = new String[prevModels.length + 1];
+			System.arraycopy(prevModels, 0, newModels, 0, prevModels.length);
+			newModels[newModels.length - 1] = automata[i].getName();
+			newAnswer.setAnnotation(Annotable.COMPOSED_OF, newModels);
+			// fix COMPOSED_OF states
+			flattenComposedOf(prevAnswer, newAnswer);
+
 			prevAnswer = newAnswer;
 		}
 		prevAnswer.setName(name);
@@ -498,8 +514,6 @@ public class Composition
 		observer.setAnnotation(Annotable.COMPOSED_OF, new String[] { a
 				.getName() });
 
-		// long eventid=0;
-
 		ListIterator<FSAEvent> eli = a.getEventIterator();
 		while (eli.hasNext())
 		{
@@ -507,7 +521,6 @@ public class Composition
 			if (e.isObservable())
 			{
 				FSAEvent event = new Event(e);
-				// event.setId(eventid++);
 				observer.add(event);
 			}
 		}
@@ -674,18 +687,22 @@ public class Composition
 		boolean marked = false;
 		int cId = 0;
 		long[] compositionIds = new long[sll.size()];
+		String[] compositionNames = new String[sll.size()];
 
 		while (sli.hasNext())
 		{
 			s = sli.next();
 			marked |= s.isMarked();
-			compositionIds[cId++] = s.getId();
+			compositionIds[cId] = s.getId();
+			compositionNames[cId] = s.getName();
+			cId++;
 		}
 
 		rs = new State(id);
 		rs.setMarked(marked);
 		rs.setInitial(initial);
 		rs.setAnnotation(Annotable.COMPOSED_OF, compositionIds);
+		rs.setAnnotation(Annotable.COMPOSED_OF_NAMES, compositionNames);
 		return rs;
 	}
 
@@ -777,16 +794,10 @@ public class Composition
 	private static FSAState makeState(FSAState[] s, long stateNumber)
 	{
 		FSAState state = new State(stateNumber);
-		// SubElement name = new SubElement("name");
-		// name.setChars("(" + s[0].getSubElement("name").getChars() + ", "
-		// + s[1].getSubElement("name").getChars() + ")");
-		// state.addSubElement(name);
-
-		// SubElement properties = new SubElement("properties");
-
-		// state.setName("{" + s[0].getName() + "," + s[1].getName() + "}");
 		state.setAnnotation(Annotable.COMPOSED_OF, new long[] { s[0].getId(),
 				s[1].getId() });
+		state.setAnnotation(Annotable.COMPOSED_OF_NAMES, new String[] {
+				s[0].getName(), s[1].getName() });
 
 		if (s[0].isInitial() && s[1].isInitial())
 		{
@@ -828,5 +839,57 @@ public class Composition
 			return pairIds.get(key).longValue();
 		}
 		return -1;
+	}
+
+	private static void flattenComposedOf(FSAModel previous, FSAModel current)
+	{
+		for (Iterator<FSAState> i = current.getStateIterator(); i.hasNext();)
+		{
+			FSAState s = i.next();
+			long[] currentComposedOf = (long[])s
+					.getAnnotation(Annotable.COMPOSED_OF);
+			String[] currentComposedOfNames = (String[])s
+					.getAnnotation(Annotable.COMPOSED_OF_NAMES);
+			if (currentComposedOf == null
+					|| currentComposedOf.length != 2
+					|| (currentComposedOfNames != null && currentComposedOfNames.length != 2))
+			{
+				continue;
+			}
+			FSAState previousS = previous.getState(currentComposedOf[0]);
+			if (previousS == null)
+			{
+				continue;
+			}
+			long[] previousComposedOf = (long[])previousS
+					.getAnnotation(Annotable.COMPOSED_OF);
+			String[] previousComposedOfNames = (String[])previousS
+					.getAnnotation(Annotable.COMPOSED_OF_NAMES);
+			if (previousComposedOf == null
+					|| (previousComposedOfNames != null && previousComposedOf.length != previousComposedOfNames.length))
+			{
+				continue;
+			}
+			long[] composedOf = new long[previousComposedOf.length + 1];
+			System.arraycopy(previousComposedOf,
+					0,
+					composedOf,
+					0,
+					previousComposedOf.length);
+			composedOf[composedOf.length - 1] = currentComposedOf[1];
+			s.setAnnotation(Annotable.COMPOSED_OF, composedOf);
+			if (currentComposedOfNames != null
+					&& previousComposedOfNames != null)
+			{
+				String[] composedOfNames = new String[previousComposedOfNames.length + 1];
+				System.arraycopy(previousComposedOfNames,
+						0,
+						composedOfNames,
+						0,
+						previousComposedOfNames.length);
+				composedOfNames[composedOfNames.length - 1] = currentComposedOfNames[1];
+				s.setAnnotation(Annotable.COMPOSED_OF_NAMES, composedOfNames);
+			}
+		}
 	}
 }

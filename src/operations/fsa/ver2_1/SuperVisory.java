@@ -20,10 +20,6 @@ public class SuperVisory
 {
 
 	/**
-	 * To be used to store the ids of pairs of states
-	 */
-	// protected static Map<String,Long> pairIds=new TreeMap<String,Long>();
-	/**
 	 * Finds the supremal controllable sublanguage of a legal language wrt. a
 	 * given plant
 	 * 
@@ -186,9 +182,7 @@ public class SuperVisory
 	 */
 	private static void supCProduct(FSAModel a, FSAModel b, FSAModel product)
 	{
-
 		Composition.product(a, b, product);
 		Unary.accessible(product);
-
 	}
 }

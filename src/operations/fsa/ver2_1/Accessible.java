@@ -36,7 +36,6 @@ public class Accessible extends AbstractOperation implements FilterOperation
 	public Object[] perform(Object[] inputs)
 	{
 		FSAModel a = ((FSAModel)inputs[0]).clone();
-		Unary.buildStateCompositionOfClone(a);
 		Unary.accessible(a);
 		return new Object[] { a };
 	}
@@ -46,12 +45,10 @@ public class Accessible extends AbstractOperation implements FilterOperation
 		return new int[] { 0 };
 	}
 
-	// code never reached ******************
 	public Object[] filter(Object[] inputs)
 	{
 		FSAModel a = (FSAModel)inputs[0];
 		Unary.accessible(a);
 		return new Object[] { a };
 	}
-	// end code never reached **************
 }

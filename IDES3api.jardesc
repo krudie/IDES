@@ -20,8 +20,11 @@
         <javaElement handleIdentifier="=IDES3/src&lt;ides.api.cache"/>
         <javaElement handleIdentifier="=IDES3/src&lt;ides.api.notice"/>
         <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin.presentation"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.presentation.fsa"/>
         <javaElement handleIdentifier="=IDES3/src&lt;ides.api.model.fsa"/>
         <javaElement handleIdentifier="=IDES3/src&lt;ides.api.plugin.model"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.ui"/>
+        <javaElement handleIdentifier="=IDES3/src&lt;ides.api.utilities"/>
     </selectedElements>
     <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>

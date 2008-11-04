@@ -3,7 +3,6 @@
  */
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
@@ -33,10 +32,6 @@ public class Unary
 	public static void accessible(FSAModel automaton)
 	{
 		HashSet<FSAState> accessible = new HashSet<FSAState>();
-
-		// set Annotation for labelling purposes
-		automaton.setAnnotation(Annotable.COMPOSED_OF, new String[] { automaton
-				.getName() });
 
 		LinkedList<FSAState> searchList = new LinkedList<FSAState>();
 		// find initial states, mark them as reached and add them to the queue
@@ -173,7 +168,7 @@ public class Unary
 			}
 		}
 		// for all states in the list mark all states that can access this state
-		// as marked and add it to the list (if it isn't allready marked.)
+		// as marked and add it to the list (if it isn't already marked.)
 		while (!searchList.isEmpty())
 		{
 			FSAState s = searchList.removeFirst();
@@ -188,15 +183,6 @@ public class Unary
 					searchList.addFirst(source);
 				}
 			}
-		}
-	}
-
-	public static void buildStateCompositionOfClone(FSAModel clone)
-	{
-		for (Iterator<FSAState> i = clone.getStateIterator(); i.hasNext();)
-		{
-			FSAState s = i.next();
-			s.setAnnotation(Annotable.COMPOSED_OF, new long[] { s.getId() });
 		}
 	}
 }

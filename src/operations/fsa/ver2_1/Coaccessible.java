@@ -36,7 +36,6 @@ public class Coaccessible extends AbstractOperation implements FilterOperation
 	public Object[] perform(Object[] inputs)
 	{
 		FSAModel a = ((FSAModel)inputs[0]).clone();
-		Unary.buildStateCompositionOfClone(a);
 		Unary.coaccessible(a);
 		return new Object[] { a };
 	}
