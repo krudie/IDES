@@ -48,24 +48,6 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog
 
 	private static Node n;
 
-	protected Action commitListener = new AbstractAction()
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 77744190651644817L;
-
-		public void actionPerformed(ActionEvent actionEvent)
-		{
-			if (gm != null && !area.getText().equals(n.getLabel().getText()))
-			{
-				new GraphActions.LabelAction(gm, n, area.getText()).execute();
-			}
-			setVisible(false);
-		}
-	};
-
-	// the main job will be handled by commitListener on focusLost
 	protected Action enterListener = new AbstractAction()
 	{
 		/**
@@ -75,7 +57,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog
 
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			setVisible(false);
+			commitAndClose();
 		}
 	};
 
@@ -83,7 +65,7 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog
 	{
 		public void focusLost(FocusEvent e)
 		{
-			me.commitListener.actionPerformed(new ActionEvent(this, 0, ""));
+			instance().commitAndClose();
 		}
 
 		public void focusGained(FocusEvent e)
@@ -196,5 +178,14 @@ public class SingleLineNodeLabellingDialog extends EscapeDialog
 	{
 		area.removeFocusListener(commitOnFocusLost);
 		setVisible(false);
+	}
+
+	protected void commitAndClose()
+	{
+		if (gm != null && !area.getText().equals(n.getLabel().getText()))
+		{
+			new GraphActions.LabelAction(gm, n, area.getText()).execute();
+		}
+		onEscapeEvent();
 	}
 }

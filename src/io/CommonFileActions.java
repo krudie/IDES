@@ -132,8 +132,8 @@ public class CommonFileActions
 				String name = ParsingToolbox.removeFileType(file.getName());
 				model.setAnnotation(Annotable.FILE, file);
 				model.setName(name);
-				model.modelSaved();
 			}
+			model.modelSaved();
 			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
 					file.getParentFile().getAbsolutePath());
 			return true;

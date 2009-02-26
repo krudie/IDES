@@ -4,6 +4,7 @@ import ides.api.core.Hub;
 import ides.api.plugin.Plugin;
 import ides.api.plugin.PluginInitException;
 import ides.api.plugin.operation.OperationManager;
+import io.AnnotatedModelPlugin;
 import io.fsa.ver2_1.EPSPlugin;
 import io.fsa.ver2_1.FSAFileIOPlugin;
 import io.fsa.ver2_1.GrailPlugin;
@@ -88,6 +89,7 @@ public class PluginManager
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();
+		new AnnotatedModelPlugin().initialize();
 
 		// Import/Export plugins:
 		new GrailPlugin().initialize();

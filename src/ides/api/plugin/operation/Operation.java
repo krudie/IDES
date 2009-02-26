@@ -31,10 +31,10 @@ public interface Operation
 	public abstract String getDescription();
 
 	/**
-	 * Nuber of inputs for the operation. If it can handle an unbounded number
+	 * Number of inputs for the operation. If it can handle an unbounded number
 	 * of inputs, return -1.
 	 * 
-	 * @return nuber of inputs for the operation; -1 if unbounded
+	 * @return number of inputs for the operation; -1 if unbounded
 	 */
 	public abstract int getNumberOfInputs();
 
@@ -73,18 +73,25 @@ public interface Operation
 	public abstract String[] getDescriptionOfInputs();
 
 	/**
-	 * Nuber of outputs from the operation.
+	 * Number of outputs from the operation.
+	 * <p>
+	 * "Macro" operations, which do not have a defined number of outputs should
+	 * return -1.
 	 * 
-	 * @return nuber of outputs from the operation
+	 * @return number of outputs from the operation
 	 */
 	public abstract int getNumberOfOutputs();
 
 	/**
-	 * Class types of the outputs.
+	 * Class types of the outputs. Each type in the array should match the type
+	 * of the corresponding output in the array returned by the operation.
 	 * <p>
 	 * Whenever possible, please use the general interfaces from the package
 	 * <code>model.*</code> (such as <code>FSAModel</code>) instead of specific
 	 * implementations.
+	 * <p>
+	 * "Macro" operations (where {@link #getNumberOfOutputs()} returns -1) need
+	 * not specify the type of outputs.
 	 * 
 	 * @return class types of the inputs
 	 * @see #getNumberOfOutputs()
@@ -94,6 +101,12 @@ public interface Operation
 
 	/**
 	 * User-readable and understandable description for each output argument.
+	 * Each description in the array should describe the corresponding output in
+	 * the array returned by the operation.
+	 * <p>
+	 * "Macro" operations (where {@link #getNumberOfOutputs()} returns -1) have
+	 * to provide descriptions for all outputs after the number of outputs is
+	 * known (e.g., after performing the operation).
 	 * 
 	 * @return user-readable descriptions of the outputs
 	 * @see #getNumberOfOutputs()

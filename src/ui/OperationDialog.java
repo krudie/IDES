@@ -3,6 +3,7 @@
  */
 package ui;
 
+import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEvent;
@@ -244,25 +245,29 @@ public class OperationDialog extends EscapeDialog
 		outputNames.clear();
 		lastSetNames.clear();
 		outputsBox.removeAll();
-		Class<?>[] outputTypes = operation.getTypeOfOutputs();
-		for (int i = 0; i < outputTypes.length; ++i)
+		if (operation.getNumberOfOutputs() >= 0)
 		{
-			if (DESModel.class.isAssignableFrom(outputTypes[i]))
+			Class<?>[] outputTypes = operation.getTypeOfOutputs();
+			for (int i = 0; i < outputTypes.length; ++i)
 			{
-				JTextField nameField = new JTextField();
-				nameField.setMaximumSize(new Dimension(
-						nameField.getMaximumSize().width,
-						nameField.getPreferredSize().height));
-				Box p = Box.createHorizontalBox();
-				p.setBorder(BorderFactory.createTitledBorder(operation
-						.getDescriptionOfOutputs()[i]));
-				p.add(nameField);
-				outputNames.add(nameField);
-				lastSetNames.add("");
-				outputsBox.add(p);
-				if (i != outputTypes.length - 1)
+				if (DESModel.class.isAssignableFrom(outputTypes[i]))
 				{
-					outputsBox.add(Box.createRigidArea(new Dimension(0, 5)));
+					JTextField nameField = new JTextField();
+					nameField.setMaximumSize(new Dimension(nameField
+							.getMaximumSize().width, nameField
+							.getPreferredSize().height));
+					Box p = Box.createHorizontalBox();
+					p.setBorder(BorderFactory.createTitledBorder(operation
+							.getDescriptionOfOutputs()[i]));
+					p.add(nameField);
+					outputNames.add(nameField);
+					lastSetNames.add("");
+					outputsBox.add(p);
+					if (i != outputTypes.length - 1)
+					{
+						outputsBox
+								.add(Box.createRigidArea(new Dimension(0, 5)));
+					}
 				}
 			}
 		}
@@ -673,12 +678,20 @@ public class OperationDialog extends EscapeDialog
 					else if (outputs[i] instanceof DESModel)
 					{
 						DESModel model = (DESModel)outputs[i];
-						model.setName(outputNames.elementAt(j).getText());
-						++j;
+						if (j < outputNames.size())
+						{
+							model.setName(outputNames.elementAt(j).getText());
+							++j;
+						}
 						if (model instanceof FSAModel)
 						{
 							FSAStateLabeller
 									.labelCompositeStates((FSAModel)model);
+						}
+						if (!model.hasAnnotation(Annotable.TEXT_ANNOTATION))
+						{
+							model.setAnnotation(Annotable.TEXT_ANNOTATION,
+									model.getName() + ": " + outputDesc[i]);
 						}
 						Hub.getWorkspace().addModel(model);
 						Hub.getWorkspace().setActiveModel(model.getName());

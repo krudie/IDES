@@ -44,6 +44,47 @@ public class ProtectedInputStream extends FilterInputStream
 		}
 	}
 
+	public int read(byte[] b) throws IOException
+	{
+		return read(b, 0, b.length);
+	}
+
+	public int read(byte[] b, int off, int len) throws IOException
+	{
+		if (b == null)
+		{
+			throw new NullPointerException();
+		}
+		if (off < 0 || len < 0 || off + len > b.length)
+		{
+			throw new IndexOutOfBoundsException();
+		}
+		if (len == 0)
+		{
+			return 0;
+		}
+		int count = 0;
+		int r = read();
+		if (r < 0)
+		{
+			return -1;
+		}
+		while (r >= 0 && count < len)
+		{
+			b[off + count] = (byte)r;
+			try
+			{
+				r = read();
+			}
+			catch (IOException e)
+			{
+				r = -1;
+			}
+			count++;
+		}
+		return count;
+	}
+
 	@Override
 	public long skip(long n) throws IOException
 	{

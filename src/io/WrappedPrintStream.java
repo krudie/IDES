@@ -15,7 +15,7 @@ public class WrappedPrintStream extends PrintStream
 	public WrappedPrintStream(OutputStream o)
 			throws UnsupportedEncodingException
 	{
-		super(o, true, "UTF-8");
+		super(o, true);
 	}
 
 	@Override

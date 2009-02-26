@@ -98,7 +98,7 @@ public final class IOCoordinator implements IOSubsytem
 				String tag = tags.next();
 				MetaPrintStream metaps = new MetaPrintStream(ps, "<meta tag=\""
 						+ tag + "\" version=\""
-						+ plugin.getSaveMetaVersion(tag) + "\">\n");
+						+ plugin.getSaveMetaVersion(tag) + "\">");
 				plugin.saveMeta(metaps, model, tag);
 				if (metaps.hasOutput())
 				{
@@ -194,7 +194,7 @@ public final class IOCoordinator implements IOSubsytem
 					try
 					{
 						fch.position(recovery.getTagOffset(tag));
-						// Get a stream countaining the metaInformation
+						// Get a stream containing the metaInformation
 						InputStream metaStream = new ProtectedInputStream(
 								fis,
 								0,

@@ -214,25 +214,25 @@ public class FilmStrip extends JPanel implements WorkspaceSubscriber,
 			return;
 		}
 		Presentation gv = ((Thumbnail)arg0.getSource()).getPresentation();
-		if (arg0.getClickCount() < 2)
+		if (!gv.getModel().getName().equals(Hub
+				.getWorkspace().getActiveModelName()))
 		{
-			gv.getModel();
-			if (!gv.getModel().getName().equals(Hub
-					.getWorkspace().getActiveModelName()))
-			{
-				Hub.getWorkspace().setActiveModel(gv.getModel().getName());
-			}
+			Hub.getWorkspace().setActiveModel(gv.getModel().getName());
 		}
-		else
+		if (arg0.getClickCount() > 1
+				&& !gv.getGUI().contains(SwingUtilities
+						.convertPoint((Thumbnail)arg0.getSource(), arg0
+								.getPoint(), gv.getGUI())))
+		// double-clicking on thumbnail label
 		{
 			if (gv.getModel().getParentModel() == null)
 			{
 				new EditActions.RenameAction().actionPerformed(null);
 			}
-			else
-			{
-				new EditActions.GoToParentAction().actionPerformed(null);
-			}
+			// else
+			// {
+			// new EditActions.GoToParentAction().actionPerformed(null);
+			// }
 		}
 	}
 

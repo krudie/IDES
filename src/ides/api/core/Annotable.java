@@ -42,6 +42,12 @@ public interface Annotable
 	public static final String LAYOUT = "layout";
 
 	/**
+	 * Annotation key for the user-defined text annotation of models. Annotation
+	 * is {@link String}. Read-only.
+	 */
+	public static final String TEXT_ANNOTATION = "textAnnotation";
+
+	/**
 	 * Returns the annotation for the given key.
 	 * 
 	 * @param key

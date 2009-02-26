@@ -71,7 +71,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	 */
 	private static final long serialVersionUID = 3889527073050548206L;
 
-	String imagePath = "images/icons/";
+	private String imagePath = "images/icons/";
 
 	protected static final String UI_SETTINGS = "MainWindow settings";
 
@@ -89,7 +89,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	private ZoomControl zoom = new ZoomControl();
 
-	Box zoomSelector;
+	private Box zoomSelector;
 
 	public MainWindow()
 	{
@@ -186,47 +186,47 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		getContentPane().add(mainPane, "Center");
 	}
 
-	Action newAction;
+	protected Action newAction;
 
-	Action openAction;
+	protected Action openAction;
 
-	Action saveAction;
+	protected Action saveAction;
 
-	Action saveasAction;
+	protected Action saveasAction;
 
-	Action saveallAction;
+	protected Action saveallAction;
 
-	Action closeAction;
+	protected Action closeAction;
 
-	Action wopenAction;
+	protected Action wopenAction;
 
-	Action wsaveAction;
+	protected Action wsaveAction;
 
-	Action wsaveasAction;
+	protected Action wsaveasAction;
 
-	Action importAction;
+	protected Action importAction;
 
-	Action exportAction;
+	protected Action exportAction;
 
-	Action exitAction;
+	protected Action exitAction;
 
-	Action undoAction;
+	protected Action undoAction;
 
-	Action redoAction;
+	protected Action redoAction;
 
-	Action operationsAction;
+	protected Action operationsAction;
 
-	Action latexAction;
+	protected Action latexAction;
 
-	Action optionsAction;
+	protected Action optionsAction;
 
-	Action pluginsAction;
+	protected Action pluginsAction;
 
-	Action aboutAction;
+	protected Action aboutAction;
 
-	Action renameAction;
+	protected Action renameAction;
 
-	Action goToParentAction;
+	protected Action goToParentAction;
 
 	private void setupActions()
 	{
@@ -622,6 +622,9 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			{
 				rightViews.add(p.getName(), p.getGUI());
 			}
+			AnnotationTab at = new AnnotationTab(Hub
+					.getWorkspace().getActiveModel());
+			rightViews.add(at.getName(), at.getGUI());
 			rightViews.add(NoticeBoard.instance().getName(), NoticeBoard
 					.instance());
 			if (tabLayout != null)

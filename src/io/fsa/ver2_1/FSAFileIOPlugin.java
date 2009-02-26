@@ -145,7 +145,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		ListIterator<FSATransition> ti = ((FSAModel)model)
 				.getTransitionIterator();
 		// TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
-		stream.println("\t<font size=\"" + 12 + "\"/>");
+		stream.println("\n\t<font size=\"" + 12 + "\"/>");
 
 		GraphLayout layout = (GraphLayout)model.getAnnotation(Annotable.LAYOUT);
 		if (layout != null)

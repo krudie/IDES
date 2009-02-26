@@ -117,8 +117,7 @@ public class CreationTool extends DrawingTool
 
 		// Do not clear the selection if the selected element is a BezierEdge
 		// Reason: let the user modify the control points of the bezier curve
-		// without
-		// need to change the curve.
+		// without need to change the curve.
 		if (!(ContextAdaptorHack.context.getSelectedElement() instanceof BezierEdge))
 		{
 			ContextAdaptorHack.context.clearCurrentSelection();
@@ -148,6 +147,10 @@ public class CreationTool extends DrawingTool
 					return;
 				}
 			}
+		}
+		else if (drawingEdge)
+		{
+			targetNode = null;
 		}
 		else
 		{// If an edge or label is selected:

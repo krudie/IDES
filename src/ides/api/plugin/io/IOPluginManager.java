@@ -33,11 +33,15 @@ public class IOPluginManager
 
 	private Map<Class<?>, Set<FileIOPlugin>> metaSavers = null;
 
+	private Set<FileIOPlugin> metaSaversGeneric = null;
+
 	private Map<Class<?>, FileIOPlugin> dataSavers = null;
 
 	private Map<String, FileIOPlugin> dataLoaders = null;
 
 	private Map<String, Map<String, FileIOPlugin>> metaLoaders = null;
+
+	private Map<String, FileIOPlugin> metaLoadersGeneric = null;
 
 	private Map<Class<?>, Set<ImportExportPlugin>> exporters = null;
 
@@ -60,8 +64,10 @@ public class IOPluginManager
 	private IOPluginManager()
 	{
 		metaSavers = new HashMap<Class<?>, Set<FileIOPlugin>>();
+		metaSaversGeneric = new HashSet<FileIOPlugin>();
 		dataSavers = new HashMap<Class<?>, FileIOPlugin>();
 		metaLoaders = new HashMap<String, Map<String, FileIOPlugin>>();
+		metaLoadersGeneric = new HashMap<String, FileIOPlugin>();
 		dataLoaders = new HashMap<String, FileIOPlugin>();
 		importers = new HashMap<String, ImportExportPlugin>();
 		exporters = new HashMap<Class<?>, Set<ImportExportPlugin>>();
@@ -122,7 +128,9 @@ public class IOPluginManager
 	 */
 	public Set<FileIOPlugin> getMetaSavers(Class<?> type)
 	{
-		return metaSavers.get(type);
+		Set<FileIOPlugin> set = new HashSet<FileIOPlugin>(metaSavers.get(type));
+		set.addAll(metaSaversGeneric);
+		return set;
 	}
 
 	/**
@@ -143,9 +151,14 @@ public class IOPluginManager
 		Map<String, FileIOPlugin> map = metaLoaders.get(type);
 		if (map == null)
 		{
-			return null;
+			return metaLoadersGeneric.get(tag);
 		}
-		return map.get(tag);
+		FileIOPlugin plugin = map.get(tag);
+		if (plugin == null)
+		{
+			return metaLoadersGeneric.get(tag);
+		}
+		return plugin;
 	}
 
 	/**
@@ -226,6 +239,24 @@ public class IOPluginManager
 	}
 
 	/**
+	 * Registers a plugin which can load meta-data with the given "tag" for any
+	 * type of DES models (a generic plugin). The "tag" is read from the IDES
+	 * model files.
+	 * 
+	 * @param plugin
+	 *            the plugin to be registered
+	 * @param tag
+	 *            the "tag" of the meta-data section which the plugin can load
+	 */
+	public void registerMetaLoader(FileIOPlugin plugin, String tag)
+	{
+		if (plugin != null)
+		{
+			metaLoadersGeneric.put(tag, plugin);
+		}
+	}
+
+	/**
 	 * Registers a plugin which can save meta-data for the given
 	 * {@link DESModel} perspective.
 	 * 
@@ -247,6 +278,22 @@ public class IOPluginManager
 			}
 			set.add(plugin);
 			metaSavers.put(type, set);
+		}
+	}
+
+	/**
+	 * Registers a plugin which can save meta-data for any {@link DESModel}
+	 * perspective (a generic plugin).
+	 * 
+	 * @param plugin
+	 *            the plugin to be registered
+	 * @see DESModelType
+	 */
+	public void registerMetaSaver(FileIOPlugin plugin)
+	{
+		if (plugin != null)
+		{
+			metaSaversGeneric.add(plugin);
 		}
 	}
 

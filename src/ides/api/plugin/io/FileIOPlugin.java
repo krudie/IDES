@@ -25,6 +25,9 @@ public interface FileIOPlugin
 	 * This string is matched against the type in IDES model files.
 	 * <p>
 	 * For example, the type of Finite-State Machines is "FSA".
+	 * <p>
+	 * This method is relevant only to data-handling plugins. Meta-data plugins
+	 * do not need to implement this method.
 	 * 
 	 * @return the string describing the type of model handled by the plugin
 	 */
@@ -73,7 +76,7 @@ public interface FileIOPlugin
 	 * written to the provided stream.
 	 * 
 	 * @param stream
-	 *            stream where to write the data
+	 *            stream where to write the data (will be encoded into UTF-8)
 	 * @param model
 	 *            DES model to save
 	 * @param fileName
@@ -95,7 +98,7 @@ public interface FileIOPlugin
 	 * @param version
 	 *            the version of the format of the model data
 	 * @param stream
-	 *            stream with the model data
+	 *            UTF-8 encoded stream with the model data
 	 * @param fileName
 	 *            absolute path to the file from where the model is loaded
 	 * @return the loaded model
@@ -111,7 +114,7 @@ public interface FileIOPlugin
 	 * @param version
 	 *            the version of the format of the meta-data section
 	 * @param stream
-	 *            stream from where meta-data should be read
+	 *            UTF-8 encoded stream from where meta-data should be read
 	 * @param model
 	 *            the DES model for which the meta-data is to be loaded
 	 * @param tag
@@ -127,7 +130,8 @@ public interface FileIOPlugin
 	 * is highly recommended that the data conforms to the XML format.
 	 * 
 	 * @param stream
-	 *            stream where to write the meta-data
+	 *            stream where to write the meta-data (will be encoded into
+	 *            UTF-8)
 	 * @param model
 	 *            the DES model for which the meta-data is to be saved
 	 * @param tag

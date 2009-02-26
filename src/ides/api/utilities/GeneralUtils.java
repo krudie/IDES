@@ -49,6 +49,34 @@ public class GeneralUtils
 	}
 
 	/**
+	 * Escapes the ampersand (&amp;) and opening angle bracket (&lt;) as defined
+	 * in XML. Ampersand becomes &amp;amp; and angle bracket becomes &amp;lt;
+	 * 
+	 * @param s
+	 *            original text
+	 * @return text with XML-escaped ampersands and opening angle brackets
+	 */
+	public static String XMLTextEscape(String s)
+	{
+		return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
+	}
+
+	/**
+	 * Unescapes the ampersand (&amp;) and opening angle bracket (&lt;) in
+	 * XML-escaped text. &amp;amp; becomes ampersand and &amp;lt; becomes angle
+	 * bracket.
+	 * 
+	 * @param s
+	 *            original text with XML-escaped ampersands and opening angle
+	 *            brackets
+	 * @return text with unescaped ampersands and opening angle brackets
+	 */
+	public static String XMLTextUnescape(String s)
+	{
+		return s.replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+	}
+
+	/**
 	 * This class allows the use of simple keyboard shortcuts for the
 	 * Yes/No/etc. buttons in a {@link JOptionPane}.
 	 * <p>

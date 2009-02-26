@@ -106,7 +106,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	 */
 	public ReflexiveLayout(Node source, ReflexiveEdge edge, BezierLayout bLayout)
 	{
-		minAxisLength = source.bounds().height;
+		minAxisLength = 2 * ((CircleNodeLayout)source.getLayout()).getRadius();
 		setEdge(edge);
 		if (bLayout != null)
 		{

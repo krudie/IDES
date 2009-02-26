@@ -247,6 +247,15 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 			}
 		}
 
+		for (Iterator<DESModel> i = getModels(); i.hasNext();)
+		{
+			DESModel cm = i.next();
+			if (cm.getParentModel() == m)
+			{
+				removeModel(cm.getName());
+			}
+		}
+
 		m.removeSubscriber(this);
 
 		int idx = getModelIndex(name);

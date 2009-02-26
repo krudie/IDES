@@ -48,33 +48,13 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 
 	private static FSAGraph gm = null;
 
-	protected Action commitListener = new AbstractAction()
+	protected Action enterListener = new AbstractAction()
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 8040999636847105815L;
 
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			// TODO these changes should be sent through undoable commands
-			if (gm != null && !area.getText().equals(""))
-			{
-				if (freeLabel == null)
-				{
-					// add a free label
-					gm.addFreeLabel(area.getText(), new Point2D.Float(me
-							.getLocation().x, me.getLocation().y
-							- me.getHeight()));
-				}
-				else
-				{
-					// change the text on an existing one.
-					gm.setLabelText(freeLabel, area.getText());
-				}
-				area.setText("");
-			}
-			setVisible(false);
+			commitAndClose();
 		}
 	};
 
@@ -82,7 +62,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 	{
 		public void focusLost(FocusEvent e)
 		{
-			me.commitListener.actionPerformed(new ActionEvent(this, 0, ""));
+			instance().commitAndClose();
 		}
 
 		public void focusGained(FocusEvent e)
@@ -98,7 +78,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				onEscapeEvent();
+				commitAndClose();
 			}
 		});
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -113,7 +93,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 				this);
 		// area.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(
 		// KeyEvent.VK_ENTER,KeyEvent.CTRL_DOWN_MASK),actionKey);
-		area.getActionMap().put(this, commitListener);
+		area.getActionMap().put(this, enterListener);
 		// JScrollPane sPane=new JScrollPane(area);
 		mainBox.add(area);
 		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -241,4 +221,26 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 		area.removeFocusListener(commitOnFocusLost);
 		setVisible(false);
 	}
+
+	protected void commitAndClose()
+	{
+		// TODO these changes should be sent through undoable commands
+		if (gm != null && !area.getText().equals(""))
+		{
+			if (freeLabel == null)
+			{
+				// add a free label
+				gm.addFreeLabel(area.getText(), new Point2D.Float(me
+						.getLocation().x, me.getLocation().y - me.getHeight()));
+			}
+			else
+			{
+				// change the text on an existing one.
+				gm.setLabelText(freeLabel, area.getText());
+			}
+			area.setText("");
+		}
+		onEscapeEvent();
+	}
+
 }

@@ -51,24 +51,6 @@ public class NodeLabellingDialog extends EscapeDialog
 
 	private static CircleNode n;
 
-	protected Action commitListener = new AbstractAction()
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -8347292673808107793L;
-
-		public void actionPerformed(ActionEvent actionEvent)
-		{
-			if (gm != null && !area.getText().equals(n.getLabel().getText()))
-			{
-				new GraphActions.LabelAction(gm, n, area.getText()).execute();
-			}
-			setVisible(false);
-		}
-	};
-
-	// the main job will be handled by commitListener on focusLost
 	protected Action enterListener = new AbstractAction()
 	{
 		/**
@@ -78,7 +60,7 @@ public class NodeLabellingDialog extends EscapeDialog
 
 		public void actionPerformed(ActionEvent actionEvent)
 		{
-			setVisible(false);
+			commitAndClose();
 		}
 	};
 
@@ -86,7 +68,7 @@ public class NodeLabellingDialog extends EscapeDialog
 	{
 		public void focusLost(FocusEvent e)
 		{
-			me.commitListener.actionPerformed(new ActionEvent(this, 0, ""));
+			instance().commitAndClose();
 		}
 
 		public void focusGained(FocusEvent e)
@@ -102,7 +84,7 @@ public class NodeLabellingDialog extends EscapeDialog
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				onEscapeEvent();
+				commitAndClose();
 			}
 		});
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -200,5 +182,14 @@ public class NodeLabellingDialog extends EscapeDialog
 	{
 		area.removeFocusListener(commitOnFocusLost);
 		setVisible(false);
+	}
+
+	protected void commitAndClose()
+	{
+		if (gm != null && !area.getText().equals(n.getLabel().getText()))
+		{
+			new GraphActions.LabelAction(gm, n, area.getText()).execute();
+		}
+		onEscapeEvent();
 	}
 }
