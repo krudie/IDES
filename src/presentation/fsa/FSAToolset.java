@@ -54,7 +54,7 @@ public class FSAToolset implements Toolset
 
 		private static Action createAction = null;
 
-		private static Action moveAction = null;
+		// private static Action moveAction = null;
 
 		private Action alignAction = null;
 
@@ -110,10 +110,10 @@ public class FSAToolset implements Toolset
 			{
 				createAction = new UIActions.CreateTool();
 			}
-			if (moveAction == null)
-			{
-				moveAction = new UIActions.MoveTool();
-			}
+			// if (moveAction == null)
+			// {
+			// moveAction = new UIActions.MoveTool();
+			// }
 		}
 
 		public JMenu[] getMenus()
@@ -125,7 +125,7 @@ public class FSAToolset implements Toolset
 				// Initializing the menu items for the "graphMenu"
 				JMenuItem select = new JMenuItem(selectAction);
 				JMenuItem create = new JMenuItem(createAction);
-				JMenuItem move = new JMenuItem(moveAction);
+				// JMenuItem move = new JMenuItem(moveAction);
 				JMenuItem showGrid = new JCheckBoxMenuItem(gridAction);
 				gridBinder.bind(showGrid);
 				// this is a dummy menu item since it'll be replaced
@@ -133,7 +133,7 @@ public class FSAToolset implements Toolset
 				// Adding the menu items to the "graphMenu"
 				graphMenu.add(select);
 				graphMenu.add(create);
-				graphMenu.add(move);
+				// graphMenu.add(move);
 				graphMenu.addSeparator();
 				graphMenu.add(alignMenuItem);
 				graphMenu.add(showGrid);
@@ -169,7 +169,7 @@ public class FSAToolset implements Toolset
 			{
 				toolbar.add(selectAction);
 				toolbar.add(createAction);
-				toolbar.add(moveAction);
+				// toolbar.add(moveAction);
 				toolbar.addSeparator();
 				alignButton.setAction(alignAction);
 				alignButton.setText("");

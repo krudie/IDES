@@ -26,7 +26,9 @@ public class ToolPopup extends JPopupMenu
 
 	private static GraphDrawingView view;
 
-	private JMenuItem miSelect, miCreate, miMove, miAlign;
+	private JMenuItem miSelect, miCreate, miAlign;
+
+	// private JMenuItem miMove;
 
 	public static void showPopup(GraphDrawingView context, MouseEvent m)
 	{
@@ -45,13 +47,13 @@ public class ToolPopup extends JPopupMenu
 
 		miSelect = new JMenuItem(new UIActions.SelectTool());
 		miCreate = new JMenuItem(new UIActions.CreateTool());
-		miMove = new JMenuItem(new UIActions.MoveTool());
+		// miMove = new JMenuItem(new UIActions.MoveTool());
 		miAlign = new JMenuItem(ContextAdaptorHack.context.getAlignAction());
 		// miShowGrid = new JMenuItem(new OptionsCommands.ShowGridAction());
 
 		add(miSelect);
 		add(miCreate);
-		add(miMove);
+		// add(miMove);
 		add(new JPopupMenu.Separator());
 		add(miAlign);
 		// add(miShowGrid);
