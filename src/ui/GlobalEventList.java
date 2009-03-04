@@ -5,6 +5,7 @@ import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.DESModel;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.SystemColor;
 import java.util.Collection;
@@ -141,7 +142,7 @@ public class GlobalEventList extends JList
 			}
 			else
 			{
-				setBackground(darker ? SystemColor.text.darker()
+				setBackground(darker ? new Color(232, 232, 232)
 						: SystemColor.text);
 				setForeground(SystemColor.textText);
 			}
