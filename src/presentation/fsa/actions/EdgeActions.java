@@ -12,6 +12,7 @@ import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
+import presentation.fsa.FSAGraphMessage;
 
 /**
  * This class holds static commands that can perform actions over edges. All the
@@ -140,6 +141,13 @@ public class EdgeActions
 				// no need to "redo" the edit since the edge has already been
 				// modified
 				postEditAdjustCanvas(graph, edit);
+				graph.fireFSAGraphChanged(new FSAGraphMessage(
+						FSAGraphMessage.MODIFY,
+						FSAGraphMessage.EDGE,
+						edge.getId(),
+						edge.bounds(),
+						graph,
+						"reshape edge"));
 			}
 		}
 	}

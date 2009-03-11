@@ -10,11 +10,10 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.geom.Point2D;
 
 import javax.swing.AbstractAction;
@@ -24,6 +23,7 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 /**
  * A dialog window for entering a single line of text and creating a free label
@@ -58,14 +58,50 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 		}
 	};
 
-	protected static FocusListener commitOnFocusLost = new FocusListener()
+	protected static WindowListener commitOnFocusLost = new WindowListener()
 	{
-		public void focusLost(FocusEvent e)
+		public void windowActivated(WindowEvent arg0)
 		{
-			instance().commitAndClose();
+			if (arg0.getOppositeWindow() != null
+					&& !Hub
+							.getUserInterface()
+							.isWindowActivationAfterNoticePopup(arg0))
+			{
+				instance().commitAndClose();
+			}
+			else
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						area.requestFocus();
+					}
+				});
+			}
 		}
 
-		public void focusGained(FocusEvent e)
+		public void windowClosed(WindowEvent arg0)
+		{
+		}
+
+		public void windowClosing(WindowEvent arg0)
+		{
+		}
+
+		public void windowDeactivated(WindowEvent arg0)
+		{
+		}
+
+		public void windowDeiconified(WindowEvent arg0)
+		{
+		}
+
+		public void windowIconified(WindowEvent arg0)
+		{
+		}
+
+		public void windowOpened(WindowEvent arg0)
 		{
 		}
 	};
@@ -135,16 +171,16 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 		instance();
 		me.pack();
 		boolean hasOurListener = false;
-		for (int i = 0; i < area.getFocusListeners().length; ++i)
+		for (int i = 0; i < Hub.getMainWindow().getWindowListeners().length; ++i)
 		{
-			if (area.getFocusListeners()[i] == commitOnFocusLost)
+			if (Hub.getMainWindow().getWindowListeners()[i] == commitOnFocusLost)
 			{
 				hasOurListener = true;
 			}
 		}
 		if (!hasOurListener)
 		{
-			area.addFocusListener(commitOnFocusLost);
+			Hub.getMainWindow().addWindowListener(commitOnFocusLost);
 		}
 		area.setText(label.getText());
 		if (gdv == null)
@@ -181,16 +217,16 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 		instance();
 		me.pack();
 		boolean hasOurListener = false;
-		for (int i = 0; i < area.getFocusListeners().length; ++i)
+		for (int i = 0; i < Hub.getMainWindow().getWindowListeners().length; ++i)
 		{
-			if (area.getFocusListeners()[i] == commitOnFocusLost)
+			if (Hub.getMainWindow().getWindowListeners()[i] == commitOnFocusLost)
 			{
 				hasOurListener = true;
 			}
 		}
 		if (!hasOurListener)
 		{
-			area.addFocusListener(commitOnFocusLost);
+			Hub.getMainWindow().addWindowListener(commitOnFocusLost);
 		}
 		area.setText("");
 		if (gdv == null)
@@ -218,7 +254,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 	@Override
 	public void onEscapeEvent()
 	{
-		area.removeFocusListener(commitOnFocusLost);
+		Hub.getMainWindow().removeWindowListener(commitOnFocusLost);
 		setVisible(false);
 	}
 

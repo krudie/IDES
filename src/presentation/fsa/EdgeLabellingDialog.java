@@ -65,7 +65,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	private static GraphView presentation;
 
-	protected CompoundEdit allEdits;
+	protected CompoundEditEx allEdits;
 
 	public static void initialize(JComponent parent)
 	{
@@ -86,7 +86,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 			initialize(view);
 		}
 		presentation = view;
-		dialog.allEdits = new CompoundEdit();
+		dialog.allEdits = new CompoundEditEx();
 		dialog.checkControllable.setSelected(dialog.cbCState);
 		dialog.checkObservable.setSelected(dialog.cbOState);
 		dialog.setEdge(e);
@@ -169,7 +169,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				onEscapeEvent();
+				buttonOK.doClick();
 			}
 		});
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -532,9 +532,15 @@ public class EdgeLabellingDialog extends EscapeDialog
 	public void setEdge(Edge e)
 	{
 		this.edge = e;
+		originalEvents.clear();
 		if (edge != null)
 		{
 			update();
+			Object[] contents = listAssignedEvents.getContents().toArray();
+			for (int i = 0; i < contents.length; i++)
+			{
+				originalEvents.add((FSAEvent)contents[i]);
+			}
 		}
 		else
 		{
@@ -582,6 +588,8 @@ public class EdgeLabellingDialog extends EscapeDialog
 	private MutableList listAssignedEvents;
 
 	private MutableList listAvailableEvents;
+
+	private Vector<FSAEvent> originalEvents = new Vector<FSAEvent>();
 
 	private JButton buttonCreate, buttonAdd, buttonRemove, buttonOK,
 			buttonCancel;
@@ -785,14 +793,22 @@ public class EdgeLabellingDialog extends EscapeDialog
 			{
 				events.add((FSAEvent)contents[i]);
 			}
-			// FIXME use passed FSAGraph rather than take current from Workspace
-			new EdgeActions.LabelAction(
-					allEdits,
-					presentation.getGraphModel(),
-					edge,
-					events).execute();
-			allEdits.end();
-			Hub.getUndoManager().addEdit(allEdits);
+			if (allEdits.size() > 0 || !originalEvents.equals(events))
+			// if new events have been created, or the set of assigned events
+			// has been changed
+			{
+				// FIXME use passed FSAGraph rather than take current from
+				// Workspace
+				new EdgeActions.LabelAction(allEdits, presentation
+						.getGraphModel(), edge, events).execute();
+				allEdits.end();
+				Hub.getUndoManager().addEdit(allEdits);
+			}
+			else
+			{
+				allEdits.end();
+				allEdits.undo();
+			}
 
 			// ((FSAGraph)Hub.getWorkspace().getActiveLayoutShell()).
 			// replaceEventsOnEdge(events,
@@ -809,6 +825,16 @@ public class EdgeLabellingDialog extends EscapeDialog
 			}
 		}
 
+	}
+
+	private static class CompoundEditEx extends CompoundEdit
+	{
+		private static final long serialVersionUID = -9190099966292314915L;
+
+		public int size()
+		{
+			return edits.size();
+		}
 	}
 
 }

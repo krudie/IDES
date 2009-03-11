@@ -279,7 +279,7 @@ public class OperationDialog extends EscapeDialog
 		repaint();
 	}
 
-	protected void fillInOutputs()
+	protected String suggestOutputName()
 	{
 		String suggestedName = opList.getSelectedValue().toString() + "(";
 		for (int i = 0; i < inputs.size() - 1; ++i)
@@ -291,6 +291,12 @@ public class OperationDialog extends EscapeDialog
 			suggestedName += getSelectedNames(inputs.size() - 1);
 		}
 		suggestedName += ")";
+		return suggestedName;
+	}
+
+	protected void fillInOutputs()
+	{
+		String suggestedName = suggestOutputName();
 		if (outputNames.size() == 1)
 		{
 			if (outputNames.firstElement() != null)
@@ -691,7 +697,7 @@ public class OperationDialog extends EscapeDialog
 						if (!model.hasAnnotation(Annotable.TEXT_ANNOTATION))
 						{
 							model.setAnnotation(Annotable.TEXT_ANNOTATION,
-									model.getName() + ": " + outputDesc[i]);
+									suggestOutputName() + ": " + outputDesc[i]);
 						}
 						Hub.getWorkspace().addModel(model);
 						Hub.getWorkspace().setActiveModel(model.getName());

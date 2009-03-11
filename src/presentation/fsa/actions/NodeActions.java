@@ -10,6 +10,7 @@ import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import presentation.fsa.FSAGraph;
+import presentation.fsa.FSAGraphMessage;
 import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 
@@ -167,6 +168,12 @@ public class NodeActions
 				// no need to "redo" the edit since the initial arrow has
 				// already been modified
 				postEditAdjustCanvas(graph, action);
+				graph.fireFSAGraphChanged(new FSAGraphMessage(
+						FSAGraphMessage.MODIFY,
+						FSAGraphMessage.NODE,
+						arrow.getParent().getId(),
+						arrow.getParent().bounds(),
+						graph));
 			}
 		}
 	}

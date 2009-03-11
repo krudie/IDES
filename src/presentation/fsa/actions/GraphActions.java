@@ -327,6 +327,7 @@ public class GraphActions
 					allEdits.end();
 					postEditAdjustCanvas(graph, allEdits);
 				}
+				graph.commitLayoutModified();
 			}
 		}
 	}

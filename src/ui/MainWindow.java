@@ -49,6 +49,7 @@ import main.Main;
 import presentation.fsa.ContextAdaptorHack;
 import services.latex.LatexBackend;
 import services.notice.NoticeBoard;
+import services.notice.NoticePopup;
 import ui.actions.EditActions;
 import ui.actions.FileActions;
 import ui.actions.HelpActions;
@@ -863,5 +864,27 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			return "";
 		}
 		return rightViews.getTitleAt(rightViews.getSelectedIndex());
+	}
+
+	public boolean isWindowActivationAfterNoticePopup(WindowEvent we)
+	{
+		if (we.getID() == WindowEvent.WINDOW_ACTIVATED
+				&& we.getWindow() == this
+				&& we.getOppositeWindow() == NoticePopup.instance())
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isWindowDeactivationDuetoNoticePopup(WindowEvent we)
+	{
+		if (we.getID() == WindowEvent.WINDOW_DEACTIVATED
+				&& we.getWindow() == this
+				&& we.getOppositeWindow() == NoticePopup.instance())
+		{
+			return true;
+		}
+		return false;
 	}
 }

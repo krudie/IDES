@@ -106,6 +106,15 @@ public class CreationTool extends DrawingTool
 						.getCurrentTool().handleMouseClicked(me);
 			}
 		}
+		else
+		{
+			if (me.getClickCount() == 2)
+			{
+				ContextAdaptorHack.context.setTool(GraphDrawingView.TEXT);
+				ContextAdaptorHack.context
+						.getCurrentTool().handleMouseClicked(me);
+			}
+		}
 	}
 
 	@Override
