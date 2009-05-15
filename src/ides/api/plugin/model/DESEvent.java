@@ -23,13 +23,13 @@ public interface DESEvent extends DESElement
 	public abstract void setSymbol(String symbol);
 
 	/**
-	 * Returns true iff <code>o</code> is of type DESEvent and has the same
-	 * properties as this DESEvent.
+	 * Returns true iff <code>o</code> is of type DESEvent and has the same name
+	 * as this DESEvent.
 	 * 
 	 * @param o
 	 *            another object
-	 * @return true iff <code>o</code> is of type DESEvent and has the same
-	 *         properties as this DESEvent.
+	 * @return true iff <code>o</code> is of type DESEvent and has the same name
+	 *         as this DESEvent.
 	 */
 	public abstract boolean equals(Object o);
 

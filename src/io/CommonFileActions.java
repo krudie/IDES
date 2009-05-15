@@ -134,8 +134,6 @@ public class CommonFileActions
 				model.setName(name);
 			}
 			model.modelSaved();
-			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
-					file.getParentFile().getAbsolutePath());
 			return true;
 		}
 		return false;
@@ -211,6 +209,8 @@ public class CommonFileActions
 			{
 				if (save(model, file))
 				{
+					Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+							file.getParentFile().getAbsolutePath());
 					// Inform the workspace that one of its models was modified
 					// (renamed)
 					Hub.getWorkspace().setDirty(true);
@@ -471,8 +471,6 @@ public class CommonFileActions
 		{
 			workspaceToXML(wd, ps);
 			WorkspaceBackend.instance().setFile(file);
-			Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
-					file.getParent());
 			return true;
 		}
 	}
@@ -554,7 +552,13 @@ public class CommonFileActions
 
 		if (retVal == JFileChooser.APPROVE_OPTION)
 		{
-			return saveWorkspace(wd, file);
+			boolean saved = saveWorkspace(wd, file);
+			if (saved)
+			{
+				Hub.getPersistentData().setProperty(LAST_PATH_SETTING_NAME,
+						file.getParent());
+			}
+			return saved;
 		}
 		return false;
 	}

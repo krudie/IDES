@@ -15,8 +15,8 @@ public class Controllable extends AbstractOperation
 	public Controllable()
 	{
 		NAME = "controllable";
-		DESCRIPTION = "Determines if the plant"
-				+ " is controllable with respect to the specification.";
+		DESCRIPTION = "Determines if the secification"
+				+ " is controllable with respect to the plant.";
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class, FSAModel.class };
 		inputDesc = new String[] { "Plant", "Specification" };
@@ -39,11 +39,11 @@ public class Controllable extends AbstractOperation
 		String resultMessage;
 		if (result)
 		{
-			resultMessage = "Plant is controllable with respect to the specification.";
+			resultMessage = "Specification is controllable with respect to the plant.";
 		}
 		else
 		{
-			resultMessage = "Plant is not controllable with respect to the specification.";
+			resultMessage = "Specification is not controllable with respect to the plant.";
 		}
 		outputDesc = new String[] { resultMessage };
 		return new Object[] { new Boolean(result) };

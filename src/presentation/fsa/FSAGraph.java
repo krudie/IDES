@@ -368,6 +368,25 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		}
 
 		// Add the edges to the FSAGraph
+
+		// start by computing greatest edge group id
+		long maxGroup = 0;
+		for (Iterator<FSATransition> i = fsa.getTransitionIterator(); i
+				.hasNext();)
+		{
+			FSATransition t = i.next();
+			if (t.getAnnotation(Annotable.LAYOUT) != null)
+			{
+				BezierLayout l = (BezierLayout)t
+						.getAnnotation(Annotable.LAYOUT);
+				if (l.getGroup() != BezierLayout.UNGROUPPED
+						&& l.getGroup() > maxGroup)
+				{
+					maxGroup = l.getGroup();
+				}
+			}
+		}
+
 		HashMap<Long, BezierEdge> groupsMap = new HashMap<Long, BezierEdge>();
 		Iterator<FSATransition> tIt = fsa.getTransitionIterator();
 		while (tIt.hasNext())
@@ -376,8 +395,56 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
 			if (l == null)
 			{
-				hasLayout = false;
-				break;
+				// check if it's a simple self-loop
+				if (t.getSource() == t.getTarget())
+				{
+					// attach to existing self-loop if possible
+					boolean attached = false;
+					for (Iterator<FSATransition> i = t
+							.getSource().getOutgoingTransitionsListIterator(); i
+							.hasNext();)
+					{
+						FSATransition et = i.next();
+						if (et == t
+								|| et.getAnnotation(Annotable.LAYOUT) == null)
+						{
+							continue;
+						}
+						if (et.getSource() == et.getTarget())
+						{
+							BezierLayout el = (BezierLayout)et
+									.getAnnotation(Annotable.LAYOUT);
+							t.setAnnotation(Annotable.LAYOUT, el);
+							if (el.getGroup() == BezierLayout.UNGROUPPED)
+							{
+								maxGroup++;
+								el.setGroup(maxGroup);
+								if (el.getEdge() != null)
+								{
+									// add to group map otherwise a second edge
+									// will be created later
+									groupsMap.put(maxGroup, el.getEdge());
+								}
+							}
+							attached = true;
+							break;
+						}
+					}
+					if (!attached)
+					{
+						Set<FSATransition> set = new HashSet<FSATransition>();
+						set.add(t);
+						wrapTransition(set);
+						continue;
+					}
+					l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+				}
+				// not a self-loop
+				else
+				{
+					hasLayout = false;
+					break;
+				}
 			}
 			// find source and target nodes
 			Node src = nodes.get(t.getSource().getId());

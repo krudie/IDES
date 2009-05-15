@@ -40,13 +40,13 @@ public interface FSAEvent extends DESEvent, Comparable<FSAEvent>
 	public abstract void setObservable(boolean b);
 
 	/**
-	 * Returns true iff <code>o</code> is of type FSAEvent and has the same
-	 * properties as this FSAEvent.
+	 * Returns true iff <code>o</code> is of type FSAEvent and has the same name
+	 * as this FSAEvent.
 	 * 
 	 * @param o
 	 *            another object
-	 * @return true iff <code>o</code> is of type FSAEvent and has the same
-	 *         properties as this FSAEvent.
+	 * @return true iff <code>o</code> is of type FSAEvent and has the same name
+	 *         as this FSAEvent.
 	 */
 	public abstract boolean equals(Object o);
 

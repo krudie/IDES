@@ -14,8 +14,10 @@ import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 import ides.api.presentation.fsa.FSAStateLabeller;
 import ides.api.utilities.EscapeDialog;
+import ides.api.utilities.GeneralUtils;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.ItemSelectable;
@@ -49,7 +51,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -76,6 +77,8 @@ public class OperationDialog extends EscapeDialog
 	private Box outputsBox;
 
 	private JTextArea description;
+
+	private JButton okButton;
 
 	public OperationDialog()
 	{
@@ -144,8 +147,6 @@ public class OperationDialog extends EscapeDialog
 		inputsBox = Box.createVerticalBox();
 		JScrollPane sp = new JScrollPane(inputsBox);
 		sp.setPreferredSize(new Dimension(225, 375));
-		sp
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setBorder(BorderFactory.createTitledBorder(Hub
 				.string("modelListTitle")));
 		controlBox.add(sp);
@@ -153,8 +154,6 @@ public class OperationDialog extends EscapeDialog
 		outputsBox = Box.createVerticalBox();
 		sp = new JScrollPane(outputsBox);
 		sp.setPreferredSize(new Dimension(225, 375));
-		sp
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setBorder(BorderFactory
 				.createTitledBorder(Hub.string("outputTitle")));
 		controlBox.add(sp);
@@ -163,7 +162,7 @@ public class OperationDialog extends EscapeDialog
 
 		mainBox.add(Box.createRigidArea(new Dimension(0, 5)));
 
-		JButton okButton = new JButton();
+		okButton = new JButton();
 		JButton cancelButton = new JButton();
 		okButton = new JButton(Hub.string("compute"));
 		okButton.addActionListener(computeAction);
@@ -277,6 +276,40 @@ public class OperationDialog extends EscapeDialog
 
 		validate();
 		repaint();
+		// select active model if possible
+		if (Hub.getWorkspace().getActiveModel() != null)
+		{
+			for (int i = 0; i < inputs.size(); ++i)
+			{
+				if (inputs.elementAt(i) instanceof JList
+						|| inputs.elementAt(i) instanceof JComboBox)
+				{
+					DESModel m = Hub.getWorkspace().getActiveModel();
+					boolean sameAsActiveType = false;
+					Class<?>[] ifaces = m.getModelType().getModelPerspectives();
+					for (int j = 0; j < ifaces.length; ++j)
+					{
+						if (ifaces[j].equals(inputTypes[i]))
+						{
+							sameAsActiveType = true;
+							break;
+						}
+					}
+					if (sameAsActiveType)
+					{
+						if (inputs.elementAt(i) instanceof JComboBox)
+						{
+							((JComboBox)inputs.elementAt(i)).setSelectedItem(m);
+						}
+						else if (inputs.elementAt(i) instanceof JList)
+						{
+							((JList)inputs.elementAt(i)).setSelectedValue(m,
+									true);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	protected String suggestOutputName()
@@ -305,6 +338,7 @@ public class OperationDialog extends EscapeDialog
 						.firstElement().getText()))
 				{
 					outputNames.firstElement().setText(suggestedName);
+					outputNames.firstElement().setCaretPosition(0);
 					lastSetNames.set(0, suggestedName);
 				}
 				else
@@ -324,6 +358,7 @@ public class OperationDialog extends EscapeDialog
 					{
 						outputNames.elementAt(i).setText(suggestedName + " ("
 								+ i + ")");
+						outputNames.elementAt(i).setCaretPosition(0);
 						lastSetNames.set(i, outputNames.elementAt(i).getText());
 					}
 					else
@@ -660,8 +695,31 @@ public class OperationDialog extends EscapeDialog
 					}
 					opInputs.addAll(items);
 				}
-				Object[] outputs = op.perform(opInputs.toArray());
+
+				Object[] outputs = null;
+
+				Cursor cursor = getCursor();
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				try
+				{
+					outputs = op.perform(opInputs.toArray());
+				}
+				finally
+				{
+					setCursor(cursor);
+				}
+
 				String[] outputDesc = op.getDescriptionOfOutputs().clone();
+
+				if (!op.getWarnings().isEmpty())
+				{
+					String warning = "";
+					for (String w : op.getWarnings())
+					{
+						warning += w + "\n";
+					}
+					Hub.displayAlert(GeneralUtils.truncateMessage(warning));
+				}
 
 				int j = 0; // separate counter for text field with name of
 				// output DESModel
@@ -683,24 +741,35 @@ public class OperationDialog extends EscapeDialog
 					}
 					else if (outputs[i] instanceof DESModel)
 					{
-						DESModel model = (DESModel)outputs[i];
-						if (j < outputNames.size())
+						setCursor(Cursor
+								.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						try
 						{
-							model.setName(outputNames.elementAt(j).getText());
-							++j;
+							DESModel model = (DESModel)outputs[i];
+							if (j < outputNames.size())
+							{
+								model.setName(outputNames
+										.elementAt(j).getText());
+								++j;
+							}
+							if (model instanceof FSAModel)
+							{
+								FSAStateLabeller
+										.labelCompositeStates((FSAModel)model);
+							}
+							if (!model.hasAnnotation(Annotable.TEXT_ANNOTATION))
+							{
+								model.setAnnotation(Annotable.TEXT_ANNOTATION,
+										suggestOutputName() + ": "
+												+ outputDesc[i]);
+							}
+							Hub.getWorkspace().addModel(model);
+							Hub.getWorkspace().setActiveModel(model.getName());
 						}
-						if (model instanceof FSAModel)
+						finally
 						{
-							FSAStateLabeller
-									.labelCompositeStates((FSAModel)model);
+							setCursor(cursor);
 						}
-						if (!model.hasAnnotation(Annotable.TEXT_ANNOTATION))
-						{
-							model.setAnnotation(Annotable.TEXT_ANNOTATION,
-									suggestOutputName() + ": " + outputDesc[i]);
-						}
-						Hub.getWorkspace().addModel(model);
-						Hub.getWorkspace().setActiveModel(model.getName());
 					}
 					else
 					{

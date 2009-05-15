@@ -18,8 +18,8 @@ public class SupCon extends AbstractOperation
 	{
 		NAME = "supcon";
 		DESCRIPTION = "Computes an automaton that generates the supremal"
-				+ " controllable sublanguage of the plant with respect to the"
-				+ " given specification.";
+				+ " controllable sublanguage of the specification with respect to the"
+				+ " given plant.";
 
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class, FSAModel.class };
