@@ -726,7 +726,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
-			if (e.getClickCount() > 1
+			if (e.getClickCount() == 2
 					&& !listAvailableEvents.isSelectionEmpty())
 			{
 				actionPerformed(new ActionEvent(listAvailableEvents, 0, ""));
@@ -763,7 +763,8 @@ public class EdgeLabellingDialog extends EscapeDialog
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
-			if (e.getClickCount() > 1 && !listAssignedEvents.isSelectionEmpty())
+			if (e.getClickCount() == 2
+					&& !listAssignedEvents.isSelectionEmpty())
 			{
 				actionPerformed(new ActionEvent(listAssignedEvents, 0, ""));
 			}

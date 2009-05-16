@@ -17,7 +17,7 @@ public class SupCon extends AbstractOperation
 	public SupCon()
 	{
 		NAME = "supcon";
-		DESCRIPTION = "Computes an automaton that generates the supremal"
+		DESCRIPTION = "Computes an automaton that accepts the supremal"
 				+ " controllable sublanguage of the specification with respect to the"
 				+ " given plant.";
 

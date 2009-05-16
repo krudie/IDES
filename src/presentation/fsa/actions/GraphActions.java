@@ -142,15 +142,18 @@ public class GraphActions
 							eventsToKeep.add(te);
 						}
 					}
-					if (e.transitionCount() > 0 && eventsToKeep.size() == 0)
+					if (eventsToKeep.size() == 0)
 					{
 						edgesToRemove.add(e);
 					}
-					new EdgeActions.LabelAction(
+					else
+					{
+						new EdgeActions.LabelAction(
 							allEdits,
 							graph,
 							e,
 							eventsToKeep).execute();
+					}
 				}
 				SelectionGroup group = new SelectionGroup();
 				for (Edge e : edgesToRemove)
