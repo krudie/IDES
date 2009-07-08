@@ -99,7 +99,7 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 						hasTransition = true;
 						break;
 					}
-					if (t.getEvent() == null)
+					if (t.getEvent() == null && t.getSource() == t.getTarget())
 					{
 						emptyLoop = t;
 					}
