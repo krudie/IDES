@@ -771,6 +771,13 @@ public class OperationDialog extends EscapeDialog
 							setCursor(cursor);
 						}
 					}
+					else if(outputs[i] instanceof String)
+					{
+						JOptionPane.showMessageDialog(Hub.getMainWindow(),
+								outputDesc[i] + ": " + outputs[i],
+								Hub.string("result"),
+								JOptionPane.PLAIN_MESSAGE);
+					}
 					else
 					{
 						Hub.displayAlert(Hub.string("cantInterpretOutput"));

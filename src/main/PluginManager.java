@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -65,7 +66,14 @@ public class PluginManager
 				+ " not supported.");
 	}
 
-	protected static Set<Plugin> loadedPlugins = new TreeSet<Plugin>();
+	protected static Set<Plugin> loadedPlugins = new TreeSet<Plugin>(
+			new Comparator<Plugin>()
+			{
+				public int compare(Plugin o1, Plugin o2)
+				{
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 
 	protected static void initInternalPlugins()
 	{
