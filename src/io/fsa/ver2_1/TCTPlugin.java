@@ -21,7 +21,7 @@ import java.io.IOException;
 public class TCTPlugin implements ImportExportPlugin
 {
 
-	private String description = "TCT";
+	private String description = "TCT (experimental)";
 
 	private String ext = "des";
 

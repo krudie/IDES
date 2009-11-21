@@ -10,7 +10,11 @@ public class ParsingToolbox
 {
 
 	/**
-	 * removes the last ".*" of a string.
+	 * Removes the last ".*" of a string.
+	 * <p>
+	 * Note: The whole string is assumed to be a file name (even if it contains
+	 * directory separation characters). Thus, calling on
+	 * "c:\folder0.1\file.ext" will return "c:\folder0".
 	 * 
 	 * @param s
 	 *            the string that shall have ".*" removed

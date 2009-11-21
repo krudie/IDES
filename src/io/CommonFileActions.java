@@ -402,8 +402,9 @@ public class CommonFileActions
 			// model.
 			if (extension.equals(""))
 			{
-				file = new File(ParsingToolbox.removeFileType(file
-						.getAbsolutePath())
+				file = new File(file.getParentFile().getAbsolutePath()
+						+ File.separator
+						+ ParsingToolbox.removeFileType(file.getName())
 						+ (extPlugin != null ? ("." + extPlugin) : ""));
 			}
 			// Confirms with the user whether an existent file should be
