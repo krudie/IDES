@@ -102,7 +102,8 @@ public final class IOCoordinator implements IOSubsytem
 				plugin.saveMeta(metaps, model, tag);
 				if (metaps.hasOutput())
 				{
-					metaps.println("</meta>");
+					// the metaps stream might be closed by the plugin, so use ps
+					ps.println("</meta>");
 				}
 			}
 		}
