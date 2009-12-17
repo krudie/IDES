@@ -2,6 +2,11 @@ package ides.api.plugin.model;
 
 import java.util.Set;
 
+/**
+ * A set of {@link DESEvent}s.
+ * 
+ * @author Lenko Grigorov
+ */
 public interface DESEventSet extends Set<DESEvent>
 {
 	/**

@@ -1,9 +1,7 @@
-/**
- * 
- */
 package ides.api.ui;
 
 import ides.api.core.Hub;
+import ides.api.plugin.presentation.Presentation;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -15,47 +13,28 @@ import presentation.fsa.FSAToolset;
 import presentation.fsa.GraphDrawingView;
 
 /**
+ * The control for the zoom level when rendering models (to be used by
+ * {@link Presentation}s which support zoom).
+ * 
  * @author lenko
  */
 public class ZoomControl extends JComboBox implements ActionListener
 {
-
-	// /**
-	// * @param arg0
-	// */
-	// public ZoomControl(ComboBoxModel arg0) {
-	// super(arg0);
-	//
-	// }
-	//
-	// /**
-	// * @param arg0
-	// */
-	// public ZoomControl(Object[] arg0) {
-	// super(arg0);
-	//
-	// }
-	//
-	// /**
-	// * @param arg0
-	// */
-	// public ZoomControl(Vector<?> arg0) {
-	// super(arg0);
-	//
-	// }
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2215751287682688097L;
 
+	/**
+	 * The zoom level.
+	 */
 	protected int zoomValue = 100;
 
+	/**
+	 * Zoom level presets.
+	 */
 	protected static final String[] presets = { "10 %", "25 %", "50 %", "75 %",
 			"100 %", "150 %", "200 %" };
 
 	/**
-	 * 
+	 * Instantiate and setup the zoom control.
 	 */
 	public ZoomControl()
 	{
@@ -67,6 +46,9 @@ public class ZoomControl extends JComboBox implements ActionListener
 		setPreferredSize(new Dimension(90, getPreferredSize().height));
 	}
 
+	/**
+	 * Response to the modification of the zoom level through the GUI.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -91,11 +73,22 @@ public class ZoomControl extends JComboBox implements ActionListener
 		}
 	}
 
+	/**
+	 * Retrieve the current zoom level.
+	 * 
+	 * @return the current zoom level
+	 */
 	public float getZoom()
 	{
 		return zoomValue / 100F;
 	}
 
+	/**
+	 * Set the zoom level.
+	 * 
+	 * @param z
+	 *            the new zoom level
+	 */
 	public void setZoom(float z)
 	{
 		if (z < 0)
@@ -105,6 +98,12 @@ public class ZoomControl extends JComboBox implements ActionListener
 		commitZoom((int)(z * 100));
 	}
 
+	/**
+	 * Perform the zoom level change and notify the workspace.
+	 * 
+	 * @param z
+	 *            the new zoom level
+	 */
 	private void commitZoom(int z)
 	{
 		if (z != zoomValue)

@@ -147,6 +147,15 @@ public interface Workspace
 	 */
 	public int size();
 
+	/**
+	 * Returns all models of the given type opened in the workspace.
+	 * 
+	 * @param <T>
+	 *            the type of model
+	 * @param type
+	 *            the class type of model
+	 * @return all models of the given type opened in the workspace
+	 */
 	public <T> Collection<T> getModelsOfType(Class<T> type);
 
 	/**

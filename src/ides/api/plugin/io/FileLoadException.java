@@ -20,11 +20,20 @@ public class FileLoadException extends IOException
 	 */
 	protected DESModel partialModel = null;
 
+	/**
+	 * Creates an exception without specifying a partially-loaded model.
+	 */
 	public FileLoadException()
 	{
 		super();
 	}
 
+	/**
+	 * Creates an exception without specifying a partially-loaded model.
+	 * 
+	 * @param msg
+	 *            message
+	 */
 	public FileLoadException(String msg)
 	{
 		super(msg);

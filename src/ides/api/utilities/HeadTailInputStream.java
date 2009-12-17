@@ -4,19 +4,57 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Wrapper for {@link InputStream}s which allows the prefixing of the stream
+ * with a header and the appending of a tail to the stream. To the reader of the
+ * stream, it appears as if the stream contains the header, the content of the
+ * original stream and the tail.
+ * <p>
+ * For example, if one wants to add the tags "&lt;b&gt;" and "&lt;/b&gt;" around
+ * the content of the stream <code>input</code>, it is sufficient to say: <br>
+ *<code>input=new HeadTailInputStream(input,"&lt;b&gt;".getBytes(),"&lt;/b&gt;".getBytes());</code>
+ * 
+ * @author Lenko Grigorov
+ */
 public class HeadTailInputStream extends FilterInputStream
 {
 
+	/**
+	 * The header to be available before the content of the original stream.
+	 */
 	protected byte[] head;
 
+	/**
+	 * The tail to be available after the content of the original stream.
+	 */
 	protected byte[] tail;
 
+	/**
+	 * bytes left to read from the head
+	 */
 	private int headLeft;
 
+	/**
+	 * bytes left to read from the tail
+	 */
 	private int tailLeft;
 
+	/**
+	 * the original stream has hit EOF
+	 */
 	private boolean hitEOF = false;
 
+	/**
+	 * Wrap an {@link InputStream} so that readers read a custom header before
+	 * the original content and a custom tail after the original content.
+	 * 
+	 * @param in
+	 *            the stream to be wrapped
+	 * @param head
+	 *            the custom header to be available before the original content
+	 * @param tail
+	 *            the custom tail to be available after the original content
+	 */
 	public HeadTailInputStream(InputStream in, byte[] head, byte[] tail)
 	{
 		super(in);

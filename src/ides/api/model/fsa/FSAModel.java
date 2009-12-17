@@ -1,12 +1,13 @@
 package ides.api.model.fsa;
 
-// import io.fsa.ver2_1.SubElement;
-
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.DESModel;
 
 import java.util.ListIterator;
 
+/**
+ * Interface for models of Finite-State Automata.
+ */
 public interface FSAModel extends DESModel, FSAPublisher
 {
 
@@ -47,22 +48,30 @@ public interface FSAModel extends DESModel, FSAPublisher
 			long event);
 
 	/**
+	 * Add a state.
+	 * 
 	 * @param s
 	 *            a state that needs to be added.
 	 */
 	public abstract void add(FSAState s);
 
 	/**
+	 * Get the number of states in the FSA.
+	 * 
 	 * @return the number of states in the automaton
 	 */
 	public abstract long getStateCount();
 
 	/**
+	 * Get the number of transitions in the FSA.
+	 * 
 	 * @return the number of transitions in the automaton
 	 */
 	public abstract long getTransitionCount();
 
 	/**
+	 * Get the number of events in the event set of the FSA.
+	 * 
 	 * @return the number of events in the automaton
 	 */
 	public abstract long getEventCount();
@@ -77,12 +86,14 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract void remove(FSAState s);
 
 	/**
+	 * Get an iterator for the states in the FSA.
+	 * 
 	 * @return a custom list iterator for the states
 	 */
 	public abstract ListIterator<FSAState> getStateIterator();
 
 	/**
-	 * searches for the state with the given id.
+	 * Get the state with the given id.
 	 * 
 	 * @param id
 	 *            the id of the state
@@ -101,8 +112,8 @@ public interface FSAModel extends DESModel, FSAPublisher
 
 	/**
 	 * Removes a transition from the automaton. Removes the transition from the
-	 * list of sourcetransitions and the list of target transitions in the right
-	 * states.
+	 * list of source transitions and the list of target transitions in the
+	 * right states.
 	 * 
 	 * @param t
 	 *            the transition to be removed
@@ -110,7 +121,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract void remove(FSATransition t);
 
 	/**
-	 * searches for the transition with the given id.
+	 * Get the transition with the given id.
 	 * 
 	 * @param id
 	 *            the id of the transition.
@@ -119,12 +130,14 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract FSATransition getTransition(long id);
 
 	/**
+	 * Get an iterator for the transitions in the FSA.
+	 * 
 	 * @return a custom list iterator for the transitions.
 	 */
 	public abstract ListIterator<FSATransition> getTransitionIterator();
 
 	/**
-	 * Adds an event to the automaton.
+	 * Adds an event to the event set of the automaton.
 	 * 
 	 * @param e
 	 *            the event that shall be added to the automaton.
@@ -140,6 +153,8 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract void remove(FSAEvent e);
 
 	/**
+	 * Get an iterator for the events in the event set of the FSA.
+	 * 
 	 * @return a custom list iterator for the events.
 	 */
 	public abstract ListIterator<FSAEvent> getEventIterator();
@@ -153,7 +168,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract DESEventSet getEventSet();
 
 	/**
-	 * searches for the event with the given event id.
+	 * Get the event with the given event id.
 	 * 
 	 * @param id
 	 *            the id of the event

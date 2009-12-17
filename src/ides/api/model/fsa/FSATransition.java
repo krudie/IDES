@@ -2,6 +2,9 @@ package ides.api.model.fsa;
 
 import ides.api.plugin.model.DESElement;
 
+/**
+ * Transition of an {@link FSAModel}.
+ */
 public interface FSATransition extends DESElement
 {
 	/**
@@ -36,17 +39,17 @@ public interface FSATransition extends DESElement
 	public abstract FSAState getTarget();
 
 	/**
-	 * set the event this transiton fires uppon to e.
+	 * set the event upon which this transition fires.
 	 * 
 	 * @param e
-	 *            the event this transition fires uppon.
+	 *            the event this transition fires upon.
 	 */
 	public abstract void setEvent(FSAEvent e);
 
 	/**
-	 * returns the event this transition fires uppon.
+	 * returns the event upon which this transition fires.
 	 * 
-	 * @return the event this transition fires uppon.
+	 * @return the event this transition fires upon.
 	 */
 	public abstract FSAEvent getEvent();
 

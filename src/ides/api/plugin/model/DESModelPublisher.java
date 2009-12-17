@@ -1,5 +1,10 @@
 package ides.api.plugin.model;
 
+/**
+ * A publisher of {@link DESModelMessage}s.
+ * 
+ * @author Lenko Grigorov
+ */
 public interface DESModelPublisher
 {
 	/**

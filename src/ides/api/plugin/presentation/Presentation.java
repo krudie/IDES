@@ -29,6 +29,11 @@ public interface Presentation
 	 */
 	public JComponent getGUI();
 
+	/**
+	 * Retrieve the model rendered in the presentation.
+	 * 
+	 * @return the model rendered in the presentation
+	 */
 	public DESModel getModel();
 
 	/**

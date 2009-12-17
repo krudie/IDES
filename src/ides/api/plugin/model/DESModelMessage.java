@@ -1,9 +1,11 @@
 package ides.api.plugin.model;
 
+/**
+ * Message sent to the subscribers listening for updates of a {@link DESModel}.
+ */
 public class DESModelMessage
 {
 
-	/* the possible events that caused this message to be sent */
 	/** DESModel became dirty (clean to dirty) */
 	public static final int DIRTY = 0;
 

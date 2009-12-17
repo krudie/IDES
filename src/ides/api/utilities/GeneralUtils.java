@@ -17,6 +17,11 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
+/**
+ * A collection of methods and classes of general utility.
+ * 
+ * @author Lenko Grigorov
+ */
 public class GeneralUtils
 {
 	/**

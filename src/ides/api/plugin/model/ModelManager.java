@@ -38,6 +38,11 @@ public class ModelManager
 	 */
 	private static ModelManager me = null;
 
+	/**
+	 * Provides access to the instance of the manager.
+	 * 
+	 * @return the model manager
+	 */
 	public static ModelManager instance()
 	{
 		if (me == null)

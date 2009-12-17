@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ides.api.core;
 
 /**
@@ -14,12 +11,19 @@ public class WorkspaceMessage
 {
 
 	/**
-	 * Possible event types
+	 * Addition of a model.
 	 */
 	public static final int ADD = 0;
 
+	/**
+	 * Removal of a model.
+	 */
 	public static final int REMOVE = 1;
 
+	/**
+	 * Other change of the workspace which cannot be described as addition or
+	 * removal of a model, such as switching the active model.
+	 */
 	public static final int MODIFY = 2;
 
 	/** Name of the model changed, if a specific model */

@@ -37,6 +37,11 @@ public class ToolsetManager
 	 */
 	private static ToolsetManager me = null;
 
+	/**
+	 * Provides access to the instance of the manager.
+	 * 
+	 * @return the toolset manager
+	 */
 	public static ToolsetManager instance()
 	{
 		if (me == null)

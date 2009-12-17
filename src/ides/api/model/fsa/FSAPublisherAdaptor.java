@@ -6,6 +6,8 @@ package ides.api.model.fsa;
 import java.util.ArrayList;
 
 /**
+ * Implementation of the {@link FSAPublisher} interface.
+ * 
  * @author Helen Bretzke
  */
 public abstract class FSAPublisherAdaptor implements FSAPublisher
@@ -13,6 +15,9 @@ public abstract class FSAPublisherAdaptor implements FSAPublisher
 
 	private ArrayList<FSASubscriber> subscribers;
 
+	/**
+	 * Initialize the adaptor.
+	 */
 	public FSAPublisherAdaptor()
 	{
 		super();
