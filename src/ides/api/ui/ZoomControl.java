@@ -34,7 +34,7 @@ public class ZoomControl extends JComboBox implements ActionListener
 			"100 %", "150 %", "200 %" };
 
 	/**
-	 * Instantiate and setup the zoom control.
+	 * Instantiate and set up the zoom control.
 	 */
 	public ZoomControl()
 	{
