@@ -3,13 +3,17 @@ package presentation.fsa.actions;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -731,13 +735,74 @@ public class GraphActions
 			return allEdits;
 		}
 	}
+	
+	public static class SimplifyStateLabelsAction extends AbstractGraphAction
+	{
+		private static final long serialVersionUID = -7005200938396651552L;
+		
+		protected FSAGraph graph;
+
+		public SimplifyStateLabelsAction(FSAGraph graph)
+		{
+			super(Hub.string("comSimplifyStateLabels"));
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintSimplifyStateLabels"));
+			this.graph = graph;
+		}
+
+		public void actionPerformed(ActionEvent e)
+		{
+			CompoundEdit allEdits = new CompoundEdit();
+			Collection<Node> processed=new HashSet<Node>();
+			List<Node> toProcess=new LinkedList<Node>();
+			for(Node n:graph.getNodes())
+			{
+				if(n.getState().isInitial())
+				{
+					toProcess.add(n);
+				}
+			}
+			long count=1;
+			while(!toProcess.isEmpty())
+			{
+				Node n=toProcess.get(0);
+				toProcess.remove(0);
+				processed.add(n);
+				UndoableEdit edit = new GraphUndoableEdits.UndoableLabel(graph,
+						n,
+						""+count);
+				edit.redo();
+				allEdits.addEdit(edit);
+				for(Iterator<Edge> i=n.adjacentEdges();i.hasNext();)
+				{
+					Edge edge=i.next();
+					if(!(edge instanceof InitialArrow)&&!processed.contains(edge.getTargetNode()))
+					{
+						toProcess.add(edge.getTargetNode());
+					}
+				}
+				count++;
+			}
+			for(Node n:graph.getNodes())
+			{
+				if(!processed.contains(n))
+				{
+					UndoableEdit edit = new GraphUndoableEdits.UndoableLabel(graph,
+							n,
+							""+count);
+					edit.redo();
+					allEdits.addEdit(edit);
+					++count;
+				}
+			}
+			allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(
+					Hub.string("undoSimplifyStateLabels")));
+			allEdits.end();
+			postEditAdjustCanvas(graph, allEdits);
+		}
+	}
 
 	public static class UniformNodesAction extends AbstractGraphAction
 	{
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -5405840159479166562L;
 
 		protected FSAGraph graph;

@@ -66,6 +66,8 @@ public class FSAToolset implements Toolset
 
 		private static JMenuItem alignMenuItem = new JMenuItem();
 
+		private static JMenuItem simpleStatesMenuItem = new JMenuItem();
+
 		private static JButton alignButton = new JButton();
 
 		public FSAUIDescriptor(FSAModel model)
@@ -135,10 +137,12 @@ public class FSAToolset implements Toolset
 				graphMenu.add(create);
 				// graphMenu.add(move);
 				graphMenu.addSeparator();
+				graphMenu.add(simpleStatesMenuItem);
 				graphMenu.add(alignMenuItem);
 				graphMenu.add(showGrid);
 				graphMenu.add(uniformNodeSize);
 			}
+			simpleStatesMenuItem.setAction(new GraphActions.SimplifyStateLabelsAction(((GraphDrawingView)views[0]).getGraphModel()));
 			alignMenuItem.setAction(alignAction);
 			// get the "use uniform node size" menu item for the current shell
 			String MENU_ITEM = "useUniformNodeSizeMenuItem";
