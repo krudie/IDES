@@ -7,6 +7,7 @@ import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 import java.util.Collection;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
@@ -739,12 +741,16 @@ public class GraphActions
 	public static class SimplifyStateLabelsAction extends AbstractGraphAction
 	{
 		private static final long serialVersionUID = -7005200938396651552L;
-		
+
+		private static ImageIcon icon = new ImageIcon();
+
 		protected FSAGraph graph;
 
 		public SimplifyStateLabelsAction(FSAGraph graph)
 		{
-			super(Hub.string("comSimplifyStateLabels"));
+			super(Hub.string("comSimplifyStateLabels"),icon);
+			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
+					.getIDESResource("images/icons/graphic_simplify_labels.gif")));
 			putValue(SHORT_DESCRIPTION, Hub.string("comHintSimplifyStateLabels"));
 			this.graph = graph;
 		}

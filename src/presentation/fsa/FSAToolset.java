@@ -54,7 +54,7 @@ public class FSAToolset implements Toolset
 
 		private static Action createAction = null;
 
-		// private static Action moveAction = null;
+		private Action simplifyAction = null;
 
 		private Action alignAction = null;
 
@@ -68,6 +68,8 @@ public class FSAToolset implements Toolset
 
 		private static JMenuItem simpleStatesMenuItem = new JMenuItem();
 
+		private static JButton simplifyButton = new JButton();
+
 		private static JButton alignButton = new JButton();
 
 		public FSAUIDescriptor(FSAModel model)
@@ -77,6 +79,7 @@ public class FSAToolset implements Toolset
 			GraphDrawingView drawingBoard = new GraphDrawingView(
 					model,
 					gridBinder);
+			simplifyAction=new GraphActions.SimplifyStateLabelsAction(drawingBoard.getGraphModel());
 			gridAction = new UIActions.ShowGridAction(drawingBoard);
 			alignAction = drawingBoard.getAlignAction();
 			drawingBoard.setName(Hub.string("graph"));
@@ -112,10 +115,6 @@ public class FSAToolset implements Toolset
 			{
 				createAction = new UIActions.CreateTool();
 			}
-			// if (moveAction == null)
-			// {
-			// moveAction = new UIActions.MoveTool();
-			// }
 		}
 
 		public JMenu[] getMenus()
@@ -142,7 +141,7 @@ public class FSAToolset implements Toolset
 				graphMenu.add(showGrid);
 				graphMenu.add(uniformNodeSize);
 			}
-			simpleStatesMenuItem.setAction(new GraphActions.SimplifyStateLabelsAction(((GraphDrawingView)views[0]).getGraphModel()));
+			simpleStatesMenuItem.setAction(simplifyAction);
 			alignMenuItem.setAction(alignAction);
 			// get the "use uniform node size" menu item for the current shell
 			String MENU_ITEM = "useUniformNodeSizeMenuItem";
@@ -173,8 +172,10 @@ public class FSAToolset implements Toolset
 			{
 				toolbar.add(selectAction);
 				toolbar.add(createAction);
-				// toolbar.add(moveAction);
 				toolbar.addSeparator();
+				simplifyButton.setAction(simplifyAction);
+				simplifyButton.setText("");
+				toolbar.add(simplifyButton);
 				alignButton.setAction(alignAction);
 				alignButton.setText("");
 				toolbar.add(alignButton);
