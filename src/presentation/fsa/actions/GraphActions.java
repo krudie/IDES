@@ -758,7 +758,8 @@ public class GraphActions
 				{
 					Edge edge = i.next();
 					if (!(edge instanceof InitialArrow)
-							&& !processed.contains(edge.getTargetNode()))
+							&& !processed.contains(edge.getTargetNode())
+							&& !toProcess.contains(edge.getTargetNode()))
 					{
 						toProcess.add(edge.getTargetNode());
 					}
