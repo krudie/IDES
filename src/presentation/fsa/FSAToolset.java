@@ -79,7 +79,8 @@ public class FSAToolset implements Toolset
 			GraphDrawingView drawingBoard = new GraphDrawingView(
 					model,
 					gridBinder);
-			simplifyAction=new GraphActions.SimplifyStateLabelsAction(drawingBoard.getGraphModel());
+			simplifyAction = new GraphActions.SimplifyStateLabelsAction(
+					drawingBoard.getGraphModel());
 			gridAction = new UIActions.ShowGridAction(drawingBoard);
 			alignAction = drawingBoard.getAlignAction();
 			drawingBoard.setName(Hub.string("graph"));

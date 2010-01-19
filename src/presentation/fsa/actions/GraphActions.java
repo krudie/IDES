@@ -3,7 +3,6 @@ package presentation.fsa.actions;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
-import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 
 import java.awt.Rectangle;
@@ -38,9 +37,6 @@ public class GraphActions
 
 	public static class CreateEventAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -6892165635585940404L;
 
 		protected String eventName;
@@ -104,9 +100,6 @@ public class GraphActions
 
 	public static class RemoveEventAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 3384021428481069994L;
 
 		protected FSAEvent event;
@@ -155,10 +148,10 @@ public class GraphActions
 					else
 					{
 						new EdgeActions.LabelAction(
-							allEdits,
-							graph,
-							e,
-							eventsToKeep).execute();
+								allEdits,
+								graph,
+								e,
+								eventsToKeep).execute();
 					}
 				}
 				SelectionGroup group = new SelectionGroup();
@@ -180,9 +173,6 @@ public class GraphActions
 
 	public static class ModifyEventAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -1173808761820564447L;
 
 		protected FSAEvent event;
@@ -243,9 +233,6 @@ public class GraphActions
 	 */
 	public static class MoveAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -6469239456200190095L;
 
 		// The set of elements that are being moved.
@@ -343,9 +330,6 @@ public class GraphActions
 
 	public static class LabelAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -3976668220431694563L;
 
 		protected String text;
@@ -412,10 +396,6 @@ public class GraphActions
 	 */
 	public static class AlignNodesAction extends AbstractGraphAction
 	{
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -8359658501096690473L;
 
 		protected FSAGraph graph;
@@ -480,9 +460,6 @@ public class GraphActions
 	 */
 	public static class CreateNodeAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -5635655934590985770L;
 
 		protected Point2D.Float location;
@@ -536,9 +513,6 @@ public class GraphActions
 
 	public static class CreateEdgeAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 2023269558543526739L;
 
 		protected Node source;
@@ -610,9 +584,6 @@ public class GraphActions
 
 	public static class RemoveAction extends AbstractGraphAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -1845072786432848671L;
 
 		protected SelectionGroup selection;
@@ -737,7 +708,7 @@ public class GraphActions
 			return allEdits;
 		}
 	}
-	
+
 	public static class SimplifyStateLabelsAction extends AbstractGraphAction
 	{
 		private static final long serialVersionUID = -7005200938396651552L;
@@ -748,60 +719,67 @@ public class GraphActions
 
 		public SimplifyStateLabelsAction(FSAGraph graph)
 		{
-			super(Hub.string("comSimplifyStateLabels"),icon);
-			icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub
-					.getIDESResource("images/icons/graphic_simplify_labels.gif")));
-			putValue(SHORT_DESCRIPTION, Hub.string("comHintSimplifyStateLabels"));
+			super(Hub.string("comSimplifyStateLabels"), icon);
+			icon
+					.setImage(Toolkit
+							.getDefaultToolkit()
+							.createImage(Hub
+									.getIDESResource("images/icons/graphic_simplify_labels.gif")));
+			putValue(SHORT_DESCRIPTION, Hub
+					.string("comHintSimplifyStateLabels"));
 			this.graph = graph;
 		}
 
 		public void actionPerformed(ActionEvent e)
 		{
 			CompoundEdit allEdits = new CompoundEdit();
-			Collection<Node> processed=new HashSet<Node>();
-			List<Node> toProcess=new LinkedList<Node>();
-			for(Node n:graph.getNodes())
+			Collection<Node> processed = new HashSet<Node>();
+			List<Node> toProcess = new LinkedList<Node>();
+			for (Node n : graph.getNodes())
 			{
-				if(n.getState().isInitial())
+				if (n.getState().isInitial())
 				{
 					toProcess.add(n);
 				}
 			}
-			long count=1;
-			while(!toProcess.isEmpty())
+			long count = 1;
+			while (!toProcess.isEmpty())
 			{
-				Node n=toProcess.get(0);
+				Node n = toProcess.get(0);
 				toProcess.remove(0);
 				processed.add(n);
-				UndoableEdit edit = new GraphUndoableEdits.UndoableLabel(graph,
+				UndoableEdit edit = new GraphUndoableEdits.UndoableLabel(
+						graph,
 						n,
-						""+count);
+						"" + count);
 				edit.redo();
 				allEdits.addEdit(edit);
-				for(Iterator<Edge> i=n.adjacentEdges();i.hasNext();)
+				for (Iterator<Edge> i = n.adjacentEdges(); i.hasNext();)
 				{
-					Edge edge=i.next();
-					if(!(edge instanceof InitialArrow)&&!processed.contains(edge.getTargetNode()))
+					Edge edge = i.next();
+					if (!(edge instanceof InitialArrow)
+							&& !processed.contains(edge.getTargetNode()))
 					{
 						toProcess.add(edge.getTargetNode());
 					}
 				}
 				count++;
 			}
-			for(Node n:graph.getNodes())
+			for (Node n : graph.getNodes())
 			{
-				if(!processed.contains(n))
+				if (!processed.contains(n))
 				{
-					UndoableEdit edit = new GraphUndoableEdits.UndoableLabel(graph,
+					UndoableEdit edit = new GraphUndoableEdits.UndoableLabel(
+							graph,
 							n,
-							""+count);
+							"" + count);
 					edit.redo();
 					allEdits.addEdit(edit);
 					++count;
 				}
 			}
-			allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(
-					Hub.string("undoSimplifyStateLabels")));
+			allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub
+					.string("undoSimplifyStateLabels")));
 			allEdits.end();
 			postEditAdjustCanvas(graph, allEdits);
 		}
@@ -832,9 +810,6 @@ public class GraphActions
 
 	public static class ShiftGraphInViewAction extends AbstractAction
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 2907001062138002843L;
 
 		protected static final int GRAPH_BORDER_THICKNESS = 10;
