@@ -273,9 +273,9 @@ public class State implements ides.api.model.fsa.FSAState
 	{
 		setAnnotation(NAME, name);
 	}
-	
+
 	public String toString()
 	{
-		return getAnnotation(NAME)+"("+id+")";
+		return getAnnotation(NAME) + "(" + id + ")";
 	}
 }

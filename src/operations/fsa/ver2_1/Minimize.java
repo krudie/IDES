@@ -14,6 +14,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * State minimization of deterministic finite state automata using Hopcroft's
+ * algorithm.
+ * 
+ * @author Lenko Grigorov
+ */
 public class Minimize extends AbstractOperation
 {
 
@@ -58,10 +64,10 @@ public class Minimize extends AbstractOperation
 			return part.equals(((Splitter)o).part)
 					&& event.equals(((Splitter)o).event);
 		}
-		
+
 		public String toString()
 		{
-			return part.toString()+","+event.toString();
+			return part.toString() + "," + event.toString();
 		}
 	}
 
@@ -138,10 +144,11 @@ public class Minimize extends AbstractOperation
 				nf.add(s);
 			}
 		}
-		if(f.isEmpty())
+		if (f.isEmpty())
 		{
 			warnings.add("No final states.");
-			return new Object[] { ModelManager.instance().createModel(FSAModel.class) };
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
 		}
 		parts.add(f);
 		parts.add(nf);
@@ -162,30 +169,33 @@ public class Minimize extends AbstractOperation
 		{
 			Splitter split = splitters.iterator().next();
 			splitters.remove(split);
-			Collection<Collection<FSAState>> newParts=new HashSet<Collection<FSAState>>();
-			for(Collection<FSAState> part:parts)
+			Collection<Collection<FSAState>> newParts = new HashSet<Collection<FSAState>>();
+			for (Collection<FSAState> part : parts)
 			{
-				Collection<Collection<FSAState>> splits=split(part,split);
+				Collection<Collection<FSAState>> splits = split(part, split);
 				newParts.addAll(splits);
-				if(splits.size()>1)
+				if (splits.size() > 1)
 				{
-					Iterator<Collection<FSAState>> is=splits.iterator();
-					Collection<FSAState> part1=is.next();
-					Collection<FSAState> part2=is.next();
-					Collection<Splitter> newSplitters=new HashSet<Splitter>();
-					for(Splitter splitter:splitters)
+					Iterator<Collection<FSAState>> is = splits.iterator();
+					Collection<FSAState> part1 = is.next();
+					Collection<FSAState> part2 = is.next();
+					Collection<Splitter> newSplitters = new HashSet<Splitter>();
+					for (Splitter splitter : splitters)
 					{
-						if(splitter.part.equals(part))
+						if (splitter.part.equals(part))
 						{
-							newSplitters.add(new Splitter(part1,splitter.event));
-							newSplitters.add(new Splitter(part2,splitter.event));
+							newSplitters
+									.add(new Splitter(part1, splitter.event));
+							newSplitters
+									.add(new Splitter(part2, splitter.event));
 						}
 						else
 						{
 							newSplitters.add(splitter);
 						}
 					}
-					for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
+					for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie
+							.hasNext();)
 					{
 						if (part1.size() < part2.size())
 						{
@@ -196,45 +206,47 @@ public class Minimize extends AbstractOperation
 							newSplitters.add(new Splitter(part2, ie.next()));
 						}
 					}
-					splitters=newSplitters;
+					splitters = newSplitters;
 				}
 			}
-			parts=newParts;
+			parts = newParts;
 		}
 		parts.remove(new HashSet<FSAState>());
 
-		//construct minimal FSA
-		FSAModel ret=ModelManager.instance().createModel(FSAModel.class);
-		ret.setAnnotation(Annotable.COMPOSED_OF, new String[]{fsa.getName()});
-		Map<FSAEvent,FSAEvent> eventMap=new HashMap<FSAEvent, FSAEvent>();
+		// construct minimal FSA
+		FSAModel ret = ModelManager.instance().createModel(FSAModel.class);
+		ret
+				.setAnnotation(Annotable.COMPOSED_OF, new String[] { fsa
+						.getName() });
+		Map<FSAEvent, FSAEvent> eventMap = new HashMap<FSAEvent, FSAEvent>();
 		for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
 		{
-			FSAEvent e=ie.next();
-			FSAEvent event=ret.assembleEvent(e.getSymbol());
+			FSAEvent e = ie.next();
+			FSAEvent event = ret.assembleEvent(e.getSymbol());
 			event.setControllable(e.isControllable());
 			event.setObservable(e.isObservable());
 			ret.add(event);
 			eventMap.put(e, event);
 		}
-		
-		Map<Collection<FSAState>,FSAState> stateMap=new HashMap<Collection<FSAState>, FSAState>();
-		for(Collection<FSAState> part:parts)
+
+		Map<Collection<FSAState>, FSAState> stateMap = new HashMap<Collection<FSAState>, FSAState>();
+		for (Collection<FSAState> part : parts)
 		{
-			FSAState state=ret.assembleState();
+			FSAState state = ret.assembleState();
 			state.setInitial(false);
 			state.setMarked(false);
-			long[] ids=new long[part.size()];
-			String[] names=new String[part.size()];
-			int idx=0;
-			for(FSAState s:part)
+			long[] ids = new long[part.size()];
+			String[] names = new String[part.size()];
+			int idx = 0;
+			for (FSAState s : part)
 			{
-				ids[idx]=s.getId();
-				names[idx]=s.getName();
-				if(s.isInitial())
+				ids[idx] = s.getId();
+				names[idx] = s.getName();
+				if (s.isInitial())
 				{
 					state.setInitial(true);
 				}
-				if(s.isMarked())
+				if (s.isMarked())
 				{
 					state.setMarked(true);
 				}
@@ -243,29 +255,33 @@ public class Minimize extends AbstractOperation
 			state.setAnnotation(Annotable.COMPOSED_OF, ids);
 			state.setAnnotation(Annotable.COMPOSED_OF_NAMES, names);
 			ret.add(state);
-			stateMap.put(part,state);
+			stateMap.put(part, state);
 		}
-		
-		for(Collection<FSAState> part:parts)
+
+		for (Collection<FSAState> part : parts)
 		{
-			FSAState rep=part.iterator().next();
-			for(Iterator<FSATransition> it=rep.getOutgoingTransitionsListIterator();it.hasNext();)
+			FSAState rep = part.iterator().next();
+			for (Iterator<FSATransition> it = rep
+					.getOutgoingTransitionsListIterator(); it.hasNext();)
 			{
-				FSATransition t=it.next();
-				Collection<FSAState> target=null;
-				for(Collection<FSAState> p:parts)
+				FSATransition t = it.next();
+				Collection<FSAState> target = null;
+				for (Collection<FSAState> p : parts)
 				{
-					if(p.contains(t.getTarget()))
+					if (p.contains(t.getTarget()))
 					{
-						target=p;
+						target = p;
 						break;
 					}
 				}
-				FSATransition transition=ret.assembleTransition(stateMap.get(part).getId(), stateMap.get(target).getId(), eventMap.get(t.getEvent()).getId());
+				FSATransition transition = ret.assembleTransition(stateMap
+						.get(part).getId(),
+						stateMap.get(target).getId(),
+						eventMap.get(t.getEvent()).getId());
 				ret.add(transition);
 			}
 		}
-		
+
 		return new Object[] { ret };
 	}
 
