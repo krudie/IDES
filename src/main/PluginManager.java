@@ -37,6 +37,7 @@ import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
 import operations.fsa.ver2_1.LocalModular;
 import operations.fsa.ver2_1.Meet;
+import operations.fsa.ver2_1.Minimize;
 import operations.fsa.ver2_1.MultiAgentProductFSA;
 import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.PrefixClosure;
@@ -94,6 +95,7 @@ public class PluginManager
 		OperationManager.instance().register(new SupRed());
 		OperationManager.instance().register(new MultiAgentProductFSA());
 		OperationManager.instance().register(new SelfLoop());
+		OperationManager.instance().register(new Minimize());
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();
