@@ -301,9 +301,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	}
 
 	/**
-	 * Builds this graph from the elements in <code>fsa</code>. TODO Build this
-	 * graph in LayoutDataParser Build free labels (those not associated with
-	 * elements of the automaton). Replace the intersection lists with a
+	 * Builds this graph from the elements in <code>fsa</code>. TODO Build
+	 * this graph in LayoutDataParser Build free labels (those not associated
+	 * with elements of the automaton). Replace the intersection lists with a
 	 * quadtree.
 	 */
 	private void initializeGraph()
@@ -570,7 +570,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return set;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	// //////////////////////////////////////////////////////////////////////////
 	// /
 
 	/**
@@ -739,8 +739,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	}
 
 	/**
-	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>. and
-	 * a adds a new transition to the automaton.
+	 * Creates a new edge from node <code>n1</code> to node <code>n2</code>.
+	 * and a adds a new transition to the automaton.
 	 * 
 	 * @param n1
 	 *            source node
@@ -940,8 +940,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	}
 
 	/**
-	 * Assigns the set of events to <code>edge</code>, removes any events from
-	 * edge that are not in the given list and commits any changes to the
+	 * Assigns the set of events to <code>edge</code>, removes any events
+	 * from edge that are not in the given list and commits any changes to the
 	 * LayoutData (MetaData).
 	 * 
 	 * @param events
@@ -1727,19 +1727,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 	/*
 	 * (non-Javadoc)
-	 * @see observer.FSASubscriber#fsaPersistenceChanged(observer.FSAMessage)
-	 */
-	// public void fsaSaved() {
-	// needsSave = false;
-	// // fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.SAVE,
-	// // FSAGraphMessage.GRAPH,
-	// // this.getId(),
-	// // this.bounds(),
-	// // this, ""));
-	// fireSaveStatusChanged();
-	// }
-	/*
-	 * (non-Javadoc)
+	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message)
@@ -1757,10 +1745,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		{
 		case FSAMessage.STATE:
 
-			/*
-			 * fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???,
-			 * FSMGraphMessage.???, ?.getId(), ?.bounds(), this, ""));
-			 */
 			break;
 
 		case FSAMessage.TRANSITION:
@@ -1774,22 +1758,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 		case FSAMessage.EVENT:
 
-			/*
-			 * fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???,
-			 * FSMGraphMessage.???, ?.getId(), ?.bounds(), this, ""));
-			 */
 			break;
 
-		default: // otherwise rebuild the graph structure
-
-			initializeGraph();
-
-			/*
-			 * fireFSMGraphChanged(new FSMGraphMessage(FSMGraphMessage.???,
-			 * FSMGraphMessage.???, ?.getId(), ?.bounds(), this, ""));
-			 */
-
 		}
+		initializeGraph();
 
 	}
 
@@ -2056,8 +2028,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * Set if rendered labels have to be drawn.
 	 * 
 	 * @param b
-	 *            <code>true</code> to draw rendered labels; <code>false</code>
-	 *            not to
+	 *            <code>true</code> to draw rendered labels;
+	 *            <code>false</code> not to
 	 */
 	public void setDrawRenderedLabels(boolean b)
 	{
@@ -2068,8 +2040,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * Returns if rendered labels have to be drawn. To be used by graph labels
 	 * to determine whether to draw or not.
 	 * 
-	 * @return <code>true</code> to draw rendered labels; <code>false</code> not
-	 *         to
+	 * @return <code>true</code> to draw rendered labels; <code>false</code>
+	 *         not to
 	 */
 	public boolean isDrawRenderedLabels()
 	{
