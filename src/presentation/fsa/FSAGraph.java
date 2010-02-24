@@ -1777,7 +1777,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 		Edge edge = null;
 
-		for (Edge e : edges.values())
+		for (Edge e : new HashSet<Edge>(edges.values()))
 		{
 
 			Iterator<FSATransition> trans = e.getTransitions();
