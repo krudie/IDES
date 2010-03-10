@@ -76,7 +76,7 @@ public final class IOCoordinator implements IOSubsytem
 
 		// Open ""file"" and start writing the header of the IDES file format
 		WrappedPrintStream ps = null;
-		ps = new WrappedPrintStream(IOUtilities.getPrintStream(file));
+		ps = new WrappedPrintStream(IOUtilities.getPrintStream(file), "UTF-8");
 		ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		ps.println("<model version=\"" + version + "\" type=\"" + type
 				+ "\" id=\"" + model.getName() + "\">");
@@ -102,7 +102,8 @@ public final class IOCoordinator implements IOSubsytem
 				plugin.saveMeta(metaps, model, tag);
 				if (metaps.hasOutput())
 				{
-					// the metaps stream might be closed by the plugin, so use ps
+					// the metaps stream might be closed by the plugin, so use
+					// ps
 					ps.println("</meta>");
 				}
 			}

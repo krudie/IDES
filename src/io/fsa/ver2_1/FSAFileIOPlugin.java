@@ -18,6 +18,7 @@ import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.ModelManager;
 import ides.api.utilities.HeadTailInputStream;
 import io.AbstractParser;
+import io.IOUtilities;
 
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
@@ -291,9 +292,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 
 			if (s.getName() != null)
 			{
-				ps
-						.println(indent + indent + "<name>" + s.getName()
-								+ "</name>");
+				ps.println(indent + indent + "<name>"
+						+ IOUtilities.encodeForXML(s.getName()) + "</name>");
 			}
 			else
 			{
@@ -342,7 +342,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				}
 				if (e.getSymbol() != null)
 				{
-					ps.println(indent + indent + "<name>" + e.getSymbol()
+					ps.println(indent + indent + "<name>"
+							+ IOUtilities.encodeForXML(e.getSymbol())
 							+ "</name>");
 				}
 				else

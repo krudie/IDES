@@ -18,6 +18,12 @@ public class WrappedPrintStream extends PrintStream
 		super(o, true);
 	}
 
+	public WrappedPrintStream(OutputStream o, String encoding)
+			throws UnsupportedEncodingException
+	{
+		super(o, true, encoding);
+	}
+
 	@Override
 	public void close()
 	{
