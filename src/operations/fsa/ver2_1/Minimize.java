@@ -152,15 +152,16 @@ public class Minimize extends AbstractOperation
 		}
 		parts.add(f);
 		parts.add(nf);
+		parts.remove(new HashSet<FSAState>());
 		for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
 		{
-			if (f.size() < nf.size())
+			if (!nf.isEmpty() && nf.size() < f.size())
 			{
-				splitters.add(new Splitter(f, ie.next()));
+				splitters.add(new Splitter(nf, ie.next()));
 			}
 			else
 			{
-				splitters.add(new Splitter(nf, ie.next()));
+				splitters.add(new Splitter(f, ie.next()));
 			}
 		}
 
