@@ -71,7 +71,7 @@ public interface FSAState extends DESElement
 	 * 
 	 * @return an iterator for the transitions ending in this state
 	 */
-	public abstract ListIterator<FSATransition> getIncomingTransitionListIterator();
+	public abstract ListIterator<FSATransition> getIncomingTransitionsListIterator();
 
 	/**
 	 * Returns true iff this is an initial state.

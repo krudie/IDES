@@ -16,7 +16,9 @@ import java.util.Map;
 
 /**
  * State minimization of deterministic finite state automata using Hopcroft's
- * algorithm.
+ * algorithm. The implementation is inspired by the publication &quot;Describing
+ * an n log n algorithm for minimizing states in deterministic finite
+ * automaton&quot; by Yingjie Xu (Stellenbosch University, South Africa).
  * 
  * @author Lenko Grigorov
  */
@@ -38,85 +40,22 @@ public class Minimize extends AbstractOperation
 		outputDesc = new String[] { "Minimized automaton" };
 	}
 
-	protected class Splitter
+	protected Collection<FSAState> comingFrom(Collection<FSAState> part,
+			FSAEvent e)
 	{
-		public Collection<FSAState> part;
-
-		public FSAEvent event;
-
-		public Splitter(Collection<FSAState> part, FSAEvent event)
-		{
-			this.part = part;
-			this.event = event;
-		}
-
-		public int hashCode()
-		{
-			return event.hashCode() * part.size();
-		}
-
-		public boolean equals(Object o)
-		{
-			if (o == null || !(o instanceof Splitter))
-			{
-				return false;
-			}
-			return part.equals(((Splitter)o).part)
-					&& event.equals(((Splitter)o).event);
-		}
-
-		public String toString()
-		{
-			return part.toString() + "," + event.toString();
-		}
-	}
-
-	protected Collection<Collection<FSAState>> split(Collection<FSAState> part,
-			Splitter split)
-	{
-		Collection<FSAState> partIn = new HashSet<FSAState>();
-		Collection<FSAState> partOut = new HashSet<FSAState>();
+		Collection<FSAState> ret = new HashSet<FSAState>();
 		for (FSAState s : part)
 		{
-			FSAState target = goingTo(s, split.event);
-			if (split.part.contains(target))
+			for (Iterator<FSATransition> it = s
+					.getIncomingTransitionsListIterator(); it.hasNext();)
 			{
-				partIn.add(s);
+				FSATransition t = it.next();
+				if (e.equals(t.getEvent()))
+				{
+					ret.add(t.getSource());
+				}
 			}
-			else
-			{
-				partOut.add(s);
-			}
-		}
-		Collection<Collection<FSAState>> ret = new HashSet<Collection<FSAState>>();
-		if (partIn.isEmpty())
-		{
-			ret.add(partOut);
-		}
-		else if (partOut.isEmpty())
-		{
-			ret.add(partIn);
-		}
-		else
-		{
-			ret.add(partIn);
-			ret.add(partOut);
-		}
-		return ret;
-	}
 
-	protected FSAState goingTo(FSAState s, FSAEvent e)
-	{
-		FSAState ret = null;
-		for (Iterator<FSATransition> it = s
-				.getOutgoingTransitionsListIterator(); it.hasNext();)
-		{
-			FSATransition t = it.next();
-			if (e.equals(t.getEvent()))
-			{
-				ret = t.getTarget();
-				break;
-			}
 		}
 		return ret;
 	}
@@ -127,7 +66,7 @@ public class Minimize extends AbstractOperation
 		FSAModel fsa = (FSAModel)OperationManager
 				.instance().getOperation("accessible").perform(inputs)[0];
 		Collection<Collection<FSAState>> parts = new HashSet<Collection<FSAState>>();
-		Collection<Splitter> splitters = new HashSet<Splitter>();
+		Collection<Collection<FSAState>> splitters = new HashSet<Collection<FSAState>>();
 
 		// initialize
 		Collection<FSAState> nf = new HashSet<FSAState>();
@@ -153,66 +92,67 @@ public class Minimize extends AbstractOperation
 		parts.add(f);
 		parts.add(nf);
 		parts.remove(new HashSet<FSAState>());
-		for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
-		{
-			if (!nf.isEmpty() && nf.size() < f.size())
-			{
-				splitters.add(new Splitter(nf, ie.next()));
-			}
-			else
-			{
-				splitters.add(new Splitter(f, ie.next()));
-			}
-		}
+		splitters.add(f);
+		splitters.add(nf);
+		splitters.remove(new HashSet<FSAState>());
 
 		// get equivalence sets
 		while (!splitters.isEmpty())
 		{
-			Splitter split = splitters.iterator().next();
-			splitters.remove(split);
-			Collection<Collection<FSAState>> newParts = new HashSet<Collection<FSAState>>();
-			for (Collection<FSAState> part : parts)
+			Collection<FSAState> splitter = splitters.iterator().next();
+			splitters.remove(splitter);
+			for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
 			{
-				Collection<Collection<FSAState>> splits = split(part, split);
-				newParts.addAll(splits);
-				if (splits.size() > 1)
+				FSAEvent e = ie.next();
+				Collection<FSAState> sources = comingFrom(splitter, e);
+				Collection<Collection<FSAState>> newParts = new HashSet<Collection<FSAState>>();
+				for (Collection<FSAState> part : parts)
 				{
-					Iterator<Collection<FSAState>> is = splits.iterator();
-					Collection<FSAState> part1 = is.next();
-					Collection<FSAState> part2 = is.next();
-					Collection<Splitter> newSplitters = new HashSet<Splitter>();
-					for (Splitter splitter : splitters)
+					if (!sources.containsAll(part))
 					{
-						if (splitter.part.equals(part))
+						Collection<FSAState> intersect = new HashSet<FSAState>(
+								part);
+						intersect.retainAll(sources);
+						if (intersect.isEmpty())
 						{
-							newSplitters
-									.add(new Splitter(part1, splitter.event));
-							newSplitters
-									.add(new Splitter(part2, splitter.event));
+							newParts.add(part);
 						}
 						else
 						{
-							newSplitters.add(splitter);
+							Collection<FSAState> part1 = intersect;
+							Collection<FSAState> part2 = new HashSet<FSAState>(
+									part);
+							part2.removeAll(intersect);
+							newParts.add(part1);
+							newParts.add(part2);
+							if (splitters.contains(part))
+							{
+								splitters.remove(part);
+								splitters.add(part1);
+								splitters.add(part2);
+							}
+							else
+							{
+								if (part1.size() < part2.size())
+								{
+									splitters.add(part1);
+								}
+								else
+								{
+									splitters.add(part2);
+								}
+							}
 						}
 					}
-					for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie
-							.hasNext();)
+					else
 					{
-						if (part1.size() < part2.size())
-						{
-							newSplitters.add(new Splitter(part1, ie.next()));
-						}
-						else
-						{
-							newSplitters.add(new Splitter(part2, ie.next()));
-						}
+						newParts.add(part);
 					}
-					splitters = newSplitters;
 				}
+				parts = newParts;
+				parts.remove(new HashSet<FSAState>());
 			}
-			parts = newParts;
 		}
-		parts.remove(new HashSet<FSAState>());
 
 		// construct minimal FSA
 		FSAModel ret = ModelManager.instance().createModel(FSAModel.class);

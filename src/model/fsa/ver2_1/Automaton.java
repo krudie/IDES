@@ -454,7 +454,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			t.getTarget().removeIncomingTransition(t);
 		}
 		ListIterator<FSATransition> targets = s
-				.getIncomingTransitionListIterator();
+				.getIncomingTransitionsListIterator();
 		while (targets.hasNext())
 		{
 			FSATransition t = targets.next();
@@ -752,7 +752,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			}
 
 			ListIterator<FSATransition> targets = current
-					.getIncomingTransitionListIterator();
+					.getIncomingTransitionsListIterator();
 			while (targets.hasNext())
 			{
 				FSATransition t = targets.next();
@@ -776,7 +776,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			}
 
 			ListIterator<FSATransition> targets = current
-					.getIncomingTransitionListIterator();
+					.getIncomingTransitionsListIterator();
 			while (targets.hasNext())
 			{
 				FSATransition t = targets.next();
@@ -1065,8 +1065,8 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * 
 	 * @param state
 	 *            state of the supervisor
-	 * @return the events disabled at a given state; or <code>null</code> if
-	 *         the control map is undefined
+	 * @return the events disabled at a given state; or <code>null</code> if the
+	 *         control map is undefined
 	 */
 	public DESEventSet getDisabledEvents(FSAState state)
 	{

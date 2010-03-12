@@ -109,7 +109,7 @@ public class Unary
 		{
 			FSAState s = searchList.removeFirst();
 			ListIterator<FSATransition> tli = s
-					.getIncomingTransitionListIterator();
+					.getIncomingTransitionsListIterator();
 			while (tli.hasNext())
 			{
 				FSAState source = tli.next().getSource();
@@ -173,7 +173,7 @@ public class Unary
 		{
 			FSAState s = searchList.removeFirst();
 			ListIterator<FSATransition> tli = s
-					.getIncomingTransitionListIterator();
+					.getIncomingTransitionsListIterator();
 			while (tli.hasNext())
 			{
 				FSAState source = tli.next().getSource();

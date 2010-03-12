@@ -133,7 +133,7 @@ public class State implements ides.api.model.fsa.FSAState
 	/**
 	 * @return an iterator for the transitions ending in this state
 	 */
-	public ListIterator<FSATransition> getIncomingTransitionListIterator()
+	public ListIterator<FSATransition> getIncomingTransitionsListIterator()
 	{
 		return targetT.listIterator();
 	}
