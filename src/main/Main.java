@@ -47,12 +47,11 @@ public class Main
 		// set up global exception handler
 		// TODO uncomment these lines before shipping. Default exception handler
 		// disabled for debugging. -- CLM
-		// Thread.setDefaultUncaughtExceptionHandler(new
-		// GlobalExceptionHandler());
+		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
 		// AWT/Swing Exception handling (changes expected in future Java
 		// releases)
-		// System.setProperty("sun.awt.exception.handler",
-		// GlobalExceptionHandler.class.getName());
+		System.setProperty("sun.awt.exception.handler",
+				GlobalExceptionHandler.class.getName());
 
 		// load resource with strings used in the program
 		try
