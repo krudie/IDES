@@ -48,6 +48,23 @@ public interface FSAModel extends DESModel, FSAPublisher
 			long event);
 
 	/**
+	 * Assembles a new epsilon transition which can be added to the model. The
+	 * transition is not automatically added to the model. An epsilon transition
+	 * is a transition with no associated event (null). It is interpreted as a
+	 * transition on the epsilon (empty) string.
+	 * 
+	 * @param source
+	 *            the id of the source state of the transition
+	 * @param target
+	 *            the id of the target state of the transition
+	 * @return a new transition with the given properties and no event
+	 * @throws IllegalArgumentException
+	 *             when the given source or target are not part of the model
+	 */
+	public abstract FSATransition assembleEpsilonTransition(long source,
+			long target);
+
+	/**
 	 * Add a state.
 	 * 
 	 * @param s

@@ -418,6 +418,21 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				targetState,
 				transitionEvent);
 	}
+	
+	public FSATransition assembleEpsilonTransition(long source, long target)
+	{
+		FSAState sourceState = getState(source);
+		FSAState targetState = getState(target);
+		if (sourceState == null || targetState == null)
+		{
+			throw new IllegalArgumentException();
+		}
+		return new Transition(
+				getFreeTransitionId(),
+				sourceState,
+				targetState);
+	}
+
 
 	/*
 	 * (non-Javadoc)

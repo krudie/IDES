@@ -231,4 +231,11 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	{
 		this.id = id;
 	}
+
+	@Override
+	public boolean isEpsilonTransition()
+	{
+
+		return e == null;
+	}
 }

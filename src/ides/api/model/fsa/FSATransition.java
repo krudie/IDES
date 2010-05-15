@@ -39,18 +39,30 @@ public interface FSATransition extends DESElement
 	public abstract FSAState getTarget();
 
 	/**
-	 * set the event upon which this transition fires.
+	 * set the event upon which this transition fires. If the parameter is
+	 * <code>null</code>, then this will be an epsilon transition.
 	 * 
 	 * @param e
-	 *            the event this transition fires upon.
+	 *            the event this transition fires upon; set to <code>null</code>
+	 *            for an epsilon transition.
 	 */
 	public abstract void setEvent(FSAEvent e);
 
 	/**
 	 * returns the event upon which this transition fires.
 	 * 
-	 * @return the event this transition fires upon.
+	 * @return the event this transition fires upon; or <code>null</code> if
+	 *         this is an epsilon transition.
 	 */
 	public abstract FSAEvent getEvent();
+
+	/**
+	 * Check if this is an epsilon transition (with <code>null</code> event) or
+	 * not.
+	 * 
+	 * @return returns <code>true</code> if this transition is an epsilon
+	 *         transition, <code>false</code> otherwise.
+	 */
+	public abstract boolean isEpsilonTransition();
 
 }
