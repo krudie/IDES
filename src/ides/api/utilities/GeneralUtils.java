@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -331,5 +332,71 @@ public class GeneralUtils
 			}
 			return null;
 		}
+	}
+
+	/**
+	 * Attempts to open a browser in the host OS and load the provided URL.
+	 * 
+	 * @author contains code written by Dem Pilafian.
+	 * @param url
+	 *            the URL to be loaded in the browser
+	 * @return <code>true</code> if no exceptions were encountered in launching
+	 *         the browser and loading the provided URL; <code>false</code>
+	 *         otherwise
+	 */
+	public static boolean launchBrowser(String url)
+	{
+		String[] browsers = { "google-chrome", "firefox", "opera", "konqueror",
+				"epiphany", "seamonkey", "galeon", "kazehakase", "mozilla" };
+		try
+		{ // attempt to use Desktop library from JDK 1.6+ (even if on 1.5)
+			Class<?> d = Class.forName("java.awt.Desktop");
+			d
+					.getDeclaredMethod("browse",
+							new Class[] { java.net.URI.class }).invoke(d
+							.getDeclaredMethod("getDesktop").invoke(null),
+							new Object[] { java.net.URI.create(url) });
+			// above code mimics:
+			// java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+		}
+		catch (Exception ignore)
+		{ // library not available or failed
+			String osName = System.getProperty("os.name");
+			try
+			{
+				if (osName.startsWith("Mac OS"))
+				{
+					Class
+							.forName("com.apple.eio.FileManager")
+							.getDeclaredMethod("openURL",
+									new Class[] { String.class }).invoke(null,
+									new Object[] { url });
+				}
+				else if (osName.startsWith("Windows"))
+					Runtime
+							.getRuntime()
+							.exec("rundll32 url.dll,FileProtocolHandler " + url);
+				else
+				{ // assume Unix or Linux
+					boolean found = false;
+					for (String browser : browsers)
+						if (!found)
+						{
+							found = Runtime.getRuntime().exec(new String[] {
+									"which", browser }).waitFor() == 0;
+							if (found)
+								Runtime.getRuntime().exec(new String[] {
+										browser, url });
+						}
+					if (!found)
+						throw new Exception(Arrays.toString(browsers));
+				}
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

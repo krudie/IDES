@@ -637,16 +637,6 @@ public class EdgeLabellingDialog extends EscapeDialog
 			return false;
 		}
 
-		MutableList(Object[] elements)
-		{
-			this();
-			DefaultListModel model = getContents();
-			for (Object element : elements)
-			{
-				model.addElement(element);
-			}
-		}
-
 		DefaultListModel getContents()
 		{
 			return (DefaultListModel)getModel();

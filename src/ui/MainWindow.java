@@ -229,6 +229,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	protected Action goToParentAction;
 
+	protected JMenu helpTopics;
+
 	private void setupActions()
 	{
 		// Create actions
@@ -251,6 +253,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		operationsAction = new OperationsActions.ShowDialogAction();
 		latexAction = new services.latex.UseLatexAction();
 		optionsAction = new OptionsActions.MoreOptionsAction();
+		helpTopics = new HelpActions.HelpTopics();
 		pluginsAction = new HelpActions.PluginsAction();
 		aboutAction = new HelpActions.AboutAction();
 
@@ -383,6 +386,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		// adding the menu items to the "helpMenu"
 		JMenuItem viewPlugins = new JMenuItem(pluginsAction);
 		JMenuItem aboutIDES = new JMenuItem(aboutAction);
+		helpMenu.add(helpTopics);
 		helpMenu.add(viewPlugins);
 		helpMenu.addSeparator();
 		helpMenu.add(aboutIDES);

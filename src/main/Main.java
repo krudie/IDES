@@ -22,6 +22,7 @@ import services.latex.LatexBackend;
 import services.notice.NoticeBackend;
 import services.notice.NoticePopup;
 import services.undo.UndoBackend;
+import ui.HelpDirLister;
 import ui.MainWindow;
 
 /**
@@ -47,11 +48,12 @@ public class Main
 		// set up global exception handler
 		// TODO uncomment these lines before shipping. Default exception handler
 		// disabled for debugging. -- CLM
-		Thread.setDefaultUncaughtExceptionHandler(new GlobalExceptionHandler());
+		// Thread.setDefaultUncaughtExceptionHandler(new
+		// GlobalExceptionHandler());
 		// AWT/Swing Exception handling (changes expected in future Java
 		// releases)
-		System.setProperty("sun.awt.exception.handler",
-				GlobalExceptionHandler.class.getName());
+		// System.setProperty("sun.awt.exception.handler",
+		// GlobalExceptionHandler.class.getName());
 
 		// load resource with strings used in the program
 		try
@@ -107,6 +109,7 @@ public class Main
 		CacheBackend.init();
 		UndoBackend.init();
 		NoticeBackend.init();
+		HelpDirLister.init();
 
 		// setup main window
 		HubBackend.setUserInterface(new MainWindow());
