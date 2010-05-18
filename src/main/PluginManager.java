@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import operations.fsa.ver2_1.Accessible;
 import operations.fsa.ver2_1.Coaccessible;
+import operations.fsa.ver2_1.Complement;
 import operations.fsa.ver2_1.Containment;
 import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
@@ -43,6 +44,7 @@ import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.PrefixClosure;
 import operations.fsa.ver2_1.Projection;
 import operations.fsa.ver2_1.SelfLoop;
+import operations.fsa.ver2_1.SetDifference;
 import operations.fsa.ver2_1.SupCon;
 import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
@@ -96,6 +98,8 @@ public class PluginManager
 		OperationManager.instance().register(new MultiAgentProductFSA());
 		OperationManager.instance().register(new SelfLoop());
 		OperationManager.instance().register(new Minimize());
+		OperationManager.instance().register(new SetDifference());
+		OperationManager.instance().register(new Complement());
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();
