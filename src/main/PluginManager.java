@@ -33,22 +33,30 @@ import java.util.Vector;
 import operations.fsa.ver2_1.Accessible;
 import operations.fsa.ver2_1.Coaccessible;
 import operations.fsa.ver2_1.Complement;
+import operations.fsa.ver2_1.ConcatenationOperation;
 import operations.fsa.ver2_1.Containment;
 import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
+import operations.fsa.ver2_1.LanguageEqualityOperation;
 import operations.fsa.ver2_1.LocalModular;
 import operations.fsa.ver2_1.Meet;
 import operations.fsa.ver2_1.Minimize;
 import operations.fsa.ver2_1.MultiAgentProductFSA;
 import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.PrefixClosure;
-import operations.fsa.ver2_1.Projection;
+import operations.fsa.ver2_1.ProjectEventSetOperation;
+import operations.fsa.ver2_1.ProjectNullOperation;
+import operations.fsa.ver2_1.ProjectUnobservableOperation;
 import operations.fsa.ver2_1.SelfLoop;
 import operations.fsa.ver2_1.SetDifference;
 import operations.fsa.ver2_1.SupCon;
 import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
 import operations.fsa.ver2_1.Trim;
+import operations.fsa.ver2_1.UnionOperation;
+
+
+
 
 /**
  * Deals with the management of plugins.
@@ -83,7 +91,6 @@ public class PluginManager
 		// Register FSA operations
 		OperationManager.instance().register(new Meet());
 		OperationManager.instance().register(new SynchronousProduct());
-		OperationManager.instance().register(new Projection());
 		OperationManager.instance().register(new Accessible());
 		OperationManager.instance().register(new Coaccessible());
 		OperationManager.instance().register(new Trim());
@@ -100,7 +107,16 @@ public class PluginManager
 		OperationManager.instance().register(new Minimize());
 		OperationManager.instance().register(new SetDifference());
 		OperationManager.instance().register(new Complement());
+		OperationManager.instance().register(new UnionOperation());
+		OperationManager.instance().register(new ConcatenationOperation());
+		OperationManager.instance().register(new ProjectNullOperation());
+		OperationManager
+				.instance().register(new ProjectUnobservableOperation());
+		OperationManager.instance().register(new ProjectEventSetOperation());
+		OperationManager.instance().register(new LanguageEqualityOperation());
 
+	
+		
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();
 		new AnnotatedModelPlugin().initialize();
