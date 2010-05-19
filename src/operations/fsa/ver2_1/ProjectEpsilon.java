@@ -1,56 +1,51 @@
 package operations.fsa.ver2_1;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * 
  * @author Valerie Sugarman
- *
  */
-public class ProjectEventSetOperation implements Operation
+public class ProjectEpsilon implements Operation
 {
 
 	private LinkedList<String> warnings = new LinkedList<String>();
 
-	
 	public String getDescription()
 	{
 
-		return "Computes a projection of the given automaton such that all of the specified"
-				+ " events have been removed. Epsilon transitions are not removed.";
+		return "Computes an automaton which recognizes the same language as the given automaton and contains"
+				+ " no epsilon transitions.";
 	}
-
 
 	public String[] getDescriptionOfInputs()
 	{
 
-		return new String[] { "Finite-State automaton", "Events to project out" };
+		return new String[] { "Finite-State automaton" };
 
 	}
-
 
 	public String[] getDescriptionOfOutputs()
 	{
 
-		return new String[] { "Automaton with events projected out" };
+		return new String[] { "FSA with null events projected out" };
 	}
-
 
 	public String getName()
 	{
 
-		return "project";
+		return "removeepsilon";
 	}
 
 	public int getNumberOfInputs()
 	{
 
-		return 2;
+		return 1;
 	}
 
 	public int getNumberOfOutputs()
@@ -62,10 +57,9 @@ public class ProjectEventSetOperation implements Operation
 	public Class<?>[] getTypeOfInputs()
 	{
 
-		return new Class<?>[] { FSAModel.class, DESEventSet.class };
+		return new Class<?>[] { FSAModel.class };
 
 	}
-
 
 	public Class<?>[] getTypeOfOutputs()
 	{
@@ -73,30 +67,25 @@ public class ProjectEventSetOperation implements Operation
 		return new Class<?>[] { FSAModel.class };
 	}
 
-
 	public List<String> getWarnings()
 	{
 
 		return warnings;
 	}
 
-
 	public Object[] perform(Object[] arg0)
 	{
 
 		warnings.clear();
 		FSAModel model;
-		DESEventSet DESEventsToRemove;
 		FSAModel projection = ides.api.plugin.model.ModelManager
 				.instance().createModel(FSAModel.class);
 
-		if (arg0.length == 2)
+		if (arg0.length == 1)
 		{
-			if ((arg0[0] instanceof FSAModel)
-					&& (arg0[1] instanceof DESEventSet))
+			if (arg0[0] instanceof FSAModel)
 			{
-				model = (FSAModel)arg0[0];
-				DESEventsToRemove = (DESEventSet)arg0[1];
+				model = ((FSAModel)arg0[0]);
 			}
 			else
 			{
@@ -108,7 +97,7 @@ public class ProjectEventSetOperation implements Operation
 		}
 		else
 		{
-			String error = "Illegal number of arguments, two expected.";
+			String error = "Illegal number of arguments, one expected.";
 			warnings.add(error);
 			return new Object[] { ides.api.plugin.model.ModelManager
 					.instance().createModel(FSAModel.class) };
@@ -116,19 +105,22 @@ public class ProjectEventSetOperation implements Operation
 
 		if (CheckingToolbox.initialStateCount(model) != 1)
 		{
-			String error = "There should be exactly one initial State in the";
+			String error = "There should be exactly one initial State in the model";
 			warnings.add(error);
 			return new Object[] { ides.api.plugin.model.ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		Object doubleCheck = Project.projectCustom(model,
-				DESEventsToRemove,
-				false);
+		DESEventSet des = ides.api.plugin.model.ModelManager
+				.instance().createEmptyEventSet();
+
+		Object doubleCheck = Project.projectCustom(model, des, true);
+
 		if (doubleCheck instanceof FSAModel)
+		{
 			projection = (FSAModel)doubleCheck;
+		}
 
 		return new Object[] { projection };
 	}
-
 }

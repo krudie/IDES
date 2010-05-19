@@ -1,11 +1,12 @@
 package operations.fsa.ver2_1;
-import java.util.LinkedList;
-import java.util.List;
-import java.lang.Class;
+
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class subtracts one language from the other.
@@ -30,7 +31,7 @@ public class SetDifference implements Operation
 
 	public String[] getDescriptionOfOutputs()
 	{
-		return new String[] { "Subtracted language" };
+		return new String[] { "Langauge after subtraction" };
 
 	}
 

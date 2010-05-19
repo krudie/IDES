@@ -1,17 +1,19 @@
 package operations.fsa.ver2_1;
+
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.DESEvent;
+import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.FilterOperation;
+import ides.api.plugin.operation.OperationManager;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import ides.api.model.fsa.FSAModel;
-import ides.api.model.fsa.FSAState;
-import ides.api.plugin.model.ModelManager;
-import ides.api.model.fsa.FSATransition;
-import ides.api.plugin.model.DESEvent;
-import ides.api.plugin.model.DESEventSet;
-import ides.api.plugin.operation.FilterOperation;
-import ides.api.plugin.operation.OperationManager;
 
 /**
  * This class performs the Complement Operation on languages. Algorithm taken
@@ -26,7 +28,7 @@ public class Complement implements FilterOperation
 
 	public String getDescription()
 	{
-		return "Compute the complement of a language.";
+		return "Computes the complement of a language.";
 	}
 
 	public String[] getDescriptionOfInputs()

@@ -1,11 +1,5 @@
 package operations.fsa.ver2_1;
 
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Stack;
-
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -14,29 +8,32 @@ import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
 
-/** algorithm taken from "A Course in Formal Languages, Automata and Groups" by Ian M. Chiswell
- * Springer London, 2009.
- * 
- * Construct a new FSA, whose transition diagram is the union of the 
- * transition diagrams for M1 and M2, modified as follows. There is one 
- * extra vertex as initial state and two extra edges from this new 
- * vertex to the initial states of M1 and M2, having label "epsilon". The final 
- * states are those of M1 and M2.
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Stack;
+
+/**
+ * algorithm taken from "A Course in Formal Languages, Automata and Groups" by
+ * Ian M. Chiswell Springer London, 2009. Construct a new FSA, whose transition
+ * diagram is the union of the transition diagrams for M1 and M2, modified as
+ * follows. There is one extra vertex as initial state and two extra edges from
+ * this new vertex to the initial states of M1 and M2, having label "epsilon".
+ * The final states are those of M1 and M2.
  * 
  * @author Valerie Sugarman
  */
-public class UnionOperation implements Operation
+public class Union implements Operation
 {
 
 	private LinkedList<String> warnings = new LinkedList<String>();
-
 
 	public String getDescription()
 	{
 
 		return "Computes the union of the languages represented by the given automata.";
 	}
-
 
 	public String[] getDescriptionOfInputs()
 	{
@@ -45,13 +42,11 @@ public class UnionOperation implements Operation
 
 	}
 
-
 	public String[] getDescriptionOfOutputs()
 	{
 
 		return new String[] { "Union of the automata" };
 	}
-
 
 	public String getName()
 	{
@@ -59,20 +54,17 @@ public class UnionOperation implements Operation
 		return "union";
 	}
 
-
 	public int getNumberOfInputs()
 	{
 
 		return -1;
 	}
 
-
 	public int getNumberOfOutputs()
 	{
 
 		return 1;
 	}
-
 
 	public Class<?>[] getTypeOfInputs()
 	{
@@ -81,7 +73,6 @@ public class UnionOperation implements Operation
 
 	}
 
-	
 	public Class<?>[] getTypeOfOutputs()
 	{
 
@@ -183,16 +174,12 @@ public class UnionOperation implements Operation
 					FSATransition origTransition = d.next();
 
 					FSAState origSource = origTransition.getSource();
-					FSAState copySource = DuplicationToolbox.copyStateInto(model1,
-							origSource,
-							states,
-							false);
+					FSAState copySource = DuplicationToolbox
+							.copyStateInto(model1, origSource, states, false);
 
 					FSAState origTarget = origTransition.getTarget();
-					FSAState copyTarget = DuplicationToolbox.copyStateInto(model1,
-							origTarget,
-							states,
-							false);
+					FSAState copyTarget = DuplicationToolbox
+							.copyStateInto(model1, origTarget, states, false);
 
 					FSAEvent origEvent = origTransition.getEvent();
 

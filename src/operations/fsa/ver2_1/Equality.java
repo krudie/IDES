@@ -1,20 +1,19 @@
 package operations.fsa.ver2_1;
 
-import java.util.LinkedList;
-import java.util.List;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * 
  * @author Valerie Sugarman
- *
  */
-public class LanguageEqualityOperation implements Operation
+public class Equality implements Operation
 {
 
 	protected String resultMessage;
-
 
 	public String getDescription()
 	{
@@ -22,7 +21,6 @@ public class LanguageEqualityOperation implements Operation
 		return "Determines if the two languages are equal.";
 	}
 
-	
 	public String[] getDescriptionOfInputs()
 	{
 
@@ -30,13 +28,11 @@ public class LanguageEqualityOperation implements Operation
 				"Finite-state automaton" };
 	}
 
-	
 	public String[] getDescriptionOfOutputs()
 	{
 
 		return new String[] { resultMessage };
 	}
-
 
 	public String getName()
 	{
@@ -44,20 +40,17 @@ public class LanguageEqualityOperation implements Operation
 		return "equals";
 	}
 
-
 	public int getNumberOfInputs()
 	{
 
 		return 2;
 	}
 
-
 	public int getNumberOfOutputs()
 	{
 
 		return 1;
 	}
-
 
 	public Class<?>[] getTypeOfInputs()
 	{
@@ -71,17 +64,15 @@ public class LanguageEqualityOperation implements Operation
 		return new Class<?>[] { Boolean.class };
 	}
 
-
 	public List<String> getWarnings()
 	{
 
 		return new LinkedList<String>();
 	}
 
-
 	public Object[] perform(Object[] arg0)
 	{
-		
+
 		FSAModel model1 = ((FSAModel)arg0[0]);
 		FSAModel model2 = ((FSAModel)arg0[1]);
 

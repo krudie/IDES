@@ -1,12 +1,5 @@
 package operations.fsa.ver2_1;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -14,21 +7,24 @@ import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+
 /**
- * @author Valerie Sugarman
- *  
- *  
- *  algorithm taken from "A Course in Formal Languages, Automata and Groups" by Ian M. Chiswell
- * Springer London, 2009.
+ * "A Course in Formal Languages, Automata and Groups" by Ian M. Chiswell
+ * Springer London, 2009. Take the union of the transition diagrams of M1 and
+ * M2, with new null string edges from the final states of M1 to the initial
+ * state of M2. The new initial state is that of M1, and the final states are
+ * those of M2. The null string transitions are then projected out of the
+ * result.
  * 
- * Take the union of the transition diagrams of M1 and M2, with 
- * new null string edges from the final states of M1 to the initial state of M2.
- *  The new initial state is that of M1, and the
- *  final states are those of M2.
- *  
- *  The null string transitions are then projected out of the result.
+ * @author Valerie Sugarman algorithm taken from
  */
-public class ConcatenationOperation implements Operation
+public class Concatenation implements Operation
 {
 
 	private LinkedList<String> warnings = new LinkedList<String>();
@@ -207,10 +203,8 @@ public class ConcatenationOperation implements Operation
 				}
 				else
 				{
-					FSAEvent copyEvent = DuplicationToolbox.copyEventInto(model1,
-							origEvent,
-							events,
-							false);
+					FSAEvent copyEvent = DuplicationToolbox
+							.copyEventInto(model1, origEvent, events, false);
 					copyTransition = model1.assembleTransition(copySource
 							.getId(), copyTarget.getId(), copyEvent.getId());
 				}

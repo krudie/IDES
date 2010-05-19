@@ -1,18 +1,19 @@
 package operations.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAEvent;
+import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.DESEvent;
+import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.operation.Operation;
+
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.model.DESEventSet;
-import ides.api.plugin.operation.CheckingToolbox;
-import ides.api.plugin.operation.Operation;
 /**
- * 
  * @author Valerie Sugarman
- *
  */
-public class ProjectNullOperation implements Operation
+public class ProjectUnobservable implements Operation
 {
 
 	private LinkedList<String> warnings = new LinkedList<String>();
@@ -20,8 +21,8 @@ public class ProjectNullOperation implements Operation
 	public String getDescription()
 	{
 
-		return "Computes an automaton which recognizes the same language as the given automaton and contains"
-				+ " no epsilon transitions.";
+		return "Computes a projection of the given automaton such that all of the unobservable events"
+				+ " have been removed. Epsilon transitions are not removed.";
 	}
 
 	public String[] getDescriptionOfInputs()
@@ -34,13 +35,13 @@ public class ProjectNullOperation implements Operation
 	public String[] getDescriptionOfOutputs()
 	{
 
-		return new String[] { "FSA with null events projected out" };
+		return new String[] { "Observer automaton" };
 	}
 
 	public String getName()
 	{
 
-		return "removeepsilon";
+		return "observer";
 	}
 
 	public int getNumberOfInputs()
@@ -78,6 +79,7 @@ public class ProjectNullOperation implements Operation
 	{
 
 		warnings.clear();
+
 		FSAModel model;
 		FSAModel projection = ides.api.plugin.model.ModelManager
 				.instance().createModel(FSAModel.class);
@@ -86,11 +88,11 @@ public class ProjectNullOperation implements Operation
 		{
 			if (arg0[0] instanceof FSAModel)
 			{
-				model = ((FSAModel)arg0[0]);
+				model = (FSAModel)arg0[0];
 			}
 			else
 			{
-				String error = "Illegal argument, FSAModel and DESEventSet expected";
+				String error = "Illegal argument, FSAModel expected.";
 				warnings.add(error);
 				return new Object[] { ides.api.plugin.model.ModelManager
 						.instance().createModel(FSAModel.class) };
@@ -98,24 +100,26 @@ public class ProjectNullOperation implements Operation
 		}
 		else
 		{
-			String error = "Illegal number of arguments, one expected.";
+			String error = "Illegal number of arguments, one FSAModel expected.";
 			warnings.add(error);
 			return new Object[] { ides.api.plugin.model.ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		if (CheckingToolbox.initialStateCount(model) != 1)
-		{
-			String error = "There should be exactly one initial State in the model";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
-
-		DESEventSet des = ides.api.plugin.model.ModelManager
+		// create a DESEventSet with only the unobservable events to remove
+		DESEventSet eventsToRemove = ides.api.plugin.model.ModelManager
 				.instance().createEmptyEventSet();
+		for (Iterator<FSAEvent> i = model.getEventIterator(); i.hasNext();)
+		{
+			FSAEvent e = i.next();
+			if (!e.isObservable())
+			{
+				eventsToRemove.add((DESEvent)e);
+			}
+		}
 
-		Object doubleCheck = Project.projectCustom(model, des, true);
+		Object doubleCheck = Project
+				.projectCustom(model, eventsToRemove, false);
 
 		if (doubleCheck instanceof FSAModel)
 		{
