@@ -4,6 +4,8 @@
 package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.OperationManager;
 
 /**
  * @author Lenko Grigorov
@@ -33,10 +35,48 @@ public class Controllable extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-
-		boolean result = SuperVisory.controllable((FSAModel)inputs[0],
-				(FSAModel)inputs[1]);
+		warnings.clear();
+		FSAModel plant;
+		FSAModel specification;
 		String resultMessage;
+		if (inputs.length >= 2)
+		{
+			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel)
+			{
+				plant = (FSAModel)inputs[0];
+				specification = (FSAModel)inputs[1];
+			}
+			else
+			{
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { new Boolean(false) };
+			}
+		}
+		else
+		{
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { new Boolean(false) };
+		}
+
+		if (!CheckingToolbox.isDeterministic(plant))
+		{
+			plant = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { plant })[0];
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
+		}
+		if (!CheckingToolbox.isDeterministic(specification))
+		{
+			specification = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { specification })[0];
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
+		}
+
+		boolean result = SuperVisory.controllable(plant, specification);
+
 		if (result)
 		{
 			resultMessage = "Specification is controllable with respect to the plant.";

@@ -6,6 +6,7 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.OperationManager;
 
 import java.util.Collection;
@@ -63,8 +64,42 @@ public class Minimize extends AbstractOperation
 	public Object[] perform(Object[] inputs)
 	{
 		warnings.clear();
-		FSAModel fsa = (FSAModel)OperationManager
-				.instance().getOperation("accessible").perform(inputs)[0];
+		FSAModel fsa;
+		if (inputs.length == 1)
+		{
+			if (inputs[0] instanceof FSAModel)
+			{
+				fsa = (FSAModel)inputs[0];
+			}
+			else
+			{
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
+						.instance().createModel(FSAModel.class) };
+			}
+		}
+		else
+		{
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
+		fsa = (FSAModel)OperationManager
+				.instance().getOperation("accessible")
+				.perform(new Object[] { fsa })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("accessible").getWarnings());
+
+		if (!CheckingToolbox.isDeterministic(fsa))
+		{
+			fsa = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { fsa })[0];
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
+		}
+
 		Collection<Collection<FSAState>> parts = new HashSet<Collection<FSAState>>();
 		Collection<Collection<FSAState>> splitters = new HashSet<Collection<FSAState>>();
 
@@ -85,7 +120,7 @@ public class Minimize extends AbstractOperation
 		}
 		if (f.isEmpty())
 		{
-			warnings.add("No final states.");
+			warnings.add(CheckingToolbox.NO_MARKED_STATES);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}

@@ -5,8 +5,10 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
+import ides.api.plugin.operation.OperationManager;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -84,10 +86,19 @@ public class Union implements Operation
 		return warnings;
 	}
 
+	/**
+	 * Performs the union operation.
+	 * 
+	 * @param arg0
+	 *            An array of type Object, containing the FSAModels on which to
+	 *            perform the operation.
+	 * @return The union of the given input automata.
+	 */
 	public Object[] perform(Object[] arg0)
 	{
 
 		warnings.clear();
+		FSAModel temp;
 		FSAModel model1;
 		FSAModel model2;
 		Stack<FSAModel> models = new Stack<FSAModel>();
@@ -99,20 +110,22 @@ public class Union implements Operation
 			{
 				if (arg0[i] instanceof FSAModel)
 				{
+					temp = (FSAModel)arg0[i];
 					if (i == arg0.length - 1)
 					{
-						models.push(((FSAModel)arg0[i]).clone());
+						if (CheckingToolbox.initialStateCount(temp) == 1)
+							models.push(temp.clone());
 					}
 					else
 					{
-						models.push(((FSAModel)arg0[i]));
+						if (CheckingToolbox.initialStateCount(temp) == 1)
+							models.push(temp);
 					}
 				}
 				else
 				{
-					String error = "Illegal argument, FSAModels expected for union operation";
-					warnings.add(error);
-					return new Object[] { ides.api.plugin.model.ModelManager
+					warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+					return new Object[] { ModelManager
 							.instance().createModel(FSAModel.class) };
 				}
 			}
@@ -120,7 +133,15 @@ public class Union implements Operation
 		else
 		// if input array is empty
 		{
-			return new Object[] { ides.api.plugin.model.ModelManager
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
+		if (models.isEmpty())
+		{
+			warnings.add(CheckingToolbox.NOT_1_INITIAL_STATE);
+			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
@@ -137,17 +158,6 @@ public class Union implements Operation
 
 			model1 = models.pop();
 			model2 = models.pop();
-
-			// Make sure there is exactly one initial state in each model and
-			// inform the user and return and empty model if not
-			if ((CheckingToolbox.initialStateCount(model1) != 1)
-					|| (CheckingToolbox.initialStateCount(model2) != 1))
-			{
-				String error = CheckingToolbox.NOT_1_INITIAL_STATE;
-				warnings.add(error);
-				return new Object[] { ides.api.plugin.model.ModelManager
-						.instance().createModel(FSAModel.class) };
-			}
 
 			/* Identify the initial states of the model1s */
 			FSAState model1initial = DuplicationToolbox.getInitial(model1);
@@ -227,11 +237,14 @@ public class Union implements Operation
 									model2initial.getId());
 					model1.add(toModel2);
 
-					DESEventSet des = ides.api.plugin.model.ModelManager
+					DESEventSet des = ModelManager
 							.instance().createEmptyEventSet();
-					model1 = (FSAModel)ides.api.plugin.operation.OperationManager
-							.instance().getOperation("projectcustom")
+					model1 = (FSAModel)OperationManager
+							.instance().getOperation("removeepsilon")
 							.perform(new Object[] { model1, des })[0];
+					warnings.addAll(OperationManager
+							.instance().getOperation("removeepsilon")
+							.getWarnings());
 
 					return new Object[] { model1 };
 				}
@@ -261,9 +274,11 @@ public class Union implements Operation
 			model1.add(toModel2);
 
 			/* project out the null string transitions (no associated event) */
-			model1 = (FSAModel)ides.api.plugin.operation.OperationManager
+			model1 = (FSAModel)OperationManager
 					.instance().getOperation("removeepsilon")
 					.perform(new Object[] { model1 })[0];
+			warnings.addAll(OperationManager
+					.instance().getOperation("removeepsilon").getWarnings());
 
 			models.push(model1);
 

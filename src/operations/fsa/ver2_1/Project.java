@@ -1,11 +1,13 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +22,11 @@ import java.util.TreeMap;
 /**
  * Adapted from Composition.observer algorithm.
  * 
+ * @author Kristian Edlund
+ * @author Axel Gottlieb Michelsen
+ * @author Lenko Grigorov
+ * @author Chris Dragert
+ * @author Valerie Sugarman
  */
 public class Project
 {
@@ -54,12 +61,14 @@ public class Project
 
 		if (DESEventsToRemove == null)
 		{
-			DESEventsToRemove = ides.api.plugin.model.ModelManager
-					.instance().createEmptyEventSet();
+			DESEventsToRemove = ModelManager.instance().createEmptyEventSet();
 		}
 
-		FSAModel projection = ides.api.plugin.model.ModelManager
+		FSAModel projection = ModelManager
 				.instance().createModel(FSAModel.class);
+
+		projection.setAnnotation(Annotable.COMPOSED_OF, new String[] { model
+				.getName() });
 
 		HashMap<String, FSAEvent> newEvents = new HashMap<String, FSAEvent>();
 		HashSet<FSAEvent> eventsToRemove = new HashSet<FSAEvent>();
@@ -102,7 +111,7 @@ public class Project
 		reach(states, eventsToRemove, removeNulls);
 		sort(states);
 		FSAState rState = projection.assembleState();
-		// make a state based on the states contained in the states
+		// make a state based on the states contained in states
 		rState = makeState(states, rState, id, true);
 		projection.add(rState);
 		setIn(states, id++);
@@ -281,34 +290,30 @@ public class Project
 		ListIterator<FSAState> sli = sll.listIterator();
 		FSAState s;
 		boolean marked = false;
-		String name = "";
-
-		if (sll.size() > 1)
-			name += "(";
-
-		if (sli.hasNext())
-		{
-			s = sli.next();
-			marked |= s.isMarked();
-			if (s.getName() != "")
-				name += s.getName();
-		}
+		int cId = 0;
+		LinkedList<String> compositionNamesLL = new LinkedList<String>();
+		long[] compositionIds = new long[sll.size()];
+		
 
 		while (sli.hasNext())
 		{
 			s = sli.next();
 			marked |= s.isMarked();
+			compositionIds[cId] = s.getId();
+			cId++;
 			if (s.getName() != "")
-				name += ", " + s.getName();
+			{
+				compositionNamesLL.add(s.getName());
+			}
 		}
 
-		if (sll.size() > 1)
-			name += ")";
-
+		String[] compositionNames = compositionNamesLL
+				.toArray(new String[compositionNamesLL.size()]);
 		aState.setId(id);
 		aState.setMarked(marked);
 		aState.setInitial(initial);
-		aState.setName(name);
+		aState.setAnnotation(Annotable.COMPOSED_OF, compositionIds);
+		aState.setAnnotation(Annotable.COMPOSED_OF_NAMES, compositionNames);
 
 		return aState;
 	}

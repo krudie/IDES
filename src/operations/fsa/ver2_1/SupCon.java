@@ -5,6 +5,7 @@ package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.FilterOperation;
 
 /**
@@ -37,11 +38,27 @@ public class SupCon extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
+		warnings.clear();
+		FSAModel model1;
+		FSAModel model2;
+		if(inputs.length == 2){
+			if(inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel){
+				model1 = (FSAModel) inputs[0];
+				model2 = (FSAModel) inputs[1];
+			} else {
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
+			}
+		} else {
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
+		}
 		FSAModel a = ModelManager
 				.instance().createModel(FSAModel.class, "none");
-		SuperVisory.supC((FSAModel)inputs[0], (FSAModel)inputs[1], a);
+		SuperVisory.supC(model1, model2, a);
 		FilterOperation fo = new ControlMap();
 		fo.filter(new Object[] { a, inputs[0] });
+		warnings.addAll(fo.getWarnings());
 		return new Object[] { a };
 	}
 

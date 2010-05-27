@@ -1,6 +1,8 @@
 package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
@@ -14,6 +16,8 @@ public class Equality implements Operation
 {
 
 	protected String resultMessage;
+
+	private LinkedList<String> warnings = new LinkedList<String>();
 
 	public String getDescription()
 	{
@@ -67,24 +71,57 @@ public class Equality implements Operation
 	public List<String> getWarnings()
 	{
 
-		return new LinkedList<String>();
+		return warnings;
 	}
 
-	public Object[] perform(Object[] arg0)
+	public Object[] perform(Object[] inputs)
 	{
 
-		FSAModel model1 = ((FSAModel)arg0[0]);
-		FSAModel model2 = ((FSAModel)arg0[1]);
+		warnings.clear();
+		FSAModel a, b;
+		if (inputs.length == 2)
+		{
+			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel)
+			{
+				a = (FSAModel)inputs[0];
+				b = (FSAModel)inputs[1];
+			}
+			else
+			{
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
+						.instance().createModel(FSAModel.class) };
+			}
+		}
+		else
+		{
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
+		if (!CheckingToolbox.isDeterministic(a))
+		{
+			a = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { a })[0];
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
+		}
+		if (!CheckingToolbox.isDeterministic(b))
+		{
+			b = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { b })[0];
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
+		}
 
 		boolean equals;
 
-		equals = (Boolean)OperationManager
-				.instance().getOperation("subset").perform(new Object[] {
-						model1, model2 })[0];
+		equals = Subset.subset(a, b);
 
-		equals &= (Boolean)OperationManager
-				.instance().getOperation("subset").perform(new Object[] {
-						model2, model1 })[0];
+		equals &= Subset.subset(b, a);
 
 		if (equals)
 		{

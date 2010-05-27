@@ -3,7 +3,12 @@
  */
 package operations.fsa.ver2_1;
 
+import java.util.LinkedList;
+
+import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.OperationManager;
 
 /**
  * @author Lenko Grigorov
@@ -40,16 +45,43 @@ public class SynchronousProduct extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
+		warnings.clear();
+		FSAModel newInput;
+		LinkedList<FSAModel> newInputs = new LinkedList<FSAModel>();
 		FSAModel[] models = new FSAModel[inputs.length];
+		FSAModel model;
+		boolean epsilonsRemoved = false;
+		
 		for (int i = 0; i < inputs.length; ++i)
 		{
-			if (!(inputs[i] instanceof FSAModel))
+			if ((inputs[i] instanceof FSAModel))
 			{
-				throw new IllegalArgumentException();
+				newInput = (FSAModel)inputs[i];
+				if (CheckingToolbox.containsEpsilonTransitions(newInput))
+				{
+					newInput = (FSAModel)OperationManager
+							.instance().getOperation("removeepsilon")
+							.perform(new Object[] { newInput })[0];
+					warnings.addAll(OperationManager
+							.instance().getOperation("removeepsilon").getWarnings());
+					epsilonsRemoved = true;
+				}
+				newInputs.add(newInput);
 			}
-			models[i] = (FSAModel)inputs[i];
+			
 		}
-		return new Object[] { Composition.parallel(models, "none") };
+		
+		models = newInputs.toArray(new FSAModel[0]);
+		model = Composition.parallel(models, "none");
+		
+		// if epsilon transitions were removed above, state labels no longer
+		// make sense in sync
+		if (epsilonsRemoved)
+		{
+			model.removeAnnotation(Annotable.COMPOSED_OF);
+		}
+		
+		return new Object[] { model };
 		// FSAModel a = ModelManager
 		// .instance().createModel(FSAModel.class, "none");
 		// Composition.parallel((FSAModel)inputs[0], (FSAModel)inputs[1], a);

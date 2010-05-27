@@ -2,6 +2,7 @@ package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
 
@@ -78,7 +79,7 @@ public class ProjectEpsilon implements Operation
 
 		warnings.clear();
 		FSAModel model;
-		FSAModel projection = ides.api.plugin.model.ModelManager
+		FSAModel projection = ModelManager
 				.instance().createModel(FSAModel.class);
 
 		if (arg0.length == 1)
@@ -89,37 +90,21 @@ public class ProjectEpsilon implements Operation
 			}
 			else
 			{
-				String error = "Illegal argument, FSAModel and DESEventSet expected";
-				warnings.add(error);
-				return new Object[] { ides.api.plugin.model.ModelManager
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			String error = "Illegal number of arguments, one expected.";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		if (CheckingToolbox.initialStateCount(model) != 1)
-		{
-			String error = "There should be exactly one initial State in the model";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
+		DESEventSet des = ModelManager.instance().createEmptyEventSet();
 
-		DESEventSet des = ides.api.plugin.model.ModelManager
-				.instance().createEmptyEventSet();
-
-		Object doubleCheck = Project.projectCustom(model, des, true);
-
-		if (doubleCheck instanceof FSAModel)
-		{
-			projection = (FSAModel)doubleCheck;
-		}
+		projection = Project.projectCustom(model, des, true);
 
 		return new Object[] { projection };
 	}

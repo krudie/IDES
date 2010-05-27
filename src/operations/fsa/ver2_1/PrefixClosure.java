@@ -36,6 +36,7 @@ public class PrefixClosure extends AbstractOperation implements FilterOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
+		warnings.clear();
 		FSAModel a = ((FSAModel)inputs[0]).clone();
 		Unary.prefixClosure(a);
 		return new Object[] { a };
@@ -49,6 +50,7 @@ public class PrefixClosure extends AbstractOperation implements FilterOperation
 	// unknown if this code is ever reached...
 	public Object[] filter(Object[] inputs)
 	{
+		warnings.clear();
 		FSAModel a = (FSAModel)inputs[0];
 		Unary.prefixClosure(a);
 		return new Object[] { a };

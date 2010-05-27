@@ -4,14 +4,11 @@
 package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
-import ides.api.model.fsa.FSAState;
-import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.OperationManager;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
+
 
 /**
  * @author Lenko Grigorov
@@ -42,77 +39,38 @@ public class Containment extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-		FSAModel a = (FSAModel)inputs[0];
-		FSAModel b = (FSAModel)inputs[1];
 
-		a = (FSAModel)OperationManager
-				.instance().getOperation("trim").perform(new Object[] { a })[0];
-		b = (FSAModel)OperationManager
-				.instance().getOperation("trim").perform(new Object[] { b })[0];
-
-		LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
-		Set<String> pairs = new HashSet<String>();
-		FSAState[] cState = new FSAState[2];
-
-		Iterator<FSAState> sia = a.getStateIterator();
-		while (sia.hasNext())
-		{
-			cState[0] = sia.next();
-			if (cState[0].isInitial())
-			{
-				Iterator<FSAState> sib = b.getStateIterator();
-				while (sib.hasNext())
-				{
-					cState[1] = sib.next();
-					if (cState[1].isInitial())
-					{
-						searchList.add(cState.clone());
-					}
-				}
+		warnings.clear();
+		FSAModel a,b;
+		if (inputs.length == 2){
+			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel){
+				a = (FSAModel)inputs[0];
+				b = (FSAModel)inputs[1];
+			} else {
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
 			}
+		} else {
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
+		}
+		
+		if (!CheckingToolbox.isDeterministic(a))
+		{
+			a = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { a })[0];
+			warnings.addAll(OperationManager.instance().getOperation("NFAtoDFA").getWarnings());
+		}
+		if (!CheckingToolbox.isDeterministic(b))
+		{
+			b = (FSAModel)OperationManager
+					.instance().getOperation("NFAtoDFA")
+					.perform(new Object[] { b })[0];
+			warnings.addAll(OperationManager.instance().getOperation("NFAtoDFA").getWarnings());
 		}
 
-		boolean contained = !searchList.isEmpty() || a.getStateCount() == 0;
-
-		while (!searchList.isEmpty())
-		{
-			cState = searchList.removeFirst();
-			contained &= !(cState[0].isMarked() && !cState[1].isMarked());
-			if (!contained)
-			{
-				break;
-			}
-			pairs.add("" + cState[0].getId() + "," + cState[1].getId());
-			for (Iterator<FSATransition> i = cState[0]
-					.getOutgoingTransitionsListIterator(); i.hasNext();)
-			{
-				FSATransition ta = i.next();
-				boolean matchingFound = false;
-				for (Iterator<FSATransition> j = cState[1]
-						.getOutgoingTransitionsListIterator(); j.hasNext();)
-				{
-					FSATransition tb = j.next();
-					if ((ta.getEvent() == null && tb.getEvent() == null)
-							|| (ta.getEvent() != null && ta
-									.getEvent().equals(tb.getEvent())))
-					{
-						if (!pairs.contains("" + ta.getTarget().getId() + ","
-								+ tb.getTarget().getId()))
-						{
-							searchList.add(new FSAState[] { ta.getTarget(),
-									tb.getTarget() });
-						}
-						matchingFound = true;
-						break;
-					}
-				}
-				contained &= matchingFound;
-				if (!contained)
-				{
-					break;
-				}
-			}
-		}
+		boolean contained = Subset.subset(a, b);
 
 		String resultMessage = "";
 		if (contained)

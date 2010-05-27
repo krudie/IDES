@@ -52,7 +52,7 @@ public class Composition
 
 		if (automata.length < 1)
 		{
-			return null;
+			return ModelManager.instance().createModel(FSAModel.class);
 		}
 		else if (automata.length == 1)
 		{

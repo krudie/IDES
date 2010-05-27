@@ -6,8 +6,8 @@ import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.FilterOperation;
-import ides.api.plugin.operation.OperationManager;
+import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FilterOperation; //import ides.api.plugin.operation.OperationManager;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,7 +69,7 @@ public class Complement implements FilterOperation
 
 	public List<String> getWarnings()
 	{
-		return new LinkedList<String>();
+		return warnings;
 	}
 
 	/**
@@ -84,6 +84,7 @@ public class Complement implements FilterOperation
 	 */
 	public Object[] perform(Object[] arg0)
 	{
+		warnings.clear();
 		// Cloning to the input model to leave it modified.
 		FSAModel model = ((FSAModel)arg0[0]).clone();
 
@@ -96,17 +97,18 @@ public class Complement implements FilterOperation
 	 * 
 	 * @param arg0
 	 *            one input of type FSAModel, whose complemented is to be
-	 *            computed @ returns one model of type FSAModel which is the
-	 *            complement of the input model
+	 *            computed
+	 * @returns one model of type FSAModel which is the complement of the input
+	 *          model
 	 */
 	public Object[] filter(Object[] arg0)
 	{
+		warnings.clear();
 		if (!FSAModel.class.isInstance(arg0[0]))
 		{
-			warnings.add("Complement Error! Inconsistent argument");
-			FSAModel model = ModelManager
-					.instance().createModel(FSAModel.class);
-			return new Object[] { model };
+			warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
 		}
 
 		FSAModel model = (FSAModel)arg0[0];
@@ -121,22 +123,28 @@ public class Complement implements FilterOperation
 		boolean hasInitialState = false;
 		Collection<FSATransition> transitionToRemove = new HashSet<FSATransition>();
 
-		// Adding the new state
-
-		// if (debug)
-		// {
-		// for (DESEvent e : eventSetForModelToComplement)
-		// System.out.println("Event " + e);
-		// }
-
-		model = (FSAModel)OperationManager
-				.instance().getFilterOperation("trim")
-				.filter(new Object[] { model })[0];
-
-		if ((model.getStateCount() == 0) && (model.getEventSet().isEmpty()))
+		if (!CheckingToolbox.isDeterministic(model))
+		{
+			warnings.add(CheckingToolbox.NON_DETERM);
 			return new Object[] { model };
+		}
 
-		if ((model.getStateCount() == 0) && (!model.getEventSet().isEmpty()))
+		if (CheckingToolbox.isEmptyLanguage(model)
+				&& model.getEventSet().isEmpty())
+		{
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+		/*
+		 * model = (FSAModel)OperationManager
+		 * .instance().getFilterOperation("trim") .filter(new Object[] { model
+		 * })[0];
+		 * warnings.addAll(OperationManager.instance().getOperation("trim"
+		 * ).getWarnings() );
+		 */
+
+		if (CheckingToolbox.isEmptyLanguage(model)
+				&& (!model.getEventSet().isEmpty()))
 		{
 
 			addedState = model.assembleState();

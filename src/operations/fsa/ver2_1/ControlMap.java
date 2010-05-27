@@ -7,6 +7,7 @@ import ides.api.model.fsa.FSASupervisor;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.FilterOperation;
 
 import java.util.Iterator;
@@ -41,9 +42,40 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 
 	public Object[] filter(Object[] inputs)
 	{
-		FSASupervisor supervisor = (FSASupervisor)inputs[0];
+		warnings.clear();
+		FSASupervisor supervisor;
+		FSAModel plant;
+		if (inputs.length >= 2)
+		{
+			if (inputs[0] instanceof FSASupervisor
+					&& inputs[1] instanceof FSAModel)
+			{
+				supervisor = (FSASupervisor)inputs[0];
+				plant = (FSAModel)inputs[1];
+			}
+			else
+			{
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
+						.instance().createModel(FSASupervisor.class) };
+			}
+		}
+		else
+		{
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSASupervisor.class) };
+		}
+
 		// Unary.buildStateCompositionOfClone((Automaton)supervisor);
-		FSAModel plant = (FSAModel)inputs[1];
+
+		if (!CheckingToolbox.isDeterministic(plant)
+				|| !CheckingToolbox.isDeterministic(supervisor))
+		{
+			warnings.add(CheckingToolbox.NON_DETERM);
+			return new Object[] { ModelManager
+					.instance().createModel(FSASupervisor.class) };
+		}
 
 		FSAModel product = ModelManager.instance().createModel(FSAModel.class,
 				"temp");
@@ -133,7 +165,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 		// TODO the block below is only for debugging
 		// for(Iterator<FSAState> i=supervisor.getStateIterator();i.hasNext();)
 		// {
-		//System.out.println(supervisor.getDisabledEvents(i.next()).toString());
+		// System.out.println(supervisor.getDisabledEvents(i.next()).toString());
 		// }
 
 		return new Object[] { supervisor };

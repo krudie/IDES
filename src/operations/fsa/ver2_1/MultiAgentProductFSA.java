@@ -6,6 +6,8 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.OperationManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,20 +61,43 @@ public class MultiAgentProductFSA extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-		if (inputs.length == 0)
-		{
-			return new Object[0];
-		}
-		FSAModel a = ModelManager.instance().createModel(FSAModel.class);
-		maOrder = inputs.length;
-		FSAState[] initial = new FSAState[maOrder];
-		String[] fsaIds = new String[maOrder];
+		warnings.clear();
+		
+		LinkedList<FSAModel> newInputs = new LinkedList<FSAModel>();
 		for (int i = 0; i < inputs.length; ++i)
 		{
-			fsaIds[i] = ((FSAModel)inputs[i]).getName();
+			if (inputs[i] instanceof FSAModel)
+			{
+				FSAModel model = (FSAModel)inputs[i];
+				if (!CheckingToolbox.isDeterministic(model))
+				{
+					model = (FSAModel)OperationManager
+							.instance().getOperation("NFAtoDFA")
+							.perform(new Object[] { model })[0];
+					warnings.addAll(OperationManager
+							.instance().getOperation("NFAtoDFA").getWarnings());
+				}
+				newInputs.add(model);
+			}
+		}
+		
+		if (newInputs.size() == 0)
+		{
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
+		FSAModel a = ModelManager.instance().createModel(FSAModel.class);
+		maOrder = newInputs.size();
+		FSAState[] initial = new FSAState[maOrder];
+		String[] fsaIds = new String[maOrder];
+		for (int i = 0; i < maOrder; ++i)
+		{
+			fsaIds[i] = newInputs.get(i).getName();
 			initial[i] = null;
-			for (Iterator<FSAState> j = ((FSAModel)inputs[i])
-					.getStateIterator(); j.hasNext();)
+			for (Iterator<FSAState> j = newInputs.get(i).getStateIterator(); j
+					.hasNext();)
 			{
 				FSAState state = j.next();
 				if (state.isInitial())
@@ -85,7 +110,8 @@ public class MultiAgentProductFSA extends AbstractOperation
 			{
 				warnings.add("FSA \'" + fsaIds[i]
 						+ "\' does not have an initial state");
-				return new Object[0];
+				return new Object[] { ides.api.plugin.model.ModelManager
+						.instance().createModel(FSAModel.class) };
 			}
 		}
 		a.setAnnotation(Annotable.COMPOSED_OF, fsaIds);

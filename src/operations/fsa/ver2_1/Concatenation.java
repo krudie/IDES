@@ -4,15 +4,18 @@ import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
+import ides.api.plugin.operation.OperationManager;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 /**
  * "A Course in Formal Languages, Automata and Groups" by Ian M. Chiswell
@@ -84,6 +87,16 @@ public class Concatenation implements Operation
 		return warnings;
 	}
 
+	/**
+	 * Performs the concatenation operation.
+	 * 
+	 * @param arg0
+	 *            An array of type Object. The object at index 0 is the prefix
+	 *            language and the object at index 1 is the suffix language.
+	 * @return The concatenation of the prefix and the suffix. If either are the
+	 *         empty language, or the input array is not as expected an empty
+	 *         model will be returned.
+	 */
 	public Object[] perform(Object[] arg0)
 	{
 
@@ -98,6 +111,7 @@ public class Concatenation implements Operation
 		 */
 		Hashtable<FSAState, FSAState> states = new Hashtable<FSAState, FSAState>();
 		Hashtable<String, FSAEvent> events = new Hashtable<String, FSAEvent>();
+		HashSet<Long> model2CopiedInitialStateIds = new HashSet<Long>();
 
 		// Verify validity of parameters
 		if (arg0.length == 2)
@@ -109,59 +123,39 @@ public class Concatenation implements Operation
 			}
 			else
 			{
-				String error = "Illegal argument, FSAModel expected for concatenation operation";
-				warnings.add(error);
-				return new Object[] { ides.api.plugin.model.ModelManager
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			String error = "Illegal number of arguments, two expected for concatenation operation";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
-		// Special case: model2 is empty and there is nothing to add to model1
-		if (model2.getStateCount() == 0)
+		// Special case: if either is the empty language, the concatenation is
+		// the empty language. To get past this step, both models will have an
+		// initial and marked state.
+		if (CheckingToolbox.isEmptyLanguage(model1)
+				|| CheckingToolbox.isEmptyLanguage(model2))
 		{
-			return new Object[] { model1 };
+			FSAModel emptyLanguage = ModelManager
+					.instance().createModel(FSAModel.class);
+			FSAState s = emptyLanguage.assembleState();
+			emptyLanguage.add(s);
+			return new Object[] { emptyLanguage };
 		}
 
-		// in this operation really only important that there is an initial
-		// state in model2, but FSAs representing languages don't really make
-		// sense unless they both have initials states
-		if ((CheckingToolbox.initialStateCount(model2) != 1)
-				|| (CheckingToolbox.initialStateCount(model1) != 1))
-		{
-			String error = "There should be exactly one initial State in each automata";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
-
-		// Identify the initial state of model2
-		FSAState model2Initial = DuplicationToolbox.getInitial(model2);
+		// FSAState model2Initial = DuplicationToolbox.getInitial(model2);
 
 		/*
-		 * Identify the marked states of model1 and stop (and warn the user) if
-		 * there is not at least 1
+		 * Identify the marked states of model1
 		 */
-		Collection<FSAState> model1MarkedStates = new HashSet<FSAState>();
-		for (ListIterator<FSAState> a = model1.getStateIterator(); a.hasNext();)
-		{
-			FSAState currState = a.next();
-			if (currState.isMarked())
-				model1MarkedStates.add(currState);
-		}
-		if (model1MarkedStates.isEmpty())
-		{
-			String error = "There needs to be at least one marked state in Finite-State Automaton 1";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
-
+		Set<Long> model1MarkedStateIds = ides.api.plugin.operation.CheckingToolbox
+				.getMarkedStates(model1);
+		
+		
 		/*
 		 * Add the events in model1 to the hashtable "events". Later on, if an
 		 * event with the same name exists in model2, it will not be added, but
@@ -185,12 +179,16 @@ public class Concatenation implements Operation
 						origSource,
 						states,
 						false);
+				if (copySource.isInitial())
+					model2CopiedInitialStateIds.add(copySource.getId());
 
 				FSAState origTarget = origTransition.getTarget();
 				FSAState copyTarget = DuplicationToolbox.copyStateInto(model1,
 						origTarget,
 						states,
 						false);
+				if (copyTarget.isInitial())
+					model2CopiedInitialStateIds.add(copyTarget.getId());
 
 				FSAEvent origEvent = origTransition.getEvent();
 
@@ -215,24 +213,36 @@ public class Concatenation implements Operation
 		else
 		{ // if there are no transitions in model2
 			DuplicationToolbox.copyAllEvents(model1, model2, events, false);
-			DuplicationToolbox.copyAllStates(model1, model2, states, false);
+			for (Iterator<FSAState> i = model2.getStateIterator(); i.hasNext();)
+			{
+				FSAState origState = i.next();
+				FSAState copyState = DuplicationToolbox.copyStateInto(model1,
+						origState,
+						states,
+						false);
+				if (copyState.isInitial())
+					model2CopiedInitialStateIds.add(copyState.getId());
+			}
 		}
 
-		model2Initial = states.get(model2Initial);
-		model2Initial.setInitial(false);
-
-		for (FSAState s : model1MarkedStates)
+		for (Long markedId : model1MarkedStateIds)
 		{
-			s.setMarked(false);
-			FSATransition t = model1.assembleEpsilonTransition(s.getId(),
-					model2Initial.getId());
-			model1.add(t);
+			for (Long initialId : model2CopiedInitialStateIds)
+			{
+				model1.getState(markedId).setMarked(false);
+				model1.getState(initialId).setInitial(false);
+				FSATransition t = model1.assembleEpsilonTransition(markedId,
+						initialId);
+				model1.add(t);
+			}
 		}
 
-		/* project out the null string transitions (no associated event) */
-		model1 = (FSAModel)ides.api.plugin.operation.OperationManager
+		// project out the null string transitions (no associated event)
+		model1 = (FSAModel)OperationManager
 				.instance().getOperation("removeepsilon")
 				.perform(new Object[] { model1 })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("removeepsilon").getWarnings());
 
 		return new Object[] { model1 };
 	}

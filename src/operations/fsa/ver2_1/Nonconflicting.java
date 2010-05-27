@@ -36,6 +36,7 @@ public class Nonconflicting extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
+		warnings.clear();
 		FSAModel a = (FSAModel)inputs[0];
 		FSAModel b = (FSAModel)inputs[1];
 

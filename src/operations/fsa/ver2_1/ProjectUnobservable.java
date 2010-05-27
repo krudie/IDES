@@ -4,6 +4,8 @@ import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
 
 import java.util.Iterator;
@@ -81,7 +83,7 @@ public class ProjectUnobservable implements Operation
 		warnings.clear();
 
 		FSAModel model;
-		FSAModel projection = ides.api.plugin.model.ModelManager
+		FSAModel projection = ModelManager
 				.instance().createModel(FSAModel.class);
 
 		if (arg0.length == 1)
@@ -92,22 +94,20 @@ public class ProjectUnobservable implements Operation
 			}
 			else
 			{
-				String error = "Illegal argument, FSAModel expected.";
-				warnings.add(error);
-				return new Object[] { ides.api.plugin.model.ModelManager
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			String error = "Illegal number of arguments, one FSAModel expected.";
-			warnings.add(error);
-			return new Object[] { ides.api.plugin.model.ModelManager
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
 		// create a DESEventSet with only the unobservable events to remove
-		DESEventSet eventsToRemove = ides.api.plugin.model.ModelManager
+		DESEventSet eventsToRemove = ModelManager
 				.instance().createEmptyEventSet();
 		for (Iterator<FSAEvent> i = model.getEventIterator(); i.hasNext();)
 		{
@@ -118,13 +118,9 @@ public class ProjectUnobservable implements Operation
 			}
 		}
 
-		Object doubleCheck = Project
+		projection = Project
 				.projectCustom(model, eventsToRemove, false);
 
-		if (doubleCheck instanceof FSAModel)
-		{
-			projection = (FSAModel)doubleCheck;
-		}
 
 		return new Object[] { projection };
 	}

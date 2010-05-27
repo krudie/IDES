@@ -35,10 +35,12 @@ public class LocalModular extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
+		warnings.clear();
 		Vector<FSAModel> models = new Vector<FSAModel>();
 		for (int i = 0; i < inputs.length; ++i)
 		{
-			models.add((FSAModel)inputs[i]);
+			if(inputs[i] instanceof FSAModel)
+				models.add((FSAModel)inputs[i]);
 		}
 		Operation prefix = OperationManager
 				.instance().getOperation("prefixclose");
@@ -47,22 +49,27 @@ public class LocalModular extends AbstractOperation
 		for (FSAModel m : models)
 		{
 			pModels.add((FSAModel)prefix.perform(new Object[] { m })[0]);
+			warnings.addAll(prefix.getWarnings());
 		}
 		FSAModel l = models.firstElement();
 		for (int i = 1; i < models.size(); ++i)
 		{
 			l = (FSAModel)sync.perform(new Object[] { l, models.elementAt(i) })[0];
+			warnings.addAll(sync.getWarnings());
 		}
 		l = (FSAModel)prefix.perform(new Object[] { l })[0];
+		warnings.addAll(prefix.getWarnings());
 		FSAModel r = pModels.firstElement();
 		for (int i = 1; i < pModels.size(); ++i)
 		{
 			r = (FSAModel)sync
 					.perform(new Object[] { r, pModels.elementAt(i) })[0];
+			warnings.addAll(sync.getWarnings());
 		}
 		boolean equal = ((Boolean)OperationManager
 				.instance().getOperation("subset")
 				.perform(new Object[] { r, l })[0]).booleanValue();
+		warnings.addAll(OperationManager.instance().getOperation("subset").getWarnings());
 
 		String resultMessage = "";
 		if (equal)
