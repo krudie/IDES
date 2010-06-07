@@ -56,15 +56,13 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 			else
 			{
 				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-				return new Object[] { ModelManager
-						.instance().createModel(FSASupervisor.class) };
+				return new Object[] { inputs[0] };
 			}
 		}
 		else
 		{
 			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[] { ModelManager
-					.instance().createModel(FSASupervisor.class) };
+			return new Object[] { inputs[0] };
 		}
 
 		// Unary.buildStateCompositionOfClone((Automaton)supervisor);
@@ -73,8 +71,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 				|| !CheckingToolbox.isDeterministic(supervisor))
 		{
 			warnings.add(CheckingToolbox.NON_DETERM);
-			return new Object[] { ModelManager
-					.instance().createModel(FSASupervisor.class) };
+			return new Object[] { supervisor };
 		}
 
 		FSAModel product = ModelManager.instance().createModel(FSAModel.class,

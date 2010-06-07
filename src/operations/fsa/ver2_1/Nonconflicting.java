@@ -40,22 +40,38 @@ public class Nonconflicting extends AbstractOperation
 		FSAModel a = (FSAModel)inputs[0];
 		FSAModel b = (FSAModel)inputs[1];
 
+		FSAModel tempInput1 = (FSAModel)OperationManager
+				.instance().getOperation("prefixclose")
+				.perform(new Object[] { a })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("prefixclose").getWarnings());
+		FSAModel tempInput2 = (FSAModel)OperationManager
+				.instance().getOperation("prefixclose")
+				.perform(new Object[] { b })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("prefixclose").getWarnings());
+
 		FSAModel l = (FSAModel)OperationManager
 				.instance().getOperation("product").perform(new Object[] {
-						OperationManager
-								.instance().getOperation("prefixclose")
-								.perform(new Object[] { a })[0],
-						OperationManager
-								.instance().getOperation("prefixclose")
-								.perform(new Object[] { b })[0] })[0];
+						tempInput1, tempInput2 })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("product").getWarnings());
+
 		FSAModel r = (FSAModel)OperationManager
 				.instance().getOperation("prefixclose")
 				.perform(new Object[] { OperationManager
 						.instance().getOperation("product")
 						.perform(new Object[] { a, b })[0] })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("prefixclose").getWarnings());
+		warnings.addAll(OperationManager
+				.instance().getOperation("product").getWarnings());
+
 		boolean equal = ((Boolean)OperationManager
 				.instance().getOperation("subset")
 				.perform(new Object[] { l, r })[0]).booleanValue();
+		warnings.addAll(OperationManager
+				.instance().getOperation("subset").getWarnings());
 		String output;
 		if (equal)
 		{

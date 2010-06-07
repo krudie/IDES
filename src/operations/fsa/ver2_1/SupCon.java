@@ -41,17 +41,25 @@ public class SupCon extends AbstractOperation
 		warnings.clear();
 		FSAModel model1;
 		FSAModel model2;
-		if(inputs.length == 2){
-			if(inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel){
-				model1 = (FSAModel) inputs[0];
-				model2 = (FSAModel) inputs[1];
-			} else {
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-				return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
+		if (inputs.length == 2)
+		{
+			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel)
+			{
+				model1 = (FSAModel)inputs[0];
+				model2 = (FSAModel)inputs[1];
 			}
-		} else {
+			else
+			{
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
+						.instance().createModel(FSAModel.class) };
+			}
+		}
+		else
+		{
 			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
 		}
 		FSAModel a = ModelManager
 				.instance().createModel(FSAModel.class, "none");

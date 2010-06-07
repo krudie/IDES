@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+
 /**
  * @author Lenko Grigorov
  * @author Chris Dragert
  * @author Valerie Sugarman
- *
  */
 public class Subset
 {

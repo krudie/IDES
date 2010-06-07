@@ -293,7 +293,6 @@ public class Project
 		int cId = 0;
 		LinkedList<String> compositionNamesLL = new LinkedList<String>();
 		long[] compositionIds = new long[sll.size()];
-		
 
 		while (sli.hasNext())
 		{

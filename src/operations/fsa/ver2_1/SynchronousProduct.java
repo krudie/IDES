@@ -51,7 +51,7 @@ public class SynchronousProduct extends AbstractOperation
 		FSAModel[] models = new FSAModel[inputs.length];
 		FSAModel model;
 		boolean epsilonsRemoved = false;
-		
+
 		for (int i = 0; i < inputs.length; ++i)
 		{
 			if ((inputs[i] instanceof FSAModel))
@@ -63,24 +63,25 @@ public class SynchronousProduct extends AbstractOperation
 							.instance().getOperation("removeepsilon")
 							.perform(new Object[] { newInput })[0];
 					warnings.addAll(OperationManager
-							.instance().getOperation("removeepsilon").getWarnings());
+							.instance().getOperation("removeepsilon")
+							.getWarnings());
 					epsilonsRemoved = true;
 				}
 				newInputs.add(newInput);
 			}
-			
+
 		}
-		
+
 		models = newInputs.toArray(new FSAModel[0]);
 		model = Composition.parallel(models, "none");
-		
+
 		// if epsilon transitions were removed above, state labels no longer
 		// make sense in sync
 		if (epsilonsRemoved)
 		{
 			model.removeAnnotation(Annotable.COMPOSED_OF);
 		}
-		
+
 		return new Object[] { model };
 		// FSAModel a = ModelManager
 		// .instance().createModel(FSAModel.class, "none");

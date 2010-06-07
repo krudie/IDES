@@ -39,7 +39,7 @@ public class LocalModular extends AbstractOperation
 		Vector<FSAModel> models = new Vector<FSAModel>();
 		for (int i = 0; i < inputs.length; ++i)
 		{
-			if(inputs[i] instanceof FSAModel)
+			if (inputs[i] instanceof FSAModel)
 				models.add((FSAModel)inputs[i]);
 		}
 		Operation prefix = OperationManager
@@ -69,7 +69,8 @@ public class LocalModular extends AbstractOperation
 		boolean equal = ((Boolean)OperationManager
 				.instance().getOperation("subset")
 				.perform(new Object[] { r, l })[0]).booleanValue();
-		warnings.addAll(OperationManager.instance().getOperation("subset").getWarnings());
+		warnings.addAll(OperationManager
+				.instance().getOperation("subset").getWarnings());
 
 		String resultMessage = "";
 		if (equal)

@@ -19,58 +19,47 @@ public class ProjectEpsilon implements Operation
 
 	public String getDescription()
 	{
-
 		return "Computes an automaton which recognizes the same language as the given automaton and contains"
 				+ " no epsilon transitions.";
 	}
 
 	public String[] getDescriptionOfInputs()
 	{
-
 		return new String[] { "Finite-State automaton" };
-
 	}
 
 	public String[] getDescriptionOfOutputs()
 	{
-
 		return new String[] { "FSA with null events projected out" };
 	}
 
 	public String getName()
 	{
-
 		return "removeepsilon";
 	}
 
 	public int getNumberOfInputs()
 	{
-
 		return 1;
 	}
 
 	public int getNumberOfOutputs()
 	{
-
 		return 1;
 	}
 
 	public Class<?>[] getTypeOfInputs()
 	{
-
 		return new Class<?>[] { FSAModel.class };
-
 	}
 
 	public Class<?>[] getTypeOfOutputs()
 	{
-
 		return new Class<?>[] { FSAModel.class };
 	}
 
 	public List<String> getWarnings()
 	{
-
 		return warnings;
 	}
 

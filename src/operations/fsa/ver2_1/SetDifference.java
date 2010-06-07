@@ -85,7 +85,7 @@ public class SetDifference implements Operation
 				|| (!FSAModel.class.isInstance(arg0[1])))
 		{
 			warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-			
+
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
@@ -97,14 +97,16 @@ public class SetDifference implements Operation
 		model2 = (FSAModel)OperationManager
 				.instance().getOperation("complement")
 				.perform(new Object[] { model2 })[0];
-		warnings.addAll(OperationManager.instance().getOperation("complement").getWarnings());
+		warnings.addAll(OperationManager
+				.instance().getOperation("complement").getWarnings());
 
 		// Finding the product of the model1 with complement of model2, this is
 		// the difference
 		differenceModel = (FSAModel)OperationManager
 				.instance().getOperation("product").perform(new Object[] {
 						model1, model2 })[0];
-		warnings.addAll(OperationManager.instance().getOperation("product").getWarnings());
+		warnings.addAll(OperationManager
+				.instance().getOperation("product").getWarnings());
 
 		return new Object[] { differenceModel };
 	}

@@ -8,8 +8,6 @@ import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.OperationManager;
 
-
-
 /**
  * @author Lenko Grigorov
  * @author Chris Dragert
@@ -39,35 +37,44 @@ public class Containment extends AbstractOperation
 	@Override
 	public Object[] perform(Object[] inputs)
 	{
-
 		warnings.clear();
-		FSAModel a,b;
-		if (inputs.length == 2){
-			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel){
+		FSAModel a, b;
+		if (inputs.length == 2)
+		{
+			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel)
+			{
 				a = (FSAModel)inputs[0];
 				b = (FSAModel)inputs[1];
-			} else {
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-				return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
 			}
-		} else {
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[]{ModelManager.instance().createModel(FSAModel.class)};
+			else
+			{
+				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
+						.instance().createModel(FSAModel.class) };
+			}
 		}
-		
+		else
+		{
+			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
 		if (!CheckingToolbox.isDeterministic(a))
 		{
 			a = (FSAModel)OperationManager
 					.instance().getOperation("NFAtoDFA")
 					.perform(new Object[] { a })[0];
-			warnings.addAll(OperationManager.instance().getOperation("NFAtoDFA").getWarnings());
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
 		}
 		if (!CheckingToolbox.isDeterministic(b))
 		{
 			b = (FSAModel)OperationManager
 					.instance().getOperation("NFAtoDFA")
 					.perform(new Object[] { b })[0];
-			warnings.addAll(OperationManager.instance().getOperation("NFAtoDFA").getWarnings());
+			warnings.addAll(OperationManager
+					.instance().getOperation("NFAtoDFA").getWarnings());
 		}
 
 		boolean contained = Subset.subset(a, b);

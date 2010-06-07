@@ -62,7 +62,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 	public Object[] perform(Object[] inputs)
 	{
 		warnings.clear();
-		
+
 		LinkedList<FSAModel> newInputs = new LinkedList<FSAModel>();
 		for (int i = 0; i < inputs.length; ++i)
 		{
@@ -80,7 +80,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 				newInputs.add(model);
 			}
 		}
-		
+
 		if (newInputs.size() == 0)
 		{
 			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);

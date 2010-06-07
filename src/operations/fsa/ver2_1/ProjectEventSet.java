@@ -19,27 +19,22 @@ public class ProjectEventSet implements Operation
 
 	public String getDescription()
 	{
-
 		return "Computes a projection of the given automaton such that all of the specified"
 				+ " events have been removed. Epsilon transitions are not removed.";
 	}
 
 	public String[] getDescriptionOfInputs()
 	{
-
 		return new String[] { "Finite-State automaton", "Events to project out" };
-
 	}
 
 	public String[] getDescriptionOfOutputs()
 	{
-
 		return new String[] { "Automaton with events projected out" };
 	}
 
 	public String getName()
 	{
-
 		return "project";
 	}
 
@@ -51,32 +46,26 @@ public class ProjectEventSet implements Operation
 
 	public int getNumberOfOutputs()
 	{
-
 		return 1;
 	}
 
 	public Class<?>[] getTypeOfInputs()
 	{
-
 		return new Class<?>[] { FSAModel.class, DESEventSet.class };
-
 	}
 
 	public Class<?>[] getTypeOfOutputs()
 	{
-
 		return new Class<?>[] { FSAModel.class };
 	}
 
 	public List<String> getWarnings()
 	{
-
 		return warnings;
 	}
 
 	public Object[] perform(Object[] arg0)
 	{
-
 		warnings.clear();
 		FSAModel model;
 		DESEventSet DESEventsToRemove;

@@ -22,64 +22,52 @@ public class ProjectUnobservable implements Operation
 
 	public String getDescription()
 	{
-
 		return "Computes a projection of the given automaton such that all of the unobservable events"
 				+ " have been removed. Epsilon transitions are not removed.";
 	}
 
 	public String[] getDescriptionOfInputs()
 	{
-
 		return new String[] { "Finite-State automaton" };
-
 	}
 
 	public String[] getDescriptionOfOutputs()
 	{
-
 		return new String[] { "Observer automaton" };
 	}
 
 	public String getName()
 	{
-
 		return "observer";
 	}
 
 	public int getNumberOfInputs()
 	{
-
 		return 1;
 	}
 
 	public int getNumberOfOutputs()
 	{
-
 		return 1;
 	}
 
 	public Class<?>[] getTypeOfInputs()
 	{
-
 		return new Class<?>[] { FSAModel.class };
-
 	}
 
 	public Class<?>[] getTypeOfOutputs()
 	{
-
 		return new Class<?>[] { FSAModel.class };
 	}
 
 	public List<String> getWarnings()
 	{
-
 		return warnings;
 	}
 
 	public Object[] perform(Object[] arg0)
 	{
-
 		warnings.clear();
 
 		FSAModel model;
@@ -118,9 +106,7 @@ public class ProjectUnobservable implements Operation
 			}
 		}
 
-		projection = Project
-				.projectCustom(model, eventsToRemove, false);
-
+		projection = Project.projectCustom(model, eventsToRemove, false);
 
 		return new Object[] { projection };
 	}

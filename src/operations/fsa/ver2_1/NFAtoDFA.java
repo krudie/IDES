@@ -12,7 +12,7 @@ import ides.api.plugin.operation.Operation;
 /**
  * @author Valerie Sugarman
  */
-public class NFAtoDFAOperation implements Operation
+public class NFAtoDFA implements Operation
 {
 
 	private LinkedList<String> warnings = new LinkedList<String>();

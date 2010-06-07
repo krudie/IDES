@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class performs the Complement Operation on languages. Algorithm taken
@@ -107,8 +108,7 @@ public class Complement implements FilterOperation
 		if (!FSAModel.class.isInstance(arg0[0]))
 		{
 			warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
+			return new Object[] { arg0[0] };
 		}
 
 		FSAModel model = (FSAModel)arg0[0];
@@ -120,7 +120,6 @@ public class Complement implements FilterOperation
 
 		// boolean debug = false;
 		boolean newStateNeeded = false;
-		boolean hasInitialState = false;
 		Collection<FSATransition> transitionToRemove = new HashSet<FSATransition>();
 
 		if (!CheckingToolbox.isDeterministic(model))
@@ -132,8 +131,16 @@ public class Complement implements FilterOperation
 		if (CheckingToolbox.isEmptyLanguage(model)
 				&& model.getEventSet().isEmpty())
 		{
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
+			return new Object[] { model };
+		}
+
+		// check for at least 1 initial state (isDeterministic would have caught
+		// more than 1)
+		Set<Long> initialStateIds = CheckingToolbox.getInitialStates(model);
+		if (initialStateIds.size() == 0)
+		{
+			warnings.add(CheckingToolbox.NOT_1_INITIAL_STATE);
+			return new Object[] { model };
 		}
 		/*
 		 * model = (FSAModel)OperationManager
@@ -159,7 +166,6 @@ public class Complement implements FilterOperation
 						addedState.getId(),
 						eventToAdd.getId());
 				model.add(transitionToAdd);
-
 			}
 
 			return new Object[] { model };
@@ -178,10 +184,6 @@ public class Complement implements FilterOperation
 			stateExtracted = i.next();
 
 			// Changing markings of the state
-			if (stateExtracted.isInitial())
-			{
-				hasInitialState = true;
-			}
 			stateExtracted.setMarked(!stateExtracted.isMarked());
 
 			// Removing all the events for the previous state
@@ -238,10 +240,6 @@ public class Complement implements FilterOperation
 			}
 			model.remove(addedState);
 		}
-
-		if (!hasInitialState)
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
 
 		return new Object[] { model };
 	}

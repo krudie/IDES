@@ -99,7 +99,6 @@ public class Concatenation implements Operation
 	 */
 	public Object[] perform(Object[] arg0)
 	{
-
 		warnings.clear();
 		FSAModel model1;
 		FSAModel model2;
@@ -154,8 +153,7 @@ public class Concatenation implements Operation
 		 */
 		Set<Long> model1MarkedStateIds = ides.api.plugin.operation.CheckingToolbox
 				.getMarkedStates(model1);
-		
-		
+
 		/*
 		 * Add the events in model1 to the hashtable "events". Later on, if an
 		 * event with the same name exists in model2, it will not be added, but
