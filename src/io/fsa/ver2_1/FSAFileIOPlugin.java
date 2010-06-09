@@ -1027,7 +1027,9 @@ public class FSAFileIOPlugin implements FileIOPlugin
 			if (parsingElement == EVENT)
 			{
 				long id = Long.parseLong(atts.getValue(ID));
-				return new Event(id);
+				Event e = new Event(id);
+				e.setObservable(false);
+				return e;
 			}
 
 			if (parsingElement == TRANSITION)
