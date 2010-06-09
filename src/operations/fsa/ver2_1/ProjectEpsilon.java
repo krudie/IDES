@@ -30,7 +30,7 @@ public class ProjectEpsilon implements Operation
 
 	public String[] getDescriptionOfOutputs()
 	{
-		return new String[] { "FSA with null events projected out" };
+		return new String[] { "FSA with null transitions projected out" };
 	}
 
 	public String getName()

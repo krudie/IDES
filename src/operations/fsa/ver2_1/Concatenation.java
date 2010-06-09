@@ -48,13 +48,13 @@ public class Concatenation implements Operation
 	public String[] getDescriptionOfOutputs()
 	{
 
-		return new String[] { "Automaton with the concatenation" };
+		return new String[] { "Automaton recognizing the concatenation" };
 	}
 
 	public String getName()
 	{
 
-		return "concat";
+		return "concatenate";
 	}
 
 	public int getNumberOfInputs()

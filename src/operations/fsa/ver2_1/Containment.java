@@ -63,18 +63,18 @@ public class Containment extends AbstractOperation
 		if (!CheckingToolbox.isDeterministic(a))
 		{
 			a = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { a })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 		if (!CheckingToolbox.isDeterministic(b))
 		{
 			b = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { b })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 
 		boolean contained = Subset.subset(a, b);

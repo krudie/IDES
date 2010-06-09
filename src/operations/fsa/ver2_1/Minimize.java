@@ -29,8 +29,8 @@ public class Minimize extends AbstractOperation
 	public Minimize()
 	{
 		NAME = "minimize";
-		DESCRIPTION = "Computes an automaton that accepts the"
-				+ " same language as the input automaton and has the minimum number of states.";
+		DESCRIPTION = "Computes a minimal-state automaton that recognizes the"
+				+ " same language as the input automaton.";
 
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class };
@@ -94,10 +94,10 @@ public class Minimize extends AbstractOperation
 		if (!CheckingToolbox.isDeterministic(fsa))
 		{
 			fsa = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { fsa })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 
 		Collection<Collection<FSAState>> parts = new HashSet<Collection<FSAState>>();

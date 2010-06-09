@@ -34,7 +34,7 @@ public class Union implements Operation
 	public String getDescription()
 	{
 
-		return "Computes the union of the languages represented by the given automata.";
+		return "Computes the union of the languages recognized by the given automata.";
 	}
 
 	public String[] getDescriptionOfInputs()

@@ -30,7 +30,7 @@ public class SynchronousProduct extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { FSAModel.class };
-		outputDesc = new String[] { "Composed automata" };
+		outputDesc = new String[] { "Composed automaton" };
 	}
 
 	public int getNumberOfInputs()

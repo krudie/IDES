@@ -17,7 +17,7 @@ public class Controllable extends AbstractOperation
 	public Controllable()
 	{
 		NAME = "controllable";
-		DESCRIPTION = "Determines if the secification"
+		DESCRIPTION = "Determines if the specification"
 				+ " is controllable with respect to the plant.";
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class, FSAModel.class };
@@ -61,18 +61,18 @@ public class Controllable extends AbstractOperation
 		if (!CheckingToolbox.isDeterministic(plant))
 		{
 			plant = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { plant })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 		if (!CheckingToolbox.isDeterministic(specification))
 		{
 			specification = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { specification })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 
 		boolean result = SuperVisory.controllable(plant, specification);

@@ -119,18 +119,18 @@ public class Observable implements Operation
 		if (!CheckingToolbox.isDeterministic(plant))
 		{
 			plant = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { plant })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 		if (!CheckingToolbox.isDeterministic(sublanguage))
 		{
 			sublanguage = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { sublanguage })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 
 		// check to make sure that events that are in both plant and sublanguage
@@ -163,7 +163,8 @@ public class Observable implements Operation
 		}
 
 		// Double check that sublanguage is in fact a sublanguage of the
-		// plant. (don't call the operation since that will run NFAtoDFA again)
+		// plant. (don't call the operation since that will run determinize
+		// again)
 		boolean isSublanguage = Subset.subset(sublanguage, plant);
 
 		if (!isSublanguage)
@@ -240,7 +241,7 @@ public class Observable implements Operation
 						new String[] { "dead" });
 
 		// it is known there is only one initial state (since if not initially
-		// NFAtoDFA was run)
+		// determinize was run)
 		stateTriple[0] = DuplicationToolbox.getInitial(sublanguage);
 		stateTriple[1] = stateTriple[0];
 		stateTriple[2] = DuplicationToolbox.getInitial(plant);

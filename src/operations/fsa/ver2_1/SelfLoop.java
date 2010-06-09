@@ -21,8 +21,8 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 	public SelfLoop()
 	{
 		NAME = "selfloop";
-		DESCRIPTION = "Self-loops selected events in every state of an automaton. "
-				+ "In other words, computes the inverse projection of these events.";
+		DESCRIPTION = "Creates self-loops of given events at every state of an automaton. "
+				+ "In other words, computes the inverse projection with respect to these events.";
 
 		// WARNING - Ensure that input type and description always match!
 		inputType = new Class[] { FSAModel.class, DESEventSet.class };

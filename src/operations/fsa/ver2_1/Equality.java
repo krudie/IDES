@@ -22,7 +22,7 @@ public class Equality implements Operation
 	public String getDescription()
 	{
 
-		return "Determines if the two languages are equal.";
+		return "Determines if the languages recognized by two automata are equal.";
 	}
 
 	public String[] getDescriptionOfInputs()
@@ -103,18 +103,18 @@ public class Equality implements Operation
 		if (!CheckingToolbox.isDeterministic(a))
 		{
 			a = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { a })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 		if (!CheckingToolbox.isDeterministic(b))
 		{
 			b = (FSAModel)OperationManager
-					.instance().getOperation("NFAtoDFA")
+					.instance().getOperation("determinize")
 					.perform(new Object[] { b })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("NFAtoDFA").getWarnings());
+					.instance().getOperation("determinize").getWarnings());
 		}
 
 		boolean equals;

@@ -39,7 +39,7 @@ public class Complement implements FilterOperation
 
 	public String[] getDescriptionOfOutputs()
 	{
-		return new String[] { "Automaton with the complement" };
+		return new String[] { "Automaton recognizing the complement" };
 	}
 
 	public String getName()

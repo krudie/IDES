@@ -72,10 +72,11 @@ public class MultiAgentProductFSA extends AbstractOperation
 				if (!CheckingToolbox.isDeterministic(model))
 				{
 					model = (FSAModel)OperationManager
-							.instance().getOperation("NFAtoDFA")
+							.instance().getOperation("determinize")
 							.perform(new Object[] { model })[0];
 					warnings.addAll(OperationManager
-							.instance().getOperation("NFAtoDFA").getWarnings());
+							.instance().getOperation("determinize")
+							.getWarnings());
 				}
 				newInputs.add(model);
 			}

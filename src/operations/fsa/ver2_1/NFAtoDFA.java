@@ -20,26 +20,26 @@ public class NFAtoDFA implements Operation
 	public String getDescription()
 	{
 
-		return "Computes an equivalent deterministic automata from the input non-deterministic automata.";
+		return "Computes an equivalent deterministic automaton from the input automaton.";
 	}
 
 	public String[] getDescriptionOfInputs()
 	{
 
-		return new String[] { "Non-deterministic finite-state automaton" };
+		return new String[] { "Finite-state automaton" };
 
 	}
 
 	public String[] getDescriptionOfOutputs()
 	{
 
-		return new String[] { "Language equivalent deterministic automaton" };
+		return new String[] { "Language-equivalent deterministic automaton" };
 	}
 
 	public String getName()
 	{
 
-		return "NFAtoDFA";
+		return "determinize";
 	}
 
 	public int getNumberOfInputs()
