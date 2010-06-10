@@ -84,6 +84,13 @@ public class ModelManager
 		}
 		else
 		{
+			for (DESModelType type : s)
+			{
+				if (type.getMainPerspective().equals(perspective))
+				{
+					return perspective.cast(type.createModel(name));
+				}
+			}
 			return perspective.cast(s.iterator().next().createModel(name));
 		}
 	}
