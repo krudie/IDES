@@ -83,7 +83,7 @@ public class HelpDirLister extends TreeMap<String, String>
 						if (index.exists())
 						{
 							instance().put(f.getName(),
-									index.toURL().toString());
+									index.toURI().toURL().toString());
 						}
 					}
 				}
@@ -106,7 +106,7 @@ public class HelpDirLister extends TreeMap<String, String>
 						if (index.exists())
 						{
 							instance().put(f.getName(),
-									index.toURL().toString());
+									index.toURI().toURL().toString());
 						}
 					}
 				}
