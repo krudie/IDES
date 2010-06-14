@@ -51,6 +51,13 @@ public interface FSAState extends DESElement
 	public abstract ListIterator<FSATransition> getOutgoingTransitionsListIterator();
 
 	/**
+	 * Returns the number of transitions originating from this state.
+	 * 
+	 * @return the number of transitions originating from this state
+	 */
+	public int getOutgoingTransitionsCount();
+
+	/**
 	 * Adds a transition that ends in this state.
 	 * 
 	 * @param t
@@ -72,6 +79,13 @@ public interface FSAState extends DESElement
 	 * @return an iterator for the transitions ending in this state
 	 */
 	public abstract ListIterator<FSATransition> getIncomingTransitionsListIterator();
+
+	/**
+	 * Returns the number of transitions ending in this state.
+	 * 
+	 * @return the number of transitions ending in this state
+	 */
+	public int getIncomingTransitionsCount();
 
 	/**
 	 * Returns true iff this is an initial state.

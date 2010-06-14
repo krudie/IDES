@@ -58,7 +58,7 @@ public abstract class FSAPublisherAdaptor implements FSAPublisher
 
 	public void fireFSAStructureChanged(FSAMessage message)
 	{
-		for (FSASubscriber s : subscribers)
+		for (FSASubscriber s : getFSASubscribers())
 		{
 			// sets the dirty flag
 			s.fsaStructureChanged(message);
@@ -67,7 +67,7 @@ public abstract class FSAPublisherAdaptor implements FSAPublisher
 
 	public void fireFSAEventSetChanged(FSAMessage message)
 	{
-		for (FSASubscriber s : subscribers)
+		for (FSASubscriber s : getFSASubscribers())
 		{
 			// sets the dirty flag
 			s.fsaEventSetChanged(message);

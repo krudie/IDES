@@ -28,7 +28,6 @@ public class State implements ides.api.model.fsa.FSAState
 
 	private long id;
 
-	// TODO make the state use a common annotation repository
 	protected Hashtable<String, Object> annotations = new Hashtable<String, Object>();
 
 	/**
@@ -277,5 +276,15 @@ public class State implements ides.api.model.fsa.FSAState
 	public String toString()
 	{
 		return getAnnotation(NAME) + "(" + id + ")";
+	}
+
+	public int getIncomingTransitionsCount()
+	{
+		return targetT.size();
+	}
+
+	public int getOutgoingTransitionsCount()
+	{
+		return sourceT.size();
 	}
 }
