@@ -116,12 +116,10 @@ public class ReflexiveEdge extends BezierEdge
 		double delta = Math.toRadians(2.0);
 		double alpha = 0.0;
 
-		System.out.println("foo");
 		if (!BezierEdgePlacer.tooClose(this, neighbours))
 		{
 			return;
 		}
-		System.out.println("goo");
 
 		/**
 		 * Search for a free space using brute force and ignorance.
