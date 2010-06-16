@@ -134,13 +134,14 @@ public class Observable implements Operation
 		}
 
 		// check to make sure that events that are in both plant and sublanguage
-		// have the same observable/controllable status.
+		// have the same observable/controllable status. 
 		boolean eventError = false;
-		for (Iterator<FSAEvent> i = plant.getEventIterator(); i.hasNext();)
+		eventErrorSearch: for (Iterator<FSAEvent> i = plant.getEventIterator(); i
+				.hasNext();)
 		{
 			FSAEvent p = i.next();
-			eventErrorSearch: for (Iterator<FSAEvent> j = sublanguage
-					.getEventIterator(); j.hasNext();)
+			for (Iterator<FSAEvent> j = sublanguage.getEventIterator(); j
+					.hasNext();)
 			{
 				FSAEvent s = j.next();
 				if (p.equals(s))
@@ -158,8 +159,7 @@ public class Observable implements Operation
 		if (eventError)
 		{
 			warnings.add(Hub.string("errorControlObserve"));
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
+			return new Object[] { new Boolean(false) };
 		}
 
 		// Double check that sublanguage is in fact a sublanguage of the
@@ -170,8 +170,7 @@ public class Observable implements Operation
 		if (!isSublanguage)
 		{
 			warnings.add(Hub.string("errorNotSublanguage"));
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
+			return new Object[] { new Boolean(false) };
 		}
 
 		FSAModel obsTest = ModelManager.instance().createModel(FSAModel.class);
@@ -253,7 +252,7 @@ public class Observable implements Operation
 		searchList.add(stateTriple);
 
 		// used for the transition function. null interpreted as no transition.
-		// (there won't be any "real" epsilon transitions because of NFA to DFA)
+		// (there won't be any "real" epsilon transitions because determinized)
 		FSATransition[] transitionTriple;
 		FSATransition[] tempTransitionTriple;
 		FSAState[] sourceTriple, targetTriple;
@@ -268,7 +267,7 @@ public class Observable implements Operation
 			// gather the outgoing events from states 0 and 1 (which are in the
 			// sublanguage) so that only these are looped over in the next
 			// section. Also, no need to worry about transitions with null
-			// events since these would have been removed in NFA to DFA.
+			// events since these would have been removed when determinized.
 			for (Iterator<FSATransition> i = sourceTriple[0]
 					.getOutgoingTransitionsListIterator(); i.hasNext();)
 			{

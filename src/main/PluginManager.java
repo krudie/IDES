@@ -44,6 +44,7 @@ import operations.fsa.ver2_1.Minimize;
 import operations.fsa.ver2_1.MultiAgentProductFSA;
 import operations.fsa.ver2_1.NFAtoDFA;
 import operations.fsa.ver2_1.Nonconflicting;
+import operations.fsa.ver2_1.Normal;
 import operations.fsa.ver2_1.Observable;
 import operations.fsa.ver2_1.PrefixClosure;
 import operations.fsa.ver2_1.ProjectEventSet;
@@ -52,6 +53,7 @@ import operations.fsa.ver2_1.ProjectUnobservable;
 import operations.fsa.ver2_1.SelfLoop;
 import operations.fsa.ver2_1.SetDifference;
 import operations.fsa.ver2_1.SupCon;
+import operations.fsa.ver2_1.SupNorm;
 import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
 import operations.fsa.ver2_1.Trim;
@@ -114,6 +116,8 @@ public class PluginManager
 		OperationManager.instance().register(new Equality());
 		OperationManager.instance().register(new NFAtoDFA());
 		OperationManager.instance().register(new Observable());
+		OperationManager.instance().register(new Normal());
+		OperationManager.instance().register(new SupNorm());
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();

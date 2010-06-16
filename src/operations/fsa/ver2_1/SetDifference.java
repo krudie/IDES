@@ -1,11 +1,14 @@
 package operations.fsa.ver2_1;
 
+import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.CheckingToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -91,7 +94,21 @@ public class SetDifference implements Operation
 		}
 
 		FSAModel model1 = (FSAModel)arg0[0];
-		FSAModel model2 = (FSAModel)arg0[1];
+		FSAModel model2 = ((FSAModel)arg0[1]).clone();
+
+		// make sure all events in model 1 are in model 2 so the complementing
+		// works properly
+		DESEventSet eventsInModel2 = model2.getEventSet();
+		for(Iterator<FSAEvent> i = model1.getEventIterator(); i.hasNext();){
+			FSAEvent origEvent = i.next();
+			if(!eventsInModel2.contains(origEvent)){
+				FSAEvent copyEvent = model2.assembleEvent(origEvent.getSymbol());
+				copyEvent.setObservable(origEvent.isObservable());
+				copyEvent.setControllable(origEvent.isControllable());
+				model2.add(copyEvent);
+			}
+		}
+		
 
 		// Complementing the model2 to get the elements not part of model2
 		model2 = (FSAModel)OperationManager
