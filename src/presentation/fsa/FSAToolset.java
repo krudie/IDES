@@ -4,6 +4,7 @@ import ides.api.core.Hub;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSASubscriber;
+import ides.api.plugin.layout.FSALayoutManager;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.DESModelMessage;
 import ides.api.plugin.model.DESModelSubscriber;
@@ -15,12 +16,14 @@ import ides.api.plugin.presentation.UnsupportedModelException;
 import java.util.Collection;
 
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
@@ -71,6 +74,8 @@ public class FSAToolset implements Toolset
 		private static JButton simplifyButton = new JButton();
 
 		private static JButton alignButton = new JButton();
+
+		private static JMenu layoutMenu = new JMenu();
 
 		public FSAUIDescriptor(FSAModel model)
 		{
@@ -128,6 +133,8 @@ public class FSAToolset implements Toolset
 				JMenuItem select = new JMenuItem(selectAction);
 				JMenuItem create = new JMenuItem(createAction);
 				// JMenuItem move = new JMenuItem(moveAction);
+				layoutMenu.setText(Hub.string("comLayout"));
+				layoutMenu.setToolTipText(Hub.string("comHintLayout"));
 				JMenuItem showGrid = new JCheckBoxMenuItem(gridAction);
 				gridBinder.bind(showGrid);
 				// this is a dummy menu item since it'll be replaced
@@ -137,10 +144,25 @@ public class FSAToolset implements Toolset
 				graphMenu.add(create);
 				// graphMenu.add(move);
 				graphMenu.addSeparator();
+				graphMenu.add(layoutMenu);
 				graphMenu.add(simpleStatesMenuItem);
 				graphMenu.add(alignMenuItem);
 				graphMenu.add(showGrid);
 				graphMenu.add(uniformNodeSize);
+			}
+			layoutMenu.removeAll();
+			ButtonGroup group = new ButtonGroup();
+			String defaultName = FSALayoutManager
+					.instance().getDefaultFSALayouter().getName();
+			for (String name : FSALayoutManager.instance().getLayouterNames())
+			{
+				JRadioButtonMenuItem rbmi = new JRadioButtonMenuItem(
+						new UIActions.SelectLayoutAction(
+								shell,
+								FSALayoutManager.instance().getLayouter(name)));
+				group.add(rbmi);
+				rbmi.setSelected(defaultName.equals(name));
+				layoutMenu.add(rbmi);
 			}
 			simpleStatesMenuItem.setAction(simplifyAction);
 			alignMenuItem.setAction(alignAction);

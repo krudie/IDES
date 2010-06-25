@@ -3,15 +3,17 @@
  */
 package pluggable.layout.jung;
 
+import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.layout.FSALayouter;
+
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-import pluggable.layout.FSALayouter;
-import presentation.fsa.Edge;
-import presentation.fsa.FSAGraph;
-import presentation.fsa.InitialArrow;
-import presentation.fsa.Node;
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
 import edu.uci.ics.jung.graph.impl.DirectedSparseGraph;
@@ -30,35 +32,40 @@ public class JUNGLayouter implements FSALayouter
 	 */
 	private static final int SIZE_FACTOR = 175;
 
-	/*
-	 * (non-Javadoc)
-	 * @see pluggable.layout.FSMLayouter#layout(presentation.fsa.FSMGraph)
-	 */
-	public void layout(FSAGraph graph)
+	public String getName()
+	{
+		return "Default layout";
+	}
+
+	public Map<Long, Point2D.Float> layout(FSAModel model)
 	{
 		DirectedSparseGraph g = new DirectedSparseGraph();
-		BridgeMapper.nodeMap.clear();
-		BridgeMapper.nodeMapInverse.clear();
-		for (Node n : graph.getNodes())
+		BridgeMapper.stateMap.clear();
+		BridgeMapper.stateMapInverse.clear();
+		for (Iterator<FSAState> si = model.getStateIterator(); si.hasNext();)
 		{
+			FSAState s = si.next();
 			SimpleDirectedSparseVertex v = new SimpleDirectedSparseVertex();
 			g.addVertex(v);
-			BridgeMapper.nodeMap.put(n, v);
-			BridgeMapper.nodeMapInverse.put(v, n);
+			BridgeMapper.stateMap.put(s, v);
+			BridgeMapper.stateMapInverse.put(v, s);
 		}
-		for (Edge e : graph.getEdges())
+		for (Iterator<FSATransition> ti = model.getTransitionIterator(); ti
+				.hasNext();)
 		{
-			if (e instanceof InitialArrow)
+			FSATransition t = ti.next();
+			if (!BridgeMapper.stateMap
+					.get(t.getSource()).isPredecessorOf(BridgeMapper.stateMap
+							.get(t.getTarget())))
 			{
-				continue;
+				DirectedSparseEdge edge = new DirectedSparseEdge(
+						BridgeMapper.stateMap.get(t.getSource()),
+						BridgeMapper.stateMap.get(t.getTarget()));
+				g.addEdge(edge);
 			}
-			DirectedSparseEdge edge = new DirectedSparseEdge(
-					BridgeMapper.nodeMap.get(e.getSourceNode()),
-					BridgeMapper.nodeMap.get(e.getTargetNode()));
-			g.addEdge(edge);
 		}
 		KKLayout l = new KKLayout(g);
-		int dim = (int)Math.ceil(Math.sqrt(BridgeMapper.nodeMap.size()))
+		int dim = (int)Math.ceil(Math.sqrt(BridgeMapper.stateMap.size()))
 				* SIZE_FACTOR;
 		l.initialize(new Dimension(dim, dim));
 		// l.setRepulsionMultiplier(.99);
@@ -67,56 +74,13 @@ public class JUNGLayouter implements FSALayouter
 		{
 			l.advancePositions();
 		}
-		for (Vertex v : BridgeMapper.nodeMapInverse.keySet())
+		Map<Long, Point2D.Float> ret = new HashMap<Long, Point2D.Float>();
+		for (Vertex v : BridgeMapper.stateMapInverse.keySet())
 		{
-			Node n = BridgeMapper.nodeMapInverse.get(v);
-			n.setLocation(new Point2D.Float(
-					(float)l.getLocation(v).getX(),
-					(float)l.getLocation(v).getY()));
+			ret.put(BridgeMapper.stateMapInverse.get(v).getId(),
+					new Point2D.Float((float)l.getLocation(v).getX(), (float)l
+							.getLocation(v).getY()));
 		}
-		// Christian - commitMovement removed!
-		// graph.commitMovement(graph);
-		formatGraph(graph);
-	}
-
-	protected void formatGraph(FSAGraph graph)
-	{
-		for (Edge edge : graph.getEdges())
-		{
-			// For each edge, get the target and source nodes
-			Node targetNode = edge.getTargetNode();
-			Node sourceNode = edge.getSourceNode();
-			// For each edge beginning on the target node, check if its target
-			// is the same as the sourceNode
-			Iterator<Edge> adjEdges = targetNode.adjacentEdges();
-			while (adjEdges.hasNext())
-			{
-				Edge secondEdge = adjEdges.next();
-				Node destination = secondEdge.getTargetNode();
-				// If the target node has an edge pointing to the sourceNode
-				// then arcMore the edge.
-				if (destination.equals(sourceNode)
-						& !(targetNode.equals(sourceNode)))
-				{
-					graph.arcMore(edge);
-				}
-			}
-
-		}
-		// Iterate all the nodes to recompute the positions for its children:
-		// initial arrows and self-loops
-		for (Node node : graph.getNodes())
-		{
-			// change this methods to a "auto-format" method on the node??
-
-			// Resetting the position for the self-arrows
-			node.relocateReflexiveEdges();
-			// Resetting the position for the initial arrows
-			if (node.getState().isInitial())
-			{
-				node.relocateInitialArrow();
-			}
-		}
-
+		return ret;
 	}
 }

@@ -1,6 +1,8 @@
 package presentation.fsa.actions;
 
 import ides.api.core.Hub;
+import ides.api.plugin.layout.FSALayoutManager;
+import ides.api.plugin.layout.FSALayouter;
 
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -594,10 +596,6 @@ public class UIActions
 	 */
 	public static class AlignAction extends AbstractAction
 	{
-
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -9179684732457960463L;
 
 		private static ImageIcon icon = new ImageIcon();
@@ -637,4 +635,36 @@ public class UIActions
 			}
 		}
 	}
+
+	/**
+	 * Sets the default {@link FSALayouter} and lays out the FSA graph using it.
+	 * 
+	 * @author Lenko Grigorov
+	 */
+	public static class SelectLayoutAction extends AbstractAction
+	{
+		private static final long serialVersionUID = 4113413289499126023L;
+
+		protected FSAGraph graph;
+
+		protected FSALayouter layouter;
+
+		public SelectLayoutAction(FSAGraph graph, FSALayouter layouter)
+		{
+			super(layouter == null ? "" : layouter.getName());
+			this.graph = graph;
+			this.layouter = layouter;
+		}
+
+		public void actionPerformed(ActionEvent event)
+		{
+			if (graph == null || layouter == null)
+			{
+				return;
+			}
+			FSALayoutManager.instance().setDefaultLayouter(layouter);
+			new GraphActions.LayoutAction(graph, layouter).execute();
+		}
+	}
+
 }

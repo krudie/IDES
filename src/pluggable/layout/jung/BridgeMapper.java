@@ -3,9 +3,10 @@
  */
 package pluggable.layout.jung;
 
+import ides.api.model.fsa.FSAState;
+
 import java.util.Hashtable;
 
-import presentation.fsa.Node;
 import edu.uci.ics.jung.graph.Vertex;
 
 /**
@@ -14,7 +15,7 @@ import edu.uci.ics.jung.graph.Vertex;
 public class BridgeMapper
 {
 
-	public static Hashtable<Node, Vertex> nodeMap = new Hashtable<Node, Vertex>();
+	public static Hashtable<FSAState, Vertex> stateMap = new Hashtable<FSAState, Vertex>();
 
-	public static Hashtable<Vertex, Node> nodeMapInverse = new Hashtable<Vertex, Node>();
+	public static Hashtable<Vertex, FSAState> stateMapInverse = new Hashtable<Vertex, FSAState>();
 }

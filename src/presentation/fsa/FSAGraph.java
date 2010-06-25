@@ -29,7 +29,6 @@ import model.fsa.ver2_1.Automaton;
 import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
-import pluggable.layout.LayoutManager;
 import util.BooleanUIBinder;
 
 /**
@@ -223,7 +222,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			wrapTransition(groupsIter.next());
 		}
 
-		LayoutManager.getDefaultFSMLayouter().layout(this);
+		FSAGraphLayouter.layout(this);
 
 		// collect all labels on edges
 		for (Edge edge : edges.values())

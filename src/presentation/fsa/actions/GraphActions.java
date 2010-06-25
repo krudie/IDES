@@ -4,6 +4,7 @@ import ides.api.core.Hub;
 import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
+import ides.api.plugin.layout.FSALayouter;
 
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -26,6 +27,7 @@ import presentation.fsa.BezierEdge;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
+import presentation.fsa.FSAGraphLayouter;
 import presentation.fsa.GraphElement;
 import presentation.fsa.GraphLabel;
 import presentation.fsa.InitialArrow;
@@ -852,6 +854,36 @@ public class GraphActions
 						Hub.getUndoManager().addEdit(translation);
 					}
 				}
+			}
+		}
+
+		public void execute()
+		{
+			actionPerformed(null);
+		}
+	}
+
+	public static class LayoutAction extends AbstractGraphAction
+	{
+		private static final long serialVersionUID = 3967723872800053789L;
+
+		protected FSAGraph graph;
+
+		protected FSALayouter layouter;
+
+		public LayoutAction(FSAGraph graph, FSALayouter layouter)
+		{
+			super(layouter == null ? "" : layouter.getName());
+			this.layouter = layouter;
+			this.graph = graph;
+		}
+
+		public void actionPerformed(ActionEvent event)
+		{
+			if (graph != null && layouter != null)
+			{
+				postEditAdjustCanvas(graph, FSAGraphLayouter
+						.layoutUndoable(graph, layouter));
 			}
 		}
 
