@@ -7,14 +7,13 @@ import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.CheckingToolbox;
-import ides.api.plugin.operation.FilterOperation; //import ides.api.plugin.operation.OperationManager;
+import ides.api.plugin.operation.FilterOperation;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * This class performs the Complement Operation on languages. Algorithm taken
@@ -118,7 +117,6 @@ public class Complement implements FilterOperation
 		DESEventSet eventSetForEachState = ModelManager
 				.instance().createEmptyEventSet();
 
-		// boolean debug = false;
 		boolean newStateNeeded = false;
 		Collection<FSATransition> transitionToRemove = new HashSet<FSATransition>();
 
@@ -134,44 +132,12 @@ public class Complement implements FilterOperation
 			return new Object[] { model };
 		}
 
-		// check for at least 1 initial state (isDeterministic would have caught
-		// more than 1)
-		Set<Long> initialStateIds = CheckingToolbox.getInitialStates(model);
-		if (initialStateIds.size() == 0)
-		{
-			warnings.add(CheckingToolbox.NOT_1_INITIAL_STATE);
-			return new Object[] { model };
-		}
-		/*
-		 * model = (FSAModel)OperationManager
-		 * .instance().getFilterOperation("trim") .filter(new Object[] { model
-		 * })[0];
-		 * warnings.addAll(OperationManager.instance().getOperation("trim"
-		 * ).getWarnings() );
-		 */
-
-		if (CheckingToolbox.isEmptyLanguage(model)
-				&& (!model.getEventSet().isEmpty()))
-		{
-
-			addedState = model.assembleState();
-			addedState.setInitial(true);
-			addedState.setMarked(true);
-			model.add(addedState);
-
-			for (DESEvent eventToAdd : model.getEventSet())
-
-			{
-				transitionToAdd = model.assembleTransition(addedState.getId(),
-						addedState.getId(),
-						eventToAdd.getId());
-				model.add(transitionToAdd);
-			}
-
-			return new Object[] { model };
-		}
-
 		addedState = model.assembleState();
+		if (CheckingToolbox.initialStateCount(model) == 0)
+		{
+			addedState.setInitial(true);
+			newStateNeeded = true;
+		}
 		model.add(addedState);
 
 		/*
@@ -193,7 +159,6 @@ public class Complement implements FilterOperation
 			 * Fetching all the outgoing Transitions and related events for the
 			 * state under consideration
 			 */
-
 			for (Iterator<FSATransition> k = stateExtracted
 					.getOutgoingTransitionsListIterator(); k.hasNext();)
 			{
@@ -224,7 +189,6 @@ public class Complement implements FilterOperation
 		 * removing all the self loops the new state and the state itself if it
 		 * is not required in the model
 		 */
-
 		if (!newStateNeeded)
 		{
 
