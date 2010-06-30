@@ -2,13 +2,15 @@ package model.fsa.ver2_1;
 
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAPublisherAdaptor;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSASupervisor;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
+import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.DESModelMessage;
@@ -29,6 +31,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+
+import model.supeventset.ver3.Event;
+import model.supeventset.ver3.EventSet;
 
 import services.General;
 
@@ -168,7 +173,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 
 	private LinkedList<FSATransition> transitions;
 
-	private LinkedList<FSAEvent> events;
+	private LinkedList<SupervisoryEvent> events;
 
 	private String name = null;
 
@@ -195,7 +200,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	{
 		states = new LinkedList<FSAState>();
 		transitions = new LinkedList<FSATransition>();
-		events = new LinkedList<FSAEvent>();
+		events = new LinkedList<SupervisoryEvent>();
 		this.name = name;
 		// The first ID for model elements will be (maxId + 1);
 		maxStateId = 0;
@@ -212,7 +217,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		Automaton clone = new Automaton(this.name);
 		clone.setName(General.getRandomId());
 		// Cloning the events:
-		ListIterator<FSAEvent> ei = getEventIterator();
+		ListIterator<SupervisoryEvent> ei = getEventIterator();
 		while (ei.hasNext())
 		{
 			clone.add(new Event(ei.next()));
@@ -390,23 +395,45 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		return ++maxStateId;
 	}
 
-	public FSAEvent assembleEvent(String symbol)
+	public SupervisoryEvent assembleEvent(String symbol)
 	{
-		FSAEvent event = new Event(getFreeEventId());
+		SupervisoryEvent event = new Event(getFreeEventId());
 		event.setSymbol(symbol);
 		return event;
+	}
+	
+	
+	public SupervisoryEvent assembleCopyOf(DESEvent event)
+	{
+		SupervisoryEvent e = assembleEvent(event.getSymbol());
+		if(event instanceof SupervisoryEvent){
+			SupervisoryEvent inputEvent = (SupervisoryEvent) event;
+			e.setObservable(inputEvent.isObservable());
+			e.setControllable(inputEvent.isControllable());
+		}
+		return e;	
 	}
 
 	public FSAState assembleState()
 	{
 		return new State(getFreeStateId());
 	}
+	
+
+	public FSAState assembleCopyOf(FSAState state)
+	{
+		FSAState s = assembleState();
+		s.setName(state.getName());
+		s.setInitial(state.isInitial());
+		s.setMarked(state.isMarked());
+		return s;
+	}
 
 	public FSATransition assembleTransition(long source, long target, long event)
 	{
 		FSAState sourceState = getState(source);
 		FSAState targetState = getState(target);
-		FSAEvent transitionEvent = getEvent(event);
+		SupervisoryEvent transitionEvent = getEvent(event);
 		if (sourceState == null || targetState == null
 				|| transitionEvent == null)
 		{
@@ -583,9 +610,9 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see model.fsa.ver2_1.FSAModel#add(model.fsa.FSAEvent)
+	 * @see model.fsa.ver2_1.FSAModel#add(model.fsa.SupervisoryEvent)
 	 */
-	public void add(FSAEvent e)
+	public void add(SupervisoryEvent e)
 	{
 		events.add(e);
 		maxEventId = maxEventId < e.getId() ? e.getId() : maxEventId;
@@ -603,7 +630,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * @param event
 	 *            the event to be removed
 	 */
-	public void remove(FSAEvent event)
+	public void remove(SupervisoryEvent event)
 	{
 
 		Iterator<FSATransition> trans = getTransitionIterator();
@@ -612,7 +639,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		while (trans.hasNext())
 		{
 			FSATransition t = trans.next();
-			FSAEvent e = t.getEvent();
+			SupervisoryEvent e = t.getEvent();
 			if (event.equals(e))
 			{
 				toRemove.add(t);
@@ -638,7 +665,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getEventIterator()
 	 */
-	public ListIterator<FSAEvent> getEventIterator()
+	public ListIterator<SupervisoryEvent> getEventIterator()
 	{
 		return new EventIterator(events.listIterator(), this);
 	}
@@ -646,7 +673,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	/**
 	 * TODO Comment!
 	 */
-	public DESEventSet getEventSet()
+	public SupervisoryEventSet getEventSet()
 	{
 		return EventSet.wrap(events);
 	}
@@ -656,12 +683,12 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * 
 	 * @see model.fsa.ver2_1.FSAModel#getEvent(int)
 	 */
-	public FSAEvent getEvent(long id)
+	public SupervisoryEvent getEvent(long id)
 	{
-		ListIterator<FSAEvent> ei = events.listIterator();
+		ListIterator<SupervisoryEvent> ei = events.listIterator();
 		while (ei.hasNext())
 		{
-			FSAEvent e = ei.next();
+			SupervisoryEvent e = ei.next();
 			if (e.getId() == id)
 			{
 				return e;
@@ -927,11 +954,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 	 * @author Axel Gottlieb Michelsen
 	 * @author Kristian Edlund
 	 */
-	private class EventIterator implements ListIterator<FSAEvent>
+	private class EventIterator implements ListIterator<SupervisoryEvent>
 	{
-		private FSAEvent current;
+		private SupervisoryEvent current;
 
-		private ListIterator<FSAEvent> eli;
+		private ListIterator<SupervisoryEvent> eli;
 
 		private FSAModel a;
 
@@ -943,7 +970,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		 * @param a
 		 *            the automaton the event list is connected to
 		 */
-		public EventIterator(ListIterator<FSAEvent> eli, FSAModel a)
+		public EventIterator(ListIterator<SupervisoryEvent> eli, FSAModel a)
 		{
 			this.eli = eli;
 			this.a = a;
@@ -960,7 +987,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		/**
 		 * @see java.util.Iterator#next()
 		 */
-		public FSAEvent next()
+		public SupervisoryEvent next()
 		{
 			current = eli.next();
 			return current;
@@ -977,7 +1004,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		/**
 		 * @see java.util.ListIterator#previous()
 		 */
-		public FSAEvent previous()
+		public SupervisoryEvent previous()
 		{
 			current = eli.previous();
 			return current;
@@ -1024,7 +1051,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		 * @param e
 		 *            the event to replace the current event
 		 */
-		public void set(FSAEvent e)
+		public void set(SupervisoryEvent e)
 		{
 			ListIterator<FSATransition> tli = a.getTransitionIterator();
 			while (tli.hasNext())
@@ -1044,7 +1071,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		 * @param e
 		 *            the event to add
 		 */
-		public void add(FSAEvent e)
+		public void add(SupervisoryEvent e)
 		{
 			eli.add(e);
 		}
@@ -1114,5 +1141,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			state.setAnnotation(Annotable.CONTROL_MAP, set);
 		}
 	}
+
+
 
 }

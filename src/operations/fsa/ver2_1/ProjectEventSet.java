@@ -3,7 +3,7 @@ package operations.fsa.ver2_1;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 
 import java.util.LinkedList;
@@ -68,7 +68,8 @@ public class ProjectEventSet implements Operation
 	{
 		warnings.clear();
 		FSAModel model;
-		DESEventSet DESEventsToRemove;
+
+		DESEventSet eventsToRemove;
 		FSAModel projection = ModelManager
 				.instance().createModel(FSAModel.class);
 
@@ -78,30 +79,24 @@ public class ProjectEventSet implements Operation
 					&& (arg0[1] instanceof DESEventSet))
 			{
 				model = (FSAModel)arg0[0];
-				DESEventsToRemove = (DESEventSet)arg0[1];
+				eventsToRemove = (DESEventSet)arg0[1];
+
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		if (CheckingToolbox.initialStateCount(model) != 1)
-		{
-			warnings.add(CheckingToolbox.NOT_1_INITIAL_STATE);
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
-
-		projection = Project.projectCustom(model, DESEventsToRemove, false);
+		projection = Project.projectCustom(model, eventsToRemove, false);
 
 		return new Object[] { projection };
 	}

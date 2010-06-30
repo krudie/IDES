@@ -3,7 +3,7 @@ package presentation.fsa;
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.latex.LatexPresentation;
-import ides.api.model.fsa.FSAEvent;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import model.fsa.ver2_1.Automaton;
-import model.fsa.ver2_1.Event;
+import model.supeventset.ver3.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 import util.BooleanUIBinder;
@@ -948,15 +948,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * @param edge
 	 *            the edge to which the edges will be assigned
 	 */
-	public void replaceEventsOnEdge(FSAEvent[] events, Edge edge)
+	public void replaceEventsOnEdge(SupervisoryEvent[] events, Edge edge)
 	{
 
 		List<FSATransition> toAdd = new ArrayList<FSATransition>();
 		List<FSATransition> toRemove = new ArrayList<FSATransition>();
 
-		Set<FSAEvent> allEvents = new HashSet<FSAEvent>();
-		Set<FSAEvent> newEvents = new HashSet<FSAEvent>();
-		for (FSAEvent e : events)
+		Set<SupervisoryEvent> allEvents = new HashSet<SupervisoryEvent>();
+		Set<SupervisoryEvent> newEvents = new HashSet<SupervisoryEvent>();
+		for (SupervisoryEvent e : events)
 		{
 			allEvents.add(e);
 			newEvents.add(e);
@@ -980,7 +980,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		if (newEvents.size() > 0
 				|| edge.transitionCount() - toRemove.size() > 0)
 		{
-			for (FSAEvent e : newEvents)
+			for (SupervisoryEvent e : newEvents)
 			{
 				toAdd.add(new Transition(fsa.getFreeTransitionId(), edge
 						.getSourceNode().getState(), edge
@@ -1041,7 +1041,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		fsa.addSubscriber(this);
 
 		// Update the event labels in the layout
-		List<FSAEvent> events = new ArrayList<FSAEvent>();
+		List<SupervisoryEvent> events = new ArrayList<SupervisoryEvent>();
 		trans = edge.getTransitions();
 		while (trans.hasNext())
 		{
@@ -1057,7 +1057,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		}
 		// replace in the layout the field EventNames:
 		layout.getEventNames().clear();
-		for (FSAEvent e : events)
+		for (SupervisoryEvent e : events)
 		{
 			if (e != null)
 			{
@@ -1264,10 +1264,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * @param observable
 	 * @return the new Event
 	 */
-	public FSAEvent createAndAddEvent(String symbol, boolean controllable,
+	public SupervisoryEvent createAndAddEvent(String symbol, boolean controllable,
 			boolean observable)
 	{
-		FSAEvent event = new Event(fsa.getFreeEventId());
+		SupervisoryEvent event = new Event(fsa.getFreeEventId());
 		event.setSymbol(symbol);
 		event.setControllable(controllable);
 		event.setObservable(observable);
@@ -1275,7 +1275,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return event;
 	}
 
-	public void setControllable(FSAEvent event, boolean b)
+	public void setControllable(SupervisoryEvent event, boolean b)
 	{
 		// update the event
 		event.setControllable(b);
@@ -1286,7 +1286,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				fsa));
 	}
 
-	public void setObservable(FSAEvent event, boolean b)
+	public void setObservable(SupervisoryEvent event, boolean b)
 	{
 		// update the event
 		event.setObservable(b);

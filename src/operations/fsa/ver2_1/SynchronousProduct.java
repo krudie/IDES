@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.OperationManager;
 
 /**
@@ -57,7 +57,7 @@ public class SynchronousProduct extends AbstractOperation
 			if ((inputs[i] instanceof FSAModel))
 			{
 				newInput = (FSAModel)inputs[i];
-				if (CheckingToolbox.containsEpsilonTransitions(newInput))
+				if (FSAToolbox.containsEpsilonTransitions(newInput))
 				{
 					newInput = (FSAModel)OperationManager
 							.instance().getOperation("removeepsilon")

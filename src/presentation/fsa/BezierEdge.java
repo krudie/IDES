@@ -1,7 +1,7 @@
 package presentation.fsa;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import io.fsa.ver2_1.GraphExporter;
 
 import java.awt.Graphics;
@@ -300,7 +300,7 @@ public class BezierEdge extends Edge
 		// Concat label from associated event[s]
 		String s = "";
 		Iterator<FSATransition> iter = this.getTransitions();
-		FSAEvent event;
+		SupervisoryEvent event;
 		while (iter.hasNext())
 		{
 			event = iter.next().getEvent();

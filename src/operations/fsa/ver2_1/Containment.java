@@ -3,9 +3,9 @@
  */
 package operations.fsa.ver2_1;
 
+import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.OperationManager;
 
 /**
@@ -14,6 +14,8 @@ import ides.api.plugin.operation.OperationManager;
  */
 public class Containment extends AbstractOperation
 {
+
+	protected String resultMessage = Hub.string("errorUnableToCompute");
 
 	public Containment()
 	{
@@ -27,7 +29,7 @@ public class Containment extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { Boolean.class };
-		outputDesc = new String[] { "resultMessage" };
+		outputDesc = new String[] { resultMessage };
 	}
 
 	/*
@@ -38,6 +40,7 @@ public class Containment extends AbstractOperation
 	public Object[] perform(Object[] inputs)
 	{
 		warnings.clear();
+		resultMessage = Hub.string("errorUnableToCompute");
 		FSAModel a, b;
 		if (inputs.length == 2)
 		{
@@ -48,19 +51,17 @@ public class Containment extends AbstractOperation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-				return new Object[] { ModelManager
-						.instance().createModel(FSAModel.class) };
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { new Boolean(false) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { new Boolean(false) };
 		}
 
-		if (!CheckingToolbox.isDeterministic(a))
+		if (!FSAToolbox.isDeterministic(a))
 		{
 			a = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -68,7 +69,7 @@ public class Containment extends AbstractOperation
 			warnings.addAll(OperationManager
 					.instance().getOperation("determinize").getWarnings());
 		}
-		if (!CheckingToolbox.isDeterministic(b))
+		if (!FSAToolbox.isDeterministic(b))
 		{
 			b = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -79,7 +80,11 @@ public class Containment extends AbstractOperation
 
 		boolean contained = Subset.subset(a, b);
 
-		String resultMessage = "";
+		if (warnings.size() != 0)
+		{
+			return new Object[] { new Boolean(false) };
+		}
+
 		if (contained)
 		{
 			resultMessage = "Sublanguage is contained in superlanguage.";

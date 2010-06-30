@@ -1,11 +1,10 @@
 package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
-import ides.api.plugin.model.DESEvent;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
 
@@ -54,14 +53,15 @@ public class Project
 	 * @return An FSAModel with the specified events projected out.
 	 */
 	protected static FSAModel projectCustom(FSAModel model,
-			DESEventSet DESEventsToRemove, boolean removeNulls)
+			DESEventSet eventsToRemove, boolean removeNulls)
 	{
 
 		pairIds.clear();
 
-		if (DESEventsToRemove == null)
+		if (eventsToRemove == null)
 		{
-			DESEventsToRemove = ModelManager.instance().createEmptyEventSet();
+			eventsToRemove = ModelManager
+					.instance().createEmptyEventSet();
 		}
 
 		FSAModel projection = ModelManager
@@ -70,22 +70,17 @@ public class Project
 		projection.setAnnotation(Annotable.COMPOSED_OF, new String[] { model
 				.getName() });
 
-		HashMap<String, FSAEvent> newEvents = new HashMap<String, FSAEvent>();
-		HashSet<FSAEvent> eventsToRemove = new HashSet<FSAEvent>();
+		HashMap<String, SupervisoryEvent> newEvents = new HashMap<String, SupervisoryEvent>();
 		LinkedList<LinkedList<FSAState>> searchList = new LinkedList<LinkedList<FSAState>>();
 		LinkedList<FSAState> states = new LinkedList<FSAState>();
 		long id = 0;
 
-		for (Iterator<DESEvent> i = DESEventsToRemove.iterator(); i.hasNext();)
-		{
-			eventsToRemove.add((FSAEvent)i.next());
-		}
-
 		// copy the events from the original model to the projection only if
 		// they were not specified as events to remove
-		for (Iterator<FSAEvent> i = model.getEventIterator(); i.hasNext();)
+		for (Iterator<SupervisoryEvent> i = model.getEventIterator(); i
+				.hasNext();)
 		{
-			FSAEvent origEvent = i.next();
+			SupervisoryEvent origEvent = i.next();
 			if (!eventsToRemove.contains(origEvent))
 			{
 				DuplicationToolbox.copyEventInto(projection,
@@ -128,10 +123,10 @@ public class Project
 
 			// iterate through all the events in projection (including null
 			// which was added above)
-			Iterator<FSAEvent> ei = newEvents.values().iterator();
+			Iterator<SupervisoryEvent> ei = newEvents.values().iterator();
 			while (ei.hasNext())
 			{
-				FSAEvent event = ei.next();
+				SupervisoryEvent event = ei.next();
 				states = new LinkedList<FSAState>();
 				ListIterator<FSAState> sli = sourceList.listIterator();
 				while (sli.hasNext())
@@ -221,7 +216,7 @@ public class Project
 	 *            whether or not the nulls should be removed
 	 */
 	private static void reach(LinkedList<FSAState> sll,
-			HashSet<FSAEvent> eventsToRemove, boolean removeNulls)
+			DESEventSet eventsToRemove, boolean removeNulls)
 	{
 		ListIterator<FSAState> sli = sll.listIterator();
 		HashSet<FSAState> reached = new HashSet<FSAState>();

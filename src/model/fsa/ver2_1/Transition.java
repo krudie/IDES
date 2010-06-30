@@ -1,8 +1,8 @@
 package model.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 
 import java.util.Hashtable;
 
@@ -19,7 +19,7 @@ public class Transition implements ides.api.model.fsa.FSATransition
 
 	private FSAState sourceS, targetS;
 
-	private FSAEvent e = null;
+	private SupervisoryEvent e = null;
 
 	private long id;
 
@@ -109,7 +109,7 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	 * @param e
 	 *            the event this transition fires uppon receival of.
 	 */
-	public Transition(long id, FSAState source, FSAState target, FSAEvent e)
+	public Transition(long id, FSAState source, FSAState target, SupervisoryEvent e)
 	{
 		this(id, source, target);
 		this.e = e;
@@ -130,7 +130,7 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	 *            the event this transition fires uppon receival of.
 	 */
 	public Transition(FSATransition t, FSAState source, FSAState target,
-			FSAEvent e)
+			SupervisoryEvent e)
 	{
 		this.id = t.getId();
 		this.sourceS = source;
@@ -207,7 +207,7 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	 * @param e
 	 *            the event this transition fires uppon.
 	 */
-	public void setEvent(FSAEvent e)
+	public void setEvent(SupervisoryEvent e)
 	{
 		this.e = e;
 	}
@@ -217,7 +217,7 @@ public class Transition implements ides.api.model.fsa.FSATransition
 	 * 
 	 * @return the event this transition fires uppon.
 	 */
-	public FSAEvent getEvent()
+	public SupervisoryEvent getEvent()
 	{
 		return e;
 	}

@@ -1,10 +1,10 @@
 package presentation.fsa;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSASubscriber;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.Toolset;
@@ -70,7 +70,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 		private FSAModel a = null;
 
-		private Vector<FSAEvent> events = null;
+		private Vector<SupervisoryEvent> events = null;
 
 		private Vector<Boolean> controllable = null;
 
@@ -82,7 +82,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 		public EventTableModel()
 		{
-			events = new Vector<FSAEvent>();
+			events = new Vector<SupervisoryEvent>();
 			controllable = new Vector<Boolean>();
 			observable = new Vector<Boolean>();
 
@@ -90,17 +90,17 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 		public EventTableModel(FSAModel a)
 		{
-			events = new Vector<FSAEvent>();
+			events = new Vector<SupervisoryEvent>();
 			controllable = new Vector<Boolean>();
 			observable = new Vector<Boolean>();
 			this.a = a;
-			for (Iterator<FSAEvent> i = a.getEventIterator(); i.hasNext();)
+			for (Iterator<SupervisoryEvent> i = a.getEventIterator(); i.hasNext();)
 			{
 				events.add(i.next());
 			}
-			Collections.sort(events, new Comparator<FSAEvent>()
+			Collections.sort(events, new Comparator<SupervisoryEvent>()
 			{
-				public int compare(FSAEvent event1, FSAEvent event2)
+				public int compare(SupervisoryEvent event1, SupervisoryEvent event2)
 				{
 					return event1.getSymbol().compareTo(event2.getSymbol());
 				}
@@ -180,7 +180,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 					return;
 				}
 				eventId = events.elementAt(row).getId();
-				FSAEvent existingEvent = closestEvent((String)value);
+				SupervisoryEvent existingEvent = closestEvent((String)value);
 				if (((String)value).equals(existingEvent.getSymbol()))
 				{
 					Toolkit.getDefaultToolkit().beep();
@@ -230,9 +230,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 			if (col == 0)
 			{
-				Collections.sort(events, new Comparator<FSAEvent>()
+				Collections.sort(events, new Comparator<SupervisoryEvent>()
 				{
-					public int compare(FSAEvent event1, FSAEvent event2)
+					public int compare(SupervisoryEvent event1, SupervisoryEvent event2)
 					{
 						return event1.getSymbol().compareTo(event2.getSymbol());
 					}
@@ -261,14 +261,14 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 			}
 		}
 
-		public FSAEvent closestEvent(String symbol)
+		public SupervisoryEvent closestEvent(String symbol)
 		{
-			FSAEvent retVal = null;
+			SupervisoryEvent retVal = null;
 			if (!events.isEmpty())
 			{
 				retVal = events.firstElement();
 			}
-			for (FSAEvent event : events)
+			for (SupervisoryEvent event : events)
 			{
 				if (event.getSymbol().compareTo(symbol) > 0)
 				{
@@ -279,7 +279,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 			return retVal;
 		}
 
-		public FSAEvent getEventAt(int idx)
+		public SupervisoryEvent getEventAt(int idx)
 		{
 			return events.elementAt(idx);
 		}
@@ -310,7 +310,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 					return;
 				}
 			}
-			FSAEvent[] delEvents = new FSAEvent[rows.length];
+			SupervisoryEvent[] delEvents = new SupervisoryEvent[rows.length];
 			for (int i = 0; i < rows.length; ++i)
 			{
 				delEvents[i] = ((EventTableModel)table.getModel())
@@ -430,7 +430,7 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 			private void configStuff(String s)
 			{
-				FSAEvent event = ((EventTableModel)table.getModel())
+				SupervisoryEvent event = ((EventTableModel)table.getModel())
 						.closestEvent(s);
 				if (event != null && event.getSymbol().equals(s))
 				{

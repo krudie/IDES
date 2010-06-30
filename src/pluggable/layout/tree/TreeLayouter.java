@@ -4,7 +4,7 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.layout.FSALayouter;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
@@ -39,7 +39,7 @@ public class TreeLayouter implements FSALayouter
 		float yTop = 0;
 		int numberOfNodes = 0;
 
-		Set<Long> initialStateIds = CheckingToolbox
+		Set<Long> initialStateIds = FSAToolbox
 				.getInitialStates(modelToLayout);
 
 		stateExtracted = modelToLayout

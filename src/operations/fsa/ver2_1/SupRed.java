@@ -1,10 +1,10 @@
 package operations.fsa.ver2_1;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
 
 import java.io.BufferedReader;
@@ -46,11 +46,11 @@ public class SupRed extends AbstractOperation
 	{
 		exportGrail((FSAModel)inputs[0], new File("PLT"));
 		exportGrail((FSAModel)inputs[1], new File("SUP"));
-		Set<FSAEvent> unctrl = new TreeSet<FSAEvent>();
-		for (Iterator<FSAEvent> i = ((FSAModel)inputs[1]).getEventIterator(); i
+		Set<SupervisoryEvent> unctrl = new TreeSet<SupervisoryEvent>();
+		for (Iterator<SupervisoryEvent> i = ((FSAModel)inputs[1]).getEventIterator(); i
 				.hasNext();)
 		{
-			FSAEvent e = i.next();
+			SupervisoryEvent e = i.next();
 			if (!e.isControllable())
 			{
 				unctrl.add(e);
@@ -76,9 +76,9 @@ public class SupRed extends AbstractOperation
 			Hub.displayAlert(Hub.string("problemSupRed"));
 		}
 		FSAModel a = importGrail(new File("RED"));
-		for (Iterator<FSAEvent> i = a.getEventIterator(); i.hasNext();)
+		for (Iterator<SupervisoryEvent> i = a.getEventIterator(); i.hasNext();)
 		{
-			FSAEvent e = i.next();
+			SupervisoryEvent e = i.next();
 			if (unctrl.contains(e))
 			{
 				e.setControllable(false);
@@ -192,11 +192,11 @@ public class SupRed extends AbstractOperation
 						s2 = new model.fsa.ver2_1.State(sId2);
 						a.add(s2);
 					}
-					FSAEvent e = null;
+					SupervisoryEvent e = null;
 					Long eId = events.get(parts[1]);
 					if (eId == null)
 					{
-						e = new model.fsa.ver2_1.Event(eCount);
+						e = new model.supeventset.ver3.Event(eCount);
 						e.setSymbol(parts[1]);
 						e.setObservable(true);
 						e.setControllable(true);

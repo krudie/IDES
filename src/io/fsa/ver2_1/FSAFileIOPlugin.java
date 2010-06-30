@@ -5,10 +5,10 @@ package io.fsa.ver2_1;
 
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.io.FileIOPlugin;
 import ides.api.plugin.io.FileLoadException;
 import ides.api.plugin.io.FileSaveException;
@@ -35,9 +35,9 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
 
-import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
+import model.supeventset.ver3.Event;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -105,7 +105,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				XMLExporter.stateToXML(si.next(), stream, XMLExporter.INDENT);
 			}
 
-			ListIterator<FSAEvent> ei = ((FSAModel)model).getEventIterator();
+			ListIterator<SupervisoryEvent> ei = ((FSAModel)model).getEventIterator();
 			while (ei.hasNext())
 			{
 				XMLExporter.eventToXML(ei.next(), stream, XMLExporter.INDENT);
@@ -313,7 +313,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void eventToXML(FSAEvent e, PrintStream ps, String indent)
+		private static void eventToXML(SupervisoryEvent e, PrintStream ps, String indent)
 		{
 			if (e.getSymbol() == "" & !(e.isObservable() | e.isControllable()))
 			{
@@ -470,7 +470,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 
 		private FSATransition tmpTransition;
 
-		private FSAEvent tmpEvent;
+		private SupervisoryEvent tmpEvent;
 
 		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long, BezierLayout>();
 
@@ -692,7 +692,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 
 				else if (CURRENT_PARSING_ELEMENT == EVENT)
 				{
-					tmpEvent = (FSAEvent)getModelElement(atts,
+					tmpEvent = (SupervisoryEvent)getModelElement(atts,
 							CURRENT_PARSING_ELEMENT);
 					model.add(tmpEvent);
 				}
@@ -936,7 +936,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					// Setting the label for the edge:
 					else if (qName.equals(LABEL))
 					{
-						FSAEvent e = tmpTransition.getEvent();
+						SupervisoryEvent e = tmpTransition.getEvent();
 						if (e != null)
 						{
 							BezierLayout layout = (BezierLayout)tmpTransition
@@ -1064,12 +1064,12 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				// dst = s;
 				// }
 				// }
-				// Iterator<FSAEvent> eIt = model.getEventIterator();
-				FSAEvent event = null;
+				// Iterator<SupervisoryEvent> eIt = model.getEventIterator();
+				SupervisoryEvent event = null;
 				event = model.getEvent(eventN);
 				// while(eIt.hasNext())
 				// {
-				// FSAEvent e = eIt.next();
+				// SupervisoryEvent e = eIt.next();
 				// if(e.getId() == eventN)
 				// {
 				// event = e;

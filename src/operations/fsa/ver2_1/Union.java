@@ -1,12 +1,11 @@
 package operations.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
-import ides.api.plugin.model.DESEventSet;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
@@ -113,18 +112,18 @@ public class Union implements Operation
 					temp = (FSAModel)arg0[i];
 					if (i == arg0.length - 1)
 					{
-						if (CheckingToolbox.initialStateCount(temp) == 1)
+						if (FSAToolbox.initialStateCount(temp) == 1)
 							models.push(temp.clone());
 					}
 					else
 					{
-						if (CheckingToolbox.initialStateCount(temp) == 1)
+						if (FSAToolbox.initialStateCount(temp) == 1)
 							models.push(temp);
 					}
 				}
 				else
 				{
-					warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+					warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 					return new Object[] { ModelManager
 							.instance().createModel(FSAModel.class) };
 				}
@@ -133,14 +132,14 @@ public class Union implements Operation
 		else
 		// if input array is empty
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
 		if (models.isEmpty())
 		{
-			warnings.add(CheckingToolbox.NOT_1_INITIAL_STATE);
+			warnings.add(FSAToolbox.NOT_1_INITIAL_STATE);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
@@ -154,7 +153,7 @@ public class Union implements Operation
 			 * states from one model to another
 			 */
 			Hashtable<FSAState, FSAState> states = new Hashtable<FSAState, FSAState>();
-			Hashtable<String, FSAEvent> events = new Hashtable<String, FSAEvent>();
+			Hashtable<String, SupervisoryEvent> events = new Hashtable<String, SupervisoryEvent>();
 
 			model1 = models.pop();
 			model2 = models.pop();
@@ -169,10 +168,10 @@ public class Union implements Operation
 			 * added, but the event (with the same name) in model1 will be
 			 * retrieved.
 			 */
-			for (ListIterator<FSAEvent> b = model1.getEventIterator(); b
+			for (ListIterator<SupervisoryEvent> b = model1.getEventIterator(); b
 					.hasNext();)
 			{
-				FSAEvent currEvent = b.next();
+				SupervisoryEvent currEvent = b.next();
 				events.put(currEvent.getSymbol(), currEvent);
 			}
 
@@ -191,7 +190,7 @@ public class Union implements Operation
 					FSAState copyTarget = DuplicationToolbox
 							.copyStateInto(model1, origTarget, states, false);
 
-					FSAEvent origEvent = origTransition.getEvent();
+					SupervisoryEvent origEvent = origTransition.getEvent();
 
 					FSATransition copyTransition;
 					if (origEvent == null)
@@ -202,7 +201,7 @@ public class Union implements Operation
 					}
 					else
 					{
-						FSAEvent copyEvent = DuplicationToolbox
+						SupervisoryEvent copyEvent = DuplicationToolbox
 								.copyEventInto(model1, origEvent, events, false);
 						copyTransition = model1
 								.assembleTransition(copySource.getId(),
@@ -237,11 +236,10 @@ public class Union implements Operation
 									model2initial.getId());
 					model1.add(toModel2);
 
-					DESEventSet des = ModelManager
-							.instance().createEmptyEventSet();
+				
 					model1 = (FSAModel)OperationManager
 							.instance().getOperation("removeepsilon")
-							.perform(new Object[] { model1, des })[0];
+							.perform(new Object[] { model1})[0];
 					warnings.addAll(OperationManager
 							.instance().getOperation("removeepsilon")
 							.getWarnings());

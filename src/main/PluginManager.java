@@ -1,9 +1,12 @@
 package main;
 
 import ides.api.core.Hub;
+import ides.api.model.supeventset.SupervisoryEventSet;
 import ides.api.plugin.Plugin;
 import ides.api.plugin.PluginInitException;
+import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.operation.OperationManager;
+import ides.api.plugin.presentation.ToolsetManager;
 import io.AnnotatedModelPlugin;
 import io.fsa.ver2_1.EPSPlugin;
 import io.fsa.ver2_1.FSAFileIOPlugin;
@@ -12,6 +15,7 @@ import io.fsa.ver2_1.JPEGPlugin;
 import io.fsa.ver2_1.LatexPlugin;
 import io.fsa.ver2_1.PNGPlugin;
 import io.fsa.ver2_1.TCTPlugin;
+import io.supeventset.ver3.SupEventSetFileIOPlugin;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -30,6 +34,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import model.supeventset.ver3.SupervisoryEventSetDescriptor;
+
 import operations.fsa.ver2_1.Accessible;
 import operations.fsa.ver2_1.Coaccessible;
 import operations.fsa.ver2_1.Complement;
@@ -46,18 +52,21 @@ import operations.fsa.ver2_1.NFAtoDFA;
 import operations.fsa.ver2_1.Nonconflicting;
 import operations.fsa.ver2_1.Normal;
 import operations.fsa.ver2_1.Observable;
+import operations.fsa.ver2_1.PlusClosure;
 import operations.fsa.ver2_1.PrefixClosure;
 import operations.fsa.ver2_1.ProjectEventSet;
 import operations.fsa.ver2_1.ProjectEpsilon;
 import operations.fsa.ver2_1.ProjectUnobservable;
 import operations.fsa.ver2_1.SelfLoop;
 import operations.fsa.ver2_1.SetDifference;
+import operations.fsa.ver2_1.StarClosure;
 import operations.fsa.ver2_1.SupCon;
 import operations.fsa.ver2_1.SupNorm;
 import operations.fsa.ver2_1.SupRed;
 import operations.fsa.ver2_1.SynchronousProduct;
 import operations.fsa.ver2_1.Trim;
 import operations.fsa.ver2_1.Union;
+import presentation.supeventset.SupEventSetToolset;
 
 /**
  * Deals with the management of plugins.
@@ -118,10 +127,13 @@ public class PluginManager
 		OperationManager.instance().register(new Observable());
 		OperationManager.instance().register(new Normal());
 		OperationManager.instance().register(new SupNorm());
+		OperationManager.instance().register(new StarClosure());
+		OperationManager.instance().register(new PlusClosure());
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();
 		new AnnotatedModelPlugin().initialize();
+		new SupEventSetFileIOPlugin().initialize();
 
 		// Import/Export plugins:
 		new GrailPlugin().initialize();
@@ -130,6 +142,12 @@ public class PluginManager
 		new LatexPlugin().initialize();
 		new PNGPlugin().initialize();
 		new JPEGPlugin().initialize();
+		
+		//Model plugins:
+		ModelManager.instance().registerModel(new SupervisoryEventSetDescriptor());
+		
+		//Toolset plugins:
+		ToolsetManager.instance().registerToolset(SupervisoryEventSet.class, new SupEventSetToolset());
 
 	}
 

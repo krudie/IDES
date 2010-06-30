@@ -5,7 +5,7 @@ package operations.fsa.ver2_1;
 
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.FilterOperation;
 
 /**
@@ -50,17 +50,26 @@ public class SupCon extends AbstractOperation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
+
+		if (FSAToolbox.hasControllabilityConflict(new FSAModel[] { model1,
+				model2 }))
+		{
+			warnings.add(FSAToolbox.ERROR_CONTROL);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
 		FSAModel a = ModelManager
 				.instance().createModel(FSAModel.class, "none");
 		SuperVisory.supC(model1, model2, a);

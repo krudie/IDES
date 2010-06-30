@@ -1,9 +1,9 @@
 package io.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
 import io.AbstractParser;
 import io.ParsingToolbox;
@@ -13,9 +13,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
+import model.supeventset.ver3.Event;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -55,7 +55,7 @@ public class AutomatonParser20 extends AbstractParser
 
 	private FSAState lastState;
 
-	private FSAEvent lastEvent;
+	private SupervisoryEvent lastEvent;
 
 	private FSATransition lastTransition;
 
@@ -184,7 +184,7 @@ public class AutomatonParser20 extends AbstractParser
 						.getValue(ATTRIBUTE_SOURCE_ID)));
 				FSAState t = a.getState(Integer.parseInt(atts
 						.getValue(ATTRIBUTE_TARGET_ID)));
-				FSAEvent e = atts.getValue(ATTRIBUTE_EVENT) != null ? a
+				SupervisoryEvent e = atts.getValue(ATTRIBUTE_EVENT) != null ? a
 						.getEvent(Integer.parseInt(atts
 								.getValue(ATTRIBUTE_EVENT))) : null;
 

@@ -2,12 +2,12 @@ package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
@@ -93,6 +93,7 @@ public class Observable implements Operation
 	{
 
 		warnings.clear();
+		resultMessage = Hub.string("errorUnableToCompute");
 		pairIds.clear();
 		FSAModel plant;
 		FSAModel sublanguage;
@@ -106,17 +107,17 @@ public class Observable implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { new Boolean(false) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { new Boolean(false) };
 		}
 
-		if (!CheckingToolbox.isDeterministic(plant))
+		if (!FSAToolbox.isDeterministic(plant))
 		{
 			plant = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -124,7 +125,7 @@ public class Observable implements Operation
 			warnings.addAll(OperationManager
 					.instance().getOperation("determinize").getWarnings());
 		}
-		if (!CheckingToolbox.isDeterministic(sublanguage))
+		if (!FSAToolbox.isDeterministic(sublanguage))
 		{
 			sublanguage = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -133,32 +134,10 @@ public class Observable implements Operation
 					.instance().getOperation("determinize").getWarnings());
 		}
 
-		// check to make sure that events that are in both plant and sublanguage
-		// have the same observable/controllable status. 
-		boolean eventError = false;
-		eventErrorSearch: for (Iterator<FSAEvent> i = plant.getEventIterator(); i
-				.hasNext();)
+		if (FSAToolbox.hasObservabilityConflict(new FSAModel[] { plant,
+				sublanguage }))
 		{
-			FSAEvent p = i.next();
-			for (Iterator<FSAEvent> j = sublanguage.getEventIterator(); j
-					.hasNext();)
-			{
-				FSAEvent s = j.next();
-				if (p.equals(s))
-				{
-					if (p.isControllable() != s.isControllable()
-							|| p.isObservable() != s.isObservable())
-					{
-						eventError = true;
-						// once one error is found, may as well stop searching.
-						break eventErrorSearch;
-					}
-				}
-			}
-		}
-		if (eventError)
-		{
-			warnings.add(Hub.string("errorControlObserve"));
+			warnings.add(FSAToolbox.ERROR_OBSERVE);
 			return new Object[] { new Boolean(false) };
 		}
 
@@ -177,6 +156,11 @@ public class Observable implements Operation
 
 		boolean observable = obsTest(sublanguage, plant, obsTest);
 
+		if (warnings.size() != 0)
+		{
+			return new Object[] { new Boolean(false) };
+		}
+
 		if (observable)
 		{
 			resultMessage = "Sublanguage is observable with respect to the plant.";
@@ -185,6 +169,7 @@ public class Observable implements Operation
 		{
 			resultMessage = "Sublanguage is not observable with respect to the plant.";
 		}
+
 		return new Object[] { new Boolean(observable) };
 	}
 
@@ -223,9 +208,9 @@ public class Observable implements Operation
 		obsTest.setAnnotation(Annotable.COMPOSED_OF, new String[] {
 				sublanguage.getName(), plant.getName() });
 
-		HashMap<String, FSAEvent> newEvents = new HashMap<String, FSAEvent>();
+		HashMap<String, SupervisoryEvent> newEvents = new HashMap<String, SupervisoryEvent>();
 		HashMap<FSAState[], FSATransition[]> stateEventMap = new HashMap<FSAState[], FSATransition[]>();
-		HashSet<FSAEvent> currentEvents = new HashSet<FSAEvent>();
+		HashSet<SupervisoryEvent> currentEvents = new HashSet<SupervisoryEvent>();
 		LinkedList<FSAState[]> searchList = new LinkedList<FSAState[]>();
 		FSAState[] stateTriple = new FSAState[3];
 		long id = 0;
@@ -279,7 +264,7 @@ public class Observable implements Operation
 				currentEvents.add(i.next().getEvent());
 			}
 
-			for (FSAEvent event : currentEvents)
+			for (SupervisoryEvent event : currentEvents)
 			{
 
 				stateEventMap.clear();
@@ -294,7 +279,7 @@ public class Observable implements Operation
 						obsTest.add(dead);
 						deadAdded = true;
 					}
-					FSAEvent toDeadEvent = obsTest.assembleEvent("("
+					SupervisoryEvent toDeadEvent = obsTest.assembleEvent("("
 							+ event.getSymbol() + ", " + nullString + ", "
 							+ event.getSymbol() + ")");
 					obsTest.add(toDeadEvent);
@@ -367,7 +352,7 @@ public class Observable implements Operation
 							FSATransition[] transitions = stateEventMap
 									.get(targetTriple);
 							String newEventName = getEventName(transitions);
-							FSAEvent newEvent;
+							SupervisoryEvent newEvent;
 							if (newEvents.containsKey(newEventName))
 							{
 								newEvent = newEvents.get(newEventName);
@@ -409,7 +394,7 @@ public class Observable implements Operation
 	 *         <code>false</code> otherwise.
 	 */
 	private static boolean isStoppingCondition(
-			FSATransition[] transitionTriple, FSAEvent event)
+			FSATransition[] transitionTriple, SupervisoryEvent event)
 	{
 		if (!event.isControllable())
 		{
@@ -446,7 +431,7 @@ public class Observable implements Operation
 	 *         array entry for that state is <code>null</code>.
 	 */
 	private static FSATransition[] getOutgoingTransitionTriple(
-			FSAState[] stateTriple, FSAEvent event)
+			FSAState[] stateTriple, SupervisoryEvent event)
 	{
 		boolean isDefined;
 		FSATransition[] transitionTriple = new FSATransition[3];

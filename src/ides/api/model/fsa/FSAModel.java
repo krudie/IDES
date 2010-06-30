@@ -1,6 +1,8 @@
 package ides.api.model.fsa;
 
-import ides.api.plugin.model.DESEventSet;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
+import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESModel;
 
 import java.util.ListIterator;
@@ -20,6 +22,18 @@ public interface FSAModel extends DESModel, FSAPublisher
 	public abstract FSAState assembleState();
 
 	/**
+	 * Assembles a new state with the same name and properties as the given
+	 * state, which can then be added to the model. The state is not
+	 * automatically added to the model.
+	 * 
+	 * @param state
+	 *            the state whose properties are to be copied.
+	 * @return A new FSAState with the same name and controllable and obsersable
+	 *         properties as the given state.
+	 */
+	public abstract FSAState assembleCopyOf(FSAState state);
+
+	/**
 	 * Assembles a new event which can be added to the model. The event is not
 	 * automatically added to the model.
 	 * 
@@ -27,7 +41,21 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 *            the name for the event
 	 * @return a new event with the given name
 	 */
-	public abstract FSAEvent assembleEvent(String symbol);
+
+	public abstract SupervisoryEvent assembleEvent(String symbol);
+
+	/**
+	 * Assembles a new event with the same name and properties as the given
+	 * event, which can then be added to the model. The event is not
+	 * automatically added to the model.
+	 * 
+	 * @param event
+	 *            the event whose properties are to be copied.
+	 * @return A new FSAState with the same name as the given state. If the
+	 *         given event is a SupervisoryEvent, the new event will have the
+	 *         same controllable and observable properties as the given event.
+	 */
+	public abstract SupervisoryEvent assembleCopyOf(DESEvent event);
 
 	/**
 	 * Assembles a new transition which can be added to the model. The
@@ -159,7 +187,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 * @param e
 	 *            the event that shall be added to the automaton.
 	 */
-	public abstract void add(FSAEvent e);
+	public abstract void add(SupervisoryEvent e);
 
 	/**
 	 * Removes an event from the automaton.
@@ -167,14 +195,14 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 * @param e
 	 *            the event to be removed
 	 */
-	public abstract void remove(FSAEvent e);
+	public abstract void remove(SupervisoryEvent e);
 
 	/**
 	 * Get an iterator for the events in the event set of the FSA.
 	 * 
 	 * @return a custom list iterator for the events.
 	 */
-	public abstract ListIterator<FSAEvent> getEventIterator();
+	public abstract ListIterator<SupervisoryEvent> getEventIterator();
 
 	/**
 	 * Obtains the set of events in the model. If there are no events in the
@@ -182,7 +210,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 * 
 	 * @return the set of events in the model.
 	 */
-	public abstract DESEventSet getEventSet();
+	public abstract SupervisoryEventSet getEventSet();
 
 	/**
 	 * Get the event with the given event id.
@@ -191,7 +219,7 @@ public interface FSAModel extends DESModel, FSAPublisher
 	 *            the id of the event
 	 * @return the event, null if it doesn't exist
 	 */
-	public abstract FSAEvent getEvent(long id);
+	public abstract SupervisoryEvent getEvent(long id);
 
 	/**
 	 * Creates and returns a copy of this FSAModel.

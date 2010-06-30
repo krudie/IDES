@@ -1,12 +1,12 @@
 package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.OperationManager;
 
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class Minimize extends AbstractOperation
 	}
 
 	protected Collection<FSAState> comingFrom(Collection<FSAState> part,
-			FSAEvent e)
+			SupervisoryEvent e)
 	{
 		Collection<FSAState> ret = new HashSet<FSAState>();
 		for (FSAState s : part)
@@ -73,14 +73,14 @@ public class Minimize extends AbstractOperation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
@@ -91,7 +91,7 @@ public class Minimize extends AbstractOperation
 		warnings.addAll(OperationManager
 				.instance().getOperation("accessible").getWarnings());
 
-		if (!CheckingToolbox.isDeterministic(fsa))
+		if (!FSAToolbox.isDeterministic(fsa))
 		{
 			fsa = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -120,7 +120,7 @@ public class Minimize extends AbstractOperation
 		}
 		if (f.isEmpty())
 		{
-			warnings.add(CheckingToolbox.NO_MARKED_STATES);
+			warnings.add(FSAToolbox.NO_MARKED_STATES);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
@@ -136,9 +136,9 @@ public class Minimize extends AbstractOperation
 		{
 			Collection<FSAState> splitter = splitters.iterator().next();
 			splitters.remove(splitter);
-			for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
+			for (Iterator<SupervisoryEvent> ie = fsa.getEventIterator(); ie.hasNext();)
 			{
-				FSAEvent e = ie.next();
+				SupervisoryEvent e = ie.next();
 				Collection<FSAState> sources = comingFrom(splitter, e);
 				Collection<Collection<FSAState>> newParts = new HashSet<Collection<FSAState>>();
 				for (Collection<FSAState> part : parts)
@@ -194,16 +194,16 @@ public class Minimize extends AbstractOperation
 		ret
 				.setAnnotation(Annotable.COMPOSED_OF, new String[] { fsa
 						.getName() });
-		Map<FSAEvent, FSAEvent> eventMap = new HashMap<FSAEvent, FSAEvent>();
-		for (Iterator<FSAEvent> ie = fsa.getEventIterator(); ie.hasNext();)
+		Map<SupervisoryEvent, SupervisoryEvent> eventMap = new HashMap<SupervisoryEvent, SupervisoryEvent>();
+		for (Iterator<SupervisoryEvent> ie = fsa.getEventIterator(); ie.hasNext();)
 		{
-			FSAEvent e = ie.next();
-			FSAEvent event = ret.assembleEvent(e.getSymbol());
-			event.setControllable(e.isControllable());
-			event.setObservable(e.isObservable());
+			SupervisoryEvent e = ie.next();
+			SupervisoryEvent event = ret.assembleCopyOf(e);
 			ret.add(event);
 			eventMap.put(e, event);
 		}
+		
+		
 
 		Map<Collection<FSAState>, FSAState> stateMap = new HashMap<Collection<FSAState>, FSAState>();
 		for (Collection<FSAState> part : parts)

@@ -4,10 +4,10 @@
 package io.fsa.ver2_1;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.io.FormatTranslationException;
 import ides.api.plugin.io.IOPluginManager;
 import ides.api.plugin.io.ImportExportPlugin;
@@ -193,11 +193,11 @@ public class GrailPlugin implements ImportExportPlugin
 						s2.setName("" + sId2);
 						a.add(s2);
 					}
-					FSAEvent e = null;
+					SupervisoryEvent e = null;
 					Long eId = events.get(parts[1]);
 					if (eId == null)
 					{
-						e = new model.fsa.ver2_1.Event(eCount);
+						e = new model.supeventset.ver3.Event(eCount);
 						e.setSymbol(parts[1]);
 						e.setObservable(true);
 						e.setControllable(true);

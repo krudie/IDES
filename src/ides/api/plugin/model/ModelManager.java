@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import model.fsa.ver2_1.EventSet;
+import model.supeventset.ver3.EventSet;
 
 /**
  * The manager of model types available to IDES. This allows for custom model

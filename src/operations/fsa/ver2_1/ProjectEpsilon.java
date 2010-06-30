@@ -3,7 +3,7 @@ package operations.fsa.ver2_1;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 
 import java.util.LinkedList;
@@ -79,21 +79,22 @@ public class ProjectEpsilon implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		DESEventSet des = ModelManager.instance().createEmptyEventSet();
+		DESEventSet eventSet = ModelManager
+				.instance().createEmptyEventSet();
 
-		projection = Project.projectCustom(model, des, true);
+		projection = Project.projectCustom(model, eventSet, true);
 
 		return new Object[] { projection };
 	}

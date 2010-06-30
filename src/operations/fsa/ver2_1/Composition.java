@@ -1,10 +1,11 @@
 package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
 import ides.api.plugin.model.ModelManager;
 
 import java.util.Collections;
@@ -17,7 +18,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
 import model.fsa.ver2_1.Transition;
 
@@ -104,11 +104,11 @@ public class Composition
 
 		// the event set for the shuffle is the union of the two event sets
 		// get all the events from 'a' first.
-		ListIterator<FSAEvent> eventIterator = a.getEventIterator();
+		ListIterator<SupervisoryEvent> eventIterator = a.getEventIterator();
 		while (eventIterator.hasNext())
 		{
 			// add the current event from 'a' to shuffle
-			shuffle.add(new Event(eventIterator.next()));
+			shuffle.add(shuffle.assembleCopyOf(eventIterator.next()));
 		}
 
 		// now get the events from b
@@ -116,11 +116,11 @@ public class Composition
 		while (eventIterator.hasNext())
 		{
 			// need to test each event to prevent duplications
-			FSAEvent testEvent = eventIterator.next();
+			SupervisoryEvent testEvent = eventIterator.next();
 			// add the event if it isn't already in the event list
 			if (!shuffle.getEventSet().contains(testEvent))
 			{
-				shuffle.add(new Event(testEvent));
+				shuffle.add(shuffle.assembleCopyOf(testEvent));
 			}
 		}
 	}
@@ -142,17 +142,20 @@ public class Composition
 				a.getName(), b.getName() });
 
 		// Add the intersection between the eventsets as the products eventset.
-		ListIterator<FSAEvent> eventsa = a.getEventIterator();
+		ListIterator<SupervisoryEvent> eventsa = a.getEventIterator();
 		while (eventsa.hasNext())
 		{
-			FSAEvent eventa = eventsa.next();
-			ListIterator<FSAEvent> eventsb = b.getEventIterator();
+			SupervisoryEvent eventa = eventsa.next();
+			ListIterator<SupervisoryEvent> eventsb = b.getEventIterator();
 			while (eventsb.hasNext())
 			{
-				FSAEvent eventb = eventsb.next();
+				SupervisoryEvent eventb = eventsb.next();
 				if (eventa.equals(eventb))
 				{
-					FSAEvent event = new Event(eventa);
+					SupervisoryEvent event = product.assembleCopyOf(eventa);
+					event.setId(eventa.getId()); // to make it work with current
+													// alg (now that no new
+													// Event(eventa) is instantiated)
 					product.add(event);
 					break;
 				}
@@ -190,7 +193,6 @@ public class Composition
 		// firing the same event, i.e., the intersection of the transitions
 		// originating from the two
 		// states are the transitions of state in product.
-		long transitionNumber = 0;
 		FSAState[] s = new FSAState[2];
 		while (!searchList.isEmpty())
 		{
@@ -212,7 +214,7 @@ public class Composition
 									.getEvent().equals(t1.getEvent())))
 					{
 
-						FSAEvent event = (t0.getEvent() == null) ? null
+						SupervisoryEvent event = (t0.getEvent() == null) ? null
 								: product.getEvent(t0.getEvent().getId());
 
 						s[0] = t0.getTarget();
@@ -221,21 +223,13 @@ public class Composition
 						long id = getStateId(s);
 						if (id != -1)
 						{
-							product.add(new Transition(
-									transitionNumber++,
-									source,
-									product.getState(id),
-									event));
+							product.add(product.assembleTransition(source.getId(), id, event.getId()));
 						}
 						else
 						{
 							FSAState target = makeState(s, stateNumber);
 							product.add(target);
-							product.add(new Transition(
-									transitionNumber++,
-									source,
-									target,
-									event));
+							product.add( product.assembleTransition( source.getId(), target.getId(), event.getId()));
 							setStateId(s, stateNumber++);
 							searchList.add(s.clone());
 						}
@@ -315,42 +309,24 @@ public class Composition
 
 		// Add the union of the eventsets as the parallel compositions eventset.
 		// mark all events in the intersection as being in the intersection.
-		long eventid = 0;
 
 		// key=event from original automata,value=correpsponding new event in
 		// result
-		HashMap<FSAEvent, FSAEvent> events = new HashMap<FSAEvent, FSAEvent>();
+		HashMap<SupervisoryEvent, SupervisoryEvent> events = new HashMap<SupervisoryEvent, SupervisoryEvent>();
 		// key=new event,value=the two original events that intersect
-		HashSet<FSAEvent> intersection = new HashSet<FSAEvent>();
 
-		ListIterator<FSAEvent> it = a.getEventIterator();
-		while (it.hasNext())
-		{
-			FSAEvent event = it.next();
-			FSAEvent temp = new Event(event);
-			temp.setId(eventid++);
-			parallel.add(temp);
-			events.put(event, temp);
-		}
+		// add the union to the model parallel, put the intersection in a set.
+		SupervisoryEventSet intersection = a.getEventSet().intersect(b
+				.getEventSet());
 
-		it = b.getEventIterator();
-		while (it.hasNext())
+		SupervisoryEventSet union = a.getEventSet().union(b.getEventSet());
+		for (Iterator<SupervisoryEvent> i = union.iteratorSupervisory(); i
+				.hasNext();)
 		{
-			FSAEvent eventb = it.next();
-			FSAEvent eventa = getId(eventb, a);
-			if (eventa == null)
-			{
-				FSAEvent temp = new Event(eventb);
-				temp.setId(eventid++);
-				parallel.add(temp);
-				events.put(eventb, temp);
-			}
-			else
-			{
-				FSAEvent e = events.get(eventa);
-				intersection.add(e);
-				events.put(eventb, e);
-			}
+			SupervisoryEvent origEvent = i.next();
+			SupervisoryEvent copyEvent = parallel.assembleCopyOf(origEvent);
+			parallel.add(copyEvent);
+			events.put(origEvent, copyEvent);
 		}
 
 		// find initial states, mark them as reached and add them to the que
@@ -385,7 +361,6 @@ public class Composition
 		// originating from the two
 		// states are the transitions of state in product, or if the event
 		// firing the transition isn't in the intersection between E_a and E_b.
-		long transitionNumber = 0;
 		FSAState[] s = new FSAState[2];
 		while (!searchList.isEmpty())
 		{
@@ -404,8 +379,8 @@ public class Composition
 					if (t.getEvent() == null
 							|| !intersection.contains(events.get(t.getEvent())))
 					{
-						FSAEvent event = (t.getEvent() == null) ? null : events
-								.get(t.getEvent());
+						SupervisoryEvent event = (t.getEvent() == null) ? null
+								: events.get(t.getEvent());
 
 						s[(i + 1) % 2] = sa[(i + 1) % 2];
 						s[i] = t.getTarget();
@@ -413,21 +388,13 @@ public class Composition
 						long id = getStateId(s);
 						if (id != -1)
 						{
-							parallel.add(new Transition(
-									transitionNumber++,
-									source,
-									parallel.getState(id),
-									event));
+							parallel.add(parallel.assembleTransition(source.getId(), id, event.getId()));
 						}
 						else
 						{
 							FSAState target = makeState(s, stateNumber);
 							parallel.add(target);
-							parallel.add(new Transition(
-									transitionNumber++,
-									source,
-									target,
-									event));
+							parallel.add(parallel.assembleTransition(source.getId(), target.getId(), event.getId()));
 							setStateId(s, stateNumber++);
 							searchList.add(s.clone());
 						}
@@ -463,7 +430,7 @@ public class Composition
 									.getEvent().equals(t1.getEvent())))
 					{
 
-						FSAEvent event = (t0.getEvent() == null) ? null
+						SupervisoryEvent event = (t0.getEvent() == null) ? null
 								: events.get(t0.getEvent());
 
 						s[0] = t0.getTarget();
@@ -472,21 +439,13 @@ public class Composition
 						long id = getStateId(s);
 						if (id != -1)
 						{
-							parallel.add(new Transition(
-									transitionNumber++,
-									source,
-									parallel.getState(id),
-									event));
+							parallel.add(parallel.assembleTransition(source.getId(), id, event.getId()));
 						}
 						else
 						{
 							FSAState target = makeState(s, stateNumber);
 							parallel.add(target);
-							parallel.add(new Transition(
-									transitionNumber++,
-									source,
-									target,
-									event));
+							parallel.add(parallel.assembleTransition(source.getId(), target.getId(), event.getId()));
 							setStateId(s, stateNumber++);
 							searchList.add(s.clone());
 						}
@@ -497,6 +456,11 @@ public class Composition
 
 		pairIds.clear();
 	}
+
+	/*
+	 * this method is no longer actually used. See Project.projectCustom for the
+	 * new implementation
+	 */
 
 	/**
 	 * Computes an observer for the non-deterministic automaton P(a), i.e., the
@@ -514,15 +478,10 @@ public class Composition
 		observer.setAnnotation(Annotable.COMPOSED_OF, new String[] { a
 				.getName() });
 
-		ListIterator<FSAEvent> eli = a.getEventIterator();
-		while (eli.hasNext())
+		for (Iterator<SupervisoryEvent> i = a
+				.getEventSet().iteratorObservable(); i.hasNext();)
 		{
-			FSAEvent e = eli.next();
-			if (e.isObservable())
-			{
-				FSAEvent event = new Event(e);
-				observer.add(event);
-			}
+			observer.add(observer.assembleCopyOf(i.next()));
 		}
 
 		LinkedList<LinkedList<FSAState>> searchList = new LinkedList<LinkedList<FSAState>>();
@@ -560,10 +519,10 @@ public class Composition
 		{
 			LinkedList<FSAState> sourceList = searchList.remove();
 			source = observer.getState(isIn(sourceList));
-			eli = a.getEventIterator();
+			ListIterator<SupervisoryEvent> eli = a.getEventIterator();
 			while (eli.hasNext())
 			{
-				FSAEvent event = eli.next();
+				SupervisoryEvent event = eli.next();
 				if (!event.isObservable())
 				{
 					continue;
@@ -768,19 +727,12 @@ public class Composition
 	 * @return returns -1 if it couldn't find the event, else returns the id of
 	 *         the event in automaton a
 	 */
-	private static FSAEvent getId(FSAEvent e, FSAModel a)
-	{
-		ListIterator<FSAEvent> eli = a.getEventIterator();
-		while (eli.hasNext())
-		{
-			FSAEvent temp = (FSAEvent)eli.next();
-			if (temp.equals(e))
-			{
-				return temp;
-			}
-		}
-		return null;
-	}
+	/*
+	 * private static SupervisoryEvent getId(SupervisoryEvent e, FSAModel a) {
+	 * ListIterator<SupervisoryEvent> eli = a.getEventIterator(); while
+	 * (eli.hasNext()) { SupervisoryEvent temp = (SupervisoryEvent)eli.next();
+	 * if (temp.equals(e)) { return temp; } } return null; }
+	 */
 
 	/**
 	 * Private function for making a new state from a stateset

@@ -1,8 +1,8 @@
 package operations.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
+import ides.api.model.supeventset.SupervisoryEvent;
 
 import java.util.ListIterator;
 import java.util.Map;
@@ -102,12 +102,12 @@ public class DuplicationToolbox
 	 */
 
 	protected static void copyAllEvents(FSAModel to, FSAModel from,
-			Map<String, FSAEvent> events, boolean copyId)
+			Map<String, SupervisoryEvent> events, boolean copyId)
 	{
 
-		for (ListIterator<FSAEvent> f = from.getEventIterator(); f.hasNext();)
+		for (ListIterator<SupervisoryEvent> f = from.getEventIterator(); f.hasNext();)
 		{
-			FSAEvent origEvent = f.next();
+			SupervisoryEvent origEvent = f.next();
 			DuplicationToolbox.copyEventInto(to, origEvent, events, copyId);
 		}
 	}
@@ -134,11 +134,11 @@ public class DuplicationToolbox
 	 *          and controllable status, and optionally id based on value of
 	 *          copyId as the original event.
 	 */
-	protected static FSAEvent copyEventInto(FSAModel model1,
-			FSAEvent origEvent, Map<String, FSAEvent> events, boolean copyId)
+	protected static SupervisoryEvent copyEventInto(FSAModel model1,
+			SupervisoryEvent origEvent, Map<String, SupervisoryEvent> events, boolean copyId)
 	{
 
-		FSAEvent copyEvent;
+		SupervisoryEvent copyEvent;
 		if (events.containsKey(origEvent.getSymbol()))
 		{
 			copyEvent = events.get(origEvent.getSymbol());
@@ -162,7 +162,7 @@ public class DuplicationToolbox
 	/**
 	 * Iterates through all of the states in model and identifies an initial
 	 * state. It is expected that it has already been verified using the
-	 * initialStateCount method in CheckingToolbox that there is exactly 1
+	 * initialStateCount method in FSAToolbox that there is exactly 1
 	 * initial state.
 	 * 
 	 * @param model

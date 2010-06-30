@@ -1,9 +1,9 @@
 package presentation.fsa;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.utilities.EscapeDialog;
 
 import java.awt.Dimension;
@@ -132,7 +132,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 			if (((JButton)actionEvent.getSource()).getText().equals(Hub
 					.string("assignNew")))
 			{
-				FSAEvent[] eventBuffer = new FSAEvent[1];
+				SupervisoryEvent[] eventBuffer = new SupervisoryEvent[1];
 				// FIXME use passed FSAGraph rather than take current from
 				// Workspace
 				new GraphActions.CreateEventAction(
@@ -232,11 +232,11 @@ public class EdgeLabellingDialog extends EscapeDialog
 					buttonCreate.setText(Hub.string("assign"));
 					checkControllable.setEnabled(false);
 					checkControllable.setSelected(cbCState);
-					for (Iterator<FSAEvent> i = ((FSAModel)Hub
+					for (Iterator<SupervisoryEvent> i = ((FSAModel)Hub
 							.getWorkspace().getActiveModel())
 							.getEventIterator(); i.hasNext();)
 					{
-						FSAEvent event = i.next();
+						SupervisoryEvent event = i.next();
 						if (event.getSymbol().equals(symbol))
 						{
 							checkControllable.setSelected(event
@@ -246,11 +246,11 @@ public class EdgeLabellingDialog extends EscapeDialog
 					}
 					checkObservable.setEnabled(false);
 					checkObservable.setSelected(cbOState);
-					for (Iterator<FSAEvent> i = ((FSAModel)Hub
+					for (Iterator<SupervisoryEvent> i = ((FSAModel)Hub
 							.getWorkspace().getActiveModel())
 							.getEventIterator(); i.hasNext();)
 					{
-						FSAEvent event = i.next();
+						SupervisoryEvent event = i.next();
 						if (event.getSymbol().equals(symbol))
 						{
 							checkObservable.setSelected(event.isObservable());
@@ -368,7 +368,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 							Object o = listAvailableEvents.getSelectedValue();
 							if (o != null)
 							{
-								selectedEvent = (FSAEvent)o;
+								selectedEvent = (SupervisoryEvent)o;
 								listAvailableEvents.setSelectedValue(o, true);
 								if (listAvailableEvents.hasFocus())
 								{
@@ -437,7 +437,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 							Object o = listAssignedEvents.getSelectedValue();
 							if (o != null)
 							{
-								selectedEvent = (FSAEvent)o;
+								selectedEvent = (SupervisoryEvent)o;
 								listAssignedEvents.setSelectedValue(o, true);
 								if (listAssignedEvents.hasFocus())
 								{
@@ -496,12 +496,12 @@ public class EdgeLabellingDialog extends EscapeDialog
 	public void updateOnlyAvailable()
 	{
 		listAvailableEvents.removeAll();
-		Iterator<FSAEvent> events = ((FSAModel)Hub
+		Iterator<SupervisoryEvent> events = ((FSAModel)Hub
 				.getWorkspace().getActiveModel()).getEventIterator();
 
 		while (events.hasNext())
 		{
-			FSAEvent e = events.next();
+			SupervisoryEvent e = events.next();
 			if (!listAssignedEvents.getContents().contains(e))
 			{
 				listAvailableEvents.insertElement(e);
@@ -539,7 +539,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 			Object[] contents = listAssignedEvents.getContents().toArray();
 			for (int i = 0; i < contents.length; i++)
 			{
-				originalEvents.add((FSAEvent)contents[i]);
+				originalEvents.add((SupervisoryEvent)contents[i]);
 			}
 		}
 		else
@@ -560,7 +560,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	private Edge edge;
 
-	private FSAEvent selectedEvent;
+	private SupervisoryEvent selectedEvent;
 
 	private boolean inserted = false;
 
@@ -589,7 +589,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 
 	private MutableList listAvailableEvents;
 
-	private Vector<FSAEvent> originalEvents = new Vector<FSAEvent>();
+	private Vector<SupervisoryEvent> originalEvents = new Vector<SupervisoryEvent>();
 
 	private JButton buttonCreate, buttonAdd, buttonRemove, buttonOK,
 			buttonCancel;
@@ -741,7 +741,7 @@ public class EdgeLabellingDialog extends EscapeDialog
 		 */
 		public void actionPerformed(ActionEvent arg0)
 		{
-			FSAEvent selected = (FSAEvent)listAssignedEvents.getSelectedValue();
+			SupervisoryEvent selected = (SupervisoryEvent)listAssignedEvents.getSelectedValue();
 			if (selected != null)
 			{
 				listAssignedEvents.removeElement(selected);
@@ -778,11 +778,11 @@ public class EdgeLabellingDialog extends EscapeDialog
 				buttonCreate.doClick();
 			}
 			// Apply any changes to edge's events
-			Vector<FSAEvent> events = new Vector<FSAEvent>();
+			Vector<SupervisoryEvent> events = new Vector<SupervisoryEvent>();
 			Object[] contents = listAssignedEvents.getContents().toArray();
 			for (int i = 0; i < contents.length; i++)
 			{
-				events.add((FSAEvent)contents[i]);
+				events.add((SupervisoryEvent)contents[i]);
 			}
 			if (allEdits.size() > 0 || !originalEvents.equals(events))
 			// if new events have been created, or the set of assigned events

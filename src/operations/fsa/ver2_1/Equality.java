@@ -1,8 +1,8 @@
 package operations.fsa.ver2_1;
 
+import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
@@ -77,6 +77,7 @@ public class Equality implements Operation
 	public Object[] perform(Object[] inputs)
 	{
 
+		resultMessage = Hub.string("errorUnableToCompute");
 		warnings.clear();
 		FSAModel a, b;
 		if (inputs.length == 2)
@@ -88,19 +89,17 @@ public class Equality implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
-				return new Object[] { ModelManager
-						.instance().createModel(FSAModel.class) };
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { new Boolean(false) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { new Boolean(false) };
 		}
 
-		if (!CheckingToolbox.isDeterministic(a))
+		if (!FSAToolbox.isDeterministic(a))
 		{
 			a = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -108,7 +107,7 @@ public class Equality implements Operation
 			warnings.addAll(OperationManager
 					.instance().getOperation("determinize").getWarnings());
 		}
-		if (!CheckingToolbox.isDeterministic(b))
+		if (!FSAToolbox.isDeterministic(b))
 		{
 			b = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -122,6 +121,11 @@ public class Equality implements Operation
 		equals = Subset.subset(a, b);
 
 		equals &= Subset.subset(b, a);
+
+		if (warnings.size() != 0)
+		{
+			return new Object[] { new Boolean(false) };
+		}
 
 		if (equals)
 		{

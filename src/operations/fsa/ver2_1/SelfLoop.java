@@ -1,20 +1,18 @@
 package operations.fsa.ver2_1;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
 import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.FilterOperation;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-
-import model.fsa.ver2_1.Automaton;
-import model.fsa.ver2_1.Transition;
 
 public class SelfLoop extends AbstractOperation implements FilterOperation
 {
@@ -51,43 +49,51 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 	{
 		warnings.clear();
 		boolean selfloopDupEvents = false;
+		FSAModel fsa;
+		DESEventSet inputEvents;
 
-		Automaton fsa = (Automaton)((Automaton)inputs[0]).clone();
-		DESEventSet eventsCopy = ((DESEventSet)inputs[1]).copy();
-		Set<FSAEvent> events = new HashSet<FSAEvent>();
-		for (DESEvent e : eventsCopy)
+		if (inputs.length >= 2)
 		{
-			if (fsa.getEventSet().contains(e))
+			if (inputs[0] instanceof FSAModel
+					&& inputs[1] instanceof DESEventSet)
 			{
-				selfloopDupEvents = true;
-				for (DESEvent event : fsa.getEventSet())
-				{
-					if (event.equals(e))
-					{
-						e = event;
-						break;
-					}
-				}
+				fsa = ((FSAModel)inputs[0]).clone();
+				inputEvents = (DESEventSet)inputs[1];
 			}
 			else
 			{
-				if (!(e instanceof FSAEvent))
-				{
-					e = fsa.assembleEvent(e.getSymbol());
-				}
-				else
-				{
-					e.setId(fsa.getFreeEventId());
-				}
-				fsa.add((FSAEvent)e);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
+				return new Object[] { ModelManager
+						.instance().createModel(FSAModel.class) };
 			}
-			events.add((FSAEvent)e);
+		}
+		else
+		{
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			return new Object[] { ModelManager
+					.instance().createModel(FSAModel.class) };
+		}
+
+		SupervisoryEventSet events = ModelManager
+				.instance().createModel(SupervisoryEventSet.class);
+
+		for (DESEvent e : inputEvents)
+		{
+			if (!fsa.getEventSet().contains(e))
+			{
+				SupervisoryEvent temp = fsa.assembleCopyOf(e);
+				fsa.add(temp);
+				events.add(temp); // add the events assembled in fsa (i.e. with
+									// the same ids)
+			}
 		}
 		for (Iterator<FSAState> i = fsa.getStateIterator(); i.hasNext();)
 		{
 			FSAState s = i.next();
-			for (FSAEvent e : events)
+			for (Iterator<SupervisoryEvent> i2 = events.iteratorSupervisory(); i2
+					.hasNext();)
 			{
+				SupervisoryEvent e = i2.next();
 				boolean hasTransition = false;
 				FSATransition emptyLoop = null;
 				for (Iterator<FSATransition> j = s
@@ -112,11 +118,8 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 					}
 					else
 					{
-						fsa.add(new Transition(
-								fsa.getFreeTransitionId(),
-								s,
-								s,
-								e));
+						fsa.add(fsa.assembleTransition(s.getId(), s.getId(), e
+								.getId()));
 					}
 				}
 			}

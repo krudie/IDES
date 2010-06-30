@@ -1,12 +1,12 @@
 package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.OperationManager;
 
 import java.util.HashMap;
@@ -14,14 +14,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import model.fsa.ver2_1.Event;
 import model.fsa.ver2_1.State;
-import model.fsa.ver2_1.Transition;
+import model.supeventset.ver3.Event;
 
 public class MultiAgentProductFSA extends AbstractOperation
 {
 
-	protected class FSAEventSet extends HashSet<FSAEvent>
+	protected class FSAEventSet extends HashSet<SupervisoryEvent>
 	{
 		private static final long serialVersionUID = -8053527967393272262L;
 	}
@@ -49,11 +48,11 @@ public class MultiAgentProductFSA extends AbstractOperation
 
 	HashMap<String, FSAState> stateMap;
 
-	HashMap<String, FSAEvent> eventMap;
+	HashMap<String, SupervisoryEvent> eventMap;
 
 	protected class PseudoTransition
 	{
-		public LinkedList<LinkedList<FSAEvent>> events = new LinkedList<LinkedList<FSAEvent>>();
+		public LinkedList<LinkedList<SupervisoryEvent>> events = new LinkedList<LinkedList<SupervisoryEvent>>();
 
 		public LinkedList<LinkedList<FSAState>> targets = new LinkedList<LinkedList<FSAState>>();
 	}
@@ -69,7 +68,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 			if (inputs[i] instanceof FSAModel)
 			{
 				FSAModel model = (FSAModel)inputs[i];
-				if (!CheckingToolbox.isDeterministic(model))
+				if (!FSAToolbox.isDeterministic(model))
 				{
 					model = (FSAModel)OperationManager
 							.instance().getOperation("determinize")
@@ -84,7 +83,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 
 		if (newInputs.size() == 0)
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
@@ -119,7 +118,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 		LinkedList<FSAState[]> openStates = new LinkedList<FSAState[]>();
 		HashSet<String> closedStates = new HashSet<String>();
 		stateMap = new HashMap<String, FSAState>();
-		eventMap = new HashMap<String, FSAEvent>();
+		eventMap = new HashMap<String, SupervisoryEvent>();
 		openStates.add(initial);
 		FSAState newS = makeState(initial, 0);
 		a.add(newS);
@@ -149,16 +148,16 @@ public class MultiAgentProductFSA extends AbstractOperation
 				}
 				eventSets[i] = eventSet;
 			}
-			PseudoTransition pt = computeTransitions(new FSAEvent[0],
+			PseudoTransition pt = computeTransitions(new SupervisoryEvent[0],
 					eventSets,
 					states);
-			Iterator<LinkedList<FSAEvent>> ei = pt.events.iterator();
+			Iterator<LinkedList<SupervisoryEvent>> ei = pt.events.iterator();
 			Iterator<LinkedList<FSAState>> si = pt.targets.iterator();
 			for (; ei.hasNext();)
 			{
-				FSAEvent[] e = ei.next().toArray(new FSAEvent[0]);
+				SupervisoryEvent[] e = ei.next().toArray(new SupervisoryEvent[0]);
 				FSAState[] s = si.next().toArray(new FSAState[0]);
-				FSAEvent event = eventMap.get(keyOf(e));
+				SupervisoryEvent event = eventMap.get(keyOf(e));
 				if (event == null)
 				{
 					event = makeEvent(e, a.getEventCount());
@@ -172,20 +171,18 @@ public class MultiAgentProductFSA extends AbstractOperation
 					a.add(target);
 					stateMap.put(keyOf(s), target);
 				}
-				FSATransition transition = new Transition(a
-						.getTransitionCount(), state, target, event);
-				a.add(transition);
+				a.add(a.assembleTransition(state.getId(), target.getId(), event.getId()));
 				openStates.addLast(s);
 			}
 		}
 		return new Object[] { a };
 	}
 
-	protected PseudoTransition computeTransitions(FSAEvent[] selectedEvents,
+	protected PseudoTransition computeTransitions(SupervisoryEvent[] selectedEvents,
 			FSAEventSet[] freeEvents, FSAState[] origin)
 	{
 		PseudoTransition pt = new PseudoTransition();
-		for (FSAEvent e : freeEvents[0])
+		for (SupervisoryEvent e : freeEvents[0])
 		{
 			boolean includeEvent = true;
 			for (int i = 0; i < selectedEvents.length; ++i)
@@ -216,7 +213,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 				}
 				if (freeEvents.length == 1)
 				{
-					LinkedList<FSAEvent> events = new LinkedList<FSAEvent>();
+					LinkedList<SupervisoryEvent> events = new LinkedList<SupervisoryEvent>();
 					events.add(e);
 					LinkedList<FSAState> targets = new LinkedList<FSAState>();
 					targets.add(target);
@@ -225,7 +222,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 				}
 				else
 				{
-					FSAEvent[] extended = new FSAEvent[selectedEvents.length + 1];
+					SupervisoryEvent[] extended = new SupervisoryEvent[selectedEvents.length + 1];
 					System.arraycopy(selectedEvents,
 							0,
 							extended,
@@ -237,14 +234,14 @@ public class MultiAgentProductFSA extends AbstractOperation
 					PseudoTransition subPT = computeTransitions(extended,
 							shorter,
 							origin);
-					Iterator<LinkedList<FSAEvent>> ei = subPT.events.iterator();
+					Iterator<LinkedList<SupervisoryEvent>> ei = subPT.events.iterator();
 					Iterator<LinkedList<FSAState>> si = subPT.targets
 							.iterator();
 					for (; ei.hasNext();)
 					{
-						LinkedList<FSAEvent> events = ei.next();
+						LinkedList<SupervisoryEvent> events = ei.next();
 						LinkedList<FSAState> targets = si.next();
-						LinkedList<FSAEvent> extendedEvents = new LinkedList<FSAEvent>(
+						LinkedList<SupervisoryEvent> extendedEvents = new LinkedList<SupervisoryEvent>(
 								events);
 						extendedEvents.addFirst(e);
 						LinkedList<FSAState> extendedTargets = new LinkedList<FSAState>(
@@ -259,7 +256,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 		return pt;
 	}
 
-	protected boolean hasOutgoingTransitionOn(FSAState s, FSAEvent e)
+	protected boolean hasOutgoingTransitionOn(FSAState s, SupervisoryEvent e)
 	{
 		for (Iterator<FSATransition> i = s.getOutgoingTransitionsListIterator(); i
 				.hasNext();)
@@ -295,12 +292,12 @@ public class MultiAgentProductFSA extends AbstractOperation
 		return newS;
 	}
 
-	protected FSAEvent makeEvent(FSAEvent[] events, long id)
+	protected SupervisoryEvent makeEvent(SupervisoryEvent[] events, long id)
 	{
-		FSAEvent e = new Event(id);
+		SupervisoryEvent e = new Event(id);
 		boolean isUncontrollable = true;
 		String label = "$\\left[\\begin{array}{c}";
-		for (FSAEvent event : events)
+		for (SupervisoryEvent event : events)
 		{
 			label += "\\mbox{" + event.getSymbol() + "}\\\\";
 			if (event.isControllable())
@@ -328,10 +325,10 @@ public class MultiAgentProductFSA extends AbstractOperation
 		return key;
 	}
 
-	protected String keyOf(FSAEvent[] events)
+	protected String keyOf(SupervisoryEvent[] events)
 	{
 		String key = "";
-		for (FSAEvent e : events)
+		for (SupervisoryEvent e : events)
 		{
 			key += e.getId() + ",";
 		}

@@ -1,11 +1,16 @@
 package ides.api.plugin.operation;
 
+import ides.api.core.Annotable;
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.plugin.model.DESEvent;
+import ides.api.plugin.model.DESEventSet;
+import ides.api.plugin.model.ModelManager;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -15,7 +20,7 @@ import java.util.Set;
  * 
  * @author Valerie Sugarman
  */
-public class CheckingToolbox
+public class FSAToolbox
 {
 	public static final String NOT_1_INITIAL_STATE = Hub
 			.string("errorNoOrManyInitStates");
@@ -30,6 +35,10 @@ public class CheckingToolbox
 			.string("errorIllegalNumberOfArguments");
 
 	public static final String NON_DETERM = Hub.string("errorNonDeterministic");
+
+	public static final String ERROR_CONTROL = Hub.string("errorControl");
+
+	public static final String ERROR_OBSERVE = Hub.string("errorObserve");
 
 	/**
 	 * Obtains a set of the ids of all initial states in the model.
@@ -231,12 +240,12 @@ public class CheckingToolbox
 			if (initialStateCount > 1)
 				return false;
 
-			HashSet<FSAEvent> events = new HashSet<FSAEvent>();
+			HashSet<SupervisoryEvent> events = new HashSet<SupervisoryEvent>();
 			for (Iterator<FSATransition> ti = s
 					.getOutgoingTransitionsListIterator(); ti.hasNext();)
 			{
 				FSATransition t = ti.next();
-				FSAEvent e = t.getEvent();
+				SupervisoryEvent e = t.getEvent();
 				if (events.contains(e))
 				{
 					return false;
@@ -245,5 +254,144 @@ public class CheckingToolbox
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Generates the FSA representation of all finite sequences over the event
+	 * set plus the null string.
+	 * 
+	 * @param set
+	 *            The given event set.
+	 * @return FSA representation of all finite sequences over the event set
+	 *         plus the null string.
+	 */
+	// TODO change my name? and fix my wording.
+	public static FSAModel sigmaStar(DESEventSet set)
+	{
+		FSAModel model = ModelManager.instance().createModel(FSAModel.class);
+		for (Iterator<DESEvent> i = set.iterator(); i.hasNext();)
+		{
+			SupervisoryEvent e = model.assembleCopyOf(i.next());
+			model.add(e);
+		}
+		model = (FSAModel)OperationManager
+				.instance().getFilterOperation("complement")
+				.filter(new Object[] { model })[0];
+		return model;
+	}
+
+	/**
+	 * Generates the FSA representation of all finite sequences over the event
+	 * set.
+	 * 
+	 * @param set
+	 *            The given event set.
+	 * @return FSA representation of all finite sequences over the event set.
+	 */
+	// TODO change my name? and fix my wording
+	public static FSAModel sigmaPlus(DESEventSet set)
+	{
+		FSAModel model1 = sigmaStar(set);
+		FSAModel epsilon = ModelManager.instance().createModel(FSAModel.class);
+		FSAState state = epsilon.assembleState();
+		state.setInitial(true);
+		state.setMarked(true);
+		epsilon.add(state);
+
+		FSAModel ret = (FSAModel)OperationManager
+				.instance().getOperation("setminus").perform(new Object[] {
+						model1, epsilon })[0];
+		ret.removeAnnotation(Annotable.COMPOSED_OF);
+		return ret;
+	}
+
+	/**
+	 * A check to see whether there is a conflict in the controllable status of
+	 * events contained in both models.
+	 * 
+	 * @param model1
+	 * @param model2
+	 * @return <code>true</code> if an event with the same name exists in both
+	 *         models but is controllable in one and uncontrollable in the
+	 *         other, <code>false</code> otherwise.
+	 */
+
+	public static boolean hasControllabilityConflict(FSAModel[] models)
+	{
+
+		if (models.length <= 1)
+		{
+			return false;
+		}
+
+		HashMap<String, SupervisoryEvent> events = new HashMap<String, SupervisoryEvent>();
+
+		for (FSAModel model : models)
+		{
+			for (Iterator<SupervisoryEvent> i = model.getEventIterator(); i
+					.hasNext();)
+			{
+				SupervisoryEvent e = i.next();
+				if (events.containsKey(e.getSymbol()))
+				{
+					SupervisoryEvent compareEvent = events.get(e.getSymbol());
+					if (e.isControllable() != compareEvent.isControllable())
+					{
+						return true;
+					}
+				}
+				else
+				{
+					events.put(e.getSymbol(), e);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * A check to see whether there is a conflict in the observable status of
+	 * events contained in both models.
+	 * 
+	 * @param model1
+	 * @param model2
+	 * @return <code>true</code> if an event with the same name exists in both
+	 *         models but is observable in one and unobservable in the other,
+	 *         <code>false</code> otherwise.
+	 */
+
+	public static boolean hasObservabilityConflict(FSAModel[] models)
+	{
+
+		if (models.length <= 1)
+		{
+			return false;
+		}
+
+		HashMap<String, SupervisoryEvent> events = new HashMap<String, SupervisoryEvent>();
+
+		for (FSAModel model : models)
+		{
+			for (Iterator<SupervisoryEvent> i = model.getEventIterator(); i
+					.hasNext();)
+			{
+				SupervisoryEvent e = i.next();
+				if (events.containsKey(e.getSymbol()))
+				{
+					SupervisoryEvent compareEvent = events.get(e.getSymbol());
+					if (e.isObservable() != compareEvent.isObservable())
+					{
+						return true;
+					}
+				}
+				else
+				{
+					events.put(e.getSymbol(), e);
+				}
+			}
+		}
+
+		return false;
 	}
 }

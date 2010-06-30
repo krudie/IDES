@@ -3,6 +3,7 @@
  */
 package operations.fsa.ver2_1;
 
+import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.operation.OperationManager;
 
@@ -13,6 +14,8 @@ import ides.api.plugin.operation.OperationManager;
 public class Nonconflicting extends AbstractOperation
 {
 
+	protected String resultMessage = Hub.string("errorUnableToCompute");
+	
 	public Nonconflicting()
 	{
 		NAME = "nonconflict";
@@ -26,7 +29,7 @@ public class Nonconflicting extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { Boolean.class };
-		outputDesc = new String[] { "resultMessage" };
+		outputDesc = new String[] { resultMessage };
 	}
 
 	/*
@@ -37,6 +40,7 @@ public class Nonconflicting extends AbstractOperation
 	public Object[] perform(Object[] inputs)
 	{
 		warnings.clear();
+		resultMessage = Hub.string("errorUnableToCompute");
 		FSAModel a = (FSAModel)inputs[0];
 		FSAModel b = (FSAModel)inputs[1];
 
@@ -72,17 +76,24 @@ public class Nonconflicting extends AbstractOperation
 				.perform(new Object[] { l, r })[0]).booleanValue();
 		warnings.addAll(OperationManager
 				.instance().getOperation("subset").getWarnings());
-		String output;
+		
+		
+		if (warnings.size() != 0)
+		{
+			return new Object[] { new Boolean(false) };
+		}
+		
 		if (equal)
 		{
-			output = "The two languages are nonconflicting.";
+			resultMessage = "The two languages are nonconflicting.";
 		}
 		else
 		{
-			output = "The two languages are not nonconflicting.";
+			resultMessage = "The two languages are not nonconflicting.";
 		}
-		outputDesc = new String[] { output };
-
+		
+		outputDesc = new String[] { resultMessage };
+		
 		return new Object[] { new Boolean(equal) };
 	}
 }

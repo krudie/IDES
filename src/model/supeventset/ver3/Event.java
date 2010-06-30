@@ -1,17 +1,17 @@
-package model.fsa.ver2_1;
+package model.supeventset.ver3;
 
-import ides.api.model.fsa.FSAEvent;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEvent;
 
 import java.util.Hashtable;
 
 /**
- * Represents an event in an automaton.
+ * Represents an event in an automaton or supervisory event set.
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
  */
-public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
+public class Event implements SupervisoryEvent
 {
 	private long id;
 
@@ -38,7 +38,7 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	// * @param e
 	// * the event the new event must equal.
 	// */
-	// public Event(FSAEvent e)
+	// public Event(SupervisoryEvent e)
 	// {
 	// this.id = e.getId();
 	// this.setSymbol(e.getSymbol());
@@ -58,9 +58,9 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	{
 		this.id = e.getId();
 		this.setSymbol(e.getSymbol());
-		if (e instanceof FSAEvent)
+		if (e instanceof SupervisoryEvent)
 		{
-			FSAEvent fsae = (FSAEvent)e;
+			SupervisoryEvent fsae = (SupervisoryEvent)e;
 			this.setControllable(fsae.isControllable());
 			this.setObservable(fsae.isObservable());
 			// TODO: also transfer other properties
@@ -152,7 +152,7 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 	 * (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
-	public int compareTo(FSAEvent arg0)
+	public int compareTo(DESEvent arg0)
 	{
 		return getSymbol().compareTo(arg0.getSymbol());
 	}
@@ -167,6 +167,7 @@ public class Event implements ides.api.model.fsa.FSAEvent, Comparable<FSAEvent>
 		return getSymbol().equals(((DESEvent)o).getSymbol());
 	}
 
+	
 	public int hashCode()
 	{
 		return getSymbol().hashCode();

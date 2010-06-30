@@ -3,13 +3,15 @@ package operations.fsa.ver2_1;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.FilterOperation;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -106,7 +108,7 @@ public class Complement implements FilterOperation
 		warnings.clear();
 		if (!FSAModel.class.isInstance(arg0[0]))
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+			warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 			return new Object[] { arg0[0] };
 		}
 
@@ -119,26 +121,36 @@ public class Complement implements FilterOperation
 
 		boolean newStateNeeded = false;
 		Collection<FSATransition> transitionToRemove = new HashSet<FSATransition>();
+		HashMap<String, Long> eventsMap = new HashMap<String, Long>();
 
-		if (!CheckingToolbox.isDeterministic(model))
+		if (!FSAToolbox.isDeterministic(model))
 		{
-			warnings.add(CheckingToolbox.NON_DETERM);
+			warnings.add(FSAToolbox.NON_DETERM);
 			return new Object[] { model };
 		}
 
-		if (CheckingToolbox.isEmptyLanguage(model)
+		if (FSAToolbox.isEmptyLanguage(model)
 				&& model.getEventSet().isEmpty())
 		{
 			return new Object[] { model };
 		}
 
 		addedState = model.assembleState();
-		if (CheckingToolbox.initialStateCount(model) == 0)
+		if (FSAToolbox.initialStateCount(model) == 0)
 		{
 			addedState.setInitial(true);
 			newStateNeeded = true;
 		}
 		model.add(addedState);
+		
+		
+		//populate the events map for use in creating transitions later
+		for(Iterator<SupervisoryEvent> i = model.getEventIterator(); i.hasNext();){
+			SupervisoryEvent e = i.next();
+			eventsMap.put(e.getSymbol(), e.getId());
+		}
+		
+		
 
 		/*
 		 * Fetching each state for the Model at a time and switching markings
@@ -180,7 +192,7 @@ public class Complement implements FilterOperation
 				 * state from the state under consideration
 				 */
 				transitionToAdd = model.assembleTransition(stateExtracted
-						.getId(), addedState.getId(), e.getId());
+						.getId(), addedState.getId(), eventsMap.get(e.getSymbol()));
 				model.add(transitionToAdd);
 			}
 		}

@@ -1,5 +1,6 @@
 package ides.api.model.fsa;
 
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESElement;
 
 /**
@@ -46,7 +47,7 @@ public interface FSATransition extends DESElement
 	 *            the event this transition fires upon; set to <code>null</code>
 	 *            for an epsilon transition.
 	 */
-	public abstract void setEvent(FSAEvent e);
+	public abstract void setEvent(SupervisoryEvent e);
 
 	/**
 	 * returns the event upon which this transition fires.
@@ -54,7 +55,7 @@ public interface FSATransition extends DESElement
 	 * @return the event this transition fires upon; or <code>null</code> if
 	 *         this is an epsilon transition.
 	 */
-	public abstract FSAEvent getEvent();
+	public abstract SupervisoryEvent getEvent();
 
 	/**
 	 * Check if this is an epsilon transition (with <code>null</code> event) or

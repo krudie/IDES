@@ -1,7 +1,7 @@
 package presentation.fsa.actions;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.layout.FSALayouter;
@@ -49,7 +49,7 @@ public class GraphActions
 
 		protected FSAGraph graph;
 
-		protected FSAEvent[] eventBuffer;
+		protected SupervisoryEvent[] eventBuffer;
 
 		public CreateEventAction(FSAGraph graph, String eventName,
 				boolean controllable, boolean observable)
@@ -58,7 +58,8 @@ public class GraphActions
 		}
 
 		public CreateEventAction(FSAGraph graph, String eventName,
-				boolean controllable, boolean observable, FSAEvent[] eventBuffer)
+				boolean controllable, boolean observable,
+				SupervisoryEvent[] eventBuffer)
 		{
 			this(null, graph, eventName, controllable, observable, eventBuffer);
 		}
@@ -71,7 +72,7 @@ public class GraphActions
 
 		public CreateEventAction(CompoundEdit parentEdit, FSAGraph graph,
 				String eventName, boolean controllable, boolean observable,
-				FSAEvent[] eventBuffer)
+				SupervisoryEvent[] eventBuffer)
 		{
 			this.parentEdit = parentEdit;
 			this.eventName = eventName;
@@ -104,17 +105,17 @@ public class GraphActions
 	{
 		private static final long serialVersionUID = 3384021428481069994L;
 
-		protected FSAEvent event;
+		protected SupervisoryEvent event;
 
 		protected FSAGraph graph;
 
-		public RemoveEventAction(FSAGraph graph, FSAEvent event)
+		public RemoveEventAction(FSAGraph graph, SupervisoryEvent event)
 		{
 			this(null, graph, event);
 		}
 
 		public RemoveEventAction(CompoundEdit parentEdit, FSAGraph graph,
-				FSAEvent event)
+				SupervisoryEvent event)
 		{
 			this.parentEdit = parentEdit;
 			this.event = event;
@@ -133,11 +134,11 @@ public class GraphActions
 					{
 						continue;
 					}
-					Vector<FSAEvent> eventsToKeep = new Vector<FSAEvent>();
+					Vector<SupervisoryEvent> eventsToKeep = new Vector<SupervisoryEvent>();
 					for (Iterator<FSATransition> i = e.getTransitions(); i
 							.hasNext();)
 					{
-						FSAEvent te = i.next().getEvent();
+						SupervisoryEvent te = i.next().getEvent();
 						if (te != this.event)
 						{
 							eventsToKeep.add(te);
@@ -177,7 +178,7 @@ public class GraphActions
 	{
 		private static final long serialVersionUID = -1173808761820564447L;
 
-		protected FSAEvent event;
+		protected SupervisoryEvent event;
 
 		protected String eventName;
 
@@ -187,14 +188,14 @@ public class GraphActions
 
 		protected FSAModel model;
 
-		public ModifyEventAction(FSAModel model, FSAEvent event,
+		public ModifyEventAction(FSAModel model, SupervisoryEvent event,
 				String eventName, boolean controllable, boolean observable)
 		{
 			this(null, model, event, eventName, controllable, observable);
 		}
 
 		public ModifyEventAction(CompoundEdit parentEdit, FSAModel model,
-				FSAEvent event, String eventName, boolean controllable,
+				SupervisoryEvent event, String eventName, boolean controllable,
 				boolean observable)
 		{
 			this.parentEdit = parentEdit;

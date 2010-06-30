@@ -1,13 +1,13 @@
-package ides.api.model.fsa;
+package ides.api.model.supeventset;
 
 import ides.api.plugin.model.DESEvent;
 
 /**
- * Defines an event in a finite state automaton.
+ * Defines an event in a finite state automaton or event set.
  * 
  * @author Helen Bretzke
  */
-public interface FSAEvent extends DESEvent, Comparable<FSAEvent>
+public interface SupervisoryEvent extends DESEvent, Comparable<DESEvent>
 {
 	/**
 	 * Returns true iff this event's controllable property is set to true.
@@ -40,13 +40,13 @@ public interface FSAEvent extends DESEvent, Comparable<FSAEvent>
 	public abstract void setObservable(boolean b);
 
 	/**
-	 * Returns true iff <code>o</code> is of type FSAEvent and has the same name
-	 * as this FSAEvent.
+	 * Returns true iff <code>o</code> is of type DESEvent and has the same name
+	 * as this SupervisoryEvent.
 	 * 
 	 * @param o
 	 *            another object
-	 * @return true iff <code>o</code> is of type FSAEvent and has the same name
-	 *         as this FSAEvent.
+	 * @return true iff <code>o</code> is of type DESEvent and has the same name
+	 *         as this SupervisoryEvent.
 	 */
 	public abstract boolean equals(Object o);
 

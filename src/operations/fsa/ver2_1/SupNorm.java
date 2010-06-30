@@ -2,13 +2,13 @@ package operations.fsa.ver2_1;
 
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
@@ -99,21 +99,21 @@ public class SupNorm implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
 		// don't want epsilon transitions, and want determinized for subset
 		// later.
-		if (!CheckingToolbox.isDeterministic(plant))
+		if (!FSAToolbox.isDeterministic(plant))
 		{
 			plant = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -121,7 +121,7 @@ public class SupNorm implements Operation
 			warnings.addAll(OperationManager
 					.instance().getOperation("determinize").getWarnings());
 		}
-		if (!CheckingToolbox.isDeterministic(language))
+		if (!FSAToolbox.isDeterministic(language))
 		{
 			language = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -130,32 +130,10 @@ public class SupNorm implements Operation
 					.instance().getOperation("determinize").getWarnings());
 		}
 
-		// check to make sure that events that are in both plant and sublanguage
-		// have the same observable/controllable status.
-		boolean eventError = false;
-		eventErrorSearch: for (Iterator<FSAEvent> i = plant.getEventIterator(); i
-				.hasNext();)
+		if (FSAToolbox.hasObservabilityConflict(new FSAModel[] { plant,
+				language }))
 		{
-			FSAEvent p = i.next();
-			for (Iterator<FSAEvent> j = language.getEventIterator(); j
-					.hasNext();)
-			{
-				FSAEvent s = j.next();
-				if (p.equals(s))
-				{
-					if (p.isControllable() != s.isControllable()
-							|| p.isObservable() != s.isObservable())
-					{
-						eventError = true;
-						// once one error is found, may as well stop searching.
-						break eventErrorSearch;
-					}
-				}
-			}
-		}
-		if (eventError)
-		{
-			warnings.add(Hub.string("errorControlObserve"));
+			warnings.add(FSAToolbox.ERROR_OBSERVE);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
@@ -178,9 +156,10 @@ public class SupNorm implements Operation
 		// inverse projection
 		DESEventSet unobservableEvents = ModelManager
 				.instance().createEmptyEventSet();
-		for (Iterator<FSAEvent> i = plant.getEventIterator(); i.hasNext();)
+		for (Iterator<SupervisoryEvent> i = plant.getEventIterator(); i
+				.hasNext();)
 		{
-			FSAEvent e = i.next();
+			SupervisoryEvent e = i.next();
 			if (!e.isObservable())
 			{
 				unobservableEvents.add(e);
@@ -193,10 +172,12 @@ public class SupNorm implements Operation
 		s.setInitial(true);
 		s.setMarked(true);
 		toConcat.add(s);
-		for (Iterator<FSAEvent> i = plant.getEventIterator(); i.hasNext();)
+		for (Iterator<SupervisoryEvent> i = plant.getEventIterator(); i
+				.hasNext();)
 		{
-			FSAEvent origEvent = i.next();
-			FSAEvent copyEvent = toConcat.assembleEvent(origEvent.getSymbol());
+			SupervisoryEvent origEvent = i.next();
+			SupervisoryEvent copyEvent = toConcat.assembleEvent(origEvent
+					.getSymbol());
 			copyEvent.setObservable(origEvent.isObservable());
 			copyEvent.setControllable(origEvent.isControllable());
 			toConcat.add(copyEvent);

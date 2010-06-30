@@ -3,8 +3,9 @@
  */
 package operations.fsa.ver2_1;
 
+import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.OperationManager;
 
 /**
@@ -13,6 +14,8 @@ import ides.api.plugin.operation.OperationManager;
  */
 public class Controllable extends AbstractOperation
 {
+
+	protected String resultMessage = Hub.string("errorUnableToCompute");
 
 	public Controllable()
 	{
@@ -25,7 +28,7 @@ public class Controllable extends AbstractOperation
 
 		// WARNING - Ensure that output type and description always match!
 		outputType = new Class[] { Boolean.class };
-		outputDesc = new String[] { "resultMessage" };
+		outputDesc = new String[] { resultMessage };
 	}
 
 	/*
@@ -36,9 +39,9 @@ public class Controllable extends AbstractOperation
 	public Object[] perform(Object[] inputs)
 	{
 		warnings.clear();
+		resultMessage = Hub.string("errorUnableToCompute");
 		FSAModel plant;
 		FSAModel specification;
-		String resultMessage;
 		if (inputs.length >= 2)
 		{
 			if (inputs[0] instanceof FSAModel && inputs[1] instanceof FSAModel)
@@ -48,17 +51,24 @@ public class Controllable extends AbstractOperation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { new Boolean(false) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { new Boolean(false) };
 		}
 
-		if (!CheckingToolbox.isDeterministic(plant))
+		if (FSAToolbox.hasControllabilityConflict(new FSAModel[] { plant,
+				specification }))
+		{
+			warnings.add(FSAToolbox.ERROR_CONTROL);
+			return new Object[] { new Boolean(false) };
+		}
+
+		if (!FSAToolbox.isDeterministic(plant))
 		{
 			plant = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -66,7 +76,7 @@ public class Controllable extends AbstractOperation
 			warnings.addAll(OperationManager
 					.instance().getOperation("determinize").getWarnings());
 		}
-		if (!CheckingToolbox.isDeterministic(specification))
+		if (!FSAToolbox.isDeterministic(specification))
 		{
 			specification = (FSAModel)OperationManager
 					.instance().getOperation("determinize")
@@ -77,6 +87,11 @@ public class Controllable extends AbstractOperation
 
 		boolean result = SuperVisory.controllable(plant, specification);
 
+		if (warnings.size() != 0)
+		{
+			return new Object[] { new Boolean(false) };
+		}
+
 		if (result)
 		{
 			resultMessage = "Specification is controllable with respect to the plant.";
@@ -86,6 +101,7 @@ public class Controllable extends AbstractOperation
 			resultMessage = "Specification is not controllable with respect to the plant.";
 		}
 		outputDesc = new String[] { resultMessage };
+
 		return new Object[] { new Boolean(result) };
 	}
 

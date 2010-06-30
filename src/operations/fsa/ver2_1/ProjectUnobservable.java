@@ -1,11 +1,10 @@
 package operations.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
-import ides.api.plugin.model.DESEvent;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 
 import java.util.Iterator;
@@ -82,27 +81,30 @@ public class ProjectUnobservable implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		// create a DESEventSet with only the unobservable events to remove
+		// create a SupervisoryEventSet with only the unobservable events to
+		// remove
+
 		DESEventSet eventsToRemove = ModelManager
 				.instance().createEmptyEventSet();
-		for (Iterator<FSAEvent> i = model.getEventIterator(); i.hasNext();)
+		for (Iterator<SupervisoryEvent> i = model.getEventIterator(); i
+				.hasNext();)
 		{
-			FSAEvent e = i.next();
+			SupervisoryEvent e = i.next();
 			if (!e.isObservable())
 			{
-				eventsToRemove.add((DESEvent)e);
+				eventsToRemove.add(e);
 			}
 		}
 

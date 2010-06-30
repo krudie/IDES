@@ -6,7 +6,7 @@ import java.util.List;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 
 /**
@@ -88,21 +88,22 @@ public class NFAtoDFA implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 
-		DESEventSet des = ModelManager.instance().createEmptyEventSet();
+		DESEventSet eventSet = ModelManager
+				.instance().createEmptyEventSet();
 
-		dfa = Project.projectCustom(nfa, des, true);
+		dfa = Project.projectCustom(nfa, eventSet, true);
 
 		return new Object[] { dfa };
 	}

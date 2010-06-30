@@ -1,11 +1,11 @@
 package operations.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.Operation;
 import ides.api.plugin.operation.OperationManager;
 
@@ -106,10 +106,10 @@ public class Concatenation implements Operation
 		/*
 		 * In the following hash table, the original state is the key, copy is
 		 * the value. This is used to avoid duplication when copying states from
-		 * one model to another and calling copyStatInto
+		 * one model to another and calling copyStateInto
 		 */
 		Hashtable<FSAState, FSAState> states = new Hashtable<FSAState, FSAState>();
-		Hashtable<String, FSAEvent> events = new Hashtable<String, FSAEvent>();
+		Hashtable<String, SupervisoryEvent> events = new Hashtable<String, SupervisoryEvent>();
 		HashSet<Long> model2CopiedInitialStateIds = new HashSet<Long>();
 
 		// Verify validity of parameters
@@ -122,27 +122,25 @@ public class Concatenation implements Operation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { ModelManager
 						.instance().createModel(FSAModel.class) };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { ModelManager
 					.instance().createModel(FSAModel.class) };
 		}
 		// Special case: if either is the empty language, the concatenation is
 		// the empty language. To get past this step, both models will have an
 		// initial and marked state.
-		if (CheckingToolbox.isEmptyLanguage(model1)
-				|| CheckingToolbox.isEmptyLanguage(model2))
+		if (FSAToolbox.isEmptyLanguage(model1)
+				|| FSAToolbox.isEmptyLanguage(model2))
 		{
 			FSAModel emptyLanguage = ModelManager
 					.instance().createModel(FSAModel.class);
-			FSAState s = emptyLanguage.assembleState();
-			emptyLanguage.add(s);
 			return new Object[] { emptyLanguage };
 		}
 
@@ -151,7 +149,7 @@ public class Concatenation implements Operation
 		/*
 		 * Identify the marked states of model1
 		 */
-		Set<Long> model1MarkedStateIds = ides.api.plugin.operation.CheckingToolbox
+		Set<Long> model1MarkedStateIds = FSAToolbox
 				.getMarkedStates(model1);
 
 		/*
@@ -159,9 +157,9 @@ public class Concatenation implements Operation
 		 * event with the same name exists in model2, it will not be added, but
 		 * the event (with the same name) in model1 will be retrieved.
 		 */
-		for (ListIterator<FSAEvent> b = model1.getEventIterator(); b.hasNext();)
+		for (ListIterator<SupervisoryEvent> b = model1.getEventIterator(); b.hasNext();)
 		{
-			FSAEvent currEvent = b.next();
+			SupervisoryEvent currEvent = b.next();
 			events.put(currEvent.getSymbol(), currEvent);
 		}
 
@@ -188,7 +186,7 @@ public class Concatenation implements Operation
 				if (copyTarget.isInitial())
 					model2CopiedInitialStateIds.add(copyTarget.getId());
 
-				FSAEvent origEvent = origTransition.getEvent();
+				SupervisoryEvent origEvent = origTransition.getEvent();
 
 				FSATransition copyTransition;
 				if (origEvent == null)
@@ -199,7 +197,7 @@ public class Concatenation implements Operation
 				}
 				else
 				{
-					FSAEvent copyEvent = DuplicationToolbox
+					SupervisoryEvent copyEvent = DuplicationToolbox
 							.copyEventInto(model1, origEvent, events, false);
 					copyTransition = model1.assembleTransition(copySource
 							.getId(), copyTarget.getId(), copyEvent.getId());

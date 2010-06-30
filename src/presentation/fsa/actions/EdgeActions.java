@@ -1,6 +1,6 @@
 package presentation.fsa.actions;
 
-import ides.api.model.fsa.FSAEvent;
+import ides.api.model.supeventset.SupervisoryEvent;
 
 import java.awt.event.ActionEvent;
 import java.util.Vector;
@@ -51,27 +51,27 @@ public class EdgeActions
 		 */
 		private static final long serialVersionUID = -6195557069948251536L;
 
-		protected Vector<FSAEvent> assignedEvents = null;
+		protected Vector<SupervisoryEvent> assignedEvents = null;
 
 		protected Edge edge;
 
 		protected FSAGraph graph;
 
 		public LabelAction(FSAGraph graph, Edge edge,
-				Vector<FSAEvent> assignedEvents)
+				Vector<SupervisoryEvent> assignedEvents)
 		{
 			this(null, graph, edge, assignedEvents);
 		}
 
 		public LabelAction(CompoundEdit parentEdit, FSAGraph graph, Edge edge,
-				Vector<FSAEvent> assignedEvents)
+				Vector<SupervisoryEvent> assignedEvents)
 		{
 			this.graph = graph;
 			this.edge = edge;
 			this.assignedEvents = assignedEvents;
 			if (this.assignedEvents == null)
 			{
-				this.assignedEvents = new Vector<FSAEvent>();
+				this.assignedEvents = new Vector<SupervisoryEvent>();
 			}
 			this.parentEdit = parentEdit;
 		}

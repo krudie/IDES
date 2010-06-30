@@ -1,13 +1,13 @@
 package operations.fsa.ver2_1;
 
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSASupervisor;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.operation.CheckingToolbox;
+import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.FilterOperation;
 
 import java.util.Iterator;
@@ -55,22 +55,22 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 			}
 			else
 			{
-				warnings.add(CheckingToolbox.ILLEGAL_ARGUMENT);
+				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
 				return new Object[] { inputs[0] };
 			}
 		}
 		else
 		{
-			warnings.add(CheckingToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
 			return new Object[] { inputs[0] };
 		}
 
 		// Unary.buildStateCompositionOfClone((Automaton)supervisor);
 
-		if (!CheckingToolbox.isDeterministic(plant)
-				|| !CheckingToolbox.isDeterministic(supervisor))
+		if (!FSAToolbox.isDeterministic(plant)
+				|| !FSAToolbox.isDeterministic(supervisor))
 		{
-			warnings.add(CheckingToolbox.NON_DETERM);
+			warnings.add(FSAToolbox.NON_DETERM);
 			return new Object[] { supervisor };
 		}
 
@@ -120,7 +120,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 				FSATransition t0 = sti0.next();
 				ListIterator<FSATransition> sti1 = sa[1]
 						.getOutgoingTransitionsListIterator();
-				FSAEvent notMatched = t0.getEvent();
+				SupervisoryEvent notMatched = t0.getEvent();
 				while (sti1.hasNext())
 				{
 					FSATransition t1 = sti1.next();

@@ -1,10 +1,10 @@
 package presentation.fsa.actions;
 
 import ides.api.core.Hub;
-import ides.api.model.fsa.FSAEvent;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 
 import java.awt.geom.Point2D;
 import java.util.Iterator;
@@ -166,10 +166,10 @@ public class GraphUndoableEdits
 
 		protected FSAGraph graph;
 
-		protected Vector<FSAEvent> assignedEvents;
+		protected Vector<SupervisoryEvent> assignedEvents;
 
 		public UndoableEdgeLabel(FSAGraph graph, Edge edge,
-				Vector<FSAEvent> assignedEvents)
+				Vector<SupervisoryEvent> assignedEvents)
 		{
 			this.graph = graph;
 			this.edge = edge;
@@ -197,7 +197,7 @@ public class GraphUndoableEdits
 					originalTransitions.add(i.next());
 				}
 				graph.replaceEventsOnEdge(assignedEvents
-						.toArray(new FSAEvent[0]), edge);
+						.toArray(new SupervisoryEvent[0]), edge);
 				for (Iterator<FSATransition> i = edge.getTransitions(); i
 						.hasNext();)
 				{
@@ -369,7 +369,7 @@ public class GraphUndoableEdits
 		 */
 		private static final long serialVersionUID = 6944709340848440216L;
 
-		protected FSAEvent event;
+		protected SupervisoryEvent event;
 
 		protected String eventName;
 
@@ -388,7 +388,7 @@ public class GraphUndoableEdits
 			this.graph = graph;
 		}
 
-		public FSAEvent getEvent()
+		public SupervisoryEvent getEvent()
 		{
 			return event;
 		}
@@ -463,11 +463,11 @@ public class GraphUndoableEdits
 		 */
 		private static final long serialVersionUID = -3922017791552901537L;
 
-		protected FSAEvent event;
+		protected SupervisoryEvent event;
 
 		protected FSAGraph graph;
 
-		public UndoableRemoveEvent(FSAGraph graph, FSAEvent event)
+		public UndoableRemoveEvent(FSAGraph graph, SupervisoryEvent event)
 		{
 			this.graph = graph;
 			this.event = event;
@@ -538,7 +538,7 @@ public class GraphUndoableEdits
 		 */
 		private static final long serialVersionUID = -7428178659902586803L;
 
-		protected FSAEvent event;
+		protected SupervisoryEvent event;
 
 		protected String alternateName;
 
@@ -548,7 +548,7 @@ public class GraphUndoableEdits
 
 		protected FSAModel model;
 
-		public UndoableModifyEvent(FSAModel model, FSAEvent event,
+		public UndoableModifyEvent(FSAModel model, SupervisoryEvent event,
 				String newName, boolean newControllable, boolean newObservable)
 		{
 			this.model = model;
