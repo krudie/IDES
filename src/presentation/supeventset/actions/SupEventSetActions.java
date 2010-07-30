@@ -43,7 +43,6 @@ public class SupEventSetActions
 			this(null, model, eventName, controllable, observable);
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent e)
 		{
 			if (model != null)
@@ -82,7 +81,6 @@ public class SupEventSetActions
 			this.model = model;
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent e)
 		{
 			if (model != null)
@@ -135,7 +133,6 @@ public class SupEventSetActions
 			this.model = model;
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent arg0)
 		{
 			if (model != null)
