@@ -18,6 +18,7 @@ import javax.swing.UIManager;
 import model.fsa.ver2_1.Automaton;
 import presentation.fsa.FSAToolset;
 import services.cache.CacheBackend;
+import services.ccp.CopyPasteBackend;
 import services.latex.LatexBackend;
 import services.notice.NoticeBackend;
 import services.notice.NoticePopup;
@@ -128,6 +129,7 @@ public class Main
 
 		// setup stuff that needs the main window visible
 		NoticePopup.init();
+		CopyPasteBackend.init(); 
 
 		// last initialize plugins
 		PluginManager.init();

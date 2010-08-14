@@ -418,6 +418,10 @@ public class OperationDialog extends EscapeDialog
 						.getText() };
 			}
 		}
+		else if (inputs.elementAt(inputIdx) instanceof EventStringInput)
+		{
+			values = new Object[] { ((EventStringInput)inputs.elementAt(inputIdx)).getList() };
+		}
 		return Arrays.asList(values);
 	}
 
@@ -474,6 +478,15 @@ public class OperationDialog extends EscapeDialog
 				}
 			});
 			return tf;
+		}
+		else if (new LinkedList<DESEvent>().getClass().equals(type))
+		{
+			
+			JPanel panel = new EventStringInput();
+			// makes the panel match the size of everything else
+			panel.setMaximumSize(new Dimension((new JComboBox())
+					.getMaximumSize().width, panel.getPreferredSize().height));
+			return panel;
 		}
 		else
 		{

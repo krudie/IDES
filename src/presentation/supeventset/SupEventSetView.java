@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -33,8 +36,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.undo.CompoundEdit;
 
+import presentation.fsa.actions.GraphUndoableEdits;
 import presentation.supeventset.actions.AbstractSupEventSetAction;
 import presentation.supeventset.actions.SupEventSetActions;
+import services.ccp.EventSetWrapper;
 
 import ides.api.core.Hub;
 import ides.api.model.supeventset.SupEventSetMessage;
@@ -42,6 +47,8 @@ import ides.api.model.supeventset.SupEventSetSubscriber;
 import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.model.supeventset.SupervisoryEventSet;
 import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.presentation.CopyPastePresentation;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.utilities.GeneralUtils;
 
@@ -50,7 +57,7 @@ import ides.api.utilities.GeneralUtils;
  *         really also @author Lenko Grigorov
  */
 public class SupEventSetView extends JPanel implements Presentation,
-		SupEventSetSubscriber
+		SupEventSetSubscriber, CopyPastePresentation, ClipboardOwner
 {
 
 	/**
@@ -406,10 +413,11 @@ public class SupEventSetView extends JPanel implements Presentation,
 		Box createTopBox = Box.createHorizontalBox();
 		Box createBottomBox = Box.createHorizontalBox();
 
-		eventNameField = new JTextField();
+		eventNameField = new JTextField(40);
 		eventNameField.setMaximumSize(new Dimension(
-				eventNameField.getMaximumSize().width,
+				eventNameField.getPreferredSize().width,
 				eventNameField.getPreferredSize().height));
+
 		DocumentListener al = new DocumentListener()
 		{
 			public void changedUpdate(DocumentEvent e)
@@ -486,6 +494,7 @@ public class SupEventSetView extends JPanel implements Presentation,
 				eventNameField.getPreferredSize().height));
 		createButton.addActionListener(createListener);
 		createTopBox.add(createButton);
+		createTopBox.add(Box.createHorizontalGlue());
 
 		createBox.add(createTopBox);
 		createBox.add(createBottomBox);
@@ -506,6 +515,14 @@ public class SupEventSetView extends JPanel implements Presentation,
 				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), this);
 		table.getActionMap().put(this, deleteListener);
+
+		Action cutAction = Hub.getCopyPasteManager().getCutOverwriteAction();
+		Action copyAction = Hub.getCopyPasteManager().getCopyOverwriteAction();
+		Action pasteAction = Hub.getCopyPasteManager().getPasteOverwriteAction();
+		table.getActionMap().put("cut", cutAction);
+		table.getActionMap().put("copy", copyAction);
+		table.getActionMap().put("paste", pasteAction);
+
 		table.addFocusListener(new FocusAdapter()
 		{
 			private Component editor;
@@ -618,6 +635,19 @@ public class SupEventSetView extends JPanel implements Presentation,
 		refreshEventTable();
 	}
 
+	/**
+	 * Makes the Event tab visible or invisible
+	 * 
+	 * @param b
+	 *            flag indicating visibility status
+	 */
+	@Override
+	public void setVisible(boolean b)
+	{
+		super.setVisible(b);
+		eventNameField.requestFocus();
+	}
+
 	private void refreshEventTable()
 	{
 
@@ -637,6 +667,194 @@ public class SupEventSetView extends JPanel implements Presentation,
 		}
 		eventNameField.setEnabled(true);
 		table.setEnabled(true);
+
+	}
+
+	public Action getCopyAction()
+	{
+		return new EventCopyAction();
+	}
+
+	public Action getCutAction()
+	{
+		return new EventCutAction();
+	}
+
+	public Action getPasteAction()
+	{
+		return new EventPasteAction();
+	}
+
+	public boolean isCutCopyEnabled()
+	{
+		return !table.getSelectionModel().isSelectionEmpty();
+	}
+
+	public boolean isPasteEnabled()
+	{
+		if (Hub
+				.getCopyPasteManager().getClipboard()
+				.isDataFlavorAvailable(EventSetWrapper.eventSelectionFlavor))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	public void newItemOnClipboard()
+	{
+
+	}
+
+	public void lostOwnership(Clipboard arg0, Transferable arg1)
+	{
+
+	}
+
+	private class EventCopyAction extends AbstractAction
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5587004651412055515L;
+
+		public void actionPerformed(ActionEvent arg0)
+		{
+			SupervisoryEventSet eventSet = ModelManager
+					.instance().createModel(SupervisoryEventSet.class);
+			int[] rows = table.getSelectedRows();
+			for (int i = 0; i < rows.length; i++)
+			{
+				eventSet.add(((EventTableModel)table.getModel())
+						.getEventAt(rows[i]));
+			}
+			EventSetWrapper selection = new EventSetWrapper(eventSet);
+			Clipboard clip = Hub.getCopyPasteManager().getClipboard();
+			clip.setContents(selection, SupEventSetView.this);
+		}
+
+	}
+
+	private class EventCutAction extends AbstractAction
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4876758349363695584L;
+
+		@Override
+		public void actionPerformed(ActionEvent arg0)
+		{
+			SupervisoryEventSet eventSet = ModelManager
+					.instance().createModel(SupervisoryEventSet.class);
+			int[] rows = table.getSelectedRows();
+			CompoundEdit allEdits = new CompoundEdit();
+			for (int i = 0; i < rows.length; i++)
+			{
+				SupervisoryEvent e = ((EventTableModel)table.getModel())
+						.getEventAt(rows[i]);
+				eventSet.add(e);
+			}
+			for (Iterator<SupervisoryEvent> i = eventSet.iteratorSupervisory(); i
+					.hasNext();)
+			{
+				SupervisoryEvent e = i.next();
+				new SupEventSetActions.RemoveEventAction(allEdits, model, e)
+						.execute();
+				// new GraphActions.RemoveEventAction(allEdits, graph, e)
+				// .execute();
+			}
+			allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub
+					.string("cut")));// TODO take me out?
+			allEdits.end();
+			Hub.getUndoManager().addEdit(allEdits);
+			EventSetWrapper selection = new EventSetWrapper(eventSet);
+			Clipboard clip = Hub.getCopyPasteManager().getClipboard();
+			clip.setContents(selection, SupEventSetView.this);
+
+		}
+
+	}
+
+	protected class EventPasteAction extends AbstractAction
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3518141890000056919L;
+
+		public void actionPerformed(ActionEvent arg0)
+		{
+			Transferable clipboardContent = Hub
+					.getCopyPasteManager().getClipboard()
+					.getContents(SupEventSetView.this);
+			if (clipboardContent != null
+					&& clipboardContent
+							.isDataFlavorSupported(EventSetWrapper.eventSelectionFlavor))
+			{
+				SupervisoryEventSet clipboardSelection = null;
+				try
+				{
+					clipboardSelection = (SupervisoryEventSet)clipboardContent
+							.getTransferData(EventSetWrapper.eventSelectionFlavor);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					return;
+				}
+
+				if (clipboardSelection.size() > 0)
+				{
+					CompoundEdit allEdits = new CompoundEdit();
+					boolean contained = false;
+					for (Iterator<SupervisoryEvent> i = clipboardSelection
+							.iteratorSupervisory(); i.hasNext();)
+					{
+						SupervisoryEvent e = i.next();
+						if (!((EventTableModel)table.getModel()).events
+								.contains(e))
+						{
+							new SupEventSetActions.CreateEventAction(
+									allEdits,
+									model,
+									e.getSymbol(),
+									e.isControllable(),
+									e.isObservable()).execute();
+							// new GraphActions.CreateEventAction(
+							// allEdits,
+							// graph,
+							// e.getSymbol(),
+							// e.isControllable(),
+							// e.isObservable()).execute();
+						}
+						else
+						{
+							contained = true;
+						}
+					}
+					if (contained)
+					{
+						Hub
+								.getNoticeManager()
+								.postWarningTemporary(Hub
+										.string("errorModelContainsPastedEventsDigest"),
+										Hub
+												.string("errorModelContainsPastedEventsFull"));
+					}
+					allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(
+							Hub.string("paste")));
+					allEdits.end();
+					Hub.getUndoManager().addEdit(allEdits);
+
+				}
+			}
+
+		}
 
 	}
 

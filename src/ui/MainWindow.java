@@ -7,8 +7,12 @@ import ides.api.core.Hub;
 import ides.api.core.UserInterface;
 import ides.api.core.WorkspaceMessage;
 import ides.api.core.WorkspaceSubscriber;
+import ides.api.plugin.presentation.CopyPastePresentation;
+import ides.api.plugin.presentation.GlobalFontSizePresentation;
 import ides.api.plugin.presentation.Presentation;
 import ides.api.plugin.presentation.UIDescriptor;
+import ides.api.plugin.presentation.ZoomablePresentation;
+import ides.api.ui.FontSizeSelector;
 import ides.api.ui.ZoomControl;
 
 import java.awt.BorderLayout;
@@ -22,6 +26,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,6 +52,7 @@ import javax.swing.SwingUtilities;
 
 import main.Main;
 import presentation.fsa.ContextAdaptorHack;
+import services.ccp.CopyPasteAction;
 import services.latex.LatexBackend;
 import services.notice.NoticeBoard;
 import services.notice.NoticePopup;
@@ -90,7 +96,15 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	private ZoomControl zoom = new ZoomControl();
 
+	private FontSizeSelector font = new FontSizeSelector();
+
 	private Box zoomSelector;
+
+	private Box fontSelector;
+	
+	private JButton copyButton = new JButton();
+	
+	private JButton pasteButton = new JButton();
 
 	public MainWindow()
 	{
@@ -227,6 +241,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 
 	protected Action renameAction;
 
+	protected Action ccpAction;
+
 	protected Action goToParentAction;
 
 	protected JMenu helpTopics;
@@ -256,6 +272,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		helpTopics = new HelpActions.HelpTopics();
 		pluginsAction = new HelpActions.PluginsAction();
 		aboutAction = new HelpActions.AboutAction();
+		ccpAction = new CopyPasteAction();
 
 		// decide which ones will be disabled when there's no model open
 		disabledOnNoModel.add(saveAction);
@@ -359,13 +376,47 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 				ActionEvent.CTRL_MASK));
 		redo.setToolTipText(Hub.string("comHintRedo"));
 		redo.addActionListener(redoAction);
+
+		JMenuItem cut = new JMenuItem(Hub.string("cut"));
+		cut.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
+				.getIDESResource("images/icons/edit_cut16.gif"))));
+		cut.setActionCommand(Hub.string("cut"));
+		cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+				ActionEvent.CTRL_MASK));
+		cut.addActionListener(ccpAction);
+
+		JMenuItem copy = new JMenuItem(Hub.string("copy"));
+		copy.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
+				.getIDESResource("images/icons/edit_copy.gif"))));
+		copy.setActionCommand(Hub.string("copy"));
+		copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+				ActionEvent.CTRL_MASK));
+		copy.addActionListener(ccpAction);
+
+		JMenuItem paste = new JMenuItem(Hub.string("paste"));
+		paste.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
+				.getIDESResource("images/icons/edit_paste.gif"))));
+		paste.setActionCommand(Hub.string("paste"));
+		paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+				ActionEvent.CTRL_MASK));
+		paste.addActionListener(ccpAction);
+
 		// Bind to the undo manager
 		Hub.getUndoManager().bindUndo(undo);
 		Hub.getUndoManager().bindRedo(redo);
+		// Bind to the cut/copy/paste (CCP) manager
+		Hub.getCopyPasteManager().bindCutCopy(cut);
+		Hub.getCopyPasteManager().bindCutCopy(copy);
+		Hub.getCopyPasteManager().bindPaste(paste);
+
 		// Adding the menu items to the "editMenu"
 		JMenuItem rename = new JMenuItem(renameAction);
 		editMenu.add(undo);
 		editMenu.add(redo);
+		editMenu.addSeparator();
+		editMenu.add(cut);
+		editMenu.add(copy);
+		editMenu.add(paste);
 		editMenu.addSeparator();
 		editMenu.add(rename);
 		editMenu.add(goToParentAction);
@@ -429,9 +480,28 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		Hub.getUndoManager().bindNoTextRedo(redo);
 		toolbar.addSeparator();
 		toolbar.add(goToParentAction);
+		
+		//create these, but don't add until needed (see hotPlugToolbar)
 		zoomSelector = Box.createHorizontalBox();// new JPanel();
 		zoomSelector.add(new JLabel(" " + Hub.string("zoom") + ": "));
 		zoomSelector.add(zoom);
+		fontSelector = Box.createHorizontalBox();
+		fontSelector.add(new JLabel(" " + Hub.string("fontSize") + ": "));
+		fontSelector.add(font);
+		copyButton.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
+				.getIDESResource("images/icons/edit_copy.gif"))));
+		copyButton.setActionCommand(Hub.string("copy"));
+		copyButton.setToolTipText(Hub.string("copy"));
+		copyButton.addActionListener(ccpAction);
+		pasteButton.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
+				.getIDESResource("images/icons/edit_paste.gif"))));
+		pasteButton.setActionCommand(Hub.string("paste"));
+		pasteButton.setToolTipText(Hub.string("paste"));
+		pasteButton.addActionListener(ccpAction);
+		Hub.getCopyPasteManager().bindCutCopy(copyButton);
+		Hub.getCopyPasteManager().bindPaste(pasteButton);
+		
+		
 		// p.add(Box.createHorizontalGlue());
 		// toolbar.add(z);
 	}
@@ -454,7 +524,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		this.setJMenuBar(menuBar);
 	}
 
-	private void hotPlugToolbar(JToolBar tb, boolean showZoomControl)
+	private void hotPlugToolbar(JToolBar tb)
 	{
 		getContentPane().remove(toolbar);
 		JToolBar newToolbar = new JToolBar();
@@ -464,10 +534,30 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			// previous bar
 			newToolbar.add(toolbar.getComponentAtIndex(0));
 		}
-		if (showZoomControl)
+		Collection<CopyPastePresentation> ccpp = Hub
+				.getWorkspace()
+				.getPresentationsOfType(CopyPastePresentation.class);
+		
+		if(ccpp.size() > 0)
+		{
+			newToolbar.addSeparator();
+			newToolbar.add(copyButton);
+			newToolbar.add(pasteButton);
+			newToolbar.addSeparator();
+		}
+		Collection<ZoomablePresentation> zooms = Hub
+				.getWorkspace()
+				.getPresentationsOfType(ZoomablePresentation.class);
+		if (zooms.size() > 0)
 		{
 			newToolbar.add(zoomSelector);
-			newToolbar.addSeparator();
+		}
+		Collection<GlobalFontSizePresentation> fonts = Hub
+				.getWorkspace()
+				.getPresentationsOfType(GlobalFontSizePresentation.class);
+		if (fonts.size() > 0)
+		{
+			newToolbar.add(fontSelector);
 		}
 		int tbSize = tb.getComponentCount();
 		for (int i = 0; i < tbSize; ++i)
@@ -531,6 +621,11 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		return zoom;
 	}
 
+	public FontSizeSelector getFontSelector()
+	{
+		return font;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -581,17 +676,19 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			rightViews.add(NoticeBoard.instance().getName(), NoticeBoard
 					.instance());
 			zoom.setEnabled(false);
+			font.setEnabled(false);
 			for (Action a : disabledOnNoModel)
 			{
 				a.setEnabled(false);
 			}
 			hotPlugMenus(new JMenu[0]);
-			hotPlugToolbar(new JToolBar(), false);
+			hotPlugToolbar(new JToolBar());
 			statusBar.setContent(null);
 		}
 		else
 		{
 			zoom.setEnabled(true);
+			font.setEnabled(true);
 			for (Action a : disabledOnNoModel)
 			{
 				a.setEnabled(true);
@@ -647,7 +744,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			}
 			arrangeViews();
 			hotPlugMenus(uid.getMenus());
-			hotPlugToolbar(uid.getToolbar(), uid.supportsZoom());
+			hotPlugToolbar(uid.getToolbar());
 			statusBar.setContent(uid.getStatusBar().getGUI());
 		}
 	}

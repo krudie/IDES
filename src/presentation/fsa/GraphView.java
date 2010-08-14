@@ -4,7 +4,9 @@ import ides.api.core.Hub;
 import ides.api.latex.LatexElement;
 import ides.api.latex.LatexPresentation;
 import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.presentation.GlobalFontSizePresentation;
 import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.ZoomablePresentation;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,7 +36,7 @@ import presentation.fsa.actions.GraphActions;
  */
 @SuppressWarnings("serial")
 public class GraphView extends JComponent implements FSAGraphSubscriber,
-		LatexPresentation
+		LatexPresentation, ZoomablePresentation, GlobalFontSizePresentation
 {
 	protected static final String FSA_LAYOUT = "presentation.fsa.FSAGraph";
 
@@ -371,5 +373,10 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,
 					graphModel).execute();
 		}
 		graphModel.setAnnotation(SHIFT_GRAPH_AFTER_PRERENDER, false);
+	}
+
+	public void setFontSize(float fs)
+	{		
+		getGraphModel().setFontSize(fs);
 	}
 }

@@ -14,9 +14,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import model.fsa.ver2_1.State;
-import model.supeventset.ver3.Event;
-
 public class MultiAgentProductFSA extends AbstractOperation
 {
 
@@ -120,7 +117,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 		stateMap = new HashMap<String, FSAState>();
 		eventMap = new HashMap<String, SupervisoryEvent>();
 		openStates.add(initial);
-		FSAState newS = makeState(initial, 0);
+		FSAState newS = makeState(initial, 0, a.assembleState());
 		a.add(newS);
 		stateMap.put(keyOf(initial), newS);
 		while (!openStates.isEmpty())
@@ -155,31 +152,34 @@ public class MultiAgentProductFSA extends AbstractOperation
 			Iterator<LinkedList<FSAState>> si = pt.targets.iterator();
 			for (; ei.hasNext();)
 			{
-				SupervisoryEvent[] e = ei.next().toArray(new SupervisoryEvent[0]);
+				SupervisoryEvent[] e = ei
+						.next().toArray(new SupervisoryEvent[0]);
 				FSAState[] s = si.next().toArray(new FSAState[0]);
 				SupervisoryEvent event = eventMap.get(keyOf(e));
 				if (event == null)
 				{
-					event = makeEvent(e, a.getEventCount());
+					event = makeEvent(e, a.getEventCount(), a.assembleEvent(""));
 					a.add(event);
 					eventMap.put(keyOf(e), event);
 				}
 				FSAState target = stateMap.get(keyOf(s));
 				if (target == null)
 				{
-					target = makeState(s, a.getStateCount());
+					target = makeState(s, a.getStateCount(), a.assembleState());
 					a.add(target);
 					stateMap.put(keyOf(s), target);
 				}
-				a.add(a.assembleTransition(state.getId(), target.getId(), event.getId()));
+				a.add(a.assembleTransition(state.getId(), target.getId(), event
+						.getId()));
 				openStates.addLast(s);
 			}
 		}
 		return new Object[] { a };
 	}
 
-	protected PseudoTransition computeTransitions(SupervisoryEvent[] selectedEvents,
-			FSAEventSet[] freeEvents, FSAState[] origin)
+	protected PseudoTransition computeTransitions(
+			SupervisoryEvent[] selectedEvents, FSAEventSet[] freeEvents,
+			FSAState[] origin)
 	{
 		PseudoTransition pt = new PseudoTransition();
 		for (SupervisoryEvent e : freeEvents[0])
@@ -234,7 +234,8 @@ public class MultiAgentProductFSA extends AbstractOperation
 					PseudoTransition subPT = computeTransitions(extended,
 							shorter,
 							origin);
-					Iterator<LinkedList<SupervisoryEvent>> ei = subPT.events.iterator();
+					Iterator<LinkedList<SupervisoryEvent>> ei = subPT.events
+							.iterator();
 					Iterator<LinkedList<FSAState>> si = subPT.targets
 							.iterator();
 					for (; ei.hasNext();)
@@ -271,9 +272,10 @@ public class MultiAgentProductFSA extends AbstractOperation
 		return false;
 	}
 
-	protected FSAState makeState(FSAState[] states, long id)
+	protected FSAState makeState(FSAState[] states, long id, FSAState newS)
 	{
-		FSAState newS = new State(id);
+		// FSAState newS = new State(id);
+		newS.setId(id);
 		boolean isInitial = true;
 		boolean isMarked = true;
 		long[] composedIds = new long[states.length];
@@ -292,9 +294,11 @@ public class MultiAgentProductFSA extends AbstractOperation
 		return newS;
 	}
 
-	protected SupervisoryEvent makeEvent(SupervisoryEvent[] events, long id)
+	protected SupervisoryEvent makeEvent(SupervisoryEvent[] events, long id,
+			SupervisoryEvent e)
 	{
-		SupervisoryEvent e = new Event(id);
+		// SupervisoryEvent e = new Event(id);
+		e.setId(id);
 		boolean isUncontrollable = true;
 		String label = "$\\left[\\begin{array}{c}";
 		for (SupervisoryEvent event : events)

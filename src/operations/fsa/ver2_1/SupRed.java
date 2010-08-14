@@ -47,8 +47,8 @@ public class SupRed extends AbstractOperation
 		exportGrail((FSAModel)inputs[0], new File("PLT"));
 		exportGrail((FSAModel)inputs[1], new File("SUP"));
 		Set<SupervisoryEvent> unctrl = new TreeSet<SupervisoryEvent>();
-		for (Iterator<SupervisoryEvent> i = ((FSAModel)inputs[1]).getEventIterator(); i
-				.hasNext();)
+		for (Iterator<SupervisoryEvent> i = ((FSAModel)inputs[1])
+				.getEventIterator(); i.hasNext();)
 		{
 			SupervisoryEvent e = i.next();
 			if (!e.isControllable())
@@ -147,8 +147,8 @@ public class SupRed extends AbstractOperation
 			in = new java.io.BufferedReader(new java.io.FileReader(file));
 			a = ModelManager.instance().createModel(FSAModel.class,
 					file.getName());
-			long tCount = 0;
-			long eCount = 0;
+			// long tCount = 0;
+			// long eCount = 0;
 			java.util.Hashtable<String, Long> events = new java.util.Hashtable<String, Long>();
 			String line;
 			while ((line = in.readLine()) != null)
@@ -160,7 +160,8 @@ public class SupRed extends AbstractOperation
 					FSAState s = a.getState(sId);
 					if (s == null)
 					{
-						s = new model.fsa.ver2_1.State(sId);
+						s = a.assembleState();
+						s.setId(sId);// new model.fsa.ver2_1.State(sId);
 						a.add(s);
 					}
 					s.setInitial(true);
@@ -171,7 +172,8 @@ public class SupRed extends AbstractOperation
 					FSAState s = a.getState(sId);
 					if (s == null)
 					{
-						s = new model.fsa.ver2_1.State(sId);
+						s = a.assembleState();
+						s.setId(sId);// new model.fsa.ver2_1.State(sId);
 						a.add(s);
 					}
 					s.setMarked(true);
@@ -182,25 +184,28 @@ public class SupRed extends AbstractOperation
 					FSAState s1 = a.getState(sId1);
 					if (s1 == null)
 					{
-						s1 = new model.fsa.ver2_1.State(sId1);
+						s1 = a.assembleState();
+						s1.setId(sId1);// new model.fsa.ver2_1.State(sId1);
 						a.add(s1);
 					}
 					long sId2 = Long.parseLong(parts[2]);
 					FSAState s2 = a.getState(sId2);
 					if (s2 == null)
 					{
-						s2 = new model.fsa.ver2_1.State(sId2);
+						s2 = a.assembleState();
+						s2.setId(sId2);// new model.fsa.ver2_1.State(sId2);
 						a.add(s2);
 					}
 					SupervisoryEvent e = null;
 					Long eId = events.get(parts[1]);
 					if (eId == null)
 					{
-						e = new model.supeventset.ver3.Event(eCount);
-						e.setSymbol(parts[1]);
+						e = a.assembleEvent(parts[1]);// new
+														// model.supeventset.ver3.Event(eCount);
+						// e.setSymbol(parts[1]);
 						e.setObservable(true);
 						e.setControllable(true);
-						eCount++;
+						// eCount++;
 						a.add(e);
 						events.put(parts[1], new Long(e.getId()));
 					}
@@ -208,13 +213,15 @@ public class SupRed extends AbstractOperation
 					{
 						e = a.getEvent(eId.longValue());
 					}
-					FSATransition t = new model.fsa.ver2_1.Transition(
-							tCount,
-							s1,
-							s2,
-							e);
+					FSATransition t = a.assembleTransition(s1.getId(), s2
+							.getId(), e.getId());// new
+													// model.fsa.ver2_1.Transition(
+					// tCount,
+					// s1,
+					// s2,
+					// e);
 					a.add(t);
-					tCount++;
+					// tCount++;
 				}
 			}
 		}

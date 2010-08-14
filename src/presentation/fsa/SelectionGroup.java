@@ -1,9 +1,19 @@
 package presentation.fsa;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.Iterator;
 
-public class SelectionGroup extends GraphElement
+public class SelectionGroup extends GraphElement implements Transferable
 {
+
+	public final static DataFlavor selectionGroupFlavor = new DataFlavor(
+			SelectionGroup.class,
+			"Graph Selection Group");
+
+	private DataFlavor[] supportedFlavors = { selectionGroupFlavor };
 
 	public SelectionGroup()
 	{
@@ -72,6 +82,32 @@ public class SelectionGroup extends GraphElement
 		GraphElement p = e.getParent();
 		super.insert(e);
 		e.setParent(p);
+		
 	}
+
+	public Object getTransferData(DataFlavor arg0)
+			throws UnsupportedFlavorException, IOException
+	{
+		if (arg0.equals(selectionGroupFlavor))
+		{
+			return this;
+		}
+		else
+		{
+			throw new UnsupportedFlavorException(selectionGroupFlavor);
+		}
+	}
+
+	public DataFlavor[] getTransferDataFlavors()
+	{
+		return supportedFlavors;
+	}
+
+	public boolean isDataFlavorSupported(DataFlavor arg0)
+	{
+		return (arg0.equals(selectionGroupFlavor));
+	}
+
+
 
 }

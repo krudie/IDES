@@ -5,6 +5,7 @@ import ides.api.core.Workspace;
 import ides.api.latex.LatexManager;
 import ides.api.latex.LatexPresentation;
 import ides.api.latex.Renderer;
+import ides.api.plugin.presentation.GlobalFontSizePresentation;
 import ides.api.utilities.GeneralUtils;
 
 import java.io.File;
@@ -334,6 +335,20 @@ public class LatexBackend implements LatexManager
 			Hub.getPersistentData().setBoolean(LATEX_OPTION, true);
 			LatexBackend.getUIBinder().set(true);
 			new Thread(new SetLatexUpdater()).start();
+			// currently latex won't render font sizes above 25. Give a warning
+			// if turning on latex and font size is currently bigger.
+			if (Hub
+					.getWorkspace()
+					.getPresentationsOfType(GlobalFontSizePresentation.class)
+					.size() > 0)
+			{
+				if (Hub.getUserInterface().getFontSelector().getFontSize() > 25)
+				{
+					Hub.getUserInterface().getFontSelector().setFontSize(25);
+					LatexMessages.fontSizeTooBig();
+				}
+			}
+
 		}
 		else
 		{
@@ -378,15 +393,5 @@ public class LatexBackend implements LatexManager
 				}
 			}
 		});
-	}
-
-	/**
-	 * Returns the font size used for LaTeX rendering.
-	 * 
-	 * @return the font size used for LaTeX rendering
-	 */
-	public float getFontSize()
-	{
-		return 12;
 	}
 }

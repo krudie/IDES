@@ -1,6 +1,7 @@
 package ides.api.core;
 
 import ides.api.cache.Cache;
+import ides.api.copypaste.CopyPasteManager;
 import ides.api.latex.LatexManager;
 import ides.api.notice.NoticeManager;
 import ides.api.plugin.io.IOSubsytem;
@@ -17,6 +18,7 @@ import java.util.ResourceBundle;
 import main.HubBackend;
 import main.WorkspaceBackend;
 import services.cache.CacheBackend;
+import services.ccp.CopyPasteBackend;
 import services.latex.LatexBackend;
 import services.notice.NoticeBackend;
 import services.undo.UndoBackend;
@@ -302,5 +304,15 @@ public class Hub
 	public static IOSubsytem getIOSubsystem()
 	{
 		return IOCoordinator.getInstance();
+	}
+
+	/**
+	 * Provides access to the cut, copy and paste facility in IDES.
+	 * 
+	 * @return the IDES {@link CopyPasteManager}
+	 */
+	public static CopyPasteManager getCopyPasteManager()
+	{
+		return CopyPasteBackend.instance();
 	}
 }

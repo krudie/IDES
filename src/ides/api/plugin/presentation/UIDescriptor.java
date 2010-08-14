@@ -2,7 +2,6 @@ package ides.api.plugin.presentation;
 
 import ides.api.core.Hub;
 import ides.api.core.UserInterface;
-import ides.api.ui.ZoomControl;
 
 import javax.swing.JMenu;
 import javax.swing.JToolBar;
@@ -93,18 +92,4 @@ public interface UIDescriptor
 	 * @see UserInterface#getStatusBar()
 	 */
 	public Presentation getStatusBar();
-
-	/**
-	 * Determine if at least one of the {@link Presentation}s rendering the
-	 * model supports different levels of zoom. This is used by IDES to
-	 * determine if the zoom control should be visible.
-	 * 
-	 * @return <code>true</code> if at least one of the {@link Presentation}s
-	 *         rendering the model supports different levels of zoom;
-	 *         <code>false</code> otherwise
-	 * @see Hub#getUserInterface()
-	 * @see UserInterface#getZoomControl()
-	 * @see ZoomControl
-	 */
-	public boolean supportsZoom();
 }

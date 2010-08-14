@@ -247,10 +247,10 @@ public class SupNorm implements Operation
 					.instance().getOperation("product").getWarnings());
 
 			checkConvergence = (Boolean)OperationManager
-					.instance().getOperation("equals").perform(new Object[] {
+					.instance().getOperation("langequals").perform(new Object[] {
 							currK, prevK })[0];
 			warnings.addAll(OperationManager
-					.instance().getOperation("equals").getWarnings());
+					.instance().getOperation("langequals").getWarnings());
 
 		}
 		while (!checkConvergence);

@@ -13,10 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import model.fsa.ver2_1.State;
-import model.fsa.ver2_1.Transition;
-import model.supeventset.ver3.Event;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -161,7 +157,8 @@ public class AutomatonParser20 extends AbstractParser
 					break;
 				}
 				int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
-				lastState = new State(id);
+				lastState = a.assembleState();
+				lastState.setId(id);// new State(id);
 				a.add(lastState);
 				state = STATE_STATE;
 			}
@@ -174,7 +171,8 @@ public class AutomatonParser20 extends AbstractParser
 					break;
 				}
 				int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
-				lastEvent = new Event(id);
+				lastEvent = a.assembleEvent("");//new Event(id);
+				lastEvent.setId(id);
 				a.add(lastEvent);
 				state = STATE_EVENT;
 			}
@@ -210,12 +208,17 @@ public class AutomatonParser20 extends AbstractParser
 				}
 				else if (e == null)
 				{
-					lastTransition = new Transition(id, s, t);
+					lastTransition = a.assembleEpsilonTransition(s.getId(), t
+							.getId());// new Transition(id, s, t);
+					lastTransition.setId(id);
 					a.add(lastTransition);
 				}
 				else
 				{
-					lastTransition = new Transition(id, s, t, e);
+					lastTransition = a.assembleTransition(s.getId(),
+							t.getId(),
+							e.getId());// new Transition(id, s, t, e);
+					lastTransition.setId(id);
 					a.add(lastTransition);
 				}
 				state = STATE_TRANSITION;

@@ -2,6 +2,11 @@ package presentation.fsa;
 
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
+import ides.api.model.fsa.FSAState;
+import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.presentation.CopyPastePresentation;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -20,6 +25,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -31,8 +43,11 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.undo.CompoundEdit;
 
 import presentation.GraphicalLayout;
+import presentation.fsa.actions.GraphActions;
+import presentation.fsa.actions.GraphUndoableEdits;
 import presentation.fsa.actions.UIActions;
 import presentation.fsa.tools.CreationTool;
 import presentation.fsa.tools.DrawingTool;
@@ -51,7 +66,7 @@ import util.BooleanUIBinder;
  */
 @SuppressWarnings("serial")
 public class GraphDrawingView extends GraphView implements MouseMotionListener,
-		MouseListener, KeyListener
+		MouseListener, KeyListener, CopyPastePresentation, ClipboardOwner
 {
 
 	protected static class CanvasSettings
@@ -66,6 +81,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	protected final static String CANVAS_SETTINGS = "canvasSettings";
 
 	protected CanvasSettings canvasSettings = null;
+
+	protected JComponent gui = null;
 
 	/** If true, the next refresh will not change the view */
 	private boolean avoidNextDraw;
@@ -198,7 +215,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	public GraphDrawingView(FSAModel model, BooleanUIBinder gridBinder)
 	{
 		super();
-
 		gridToggle = gridBinder;
 		// Hub.getWorkspace().addSubscriber(this);
 
@@ -507,7 +523,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 								graphModel,
 								""));
 				// this method used to call
-				//this.graphModel.commitLayoutModified(this.getSelectedElement()
+				// this.graphModel.commitLayoutModified(this.getSelectedElement()
 				// );
 				// I replaced with selectionChanged message but not 100% sure
 				// there won't be side-effects
@@ -668,6 +684,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			// I replaced with selectionChanged message but not 100% sure there
 			// won't be side-effects
 			// -- Lenko
+			CCPStatusChanged();
 		}
 	}
 
@@ -693,6 +710,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			{
 				selectedGroup.insert(el);
 				selectedGroup.setSelected(true);
+				CCPStatusChanged();
 				return true;
 			}
 		}
@@ -713,6 +731,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 			// rectangle
 			selectedGroup.setHighlighted(false);
 			selectedGroup = graphModel.getElementsContainedBy(rectangle);
+			CCPStatusChanged();
 		}
 	}
 
@@ -744,6 +763,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	protected void setSelectedGroup(SelectionGroup currentSelection)
 	{
 		this.selectedGroup = currentSelection;
+		CCPStatusChanged();
 	}
 
 	/**
@@ -870,11 +890,15 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	@Override
 	public JComponent getGUI()
 	{
-		JScrollPane sp = new JScrollPane(
-				this,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		return sp;
+		if (gui == null)
+		{
+			gui = new JScrollPane(
+					this,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		}
+
+		return gui;
 	}
 
 	@Override
@@ -905,6 +929,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		// won't work
 		scaleFactor = Hub.getUserInterface().getZoomControl().getZoom();
 		uiInteraction = false;
+		Hub.getUserInterface().getFontSelector().setFontSize(graphModel.getFontSize());
 	}
 
 	@Override
@@ -927,5 +952,521 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	public void startUIInteraction()
 	{
 		uiInteraction = true;
+	}
+
+	private class GraphSelectionCopyAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent arg0)
+		{
+			SelectionGroup selection = getSelectedGroup().copy();
+			addChildrenToSelection(selection);
+			FSAGraph graph = new FSAGraph(ModelManager
+					.instance().createModel(FSAModel.class));
+			// paste the selection into intermediary FSAGraph to break link to
+			// original, then put the new selection on the clipboard
+			selection = paste(graph, selection, false);
+			Clipboard clipboard = Hub.getCopyPasteManager().getClipboard();
+			clipboard.setContents(selection, GraphDrawingView.this);
+		}
+	}
+
+	private class GraphSelectionCutAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent arg0)
+		{
+			SelectionGroup selection = getSelectedGroup().copy();
+			addChildrenToSelection(selection);
+			// clear the selection so that when undoing the cut, some parts
+			// aren't still selected
+			clearCurrentSelection();
+			FSAGraph graph = new FSAGraph(ModelManager
+					.instance().createModel(FSAModel.class));
+			// paste the selection into intermediary FSAGraph to break link to
+			// original, then put the new selection on the clipboard
+			SelectionGroup newSelection = paste(graph, selection, false);
+			Clipboard clipboard = Hub.getCopyPasteManager().getClipboard();
+			clipboard.setContents(newSelection, GraphDrawingView.this);
+			CompoundEdit allEdits = new CompoundEdit();
+			new GraphActions.RemoveAction(allEdits, getGraphModel(), selection)
+					.execute();
+
+			// show something useful in edit menu for undo/redo
+			allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub
+					.string("cut")));
+
+			allEdits.end();
+			Hub.getUndoManager().addEdit(allEdits);
+
+		}
+	}
+
+	protected final static int pasteOffsetIncrease = 20;
+
+	/**
+	 * The amount the pasted selection is offset from the original selection.
+	 * Increased by pasetOffsetIncrease every time the selection is pasted until
+	 * there is a new item on the clipboard (@see newItemOnClipboard)
+	 */
+	protected int pasteOffset = pasteOffsetIncrease;
+
+	protected class GraphSelectionPasteAction extends AbstractAction
+	{
+
+		public void actionPerformed(ActionEvent arg0)
+		{
+
+			Transferable clipboardContent = Hub.getCopyPasteManager()
+					.getClipboard().getContents(GraphDrawingView.this);
+			if (clipboardContent != null
+					&& clipboardContent
+							.isDataFlavorSupported(SelectionGroup.selectionGroupFlavor))
+			{
+				SelectionGroup clipboardSelection = null;
+				try
+				{
+					clipboardSelection = (SelectionGroup)clipboardContent
+							.getTransferData(SelectionGroup.selectionGroupFlavor);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					return;
+				}
+
+				if (clipboardSelection.hasChildren())
+				{
+					SelectionGroup newSelection = paste(getGraphModel(),
+							clipboardSelection,
+							true);
+					clearCurrentSelection();
+					newSelection.translate(pasteOffset, pasteOffset);
+					pasteOffset += pasteOffsetIncrease;
+					newSelection.setHighlighted(true);
+					setSelectedGroup(newSelection);
+					/*
+					 * // to group the newly created elements so that they are
+					 * all // selected and movable together when pasted
+					 * SelectionGroup newSelection = new SelectionGroup(); //
+					 * map from the original node to the new node for creating
+					 * // the new edges HashMap<Node, Node> nodes = new
+					 * HashMap<Node, Node>(); Node[] nodeBuffer = new Node[1];
+					 * Edge[] edgeBuffer = new Edge[1]; SupervisoryEvent[]
+					 * eventBuffer = new SupervisoryEvent[1]; CompoundEdit
+					 * allEdits = new CompoundEdit(); GraphElement currElement;
+					 * Node oldNode, newNode; Edge oldEdge, newEdge;
+					 * SupervisoryEvent newEvent; FSAState oldState, newState;
+					 * // iterate through children once for the nodes, then
+					 * again // for the edges (can't create new edges without
+					 * new nodes) for (Iterator<GraphElement> i =
+					 * clipboardSelection .children(); i.hasNext();) {
+					 * currElement = i.next(); if (currElement instanceof Node)
+					 * { oldNode = (Node)currElement; new
+					 * GraphActions.CreateNodeAction( allEdits,
+					 * GraphDrawingView.this.getGraphModel(),
+					 * (Point2D.Float)oldNode .getLayout().getLocation(),
+					 * nodeBuffer).execute(); newNode = nodeBuffer[0]; // a
+					 * little clunky since some with states and some // with
+					 * nodes, but without making changes to Node // that's how
+					 * it works newState = newNode.getState(); oldState =
+					 * oldNode.getState(); // needs to be done on the node to
+					 * "active" initial // arrow
+					 * newNode.setInitial(oldState.isInitial()); if
+					 * (newNode.getState().isInitial()) {
+					 * newNode.getInitialArrow().setDirection(oldNode
+					 * .getInitialArrow().getDirection()); }
+					 * newState.setMarked(oldState.isMarked()); if
+					 * (oldState.getName() != null) {
+					 * getGraphModel().labelNode(newNode, oldState.getName()); }
+					 * newSelection.insert(newNode); nodes.put(oldNode,
+					 * newNode); } } // iterate again for the edges for
+					 * (Iterator<GraphElement> i = clipboardSelection
+					 * .children(); i.hasNext();) { currElement = i.next(); if
+					 * (currElement instanceof Edge) { // initial arrow was
+					 * already created when the new // node was set to initial,
+					 * and without this // continue, the create edge action
+					 * throws a cannot // redo exception since the source of the
+					 * edge is // null if (currElement instanceof InitialArrow)
+					 * { continue; } oldEdge = (Edge)currElement; // figure out
+					 * whether equivalent event(s) to those // on this edge
+					 * exist in the model being pasted // into, if not, create
+					 * them HashSet<SupervisoryEvent> eventsToAddToEdge = new
+					 * HashSet<SupervisoryEvent>(); for (Iterator<FSATransition>
+					 * it = oldEdge .getTransitions(); it.hasNext();) {
+					 * FSATransition t = it.next(); SupervisoryEvent e = null;
+					 * if (t.getEvent() != null) { e = t.getEvent(); } //
+					 * potential event with same name that already // exists in
+					 * the model to be pasted into SupervisoryEvent equivEvent =
+					 * null; for (Iterator<SupervisoryEvent> ie =
+					 * getGraphModel() .getModel().getEventIterator(); ie
+					 * .hasNext();) { SupervisoryEvent modelEvent = ie.next();
+					 * if (modelEvent.equals(e)) { equivEvent = modelEvent; } }
+					 * if (equivEvent != null) {
+					 * eventsToAddToEdge.add(equivEvent); } else if (e != null)
+					 * { eventBuffer = new SupervisoryEvent[1]; new
+					 * GraphActions.CreateEventAction( allEdits,
+					 * getGraphModel(), e.getSymbol(), e.isControllable(),
+					 * e.isObservable(), eventBuffer).execute(); newEvent =
+					 * eventBuffer[0]; eventsToAddToEdge.add(newEvent); } } //
+					 * create the new edge here (as opposed to above // finding
+					 * the transitions) so that undo works // properly. If
+					 * creating a new event is last, it // would be undone
+					 * first, and removing the event // deletes associated
+					 * transitions and possibly edges // which throws exceptions
+					 * when it comes time to // undo creating those. new
+					 * GraphActions.CreateEdgeAction( allEdits, getGraphModel(),
+					 * nodes.get(oldEdge.getSourceNode()),
+					 * nodes.get(oldEdge.getTargetNode()),
+					 * edgeBuffer).execute(); newEdge = edgeBuffer[0];
+					 * getGraphModel() .replaceEventsOnEdge(eventsToAddToEdge
+					 * .toArray(new SupervisoryEvent[0]), newEdge); // preserve
+					 * the layout of Bezier edges. // no need to make these
+					 * explicitly undoable, // since the edge itself is
+					 * modified, and will // be deleted/revived as needed. if
+					 * (oldEdge instanceof ReflexiveEdge) { ReflexiveLayout
+					 * newLayout = ((ReflexiveLayout)((ReflexiveEdge)oldEdge)
+					 * .getLayout()).clone();
+					 * newLayout.setEdge((ReflexiveEdge)newEdge);
+					 * newEdge.setLayout(newLayout); } else if (oldEdge
+					 * instanceof BezierEdge) { BezierLayout newLayout =
+					 * ((BezierLayout)((BezierEdge)oldEdge)
+					 * .getLayout()).clone();
+					 * newLayout.setEdge((BezierEdge)newEdge);
+					 * newEdge.setLayout(newLayout); }
+					 * newSelection.insert(newEdge); } } // show something
+					 * useful in edit menu for undo/redo allEdits.addEdit(new
+					 * GraphUndoableEdits.UndoableDummyLabel(
+					 * Hub.string("paste"))); allEdits.end();
+					 * Hub.getUndoManager().addEdit(allEdits); // TODO have the
+					 * pasted selection appear in the top left // corner?
+					 * newSelection.translate(20, 20);
+					 * newSelection.setHighlighted(true);
+					 * clearCurrentSelection(); setSelectedGroup(newSelection);
+					 * }
+					 */
+				}
+				else
+				// for information/debug purposes, remove when complete
+				{
+					System.out
+							.println("something's up with the clipboard contents..."
+									+ "is it null?: "
+									+ (clipboardContent == null) + ".");
+					if (clipboardContent != null)
+					{
+						System.out
+								.println("is the data flavor supported?: "
+										+ (clipboardContent
+												.isDataFlavorSupported(SelectionGroup.selectionGroupFlavor))
+										+ ". ");
+						DataFlavor[] flavours = clipboardContent
+								.getTransferDataFlavors();
+						System.out.println("the available dataflavors are: ");
+						for (int i = 0; i < flavours.length; i++)
+						{
+							System.out.println(i
+									+ flavours[i].getHumanPresentableName());
+						}
+					}
+
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * Pastes a selection into the given graph.
+	 * 
+	 * @param graph
+	 *            the FSAGraph to be pasted into
+	 * @param selection
+	 *            the SelectionGroup to be pasted
+	 * @param undoable
+	 *            whether or not the edits should be added to the undo stack.
+	 * @return the new equivalent SelectionGroup in the given FSAGraph.
+	 */
+	protected SelectionGroup paste(FSAGraph graph, SelectionGroup selection,
+			boolean undoable)
+	{
+
+		// to group the newly created elements so that they are all
+		// selected and movable together when pasted
+		SelectionGroup newSelection = new SelectionGroup();
+		// map from the original node to the new node for creating
+		// the new edges
+		HashMap<Node, Node> nodes = new HashMap<Node, Node>();
+		Node[] nodeBuffer = new Node[1];
+		Edge[] edgeBuffer = new Edge[1];
+		SupervisoryEvent[] eventBuffer = new SupervisoryEvent[1];
+		CompoundEdit allEdits = new CompoundEdit();
+		GraphElement currElement;
+		Node oldNode, newNode;
+		Edge oldEdge, newEdge;
+		SupervisoryEvent newEvent;
+		FSAState oldState, newState;
+		// iterate through children once for the nodes, then again
+		// for the edges (can't create new edges without new nodes)
+		for (Iterator<GraphElement> i = selection.children(); i.hasNext();)
+		{
+			currElement = i.next();
+			if (currElement instanceof Node)
+			{
+				oldNode = (Node)currElement;
+				new GraphActions.CreateNodeAction(
+						allEdits,
+						graph,
+						(Point2D.Float)oldNode.getLayout().getLocation(),
+						nodeBuffer).execute();
+
+				newNode = nodeBuffer[0];
+				// a little clunky since some with states and some
+				// with nodes, but without making changes to Node
+				// that's how it works
+				newState = newNode.getState();
+				oldState = oldNode.getState();
+				// needs to be done on the node to "active" initial
+				// arrow
+				newNode.setInitial(oldState.isInitial());
+				if (newNode.getState().isInitial())
+				{
+					newNode.getInitialArrow().setDirection(oldNode
+							.getInitialArrow().getDirection());
+				}
+
+				newState.setMarked(oldState.isMarked());
+				if (oldState.getName() != null)
+				{
+					graph.labelNode(newNode, oldState.getName());
+				}
+
+				newSelection.insert(newNode);
+				nodes.put(oldNode, newNode);
+
+			}
+
+		}
+
+		// iterate again for the edges
+		for (Iterator<GraphElement> i = selection.children(); i.hasNext();)
+		{
+			currElement = i.next();
+			if (currElement instanceof Edge)
+			{
+				// initial arrow was already created when the new
+				// node was set to initial, and without this
+				// continue, the create edge action throws a cannot
+				// redo exception since the source of the edge is
+				// null
+				if (currElement instanceof InitialArrow)
+				{
+					continue;
+				}
+				oldEdge = (Edge)currElement;
+
+				// figure out whether equivalent event(s) to those
+				// on this edge exist in the model being pasted
+				// into, if not, create them
+				HashSet<SupervisoryEvent> eventsToAddToEdge = new HashSet<SupervisoryEvent>();
+				for (Iterator<FSATransition> it = oldEdge.getTransitions(); it
+						.hasNext();)
+				{
+					FSATransition t = it.next();
+					SupervisoryEvent e = null;
+
+					if (t.getEvent() != null)
+					{
+						e = t.getEvent();
+					}
+					// potential event with same name that already
+					// exists in the model to be pasted into
+					SupervisoryEvent equivEvent = null;
+					for (Iterator<SupervisoryEvent> ie = graph
+							.getModel().getEventIterator(); ie.hasNext();)
+					{
+						SupervisoryEvent modelEvent = ie.next();
+						if (modelEvent.equals(e))
+						{
+							equivEvent = modelEvent;
+						}
+					}
+
+					if (equivEvent != null)
+					{
+						eventsToAddToEdge.add(equivEvent);
+					}
+					else if (e != null)
+					{
+						eventBuffer = new SupervisoryEvent[1];
+
+						new GraphActions.CreateEventAction(allEdits, graph, e
+								.getSymbol(), e.isControllable(), e
+								.isObservable(), eventBuffer).execute();
+
+						newEvent = eventBuffer[0];
+						eventsToAddToEdge.add(newEvent);
+					}
+				}
+
+				// create the new edge here (as opposed to above
+				// finding the transitions) so that undo works
+				// properly. If creating a new event is last, it
+				// would be undone first, and removing the event
+				// deletes associated transitions and possibly edges
+				// which throws exceptions when it comes time to
+				// undo creating those.
+
+				new GraphActions.CreateEdgeAction(allEdits, graph, nodes
+						.get(oldEdge.getSourceNode()), nodes.get(oldEdge
+						.getTargetNode()), edgeBuffer).execute();
+
+				newEdge = edgeBuffer[0];
+
+				graph.replaceEventsOnEdge(eventsToAddToEdge
+						.toArray(new SupervisoryEvent[0]), newEdge);
+
+				// preserve the layout of Bezier edges.
+				// no need to make these explicitly undoable,
+				// since the edge itself is modified, and will
+				// be deleted/revived as needed.
+				if (oldEdge instanceof ReflexiveEdge)
+				{
+					ReflexiveLayout newLayout = ((ReflexiveLayout)((ReflexiveEdge)oldEdge)
+							.getLayout()).clone();
+					newLayout.setEdge((ReflexiveEdge)newEdge);
+					newEdge.setLayout(newLayout);
+				}
+				else if (oldEdge instanceof BezierEdge)
+				{
+					BezierLayout newLayout = ((BezierLayout)((BezierEdge)oldEdge)
+							.getLayout()).clone();
+					newLayout.setEdge((BezierEdge)newEdge);
+					newEdge.setLayout(newLayout);
+				}
+
+				newSelection.insert(newEdge);
+			}
+		}
+
+		// show something useful in edit menu for undo/redo
+		allEdits.addEdit(new GraphUndoableEdits.UndoableDummyLabel(Hub
+				.string("paste")));
+		allEdits.end();
+		if (undoable)
+		{
+			Hub.getUndoManager().addEdit(allEdits);
+		}
+
+		// TODO have the pasted selection appear in the top left
+		// corner?
+		return newSelection;
+
+	}
+
+	/**
+	 * <p>
+	 * Iterates through the elements in <code>selection</code> and for all nodes
+	 * contained, iterates over adjacent edges, and for any BezierEdges, if both
+	 * the source and target nodes of the edge are in the selection, the edge is
+	 * added to the selection.
+	 * </p>
+	 * <p>
+	 * This method was added to address the fact that when BeizerEdges are
+	 * curved, the size of the handles can get large and if they are not
+	 * completely contained in the selection rectangle, the edge otherwise
+	 * wouldn't be contained in the selection group. It keeps the selection more
+	 * in line with the highlighted selection, though not identical
+	 * </p>
+	 * 
+	 * @param selection
+	 *            the SelectionGroup under consideration
+	 * @return the SelectionGroup, now including any edges that already had both
+	 *         source and target included but the edge might not have been
+	 *         included before.
+	 */
+	protected void addChildrenToSelection(SelectionGroup selection)
+	{
+		HashSet<GraphElement> elementsToAdd = new HashSet<GraphElement>();
+		for (Iterator<GraphElement> i = selection.children(); i.hasNext();)
+		{
+			GraphElement currElement = i.next();
+			if (currElement instanceof Node)
+			{
+				Node node = (Node)currElement;
+				for (Iterator<Edge> i2 = node.adjacentEdges(); i2.hasNext();)
+				{
+					Edge edge = (Edge)i2.next();
+					// make sure not to mess this up with initial arrows?
+					if (edge instanceof BezierEdge)// ignores initial
+					// arrows
+					{
+						BezierEdge nodeEdge = (BezierEdge)edge;
+						if (selection.contains(nodeEdge.getSourceNode())
+								&& selection.contains(nodeEdge.getTargetNode()))
+						{
+							elementsToAdd.add(nodeEdge);
+						}
+
+					}
+
+				}
+			}
+		}
+		for (GraphElement e : elementsToAdd)
+		{
+			selection.insert(e);
+		}
+	}
+
+	protected void CCPStatusChanged()
+	{
+		Hub.getCopyPasteManager().refresh();
+	}
+
+	public Action getCopyAction()
+	{
+		return new GraphSelectionCopyAction();
+	}
+
+	public Action getCutAction()
+	{
+		return new GraphSelectionCutAction();
+	}
+
+	public boolean isCutCopyEnabled()
+	{
+		if (hasSelection())
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isPasteEnabled()
+	{
+		// if (CopyPasteBackend
+		// .getClipboard()
+		// .isDataFlavorAvailable(SelectionGroup.selectionGroupFlavor))
+		// {
+		// return true;
+		// }
+		// return false;
+		return FSAPasteHandler.isPasteEnabled();
+	}
+
+	public Action getPasteAction()
+	{
+		// return new GraphSelectionPasteAction();
+		return FSAPasteHandler.getPasteAction();
+	}
+
+	public void newItemOnClipboard()
+	{
+		pasteOffset = pasteOffsetIncrease;
+	}
+
+	public void lostOwnership(Clipboard arg0, Transferable arg1)
+	{
+		// do nothing
 	}
 }

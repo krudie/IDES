@@ -46,6 +46,12 @@ public interface Annotable
 	 * is {@link String}. Read-only.
 	 */
 	public static final String TEXT_ANNOTATION = "textAnnotation";
+	
+	/**
+	 * Annotation key for a ui binder. Annotation is
+	 * implementation-dependent.
+	 */
+	public static final String BINDER = "uniformRadiusBinder";
 
 	/**
 	 * Returns the annotation for the given key.

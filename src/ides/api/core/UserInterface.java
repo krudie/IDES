@@ -1,5 +1,6 @@
 package ides.api.core;
 
+import ides.api.ui.FontSizeSelector;
 import ides.api.ui.ZoomControl;
 
 import java.awt.Frame;
@@ -36,6 +37,13 @@ public interface UserInterface
 	 * @return the zoom control
 	 */
 	public ZoomControl getZoomControl();
+	
+	/**
+	 * Access to the font selector element.
+	 * 
+	 * @return the font selector
+	 */
+	public FontSizeSelector getFontSelector();
 
 	/**
 	 * Bring forward the list of notices ({@link NoticeBoard}).

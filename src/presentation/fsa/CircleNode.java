@@ -60,7 +60,7 @@ public class CircleNode extends Node
 	{
 		this.state = s;
 		setLayout(layout);
-		label = new GraphLabel("");
+		label = new GraphLabel("", GraphLabel.DEFAULT_FONT_SIZE);
 		this.insert(label);
 		circle = computeCircle(CircleNodeLayout.DEFAULT_RADIUS + 2
 				* CircleNodeLayout.RADIUS_MARGIN);

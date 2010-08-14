@@ -57,6 +57,8 @@ public class FSAToolset implements Toolset
 
 		private static Action createAction = null;
 
+		private static Action duplicateModelAction = null;
+
 		private Action simplifyAction = null;
 
 		private Action alignAction = null;
@@ -121,6 +123,10 @@ public class FSAToolset implements Toolset
 			{
 				createAction = new UIActions.CreateTool();
 			}
+			if (duplicateModelAction == null)
+			{
+				duplicateModelAction = new UIActions.DuplicateModelAction();
+			}
 		}
 
 		public JMenu[] getMenus()
@@ -139,6 +145,7 @@ public class FSAToolset implements Toolset
 				gridBinder.bind(showGrid);
 				// this is a dummy menu item since it'll be replaced
 				JCheckBoxMenuItem uniformNodeSize = new JCheckBoxMenuItem();
+				JMenuItem duplicateModel = new JMenuItem(duplicateModelAction);
 				// Adding the menu items to the "graphMenu"
 				graphMenu.add(select);
 				graphMenu.add(create);
@@ -148,6 +155,7 @@ public class FSAToolset implements Toolset
 				graphMenu.add(simpleStatesMenuItem);
 				graphMenu.add(alignMenuItem);
 				graphMenu.add(showGrid);
+				graphMenu.add(duplicateModel);
 				graphMenu.add(uniformNodeSize);
 			}
 			layoutMenu.removeAll();
@@ -214,11 +222,6 @@ public class FSAToolset implements Toolset
 		public Presentation getStatusBar()
 		{
 			return statusBar;
-		}
-
-		public boolean supportsZoom()
-		{
-			return true;
 		}
 	}
 

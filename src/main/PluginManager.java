@@ -41,9 +41,11 @@ import operations.fsa.ver2_1.Coaccessible;
 import operations.fsa.ver2_1.Complement;
 import operations.fsa.ver2_1.Concatenation;
 import operations.fsa.ver2_1.Containment;
+import operations.fsa.ver2_1.ContainsString;
 import operations.fsa.ver2_1.ControlMap;
 import operations.fsa.ver2_1.Controllable;
 import operations.fsa.ver2_1.Equality;
+import operations.fsa.ver2_1.InfimalObservable;
 import operations.fsa.ver2_1.LocalModular;
 import operations.fsa.ver2_1.Meet;
 import operations.fsa.ver2_1.Minimize;
@@ -129,6 +131,8 @@ public class PluginManager
 		OperationManager.instance().register(new SupNorm());
 		OperationManager.instance().register(new StarClosure());
 		OperationManager.instance().register(new PlusClosure());
+		OperationManager.instance().register(new InfimalObservable());
+		OperationManager.instance().register(new ContainsString());
 
 		// Input/Output plugins:
 		new FSAFileIOPlugin().initialize();

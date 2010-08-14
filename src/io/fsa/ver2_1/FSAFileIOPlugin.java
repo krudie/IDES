@@ -35,10 +35,6 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
 
-import model.fsa.ver2_1.State;
-import model.fsa.ver2_1.Transition;
-import model.supeventset.ver3.Event;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -105,7 +101,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				XMLExporter.stateToXML(si.next(), stream, XMLExporter.INDENT);
 			}
 
-			ListIterator<SupervisoryEvent> ei = ((FSAModel)model).getEventIterator();
+			ListIterator<SupervisoryEvent> ei = ((FSAModel)model)
+					.getEventIterator();
 			while (ei.hasNext())
 			{
 				XMLExporter.eventToXML(ei.next(), stream, XMLExporter.INDENT);
@@ -146,13 +143,15 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		ListIterator<FSATransition> ti = ((FSAModel)model)
 				.getTransitionIterator();
 		// TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
-		stream.println("\n\t<font size=\"" + 12 + "\"/>");
+		//int fontSize = (Integer)model.getAnnotation(Annotable.FONT_SIZE);
+		//stream.println("\n\t<font size=\"" + /* 12 */fontSize + "\"/>");
 
 		GraphLayout layout = (GraphLayout)model.getAnnotation(Annotable.LAYOUT);
 		if (layout != null)
 		{
+			stream.println("\n\t<font size=\"" + layout.getFontSize() + "\"/>");
 			stream.println("\t<layout uniformnodes=\""
-					+ layout.getUseUniformRadius().get() + "\"/>");
+					+ layout.getUseUniformRadius() + "\"/>");
 		}
 
 		si = ((FSAModel)model).getStateIterator();
@@ -313,7 +312,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param indent
 		 *            the indentation to be used in the file
 		 */
-		private static void eventToXML(SupervisoryEvent e, PrintStream ps, String indent)
+		private static void eventToXML(SupervisoryEvent e, PrintStream ps,
+				String indent)
 		{
 			if (e.getSymbol() == "" & !(e.isObservable() | e.isControllable()))
 			{
@@ -471,7 +471,9 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		private FSATransition tmpTransition;
 
 		private SupervisoryEvent tmpEvent;
-
+		
+		private GraphLayout gl = new GraphLayout();
+		
 		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long, BezierLayout>();
 
 		// Constants representing names of xml tags and subtags
@@ -765,6 +767,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 			// The sublevel is identified by the class constants: MAINTAG,
 			// SUBTAG, SUBSUBTAG, etc,
 			// which are integers with value meaning the sublevel of the tag.
+			
 			switch (tags.size())
 			{
 			case MAINTAG:// MAINTAG
@@ -842,7 +845,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 
 				else if (CURRENT_PARSING_ELEMENT == FONT)
 				{
-
+					gl.setFontSize(Float.parseFloat(atts.getValue("size")));
+					model.setAnnotation(Annotable.LAYOUT, gl);
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == LAYOUT)
@@ -852,8 +856,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					{
 						uniformNodes = "false";
 					}
-					GraphLayout gl = new GraphLayout();
-					gl.getUseUniformRadius().set(Boolean
+					gl.setUseUniformRadius(Boolean
 							.parseBoolean(uniformNodes));
 					model.setAnnotation(Annotable.LAYOUT, gl);
 				}
@@ -1020,14 +1023,16 @@ public class FSAFileIOPlugin implements FileIOPlugin
 			if (parsingElement == STATE)
 			{
 				long id = Long.parseLong(atts.getValue(ID));
-				FSAState s = new State(id);
+				FSAState s = model.assembleState();// new State(id);
+				s.setId(id);
 				return s;
 			}
 
 			if (parsingElement == EVENT)
 			{
 				long id = Long.parseLong(atts.getValue(ID));
-				Event e = new Event(id);
+				SupervisoryEvent e = model.assembleEvent("");// new Event(id);
+				e.setId(id);
 				e.setObservable(false);
 				return e;
 			}
@@ -1077,11 +1082,17 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				// }
 				if (event != null)
 				{
-					return new Transition(id, src, dst, event);
+					FSATransition t = model.assembleTransition(src.getId(), dst
+							.getId(), event.getId());
+					t.setId(id);
+					return t;// new Transition(id, src, dst, event);
 				}
 				else
 				{
-					return new Transition(id, src, dst);
+					FSATransition t = model.assembleEpsilonTransition(src
+							.getId(), dst.getId());
+					t.setId(id);
+					return t;// new Transition(id, src, dst);
 				}
 			}
 

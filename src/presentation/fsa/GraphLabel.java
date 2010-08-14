@@ -56,12 +56,12 @@ public class GraphLabel extends GraphElement implements LatexElement
 
 	private static final int TEXT_MARGIN_WIDTH = 2;
 
-	public GraphLabel(String text)
+	public static final int DEFAULT_FONT_SIZE = 12;
+
+	public GraphLabel(String text, int fontSize)
 	{
 		setLayout(new GraphicalLayout());
-		// TODO change to a dynamic value read from a config file and stored in
-		// SystemVariables? ResourceManager?
-		font = new Font("times", Font.ITALIC, 12);
+		font = new Font("times", Font.ITALIC, fontSize);
 		setText(text);
 	}
 
@@ -76,9 +76,9 @@ public class GraphLabel extends GraphElement implements LatexElement
 	 * @param location
 	 *            the x,y coordinates of the top left corner of this label
 	 */
-	public GraphLabel(String text, Point2D location)
+	public GraphLabel(String text, int fontSize, Point2D location)
 	{
-		this(text);
+		this(text, fontSize);
 		getLayout().setLocation((float)location.getX(), (float)location.getY());
 	}
 
@@ -469,7 +469,13 @@ public class GraphLabel extends GraphElement implements LatexElement
 		// try{throw new RuntimeException();}catch(Exception
 		// e){e.printStackTrace();}
 		needsRefresh = true;
-		String label = getText();
+		String label = "\\fontsize{"
+				+ getFontSize()
+				+ "} {"
+				+ BentoBox.roundDouble(getFontSize()
+						* GraphExporter.DBL_PSTRICKS_FONT_BASELINE_FACTOR, 2)
+				+ "} \\selectfont " + getText();
+
 		if (label == null)
 		{
 			label = "";
@@ -577,7 +583,6 @@ public class GraphLabel extends GraphElement implements LatexElement
 
 		if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS)
 		{
-			// Don't forget the font size!!!
 			exportString = "  \\rput("
 					+ (labelBounds.x - selectionBox.x + (labelBounds.width / 2.0))
 					+ ","
@@ -585,9 +590,9 @@ public class GraphLabel extends GraphElement implements LatexElement
 					+ "){\\parbox{"
 					+ labelBounds.width
 					+ "pt}{\\fontsize{"
-					+ getLatexFontSize()
+					+ getFontSize()
 					+ "}{"
-					+ BentoBox.roundDouble(getLatexFontSize()
+					+ BentoBox.roundDouble(getFontSize()
 							* GraphExporter.DBL_PSTRICKS_FONT_BASELINE_FACTOR,
 							2) + "} \\selectfont \\begin{center}" + safeLabel
 					+ "\\end{center}}}\n";
@@ -630,8 +635,54 @@ public class GraphLabel extends GraphElement implements LatexElement
 		textMetricsHeight = metrics.getHeight();
 	}
 
-	public static float getLatexFontSize()
+	public void setFontSize(int fs)
 	{
-		return Hub.getLatexManager().getFontSize();
+		int prevSize = getFontSize();
+		if (fs <= 0)
+		{
+			fs = 12;
+		}
+
+		font = new Font("times", Font.ITALIC, fs);
+
+		if (fs != prevSize)
+		{
+			rendered = null;
+			FSAGraph graph = getGraph();
+			if (graph != null && graph.isRenderingOn())
+			{
+				try
+				{
+					renderIfNeeded();
+				}
+				catch (LatexRenderException e)
+				{
+					Hub.getLatexManager().handleRenderingProblem();
+					rendered = null;
+				}
+			}
+		}
+		// setNeedsRefresh(true);
+		updateMetrics();
+	}
+
+	public int getFontSize()
+	{
+		return font.getSize();
+	}
+
+	public void refresh()
+	{
+		int size = DEFAULT_FONT_SIZE;
+		if (getGraph() != null)
+		{
+			size = (int)getGraph().getFontSize();
+		}
+		
+		if (size != getFontSize())
+		{
+			setFontSize(size);
+		}
+
 	}
 }

@@ -25,10 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import model.fsa.ver2_1.Automaton;
-import model.supeventset.ver3.Event;
-import model.fsa.ver2_1.State;
-import model.fsa.ver2_1.Transition;
 import util.BooleanUIBinder;
 
 /**
@@ -54,21 +50,27 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return avoidLayoutDrawing;
 	}
 
+	protected float fontSize;
+
 	protected UniformRadius uniformR = new UniformRadius();
 
 	public boolean isUseUniformRadius()
 	{
 		return ((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
-				.getUseUniformRadius().get();
+				.getUseUniformRadius();
 	}
 
 	public void setUseUniformRadius(boolean b)
 	{
-		BooleanUIBinder binder = ((GraphLayout)fsa
-				.getAnnotation(Annotable.LAYOUT)).getUseUniformRadius();
+		// BooleanUIBinder binder = ((GraphLayout)fsa
+		// .getAnnotation(Annotable.LAYOUT)).getUseUniformRadius();
+		BooleanUIBinder binder = (BooleanUIBinder)fsa
+				.getAnnotation(Annotable.BINDER);
 		if (b != binder.get())
 		{
 			binder.set(b);
+			((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
+					.setUseUniformRadius(b);
 			setNeedsRefresh(true);
 			fireFSAGraphChanged(new FSAGraphMessage(
 					FSAGraphMessage.MODIFY,
@@ -81,8 +83,27 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 	public BooleanUIBinder getUseUniformRadiusBinder()
 	{
-		return ((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
-				.getUseUniformRadius();
+		return (BooleanUIBinder)fsa.getAnnotation(Annotable.BINDER);
+	}
+
+	public float getFontSize()
+	{
+		return fontSize;
+	}
+
+	public void setFontSize(float fs)
+	{
+		fontSize = fs;
+		GraphLayout lay = (GraphLayout)fsa.getAnnotation(Annotable.LAYOUT);
+		lay.setFontSize(fs);
+		fsa.metadataChanged();
+		setNeedsRefresh(true);
+		fireFSAGraphChanged(new FSAGraphMessage(
+				FSAGraphMessage.MODIFY,
+				FSAGraphMessage.GRAPH,
+				FSAGraphMessage.UNKNOWN_ID,
+				getBounds(false),
+				this));
 	}
 
 	protected Set<Presentation> hooks = new HashSet<Presentation>();
@@ -119,7 +140,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	/**
 	 * The system data model
 	 */
-	private Automaton fsa; // system model
+	private FSAModel fsa; // system model
 
 	/**
 	 * Creates a graph model from the given system data model using an automatic
@@ -130,17 +151,25 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 */
 	public FSAGraph(FSAModel fsa)
 	{
-		if (!(fsa instanceof Automaton))
-		{
-			throw new RuntimeException("FSAGraph can only layout Automatons");
-		}
-		this.fsa = (Automaton)fsa;
+		// if (!(fsa instanceof Automaton))
+		// {
+		// throw new RuntimeException("FSAGraph can only layout Automatons");
+		// }
+		this.fsa = /* (Automaton) */fsa;
 		fsa.addSubscriber(this);
 
 		// test for global layout
 		if (!fsa.hasAnnotation(Annotable.LAYOUT))
 		{
 			fsa.setAnnotation(Annotable.LAYOUT, new GraphLayout());
+		}
+
+		if (!fsa.hasAnnotation(Annotable.BINDER))
+		{
+			BooleanUIBinder b = new BooleanUIBinder();
+			b.set(((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
+					.getUseUniformRadius());
+			fsa.setAnnotation(Annotable.BINDER, b);
 		}
 
 		nodes = new HashMap<Long, Node>();
@@ -322,6 +351,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		edges.clear();
 		edgeLabels.clear();
 		freeLabels.clear();
+
+		fontSize = ((GraphLayout)fsa.getAnnotation(LAYOUT)).getFontSize();
 
 		// Testing annotations:
 		boolean hasLayout = true;
@@ -542,6 +573,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		}
 
 		// clear all dirty bits in the graph structure
+		// also sets the font size in GraphLabels
 		refresh();
 	}
 
@@ -569,7 +601,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return set;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	// //////////////////////////////////////////////////////////////////////////
 	// /
 
 	/**
@@ -582,7 +614,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 */
 	public CircleNode createNode(Point2D.Float p)
 	{
-		FSAState s = new State(fsa.getFreeStateId());
+		FSAState s = fsa.assembleState();// new State(fsa.getFreeStateId());
 		s.setInitial(false);
 		s.setMarked(false);
 		CircleNodeLayout layout = new CircleNodeLayout(uniformR, p);
@@ -748,8 +780,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 */
 	public BezierEdge createEdge(Node n1, Node n2)
 	{
-		FSATransition t = new Transition(fsa.getFreeTransitionId(), fsa
-				.getState(n1.getId()), fsa.getState(n2.getId()));
+		FSATransition t = fsa
+				.assembleEpsilonTransition(fsa.getState(n1.getId()).getId(),
+						fsa.getState(n2.getId()).getId());// new
+		// Transition(fsa.getFreeTransitionId(),
+		// fsa
+		// .getState(n1.getId()), fsa.getState(n2.getId()));
 		Edge e;
 		if (n1.equals(n2))
 		{
@@ -982,17 +1018,25 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		{
 			for (SupervisoryEvent e : newEvents)
 			{
-				toAdd.add(new Transition(fsa.getFreeTransitionId(), edge
-						.getSourceNode().getState(), edge
-						.getTargetNode().getState(), e));
+				toAdd.add(fsa.assembleTransition(edge
+						.getSourceNode().getState().getId(), edge
+						.getTargetNode().getState().getId(), e.getId())); // new
+				// Transition(fsa.getFreeTransitionId(),
+				// edge
+				// .getSourceNode().getState(), edge
+				// .getTargetNode().getState(), e));
 			}
 		}
 		else
 		// we'll be removing all events, so leave only one "empty" transition
 		{
-			toAdd.add(new Transition(fsa.getFreeTransitionId(), edge
-					.getSourceNode().getState(), edge
-					.getTargetNode().getState(), null));
+			toAdd.add(fsa.assembleEpsilonTransition(edge
+					.getSourceNode().getState().getId(), edge
+					.getTargetNode().getState().getId()));// new
+			// Transition(fsa.getFreeTransitionId(),
+			// edge
+			// .getSourceNode().getState(), edge
+			// .getTargetNode().getState(), null));
 		}
 
 		addAndRemoveTransitions(toRemove, toAdd, edge);
@@ -1226,9 +1270,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * @param p
 	 *            the location to place the label
 	 */
-	public void addFreeLabel(String text, Point2D.Float p)
+	public void addFreeLabel(String text, int fontSize, Point2D.Float p)
 	{
-		GraphLabel label = new GraphLabel(text, p);
+		GraphLabel label = new GraphLabel(text, fontSize, p);
 		freeLabels.put(label.getId(), label);
 		insert(label);
 		setNeedsRefresh(true);
@@ -1264,11 +1308,12 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * @param observable
 	 * @return the new Event
 	 */
-	public SupervisoryEvent createAndAddEvent(String symbol, boolean controllable,
-			boolean observable)
+	public SupervisoryEvent createAndAddEvent(String symbol,
+			boolean controllable, boolean observable)
 	{
-		SupervisoryEvent event = new Event(fsa.getFreeEventId());
-		event.setSymbol(symbol);
+		SupervisoryEvent event = fsa.assembleEvent(symbol);// new
+		// Event(fsa.getFreeEventId());
+		// event.setSymbol(symbol);
 		event.setControllable(controllable);
 		event.setObservable(observable);
 		fsa.add(event);
@@ -1726,7 +1771,6 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see observer.FSMSubscriber#fsmStructureChanged(observer.FSMMessage)
 	 */
 	public void fsaStructureChanged(FSAMessage message)

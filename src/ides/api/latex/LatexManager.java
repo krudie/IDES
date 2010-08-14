@@ -76,11 +76,4 @@ public interface LatexManager
 	 * LaTeX settings.
 	 */
 	public void handleRenderingProblem();
-
-	/**
-	 * Returns the font size used for LaTeX rendering.
-	 * 
-	 * @return the font size used for LaTeX rendering
-	 */
-	public float getFontSize();
 }

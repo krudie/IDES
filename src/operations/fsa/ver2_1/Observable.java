@@ -144,7 +144,17 @@ public class Observable implements Operation
 		// Double check that sublanguage is in fact a sublanguage of the
 		// plant. (don't call the operation since that will run determinize
 		// again)
-		boolean isSublanguage = Subset.subset(sublanguage, plant);
+		// NOTE: use subset of L(G) not Lm(G) as per Karen's suggestion when
+		// presented with problem of prefix-closed infimal observable language
+		// not being official observable (because not a sublanguage)
+
+		FSAModel prefixClosedPlant = (FSAModel)OperationManager
+				.instance().getOperation("prefixclose")
+				.perform(new Object[] { plant })[0];
+		warnings.addAll(OperationManager
+				.instance().getOperation("prefixclose").getWarnings());
+		
+		boolean isSublanguage = Subset.subset(sublanguage, prefixClosedPlant);
 
 		if (!isSublanguage)
 		{

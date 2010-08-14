@@ -2,15 +2,15 @@ package ides.api.ui;
 
 import ides.api.core.Hub;
 import ides.api.plugin.presentation.Presentation;
+import ides.api.plugin.presentation.ZoomablePresentation;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JComboBox;
-
-import presentation.fsa.FSAToolset;
-import presentation.fsa.GraphDrawingView;
 
 /**
  * The control for the zoom level when rendering models (to be used by
@@ -109,12 +109,25 @@ public class ZoomControl extends JComboBox implements ActionListener
 		if (z != zoomValue)
 		{
 			zoomValue = z;
-			GraphDrawingView gdv = FSAToolset.getCurrentBoard();
-			if (gdv != null)
+
+			Collection<Presentation> presentations = Hub
+					.getWorkspace().getPresentations();
+			for (Iterator<Presentation> i = presentations.iterator(); i
+					.hasNext();)
 			{
-				gdv.setScaleFactor(getZoom());
+				Presentation curr = i.next();
+				if (curr instanceof ZoomablePresentation)
+				{
+					((ZoomablePresentation)curr).setScaleFactor(getZoom());
+				}
 			}
-			// ((MainWindow)Hub.getMainWindow()).getDrawingBoard().update();
+
+			// GraphDrawingView gdv = FSAToolset.getCurrentBoard();
+			// if (gdv != null)
+			// {
+			// gdv.setScaleFactor(getZoom());
+			// }
+			// // ((MainWindow)Hub.getMainWindow()).getDrawingBoard().update();
 			Hub.getWorkspace().fireRepaintRequired();
 		}
 		setSelectedItem("" + zoomValue + " %");

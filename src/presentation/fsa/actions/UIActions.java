@@ -1,6 +1,7 @@
 package presentation.fsa.actions;
 
 import ides.api.core.Hub;
+import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.layout.FSALayoutManager;
 import ides.api.plugin.layout.FSALayouter;
 
@@ -342,7 +343,7 @@ public class UIActions
 					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 							edge);
 					// new EdgeCommands.CreateEventCommand(,edge).execute();
-					//EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+					// EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 					// edge);
 					// TODO accumulate set of edits that were performed in the
 					// edge
@@ -355,9 +356,9 @@ public class UIActions
 					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 							edge);
 					// new
-					//EdgeCommands.CreateEventCommand(ContextAdaptorHack.context
+					// EdgeCommands.CreateEventCommand(ContextAdaptorHack.context
 					// ,edge).execute();
-					//EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+					// EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 					// edge);
 				}
 				else
@@ -617,22 +618,16 @@ public class UIActions
 			{
 				return;
 			}
-			if (gdv.getSelectedGroup().size() > 0)
+
+			SelectionGroup group = new SelectionGroup();
+			for (Iterator<GraphElement> i = gdv.getGraphModel().children(); i
+					.hasNext();)
 			{
-				new GraphActions.AlignNodesAction(gdv.getGraphModel(), gdv
-						.getSelectedGroup()).execute();
+				group.insert(i.next());
 			}
-			else
-			{
-				SelectionGroup group = new SelectionGroup();
-				for (Iterator<GraphElement> i = gdv.getGraphModel().children(); i
-						.hasNext();)
-				{
-					group.insert(i.next());
-				}
-				new GraphActions.AlignNodesAction(gdv.getGraphModel(), group)
-						.execute();
-			}
+			new GraphActions.AlignNodesAction(gdv.getGraphModel(), group)
+					.execute();
+
 		}
 	}
 
@@ -665,6 +660,41 @@ public class UIActions
 			FSALayoutManager.instance().setDefaultLayouter(layouter);
 			new GraphActions.LayoutAction(graph, layouter).execute();
 		}
+	}
+
+	public static class DuplicateModelAction extends AbstractAction
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -4284838639085719455L;
+
+		public DuplicateModelAction()
+		{
+			super(Hub.string("comDuplicateModel"), new ImageIcon());
+			putValue(SHORT_DESCRIPTION, Hub.string("comHintDuplicateModel"));
+		}
+
+		public void actionPerformed(ActionEvent arg0)
+		{
+			FSAModel model = (FSAModel)Hub.getWorkspace().getActiveModel();
+			FSAModel clone = model.clone();
+			clone.setName(model.getName() + " (clone)");
+			Hub.getWorkspace().addModel(clone);
+
+			// if someone wanted to duplicate the default Untitled model before
+			// having made any changed (just in case...)
+			// without this it closes the default Untitled model when adding a
+			// new model so you get the screen of no model open with the clone
+			// in the filmstrip
+			if (Hub.getWorkspace().size() <= 1)
+			{
+				Hub.getWorkspace().setActiveModel(clone.getName());
+			}
+
+		}
+
 	}
 
 }

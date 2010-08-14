@@ -16,8 +16,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import model.fsa.ver2_1.State;
-
 public class ControlMap extends AbstractOperation implements FilterOperation
 {
 
@@ -95,7 +93,8 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 					if (initial[1].isInitial())
 					{
 						searchList.add(initial.clone());
-						product.add(makeState(initial, stateNumber));
+						product.add(makeState(initial, stateNumber, product
+								.assembleState()));
 						setStateId(initial, stateNumber++);
 					}
 				}
@@ -135,7 +134,8 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 						long id = getStateId(s);
 						if (id == -1)
 						{
-							FSAState target = makeState(s, stateNumber);
+							FSAState target = makeState(s, stateNumber, product
+									.assembleState());
 							product.add(target);
 							setStateId(s, stateNumber++);
 							searchList.add(s.clone());
@@ -175,11 +175,16 @@ public class ControlMap extends AbstractOperation implements FilterOperation
 	 *            the stateset to make a new state from
 	 * @param stateNumber
 	 *            the id of the new state
+	 * @param state
+	 *            a state that has been pre-assembled in the model to which this
+	 *            new state is to be added
 	 * @return the newly created state
 	 */
-	private static FSAState makeState(FSAState[] s, long stateNumber)
+	private static FSAState makeState(FSAState[] s, long stateNumber,
+			FSAState state)
 	{
-		FSAState state = new State(stateNumber);
+		// FSAState state = new State(stateNumber);
+		state.setId(stateNumber);
 
 		if (s[0].isInitial() && s[1].isInitial())
 		{

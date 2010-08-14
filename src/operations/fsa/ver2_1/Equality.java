@@ -41,7 +41,7 @@ public class Equality implements Operation
 	public String getName()
 	{
 
-		return "equals";
+		return "langequals";
 	}
 
 	public int getNumberOfInputs()

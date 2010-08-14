@@ -53,10 +53,4 @@ public class SupEventSetUIDescriptor implements UIDescriptor
 	{
 		return new JToolBar();
 	}
-
-	public boolean supportsZoom()
-	{
-		return false;
-	}
-
 }

@@ -239,11 +239,11 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				ObjectInputStream objectIS = new ObjectInputStream(is);
 				Object layout = objectIS.readObject();
 				is.close();
-				FSAState s = new State(tmpState);
+				FSAState s = clone.assembleCopyOf(tmpState);//new State(tmpState);
 				s.setId(tmpState.getId());
-				s.setMarked(tmpState.isMarked());
-				s.setInitial(tmpState.isInitial());
-				s.setName(tmpState.getName());
+				//s.setMarked(tmpState.isMarked());
+				//s.setInitial(tmpState.isInitial());
+				//s.setName(tmpState.getName());
 				if (layout != null)
 				{
 					s.setAnnotation(Annotable.LAYOUT, layout);
@@ -298,6 +298,38 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				throw new RuntimeException(e);
 			}
 		}
+		
+		//clone the GraphLayout
+		if(hasAnnotation(Annotable.LAYOUT))
+		{
+			try
+			{
+				ByteArrayOutputStream fo = new ByteArrayOutputStream();
+				ObjectOutputStream so;
+				so = new ObjectOutputStream(fo);
+				so.writeObject(getAnnotation(Annotable.LAYOUT));
+				so.flush();
+				ByteArrayInputStream is = new ByteArrayInputStream(fo
+						.toByteArray());
+				ObjectInputStream objectIS = new ObjectInputStream(is);
+				Object layout = objectIS.readObject();
+				is.close();
+				if (layout != null)
+				{
+					clone.setAnnotation(Annotable.LAYOUT, layout);
+				}
+			}
+			catch (IOException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (ClassNotFoundException e)
+			{
+				throw new RuntimeException(e);
+			}
+			
+		}
+		
 		return clone;
 	}
 

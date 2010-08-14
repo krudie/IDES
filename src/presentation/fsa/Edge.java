@@ -80,7 +80,7 @@ public abstract class Edge extends GraphElement
 		transitions = new ArrayList<FSATransition>();
 		this.source = source;
 		this.target = target;
-		this.label = new GraphLabel("");
+		this.label = new GraphLabel("", GraphLabel.DEFAULT_FONT_SIZE);
 		insert(label);
 	}
 

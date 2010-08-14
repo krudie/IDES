@@ -266,7 +266,7 @@ public class SingleLineFreeLabellingDialog extends EscapeDialog
 			if (freeLabel == null)
 			{
 				// add a free label
-				gm.addFreeLabel(area.getText(), new Point2D.Float(me
+				gm.addFreeLabel(area.getText(), GraphLabel.DEFAULT_FONT_SIZE, new Point2D.Float(me
 						.getLocation().x, me.getLocation().y - me.getHeight()));
 			}
 			else

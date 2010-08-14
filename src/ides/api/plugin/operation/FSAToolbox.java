@@ -1,18 +1,18 @@
 package ides.api.plugin.operation;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.model.DESEvent;
-import ides.api.plugin.model.DESEventSet;
 import ides.api.plugin.model.ModelManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 /**
@@ -39,6 +39,9 @@ public class FSAToolbox
 	public static final String ERROR_CONTROL = Hub.string("errorControl");
 
 	public static final String ERROR_OBSERVE = Hub.string("errorObserve");
+
+	public static final String ERROR_UNABLE_TO_COMPUTE = Hub
+			.string("errorUnableToCompute");
 
 	/**
 	 * Obtains a set of the ids of all initial states in the model.
@@ -182,7 +185,7 @@ public class FSAToolbox
 		compareTo.add(s);
 
 		boolean isEmpty = (Boolean)OperationManager
-				.instance().getOperation("equals").perform(new Object[] {
+				.instance().getOperation("langequals").perform(new Object[] {
 						model, compareTo })[0];
 
 		return isEmpty;
@@ -208,7 +211,7 @@ public class FSAToolbox
 		compareTo.add(s);
 
 		boolean isEpsilonLanguage = (Boolean)OperationManager
-				.instance().getOperation("equals").perform(new Object[] {
+				.instance().getOperation("langequals").perform(new Object[] {
 						model, compareTo })[0];
 
 		return isEpsilonLanguage;
@@ -254,55 +257,6 @@ public class FSAToolbox
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * Generates the FSA representation of all finite sequences over the event
-	 * set plus the null string.
-	 * 
-	 * @param set
-	 *            The given event set.
-	 * @return FSA representation of all finite sequences over the event set
-	 *         plus the null string.
-	 */
-	// TODO change my name? and fix my wording.
-	public static FSAModel sigmaStar(DESEventSet set)
-	{
-		FSAModel model = ModelManager.instance().createModel(FSAModel.class);
-		for (Iterator<DESEvent> i = set.iterator(); i.hasNext();)
-		{
-			SupervisoryEvent e = model.assembleCopyOf(i.next());
-			model.add(e);
-		}
-		model = (FSAModel)OperationManager
-				.instance().getFilterOperation("complement")
-				.filter(new Object[] { model })[0];
-		return model;
-	}
-
-	/**
-	 * Generates the FSA representation of all finite sequences over the event
-	 * set.
-	 * 
-	 * @param set
-	 *            The given event set.
-	 * @return FSA representation of all finite sequences over the event set.
-	 */
-	// TODO change my name? and fix my wording
-	public static FSAModel sigmaPlus(DESEventSet set)
-	{
-		FSAModel model1 = sigmaStar(set);
-		FSAModel epsilon = ModelManager.instance().createModel(FSAModel.class);
-		FSAState state = epsilon.assembleState();
-		state.setInitial(true);
-		state.setMarked(true);
-		epsilon.add(state);
-
-		FSAModel ret = (FSAModel)OperationManager
-				.instance().getOperation("setminus").perform(new Object[] {
-						model1, epsilon })[0];
-		ret.removeAnnotation(Annotable.COMPOSED_OF);
-		return ret;
 	}
 
 	/**
@@ -393,5 +347,45 @@ public class FSAToolbox
 		}
 
 		return false;
+	}
+
+	/**
+	 * Constructs an FSAModel representing a string from a List of DESEvents.
+	 * 
+	 * @param list
+	 *            The List of DESEvents to construct the FSAModel from.
+	 * @return FSAModel representing the given string.
+	 */
+
+	public static FSAModel modelFromList(List<DESEvent> list)
+	{
+		FSAModel model = ModelManager.instance().createModel(FSAModel.class);
+		FSAState initial = model.assembleState();
+		initial.setInitial(true);
+		model.add(initial);
+
+		FSAState currState = initial;
+		FSAState newState;
+		FSATransition t;
+		SupervisoryEvent e;
+
+		for (ListIterator<DESEvent> i = list.listIterator(); i.hasNext();)
+		{
+			DESEvent de = i.next();
+			e = model.assembleCopyOf(de);
+			model.add(e);
+
+			newState = model.assembleState();
+			model.add(newState);
+
+			t = model.assembleTransition(currState.getId(), newState.getId(), e
+					.getId());
+			model.add(t);
+
+			currState = newState;
+		}
+		currState.setMarked(true);
+
+		return model;
 	}
 }
