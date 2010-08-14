@@ -522,7 +522,8 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 		Action cutAction = Hub.getCopyPasteManager().getCutOverwriteAction();
 		Action copyAction = Hub.getCopyPasteManager().getCopyOverwriteAction();
-		Action pasteAction = Hub.getCopyPasteManager().getPasteOverwriteAction();
+		Action pasteAction = Hub
+				.getCopyPasteManager().getPasteOverwriteAction();
 		table.getActionMap().put("cut", cutAction);
 		table.getActionMap().put("copy", copyAction);
 		table.getActionMap().put("paste", pasteAction);
@@ -866,7 +867,6 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 		 */
 		private static final long serialVersionUID = 4876758349363695584L;
 
-		@Override
 		public void actionPerformed(ActionEvent arg0)
 		{
 			SupervisoryEventSet eventSet = ModelManager
@@ -909,8 +909,9 @@ public class EventView extends JPanel implements Presentation, FSASubscriber,
 
 		public void actionPerformed(ActionEvent arg0)
 		{
-			Transferable clipboardContent = Hub.getCopyPasteManager()
-					.getClipboard().getContents(EventView.this);
+			Transferable clipboardContent = Hub
+					.getCopyPasteManager().getClipboard()
+					.getContents(EventView.this);
 			if (clipboardContent != null
 					&& clipboardContent
 							.isDataFlavorSupported(EventSetWrapper.eventSelectionFlavor))

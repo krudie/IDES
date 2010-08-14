@@ -1,5 +1,16 @@
 package presentation.supeventset;
 
+import ides.api.core.Hub;
+import ides.api.model.supeventset.SupEventSetMessage;
+import ides.api.model.supeventset.SupEventSetSubscriber;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.ModelManager;
+import ides.api.plugin.presentation.CopyPastePresentation;
+import ides.api.plugin.presentation.Presentation;
+import ides.api.utilities.GeneralUtils;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -40,17 +51,6 @@ import presentation.fsa.actions.GraphUndoableEdits;
 import presentation.supeventset.actions.AbstractSupEventSetAction;
 import presentation.supeventset.actions.SupEventSetActions;
 import services.ccp.EventSetWrapper;
-
-import ides.api.core.Hub;
-import ides.api.model.supeventset.SupEventSetMessage;
-import ides.api.model.supeventset.SupEventSetSubscriber;
-import ides.api.model.supeventset.SupervisoryEvent;
-import ides.api.model.supeventset.SupervisoryEventSet;
-import ides.api.plugin.model.DESModel;
-import ides.api.plugin.model.ModelManager;
-import ides.api.plugin.presentation.CopyPastePresentation;
-import ides.api.plugin.presentation.Presentation;
-import ides.api.utilities.GeneralUtils;
 
 /**
  * @author Valerie Sugarman but adapted from presentation.fsa.EventView so
@@ -518,7 +518,8 @@ public class SupEventSetView extends JPanel implements Presentation,
 
 		Action cutAction = Hub.getCopyPasteManager().getCutOverwriteAction();
 		Action copyAction = Hub.getCopyPasteManager().getCopyOverwriteAction();
-		Action pasteAction = Hub.getCopyPasteManager().getPasteOverwriteAction();
+		Action pasteAction = Hub
+				.getCopyPasteManager().getPasteOverwriteAction();
 		table.getActionMap().put("cut", cutAction);
 		table.getActionMap().put("copy", copyAction);
 		table.getActionMap().put("paste", pasteAction);
@@ -745,7 +746,6 @@ public class SupEventSetView extends JPanel implements Presentation,
 		 */
 		private static final long serialVersionUID = 4876758349363695584L;
 
-		@Override
 		public void actionPerformed(ActionEvent arg0)
 		{
 			SupervisoryEventSet eventSet = ModelManager

@@ -151,11 +151,12 @@ public class FSAToolset implements Toolset
 				graphMenu.add(create);
 				// graphMenu.add(move);
 				graphMenu.addSeparator();
+				graphMenu.add(duplicateModel);
+				graphMenu.addSeparator();
 				graphMenu.add(layoutMenu);
 				graphMenu.add(simpleStatesMenuItem);
 				graphMenu.add(alignMenuItem);
 				graphMenu.add(showGrid);
-				graphMenu.add(duplicateModel);
 				graphMenu.add(uniformNodeSize);
 			}
 			layoutMenu.removeAll();

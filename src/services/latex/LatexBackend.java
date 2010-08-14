@@ -344,7 +344,9 @@ public class LatexBackend implements LatexManager
 			{
 				if (Hub.getUserInterface().getFontSelector().getFontSize() > 25)
 				{
-					Hub.getUserInterface().getFontSelector().setFontSize(25);
+					// don't restrict the user
+					// -- Lenko
+					// Hub.getUserInterface().getFontSelector().setFontSize(25);
 					LatexMessages.fontSizeTooBig();
 				}
 			}

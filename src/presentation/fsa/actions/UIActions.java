@@ -680,7 +680,7 @@ public class UIActions
 		{
 			FSAModel model = (FSAModel)Hub.getWorkspace().getActiveModel();
 			FSAModel clone = model.clone();
-			clone.setName(model.getName() + " (clone)");
+			clone.setName(model.getName());
 			Hub.getWorkspace().addModel(clone);
 
 			// if someone wanted to duplicate the default Untitled model before

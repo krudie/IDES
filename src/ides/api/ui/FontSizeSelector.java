@@ -70,7 +70,9 @@ public class FontSizeSelector extends JComboBox implements ActionListener
 			}
 			else if (newSize > 25 && Hub.getLatexManager().isLatexEnabled())
 			{
-				newSize = 25;
+				// don't restrict the user
+				// -- Lenko
+				// newSize = 25;
 				LatexMessages.fontSizeTooBig();
 			}
 			commitFontSize(newSize);
@@ -131,7 +133,10 @@ public class FontSizeSelector extends JComboBox implements ActionListener
 			}
 			Hub.getWorkspace().fireRepaintRequired();
 		}
-		setSelectedItem(fontSize);
+		if (!getEditor().getItem().toString().equals("" + fontSize))
+		{
+			setSelectedItem(fontSize);
+		}
 	}
 
 }
