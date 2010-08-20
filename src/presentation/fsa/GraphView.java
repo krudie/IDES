@@ -376,7 +376,14 @@ public class GraphView extends JComponent implements FSAGraphSubscriber,
 	}
 
 	public void setFontSize(float fs)
-	{		
-		getGraphModel().setFontSize(fs);
+	{	
+		if(fs != getGraphModel().getFontSize())
+		{
+			new GraphActions.ChangeFontSizeAction(getGraphModel(), fs).execute();	
+		}
+		if(graphModel.isRenderingOn())
+		{
+			Hub.getLatexManager().prerenderAndRepaint(this);
+		}
 	}
 }

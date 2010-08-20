@@ -8,6 +8,8 @@ import ides.api.plugin.model.DESModel;
 
 import java.util.Iterator;
 
+import util.AnnotationKeys;
+
 /**
  * Provides state labelling services for {@link FSAModel}s.
  * 
@@ -49,21 +51,21 @@ public class FSAStateLabeller
 	 */
 	public static void labelCompositeStates(FSAModel fsa)
 	{
-		if (fsa.getAnnotation(Annotable.COMPOSED_OF) == null
-				|| !(fsa.getAnnotation(Annotable.COMPOSED_OF) instanceof String[]))
+		if (fsa.getAnnotation(AnnotationKeys.COMPOSED_OF) == null
+				|| !(fsa.getAnnotation(AnnotationKeys.COMPOSED_OF) instanceof String[]))
 		{
 			// no "composed of" info
 			return;
 		}
-		if (((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length > 1)
+		if (((String[])fsa.getAnnotation(AnnotationKeys.COMPOSED_OF)).length > 1)
 		{
 			// "composed of" more than one models
 			FSAModel[] gs = new FSAModel[((String[])fsa
-					.getAnnotation(Annotable.COMPOSED_OF)).length];
+					.getAnnotation(AnnotationKeys.COMPOSED_OF)).length];
 			for (int i = 0; i < gs.length; ++i)
 			{
 				DESModel m = Hub.getWorkspace().getModel(((String[])fsa
-						.getAnnotation(Annotable.COMPOSED_OF))[i]);
+						.getAnnotation(AnnotationKeys.COMPOSED_OF))[i]);
 				if (m == null || !(m instanceof FSAModel))
 				{
 					gs[i] = null;
@@ -78,7 +80,7 @@ public class FSAStateLabeller
 				FSAState s = si.next();
 				String label = "(";
 				String[] names = (String[])s
-						.getAnnotation(Annotable.COMPOSED_OF_NAMES);
+						.getAnnotation(AnnotationKeys.COMPOSED_OF_NAMES);
 				if (names != null && names.length > 0)
 				{
 					// "composed of names" is available
@@ -93,7 +95,7 @@ public class FSAStateLabeller
 					// "composed of names" is not available; try to recover
 					// state names from original models
 					long[] composition = (long[])s
-							.getAnnotation(Annotable.COMPOSED_OF);
+							.getAnnotation(AnnotationKeys.COMPOSED_OF);
 					if (composition == null)
 					{
 						nameError(s);
@@ -139,11 +141,11 @@ public class FSAStateLabeller
 				s.setName(label);
 			}
 		}
-		else if (((String[])fsa.getAnnotation(Annotable.COMPOSED_OF)).length == 1)
+		else if (((String[])fsa.getAnnotation(AnnotationKeys.COMPOSED_OF)).length == 1)
 		{
 			// "composed of" only one model (e.g. when using "projection")
 			DESModel m = Hub.getWorkspace().getModel(((String[])fsa
-					.getAnnotation(Annotable.COMPOSED_OF))[0]);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF))[0]);
 			if (m == null || !(m instanceof FSAModel))
 			{
 				m = null;
@@ -154,7 +156,7 @@ public class FSAStateLabeller
 				FSAState s = si.next();
 				String label = "";
 				String[] names = (String[])s
-						.getAnnotation(Annotable.COMPOSED_OF_NAMES);
+						.getAnnotation(AnnotationKeys.COMPOSED_OF_NAMES);
 				if (names != null && names.length > 0)
 				{
 					// "composed of names" available
@@ -178,7 +180,7 @@ public class FSAStateLabeller
 					// "composed of names" not available; try to recover state
 					// names from original models
 					long[] composition = (long[])s
-							.getAnnotation(Annotable.COMPOSED_OF);
+							.getAnnotation(AnnotationKeys.COMPOSED_OF);
 					if (composition == null || g == null)
 					{
 						nameError(s);

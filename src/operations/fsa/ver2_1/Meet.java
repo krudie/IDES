@@ -5,7 +5,8 @@ package operations.fsa.ver2_1;
 
 import java.util.LinkedList;
 
-import ides.api.core.Annotable;
+import util.AnnotationKeys;
+
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.operation.FSAToolbox;
 import ides.api.plugin.operation.OperationManager;
@@ -80,7 +81,7 @@ public class Meet extends AbstractOperation
 		// make sense in product
 		if (epsilonsRemoved)
 		{
-			model.removeAnnotation(Annotable.COMPOSED_OF);
+			model.removeAnnotation(AnnotationKeys.COMPOSED_OF);
 		}
 
 		return new Object[] { model };

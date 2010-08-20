@@ -647,22 +647,8 @@ public class GraphLabel extends GraphElement implements LatexElement
 
 		if (fs != prevSize)
 		{
-			rendered = null;
-			FSAGraph graph = getGraph();
-			if (graph != null && graph.isRenderingOn())
-			{
-				try
-				{
-					renderIfNeeded();
-				}
-				catch (LatexRenderException e)
-				{
-					Hub.getLatexManager().handleRenderingProblem();
-					rendered = null;
-				}
-			}
+			rendered = null; // causes needsRendering() to return true
 		}
-		// setNeedsRefresh(true);
 		updateMetrics();
 	}
 
@@ -678,7 +664,7 @@ public class GraphLabel extends GraphElement implements LatexElement
 		{
 			size = (int)getGraph().getFontSize();
 		}
-		
+
 		if (size != getFontSize())
 		{
 			setFontSize(size);

@@ -1,6 +1,5 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
@@ -14,6 +13,8 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import util.AnnotationKeys;
 
 /**
  * This class contains methods for composing new automata from existing
@@ -67,11 +68,11 @@ public class Composition
 
 			// fix COMPOSED_OF model names
 			String[] prevModels = (String[])prevAnswer
-					.getAnnotation(Annotable.COMPOSED_OF);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF);
 			String[] newModels = new String[prevModels.length + 1];
 			System.arraycopy(prevModels, 0, newModels, 0, prevModels.length);
 			newModels[newModels.length - 1] = automata[i].getName();
-			newAnswer.setAnnotation(Annotable.COMPOSED_OF, newModels);
+			newAnswer.setAnnotation(AnnotationKeys.COMPOSED_OF, newModels);
 			// fix COMPOSED_OF states
 			flattenComposedOf(prevAnswer, newAnswer);
 
@@ -93,7 +94,7 @@ public class Composition
 	 */
 	public static void shuffle(FSAModel a, FSAModel b, FSAModel shuffle)
 	{
-		shuffle.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+		shuffle.setAnnotation(AnnotationKeys.COMPOSED_OF, new String[] {
 				a.getName(), b.getName() });
 
 		// the event set for the shuffle is the union of the two event sets
@@ -132,7 +133,7 @@ public class Composition
 	public static void product(FSAModel a, FSAModel b, FSAModel product)
 	{
 
-		product.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+		product.setAnnotation(AnnotationKeys.COMPOSED_OF, new String[] {
 				a.getName(), b.getName() });
 
 		// Add the intersection between the eventsets as the products eventset.
@@ -274,11 +275,11 @@ public class Composition
 
 			// fix COMPOSED_OF model names
 			String[] prevModels = (String[])prevAnswer
-					.getAnnotation(Annotable.COMPOSED_OF);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF);
 			String[] newModels = new String[prevModels.length + 1];
 			System.arraycopy(prevModels, 0, newModels, 0, prevModels.length);
 			newModels[newModels.length - 1] = automata[i].getName();
-			newAnswer.setAnnotation(Annotable.COMPOSED_OF, newModels);
+			newAnswer.setAnnotation(AnnotationKeys.COMPOSED_OF, newModels);
 			// fix COMPOSED_OF states
 			flattenComposedOf(prevAnswer, newAnswer);
 
@@ -302,7 +303,7 @@ public class Composition
 	public static void parallel(FSAModel a, FSAModel b, FSAModel parallel)
 	{
 
-		parallel.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+		parallel.setAnnotation(AnnotationKeys.COMPOSED_OF, new String[] {
 				a.getName(), b.getName() });
 
 		// Add the union of the eventsets as the parallel compositions eventset.
@@ -499,9 +500,9 @@ public class Composition
 	{
 		// FSAState state = new State(stateNumber);
 		state.setId(stateNumber);
-		state.setAnnotation(Annotable.COMPOSED_OF, new long[] { s[0].getId(),
+		state.setAnnotation(AnnotationKeys.COMPOSED_OF, new long[] { s[0].getId(),
 				s[1].getId() });
-		state.setAnnotation(Annotable.COMPOSED_OF_NAMES, new String[] {
+		state.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES, new String[] {
 				s[0].getName(), s[1].getName() });
 
 		if (s[0].isInitial() && s[1].isInitial())
@@ -552,9 +553,9 @@ public class Composition
 		{
 			FSAState s = i.next();
 			long[] currentComposedOf = (long[])s
-					.getAnnotation(Annotable.COMPOSED_OF);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF);
 			String[] currentComposedOfNames = (String[])s
-					.getAnnotation(Annotable.COMPOSED_OF_NAMES);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF_NAMES);
 			if (currentComposedOf == null
 					|| currentComposedOf.length != 2
 					|| (currentComposedOfNames != null && currentComposedOfNames.length != 2))
@@ -567,9 +568,9 @@ public class Composition
 				continue;
 			}
 			long[] previousComposedOf = (long[])previousS
-					.getAnnotation(Annotable.COMPOSED_OF);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF);
 			String[] previousComposedOfNames = (String[])previousS
-					.getAnnotation(Annotable.COMPOSED_OF_NAMES);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF_NAMES);
 			if (previousComposedOf == null
 					|| (previousComposedOfNames != null && previousComposedOf.length != previousComposedOfNames.length))
 			{
@@ -582,7 +583,7 @@ public class Composition
 					0,
 					previousComposedOf.length);
 			composedOf[composedOf.length - 1] = currentComposedOf[1];
-			s.setAnnotation(Annotable.COMPOSED_OF, composedOf);
+			s.setAnnotation(AnnotationKeys.COMPOSED_OF, composedOf);
 			if (currentComposedOfNames != null
 					&& previousComposedOfNames != null)
 			{
@@ -593,7 +594,7 @@ public class Composition
 						0,
 						previousComposedOfNames.length);
 				composedOfNames[composedOfNames.length - 1] = currentComposedOfNames[1];
-				s.setAnnotation(Annotable.COMPOSED_OF_NAMES, composedOfNames);
+				s.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES, composedOfNames);
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
@@ -14,6 +13,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+
+import util.AnnotationKeys;
 
 /**
  * State minimization of deterministic finite state automata using Hopcroft's
@@ -192,7 +193,7 @@ public class Minimize extends AbstractOperation
 		// construct minimal FSA
 		FSAModel ret = ModelManager.instance().createModel(FSAModel.class);
 		ret
-				.setAnnotation(Annotable.COMPOSED_OF, new String[] { fsa
+				.setAnnotation(AnnotationKeys.COMPOSED_OF, new String[] { fsa
 						.getName() });
 		Map<SupervisoryEvent, SupervisoryEvent> eventMap = new HashMap<SupervisoryEvent, SupervisoryEvent>();
 		for (Iterator<SupervisoryEvent> ie = fsa.getEventIterator(); ie.hasNext();)
@@ -228,8 +229,8 @@ public class Minimize extends AbstractOperation
 				}
 				++idx;
 			}
-			state.setAnnotation(Annotable.COMPOSED_OF, ids);
-			state.setAnnotation(Annotable.COMPOSED_OF_NAMES, names);
+			state.setAnnotation(AnnotationKeys.COMPOSED_OF, ids);
+			state.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES, names);
 			ret.add(state);
 			stateMap.put(part, state);
 		}

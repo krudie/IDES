@@ -3,7 +3,6 @@
  */
 package ui;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.model.DESEvent;
@@ -55,6 +54,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import util.AnnotationKeys;
 
 /**
  * @author Lenko Grigorov
@@ -770,9 +771,9 @@ public class OperationDialog extends EscapeDialog
 								FSAStateLabeller
 										.labelCompositeStates((FSAModel)model);
 							}
-							if (!model.hasAnnotation(Annotable.TEXT_ANNOTATION))
+							if (!model.hasAnnotation(AnnotationKeys.TEXT_ANNOTATION))
 							{
-								model.setAnnotation(Annotable.TEXT_ANNOTATION,
+								model.setAnnotation(AnnotationKeys.TEXT_ANNOTATION,
 										suggestOutputName() + ": "
 												+ outputDesc[i]);
 							}

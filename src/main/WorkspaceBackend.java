@@ -1,6 +1,5 @@
 package main;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.core.IncompleteWorkspaceDescriptorException;
 import ides.api.core.Workspace;
@@ -28,6 +27,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
+
+import util.AnnotationKeys;
 
 /**
  * The main manager of the open DESModels.
@@ -131,7 +132,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		// Remove initial Untitled model if it is empty
 		if (countAdd == 1 && getActiveModel() != null
 				&& !getActiveModel().needsSave()
-				&& getActiveModel().getAnnotation(Annotable.FILE) == null)
+				&& getActiveModel().getAnnotation(AnnotationKeys.FILE) == null)
 		{
 			removeModel(getActiveModel().getName());
 		}
@@ -560,7 +561,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 			if (model != null)
 			{
 				model.setName(ParsingToolbox.removeFileType(file.getName()));
-				model.setAnnotation(Annotable.FILE, file);
+				model.setAnnotation(AnnotationKeys.FILE, file);
 				loadedModels[i] = model;
 			}
 		}
@@ -649,7 +650,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		while (i.hasNext())
 		{
 			DESModel a = i.next();
-			if (!a.hasAnnotation(Annotable.FILE) && a.getParentModel() == null)
+			if (!a.hasAnnotation(AnnotationKeys.FILE) && a.getParentModel() == null)
 			{
 				unsavedModels.add(a);
 			}
@@ -665,7 +666,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 			DESModel a = systems.elementAt(counter);
 			if (a.getParentModel() == null)
 			{
-				wd.insertModel(((File)a.getAnnotation(Annotable.FILE))
+				wd.insertModel(((File)a.getAnnotation(AnnotationKeys.FILE))
 						.getName(), counter);
 			}
 			else

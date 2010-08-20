@@ -1,6 +1,5 @@
 package ui.actions;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.plugin.io.IOSubsytem;
 import ides.api.plugin.model.DESModel;
@@ -20,6 +19,8 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
+
+import util.AnnotationKeys;
 
 public class EditActions
 {
@@ -82,9 +83,9 @@ public class EditActions
 
 			protected boolean exerciseRename(String newName)
 			{
-				if (model.hasAnnotation(Annotable.FILE))
+				if (model.hasAnnotation(AnnotationKeys.FILE))
 				{
-					File oldFile = (File)model.getAnnotation(Annotable.FILE);
+					File oldFile = (File)model.getAnnotation(AnnotationKeys.FILE);
 					File newFile = new File(oldFile
 							.getParentFile().getAbsolutePath()
 							+ File.separator
@@ -115,7 +116,7 @@ public class EditActions
 					{
 						return false;
 					}
-					model.setAnnotation(Annotable.FILE, newFile);
+					model.setAnnotation(AnnotationKeys.FILE, newFile);
 				}
 				model.setName(newName);
 				return true;

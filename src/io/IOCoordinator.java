@@ -3,7 +3,6 @@
  */
 package io;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.plugin.io.FileIOPlugin;
 import ides.api.plugin.io.FileLoadException;
@@ -25,6 +24,8 @@ import java.nio.channels.FileChannel;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import util.AnnotationKeys;
 
 /**
  * @author christiansilvano
@@ -227,7 +228,7 @@ public final class IOCoordinator implements IOSubsytem
 		if (returnModel != null)
 		{
 			returnModel.setName(ParsingToolbox.removeFileType(file.getName()));
-			returnModel.setAnnotation(Annotable.FILE, file);
+			returnModel.setAnnotation(AnnotationKeys.FILE, file);
 			returnModel.modelSaved();
 		}
 		if (errorEncountered)
@@ -252,7 +253,7 @@ public final class IOCoordinator implements IOSubsytem
 		{
 			plugin.importFile(src, dst);
 			model = load(dst);
-			model.removeAnnotation(Annotable.FILE);
+			model.removeAnnotation(AnnotationKeys.FILE);
 			model.setName(ParsingToolbox.removeFileType(src.getName()));
 			model.modelSaved();
 		}
@@ -260,7 +261,7 @@ public final class IOCoordinator implements IOSubsytem
 		{
 			if (e.getPartialModel() != null)
 			{
-				e.getPartialModel().removeAnnotation(Annotable.FILE);
+				e.getPartialModel().removeAnnotation(AnnotationKeys.FILE);
 				e.getPartialModel().setName(ParsingToolbox.removeFileType(src
 						.getName()));
 				e.getPartialModel().modelSaved();

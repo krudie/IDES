@@ -1,6 +1,5 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
@@ -17,6 +16,8 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import util.AnnotationKeys;
 
 /**
  * Adapted from Composition.observer algorithm.
@@ -67,7 +68,7 @@ public class Project
 		FSAModel projection = ModelManager
 				.instance().createModel(FSAModel.class);
 
-		projection.setAnnotation(Annotable.COMPOSED_OF, new String[] { model
+		projection.setAnnotation(AnnotationKeys.COMPOSED_OF, new String[] { model
 				.getName() });
 
 		HashMap<String, SupervisoryEvent> newEvents = new HashMap<String, SupervisoryEvent>();
@@ -306,8 +307,8 @@ public class Project
 		aState.setId(id);
 		aState.setMarked(marked);
 		aState.setInitial(initial);
-		aState.setAnnotation(Annotable.COMPOSED_OF, compositionIds);
-		aState.setAnnotation(Annotable.COMPOSED_OF_NAMES, compositionNames);
+		aState.setAnnotation(AnnotationKeys.COMPOSED_OF, compositionIds);
+		aState.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES, compositionNames);
 
 		return aState;
 	}

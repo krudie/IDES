@@ -1,6 +1,5 @@
 package io;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.plugin.io.FileIOPlugin;
 import ides.api.plugin.io.FileLoadException;
@@ -18,6 +17,8 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
+
+import util.AnnotationKeys;
 
 /**
  * Plugin to store and load meta-data with user annotations for models. This
@@ -99,7 +100,7 @@ public class AnnotatedModelPlugin implements FileIOPlugin
 		{
 			throw new FileLoadException(e.getMessage());
 		}
-		model.setAnnotation(Annotable.TEXT_ANNOTATION, GeneralUtils
+		model.setAnnotation(AnnotationKeys.TEXT_ANNOTATION, GeneralUtils
 				.XMLTextUnescape(text.toString()));
 	}
 
@@ -116,12 +117,12 @@ public class AnnotatedModelPlugin implements FileIOPlugin
 			throw new FileSaveException(Hub.string("ioUnsupportedMetaTag")
 					+ " [" + tag + "]");
 		}
-		if (!model.hasAnnotation(Annotable.TEXT_ANNOTATION))
+		if (!model.hasAnnotation(AnnotationKeys.TEXT_ANNOTATION))
 		{
 			return;
 		}
 		stream.print(GeneralUtils.XMLTextEscape((String)model
-				.getAnnotation(Annotable.TEXT_ANNOTATION)));
+				.getAnnotation(AnnotationKeys.TEXT_ANNOTATION)));
 	}
 
 	public void initialize()

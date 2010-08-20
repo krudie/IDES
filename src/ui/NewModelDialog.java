@@ -50,6 +50,8 @@ public class NewModelDialog extends EscapeDialog
 
 	private static int lastIdx = 0;
 
+	private static boolean firstOpen = true;
+
 	/**
 	 * Creates a new "New model type" dialog box and fills it with all the
 	 * registered model types.
@@ -82,6 +84,24 @@ public class NewModelDialog extends EscapeDialog
 
 		Vector<Component> items = new Vector<Component>();
 		modelDescriptors = ModelManager.instance().getAllTypes();
+
+		// have FSAModel selected the first time opening a new model (after
+		// that, lastIdx will keep track of the last type of model opened)
+		if (firstOpen)
+		{
+			int fsaIdx = 0;
+			for (int i = 0; i < modelDescriptors.length; ++i)
+			{
+				if (modelDescriptors[i]
+						.getDescription().equals("Finite State Automaton"))
+				{
+					fsaIdx = i;
+				}
+			}
+			lastIdx = fsaIdx;
+			firstOpen = false;
+		}
+
 		for (int i = 0; i < modelDescriptors.length; ++i)
 		{
 			Box vbox = Box.createVerticalBox();
@@ -103,14 +123,18 @@ public class NewModelDialog extends EscapeDialog
 		{
 			lastIdx = 0;
 		}
-		if (items.size() > 0)
-		{
-			modelList.setSelectedIndex(lastIdx);
-			modelList.ensureIndexIsVisible(lastIdx);
-		}
+
 		JScrollPane sp = new JScrollPane(modelList);
 		sp.setPreferredSize(new Dimension(400, 75));
 		mainBox.add(sp);
+
+		if (items.size() > 0)
+		{
+			modelList.setSelectedIndex(lastIdx);
+			// this method is only effective after the JScrollPane is
+			// instantiated
+			modelList.ensureIndexIsVisible(lastIdx);
+		}
 
 		JButton OKButton = new JButton(Hub.string("OK"));
 		OKButton.addActionListener(sml);

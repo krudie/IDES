@@ -1,6 +1,5 @@
 package model.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
@@ -36,6 +35,7 @@ import model.supeventset.ver3.Event;
 import model.supeventset.ver3.EventSet;
 
 import services.General;
+import util.AnnotationKeys;
 
 /**
  * This class is the topmost class in the automaton hierarchy. It serves as the
@@ -231,7 +231,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 			{
 				ByteArrayOutputStream fo = new ByteArrayOutputStream();
 				ObjectOutputStream so = new ObjectOutputStream(fo);
-				so.writeObject(tmpState.getAnnotation(Annotable.LAYOUT));
+				so.writeObject(tmpState.getAnnotation(AnnotationKeys.LAYOUT));
 				so.flush();
 				so.close();
 				ByteArrayInputStream is = new ByteArrayInputStream(fo
@@ -246,7 +246,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				//s.setName(tmpState.getName());
 				if (layout != null)
 				{
-					s.setAnnotation(Annotable.LAYOUT, layout);
+					s.setAnnotation(AnnotationKeys.LAYOUT, layout);
 				}
 				clone.add(s);
 			}
@@ -271,7 +271,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				FSAState target = clone.getState(oldt.getTarget().getId());
 				ByteArrayOutputStream fo = new ByteArrayOutputStream();
 				ObjectOutputStream so = new ObjectOutputStream(fo);
-				so.writeObject(oldt.getAnnotation(Annotable.LAYOUT));
+				so.writeObject(oldt.getAnnotation(AnnotationKeys.LAYOUT));
 				so.flush();
 				ByteArrayInputStream is = new ByteArrayInputStream(fo
 						.toByteArray());
@@ -281,7 +281,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				FSATransition t = new Transition(oldt, source, target);
 				if (layout != null)
 				{
-					t.setAnnotation(Annotable.LAYOUT, layout);
+					t.setAnnotation(AnnotationKeys.LAYOUT, layout);
 				}
 				clone.add(t);
 				if (oldt.getEvent() != null)
@@ -300,14 +300,14 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		}
 		
 		//clone the GraphLayout
-		if(hasAnnotation(Annotable.LAYOUT))
+		if(hasAnnotation(AnnotationKeys.LAYOUT))
 		{
 			try
 			{
 				ByteArrayOutputStream fo = new ByteArrayOutputStream();
 				ObjectOutputStream so;
 				so = new ObjectOutputStream(fo);
-				so.writeObject(getAnnotation(Annotable.LAYOUT));
+				so.writeObject(getAnnotation(AnnotationKeys.LAYOUT));
 				so.flush();
 				ByteArrayInputStream is = new ByteArrayInputStream(fo
 						.toByteArray());
@@ -316,7 +316,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 				is.close();
 				if (layout != null)
 				{
-					clone.setAnnotation(Annotable.LAYOUT, layout);
+					clone.setAnnotation(AnnotationKeys.LAYOUT, layout);
 				}
 			}
 			catch (IOException e)
@@ -1150,7 +1150,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		}
 		else
 		{
-			return (DESEventSet)state.getAnnotation(Annotable.CONTROL_MAP);
+			return (DESEventSet)state.getAnnotation(AnnotationKeys.CONTROL_MAP);
 		}
 	}
 
@@ -1170,7 +1170,7 @@ public class Automaton extends FSAPublisherAdaptor implements Cloneable,
 		}
 		else
 		{
-			state.setAnnotation(Annotable.CONTROL_MAP, set);
+			state.setAnnotation(AnnotationKeys.CONTROL_MAP, set);
 		}
 	}
 

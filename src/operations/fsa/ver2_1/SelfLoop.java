@@ -86,6 +86,10 @@ public class SelfLoop extends AbstractOperation implements FilterOperation
 				events.add(temp); // add the events assembled in fsa (i.e. with
 									// the same ids)
 			}
+			else
+			{
+				events.add(e);
+			}
 		}
 		for (Iterator<FSAState> i = fsa.getStateIterator(); i.hasNext();)
 		{

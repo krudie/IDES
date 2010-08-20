@@ -1,6 +1,5 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -18,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import util.AnnotationKeys;
 
 /**
  * A test to see whether a given language is observable with respect to a plant.
@@ -215,7 +216,7 @@ public class Observable implements Operation
 	private static boolean obsTest(FSAModel sublanguage, FSAModel plant,
 			FSAModel obsTest)
 	{
-		obsTest.setAnnotation(Annotable.COMPOSED_OF, new String[] {
+		obsTest.setAnnotation(AnnotationKeys.COMPOSED_OF, new String[] {
 				sublanguage.getName(), plant.getName() });
 
 		HashMap<String, SupervisoryEvent> newEvents = new HashMap<String, SupervisoryEvent>();
@@ -231,7 +232,7 @@ public class Observable implements Operation
 		dead.setMarked(true);
 		dead.setId(id++);
 		dead
-				.setAnnotation(Annotable.COMPOSED_OF_NAMES,
+				.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES,
 						new String[] { "dead" });
 
 		// it is known there is only one initial state (since if not initially
@@ -516,9 +517,9 @@ public class Observable implements Operation
 	private static void makeStateFromTriple(FSAState[] s, FSAState newState,
 			long id, boolean initial)
 	{
-		newState.setAnnotation(Annotable.COMPOSED_OF, new long[] {
+		newState.setAnnotation(AnnotationKeys.COMPOSED_OF, new long[] {
 				s[0].getId(), s[1].getId(), s[2].getId() });
-		newState.setAnnotation(Annotable.COMPOSED_OF_NAMES, new String[] {
+		newState.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES, new String[] {
 				s[0].getName(), s[1].getName(), s[2].getName() });
 		newState.setId(id);
 		newState.setInitial(initial);

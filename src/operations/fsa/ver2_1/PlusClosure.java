@@ -3,7 +3,8 @@ package operations.fsa.ver2_1;
 import java.util.LinkedList;
 import java.util.List;
 
-import ides.api.core.Annotable;
+import util.AnnotationKeys;
+
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.plugin.model.DESEventSet;
@@ -110,7 +111,7 @@ public class PlusClosure implements Operation
 						model, epsilon })[0];
 		warnings.addAll(OperationManager
 				.instance().getOperation("setminus").getWarnings());
-		model.removeAnnotation(Annotable.COMPOSED_OF);
+		model.removeAnnotation(AnnotationKeys.COMPOSED_OF);
 		return new Object[] { model };
 
 	}

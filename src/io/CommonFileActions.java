@@ -3,7 +3,6 @@
  */
 package io;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.core.IncompleteWorkspaceDescriptorException;
 import ides.api.plugin.io.FileLoadException;
@@ -31,6 +30,7 @@ import javax.swing.filechooser.FileFilter;
 import main.WorkspaceBackend;
 import main.WorkspaceDescriptor;
 import ui.SaveDialog;
+import util.AnnotationKeys;
 
 /**
  * @author christiansilvano
@@ -111,7 +111,7 @@ public class CommonFileActions
 		{
 			if (file == null)
 			{
-				file = (File)model.getAnnotation(Annotable.FILE);
+				file = (File)model.getAnnotation(AnnotationKeys.FILE);
 				if (file == null)
 				{
 					return saveAs(model);
@@ -130,7 +130,7 @@ public class CommonFileActions
 			if (model.getParentModel() == null)
 			{
 				String name = ParsingToolbox.removeFileType(file.getName());
-				model.setAnnotation(Annotable.FILE, file);
+				model.setAnnotation(AnnotationKeys.FILE, file);
 				model.setName(name);
 			}
 			model.modelSaved();
@@ -159,9 +159,9 @@ public class CommonFileActions
 					new String[] { IOSubsytem.MODEL_FILE_EXT },
 					Hub.string("modelFileDescription")));
 
-			if ((File)model.getAnnotation(Annotable.FILE) != null)
+			if ((File)model.getAnnotation(AnnotationKeys.FILE) != null)
 			{
-				fc.setSelectedFile((File)model.getAnnotation(Annotable.FILE));
+				fc.setSelectedFile((File)model.getAnnotation(AnnotationKeys.FILE));
 			}
 			else
 			{
@@ -740,17 +740,17 @@ public class CommonFileActions
 		}
 		if (saveChoice == JOptionPane.YES_OPTION)
 		{
-			if ((File)m.getAnnotation(Annotable.FILE) != null)
+			if ((File)m.getAnnotation(AnnotationKeys.FILE) != null)
 			{
 				try
 				{
 					IOCoordinator.getInstance().save(m,
-							(File)m.getAnnotation(Annotable.FILE));
+							(File)m.getAnnotation(AnnotationKeys.FILE));
 				}
 				catch (IOException e)
 				{
 					Hub.displayAlert(Hub.string("cantSaveModel") + " "
-							+ m.getAnnotation(Annotable.FILE) + "\n"
+							+ m.getAnnotation(AnnotationKeys.FILE) + "\n"
 							+ "Message: "
 							+ GeneralUtils.truncateMessage(e.getMessage()));
 					return false;
@@ -775,9 +775,9 @@ public class CommonFileActions
 						new String[] { IOSubsytem.MODEL_FILE_EXT },
 						Hub.string("modelFileDescription")));
 
-				if ((File)m.getAnnotation(Annotable.FILE) != null)
+				if ((File)m.getAnnotation(AnnotationKeys.FILE) != null)
 				{
-					fc.setSelectedFile((File)m.getAnnotation(Annotable.FILE));
+					fc.setSelectedFile((File)m.getAnnotation(AnnotationKeys.FILE));
 				}
 				else
 				{
@@ -821,11 +821,11 @@ public class CommonFileActions
 
 				if (retVal != JFileChooser.CANCEL_OPTION)
 				{
-					m.setAnnotation(Annotable.FILE, file);
+					m.setAnnotation(AnnotationKeys.FILE, file);
 					try
 					{
 						IOCoordinator.getInstance().save(m,
-								(File)m.getAnnotation(Annotable.FILE));
+								(File)m.getAnnotation(AnnotationKeys.FILE));
 					}
 					catch (Exception e)
 					{
@@ -859,13 +859,13 @@ public class CommonFileActions
 			while (it.hasNext())
 			{
 				DESModel model = it.next();
-				File file = (File)model.getAnnotation(Annotable.FILE);
+				File file = (File)model.getAnnotation(AnnotationKeys.FILE);
 				if (file != null)
 				{
 					try
 					{
 						IOCoordinator.getInstance().save(model,
-								(File)model.getAnnotation(Annotable.FILE));
+								(File)model.getAnnotation(AnnotationKeys.FILE));
 						model.modelSaved();
 					}
 					catch (IOException e)

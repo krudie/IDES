@@ -1,6 +1,5 @@
 package ui;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.presentation.Presentation;
@@ -18,6 +17,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.undo.UndoManager;
+
+import util.AnnotationKeys;
 
 /**
  * Displays and allows edit of user annotations to models. Supports local "undo"
@@ -48,9 +49,9 @@ public class AnnotationTab extends JTextArea implements Presentation,
 		setName(TITLE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
-		if (model.hasAnnotation(Annotable.TEXT_ANNOTATION))
+		if (model.hasAnnotation(AnnotationKeys.TEXT_ANNOTATION))
 		{
-			setText((String)model.getAnnotation(Annotable.TEXT_ANNOTATION));
+			setText((String)model.getAnnotation(AnnotationKeys.TEXT_ANNOTATION));
 		}
 
 		undoManager = new UndoManager();
@@ -116,11 +117,11 @@ public class AnnotationTab extends JTextArea implements Presentation,
 	{
 		if ("".equals(getText()))
 		{
-			model.removeAnnotation(Annotable.TEXT_ANNOTATION);
+			model.removeAnnotation(AnnotationKeys.TEXT_ANNOTATION);
 		}
 		else
 		{
-			model.setAnnotation(Annotable.TEXT_ANNOTATION, getText());
+			model.setAnnotation(AnnotationKeys.TEXT_ANNOTATION, getText());
 		}
 		model.metadataChanged();
 	}
@@ -129,11 +130,11 @@ public class AnnotationTab extends JTextArea implements Presentation,
 	{
 		if ("".equals(getText()))
 		{
-			model.removeAnnotation(Annotable.TEXT_ANNOTATION);
+			model.removeAnnotation(AnnotationKeys.TEXT_ANNOTATION);
 		}
 		else
 		{
-			model.setAnnotation(Annotable.TEXT_ANNOTATION, getText());
+			model.setAnnotation(AnnotationKeys.TEXT_ANNOTATION, getText());
 		}
 		model.metadataChanged();
 	}
@@ -142,11 +143,11 @@ public class AnnotationTab extends JTextArea implements Presentation,
 	{
 		if ("".equals(getText()))
 		{
-			model.removeAnnotation(Annotable.TEXT_ANNOTATION);
+			model.removeAnnotation(AnnotationKeys.TEXT_ANNOTATION);
 		}
 		else
 		{
-			model.setAnnotation(Annotable.TEXT_ANNOTATION, getText());
+			model.setAnnotation(AnnotationKeys.TEXT_ANNOTATION, getText());
 		}
 		model.metadataChanged();
 	}

@@ -893,4 +893,42 @@ public class GraphActions
 			actionPerformed(null);
 		}
 	}
+	
+	public static class ChangeFontSizeAction extends AbstractGraphAction
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5214581078440236025L;
+
+		protected FSAGraph graph;
+		
+		protected float fontSize;
+		
+		public ChangeFontSizeAction(FSAGraph graph, float fontSize)
+		{
+			this(null, graph, fontSize);
+		}
+		
+		public ChangeFontSizeAction(CompoundEdit parentEdit, FSAGraph graph, float fontSize)
+		{
+			this.parentEdit = parentEdit;
+			this.graph = graph;
+			this.fontSize = fontSize;
+		}
+
+		public void actionPerformed(ActionEvent arg0)
+		{
+			if (graph != null)
+			{
+				GraphUndoableEdits.UndoableChangeFontSize action = new GraphUndoableEdits.UndoableChangeFontSize(
+						graph, fontSize);
+				action.redo();
+				
+				postEdit(action);
+			}
+		}
+		
+		
+	}
 }

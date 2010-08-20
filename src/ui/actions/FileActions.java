@@ -1,6 +1,5 @@
 package ui.actions;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.core.IncompleteWorkspaceDescriptorException;
 import ides.api.plugin.io.IOSubsytem;
@@ -23,6 +22,7 @@ import main.Main;
 import main.WorkspaceBackend;
 import main.WorkspaceDescriptor;
 import ui.NewModelDialog;
+import util.AnnotationKeys;
 
 /**
  * @author Lenko Grigorov
@@ -114,7 +114,7 @@ public class FileActions
 			io.CommonFileActions.save(Hub.getWorkspace().getActiveModel(),
 					(File)Hub
 							.getWorkspace().getActiveModel()
-							.getAnnotation(Annotable.FILE));
+							.getAnnotation(AnnotationKeys.FILE));
 		}
 	}
 
@@ -179,7 +179,7 @@ public class FileActions
 				if (model.getParentModel() == null)
 				{
 					io.CommonFileActions.save(model, (File)model
-							.getAnnotation(Annotable.FILE));
+							.getAnnotation(AnnotationKeys.FILE));
 				}
 			}
 			Hub.getMainWindow().setCursor(cursor);

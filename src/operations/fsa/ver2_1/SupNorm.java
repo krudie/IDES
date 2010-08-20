@@ -1,6 +1,5 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -15,6 +14,8 @@ import ides.api.plugin.operation.OperationManager;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import util.AnnotationKeys;
 
 /**
  * Checks to see whether a given language is normal with respect to another. See
@@ -263,7 +264,7 @@ public class SupNorm implements Operation
 
 		// remove the annotations since state labels will be meaningless after
 		// all of the above operations
-		supNorm.removeAnnotation(Annotable.COMPOSED_OF);
+		supNorm.removeAnnotation(AnnotationKeys.COMPOSED_OF);
 
 		return new Object[] { supNorm };
 	}

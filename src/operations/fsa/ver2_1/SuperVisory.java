@@ -1,12 +1,13 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
 import ides.api.plugin.model.ModelManager;
 
 import java.util.ListIterator;
+
+import util.AnnotationKeys;
 
 /**
  * This class contains methods for supervisory control of discrete event
@@ -58,7 +59,7 @@ public class SuperVisory
 				FSAState s = si.next();
 
 				FSAState pln = plant.getState(((long[])s
-						.getAnnotation(Annotable.COMPOSED_OF))[0]);
+						.getAnnotation(AnnotationKeys.COMPOSED_OF))[0]);
 				ListIterator<FSATransition> plsti = pln
 						.getOutgoingTransitionsListIterator();
 
@@ -129,7 +130,7 @@ public class SuperVisory
 			FSAState s = si.next();
 
 			FSAState pln = plant.getState(((long[])s
-					.getAnnotation(Annotable.COMPOSED_OF))[0]);
+					.getAnnotation(AnnotationKeys.COMPOSED_OF))[0]);
 			ListIterator<FSATransition> plsti = pln
 					.getOutgoingTransitionsListIterator();
 

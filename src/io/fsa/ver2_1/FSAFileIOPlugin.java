@@ -3,7 +3,6 @@
  */
 package io.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -43,6 +42,7 @@ import presentation.CubicParamCurve2D;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNodeLayout;
 import presentation.fsa.GraphLayout;
+import util.AnnotationKeys;
 
 /**
  * @author christiansilvano
@@ -142,11 +142,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		ListIterator<FSAState> si = ((FSAModel)model).getStateIterator();
 		ListIterator<FSATransition> ti = ((FSAModel)model)
 				.getTransitionIterator();
-		// TODO: DECIDE WHAT TO DO WITH THE FONT SIZE.
-		//int fontSize = (Integer)model.getAnnotation(Annotable.FONT_SIZE);
-		//stream.println("\n\t<font size=\"" + /* 12 */fontSize + "\"/>");
 
-		GraphLayout layout = (GraphLayout)model.getAnnotation(Annotable.LAYOUT);
+		GraphLayout layout = (GraphLayout)model.getAnnotation(AnnotationKeys.LAYOUT);
 		if (layout != null)
 		{
 			stream.println("\n\t<font size=\"" + layout.getFontSize() + "\"/>");
@@ -398,7 +395,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 				String indent)
 		{
 			CircleNodeLayout c = (CircleNodeLayout)s
-					.getAnnotation(Annotable.LAYOUT);
+					.getAnnotation(AnnotationKeys.LAYOUT);
 			if (c != null)
 			{
 				ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
@@ -426,7 +423,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		private static void transitionLayoutToXML(FSATransition t,
 				PrintStream ps, String indent)
 		{
-			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+			BezierLayout l = (BezierLayout)t.getAnnotation(AnnotationKeys.LAYOUT);
 			if (l != null)
 			{
 				CubicParamCurve2D curve = l.getCurve();
@@ -787,7 +784,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 						}
 					}
 					CircleNodeLayout tmpCircleNodeLayout = new CircleNodeLayout();
-					s.setAnnotation(Annotable.LAYOUT, tmpCircleNodeLayout);
+					s.setAnnotation(AnnotationKeys.LAYOUT, tmpCircleNodeLayout);
 					tmpState = s;
 				}
 
@@ -839,14 +836,14 @@ public class FSAFileIOPlugin implements FileIOPlugin
 						}
 					}
 					l.setGroup(groupId);
-					transition.setAnnotation(Annotable.LAYOUT, l);
+					transition.setAnnotation(AnnotationKeys.LAYOUT, l);
 					tmpTransition = transition;
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == FONT)
 				{
 					gl.setFontSize(Float.parseFloat(atts.getValue("size")));
-					model.setAnnotation(Annotable.LAYOUT, gl);
+					model.setAnnotation(AnnotationKeys.LAYOUT, gl);
 				}
 
 				else if (CURRENT_PARSING_ELEMENT == LAYOUT)
@@ -858,7 +855,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					}
 					gl.setUseUniformRadius(Boolean
 							.parseBoolean(uniformNodes));
-					model.setAnnotation(Annotable.LAYOUT, gl);
+					model.setAnnotation(AnnotationKeys.LAYOUT, gl);
 				}
 
 				else
@@ -873,7 +870,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					if (qName.equals(CIRCLE))
 					{
 						CircleNodeLayout layout = (CircleNodeLayout)tmpState
-								.getAnnotation(Annotable.LAYOUT);
+								.getAnnotation(AnnotationKeys.LAYOUT);
 						layout.setRadius(Float
 								.parseFloat(atts.getValue(RADIUS)));
 						layout.setLocation(Float.parseFloat(atts
@@ -885,7 +882,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					else if (qName.equals(ARROW))
 					{
 						CircleNodeLayout layout = (CircleNodeLayout)tmpState
-								.getAnnotation(Annotable.LAYOUT);
+								.getAnnotation(AnnotationKeys.LAYOUT);
 						layout.setArrow(new Point2D.Float(Float.parseFloat(atts
 								.getValue(COORD_X)), Float.parseFloat(atts
 								.getValue(COORD_Y))));
@@ -924,7 +921,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 						// Get the annotation BezierLayout, and set the curve
 						// paramethers
 						BezierLayout l = (BezierLayout)tmpTransition
-								.getAnnotation(Annotable.LAYOUT);
+								.getAnnotation(AnnotationKeys.LAYOUT);
 						l.setCurve(new CubicCurve2D.Float(
 								x1,
 								y1,
@@ -943,7 +940,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 						if (e != null)
 						{
 							BezierLayout layout = (BezierLayout)tmpTransition
-									.getAnnotation(Annotable.LAYOUT);
+									.getAnnotation(AnnotationKeys.LAYOUT);
 							if (e.getSymbol() != "")
 							{
 								// System.out.println("Adding " + e.getSymbol()

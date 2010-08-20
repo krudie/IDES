@@ -1370,4 +1370,59 @@ public class GraphUndoableEdits
 			return Hub.string("undoUniformNodeSize");
 		}
 	}
+
+	public static class UndoableChangeFontSize extends
+			AbstractGraphUndoableEdit
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2751687325218507623L;
+
+		protected FSAGraph graph;
+		
+		protected float origFontSize;
+
+		protected float fontSize;
+		
+		public UndoableChangeFontSize(FSAGraph graph, float fontSize)
+		{
+			this.graph = graph;
+			this.fontSize = fontSize;
+		}
+		
+		public void redo()
+		{
+			origFontSize = graph.getFontSize();
+			graph.setFontSize(fontSize);
+			Hub.getUserInterface().getFontSelector().setFontSize(fontSize);
+		}
+		
+		public void undo()
+		{
+			fontSize = graph.getFontSize();
+			graph.setFontSize(origFontSize);
+			Hub.getUserInterface().getFontSelector().setFontSize(origFontSize);
+			
+		}
+		
+		public boolean canUndo()
+		{
+			return true;
+		}
+		
+		public boolean canRedo()
+		{
+			return true;
+		}
+		
+		public String getPresentationName()
+		{
+			return Hub.string("undoFontSize");
+		}
+		
+		
+	}
+	
 }

@@ -4,7 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import ides.api.core.Annotable;
+import util.AnnotationKeys;
+
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -255,7 +256,7 @@ public class InfimalObservable implements Operation
 				.instance().getOperation("trim").getWarnings());
 		
 		//remove the now meaningless state annotations
-		infO.removeAnnotation(Annotable.COMPOSED_OF);
+		infO.removeAnnotation(AnnotationKeys.COMPOSED_OF);
 
 		return new Object[] { infO };
 	}

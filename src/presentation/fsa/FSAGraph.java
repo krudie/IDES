@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import util.AnnotationKeys;
 import util.BooleanUIBinder;
 
 /**
@@ -39,6 +40,8 @@ import util.BooleanUIBinder;
  */
 public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 {
+	
+	private static final String BINDER = "binder";
 	private long bezierLayoutFreeGroup = 0;
 
 	// This flag is set to true when the FSAGraph is a result of an automatic
@@ -56,7 +59,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 	public boolean isUseUniformRadius()
 	{
-		return ((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
+		return ((GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT))
 				.getUseUniformRadius();
 	}
 
@@ -65,11 +68,11 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		// BooleanUIBinder binder = ((GraphLayout)fsa
 		// .getAnnotation(Annotable.LAYOUT)).getUseUniformRadius();
 		BooleanUIBinder binder = (BooleanUIBinder)fsa
-				.getAnnotation(Annotable.BINDER);
+				.getAnnotation(BINDER);
 		if (b != binder.get())
 		{
 			binder.set(b);
-			((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
+			((GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT))
 					.setUseUniformRadius(b);
 			setNeedsRefresh(true);
 			fireFSAGraphChanged(new FSAGraphMessage(
@@ -83,7 +86,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 
 	public BooleanUIBinder getUseUniformRadiusBinder()
 	{
-		return (BooleanUIBinder)fsa.getAnnotation(Annotable.BINDER);
+		return (BooleanUIBinder)fsa.getAnnotation(BINDER);
 	}
 
 	public float getFontSize()
@@ -94,7 +97,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	public void setFontSize(float fs)
 	{
 		fontSize = fs;
-		GraphLayout lay = (GraphLayout)fsa.getAnnotation(Annotable.LAYOUT);
+		GraphLayout lay = (GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT);
 		lay.setFontSize(fs);
 		fsa.metadataChanged();
 		setNeedsRefresh(true);
@@ -159,17 +162,17 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		fsa.addSubscriber(this);
 
 		// test for global layout
-		if (!fsa.hasAnnotation(Annotable.LAYOUT))
+		if (!fsa.hasAnnotation(AnnotationKeys.LAYOUT))
 		{
-			fsa.setAnnotation(Annotable.LAYOUT, new GraphLayout());
+			fsa.setAnnotation(AnnotationKeys.LAYOUT, new GraphLayout());
 		}
 
-		if (!fsa.hasAnnotation(Annotable.BINDER))
+		if (!fsa.hasAnnotation(BINDER))
 		{
 			BooleanUIBinder b = new BooleanUIBinder();
-			b.set(((GraphLayout)fsa.getAnnotation(Annotable.LAYOUT))
+			b.set(((GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT))
 					.getUseUniformRadius());
-			fsa.setAnnotation(Annotable.BINDER, b);
+			fsa.setAnnotation(BINDER, b);
 		}
 
 		nodes = new HashMap<Long, Node>();
@@ -352,7 +355,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		edgeLabels.clear();
 		freeLabels.clear();
 
-		fontSize = ((GraphLayout)fsa.getAnnotation(LAYOUT)).getFontSize();
+		fontSize = ((GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT)).getFontSize();
 
 		// Testing annotations:
 		boolean hasLayout = true;
@@ -362,7 +365,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		{
 			FSAState s = sIt.next();
 			CircleNodeLayout l = (CircleNodeLayout)s
-					.getAnnotation(Annotable.LAYOUT);
+					.getAnnotation(AnnotationKeys.LAYOUT);
 			if (l == null)
 			{
 				hasLayout = false;
@@ -405,10 +408,10 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				.hasNext();)
 		{
 			FSATransition t = i.next();
-			if (t.getAnnotation(Annotable.LAYOUT) != null)
+			if (t.getAnnotation(AnnotationKeys.LAYOUT) != null)
 			{
 				BezierLayout l = (BezierLayout)t
-						.getAnnotation(Annotable.LAYOUT);
+						.getAnnotation(AnnotationKeys.LAYOUT);
 				if (l.getGroup() != BezierLayout.UNGROUPPED
 						&& l.getGroup() > maxGroup)
 				{
@@ -422,7 +425,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		while (tIt.hasNext())
 		{
 			FSATransition t = tIt.next();
-			BezierLayout l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+			BezierLayout l = (BezierLayout)t.getAnnotation(AnnotationKeys.LAYOUT);
 			if (l == null)
 			{
 				// check if it's a simple self-loop
@@ -436,15 +439,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 					{
 						FSATransition et = i.next();
 						if (et == t
-								|| et.getAnnotation(Annotable.LAYOUT) == null)
+								|| et.getAnnotation(AnnotationKeys.LAYOUT) == null)
 						{
 							continue;
 						}
 						if (et.getSource() == et.getTarget())
 						{
 							BezierLayout el = (BezierLayout)et
-									.getAnnotation(Annotable.LAYOUT);
-							t.setAnnotation(Annotable.LAYOUT, el);
+									.getAnnotation(AnnotationKeys.LAYOUT);
+							t.setAnnotation(AnnotationKeys.LAYOUT, el);
 							if (el.getGroup() == BezierLayout.UNGROUPPED)
 							{
 								maxGroup++;
@@ -467,7 +470,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 						wrapTransition(set);
 						continue;
 					}
-					l = (BezierLayout)t.getAnnotation(Annotable.LAYOUT);
+					l = (BezierLayout)t.getAnnotation(AnnotationKeys.LAYOUT);
 				}
 				// not a self-loop
 				else
@@ -514,7 +517,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				{
 					existingEdge.addTransition(t);
 				}
-				t.setAnnotation(Annotable.LAYOUT, existingEdge.getLayout());
+				t.setAnnotation(AnnotationKeys.LAYOUT, existingEdge.getLayout());
 			}
 			else
 			{
@@ -618,7 +621,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		s.setInitial(false);
 		s.setMarked(false);
 		CircleNodeLayout layout = new CircleNodeLayout(uniformR, p);
-		s.setAnnotation(Annotable.LAYOUT, layout);
+		s.setAnnotation(AnnotationKeys.LAYOUT, layout);
 		fsa.removeSubscriber(this);
 		fsa.add(s);
 		fsa.addSubscriber(this);
@@ -744,7 +747,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		// metaData.setLayoutData(s, layout);
 		// Christian - The following line is to supress the use of metadata, the
 		// above line should be erased as soon as possible.
-		s.setAnnotation(Annotable.LAYOUT, layout);
+		s.setAnnotation(AnnotationKeys.LAYOUT, layout);
 
 		CircleNode n = new CircleNode(s, layout);
 		nodes.put(new Long(s.getId()), n);
@@ -803,7 +806,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 					.getTargetNode()));
 		}
 		// Set the BezierLayout as an annotation for the edge
-		t.setAnnotation(Annotable.LAYOUT, e.getLayout());
+		t.setAnnotation(AnnotationKeys.LAYOUT, e.getLayout());
 		fsa.removeSubscriber(this);
 		fsa.add(t);
 		fsa.addSubscriber(this);
@@ -863,7 +866,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		}
 
 		// Set the BezierLayout as an annotation for the edge
-		t.setAnnotation(Annotable.LAYOUT, e.getLayout());
+		t.setAnnotation(AnnotationKeys.LAYOUT, e.getLayout());
 		n1.insert(e);
 		n2.insert(e);
 		edges.put(e.getId(), e);
@@ -880,7 +883,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		{
 			t = i.next();
 			e.addTransition(t);
-			t.setAnnotation(Annotable.LAYOUT, e.getLayout());
+			t.setAnnotation(AnnotationKeys.LAYOUT, e.getLayout());
 			if (t.getEvent() != null)
 			{
 				((BezierLayout)e.getLayout()).addEventName(t
@@ -921,7 +924,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		// save the arrow to metadata
 		FSAState s = fsa.getState(node.getId());
 		// Set the Layout as an annotation for the model element
-		s.setAnnotation(Annotable.LAYOUT, node.getLayout());
+		s.setAnnotation(AnnotationKeys.LAYOUT, node.getLayout());
 
 		fsa.removeSubscriber(this);
 		fsa.fireFSAStructureChanged(new FSAMessage(
@@ -1097,7 +1100,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 			// metaData.setLayoutData(t, (BezierLayout)edge.getLayout());
 			// Christian - The following line is to supress the use of metadata,
 			// the above line should be erased as soon as possible.
-			t.setAnnotation(Annotable.LAYOUT, layout);
+			t.setAnnotation(AnnotationKeys.LAYOUT, layout);
 		}
 		// replace in the layout the field EventNames:
 		layout.getEventNames().clear();
@@ -1236,7 +1239,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		FSAState s = fsa.getState(n.getId());
 		n.getLayout().setText(text);
 		n.getLabel().setText(text);
-		s.setAnnotation(Annotable.LAYOUT, n.getLayout());
+		s.setAnnotation(AnnotationKeys.LAYOUT, n.getLayout());
 		s.setName(text);
 		// this is needed to update the uniform radius database
 		n.refresh();

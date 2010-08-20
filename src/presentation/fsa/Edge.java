@@ -1,6 +1,5 @@
 package presentation.fsa;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSATransition;
 import io.fsa.ver2_1.GraphExporter;
 
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import presentation.GraphicalLayout;
+import util.AnnotationKeys;
 
 /**
  * The abstract description of data and behaviours common to all edges that
@@ -283,7 +283,7 @@ public abstract class Edge extends GraphElement
 		super.setLayout(layout);
 		for (FSATransition t : transitions)
 		{
-			t.setAnnotation(Annotable.LAYOUT, layout);
+			t.setAnnotation(AnnotationKeys.LAYOUT, layout);
 		}
 	}
 

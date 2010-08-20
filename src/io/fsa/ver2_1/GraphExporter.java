@@ -331,8 +331,10 @@ public class GraphExporter
 
 		// Step #4 - Begin with the basic scaling, picture boundary
 		// and frame information
+		// psset unit is 0.75 (72/96) to account for the shift in DPI (96 in
+		// IDES to 72). See ides.api.latex.Renderer
 		contentsString += "\\begin{document}\n" + "\\scalebox{" + scale + "}\n"
-				+ "{\n" + "\\psset{unit=1pt}\n";
+				+ "{\n" + "\\psset{unit=0.75pt}\n";
 
 		// Step #5 - Get the PSTricks figure
 		contentsString += createPSPicture(graphModel, exportBounds, useFrame);

@@ -1,6 +1,5 @@
 package operations.fsa.ver2_1;
 
-import ides.api.core.Annotable;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSATransition;
@@ -13,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import util.AnnotationKeys;
 
 public class MultiAgentProductFSA extends AbstractOperation
 {
@@ -111,7 +112,7 @@ public class MultiAgentProductFSA extends AbstractOperation
 						.instance().createModel(FSAModel.class) };
 			}
 		}
-		a.setAnnotation(Annotable.COMPOSED_OF, fsaIds);
+		a.setAnnotation(AnnotationKeys.COMPOSED_OF, fsaIds);
 		LinkedList<FSAState[]> openStates = new LinkedList<FSAState[]>();
 		HashSet<String> closedStates = new HashSet<String>();
 		stateMap = new HashMap<String, FSAState>();
@@ -289,8 +290,8 @@ public class MultiAgentProductFSA extends AbstractOperation
 		}
 		newS.setInitial(isInitial);
 		newS.setMarked(isMarked);
-		newS.setAnnotation(Annotable.COMPOSED_OF, composedIds);
-		newS.setAnnotation(Annotable.COMPOSED_OF_NAMES, composedNames);
+		newS.setAnnotation(AnnotationKeys.COMPOSED_OF, composedIds);
+		newS.setAnnotation(AnnotationKeys.COMPOSED_OF_NAMES, composedNames);
 		return newS;
 	}
 

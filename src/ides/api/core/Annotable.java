@@ -1,7 +1,5 @@
 package ides.api.core;
 
-import java.io.File;
-
 /**
  * Interface for objects which can be dynamically annotated by other parts of
  * the code. The intended use is mainly to allow plugins to annotate models and
@@ -11,48 +9,6 @@ import java.io.File;
  */
 public interface Annotable
 {
-
-	/**
-	 * Annotation key for the file (of models). Annotation is a {@link File}.
-	 */
-	public static final String FILE = "file";
-
-	/**
-	 * Annotation key for the ids of the elements of which an element is
-	 * composed. Annotation is implementation-dependent array (usually
-	 * <code>long[]</code> or {@link String}[]).
-	 */
-	public static final String COMPOSED_OF = "composedOf";
-
-	/**
-	 * Annotation key for the names (labels) of the elements of which an element
-	 * is composed. Annotation is {@link String}[].
-	 */
-	public static final String COMPOSED_OF_NAMES = "composedOfLabels";
-
-	/**
-	 * Annotation key for the set of events disabled at a state.
-	 */
-	public static final String CONTROL_MAP = "controlMap";
-
-	/**
-	 * Annotation key for the layout information of an element. Annotation is
-	 * implementation-dependent.
-	 */
-	public static final String LAYOUT = "layout";
-
-	/**
-	 * Annotation key for the user-defined text annotation of models. Annotation
-	 * is {@link String}. Read-only.
-	 */
-	public static final String TEXT_ANNOTATION = "textAnnotation";
-	
-	/**
-	 * Annotation key for a ui binder. Annotation is
-	 * implementation-dependent.
-	 */
-	public static final String BINDER = "uniformRadiusBinder";
-
 	/**
 	 * Returns the annotation for the given key.
 	 * 
