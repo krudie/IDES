@@ -2,6 +2,7 @@ package main;
 
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
+import ides.api.plugin.layout.FSALayoutManager;
 import ides.api.plugin.model.DESModel;
 import ides.api.plugin.model.ModelManager;
 import ides.api.plugin.presentation.ToolsetManager;
@@ -16,6 +17,7 @@ import java.util.Vector;
 import javax.swing.UIManager;
 
 import model.fsa.ver2_1.Automaton;
+import pluggable.layout.tree.TreeLayouter;
 import presentation.fsa.FSAToolset;
 import services.cache.CacheBackend;
 import services.ccp.CopyPasteBackend;
@@ -105,6 +107,8 @@ public class Main
 		ModelManager.instance().registerModel(Automaton.myDescriptor);
 		ToolsetManager.instance().registerToolset(FSAModel.class,
 				new FSAToolset());
+		// FSA layout
+		FSALayoutManager.instance().registerLayouter(new TreeLayouter());
 
 		// setup stuff that doesn't need the main window
 		CacheBackend.init();
