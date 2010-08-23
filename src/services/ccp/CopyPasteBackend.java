@@ -5,7 +5,6 @@ import ides.api.core.Hub;
 import ides.api.core.WorkspaceMessage;
 import ides.api.core.WorkspaceSubscriber;
 import ides.api.plugin.presentation.CopyPastePresentation;
-import ides.api.plugin.presentation.Presentation;
 
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
@@ -15,7 +14,6 @@ import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -35,8 +33,6 @@ public class CopyPasteBackend implements CopyPasteManager
 	protected Vector<CopyPastePresentation> presentations = new Vector<CopyPastePresentation>();
 
 	protected static Clipboard clipboard = new Clipboard("IDES");
-
-	protected static HashSet<Presentation> activePresentations = null;
 
 	protected static CopyPastePresentation activeCopyPastePresentation = null;
 
@@ -75,73 +71,43 @@ public class CopyPasteBackend implements CopyPasteManager
 	 */
 	public static void init()
 	{
-
-		activePresentations = new HashSet<Presentation>(Hub
-				.getWorkspace().getPresentations());
-
 		KeyboardFocusManager
 				.getCurrentKeyboardFocusManager()
 				.addPropertyChangeListener("permanentFocusOwner",
 						new PropertyChangeListener()
 						{
-
 							public void propertyChange(PropertyChangeEvent arg0)
 							{
-								// only refresh if the
-								// activeCopyPastePresentation has
-								// changed
-								boolean changed = true;
 								Component focus = KeyboardFocusManager
 										.getCurrentKeyboardFocusManager()
 										.getPermanentFocusOwner();
-								if (focus != null)
+								CopyPastePresentation newActive = null;
+								for (CopyPastePresentation p : Hub
+										.getWorkspace()
+										.getPresentationsOfType(CopyPastePresentation.class))
 								{
-									if (activePresentations != null)
+									if (p.getGUI().isAncestorOf(focus)
+											|| p.getGUI().equals(focus))
 									{
-										for (Presentation p : activePresentations)
-										{
-											if ((p.getGUI().isAncestorOf(focus) || p
-													.getGUI().equals(focus))
-													&& (p instanceof CopyPastePresentation))
-											{
-												if (activeCopyPastePresentation != p)
-												{
-													activeCopyPastePresentation = (CopyPastePresentation)p;
-												}
-												else
-												{
-													changed = false;
-												}
-
-												break;
-											}
-											else
-											{
-												// if
-												// (activeCopyPastePresentation
-												// != null)
-												// {
-												// activeCopyPastePresentation =
-												// null;
-												// }
-												// else
-												// {
-												// changed = false;
-												// }
-
-											}
-										}
+										newActive = p;
+										break;
 									}
-
 								}
-
+								boolean changed = false;
+								if (newActive != null
+										&& newActive != activeCopyPastePresentation)
+								{
+									activeCopyPastePresentation = newActive;
+									changed = true;
+								}
+								// only refresh if the
+								// activeCopyPastePresentation has
+								// changed
 								if (changed)
 								{
 									instance().refresh();
 								}
-
 							}
-
 						});
 		// refresh the enabled status whenever the flavors on the clipboard
 		// change.
@@ -190,8 +156,6 @@ public class CopyPasteBackend implements CopyPasteManager
 			 */
 			public void modelSwitched(WorkspaceMessage message)
 			{
-				activePresentations = new HashSet<Presentation>(Hub
-						.getWorkspace().getPresentations());
 				instance().refresh();
 			}
 
@@ -260,7 +224,6 @@ public class CopyPasteBackend implements CopyPasteManager
 			{
 				activeCopyPastePresentation.newItemOnClipboard();
 			}
-
 		}
 
 		if (!isCopyOrCutable())
@@ -269,7 +232,6 @@ public class CopyPasteBackend implements CopyPasteManager
 			{
 				button.setEnabled(false);
 			}
-
 		}
 		else
 		{

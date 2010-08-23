@@ -49,9 +49,14 @@ public class AnnotationTab extends JTextArea implements Presentation,
 		setName(TITLE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
-		if (model.hasAnnotation(AnnotationKeys.TEXT_ANNOTATION))
+		Object o = model.getAnnotation(AnnotationKeys.TEXT_ANNOTATION);
+		if (o == null || !(o instanceof String))
 		{
-			setText((String)model.getAnnotation(AnnotationKeys.TEXT_ANNOTATION));
+			setText("");
+		}
+		else
+		{
+			setText((String)o);
 		}
 
 		undoManager = new UndoManager();
@@ -91,6 +96,15 @@ public class AnnotationTab extends JTextArea implements Presentation,
 
 	public void forceRepaint()
 	{
+		Object o = model.getAnnotation(AnnotationKeys.TEXT_ANNOTATION);
+		if (o == null || !(o instanceof String))
+		{
+			setText("");
+		}
+		else
+		{
+			setText((String)o);
+		}
 		sp.repaint();
 	}
 

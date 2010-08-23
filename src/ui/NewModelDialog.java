@@ -131,9 +131,18 @@ public class NewModelDialog extends EscapeDialog
 		if (items.size() > 0)
 		{
 			modelList.setSelectedIndex(lastIdx);
-			// this method is only effective after the JScrollPane is
-			// instantiated
-			modelList.ensureIndexIsVisible(lastIdx);
+			if (lastIdx > 0)
+			{
+				// this method is only effective after the JScrollPane is
+				// instantiated
+				modelList.ensureIndexIsVisible(lastIdx - 1);
+			}
+			else
+			{
+				// this method is only effective after the JScrollPane is
+				// instantiated
+				modelList.ensureIndexIsVisible(lastIdx);
+			}
 		}
 
 		JButton OKButton = new JButton(Hub.string("OK"));

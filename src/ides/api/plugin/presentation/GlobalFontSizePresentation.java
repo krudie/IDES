@@ -1,5 +1,7 @@
 package ides.api.plugin.presentation;
 
+import ides.api.ui.FontSizeSelector;
+
 /**
  * An interface for presentations that support the ability to change the font
  * size. Such a presentation needs to update the {@link FontSizeSelector} via
@@ -8,7 +10,7 @@ package ides.api.plugin.presentation;
  * 
  * @author Valerie Sugarman
  */
-public interface GlobalFontSizePresentation
+public interface GlobalFontSizePresentation extends Presentation
 {
 	/**
 	 * Sets the font size for the presentation.

@@ -5,6 +5,7 @@ import ides.api.copypaste.CopyPasteManager;
 import ides.api.latex.LatexManager;
 import ides.api.notice.NoticeManager;
 import ides.api.plugin.io.IOSubsytem;
+import ides.api.plugin.model.DESModel;
 import ides.api.undo.UndoManager;
 import io.IOCoordinator;
 
@@ -23,6 +24,7 @@ import services.latex.LatexBackend;
 import services.notice.NoticeBackend;
 import services.undo.UndoBackend;
 import ui.OptionsWindow;
+import util.AnnotationKeys;
 
 /**
  * The main hub of the program. Serves to get references to all objects of
@@ -314,5 +316,41 @@ public class Hub
 	public static CopyPasteManager getCopyPasteManager()
 	{
 		return CopyPasteBackend.instance();
+	}
+
+	/**
+	 * Retrieve the user-defined text annotation of the given model. When the
+	 * model is opened, the text appears in the "Annotations" tab.
+	 * 
+	 * @param model
+	 *            the model
+	 * @return the user-defined text annotation of the given model
+	 */
+	public static String getUserTextAnnotation(DESModel model)
+	{
+		Object o = model.getAnnotation(AnnotationKeys.TEXT_ANNOTATION);
+		if (o == null || !(o instanceof String))
+		{
+			return "";
+		}
+		return (String)o;
+	}
+
+	/**
+	 * Set the user-defined text annotation of the given model. When the model
+	 * is opened, the text appears in the "Annotations" tab.
+	 * 
+	 * @param model
+	 *            the model
+	 * @param text
+	 *            the text of the annotation
+	 */
+	public static void setUserTextAnnotation(DESModel model, String text)
+	{
+		model.setAnnotation(AnnotationKeys.TEXT_ANNOTATION, text);
+		if (getWorkspace().getActiveModel() == model)
+		{
+			getWorkspace().fireRepaintRequired();
+		}
 	}
 }

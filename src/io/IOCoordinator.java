@@ -48,6 +48,21 @@ public final class IOCoordinator implements IOSubsytem
 		return instance;
 	}
 
+	public File getFileOfModel(DESModel model)
+	{
+		Object o = model.getAnnotation(AnnotationKeys.FILE);
+		if (o instanceof File)
+		{
+			return (File)o;
+		}
+		return null;
+	}
+
+	public void setFileOfModel(DESModel model, File file)
+	{
+		model.setAnnotation(AnnotationKeys.FILE, file);
+	}
+
 	public void save(DESModel model, File file) throws IOException
 	{
 		// Get the plugin capable of saving a model of the type "type"

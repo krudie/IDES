@@ -1,5 +1,7 @@
 package ides.api.plugin.presentation;
 
+import ides.api.copypaste.CopyPasteManager;
+
 import javax.swing.Action;
 
 /**
@@ -18,7 +20,7 @@ import javax.swing.Action;
  * 
  * @author Valerie Sugarman
  */
-public interface CopyPastePresentation
+public interface CopyPastePresentation extends Presentation
 {
 	/**
 	 * Determines whether cut and copy should currently be available to the
@@ -65,9 +67,8 @@ public interface CopyPastePresentation
 	/**
 	 * Updates any aspects of the CopyPastePresentation that require knowledge
 	 * of when a new item is on the clipboard. This method is ONLY received when
-	 * this CopyPastePresentation is the active presentation in the {@link CopyPasteManager}.
-	 * 
-	 *
+	 * this CopyPastePresentation is the active presentation in the
+	 * {@link CopyPasteManager}.
 	 */
 	public void newItemOnClipboard();
 

@@ -101,10 +101,12 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	private Box zoomSelector;
 
 	private Box fontSelector;
-	
+
 	private JButton copyButton = new JButton();
-	
+
 	private JButton pasteButton = new JButton();
+
+	private AnnotationTab at = null;
 
 	public MainWindow()
 	{
@@ -480,28 +482,29 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		Hub.getUndoManager().bindNoTextRedo(redo);
 		toolbar.addSeparator();
 		toolbar.add(goToParentAction);
-		
-		//create these, but don't add until needed (see hotPlugToolbar)
+
+		// create these, but don't add until needed (see hotPlugToolbar)
 		zoomSelector = Box.createHorizontalBox();// new JPanel();
 		zoomSelector.add(new JLabel(" " + Hub.string("zoom") + ": "));
 		zoomSelector.add(zoom);
 		fontSelector = Box.createHorizontalBox();
 		fontSelector.add(new JLabel(" " + Hub.string("fontSize") + ": "));
 		fontSelector.add(font);
-		copyButton.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
-				.getIDESResource("images/icons/edit_copy.gif"))));
+		copyButton.setIcon(new ImageIcon(Toolkit
+				.getDefaultToolkit().createImage(Hub
+						.getIDESResource("images/icons/edit_copy.gif"))));
 		copyButton.setActionCommand(Hub.string("copy"));
 		copyButton.setToolTipText(Hub.string("copy"));
 		copyButton.addActionListener(ccpAction);
-		pasteButton.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Hub
-				.getIDESResource("images/icons/edit_paste.gif"))));
+		pasteButton.setIcon(new ImageIcon(Toolkit
+				.getDefaultToolkit().createImage(Hub
+						.getIDESResource("images/icons/edit_paste.gif"))));
 		pasteButton.setActionCommand(Hub.string("paste"));
 		pasteButton.setToolTipText(Hub.string("paste"));
 		pasteButton.addActionListener(ccpAction);
 		Hub.getCopyPasteManager().bindCutCopy(copyButton);
 		Hub.getCopyPasteManager().bindPaste(pasteButton);
-		
-		
+
 		// p.add(Box.createHorizontalGlue());
 		// toolbar.add(z);
 	}
@@ -537,8 +540,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 		Collection<CopyPastePresentation> ccpp = Hub
 				.getWorkspace()
 				.getPresentationsOfType(CopyPastePresentation.class);
-		
-		if(ccpp.size() > 0)
+
+		if (ccpp.size() > 0)
 		{
 			newToolbar.addSeparator();
 			newToolbar.add(copyButton);
@@ -643,6 +646,10 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	 */
 	public void repaintRequired()
 	{
+		if (at != null)
+		{
+			at.forceRepaint();
+		}
 	}
 
 	/*
@@ -724,8 +731,7 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 			{
 				rightViews.add(p.getName(), p.getGUI());
 			}
-			AnnotationTab at = new AnnotationTab(Hub
-					.getWorkspace().getActiveModel());
+			at = new AnnotationTab(Hub.getWorkspace().getActiveModel());
 			rightViews.add(at.getName(), at.getGUI());
 			rightViews.add(NoticeBoard.instance().getName(), NoticeBoard
 					.instance());

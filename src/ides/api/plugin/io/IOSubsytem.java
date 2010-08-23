@@ -84,4 +84,27 @@ public interface IOSubsytem
 	public void export(DESModel model, File dst, String description)
 			throws IOException;
 
+	/**
+	 * Determine the file, if any, where the given model is saved.
+	 * 
+	 * @param model
+	 *            the model
+	 * @return the file where the given model is saved; <code>null</code> if the
+	 *         model has not been saved in a file yet
+	 */
+	public File getFileOfModel(DESModel model);
+
+	/**
+	 * Specify the file where a model is saved. The file can be
+	 * <code>null</code>.
+	 * <p>
+	 * This method simply sets an annotation. This method does not cause the
+	 * model to be saved. To save a model, use {@link #save(DESModel, File)}.
+	 * 
+	 * @param model
+	 *            the model
+	 * @param file
+	 *            the file where the model is saved
+	 */
+	public void setFileOfModel(DESModel model, File file);
 }

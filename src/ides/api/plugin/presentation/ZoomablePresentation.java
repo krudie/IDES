@@ -1,5 +1,7 @@
 package ides.api.plugin.presentation;
 
+import ides.api.ui.ZoomControl;
+
 /**
  * An interface for presentations that support the ability to zoom. Such a
  * presentation needs to update the {@link ZoomControl} via Hub
@@ -8,7 +10,7 @@ package ides.api.plugin.presentation;
  * 
  * @author Valerie Sugarman
  */
-public interface ZoomablePresentation
+public interface ZoomablePresentation extends Presentation
 {
 	/**
 	 * Sets the scale factor for the presentation.
