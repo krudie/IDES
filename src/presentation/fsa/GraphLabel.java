@@ -200,7 +200,7 @@ public class GraphLabel extends GraphElement implements LatexElement
 	}
 
 	/**
-	 * @return
+	 * @return the text in the label
 	 */
 	public String getText()
 	{
@@ -525,13 +525,14 @@ public class GraphLabel extends GraphElement implements LatexElement
 	 * This method is responsible for creating a string that contains an
 	 * appropriate (depending on the type) representation of this edge. TODO: Do
 	 * a final fix on the "y" issue
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 * 
 	 * @param selectionBox
 	 *            The area being selected or considered
 	 * @param exportType
 	 *            The export format
 	 * @return String The string representation
-	 * @author Sarah-Jane Whittaker
 	 */
 	public String createExportString(Rectangle selectionBox, int exportType)
 	{

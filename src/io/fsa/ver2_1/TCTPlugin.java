@@ -86,10 +86,9 @@ public class TCTPlugin implements ImportExportPlugin
 	 * Import a file from a different format to the IDES file system
 	 * 
 	 * @param src
-	 *            - the source file
+	 *            the source file
 	 * @param dst
-	 *            - the destination file
-	 * @return
+	 *            the destination file
 	 */
 	public void importFile(File src, File dst)
 			throws FormatTranslationException

@@ -1,5 +1,19 @@
 package io.supeventset.ver3;
 
+import ides.api.core.Hub;
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
+import ides.api.plugin.io.FileIOPlugin;
+import ides.api.plugin.io.FileLoadException;
+import ides.api.plugin.io.FileSaveException;
+import ides.api.plugin.io.IOPluginManager;
+import ides.api.plugin.io.UnsupportedVersionException;
+import ides.api.plugin.model.DESModel;
+import ides.api.plugin.model.ModelManager;
+import ides.api.utilities.HeadTailInputStream;
+import io.AbstractParser;
+import io.IOUtilities;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,20 +28,6 @@ import java.util.Vector;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import ides.api.core.Hub;
-import ides.api.model.supeventset.SupervisoryEvent;
-import ides.api.model.supeventset.SupervisoryEventSet;
-import ides.api.plugin.io.FileIOPlugin;
-import ides.api.plugin.io.FileLoadException;
-import ides.api.plugin.io.FileSaveException;
-import ides.api.plugin.io.IOPluginManager;
-import ides.api.plugin.io.UnsupportedVersionException;
-import ides.api.plugin.model.DESModel;
-import ides.api.plugin.model.ModelManager;
-import ides.api.utilities.HeadTailInputStream;
-import io.AbstractParser;
-import io.IOUtilities;
 
 /**
  * @author Valerie Sugarman
@@ -64,7 +64,7 @@ public class SupEventSetFileIOPlugin implements FileIOPlugin
 		IOPluginManager.instance().registerDataLoader(this, MODEL_TYPE);
 		IOPluginManager.instance().registerDataSaver(this,
 				SupervisoryEventSet.class);
-		//this does nothing but IOManager complains if missing.
+		// this does nothing but IOManager complains if missing.
 		IOPluginManager.instance().registerMetaSaver(this,
 				SupervisoryEventSet.class);
 	}
@@ -335,7 +335,8 @@ public class SupEventSetFileIOPlugin implements FileIOPlugin
 		/**
 		 * Debug function. Prints the content of the stream.
 		 * 
-		 * @param dataSection
+		 * @param stream
+		 *            the stream
 		 */
 		public void printInputStream(InputStream stream)
 		{
@@ -370,9 +371,6 @@ public class SupEventSetFileIOPlugin implements FileIOPlugin
 		 * @param atts
 		 *            the attributes of the XML tag, ex: <tag at1="value1"
 		 *            at2="value2" />, where at1 and at2 are the attributes
-		 * @param action
-		 *            , tells witch parsing action needs to be performed.
-		 *            Currently supports: "start" and "end"
 		 */
 		public void parseDataElements(String qName, Attributes atts)
 		{
@@ -424,7 +422,8 @@ public class SupEventSetFileIOPlugin implements FileIOPlugin
 		 * created in the future.
 		 * 
 		 * @param atts
-		 * @return
+		 *            the attributes for the event
+		 * @return the newly created event
 		 */
 		public Object getModelElement(Attributes atts)
 		{

@@ -353,7 +353,7 @@ public class ReflexiveLayout extends BezierLayout implements Serializable
 	}
 
 	/**
-	 * @author Christian
+	 * author Christian
 	 */
 	public Point2D.Float computeBestDirection(Node target)
 	{

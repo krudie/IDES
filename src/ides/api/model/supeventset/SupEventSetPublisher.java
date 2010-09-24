@@ -13,12 +13,13 @@ public interface SupEventSetPublisher
 	 * will receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
+	 *            the subscriber to be attached
 	 */
 	public abstract void addSubscriber(SupEventSetSubscriber subscriber);
 
 	/**
-	 * Triggers a notification to all subscribers that the event set of the FSA
-	 * model has changed.
+	 * Triggers a notification to all subscribers that the event set has
+	 * changed.
 	 * 
 	 * @param message
 	 *            message with additional information about the change.
@@ -37,6 +38,7 @@ public interface SupEventSetPublisher
 	 * no longer receive notifications of changes from this publisher.
 	 * 
 	 * @param subscriber
+	 *            the subscriber to be removed
 	 */
 	public abstract void removeSubscriber(SupEventSetSubscriber subscriber);
 }

@@ -15,7 +15,8 @@ public class EdgeHandler extends GraphElement
 	 * Index of last intersected control point anchor,
 	 * <code>NO_INTERSECTION</code> if there was no intersection.
 	 * 
-	 * @see EdgeLayout.P1, EdgeLayout.CTRL1 etc.
+	 * @see BezierLayout#P1
+	 * @see BezierLayout#CTRL1 etc.
 	 */
 	protected int lastIntersected = NO_INTERSECTION;
 

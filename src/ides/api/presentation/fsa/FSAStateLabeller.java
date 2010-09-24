@@ -1,6 +1,5 @@
 package ides.api.presentation.fsa;
 
-import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
@@ -24,19 +23,19 @@ public class FSAStateLabeller
 	 * operations).
 	 * <p>
 	 * The {@link FSAModel} whose states will be labelled has to have the
-	 * {@link Annotable#COMPOSED_OF} annotation with {@link String}[] array of
-	 * the names of the models used in the composition. For example, if the
+	 * {@link AnnotationKeys#COMPOSED_OF} annotation with {@link String}[] array
+	 * of the names of the models used in the composition. For example, if the
 	 * "product" operation has been called to create the model by intersecting
 	 * the models "A" and "Untitled", the annotation should be<br>
 	 * <code> String[]{"A", "Untitled"} </code>
 	 * <p>
 	 * Each state in the model also has to have the
-	 * {@link Annotable#COMPOSED_OF} annotation with an array of the IDs of the
-	 * states out of which it is composed. For example, if a state is the
+	 * {@link AnnotationKeys#COMPOSED_OF} annotation with an array of the IDs of
+	 * the states out of which it is composed. For example, if a state is the
 	 * composition of the state with ID=34 from "A" and the state with ID=43523
 	 * from "Untitled", the annotation should be<br>
 	 * <code> long[]{34, 43523} </code><br>
-	 * Furthermore, states can have the {@link Annotable#COMPOSED_OF_NAMES}
+	 * Furthermore, states can have the {@link AnnotationKeys#COMPOSED_OF_NAMES}
 	 * annotation with an array of the names of the states out of which it is
 	 * composed. For examples, if a state is the composition of the state called
 	 * "1" from "A" and the state called "opened" from "Untitled", the

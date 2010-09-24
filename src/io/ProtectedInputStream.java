@@ -17,11 +17,6 @@ public class ProtectedInputStream extends FilterInputStream
 
 	long counter = 0;
 
-	/**
-	 * @param f
-	 * @param off1
-	 * @param s
-	 */
 	public ProtectedInputStream(InputStream stream, long offset, long length)
 			throws IOException
 	{

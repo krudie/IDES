@@ -130,9 +130,10 @@ public class PNGPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile
-	 *            - the source file
-	 * @return
+	 * @param src
+	 *            the source file
+	 * @param dst
+	 *            the destination file
 	 */
 	public void importFile(File src, File dst)
 	{

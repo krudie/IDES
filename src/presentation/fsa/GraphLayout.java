@@ -20,7 +20,7 @@ public class GraphLayout implements Serializable
 	 * The global font size of the model.
 	 */
 	protected float fontSize = GraphLabel.DEFAULT_FONT_SIZE;
-	
+
 	/**
 	 * Stores the information if the FSA graph should use a uniform radius for
 	 * all nodes in the graph.
@@ -40,13 +40,12 @@ public class GraphLayout implements Serializable
 	}
 
 	/**
-	 * Sets a new {@link BooleanUIBinder} to store information if the FSA graph
-	 * should use a uniform radius for all nodes in the graph.
+	 * Sets if the FSA graph should use a uniform radius for all nodes in the
+	 * graph.
 	 * 
-	 * @param binder
-	 *            the new {@link BooleanUIBinder} to store information if the
-	 *            FSA graph should use a uniform radius for all nodes in the
-	 *            graph
+	 * @param boo
+	 *            <code>true</code> if the FSA graph should use a uniform radius
+	 *            for all nodes in the graph, <code>false</code> otherwise
 	 */
 	public void setUseUniformRadius(boolean boo)
 	{

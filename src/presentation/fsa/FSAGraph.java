@@ -3,12 +3,12 @@ package presentation.fsa;
 import ides.api.core.Annotable;
 import ides.api.core.Hub;
 import ides.api.latex.LatexPresentation;
-import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.model.fsa.FSAMessage;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSAState;
 import ides.api.model.fsa.FSASubscriber;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.presentation.Presentation;
 
 import java.awt.Cursor;
@@ -40,8 +40,9 @@ import util.BooleanUIBinder;
  */
 public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 {
-	
+
 	private static final String BINDER = "binder";
+
 	private long bezierLayoutFreeGroup = 0;
 
 	// This flag is set to true when the FSAGraph is a result of an automatic
@@ -67,8 +68,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	{
 		// BooleanUIBinder binder = ((GraphLayout)fsa
 		// .getAnnotation(Annotable.LAYOUT)).getUseUniformRadius();
-		BooleanUIBinder binder = (BooleanUIBinder)fsa
-				.getAnnotation(BINDER);
+		BooleanUIBinder binder = (BooleanUIBinder)fsa.getAnnotation(BINDER);
 		if (b != binder.get())
 		{
 			binder.set(b);
@@ -355,7 +355,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		edgeLabels.clear();
 		freeLabels.clear();
 
-		fontSize = ((GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT)).getFontSize();
+		fontSize = ((GraphLayout)fsa.getAnnotation(AnnotationKeys.LAYOUT))
+				.getFontSize();
 
 		// Testing annotations:
 		boolean hasLayout = true;
@@ -425,7 +426,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		while (tIt.hasNext())
 		{
 			FSATransition t = tIt.next();
-			BezierLayout l = (BezierLayout)t.getAnnotation(AnnotationKeys.LAYOUT);
+			BezierLayout l = (BezierLayout)t
+					.getAnnotation(AnnotationKeys.LAYOUT);
 			if (l == null)
 			{
 				// check if it's a simple self-loop
@@ -517,7 +519,9 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 				{
 					existingEdge.addTransition(t);
 				}
-				t.setAnnotation(AnnotationKeys.LAYOUT, existingEdge.getLayout());
+				t
+						.setAnnotation(AnnotationKeys.LAYOUT, existingEdge
+								.getLayout());
 			}
 			else
 			{
@@ -604,7 +608,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 		return set;
 	}
 
-	// //////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	// /
 
 	/**
@@ -1431,13 +1435,15 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable
 	 * Calculates the size of the bounding box necessary for the entire graph.
 	 * Visits every node, edge and label and uses the union of their bounds to
 	 * create the box.
+	 * <p>
+	 * author Sarah-Jane Whittaker
+	 * <p>
+	 * author Lenko Grigorov
 	 * 
 	 * @param initAtZeroZero
 	 *            Whether you want the box to begin at (0, 0) (true) or tightly
 	 *            bound around the graph (false)
 	 * @return Rectangle The bounding box for the graph
-	 * @author Sarah-Jane Whittaker
-	 * @author Lenko Grigorov Grigorov
 	 */
 	public Rectangle getBounds(boolean initAtZeroZero)
 	{

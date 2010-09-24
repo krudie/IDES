@@ -1,9 +1,9 @@
 package presentation.fsa.actions;
 
 import ides.api.core.Hub;
-import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
+import ides.api.model.supeventset.SupervisoryEvent;
 import ides.api.plugin.layout.FSALayouter;
 
 import java.awt.Rectangle;
@@ -254,10 +254,6 @@ public class GraphActions
 			this(null, graph, currentSelection, displacement);
 		}
 
-		/**
-		 * @param currentSelection
-		 * @param displacement
-		 */
 		public MoveAction(CompoundEdit parentEdit, FSAGraph graph,
 				SelectionGroup selection, Point2D.Float displacement)
 		{
@@ -893,7 +889,7 @@ public class GraphActions
 			actionPerformed(null);
 		}
 	}
-	
+
 	public static class ChangeFontSizeAction extends AbstractGraphAction
 	{
 		/**
@@ -902,15 +898,16 @@ public class GraphActions
 		private static final long serialVersionUID = 5214581078440236025L;
 
 		protected FSAGraph graph;
-		
+
 		protected float fontSize;
-		
+
 		public ChangeFontSizeAction(FSAGraph graph, float fontSize)
 		{
 			this(null, graph, fontSize);
 		}
-		
-		public ChangeFontSizeAction(CompoundEdit parentEdit, FSAGraph graph, float fontSize)
+
+		public ChangeFontSizeAction(CompoundEdit parentEdit, FSAGraph graph,
+				float fontSize)
 		{
 			this.parentEdit = parentEdit;
 			this.graph = graph;
@@ -922,13 +919,13 @@ public class GraphActions
 			if (graph != null)
 			{
 				GraphUndoableEdits.UndoableChangeFontSize action = new GraphUndoableEdits.UndoableChangeFontSize(
-						graph, fontSize);
+						graph,
+						fontSize);
 				action.redo();
-				
+
 				postEdit(action);
 			}
 		}
-		
-		
+
 	}
 }

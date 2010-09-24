@@ -131,9 +131,10 @@ public class GrailPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile
-	 *            - the source file
-	 * @return
+	 * @param src
+	 *            the source file
+	 * @param dst
+	 *            the destination file
 	 */
 	public void importFile(File src, File dst)
 			throws FormatTranslationException
@@ -144,8 +145,8 @@ public class GrailPlugin implements ImportExportPlugin
 			in = new java.io.BufferedReader(new java.io.FileReader(src));
 			FSAModel a = ModelManager.instance().createModel(FSAModel.class,
 					src.getName());
-			//long tCount = 0;
-			//long eCount = 0;
+			// long tCount = 0;
+			// long eCount = 0;
 			java.util.Hashtable<String, Long> events = new java.util.Hashtable<String, Long>();
 			String line;
 			while ((line = in.readLine()) != null)
@@ -158,7 +159,7 @@ public class GrailPlugin implements ImportExportPlugin
 					if (s == null)
 					{
 						s = a.assembleState();
-						s.setId(sId);//new model.fsa.ver2_1.State(sId);
+						s.setId(sId);// new model.fsa.ver2_1.State(sId);
 						s.setName("" + sId);
 						a.add(s);
 					}
@@ -171,7 +172,7 @@ public class GrailPlugin implements ImportExportPlugin
 					if (s == null)
 					{
 						s = a.assembleState();
-						s.setId(sId);//new model.fsa.ver2_1.State(sId);
+						s.setId(sId);// new model.fsa.ver2_1.State(sId);
 						s.setName("" + sId);
 						a.add(s);
 					}
@@ -184,7 +185,7 @@ public class GrailPlugin implements ImportExportPlugin
 					if (s1 == null)
 					{
 						s1 = a.assembleState();
-						s1.setId(sId1);//new model.fsa.ver2_1.State(sId1);
+						s1.setId(sId1);// new model.fsa.ver2_1.State(sId1);
 						s1.setName("" + sId1);
 						a.add(s1);
 					}
@@ -193,7 +194,7 @@ public class GrailPlugin implements ImportExportPlugin
 					if (s2 == null)
 					{
 						s2 = a.assembleState();
-						s2.setId(sId2);//new model.fsa.ver2_1.State(sId2);
+						s2.setId(sId2);// new model.fsa.ver2_1.State(sId2);
 						s2.setName("" + sId2);
 						a.add(s2);
 					}
@@ -201,11 +202,13 @@ public class GrailPlugin implements ImportExportPlugin
 					Long eId = events.get(parts[1]);
 					if (eId == null)
 					{
-						e = a.assembleEvent("");//new model.supeventset.ver3.Event(eCount);
+						e = a.assembleEvent("");// new
+												// model.supeventset.ver3.Event
+												// (eCount);
 						e.setSymbol(parts[1]);
 						e.setObservable(true);
 						e.setControllable(true);
-						//eCount++;
+						// eCount++;
 						a.add(e);
 						events.put(parts[1], new Long(e.getId()));
 					}
@@ -213,13 +216,16 @@ public class GrailPlugin implements ImportExportPlugin
 					{
 						e = a.getEvent(eId.longValue());
 					}
-					FSATransition t = a.assembleTransition(s1.getId(), s2.getId(), e.getId());//new model.fsa.ver2_1.Transition(
-							//tCount,
-							//s1,
-							//s2,
-							//e);
+					FSATransition t = a.assembleTransition(s1.getId(), s2
+							.getId(), e.getId());// new
+													// model.fsa.ver2_1.Transition
+													// (
+					// tCount,
+					// s1,
+					// s2,
+					// e);
 					a.add(t);
-					//tCount++;
+					// tCount++;
 				}
 			}
 			// // Create an automatic layout given the imported method

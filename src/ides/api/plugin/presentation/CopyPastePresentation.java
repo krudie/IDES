@@ -6,16 +6,16 @@ import javax.swing.Action;
 
 /**
  * <p>
- * An interface for presentations that will implement cut, copy and paste.
- * CopyPastePresentations should notify the {@link CopyPasteManager} of any
- * changes in cut, copy or paste status using
+ * An interface for {@link Presentation}s that implement cut, copy and paste.
+ * {@link CopyPastePresentation}s should notify the {@link CopyPasteManager} of
+ * any changes in the cut, copy or paste status using
  * Hub.getCopyPasteManager().refresh()
  * </p>
  * <p>
- * Only one CopyPastePresentation is active at a time, which is managed by the
- * {@link CopyPasteManager}. It is this active presentation that the
- * {@link CopyPasteManager} queries at any given time for enabled status and
- * appropriate actions.
+ * Only one {@link CopyPastePresentation} can be active at a time. It is this
+ * active presentation that the {@link CopyPasteManager} queries at any given
+ * time for enabled status and appropriate actions. The {@link CopyPasteManager}
+ * tracks the switching between presentations.
  * </p>
  * 
  * @author Valerie Sugarman
@@ -23,23 +23,23 @@ import javax.swing.Action;
 public interface CopyPastePresentation extends Presentation
 {
 	/**
-	 * Determines whether cut and copy should currently be available to the
-	 * user. This method is queried when the {@link CopyPasteManager} is
-	 * refreshed.
+	 * Determine whether cut and copy should currently be available to the user.
+	 * This method is queried when the {@link CopyPasteManager} is refreshed.
 	 * 
-	 * @return <code> true </code> if cut and copy should be available to the
-	 *         user.
+	 * @return <code>true</code> if cut and copy should be available to the
+	 *         user, <code>false</code> otherwise.
 	 */
 	public boolean isCutCopyEnabled();
 
 	/**
-	 * Determines whether paste should currently be available to the user,
+	 * Determine whether paste should currently be available to the user,
 	 * depending on the state of the presentation and on the type of data on the
 	 * clipboard. If the type of data on the clipboard cannot be accepted then
-	 * return false. This method is queried when the {@link CopyPasteManager} is
-	 * refreshed.
+	 * return <code>false</code>. This method is queried when the
+	 * {@link CopyPasteManager} is refreshed.
 	 * 
-	 * @return <code> true </code> if paste should be available to the user.
+	 * @return <code>true</code> if paste should be available to the user,
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isPasteEnabled();
 
@@ -65,10 +65,9 @@ public interface CopyPastePresentation extends Presentation
 	public Action getPasteAction();
 
 	/**
-	 * Updates any aspects of the CopyPastePresentation that require knowledge
-	 * of when a new item is on the clipboard. This method is ONLY received when
-	 * this CopyPastePresentation is the active presentation in the
-	 * {@link CopyPasteManager}.
+	 * Notification that a new item is on the clipboard. This method is ONLY
+	 * called when this {@link CopyPastePresentation} is the active presentation
+	 * in the {@link CopyPasteManager}.
 	 */
 	public void newItemOnClipboard();
 

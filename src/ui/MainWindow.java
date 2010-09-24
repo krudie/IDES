@@ -758,8 +758,8 @@ public class MainWindow extends JFrame implements WorkspaceSubscriber,
 	/**
 	 * Store the window size with the persistent properties, then free up all
 	 * screen resources used by this window.
-	 * 
-	 * @author Chris McAloney
+	 * <p>
+	 * author Chris McAloney
 	 */
 	@Override
 	public void dispose()

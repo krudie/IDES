@@ -42,7 +42,7 @@ public class Project
 	 * 
 	 * @param model
 	 *            the original model
-	 * @param DESEventsToRemove
+	 * @param eventsToRemove
 	 *            a DESEventSet containing the events to project out of the
 	 *            model. Can be empty or null. If null, an empty DESEventSet
 	 *            will be created.

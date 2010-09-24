@@ -88,18 +88,6 @@ public class LatexPlugin implements ImportExportPlugin
 	}
 
 	/**
-	 * Import a file from a different format to the IDES file system
-	 * 
-	 * @param importFile
-	 *            - the source file
-	 * @return
-	 */
-	public File importFile(File importFile)
-	{
-		return null;
-	}
-
-	/**
 	 * Return a human readable description of the plugin
 	 */
 	public String getFileDescription()
@@ -118,9 +106,10 @@ public class LatexPlugin implements ImportExportPlugin
 	/**
 	 * Import a file from a different format to the IDES file system
 	 * 
-	 * @param importFile
-	 *            - the source file
-	 * @return
+	 * @param src
+	 *            the source file
+	 * @param dst
+	 *            the destination file
 	 */
 	public void importFile(File src, File dst)
 	{

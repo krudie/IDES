@@ -56,15 +56,6 @@ public class UndoBackend implements UndoManager
 	 * Initializes the UndoManager. The UndoManager subscribes itself to the
 	 * workspace, so it can proccess events for model switching and similar
 	 * tasks.
-	 * 
-	 * @param undoItem
-	 *            the menu item which will be updated to display the current
-	 *            undoable event. This should be the "Undo" menu item in the
-	 *            "Edit" menu.
-	 * @param redoItem
-	 *            the menu item which will be updated to display the current
-	 *            redoable event. This should be the "Redo" menu item in the
-	 *            "Edit" menu.
 	 */
 	public static void init()
 	{

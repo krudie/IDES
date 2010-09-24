@@ -294,9 +294,10 @@ public class CircleNode extends Node
 
 	/**
 	 * This method is needed by the GraphExporter to draw the initial arrow.
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 * 
 	 * @return Rectangle The bounding box for the initial arrow
-	 * @author Sarah-Jane Whittaker
 	 */
 	protected Rectangle getInitialArrowBounds()
 	{
@@ -314,6 +315,8 @@ public class CircleNode extends Node
 	 * Creates and returns a string that contains an appropriate (depending on
 	 * the type) encoding of this node. NOTE: Initial arrows aren't handles, as
 	 * those are now independent edges
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 * 
 	 * @param selectionBox
 	 *            The area being selected or considered
@@ -322,7 +325,6 @@ public class CircleNode extends Node
 	 * @see GraphExporter#INT_EXPORT_TYPE_EPS
 	 * @see GraphExporter#INT_EXPORT_TYPE_PSTRICKS
 	 * @return the string representation
-	 * @author Sarah-Jane Whittaker
 	 */
 	@Override
 	public String createExportString(Rectangle selectionBox, int exportType)
@@ -415,8 +417,8 @@ public class CircleNode extends Node
 
 	/**
 	 * Used to compute bounds for LaTeX export.
-	 * 
-	 * @author Sarah-Jane Whittaker
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 */
 	protected Rectangle getSquareBounds()
 	{

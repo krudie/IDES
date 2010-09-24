@@ -449,7 +449,7 @@ public class BezierEdge extends Edge
 	/**
 	 * Get point of visible curve.
 	 * 
-	 * @return
+	 * @return end point 1
 	 */
 	public Point2D.Float getP1()
 	{
@@ -461,7 +461,7 @@ public class BezierEdge extends Edge
 	/**
 	 * Get point of visible curve.
 	 * 
-	 * @return
+	 * @return end point 2
 	 */
 	public Point2D.Float getP2()
 	{
@@ -473,7 +473,7 @@ public class BezierEdge extends Edge
 	/**
 	 * Get point of visible curve.
 	 * 
-	 * @return
+	 * @return control point 1 for the visible curve
 	 */
 	public Point2D.Float getVisibleCTRL1()
 	{
@@ -485,7 +485,7 @@ public class BezierEdge extends Edge
 	/**
 	 * Get point of complete curve.
 	 * 
-	 * @return
+	 * @return control point 1
 	 */
 	public Point2D.Float getCTRL1()
 	{
@@ -497,7 +497,7 @@ public class BezierEdge extends Edge
 	/**
 	 * Get point of visible curve.
 	 * 
-	 * @return
+	 * @return control point 2 for the visible curve
 	 */
 	public Point2D.Float getVisibleCTRL2()
 	{
@@ -509,7 +509,7 @@ public class BezierEdge extends Edge
 	/**
 	 * Get point of complete curve.
 	 * 
-	 * @return
+	 * @return control point 2
 	 */
 	public Point2D.Float getCTRL2()
 	{

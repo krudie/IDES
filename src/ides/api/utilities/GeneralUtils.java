@@ -336,8 +336,9 @@ public class GeneralUtils
 
 	/**
 	 * Attempts to open a browser in the host OS and load the provided URL.
+	 * <p>
+	 * contains code written by Dem Pilafian.
 	 * 
-	 * @author contains code written by Dem Pilafian.
 	 * @param url
 	 *            the URL to be loaded in the browser
 	 * @return <code>true</code> if no exceptions were encountered in launching

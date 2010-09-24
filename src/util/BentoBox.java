@@ -74,6 +74,8 @@ public class BentoBox
 	 * to right, so if "replace" contains "find" it will not be further
 	 * modified. Use this when String.replaceAll is too complicated (i.e.
 	 * replace < with $<$)
+	 * <p>
+	 * author Mike Wood, modified by Sarah-Jane Whittaker
 	 * 
 	 * @param source
 	 *            The source string.
@@ -83,7 +85,6 @@ public class BentoBox
 	 *            The substring to replace all occurences of find.
 	 * @return A modified version of "source" will all occurences of "find"
 	 *         replaced with "replace".
-	 * @author Mike Wood, modified by Sarah-Jane Whittaker
 	 */
 	public static String replaceAll(String source, String find, String replace)
 	{

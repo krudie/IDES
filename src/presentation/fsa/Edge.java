@@ -87,6 +87,8 @@ public abstract class Edge extends GraphElement
 	/**
 	 * Creates a string that contains an appropriate (depending on the type)
 	 * encoding of this edge.
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 * 
 	 * @param selectionBox
 	 *            The area being selected or considered
@@ -95,7 +97,6 @@ public abstract class Edge extends GraphElement
 	 * @see GraphExporter#INT_EXPORT_TYPE_EPS
 	 * @see GraphExporter#INT_EXPORT_TYPE_PSTRICKS
 	 * @return String The string representation
-	 * @author Sarah-Jane Whittaker
 	 */
 	public abstract String createExportString(Rectangle selectionBox,
 			int exportType);

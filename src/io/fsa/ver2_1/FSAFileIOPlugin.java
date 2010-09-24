@@ -83,8 +83,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	/**
 	 * Saves its data in <code>file</code> according to a <code>model</code>.
 	 * 
-	 * @param file
-	 *            the file to save the data in.
+	 * @param stream
+	 *            the stream to save the data in.
 	 * @param model
 	 *            the model to be saved in the file.
 	 * @param fileName
@@ -126,8 +126,12 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	/**
 	 * Save metaData to the file, according to model.
 	 * 
-	 * @param file
+	 * @param stream
+	 *            the stream where to save the metadata
 	 * @param model
+	 *            the model with the meta data
+	 * @param tag
+	 *            the tag for the metadata
 	 */
 	public void saveMeta(PrintStream stream, DESModel model, String tag)
 			throws FileSaveException
@@ -143,7 +147,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		ListIterator<FSATransition> ti = ((FSAModel)model)
 				.getTransitionIterator();
 
-		GraphLayout layout = (GraphLayout)model.getAnnotation(AnnotationKeys.LAYOUT);
+		GraphLayout layout = (GraphLayout)model
+				.getAnnotation(AnnotationKeys.LAYOUT);
 		if (layout != null)
 		{
 			stream.println("\n\t<font size=\"" + layout.getFontSize() + "\"/>");
@@ -174,9 +179,13 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	/**
 	 * Loads data from the file.
 	 * 
-	 * @param file
+	 * @param version
+	 *            the version of the file format
+	 * @param f
+	 *            the input
 	 * @param fileDir
-	 * @return
+	 *            the directory with the input file
+	 * @return the loaded model
 	 */
 	public DESModel loadData(String version, InputStream f, String fileDir)
 			throws FileLoadException
@@ -210,7 +219,14 @@ public class FSAFileIOPlugin implements FileIOPlugin
 	/**
 	 * Loads metadata from the file
 	 * 
-	 * @param file
+	 * @param version
+	 *            the version of the file format
+	 * @param stream
+	 *            the input
+	 * @param model
+	 *            the model where the data should be stored
+	 * @param tag
+	 *            the tag of the meta data
 	 */
 	public void loadMeta(String version, InputStream stream, DESModel model,
 			String tag) throws FileLoadException
@@ -423,7 +439,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		private static void transitionLayoutToXML(FSATransition t,
 				PrintStream ps, String indent)
 		{
-			BezierLayout l = (BezierLayout)t.getAnnotation(AnnotationKeys.LAYOUT);
+			BezierLayout l = (BezierLayout)t
+					.getAnnotation(AnnotationKeys.LAYOUT);
 			if (l != null)
 			{
 				CubicParamCurve2D curve = l.getCurve();
@@ -468,9 +485,9 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		private FSATransition tmpTransition;
 
 		private SupervisoryEvent tmpEvent;
-		
+
 		private GraphLayout gl = new GraphLayout();
-		
+
 		HashMap<Long, BezierLayout> bezierCurves = new HashMap<Long, BezierLayout>();
 
 		// Constants representing names of xml tags and subtags
@@ -631,7 +648,8 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		/**
 		 * Debug function. Prints the content of the stream.
 		 * 
-		 * @param dataSection
+		 * @param stream
+		 *            the stream
 		 */
 		public void printInputStream(InputStream stream)
 		{
@@ -666,9 +684,6 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * @param atts
 		 *            the attributes of the XML tag, ex: <tag at1="value1"
 		 *            at2="value2" />, where at1 and at2 are the attributes
-		 * @param action
-		 *            , tells witch parsing action needs to be performed.
-		 *            Currently supports: "start" and "end"
 		 */
 		public void parseDataElements(String qName, Attributes atts)
 		{
@@ -764,7 +779,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 			// The sublevel is identified by the class constants: MAINTAG,
 			// SUBTAG, SUBSUBTAG, etc,
 			// which are integers with value meaning the sublevel of the tag.
-			
+
 			switch (tags.size())
 			{
 			case MAINTAG:// MAINTAG
@@ -853,8 +868,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 					{
 						uniformNodes = "false";
 					}
-					gl.setUseUniformRadius(Boolean
-							.parseBoolean(uniformNodes));
+					gl.setUseUniformRadius(Boolean.parseBoolean(uniformNodes));
 					model.setAnnotation(AnnotationKeys.LAYOUT, gl);
 				}
 
@@ -1013,7 +1027,7 @@ public class FSAFileIOPlugin implements FileIOPlugin
 		 * 
 		 * @param atts
 		 * @param parsingElement
-		 * @return
+		 * @return the FSA element
 		 */
 		public Object getModelElement(Attributes atts, String parsingElement)
 		{

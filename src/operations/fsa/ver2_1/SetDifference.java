@@ -77,7 +77,7 @@ public class SetDifference implements Operation
 	 * @param arg0
 	 *            two inputs of type FSAModel, second input will be subtracted
 	 *            from the first
-	 * @returns one model in which the difference of the languages is stored
+	 * @return one model in which the difference of the languages is stored
 	 */
 	public Object[] perform(Object[] arg0)
 	{

@@ -66,7 +66,7 @@ public class AutomatonParser20 extends AbstractParser
 	}
 
 	/**
-	 * @see AbstractFileParser#parse(File)
+	 * @see AbstractParser
 	 */
 	public FSAModel parse(File f)
 	{
@@ -171,7 +171,7 @@ public class AutomatonParser20 extends AbstractParser
 					break;
 				}
 				int id = Integer.parseInt(atts.getValue(ATTRIBUTE_ID));
-				lastEvent = a.assembleEvent("");//new Event(id);
+				lastEvent = a.assembleEvent("");// new Event(id);
 				lastEvent.setId(id);
 				a.add(lastEvent);
 				state = STATE_EVENT;

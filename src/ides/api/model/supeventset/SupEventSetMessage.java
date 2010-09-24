@@ -1,7 +1,7 @@
 package ides.api.model.supeventset;
 
 /**
- * A message sent to subscribers listening to a SupervisoryEventSet
+ * A message sent to subscribers listening to a {@link SupervisoryEventSet}.
  * 
  * @author Valerie Sugarman
  */
@@ -29,15 +29,15 @@ public class SupEventSetMessage
 	private long supEventId;
 
 	/**
-	 * Creates a (@link SupervisoryEventSet) message to be passed on to any
-	 * SupervisoryEventSet subscribers.
+	 * Creates a {@link SupervisoryEventSet} message to be passed on to any
+	 * {@link SupervisoryEventSet} subscribers.
 	 * 
 	 * @param eventType
-	 *            the type of event (add, remove, modify).
+	 *            the type of change (add, remove, modify).
 	 * @param supEventId
-	 *            the id of the Supervisory Event in the event set.
+	 *            the id of the {@link SupervisoryEvent} in the event set.
 	 * @param source
-	 *            the (@link SupervisoryEventSet) where the message originates.
+	 *            the {@link SupervisoryEventSet} where the message originates.
 	 * @param messageText
 	 *            a descriptions of the message.
 	 */
@@ -51,15 +51,15 @@ public class SupEventSetMessage
 	}
 
 	/**
-	 * Creates a (@link SupervisoryEventSet) message to be passed on to any
-	 * SupervisoryEventSet subscribers.
+	 * Creates a {@link SupervisoryEventSet} message to be passed on to any
+	 * {@link SupervisoryEventSet} subscribers.
 	 * 
 	 * @param eventType
-	 *            the type of event (add, remove, modify).
+	 *            the type of change (add, remove, modify).
 	 * @param supEventId
 	 *            the id of the Supervisory Event in the event set.
 	 * @param source
-	 *            the (@link SupervisoryEventSet) where the message originates.
+	 *            the {@link SupervisoryEventSet} where the message originates.
 	 */
 	public SupEventSetMessage(int eventType, long supEventId,
 			SupervisoryEventSet source)
@@ -81,9 +81,9 @@ public class SupEventSetMessage
 	}
 
 	/**
-	 * Retrieve the type of event (addition, removal or modification).
+	 * Retrieve the type of change (addition, removal or modification).
 	 * 
-	 * @return the type of event (addition, removal or modification)
+	 * @return the type of change (addition, removal or modification)
 	 */
 	public int getEventType()
 	{
@@ -101,9 +101,9 @@ public class SupEventSetMessage
 	}
 
 	/**
-	 * Retrieve the ID of the SupervisoryEvent in the message.
+	 * Retrieve the ID of the {@link SupervisoryEvent} in the message.
 	 * 
-	 * @return the ID of the SupervisoryEvent in the message
+	 * @return the ID of the {@link SupervisoryEvent} in the message
 	 */
 	public long getEventId()
 	{

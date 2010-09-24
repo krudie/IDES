@@ -191,13 +191,14 @@ public class ReflexiveEdge extends BezierEdge
 	 * appropriate (depending on the type) representation of this self-loop.
 	 * TODO: Calculate a better C1 and C2 or export - there are no PSTricks
 	 * self-loop options
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 * 
 	 * @param selectionBox
 	 *            The area being selected or considered
 	 * @param exportType
 	 *            The export format
 	 * @return String The string representation
-	 * @author Sarah-Jane Whittaker
 	 */
 	@Override
 	public String createExportString(Rectangle selectionBox, int exportType)
@@ -324,9 +325,10 @@ public class ReflexiveEdge extends BezierEdge
 	/**
 	 * Sets the coordinates of <code>intersection</code> to the location where
 	 * my bezier curve intersects the boundary of <code>node</code>.
+	 * <p>
+	 * Precondition: node != null and intersection != null
 	 * 
 	 * @return param t at which my bezier curve intersects <code>node</code>
-	 * @precondition node != null and intersection != null
 	 */
 	@Override
 	protected float intersectionWithBoundary(Shape nodeShape,

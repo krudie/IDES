@@ -1,12 +1,10 @@
 package ides.api.plugin.presentation;
 
-import ides.api.ui.FontSizeSelector;
-
 /**
- * An interface for presentations that support the ability to change the font
- * size. Such a presentation needs to update the {@link FontSizeSelector} via
- * Hub .getUserInterface().getFontSelector().setFontSize(float fontSize) of any
- * font size for it to be displayed properly, otherwise the default is size 12.
+ * An interface for {@link Presentation}s that support the ability to change the
+ * font size. Such a presentation may also update the font size via
+ * Hub.getUserInterface().getFontSelector().setFontSize(float fontSize), e.g.,
+ * to restore a saved font size.
  * 
  * @author Valerie Sugarman
  */

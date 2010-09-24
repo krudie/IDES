@@ -41,6 +41,8 @@ public abstract class Node extends GraphElement
 	/**
 	 * This method is responsible for creating a string that contains an
 	 * appropriate (depending on the type) representation of this node.
+	 * <p>
+	 * author Sarah-Jane Whittaker
 	 * 
 	 * @param selectionBox
 	 *            The area being selected or considered
@@ -49,7 +51,6 @@ public abstract class Node extends GraphElement
 	 * @see GraphExporter#INT_EXPORT_TYPE_EPS
 	 * @see GraphExporter#INT_EXPORT_TYPE_PSTRICKS
 	 * @return String The string representation
-	 * @author Sarah-Jane Whittaker
 	 */
 	public abstract String createExportString(Rectangle selectionBox,
 			int exportType);
@@ -170,8 +171,8 @@ public abstract class Node extends GraphElement
 	/**
 	 * Finds the best position for the initial arrow and recompute it at the
 	 * best position.
-	 * 
-	 * @author christian
+	 * <p>
+	 * author christian
 	 */
 	public void relocateInitialArrow()
 	{

@@ -96,7 +96,7 @@ public class FontSizeSelector extends JComboBox implements ActionListener
 	/**
 	 * Set the font size.
 	 * 
-	 * @param z
+	 * @param s
 	 *            the new font size.
 	 */
 	public void setFontSize(float s)

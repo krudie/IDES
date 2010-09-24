@@ -523,7 +523,7 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 								graphModel,
 								""));
 				// this method used to call
-				// this.graphModel.commitLayoutModified(this.getSelectedElement()
+				//this.graphModel.commitLayoutModified(this.getSelectedElement()
 				// );
 				// I replaced with selectionChanged message but not 100% sure
 				// there won't be side-effects
@@ -929,7 +929,8 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		// won't work
 		scaleFactor = Hub.getUserInterface().getZoomControl().getZoom();
 		uiInteraction = false;
-		Hub.getUserInterface().getFontSelector().setFontSize(graphModel.getFontSize());
+		Hub.getUserInterface().getFontSelector().setFontSize(graphModel
+				.getFontSize());
 	}
 
 	@Override
@@ -1015,8 +1016,9 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 		public void actionPerformed(ActionEvent arg0)
 		{
 
-			Transferable clipboardContent = Hub.getCopyPasteManager()
-					.getClipboard().getContents(GraphDrawingView.this);
+			Transferable clipboardContent = Hub
+					.getCopyPasteManager().getClipboard()
+					.getContents(GraphDrawingView.this);
 			if (clipboardContent != null
 					&& clipboardContent
 							.isDataFlavorSupported(SelectionGroup.selectionGroupFlavor))
@@ -1380,9 +1382,6 @@ public class GraphDrawingView extends GraphView implements MouseMotionListener,
 	 * 
 	 * @param selection
 	 *            the SelectionGroup under consideration
-	 * @return the SelectionGroup, now including any edges that already had both
-	 *         source and target included but the edge might not have been
-	 *         included before.
 	 */
 	protected void addChildrenToSelection(SelectionGroup selection)
 	{

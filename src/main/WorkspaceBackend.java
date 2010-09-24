@@ -124,7 +124,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 	/**
 	 * Adds the given DESModel to the set of models in the workspace.
 	 * 
-	 * @param fsa
+	 * @param model
 	 *            the model to be added
 	 */
 	public void addModel(DESModel model)
@@ -650,7 +650,8 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace
 		while (i.hasNext())
 		{
 			DESModel a = i.next();
-			if (!a.hasAnnotation(AnnotationKeys.FILE) && a.getParentModel() == null)
+			if (!a.hasAnnotation(AnnotationKeys.FILE)
+					&& a.getParentModel() == null)
 			{
 				unsavedModels.add(a);
 			}

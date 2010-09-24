@@ -16,30 +16,76 @@ import java.util.ListIterator;
 import java.util.Set;
 
 /**
- * A class of methods useful for checking FSAModels for certain criteria.
+ * A class of methods useful for checking {@link FSAModel}s for certain
+ * criteria.
  * 
  * @author Valerie Sugarman
  */
 public class FSAToolbox
 {
+	// prevent instantiation
+	private FSAToolbox()
+	{
+	}
+
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * None or more than one initial states.
+	 */
 	public static final String NOT_1_INITIAL_STATE = Hub
 			.string("errorNoOrManyInitStates");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * No marked states.
+	 */
 	public static final String NO_MARKED_STATES = Hub
 			.string("errorNoMarkedStates");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * Illegal argument.
+	 */
 	public static final String ILLEGAL_ARGUMENT = Hub
 			.string("errorIllegalArgument");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * Unsupported number of arguments.
+	 */
 	public static final String ILLEGAL_NUMBER_OF_ARGUMENTS = Hub
 			.string("errorIllegalNumberOfArguments");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * Nondeterministic model.
+	 */
 	public static final String NON_DETERM = Hub.string("errorNonDeterministic");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * Mismatch between the controllability attributes of events.
+	 */
 	public static final String ERROR_CONTROL = Hub.string("errorControl");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * Mismatch between the observability attributes of events.
+	 */
 	public static final String ERROR_OBSERVE = Hub.string("errorObserve");
 
+	/**
+	 * A standard error message which can be used by {@link Operation}s.
+	 * <p>
+	 * Unable to compute the operation.
+	 */
 	public static final String ERROR_UNABLE_TO_COMPUTE = Hub
 			.string("errorUnableToCompute");
 
@@ -69,7 +115,7 @@ public class FSAToolbox
 	 * 
 	 * @param model
 	 *            the model in which to find the number of initial states
-	 * @returns the number of initial states in the model
+	 * @return the number of initial states in the model
 	 */
 	public static int initialStateCount(FSAModel model)
 	{
@@ -103,7 +149,7 @@ public class FSAToolbox
 	 * 
 	 * @param model
 	 *            the model in which to find the number of marked states
-	 * @returns the number of marked states in the model
+	 * @return the number of marked states in the model
 	 */
 	public static int markedStateCount(FSAModel model)
 	{
@@ -154,10 +200,10 @@ public class FSAToolbox
 	}
 
 	/**
-	 * Determines whether the given model is empty.
+	 * Determines whether the given model is empty (has no states).
 	 * 
 	 * @param model
-	 *            the model under consideration
+	 *            the model to be checked
 	 * @return <code>true</code> if the model contains no states,
 	 *         <code>false</code> otherwise.
 	 */
@@ -219,12 +265,12 @@ public class FSAToolbox
 
 	/**
 	 * Determines whether the model is deterministic, i.e. contains no epsilon
-	 * transitions, has no more than one initial state (but could have none for
-	 * our purposes), and from each state there is not more than one transition
-	 * with a given event.
+	 * transitions, has no more than one initial state (but could have none),
+	 * and from each state there is not more than one transition with a given
+	 * event.
 	 * 
 	 * @param model
-	 *            the model under consideration
+	 *            the model to be checked
 	 * @return <code>false</code> if model contains epsilon transitions, has
 	 *         more than one initial state or has a state with more than one
 	 *         transition firing on the same event, <code>true</code> otherwise.
@@ -260,14 +306,15 @@ public class FSAToolbox
 	}
 
 	/**
-	 * A check to see whether there is a conflict in the controllable status of
-	 * events contained in both models.
+	 * A check to see whether there is a conflict in the controllability
+	 * attribute of events contained in the given models.
 	 * 
-	 * @param model1
-	 * @param model2
-	 * @return <code>true</code> if an event with the same name exists in both
-	 *         models but is controllable in one and uncontrollable in the
-	 *         other, <code>false</code> otherwise.
+	 * @param models
+	 *            the models containing the events whose controllability
+	 *            attributes have to be checked for conflict
+	 * @return <code>true</code> if an event with the same name exists in any
+	 *         pair of models but is controllable in one and uncontrollable in
+	 *         the other, <code>false</code> otherwise.
 	 */
 
 	public static boolean hasControllabilityConflict(FSAModel[] models)
@@ -305,14 +352,15 @@ public class FSAToolbox
 	}
 
 	/**
-	 * A check to see whether there is a conflict in the observable status of
-	 * events contained in both models.
+	 * A check to see whether there is a conflict in the observability attribute
+	 * of events contained in the given models.
 	 * 
-	 * @param model1
-	 * @param model2
-	 * @return <code>true</code> if an event with the same name exists in both
-	 *         models but is observable in one and unobservable in the other,
-	 *         <code>false</code> otherwise.
+	 * @param models
+	 *            the models containing the events whose observability
+	 *            attributes have to be checked for conflict
+	 * @return <code>true</code> if an event with the same name exists in any
+	 *         pair of models but is observable in one and unobservable in the
+	 *         other, <code>false</code> otherwise.
 	 */
 
 	public static boolean hasObservabilityConflict(FSAModel[] models)
@@ -350,11 +398,13 @@ public class FSAToolbox
 	}
 
 	/**
-	 * Constructs an FSAModel representing a string from a List of DESEvents.
+	 * Constructs an {@link FSAModel} representing a string from a list of
+	 * {@link DESEvent}s.
 	 * 
 	 * @param list
-	 *            The List of DESEvents to construct the FSAModel from.
-	 * @return FSAModel representing the given string.
+	 *            The list of {@link DESEvent}s to construct the
+	 *            {@link FSAModel} from.
+	 * @return {@link FSAModel} representing the given string.
 	 */
 
 	public static FSAModel modelFromList(List<DESEvent> list)

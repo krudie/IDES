@@ -100,7 +100,7 @@ public class Complement implements FilterOperation
 	 * @param arg0
 	 *            one input of type FSAModel, whose complemented is to be
 	 *            computed
-	 * @returns one model of type FSAModel which is the complement of the input
+	 * @return one model of type FSAModel which is the complement of the input
 	 *          model
 	 */
 	public Object[] filter(Object[] arg0)

@@ -1,12 +1,10 @@
 package ides.api.plugin.presentation;
 
-import ides.api.ui.ZoomControl;
-
 /**
- * An interface for presentations that support the ability to zoom. Such a
- * presentation needs to update the {@link ZoomControl} via Hub
- * .getUserInterface().getZoomControl().setZoom(float scaleFactor) of any saved
- * scale factor for it to be displayed properly, otherwise the default is 1.
+ * An interface for {@link Presentation}s that support the ability to zoom. Such
+ * a presentation may also update the scaling factor via
+ * Hub.getUserInterface().getUserInterface().getZoomControl().setZoom(float
+ * scaleFactor), e.g., to restore a saved zoom level.
  * 
  * @author Valerie Sugarman
  */

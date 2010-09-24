@@ -42,7 +42,7 @@ public class EdgePopup extends JPopupMenu
 	/**
 	 * Creates a popup menu to for displaying when user right-clicks on an edge.
 	 * 
-	 * @param e
+	 * @param edge
 	 *            the edge to associate with this menu instance
 	 */
 	protected EdgePopup(GraphDrawingView gdv, Edge edge)

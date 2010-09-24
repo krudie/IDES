@@ -141,7 +141,7 @@ public class NoticeBackend implements NoticeManager
 	/**
 	 * Returns a free ID which can be used for a new notice.
 	 * 
-	 * @return
+	 * @return the free ID for a new notice
 	 */
 	protected synchronized int getFreeId()
 	{

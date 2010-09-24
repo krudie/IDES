@@ -1,7 +1,7 @@
 package ides.api.model.supeventset;
 
 /**
- * A subscriber to messages sent by SupervisoryEventSet models.
+ * A subscriber to messages sent by {@link SupervisoryEventSet} models.
  * 
  * @author Valerie Sugarman
  */
@@ -9,7 +9,7 @@ public interface SupEventSetSubscriber
 {
 
 	/**
-	 * The event set of the model changed.
+	 * The event set changed.
 	 * 
 	 * @param message
 	 *            description of the modification.

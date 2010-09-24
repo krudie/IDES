@@ -1,12 +1,14 @@
 package util;
 
+import ides.api.core.Annotable;
+
 import java.io.File;
 
 /**
- * Contains the {@link String}s to be used as keys for the {@link Annotable} interface.
+ * Contains the {@link String}s to be used as keys for the {@link Annotable}
+ * interface.
  * 
  * @author Valerie Sugarman
- *
  */
 public class AnnotationKeys
 {

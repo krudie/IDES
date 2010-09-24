@@ -298,7 +298,6 @@ public class UIActions
 		}
 
 		/**
-		 * @param context
 		 * @param location
 		 */
 		public TextAction(Point location)
@@ -343,7 +342,7 @@ public class UIActions
 					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 							edge);
 					// new EdgeCommands.CreateEventCommand(,edge).execute();
-					// EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+					//EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 					// edge);
 					// TODO accumulate set of edits that were performed in the
 					// edge
@@ -356,9 +355,9 @@ public class UIActions
 					EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 							edge);
 					// new
-					// EdgeCommands.CreateEventCommand(ContextAdaptorHack.context
+					//EdgeCommands.CreateEventCommand(ContextAdaptorHack.context
 					// ,edge).execute();
-					// EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
+					//EdgeLabellingDialog.showDialog(ContextAdaptorHack.context,
 					// edge);
 				}
 				else

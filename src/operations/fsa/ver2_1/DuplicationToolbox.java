@@ -6,16 +6,16 @@ import ides.api.model.supeventset.SupervisoryEvent;
 
 import java.util.ListIterator;
 import java.util.Map;
+
 /**
- * 
  * @author Valerie Sugarman
- *
  */
 public class DuplicationToolbox
 {
 
 	/**
-	 * Calls copyState for all the states in model2.
+	 * Calls {@link #copyStateInto(FSAModel, FSAState, Map, boolean)} for all
+	 * the states in model2.
 	 * 
 	 * @param model1
 	 *            The model the states are being added too.
@@ -50,7 +50,7 @@ public class DuplicationToolbox
 	 * 
 	 * @param model1
 	 *            The destination model for the copied state.
-	 * @param origEvent
+	 * @param origState
 	 *            The state to be copied.
 	 * @param states
 	 *            Contains a mapping of the original state(s) to the copied
@@ -58,9 +58,9 @@ public class DuplicationToolbox
 	 * @param copyId
 	 *            When <code>true</code>, the id of the original state will be
 	 *            copied to the new state
-	 * @returns An equivalent state in model1 with the same name, initial and
-	 *          marked status, and optionally id based on value of copyId as the
-	 *          original state.
+	 * @return An equivalent state in model1 with the same name, initial and
+	 *         marked status, and optionally id based on value of copyId as the
+	 *         original state.
 	 */
 	protected static FSAState copyStateInto(FSAModel model1,
 			FSAState origState, Map<FSAState, FSAState> states, boolean copyId)
@@ -87,15 +87,16 @@ public class DuplicationToolbox
 	}
 
 	/**
-	 * Calls copyEvent for all the events in model2.
+	 * Calls {@link #copyEventInto(FSAModel, SupervisoryEvent, Map, boolean)}
+	 * for all the events in the source model.
 	 * 
-	 * @param model1
-	 *            The model the events are being added too.
-	 * @param model2
+	 * @param to
+	 *            The model the events are being added to.
+	 * @param from
 	 *            The model the events are being copied from.
-	 * @param states
-	 *            Map to keep track of events already in model1 (originally or
-	 *            previous copied).
+	 * @param events
+	 *            Map to keep track of events already in the target model
+	 *            (originally or previously copied).
 	 * @param copyId
 	 *            When <code>true</code>, the id of each original event will be
 	 *            copied to the new state
@@ -105,7 +106,8 @@ public class DuplicationToolbox
 			Map<String, SupervisoryEvent> events, boolean copyId)
 	{
 
-		for (ListIterator<SupervisoryEvent> f = from.getEventIterator(); f.hasNext();)
+		for (ListIterator<SupervisoryEvent> f = from.getEventIterator(); f
+				.hasNext();)
 		{
 			SupervisoryEvent origEvent = f.next();
 			DuplicationToolbox.copyEventInto(to, origEvent, events, copyId);
@@ -114,12 +116,12 @@ public class DuplicationToolbox
 
 	/**
 	 * Produces a duplication in model1 of the original event. If a duplication
-	 * has already been made, an entry will exist in the map and the
-	 * previously created event with the same name will be fetched. If the
-	 * duplication has not already been made, a new event will be assembled,
-	 * duplicated, then added to model1 and the map. Duplication consists
-	 * of the same symbol, observable and controllable status, and optionally id
-	 * based on value of copyId as the original event.
+	 * has already been made, an entry will exist in the map and the previously
+	 * created event with the same name will be fetched. If the duplication has
+	 * not already been made, a new event will be assembled, duplicated, then
+	 * added to model1 and the map. Duplication consists of the same symbol,
+	 * observable and controllable status, and optionally id based on value of
+	 * copyId as the original event.
 	 * 
 	 * @param model1
 	 *            The destination model for the copied event.
@@ -130,12 +132,13 @@ public class DuplicationToolbox
 	 * @param copyId
 	 *            When <code>true</code>, the id of the original event will be
 	 *            copied to the new state
-	 * @returns An equivalent state in model1 with the same symbol, observable
-	 *          and controllable status, and optionally id based on value of
-	 *          copyId as the original event.
+	 * @return An equivalent state in model1 with the same symbol, observable
+	 *         and controllable status, and optionally id based on value of
+	 *         copyId as the original event.
 	 */
 	protected static SupervisoryEvent copyEventInto(FSAModel model1,
-			SupervisoryEvent origEvent, Map<String, SupervisoryEvent> events, boolean copyId)
+			SupervisoryEvent origEvent, Map<String, SupervisoryEvent> events,
+			boolean copyId)
 	{
 
 		SupervisoryEvent copyEvent;
@@ -162,14 +165,14 @@ public class DuplicationToolbox
 	/**
 	 * Iterates through all of the states in model and identifies an initial
 	 * state. It is expected that it has already been verified using the
-	 * initialStateCount method in FSAToolbox that there is exactly 1
-	 * initial state.
+	 * initialStateCount method in FSAToolbox that there is exactly 1 initial
+	 * state.
 	 * 
 	 * @param model
 	 *            The model under consideration
-	 * @returns Returns the initial state. (If there is more than one initial
-	 *          state, returns the last one in the iterator. If there is no
-	 *          initial state, returns a newly assembled state in model.)
+	 * @return Returns the initial state. (If there is more than one initial
+	 *         state, returns the last one in the iterator. If there is no
+	 *         initial state, returns a newly assembled state in model.)
 	 */
 	protected static FSAState getInitial(FSAModel model)
 	{

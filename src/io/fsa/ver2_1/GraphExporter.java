@@ -147,8 +147,6 @@ public class GraphExporter
 	 *            the graph of the model
 	 * @param ps
 	 *            the stream where the document has to be output
-	 * @return LaTeX document containing a PSTricks description of the current
-	 *         model
 	 */
 	public static void createPSTricksFileContents(FSAGraph graphModel,
 			PrintStream ps)
