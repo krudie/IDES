@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>IDES 3 Guidelines</title>
+</head>
+<body>
+<h1>IDES 3 Guidelines</h1>
+<br>
+<h2>Architecture</h2>
+The main goal of the architecture is to provide the infrastructure to
+support plugins. In fact, there should be as few "core" features as
+possible. The plugin architecture should allow for the
+following entities:<br>
+<ul>
+  <li><span style="font-weight: bold;">Models</span> - any sort of
+interface-defined objects that can be manipulated or used in
+computations. Examples are: FSAs, event sets, Petri nets, general
+diagrams, online DES systems, etc.</li>
+  <li><span style="font-weight: bold;">Operations</span> - any
+operation that can be performed on models. Examples are: meet, parallel
+composition, construct supervisor, run a system for N steps, etc.</li>
+  <li><span style="font-weight: bold;">Presentations</span> - the
+actual interface that visualizes and (optionally) allows the
+modification of models.</li>
+</ul>
+The entities should interact through a message channel (with message
+publishers and subscribers). A multiple of presentations should be able
+to concurrently represent a single model. There is a <span
+ style="font-weight: bold;">workspace</span> which keeps track of
+all models and their presentations which are used by a user at a given
+time. The workspace is be model-independent. If a set of DES models
+needs to have some superstructure (e.g., a global event set for a bunch
+of FSAs), this should be implemented as a layer independent of the main
+workspace.<br>
+<br>
+<h3>Plugins<br>
+</h3>
+The philosophy of the plugin architecture should be: openness over
+security, ease of plugin implementation over scalability. The plugins
+may come in a variety of flavors:<br>
+<ul>
+  <li>models</li>
+  <li>operations</li>
+  <li>presentations</li>
+  <li>sub-workspaces (unifying a set of models)</li>
+  <li>importers/exporters<br>
+  </li>
+  <li>others to come...</li>
+</ul>
+The IDES infrastructure will provide services to the plugins (such as
+screen real estate) and the plugins will be the active components (as
+opposed to being passively driven by IDES). The central point for
+access to IDES services will be the <span style="font-weight: bold;">Hub</span>
+class which will provide methods to get handles to the main window, to
+the workspace, to the IO, etc.<br>
+<br>
+<h3>Particularities</h3>
+<ul>
+  <li>In order to alleviate future improvements to the interface or
+possible localization, any text strings that will be displayed to the
+user should be put in the <span style="font-weight: bold;">strings.properties</span>
+file and the <span style="font-weight: bold;">Hub.string(key)</span>
+method should be used to retrieve the string.</li>
+  <li>Settings can be automatically managed by the <span
+ style="font-weight: bold;">Hub.persistentData</span> structure.</li>
+  <li>Stuff that needs to be done when IDES is closing, should go in <span
+ style="font-weight: bold;">Main.onClose()</span></li>
+  <li>The <span style="font-weight: bold;">util.EscapeDialog</span>
+implements a Swing dialog box which reacts to the user pressing the <span
+ style="font-style: italic;">Escape</span> key<br>
+  </li>
+</ul>
+<span style="font-weight: bold;"></span>
+<h2>User interface</h2>
+The paradigm to be used in the user interface is as follows:<br>
+<cite><br>
+Localized interaction. Mouse rules. Standard GUI elements with improved
+integration. Consistency.</cite><br>
+<br>
+The user should be able to interact with visual elements locally, in a
+context-dependent way. E.g., if there is a transition with an event,
+the user should be able to do whatever is doable to an event just by
+interacting with that event locally, at the transition. They should not
+be required to go to an "event-editing window/view" to achieve this (as
+it is in previous versions of IDES). Of course, this does not mean that
+such "event-editing windows/views" should be disposed of: such general
+views are useful for other purposes.<br>
+<br>
+The UI should be designed so that the user has to touch the keyboard
+only when absolutely necessary. Do not spend time on creating keyboard
+shortcuts if this time can be spent on improving the mouse interaction.<br>
+<br>
+The interface should be built as much as possible with standard GUI
+elements which behave as expected, are named using standard monikers
+and are arranged in a standard way. Some novel interactions will
+require unusual (i.e., not common) UI, however, most probably there is
+a way to implement it using the above constraints. The trick is not to
+invent new UI elements, but to find the right integration of the
+available ones. Users should feel confident they know what is going on
+and how their actions will modify the system.<br>
+<br>
+The MS Windows UI conventions should be followed (as opposed to GNOME,
+MacOS, etc.) The rationale is that the majority of users are acquainted
+with the Windows UI even if they are not running this OS. Be consistent
+with the design choices you and other developers make.<br>
+<br>
+Users should be given reasonable feedback. The interface should support
+fast interaction. If something is expected to take a long time, let the
+user know --- by changing the cursor to an hourglass or by displaying a
+progress bar. When messages are to be displayed to the user, avoid
+cryptic jargon. On the other hand, avoid treating the users as kids who
+should be shielded from the software. Just use plain language to
+describe what's going on. See some of the entries in <span
+ style="font-weight: bold;">strings.properties</span> for examples.<br>
+<h2>Implementation</h2>
+The implementation should be done in Java. The GUI should be in
+Swing/AWT. The use of external libraries should be minimal and reliance
+on native code should be avoided unless absolutely necessary (e.g., we
+don't feel like implementing a LaTeX compiler). If an external library
+is to be used, the license should be examined and consulted with Karen
+if needed. Avoid GNU if possible. Apache and BSD are fine.<br>
+<h3>User testing</h3>
+The software has to undergo user testing. When more than one design
+option seems viable: prototype both and user test. Bugs are reported
+and tracked at <a
+ href="http://joy.ece.queensu.ca/cgi-bin/bugzilla/index.cgi">http://joy.ece.queensu.ca/cgi-bin/bugzilla/index.cgi</a>
+(Bugzilla). Contact lab members to get an account.<br>
+<br>
+A manual test suite for the UI is being assembled. Automatic testing
+with junit will be added when time permits. A separate test suite for
+the DES operations has to be developed to test their correctness.<br>
+<h3>Particularities<br>
+</h3>
+Currently, the complete codebase for IDES is available via CVS
+(joy.ece.queensu.ca, /home/cvs/.CVSROOT). Contact lab members to get an
+account.<br>
+<h3>Style and Documentation</h3>
+Writing javadoc comments - see <a
+ href="http://java.sun.com/j2se/javadoc/writingdoccomments/index.html">http://java.sun.com/j2se/javadoc/writingdoccomments/index.html</a><br>
+Many comments are still missing, thin or ambiguous.&nbsp; This is an
+important part of the project that should continue for the future of
+the project and the sanity of all contributors.<br>
+<br>
+Java Code Conventions - see <a
+ href="http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html">http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html</a><br>
+The above link is useful to help standardize your coding style.<br>
+Also, wherever you find examples of code that violates the Java code
+conventions, please clean them up.<br>
+<br>
+Examples of style that should be tidied include:<br>
+<ul>
+  <li>Referencing of object members should not be chained without
+checking for intermediate nulls e.g.
+anObject.getVariable().callMethod(anotherObject.callMethod()).&nbsp; A
+lot can go wrong here and if a null point happens, it is hard to track
+down.</li>
+  <li>All return statements from procedures (as distinct from
+functions) should be restructured such that they occur at the end of
+the method.&nbsp; A developer should not be forced to skim through the
+whole method to look for surprise exits.</li>
+  <li>Curly braces should be used for all <span
+ style="font-weight: bold;">if</span> statement blocks and loops
+regardless of whether they contain only a single statement.&nbsp;
+Although it is legal to omit the braces, it is not as&nbsp; readable or
+extensible.</li>
+  <li>Curly brace placement should be consistent throughout the
+project. (The IDES_codestyle.xml file contains the project format style.
+It can be loaded into Eclipse and then used with automatic formating.)</li>
+</ul>
+<hr>
+Revised by Lenko Grigorov, September 24, 2010<br>
+</body>
+</html>
