@@ -45,7 +45,7 @@ A complete tutorial which describes how to use IDES can be found [here](docs/hel
 It provides you with the overview necessary to begin drawing and manipulating finite-state machines,
 performing operations and more.
 
-## Add-on For Developers
+## Add-On For Developers
 
 IDES has a pluggable architecture that allows you to write your own features and to tailor
 IDES to your own DES needs. The developer add-on, available as "IDES-version-api.zip"
