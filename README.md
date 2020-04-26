@@ -10,10 +10,10 @@ It was created in the [QDES Lab](https://www.ece.queensu.ca/people/K-Rudie/qdes.
 at Queen's University, Kingston, Canada under the supervision of Prof. Karen Rudie.
 
 Contributors:
->  Helen Bretzke, Chris Dragert, Kristian Edlund,
->  Lenko Grigorov, Chris McAloney, Axel G. Michelsen, Utsav Mital,
->  Philippe Nguyen, Christian Silvano, Valerie Sugarman,
->  Sarah-Jane Whittaker, Mike Wood.
+Helen Bretzke, Chris Dragert, Kristian Edlund,
+Lenko Grigorov, Chris McAloney, Axel G. Michelsen, Utsav Mital,
+Philippe Nguyen, Christian Silvano, Valerie Sugarman,
+Sarah-Jane Whittaker, Mike Wood.
 
 See [this notice](NOTICE.txt) for more information about the libraries used by by IDES.
 
