@@ -20,7 +20,7 @@ and IDES from [(here)](https://github.com/krudie/IDES).
 In case you would like to use LaTeX labels inside IDES, you also need to set up
 LaTeX on your computer. To do so, refer to the instructions in the IDES Help menu
 or on the
-[IDES website](https://github.com/krudie/IDES/docs/help/LaTeX%20Rendering/index.md).
+[IDES website](https://github.com/krudie/IDES/blob/master/docs/help/LaTeX%20Rendering/index.md).
 Please note that LaTeX will not be necessary for this tutorial.
 
 How to start IDES
