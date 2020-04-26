@@ -18,94 +18,73 @@ import ides.api.plugin.operation.OperationManager;
  * 
  * @author Valerie Sugarman
  */
-public class StarClosure implements Operation
-{
+public class StarClosure implements Operation {
 
-	protected LinkedList<String> warnings = new LinkedList<String>();
+    protected LinkedList<String> warnings = new LinkedList<String>();
 
-	public String getDescription()
-	{
-		return "Produces an automaton generating all finite sequences over the given event set, including the empty string. Also known as the Kleene star.";
-	}
+    public String getDescription() {
+        return "Produces an automaton generating all finite sequences over the given event set, including the empty string. Also known as the Kleene star.";
+    }
 
-	public String[] getDescriptionOfInputs()
-	{
-		return new String[] { "Event set" };
-	}
+    public String[] getDescriptionOfInputs() {
+        return new String[] { "Event set" };
+    }
 
-	public String[] getDescriptionOfOutputs()
-	{
-		return new String[] { "FSA of Kleene Closure" };
-	}
+    public String[] getDescriptionOfOutputs() {
+        return new String[] { "FSA of Kleene Closure" };
+    }
 
-	public String getName()
-	{
-		return "kleeneclosure";
-	}
+    public String getName() {
+        return "kleeneclosure";
+    }
 
-	public int getNumberOfInputs()
-	{
-		return 1;
-	}
+    public int getNumberOfInputs() {
+        return 1;
+    }
 
-	public int getNumberOfOutputs()
-	{
-		return 1;
-	}
+    public int getNumberOfOutputs() {
+        return 1;
+    }
 
-	public Class<?>[] getTypeOfInputs()
-	{
-		return new Class<?>[] { DESEventSet.class };
-	}
+    public Class<?>[] getTypeOfInputs() {
+        return new Class<?>[] { DESEventSet.class };
+    }
 
-	public Class<?>[] getTypeOfOutputs()
-	{
-		return new Class<?>[] { FSAModel.class };
-	}
+    public Class<?>[] getTypeOfOutputs() {
+        return new Class<?>[] { FSAModel.class };
+    }
 
-	public List<String> getWarnings()
-	{
-		return warnings;
-	}
+    public List<String> getWarnings() {
+        return warnings;
+    }
 
-	public Object[] perform(Object[] inputs)
-	{
-		warnings.clear();
-		DESEventSet set;
+    public Object[] perform(Object[] inputs) {
+        warnings.clear();
+        DESEventSet set;
 
-		if (inputs.length >= 1)
-		{
-			if (inputs[0] instanceof DESEventSet)
-			{
-				set = (DESEventSet)inputs[0];
+        if (inputs.length >= 1) {
+            if (inputs[0] instanceof DESEventSet) {
+                set = (DESEventSet) inputs[0];
 
-			}
-			else
-			{
-				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-				return new Object[] { ModelManager
-						.instance().createModel(FSAModel.class) };
-			}
-		}
-		else
-		{
-			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
+            } else {
+                warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
+                return new Object[] { ModelManager.instance().createModel(FSAModel.class) };
+            }
+        } else {
+            warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+            return new Object[] { ModelManager.instance().createModel(FSAModel.class) };
+        }
 
-		FSAModel model = ModelManager.instance().createModel(FSAModel.class);
-		for (Iterator<DESEvent> i = set.iterator(); i.hasNext();)
-		{
-			SupervisoryEvent e = model.assembleCopyOf(i.next());
-			model.add(e);
-		}
-		model = (FSAModel)OperationManager
-				.instance().getFilterOperation("complement")
-				.filter(new Object[] { model })[0];
+        FSAModel model = ModelManager.instance().createModel(FSAModel.class);
+        for (Iterator<DESEvent> i = set.iterator(); i.hasNext();) {
+            SupervisoryEvent e = model.assembleCopyOf(i.next());
+            model.add(e);
+        }
+        model = (FSAModel) OperationManager.instance().getFilterOperation("complement")
+                .filter(new Object[] { model })[0];
 
-		return new Object[] { model };
+        return new Object[] { model };
 
-	}
+    }
 
 }

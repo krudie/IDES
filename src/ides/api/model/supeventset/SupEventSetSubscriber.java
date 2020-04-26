@@ -5,14 +5,12 @@ package ides.api.model.supeventset;
  * 
  * @author Valerie Sugarman
  */
-public interface SupEventSetSubscriber
-{
+public interface SupEventSetSubscriber {
 
-	/**
-	 * The event set changed.
-	 * 
-	 * @param message
-	 *            description of the modification.
-	 */
-	public abstract void supEventSetChanged(SupEventSetMessage message);
+    /**
+     * The event set changed.
+     * 
+     * @param message description of the modification.
+     */
+    public abstract void supEventSetChanged(SupEventSetMessage message);
 }

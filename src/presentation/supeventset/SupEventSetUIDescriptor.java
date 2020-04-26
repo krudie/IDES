@@ -10,47 +10,39 @@ import ides.api.plugin.presentation.UIDescriptor;
 /**
  * @author Valerie Sugarman
  */
-public class SupEventSetUIDescriptor implements UIDescriptor
-{
-	protected Presentation[] view;
+public class SupEventSetUIDescriptor implements UIDescriptor {
+    protected Presentation[] view;
 
-	protected Presentation statusBar;
+    protected Presentation statusBar;
 
-	public SupEventSetUIDescriptor(SupervisoryEventSet model)
-	{
-		view = new Presentation[1];
-		view[0] = new SupEventSetView(model);
-		statusBar = new SupEventSetStatusBar(model);
-	}
+    public SupEventSetUIDescriptor(SupervisoryEventSet model) {
+        view = new Presentation[1];
+        view[0] = new SupEventSetView(model);
+        statusBar = new SupEventSetStatusBar(model);
+    }
 
-	public Presentation[] getLeftPanePresentations()
-	{
-		// doesn't do anything in IDES 3 anyways
-		return new Presentation[0];
-	}
+    public Presentation[] getLeftPanePresentations() {
+        // doesn't do anything in IDES 3 anyways
+        return new Presentation[0];
+    }
 
-	public Presentation[] getMainPanePresentations()
-	{
-		return view;
-	}
+    public Presentation[] getMainPanePresentations() {
+        return view;
+    }
 
-	public JMenu[] getMenus()
-	{
-		return new JMenu[0];
-	}
+    public JMenu[] getMenus() {
+        return new JMenu[0];
+    }
 
-	public Presentation[] getRightPanePresentations()
-	{
-		return new Presentation[0];
-	}
+    public Presentation[] getRightPanePresentations() {
+        return new Presentation[0];
+    }
 
-	public Presentation getStatusBar()
-	{
-		return statusBar;
-	}
+    public Presentation getStatusBar() {
+        return statusBar;
+    }
 
-	public JToolBar getToolbar()
-	{
-		return new JToolBar();
-	}
+    public JToolBar getToolbar() {
+        return new JToolBar();
+    }
 }

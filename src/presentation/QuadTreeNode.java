@@ -8,7 +8,6 @@ package presentation;
  * 
  * @author Helen Bretzke
  */
-public class QuadTreeNode
-{
+public class QuadTreeNode {
 
 }

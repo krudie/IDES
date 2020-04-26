@@ -8,22 +8,18 @@ import ides.api.plugin.model.DESModel;
  * 
  * @author Lenko Grigorov
  */
-public class UnsupportedVersionException extends FileLoadException
-{
-	private static final long serialVersionUID = -2729508909271561710L;
+public class UnsupportedVersionException extends FileLoadException {
+    private static final long serialVersionUID = -2729508909271561710L;
 
-	public UnsupportedVersionException()
-	{
-	}
+    public UnsupportedVersionException() {
+    }
 
-	public UnsupportedVersionException(String msg)
-	{
-		super(msg);
-	}
+    public UnsupportedVersionException(String msg) {
+        super(msg);
+    }
 
-	public UnsupportedVersionException(String msg, DESModel partialModel)
-	{
-		super(msg, partialModel);
-	}
+    public UnsupportedVersionException(String msg, DESModel partialModel) {
+        super(msg, partialModel);
+    }
 
 }

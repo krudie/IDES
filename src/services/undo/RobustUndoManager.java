@@ -1,48 +1,39 @@
 package services.undo;
 
-import ides.api.core.Hub;
-
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-public class RobustUndoManager extends UndoManager
-{
+import ides.api.core.Hub;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -57313015546231279L;
+public class RobustUndoManager extends UndoManager {
 
-	@Override
-	public void undo()
-	{
-		try
-		{
-			super.undo();
-		}
-		catch (CannotUndoException e)
-		{
-			Hub.displayAlert(Hub.string("undoFailed"));
-			int idx = edits.indexOf(editToBeRedone());
-			trimEdits(idx, edits.size() - 1);
-		}
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -57313015546231279L;
 
-	}
+    @Override
+    public void undo() {
+        try {
+            super.undo();
+        } catch (CannotUndoException e) {
+            Hub.displayAlert(Hub.string("undoFailed"));
+            int idx = edits.indexOf(editToBeRedone());
+            trimEdits(idx, edits.size() - 1);
+        }
 
-	@Override
-	public void redo()
-	{
-		try
-		{
-			super.redo();
-		}
-		catch (CannotRedoException e)
-		{
-			Hub.displayAlert(Hub.string("redoFailed"));
-			int idx = edits.indexOf(editToBeUndone());
-			trimEdits(idx, edits.size() - 1);
-		}
-	}
+    }
+
+    @Override
+    public void redo() {
+        try {
+            super.redo();
+        } catch (CannotRedoException e) {
+            Hub.displayAlert(Hub.string("redoFailed"));
+            int idx = edits.indexOf(editToBeUndone());
+            trimEdits(idx, edits.size() - 1);
+        }
+    }
 
 }

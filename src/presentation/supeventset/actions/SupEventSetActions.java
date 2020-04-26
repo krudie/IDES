@@ -1,154 +1,127 @@
 package presentation.supeventset.actions;
 
-import ides.api.model.supeventset.SupervisoryEvent;
-import ides.api.model.supeventset.SupervisoryEventSet;
-
 import java.awt.event.ActionEvent;
 
 import javax.swing.undo.CompoundEdit;
 
-public class SupEventSetActions
-{
-	public static class CreateEventAction extends AbstractSupEventSetAction
-	{
+import ides.api.model.supeventset.SupervisoryEvent;
+import ides.api.model.supeventset.SupervisoryEventSet;
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -2080722827841707742L;
+public class SupEventSetActions {
+    public static class CreateEventAction extends AbstractSupEventSetAction {
 
-		protected String eventName;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -2080722827841707742L;
 
-		protected boolean controllable;
+        protected String eventName;
 
-		protected boolean observable;
+        protected boolean controllable;
 
-		protected SupervisoryEventSet model;
+        protected boolean observable;
 
-		public CreateEventAction(CompoundEdit parentEdit,
-				SupervisoryEventSet model, String eventName,
-				boolean controllable, boolean observable)
-		{
-			this.parentEdit = parentEdit;
-			this.eventName = eventName;
-			this.controllable = controllable;
-			this.observable = observable;
-			this.model = model;
+        protected SupervisoryEventSet model;
 
-		}
+        public CreateEventAction(CompoundEdit parentEdit, SupervisoryEventSet model, String eventName,
+                boolean controllable, boolean observable) {
+            this.parentEdit = parentEdit;
+            this.eventName = eventName;
+            this.controllable = controllable;
+            this.observable = observable;
+            this.model = model;
 
-		public CreateEventAction(SupervisoryEventSet model, String eventName,
-				boolean controllable, boolean observable)
-		{
-			this(null, model, eventName, controllable, observable);
-		}
+        }
 
-		public void actionPerformed(ActionEvent e)
-		{
-			if (model != null)
-			{
-				SupEventSetUndoableEdits.UndoableCreateEvent action = new SupEventSetUndoableEdits.UndoableCreateEvent(
-						model,
-						eventName,
-						controllable,
-						observable);
-				action.redo();
+        public CreateEventAction(SupervisoryEventSet model, String eventName, boolean controllable,
+                boolean observable) {
+            this(null, model, eventName, controllable, observable);
+        }
 
-				postEdit(action);
-			}
+        public void actionPerformed(ActionEvent e) {
+            if (model != null) {
+                SupEventSetUndoableEdits.UndoableCreateEvent action = new SupEventSetUndoableEdits.UndoableCreateEvent(
+                        model, eventName, controllable, observable);
+                action.redo();
 
-		}
+                postEdit(action);
+            }
 
-	}
+        }
 
-	public static class RemoveEventAction extends AbstractSupEventSetAction
-	{
+    }
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 5898421883664852999L;
+    public static class RemoveEventAction extends AbstractSupEventSetAction {
 
-		protected SupervisoryEvent event;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 5898421883664852999L;
 
-		protected SupervisoryEventSet model;
+        protected SupervisoryEvent event;
 
-		public RemoveEventAction(CompoundEdit parentEdit,
-				SupervisoryEventSet model, SupervisoryEvent event)
-		{
-			this.parentEdit = parentEdit;
-			this.event = event;
-			this.model = model;
-		}
+        protected SupervisoryEventSet model;
 
-		public void actionPerformed(ActionEvent e)
-		{
-			if (model != null)
-			{
-				SupEventSetUndoableEdits.UndoableRemoveEvent action = new SupEventSetUndoableEdits.UndoableRemoveEvent(
-						model,
-						this.event);
-				action.redo();
-				postEdit(action);
-			}
+        public RemoveEventAction(CompoundEdit parentEdit, SupervisoryEventSet model, SupervisoryEvent event) {
+            this.parentEdit = parentEdit;
+            this.event = event;
+            this.model = model;
+        }
 
-		}
+        public void actionPerformed(ActionEvent e) {
+            if (model != null) {
+                SupEventSetUndoableEdits.UndoableRemoveEvent action = new SupEventSetUndoableEdits.UndoableRemoveEvent(
+                        model, this.event);
+                action.redo();
+                postEdit(action);
+            }
 
-	}
+        }
 
-	public static class ModifyEventAction extends AbstractSupEventSetAction
-	{
+    }
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -6390366299644971055L;
+    public static class ModifyEventAction extends AbstractSupEventSetAction {
 
-		protected SupervisoryEvent event;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -6390366299644971055L;
 
-		protected String eventName;
+        protected SupervisoryEvent event;
 
-		protected boolean controllable;
+        protected String eventName;
 
-		protected boolean observable;
+        protected boolean controllable;
 
-		protected SupervisoryEventSet model;
+        protected boolean observable;
 
-		public ModifyEventAction(SupervisoryEventSet model,
-				SupervisoryEvent event, String eventName, boolean controllable,
-				boolean observable)
-		{
-			this(null, model, event, eventName, controllable, observable);
-		}
+        protected SupervisoryEventSet model;
 
-		public ModifyEventAction(CompoundEdit parentEdit,
-				SupervisoryEventSet model, SupervisoryEvent event,
-				String eventName, boolean controllable, boolean observable)
-		{
-			this.parentEdit = parentEdit;
-			this.event = event;
-			this.eventName = eventName;
-			this.controllable = controllable;
-			this.observable = observable;
-			this.model = model;
-		}
+        public ModifyEventAction(SupervisoryEventSet model, SupervisoryEvent event, String eventName,
+                boolean controllable, boolean observable) {
+            this(null, model, event, eventName, controllable, observable);
+        }
 
-		public void actionPerformed(ActionEvent arg0)
-		{
-			if (model != null)
-			{
-				SupEventSetUndoableEdits.UndoableModifyEvent action = new SupEventSetUndoableEdits.UndoableModifyEvent(
-						model,
-						this.event,
-						eventName,
-						controllable,
-						observable);
-				action.redo();
-				postEdit(action);
-			}
+        public ModifyEventAction(CompoundEdit parentEdit, SupervisoryEventSet model, SupervisoryEvent event,
+                String eventName, boolean controllable, boolean observable) {
+            this.parentEdit = parentEdit;
+            this.event = event;
+            this.eventName = eventName;
+            this.controllable = controllable;
+            this.observable = observable;
+            this.model = model;
+        }
 
-		}
+        public void actionPerformed(ActionEvent arg0) {
+            if (model != null) {
+                SupEventSetUndoableEdits.UndoableModifyEvent action = new SupEventSetUndoableEdits.UndoableModifyEvent(
+                        model, this.event, eventName, controllable, observable);
+                action.redo();
+                postEdit(action);
+            }
 
-	}
+        }
+
+    }
 
 }

@@ -1,8 +1,8 @@
 package ides.api.latex;
 
-import ides.api.plugin.presentation.Presentation;
-
 import java.util.Collection;
+
+import ides.api.plugin.presentation.Presentation;
 
 /**
  * A {@link Presentation} which contains elements to be rendered with LaTeX.
@@ -56,44 +56,41 @@ import java.util.Collection;
  * @see LatexManager#isLatexEnabled()
  * @author Lenko Grigorov
  */
-public interface LatexPresentation extends Presentation
-{
-	/**
-	 * Returns a list of all {@link LatexElement}s in the presentation which
-	 * need to be rendered. This list does not include elements whose rendered
-	 * versions have been cached by the presentation.
-	 * 
-	 * @return list of all {@link LatexElement}s in the presentation which need
-	 *         to be rendered
-	 */
-	public Collection<LatexElement> getUnrenderedLatexElements();
+public interface LatexPresentation extends Presentation {
+    /**
+     * Returns a list of all {@link LatexElement}s in the presentation which need to
+     * be rendered. This list does not include elements whose rendered versions have
+     * been cached by the presentation.
+     * 
+     * @return list of all {@link LatexElement}s in the presentation which need to
+     *         be rendered
+     */
+    public Collection<LatexElement> getUnrenderedLatexElements();
 
-	/**
-	 * Allows or disallows rendering of LaTeX elements by the presentation. This
-	 * control is supplemental to the LaTeX on/off setting (
-	 * {@link LatexManager#isLatexEnabled()}).
-	 * <p>
-	 * A {@link LatexPresentation} must not render LaTeX elements unless
-	 * <b>both</b> LaTeX rendering is on and rendering is allowed via this
-	 * method.
-	 * 
-	 * @param b
-	 *            <code>true</code> to allow LaTeX rendering by the
-	 *            presentation, given that LaTeX rendering is on;
-	 *            <code>false</code> to disallow LaTeX rendering by the
-	 *            presentation, regardless of the LaTeX rendering setting
-	 * @see LatexManager#isLatexEnabled()
-	 */
-	public void setAllowedRendering(boolean b);
+    /**
+     * Allows or disallows rendering of LaTeX elements by the presentation. This
+     * control is supplemental to the LaTeX on/off setting (
+     * {@link LatexManager#isLatexEnabled()}).
+     * <p>
+     * A {@link LatexPresentation} must not render LaTeX elements unless <b>both</b>
+     * LaTeX rendering is on and rendering is allowed via this method.
+     * 
+     * @param b <code>true</code> to allow LaTeX rendering by the presentation,
+     *          given that LaTeX rendering is on; <code>false</code> to disallow
+     *          LaTeX rendering by the presentation, regardless of the LaTeX
+     *          rendering setting
+     * @see LatexManager#isLatexEnabled()
+     */
+    public void setAllowedRendering(boolean b);
 
-	/**
-	 * Returns what is the permission for rendering LaTeX elements by the
-	 * presentation.
-	 * 
-	 * @return <code>true</code> if LaTeX rendering is allowed for this
-	 *         presentation; <code>false</code> if LaTeX rendering is disallowed
-	 *         for this presentation
-	 * @see #setAllowedRendering(boolean)
-	 */
-	public boolean isAllowedRendering();
+    /**
+     * Returns what is the permission for rendering LaTeX elements by the
+     * presentation.
+     * 
+     * @return <code>true</code> if LaTeX rendering is allowed for this
+     *         presentation; <code>false</code> if LaTeX rendering is disallowed for
+     *         this presentation
+     * @see #setAllowedRendering(boolean)
+     */
+    public boolean isAllowedRendering();
 }

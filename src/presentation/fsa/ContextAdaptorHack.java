@@ -9,33 +9,27 @@ import ides.api.core.WorkspaceSubscriber;
  * 
  * @author Lenko Grigorov
  */
-public class ContextAdaptorHack implements WorkspaceSubscriber
-{
+public class ContextAdaptorHack implements WorkspaceSubscriber {
 
-	public static GraphDrawingView context = null;
+    public static GraphDrawingView context = null;
 
-	public void modelCollectionChanged(WorkspaceMessage message)
-	{
-	}
+    public void modelCollectionChanged(WorkspaceMessage message) {
+    }
 
-	public void modelSwitched(WorkspaceMessage message)
-	{
-		context = FSAToolset.getCurrentBoard();
-		// if(context==null)
-		// context=empty;
-	}
+    public void modelSwitched(WorkspaceMessage message) {
+        context = FSAToolset.getCurrentBoard();
+        // if(context==null)
+        // context=empty;
+    }
 
-	public void repaintRequired()
-	{
-		if (context != null)
-		{
-			context.repaint();
-			context.revalidate();
-		}
-	}
+    public void repaintRequired() {
+        if (context != null) {
+            context.repaint();
+            context.revalidate();
+        }
+    }
 
-	public void aboutToRearrangeWorkspace()
-	{
-	}
+    public void aboutToRearrangeWorkspace() {
+    }
 
 }

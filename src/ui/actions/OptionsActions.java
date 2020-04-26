@@ -1,11 +1,10 @@
 package ui.actions;
 
-import ides.api.core.Hub;
-
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import ides.api.core.Hub;
 import ui.OptionsWindow;
 
 /**
@@ -13,39 +12,34 @@ import ui.OptionsWindow;
  * 
  * @author Lenko Grigorov
  */
-public class OptionsActions
-{
+public class OptionsActions {
 
-	/**
-	 * The class for the "More options..." menu item.
-	 * 
-	 * @author Lenko Grigorov
-	 */
-	public static class MoreOptionsAction extends AbstractAction
-	{
+    /**
+     * The class for the "More options..." menu item.
+     * 
+     * @author Lenko Grigorov
+     */
+    public static class MoreOptionsAction extends AbstractAction {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 8948633481180579925L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 8948633481180579925L;
 
-		/**
-		 * Default constructor; handy for exporting this command for group
-		 * setup.
-		 */
-		public MoreOptionsAction()
-		{
-			super(Hub.string("comMoreOptions"));
-			putValue(SHORT_DESCRIPTION, Hub.string("comHintMoreOptions"));
-		}
+        /**
+         * Default constructor; handy for exporting this command for group setup.
+         */
+        public MoreOptionsAction() {
+            super(Hub.string("comMoreOptions"));
+            putValue(SHORT_DESCRIPTION, Hub.string("comHintMoreOptions"));
+        }
 
-		/**
-		 * Executes the command.
-		 */
-		public void actionPerformed(ActionEvent e)
-		{
-			new OptionsWindow();
-		}
-	}
+        /**
+         * Executes the command.
+         */
+        public void actionPerformed(ActionEvent e) {
+            new OptionsWindow();
+        }
+    }
 
 }

@@ -1,14 +1,13 @@
 package presentation.fsa;
 
-import ides.api.core.Hub;
-import ides.api.plugin.presentation.Presentation;
-
 import java.awt.datatransfer.DataFlavor;
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.Action;
 
+import ides.api.core.Hub;
+import ides.api.plugin.presentation.Presentation;
 import services.ccp.EventSetWrapper;
 
 /**
@@ -20,66 +19,44 @@ import services.ccp.EventSetWrapper;
  * 
  * @author Valerie Sugarman
  */
-public class FSAPasteHandler
-{
+public class FSAPasteHandler {
 
-	protected static final DataFlavor graphFlavor = SelectionGroup.selectionGroupFlavor;
+    protected static final DataFlavor graphFlavor = SelectionGroup.selectionGroupFlavor;
 
-	protected static final DataFlavor eventFlavor = EventSetWrapper.eventSelectionFlavor;
+    protected static final DataFlavor eventFlavor = EventSetWrapper.eventSelectionFlavor;
 
-	public static boolean isPasteEnabled()
-	{
-		// assume active model is an FSAModel since otherwise wouldn't get here
-		// (via GraphDrawingView or EventView)
-		if (Hub
-				.getCopyPasteManager().getClipboard()
-				.isDataFlavorAvailable(graphFlavor))
-		{
-			return true;
-		}
-		else if (Hub
-				.getCopyPasteManager().getClipboard()
-				.isDataFlavorAvailable(eventFlavor))
-		{
-			return true;
-		}
+    public static boolean isPasteEnabled() {
+        // assume active model is an FSAModel since otherwise wouldn't get here
+        // (via GraphDrawingView or EventView)
+        if (Hub.getCopyPasteManager().getClipboard().isDataFlavorAvailable(graphFlavor)) {
+            return true;
+        } else if (Hub.getCopyPasteManager().getClipboard().isDataFlavorAvailable(eventFlavor)) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static Action getPasteAction()
-	{
-		Collection<Presentation> presentations = Hub
-				.getWorkspace().getPresentations();
-		GraphDrawingView gdv = null;
-		EventView ev = null;
-		for (Iterator<Presentation> i = presentations.iterator(); i.hasNext();)
-		{
-			Presentation pres = i.next();
-			if (pres instanceof GraphDrawingView)
-			{
-				gdv = (GraphDrawingView)pres;
-			}
-			else if (pres instanceof EventView)
-			{
-				ev = (EventView)pres;
-			}
-		}
-		if (Hub
-				.getCopyPasteManager().getClipboard()
-				.isDataFlavorAvailable(graphFlavor))
-		{
-			return gdv.new GraphSelectionPasteAction();
-		}
-		else if (Hub
-				.getCopyPasteManager().getClipboard()
-				.isDataFlavorAvailable(eventFlavor))
-		{
-			return ev.new EventPasteAction();
-		}
+    public static Action getPasteAction() {
+        Collection<Presentation> presentations = Hub.getWorkspace().getPresentations();
+        GraphDrawingView gdv = null;
+        EventView ev = null;
+        for (Iterator<Presentation> i = presentations.iterator(); i.hasNext();) {
+            Presentation pres = i.next();
+            if (pres instanceof GraphDrawingView) {
+                gdv = (GraphDrawingView) pres;
+            } else if (pres instanceof EventView) {
+                ev = (EventView) pres;
+            }
+        }
+        if (Hub.getCopyPasteManager().getClipboard().isDataFlavorAvailable(graphFlavor)) {
+            return gdv.new GraphSelectionPasteAction();
+        } else if (Hub.getCopyPasteManager().getClipboard().isDataFlavorAvailable(eventFlavor)) {
+            return ev.new EventPasteAction();
+        }
 
-		return null;
+        return null;
 
-	}
+    }
 
 }

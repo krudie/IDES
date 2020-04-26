@@ -8,13 +8,11 @@ package ides.api.plugin.presentation;
  * 
  * @author Valerie Sugarman
  */
-public interface GlobalFontSizePresentation extends Presentation
-{
-	/**
-	 * Sets the font size for the presentation.
-	 * 
-	 * @param fs
-	 *            the font size
-	 */
-	public void setFontSize(float fs);
+public interface GlobalFontSizePresentation extends Presentation {
+    /**
+     * Sets the font size for the presentation.
+     * 
+     * @param fs the font size
+     */
+    public void setFontSize(float fs);
 }

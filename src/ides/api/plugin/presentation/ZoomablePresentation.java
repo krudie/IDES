@@ -8,13 +8,11 @@ package ides.api.plugin.presentation;
  * 
  * @author Valerie Sugarman
  */
-public interface ZoomablePresentation extends Presentation
-{
-	/**
-	 * Sets the scale factor for the presentation.
-	 * 
-	 * @param sf
-	 *            the scale factor
-	 */
-	public void setScaleFactor(float sf);
+public interface ZoomablePresentation extends Presentation {
+    /**
+     * Sets the scale factor for the presentation.
+     * 
+     * @param sf the scale factor
+     */
+    public void setScaleFactor(float sf);
 }

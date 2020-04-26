@@ -7,24 +7,20 @@ import java.io.IOException;
  * 
  * @author Lenko Grigorov
  */
-public class FormatTranslationException extends IOException
-{
+public class FormatTranslationException extends IOException {
 
-	private static final long serialVersionUID = -8596085812259995633L;
+    private static final long serialVersionUID = -8596085812259995633L;
 
-	public FormatTranslationException()
-	{
-		super();
-	}
+    public FormatTranslationException() {
+        super();
+    }
 
-	public FormatTranslationException(String msg)
-	{
-		super(msg);
-	}
+    public FormatTranslationException(String msg) {
+        super(msg);
+    }
 
-	public FormatTranslationException(Exception e)
-	{
-		super(e.getMessage());
-		setStackTrace(e.getStackTrace());
-	}
+    public FormatTranslationException(Exception e) {
+        super(e.getMessage());
+        setStackTrace(e.getStackTrace());
+    }
 }

@@ -1,8 +1,8 @@
 package ides.api.plugin.presentation;
 
-import ides.api.copypaste.CopyPasteManager;
-
 import javax.swing.Action;
+
+import ides.api.copypaste.CopyPasteManager;
 
 /**
  * <p>
@@ -20,55 +20,54 @@ import javax.swing.Action;
  * 
  * @author Valerie Sugarman
  */
-public interface CopyPastePresentation extends Presentation
-{
-	/**
-	 * Determine whether cut and copy should currently be available to the user.
-	 * This method is queried when the {@link CopyPasteManager} is refreshed.
-	 * 
-	 * @return <code>true</code> if cut and copy should be available to the
-	 *         user, <code>false</code> otherwise.
-	 */
-	public boolean isCutCopyEnabled();
+public interface CopyPastePresentation extends Presentation {
+    /**
+     * Determine whether cut and copy should currently be available to the user.
+     * This method is queried when the {@link CopyPasteManager} is refreshed.
+     * 
+     * @return <code>true</code> if cut and copy should be available to the user,
+     *         <code>false</code> otherwise.
+     */
+    public boolean isCutCopyEnabled();
 
-	/**
-	 * Determine whether paste should currently be available to the user,
-	 * depending on the state of the presentation and on the type of data on the
-	 * clipboard. If the type of data on the clipboard cannot be accepted then
-	 * return <code>false</code>. This method is queried when the
-	 * {@link CopyPasteManager} is refreshed.
-	 * 
-	 * @return <code>true</code> if paste should be available to the user,
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isPasteEnabled();
+    /**
+     * Determine whether paste should currently be available to the user, depending
+     * on the state of the presentation and on the type of data on the clipboard. If
+     * the type of data on the clipboard cannot be accepted then return
+     * <code>false</code>. This method is queried when the {@link CopyPasteManager}
+     * is refreshed.
+     * 
+     * @return <code>true</code> if paste should be available to the user,
+     *         <code>false</code> otherwise.
+     */
+    public boolean isPasteEnabled();
 
-	/**
-	 * Gives the appropriate action for cut.
-	 * 
-	 * @return The appropriate action for cut.
-	 */
-	public Action getCutAction();
+    /**
+     * Gives the appropriate action for cut.
+     * 
+     * @return The appropriate action for cut.
+     */
+    public Action getCutAction();
 
-	/**
-	 * Gives the appropriate action for copy.
-	 * 
-	 * @return The appropriate action for copy.
-	 */
-	public Action getCopyAction();
+    /**
+     * Gives the appropriate action for copy.
+     * 
+     * @return The appropriate action for copy.
+     */
+    public Action getCopyAction();
 
-	/**
-	 * Gives the appropriate action for paste.
-	 * 
-	 * @return The appropriate action for paste.
-	 */
-	public Action getPasteAction();
+    /**
+     * Gives the appropriate action for paste.
+     * 
+     * @return The appropriate action for paste.
+     */
+    public Action getPasteAction();
 
-	/**
-	 * Notification that a new item is on the clipboard. This method is ONLY
-	 * called when this {@link CopyPastePresentation} is the active presentation
-	 * in the {@link CopyPasteManager}.
-	 */
-	public void newItemOnClipboard();
+    /**
+     * Notification that a new item is on the clipboard. This method is ONLY called
+     * when this {@link CopyPastePresentation} is the active presentation in the
+     * {@link CopyPasteManager}.
+     */
+    public void newItemOnClipboard();
 
 }

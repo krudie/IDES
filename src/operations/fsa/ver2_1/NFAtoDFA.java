@@ -12,99 +12,79 @@ import ides.api.plugin.operation.Operation;
 /**
  * @author Valerie Sugarman
  */
-public class NFAtoDFA implements Operation
-{
+public class NFAtoDFA implements Operation {
 
-	private LinkedList<String> warnings = new LinkedList<String>();
+    private LinkedList<String> warnings = new LinkedList<String>();
 
-	public String getDescription()
-	{
+    public String getDescription() {
 
-		return "Computes an equivalent deterministic automaton from the input automaton.";
-	}
+        return "Computes an equivalent deterministic automaton from the input automaton.";
+    }
 
-	public String[] getDescriptionOfInputs()
-	{
+    public String[] getDescriptionOfInputs() {
 
-		return new String[] { "Finite-state automaton" };
+        return new String[] { "Finite-state automaton" };
 
-	}
+    }
 
-	public String[] getDescriptionOfOutputs()
-	{
+    public String[] getDescriptionOfOutputs() {
 
-		return new String[] { "Language-equivalent deterministic automaton" };
-	}
+        return new String[] { "Language-equivalent deterministic automaton" };
+    }
 
-	public String getName()
-	{
+    public String getName() {
 
-		return "determinize";
-	}
+        return "determinize";
+    }
 
-	public int getNumberOfInputs()
-	{
+    public int getNumberOfInputs() {
 
-		return 1;
-	}
+        return 1;
+    }
 
-	public int getNumberOfOutputs()
-	{
+    public int getNumberOfOutputs() {
 
-		return 1;
-	}
+        return 1;
+    }
 
-	public Class<?>[] getTypeOfInputs()
-	{
+    public Class<?>[] getTypeOfInputs() {
 
-		return new Class<?>[] { FSAModel.class };
+        return new Class<?>[] { FSAModel.class };
 
-	}
+    }
 
-	public Class<?>[] getTypeOfOutputs()
-	{
+    public Class<?>[] getTypeOfOutputs() {
 
-		return new Class<?>[] { FSAModel.class };
-	}
+        return new Class<?>[] { FSAModel.class };
+    }
 
-	public List<String> getWarnings()
-	{
+    public List<String> getWarnings() {
 
-		return warnings;
-	}
+        return warnings;
+    }
 
-	public Object[] perform(Object[] arg0)
-	{
+    public Object[] perform(Object[] arg0) {
 
-		warnings.clear();
-		FSAModel nfa;
-		FSAModel dfa = ModelManager.instance().createModel(FSAModel.class);
+        warnings.clear();
+        FSAModel nfa;
+        FSAModel dfa = ModelManager.instance().createModel(FSAModel.class);
 
-		if (arg0.length == 1)
-		{
-			if (arg0[0] instanceof FSAModel)
-			{
-				nfa = ((FSAModel)arg0[0]);
-			}
-			else
-			{
-				warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-				return new Object[] { ModelManager
-						.instance().createModel(FSAModel.class) };
-			}
-		}
-		else
-		{
-			warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-			return new Object[] { ModelManager
-					.instance().createModel(FSAModel.class) };
-		}
+        if (arg0.length == 1) {
+            if (arg0[0] instanceof FSAModel) {
+                nfa = ((FSAModel) arg0[0]);
+            } else {
+                warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
+                return new Object[] { ModelManager.instance().createModel(FSAModel.class) };
+            }
+        } else {
+            warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
+            return new Object[] { ModelManager.instance().createModel(FSAModel.class) };
+        }
 
-		DESEventSet eventSet = ModelManager
-				.instance().createEmptyEventSet();
+        DESEventSet eventSet = ModelManager.instance().createEmptyEventSet();
 
-		dfa = Project.projectCustom(nfa, eventSet, true);
+        dfa = Project.projectCustom(nfa, eventSet, true);
 
-		return new Object[] { dfa };
-	}
+        return new Object[] { dfa };
+    }
 }

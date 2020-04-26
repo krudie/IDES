@@ -1,63 +1,51 @@
 package presentation.supeventset.actions;
 
-import ides.api.core.Hub;
-
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-public abstract class AbstractSupEventSetAction extends AbstractAction
-{
+import ides.api.core.Hub;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6480933439174015445L;
+public abstract class AbstractSupEventSetAction extends AbstractAction {
 
-	protected CompoundEdit parentEdit = null;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6480933439174015445L;
 
-	protected boolean usePluralDescription = false;
+    protected CompoundEdit parentEdit = null;
 
-	public AbstractSupEventSetAction()
-	{
-		super();
-	}
+    protected boolean usePluralDescription = false;
 
-	public AbstractSupEventSetAction(String name)
-	{
-		super(name);
-	}
+    public AbstractSupEventSetAction() {
+        super();
+    }
 
-	public AbstractSupEventSetAction(String name, Icon icon)
-	{
-		super(name, icon);
-	}
+    public AbstractSupEventSetAction(String name) {
+        super(name);
+    }
 
-	protected void postEdit(UndoableEdit edit)
-	{
-		if (usePluralDescription
-				&& edit instanceof AbstractSupEventSetUndoableEdit)
-		{
-			((AbstractSupEventSetUndoableEdit)edit).setLastOfMultiple(true);
-		}
-		if (parentEdit != null)
-		{
-			parentEdit.addEdit(edit);
-		}
-		else
-		{
-			Hub.getUndoManager().addEdit(edit);
-		}
-	}
+    public AbstractSupEventSetAction(String name, Icon icon) {
+        super(name, icon);
+    }
 
-	public void setLastOfMultiple(boolean b)
-	{
-		usePluralDescription = b;
-	}
+    protected void postEdit(UndoableEdit edit) {
+        if (usePluralDescription && edit instanceof AbstractSupEventSetUndoableEdit) {
+            ((AbstractSupEventSetUndoableEdit) edit).setLastOfMultiple(true);
+        }
+        if (parentEdit != null) {
+            parentEdit.addEdit(edit);
+        } else {
+            Hub.getUndoManager().addEdit(edit);
+        }
+    }
 
-	public void execute()
-	{
-		actionPerformed(null);
-	}
+    public void setLastOfMultiple(boolean b) {
+        usePluralDescription = b;
+    }
+
+    public void execute() {
+        actionPerformed(null);
+    }
 }

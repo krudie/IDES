@@ -7,30 +7,25 @@ import java.io.IOException;
  * 
  * @author Lenko Grigorov
  */
-public class FileSaveException extends IOException
-{
+public class FileSaveException extends IOException {
 
-	private static final long serialVersionUID = 1678695993655527352L;
+    private static final long serialVersionUID = 1678695993655527352L;
 
-	public FileSaveException()
-	{
-	}
+    public FileSaveException() {
+    }
 
-	public FileSaveException(String arg0)
-	{
-		super(arg0);
-	}
+    public FileSaveException(String arg0) {
+        super(arg0);
+    }
 
-	public FileSaveException(Throwable arg0)
-	{
-		super();
-		initCause(arg0);
-	}
+    public FileSaveException(Throwable arg0) {
+        super();
+        initCause(arg0);
+    }
 
-	public FileSaveException(String arg0, Throwable arg1)
-	{
-		super(arg0);
-		initCause(arg1);
-	}
+    public FileSaveException(String arg0, Throwable arg1) {
+        super(arg0);
+        initCause(arg1);
+    }
 
 }

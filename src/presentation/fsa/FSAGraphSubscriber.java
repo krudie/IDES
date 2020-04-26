@@ -6,11 +6,10 @@ package presentation.fsa;
  * 
  * @author Helen Bretzke
  */
-public interface FSAGraphSubscriber
-{
+public interface FSAGraphSubscriber {
 
-	public void fsaGraphChanged(FSAGraphMessage message);
+    public void fsaGraphChanged(FSAGraphMessage message);
 
-	public void fsaGraphSelectionChanged(FSAGraphMessage message);
+    public void fsaGraphSelectionChanged(FSAGraphMessage message);
 
 }

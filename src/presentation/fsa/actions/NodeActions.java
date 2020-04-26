@@ -33,149 +33,118 @@ import presentation.fsa.Node;
  * 
  * @author Christian Silvano
  */
-public class NodeActions
-{
+public class NodeActions {
 
-	/**
-	 * A command that creates an UndoableAction that sets the value of a boolean
-	 * attribute for a DES element.
-	 * 
-	 * @author Christian Silvano
-	 */
-	public static class SetInitialAction extends AbstractGraphAction
-	{
+    /**
+     * A command that creates an UndoableAction that sets the value of a boolean
+     * attribute for a DES element.
+     * 
+     * @author Christian Silvano
+     */
+    public static class SetInitialAction extends AbstractGraphAction {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -4349136639423993817L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -4349136639423993817L;
 
-		protected FSAGraph graph;
+        protected FSAGraph graph;
 
-		protected Node node;
+        protected Node node;
 
-		protected boolean state;
+        protected boolean state;
 
-		public SetInitialAction(FSAGraph graph, Node node, boolean state)
-		{
-			this(null, graph, node, state);
-		}
+        public SetInitialAction(FSAGraph graph, Node node, boolean state) {
+            this(null, graph, node, state);
+        }
 
-		public SetInitialAction(CompoundEdit parentEdit, FSAGraph graph,
-				Node node, boolean state)
-		{
-			this.parentEdit = parentEdit;
-			this.graph = graph;
-			this.node = node;
-			this.state = state;
-		}
+        public SetInitialAction(CompoundEdit parentEdit, FSAGraph graph, Node node, boolean state) {
+            this.parentEdit = parentEdit;
+            this.graph = graph;
+            this.node = node;
+            this.state = state;
+        }
 
-		public void actionPerformed(ActionEvent e)
-		{
-			UndoableEdit action = new GraphUndoableEdits.UndoableSetInitial(
-					graph,
-					node,
-					state);
-			// perform the action
-			action.redo();
-			postEditAdjustCanvas(graph, action);
-		}
-	}
+        public void actionPerformed(ActionEvent e) {
+            UndoableEdit action = new GraphUndoableEdits.UndoableSetInitial(graph, node, state);
+            // perform the action
+            action.redo();
+            postEditAdjustCanvas(graph, action);
+        }
+    }
 
-	/**
-	 * A command that creates an UndoableAction that sets the value of a boolean
-	 * attribute for a DES element.
-	 * 
-	 * @author Christian Silvano
-	 */
-	public static class SetMarkingAction extends AbstractGraphAction
-	{
+    /**
+     * A command that creates an UndoableAction that sets the value of a boolean
+     * attribute for a DES element.
+     * 
+     * @author Christian Silvano
+     */
+    public static class SetMarkingAction extends AbstractGraphAction {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 2064321326077614081L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 2064321326077614081L;
 
-		protected FSAGraph graph;
+        protected FSAGraph graph;
 
-		protected Node node;
+        protected Node node;
 
-		protected boolean state;
+        protected boolean state;
 
-		public SetMarkingAction(FSAGraph graph, Node node, boolean state)
-		{
-			this(null, graph, node, state);
-		}
+        public SetMarkingAction(FSAGraph graph, Node node, boolean state) {
+            this(null, graph, node, state);
+        }
 
-		public SetMarkingAction(CompoundEdit parentEdit, FSAGraph graph,
-				Node node, boolean state)
-		{
-			this.parentEdit = parentEdit;
-			this.graph = graph;
-			this.node = node;
-			this.state = state;
-		}
+        public SetMarkingAction(CompoundEdit parentEdit, FSAGraph graph, Node node, boolean state) {
+            this.parentEdit = parentEdit;
+            this.graph = graph;
+            this.node = node;
+            this.state = state;
+        }
 
-		public void actionPerformed(ActionEvent e)
-		{
-			UndoableEdit action = new GraphUndoableEdits.UndoableSetMarking(
-					graph,
-					node,
-					state);
-			// perform the action
-			action.redo();
-			postEdit(action);
-		}
-	}
+        public void actionPerformed(ActionEvent e) {
+            UndoableEdit action = new GraphUndoableEdits.UndoableSetMarking(graph, node, state);
+            // perform the action
+            action.redo();
+            postEdit(action);
+        }
+    }
 
-	public static class ModifyInitialArrowAction extends AbstractGraphAction
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 6329674238564295671L;
+    public static class ModifyInitialArrowAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 6329674238564295671L;
 
-		protected FSAGraph graph;
+        protected FSAGraph graph;
 
-		protected InitialArrow arrow;
+        protected InitialArrow arrow;
 
-		protected Point2D.Float direction;
+        protected Point2D.Float direction;
 
-		public ModifyInitialArrowAction(FSAGraph graph, InitialArrow arrow,
-				Point2D.Float originalDirection)
-		{
-			this(null, graph, arrow, originalDirection);
-		}
+        public ModifyInitialArrowAction(FSAGraph graph, InitialArrow arrow, Point2D.Float originalDirection) {
+            this(null, graph, arrow, originalDirection);
+        }
 
-		public ModifyInitialArrowAction(CompoundEdit parentEdit,
-				FSAGraph graph, InitialArrow arrow,
-				Point2D.Float originalDirection)
-		{
-			this.parentEdit = parentEdit;
-			this.graph = graph;
-			this.arrow = arrow;
-			direction = originalDirection;
-		}
+        public ModifyInitialArrowAction(CompoundEdit parentEdit, FSAGraph graph, InitialArrow arrow,
+                Point2D.Float originalDirection) {
+            this.parentEdit = parentEdit;
+            this.graph = graph;
+            this.arrow = arrow;
+            direction = originalDirection;
+        }
 
-		public void actionPerformed(ActionEvent event)
-		{
-			if (arrow != null)
-			{
-				UndoableEdit action = new GraphUndoableEdits.UndoableModifyInitialArrow(
-						graph,
-						arrow,
-						direction);
-				// no need to "redo" the edit since the initial arrow has
-				// already been modified
-				postEditAdjustCanvas(graph, action);
-				graph.fireFSAGraphChanged(new FSAGraphMessage(
-						FSAGraphMessage.MODIFY,
-						FSAGraphMessage.NODE,
-						arrow.getParent().getId(),
-						arrow.getParent().bounds(),
-						graph));
-			}
-		}
-	}
+        public void actionPerformed(ActionEvent event) {
+            if (arrow != null) {
+                UndoableEdit action = new GraphUndoableEdits.UndoableModifyInitialArrow(graph, arrow, direction);
+                // no need to "redo" the edit since the initial arrow has
+                // already been modified
+                postEditAdjustCanvas(graph, action);
+                graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.NODE,
+                        arrow.getParent().getId(), arrow.getParent().bounds(), graph));
+            }
+        }
+    }
 
 }

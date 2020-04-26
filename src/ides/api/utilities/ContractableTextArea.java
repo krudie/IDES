@@ -10,17 +10,14 @@ import javax.swing.JTextArea;
  * 
  * @author Lenko Grigorov
  */
-public class ContractableTextArea extends JTextArea
-{
-	private static final long serialVersionUID = 6803315264387461529L;
+public class ContractableTextArea extends JTextArea {
+    private static final long serialVersionUID = 6803315264387461529L;
 
-	public ContractableTextArea(String s)
-	{
-		super(s);
-	}
+    public ContractableTextArea(String s) {
+        super(s);
+    }
 
-	public Dimension getPreferredSize()
-	{
-		return new Dimension(10, super.getPreferredSize().height);
-	}
+    public Dimension getPreferredSize() {
+        return new Dimension(10, super.getPreferredSize().height);
+    }
 }

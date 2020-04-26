@@ -5,13 +5,11 @@ package ides.api.latex;
  * 
  * @author Lenko Grigorov
  */
-public interface LatexElement
-{
-	/**
-	 * Request for the element to render itself if it needs to get rendered.
-	 * 
-	 * @throws LatexRenderException
-	 *             if LaTeX rendering fails
-	 */
-	public void renderIfNeeded() throws LatexRenderException;
+public interface LatexElement {
+    /**
+     * Request for the element to render itself if it needs to get rendered.
+     * 
+     * @throws LatexRenderException if LaTeX rendering fails
+     */
+    public void renderIfNeeded() throws LatexRenderException;
 }

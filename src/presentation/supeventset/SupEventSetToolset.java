@@ -10,32 +10,22 @@ import ides.api.plugin.presentation.UnsupportedModelException;
 /**
  * @author Valerie Sugarman
  */
-public class SupEventSetToolset implements Toolset
-{
+public class SupEventSetToolset implements Toolset {
 
-	public Presentation getModelThumbnail(DESModel model, int width, int height)
-			throws UnsupportedModelException
-	{
-		if (!(model instanceof SupervisoryEventSet))
-		{
-			throw new UnsupportedModelException();
-		}
+    public Presentation getModelThumbnail(DESModel model, int width, int height) throws UnsupportedModelException {
+        if (!(model instanceof SupervisoryEventSet)) {
+            throw new UnsupportedModelException();
+        }
 
-		return new SupEventSetThumbnail(
-				(SupervisoryEventSet)model,
-				width,
-				height);
-	}
+        return new SupEventSetThumbnail((SupervisoryEventSet) model, width, height);
+    }
 
-	public UIDescriptor getUIElements(DESModel model)
-			throws UnsupportedModelException
-	{
-		if (!(model instanceof SupervisoryEventSet))
-		{
-			throw new UnsupportedModelException();
-		}
+    public UIDescriptor getUIElements(DESModel model) throws UnsupportedModelException {
+        if (!(model instanceof SupervisoryEventSet)) {
+            throw new UnsupportedModelException();
+        }
 
-		return new SupEventSetUIDescriptor((SupervisoryEventSet)model);
-	}
+        return new SupEventSetUIDescriptor((SupervisoryEventSet) model);
+    }
 
 }
