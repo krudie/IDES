@@ -1,0 +1,168 @@
+plugins {
+    id 'java'
+    id 'com.github.monosoul.markdown.page.generator' version '2.1.0.1'
+}
+
+ext.releaseVersion = version.replace('SNAPSHOT', java.time.format.DateTimeFormatter.ofPattern('yyMMddHHmmss').format(LocalDateTime.now()))
+ext.releaseDate = java.time.format.DateTimeFormatter.ofPattern('MMMM, yyyy').withLocale(Locale.US).format(LocalDateTime.now())
+
+ext.releaseDir = file("${buildDir}/release/${project.name}-${version}")
+ext.releaseAPIDir = file("${buildDir}/release-api/${project.name}-${version}-api")
+ext.releaseAPIDocsDir = file("${releaseAPIDir}/docs")
+
+repositories {
+    mavenCentral {
+        content { excludeGroup('net.sf.jung') }
+    }
+    ivy {
+        url 'https://master.dl.sourceforge.net/project/jung/jung'
+        patternLayout {
+            artifact '/[module]-[revision]/[module]-[revision].jar'
+        }
+        metadataSources { artifact() }
+        content { includeGroup('net.sf.jung') }
+    }
+}
+
+dependencies {
+    compile 'commons-codec:commons-codec:1.3'
+    compile 'commons-collections:commons-collections:3.2'
+    compile ('commons-logging:commons-logging:1.1') {
+        exclude group: 'avalon-framework'
+        exclude group: 'javax.servlet'
+        exclude group: 'log4j'
+        exclude group: 'logkit'
+    }
+    compile ('colt:colt:1.2.0') { exclude group: 'concurrent' }
+    compile 'opensymphony:oscache:2.3'
+    // If needed, the JUNG 1.7.4 JAR can be downloaded manually from: 
+    // https://sourceforge.net/projects/jung/files/jung/jung-1.7.4/jung-1.7.4.jar
+    compile 'net.sf.jung:jung:1.7.4'
+}
+
+java {
+    sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+    targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'main.Main'
+        attributes 'Class-Path': configurations.runtimeClasspath.files.collect { 'lib/' + it.name }.join(' ')
+    }
+}
+
+task generateAPIJar(type: Jar) {
+    from sourceSets.main.output
+    include 'ides/api/**'
+    classifier = 'api'
+    destinationDir = releaseAPIDir
+}
+
+task generateAPIJavadoc(type: Javadoc) {
+    source = sourceSets.main.allJava.matching { include 'ides/api/**' }
+    options.addFileOption('sourcepath', file('src/main/java'))
+    classpath = configurations.compileClasspath
+    destinationDir = file("${releaseAPIDocsDir}/api")
+    title = "${project.name} ${releaseVersion} API"
+}
+
+task generateAPIDocs(type: com.github.monosoul.markdown.page.generator.gradle.plugin.GenerateHtmlTask) {
+    inputDirectory = file('docs/api')
+    outputDirectory = releaseAPIDocsDir
+    pegdownExtensions = 'FENCED_CODE_BLOCKS'
+
+    doFirst {
+        copy {
+            from inputDirectory
+            into outputDirectory
+            include '*.png'
+        }
+    }
+}
+
+task zipAPI(type: Zip, dependsOn: [generateAPIJar, generateAPIDocs, generateAPIJavadoc]) {
+    from file("${buildDir}/release-api")
+    destinationDir buildDir
+    classifier 'api'
+
+    doFirst {
+        copy {
+            from projectDir
+            into releaseAPIDir
+            include('LICENSE.txt', 'ABOUT.txt', 'agpl-3.0.txt')
+        }
+    }
+}
+
+processResources {
+    filesMatching('**/*.properties') {
+        filter(org.apache.tools.ant.filters.ReplaceTokens,
+                tokens: [version: releaseVersion, releaseDate: releaseDate])
+    }
+}
+
+jar.doLast {
+    copy {
+        from jar
+        into releaseDir
+    }
+}
+
+task generateTutorial(type: com.github.monosoul.markdown.page.generator.gradle.plugin.GenerateHtmlTask) {
+    inputDirectory = file('docs/help/IDES Tutorial')
+    outputDirectory = file("${releaseDir}/help/IDES Tutorial")
+    pegdownExtensions = 'FENCED_CODE_BLOCKS'
+
+    doFirst {
+        copy {
+            from inputDirectory
+            into outputDirectory
+            include '*.png'
+        }
+    }
+}
+
+task generateLatexDoc(type: com.github.monosoul.markdown.page.generator.gradle.plugin.GenerateHtmlTask) {
+    inputDirectory = file('docs/help/LaTeX Rendering')
+    outputDirectory = file("${releaseDir}/help/LaTeX Rendering")
+    pegdownExtensions = 'FENCED_CODE_BLOCKS'
+
+    doFirst {
+        copy {
+            from inputDirectory
+            into outputDirectory
+            include('*.png', '*.jpg')
+        }
+    }
+}
+
+task generateHelp(dependsOn: [generateTutorial, generateLatexDoc]){}
+
+task zipRelease(type: Zip, dependsOn: [jar, generateHelp]) {
+    from file("${buildDir}/release")
+    destinationDir buildDir
+
+    doFirst {
+        copy {
+            from configurations.runtimeClasspath.files
+            into "${releaseDir}/lib"
+        }
+        copy {
+            from projectDir
+            into releaseDir
+            include('LICENSE.txt', 'NOTICE.txt', 'agpl-3.0.txt', 'CHANGELOG.txt', 'settings.ini')
+        }
+        mkdir "${releaseDir}/plugins"
+        copy {
+            from file('plugins')
+            into "${releaseDir}/plugins"
+        }
+        copy {
+            from file('examples')
+            into "${releaseDir}/examples"
+        }
+    }
+}
+
+assemble.dependsOn([zipAPI, zipRelease])

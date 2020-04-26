@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace version="2.1">
+	<model file="Plant - Cat.xmd" position="0"/>
+	<model file="Plant - Mouse.xmd" position="1"/>
+	<model file="Joint Behaviour.xmd" position="2"/>
+	<model file="Specification.xmd" position="3"/>
+	<model file="supC(Specification).xmd" position="4" selected="true"/>
+</workspace>

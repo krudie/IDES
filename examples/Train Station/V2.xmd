@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="2.1" type="FSA" id="V2">
+<data>
+	<state id="1">
+		<properties>
+			<initial />
+		</properties>
+		<name>0</name>
+	</state>
+	<state id="2">
+		<properties/>
+		<name>1</name>
+	</state>
+	<state id="3">
+		<properties/>
+		<name>2</name>
+	</state>
+	<state id="4">
+		<properties/>
+		<name>3</name>
+	</state>
+	<state id="5">
+		<properties/>
+		<name>4</name>
+	</state>
+	<state id="6">
+		<properties>
+			<marked />
+		</properties>
+		<name>5</name>
+	</state>
+	<event id="1">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large{$\beta_1$}</name>
+	</event>
+	<event id="2">
+		<properties>
+			<controllable />
+		</properties>
+		<name>\Large{$\beta_2$}</name>
+	</event>
+	<event id="3">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large{$\beta_3$}</name>
+	</event>
+	<event id="4">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large{$\beta_4$}</name>
+	</event>
+	<event id="5">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large{$\beta_5$}</name>
+	</event>
+	<transition id="6" source="1" target="2" event="1">
+	</transition>
+	<transition id="7" source="2" target="3" event="2">
+	</transition>
+	<transition id="8" source="3" target="4" event="3">
+	</transition>
+	<transition id="9" source="4" target="5" event="4">
+	</transition>
+	<transition id="10" source="5" target="6" event="5">
+	</transition>
+</data>
+<meta tag="layout" version="2.1">
+	<font size="12"/>
+	<layout uniformnodes="false"/>
+	<state id="1">
+		<circle r="18.0" x="91.0" y="181.0" />
+		<arrow x="36.0" y="0.0" />
+	</state>
+	<state id="2">
+		<circle r="18.0" x="174.0" y="181.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<state id="3">
+		<circle r="18.0" x="261.0" y="182.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<state id="4">
+		<circle r="18.0" x="342.0" y="183.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<state id="5">
+		<circle r="18.0" x="424.0" y="182.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<state id="6">
+		<circle r="18.0" x="511.0" y="182.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<transition id="6">
+		<bezier x1="91.0" y1="181.0" x2="174.0" y2="181.0" ctrlx1="118.66666412353516" ctrly1="181.0" ctrlx2="146.3333282470703" ctrly2="181.0" />
+		<label x="7.0" y="-16.0" />
+	</transition>
+	<transition id="7">
+		<bezier x1="174.0" y1="181.0" x2="261.0" y2="182.0" ctrlx1="203.0" ctrly1="181.3333282470703" ctrlx2="232.0" ctrly2="181.6666717529297" />
+		<label x="2.0" y="-14.0" />
+	</transition>
+	<transition id="8">
+		<bezier x1="261.0" y1="182.0" x2="342.0" y2="183.0" ctrlx1="288.0" ctrly1="182.3333282470703" ctrlx2="315.0" ctrly2="182.6666717529297" />
+		<label x="1.0" y="-17.0" />
+	</transition>
+	<transition id="9">
+		<bezier x1="342.0" y1="183.0" x2="424.0" y2="182.0" ctrlx1="369.3333435058594" ctrly1="182.6666717529297" ctrlx2="396.6666564941406" ctrly2="182.3333282470703" />
+		<label x="2.0" y="-17.0" />
+	</transition>
+	<transition id="10">
+		<bezier x1="424.0" y1="182.0" x2="511.0" y2="182.0" ctrlx1="453.0" ctrly1="182.0" ctrlx2="482.0" ctrly2="182.0" />
+		<label x="-2.0" y="-16.0" />
+	</transition>
+</meta>
+</model>

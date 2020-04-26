@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace version="3">
+	<model file="Machine_1.xmd" position="0"/>
+	<model file="Machine_2.xmd" position="1"/>
+	<model file="Spec.xmd" position="2"/>
+	<model file="SUPER.xmd" position="3"/>
+	<model file="SPEC_1.xmd" position="4"/>
+	<model file="SPEC_2.xmd" position="5" selected="true"/>
+	<model file="Factory_Plant.xmd" position="6"/>
+</workspace>

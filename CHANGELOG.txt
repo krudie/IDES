@@ -1,0 +1,80 @@
+IDES Changelog
+
+
+[Unreleased]
+
+Changed:
+* Code released under AGPL-3.0
+* Removed support for the TCT file format 
+* Updated to Java 8
+* Documentation generated from Markdown
+Fixed:
+* Error message when settings file is missing
+
+
+Version: 3 beta 1, September 2010
+
+* Numerous new operations
+* Multiple inputs can be selected for operations which support this (e.g., "sync")
+* New model type "Event Set"
+* Introduced an API for plugins. One can create plugins for custom
+	- operations
+	- import/export
+	- graph layout
+	- etc.
+  (please download the developers package for relevant documentation)
+* The "Template Design" plugin is included with IDES
+* Event list is now visible in the side panel
+* Font size can be changed
+* Copy and paste of graphs and events is supported
+* Addition of a new tree layout algorithm
+* Tutorials included with IDES (listed in the Help menu)
+* Models can be annotated with arbitrary text ("Annotations" tab)
+* Warning and error messages appear in a separate "Notices" tab
+* Added command to simplify state labels
+* Examples are now included with IDES
+* Numerous bugfixes
+
+
+Version: 2.1 beta 5
+
+* Fix to "supcon" operation
+* Fix to FSA implementation bug which could lead to incorrect DES operation results
+* Other minor bugfixes
+
+
+Version: 2.1 beta 4
+
+* Introduction of Undo and Redo
+* New appearance of edges depending on controllability
+  and observability. Controllable edges have a little
+  marker, unobservable edges are dashed. 
+* Models can be renamed
+* New export to JPEG and PNG files
+* Fix to export to EPS
+* "Use uniform node size" is now graph-specific
+* IDES now remembers your interface settings, such
+  as viewed portion of the model, zoom level, etc.,
+  when switching between models
+* Addition of the Multi-Agent product operation
+* "Filmstrip" at the bottom automatically scrolls to
+  active model.
+* Numerous bugfixes
+
+
+Version: 2.1 beta 3
+
+* Greater usability when drawing graphs
+* Performance improvements (speed and memory footprint)
+* Large graphs with more than 100 states are not displayed
+  graphically by default
+* New I/O subsystem
+* Automatic labeling of nodes
+* New "save modified models" dialog
+* Import/export of TCT and Grail+ files
+* Resolved occasional issues with the labelling of nodes
+  after composition operations (e.g., synchronous product)
+* Smaller default node size so graphs look nicer
+* Compatibility issues with newer versions of MikTeX resolved
+* Improvements to the UI under MacOS
+* Numerous bugfixes

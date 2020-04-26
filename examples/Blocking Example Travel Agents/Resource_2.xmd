@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="2.1" type="FSA" id="Resource_2">
+<data>
+	<state id="16">
+		<properties/>
+		<name>2</name>
+	</state>
+	<state id="17">
+		<properties>
+			<initial />
+			<marked />
+		</properties>
+		<name>1</name>
+	</state>
+	<event id="0">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large {$\alpha_1$}</name>
+	</event>
+	<event id="1">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large {$\beta_1$}</name>
+	</event>
+	<event id="2">
+		<properties>
+			<observable />
+		</properties>
+		<name>\Large {$\gamma_1$}</name>
+	</event>
+	<event id="3">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large {$\alpha_2$}</name>
+	</event>
+	<event id="4">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>\Large {$\beta_2$}</name>
+	</event>
+	<event id="5">
+		<properties>
+			<observable />
+		</properties>
+		<name>\Large {$\gamma_2$}</name>
+	</event>
+	<transition id="45" source="16" target="17" event="5">
+	</transition>
+	<transition id="46" source="16" target="17" event="2">
+	</transition>
+	<transition id="47" source="17" target="16" event="4">
+	</transition>
+	<transition id="49" source="17" target="16" event="1">
+	</transition>
+	<transition id="50" source="16" target="16" event="0">
+	</transition>
+	<transition id="51" source="16" target="16" event="3">
+	</transition>
+	<transition id="52" source="17" target="17" event="0">
+	</transition>
+	<transition id="53" source="17" target="17" event="3">
+	</transition>
+</data>
+<meta tag="layout" version="2.1">
+	<font size="12"/>
+	<layout uniformnodes="false"/>
+	<state id="16">
+		<circle r="18.0" x="194.0" y="200.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<state id="17">
+		<circle r="18.0" x="390.0" y="203.0" />
+		<arrow x="-3.3812134" y="-35.840862" />
+	</state>
+	<transition id="45" group="2">
+		<bezier x1="194.0" y1="200.0" x2="390.0" y2="203.0" ctrlx1="256.36669921875" ctrly1="221.58724975585938" ctrlx2="327.0018310546875" ctrly2="222.6684112548828" />
+		<label x="7.0" y="14.0" />
+	</transition>
+	<transition id="46" group="2">
+		<bezier x1="194.0" y1="200.0" x2="390.0" y2="203.0" ctrlx1="256.36669921875" ctrly1="221.58724975585938" ctrlx2="327.0018310546875" ctrly2="222.6684112548828" />
+		<label x="7.0" y="14.0" />
+	</transition>
+	<transition id="47" group="1">
+		<bezier x1="390.0" y1="203.0" x2="194.0" y2="200.0" ctrlx1="337.4437255859375" ctrly1="184.052490234375" ctrlx2="247.1115264892578" ctrly2="182.6698455810547" />
+		<label x="9.0" y="-16.0" />
+	</transition>
+	<transition id="49" group="1">
+		<bezier x1="390.0" y1="203.0" x2="194.0" y2="200.0" ctrlx1="337.4437255859375" ctrly1="184.052490234375" ctrlx2="247.1115264892578" ctrly2="182.6698455810547" />
+		<label x="9.0" y="-16.0" />
+	</transition>
+	<transition id="50" group="3">
+		<bezier x1="194.0" y1="200.0" x2="194.0" y2="200.0" ctrlx1="256.22540283203125" ctrly1="259.39697265625" ctrlx2="134.60302734375" ctrly2="262.22540283203125" />
+		<label x="-1.0" y="12.0" />
+	</transition>
+	<transition id="51" group="3">
+		<bezier x1="194.0" y1="200.0" x2="194.0" y2="200.0" ctrlx1="256.22540283203125" ctrly1="259.39697265625" ctrlx2="134.60302734375" ctrly2="262.22540283203125" />
+		<label x="-1.0" y="12.0" />
+	</transition>
+	<transition id="52" group="4">
+		<bezier x1="390.0" y1="203.0" x2="390.0" y2="203.0" ctrlx1="339.08831787109375" ctrly1="152.08831787109375" ctrlx2="440.91168212890625" ctrly2="152.08831787109375" />
+		<label x="7.0" y="-13.0" />
+	</transition>
+	<transition id="53" group="4">
+		<bezier x1="390.0" y1="203.0" x2="390.0" y2="203.0" ctrlx1="339.08831787109375" ctrly1="152.08831787109375" ctrlx2="440.91168212890625" ctrly2="152.08831787109375" />
+		<label x="7.0" y="-13.0" />
+	</transition>
+</meta>
+<meta tag="annotation" version="3">selfloop(Plant (1),...): Automaton with self-looped events</meta>
+</model>

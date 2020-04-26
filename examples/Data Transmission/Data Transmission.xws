@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace version="2.1">
+	<model file="Plant.xmd" position="0"/>
+	<model file="Specification 1 (E-prime).xmd" position="1"/>
+	<model file="Sup C (E-prime).xmd" position="2"/>
+	<model file="Plant (only initial marked).xmd" position="3"/>
+	<model file="Sup C (E-prime) (only initial state in G marked).xmd" position="4" selected="true"/>
+</workspace>

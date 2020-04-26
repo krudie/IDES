@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace version="3">
+	<model file="Con1.xmd" position="0"/>
+	<model file="Con2.xmd" position="1"/>
+	<model file="Legal.xmd" position="2"/>
+	<model file="Plant.xmd" position="3"/>
+	<model file="Resource_1.xmd" position="4"/>
+	<model file="Resource_2.xmd" position="5"/>
+	<model file="User_1.xmd" position="6"/>
+	<model file="User_2.xmd" position="7"/>
+	<model file="UseSup.xmd" position="8" selected="true"/>
+</workspace>

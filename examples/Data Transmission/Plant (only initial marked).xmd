@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="2.1" type="FSA" id="Plant">
+<data>
+	<state id="1">
+		<properties>
+			<initial />
+			<marked />
+		</properties>
+		<name>1</name>
+	</state>
+	<state id="2">
+		<properties/>
+		<name>2</name>
+	</state>
+	<state id="3">
+		<properties/>
+		<name>3</name>
+	</state>
+	<event id="1">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>getData</name>
+	</event>
+	<event id="2">
+		<properties>
+			<controllable />
+			<observable />
+		</properties>
+		<name>sendData</name>
+	</event>
+	<event id="3">
+		<properties>
+			<observable />
+		</properties>
+		<name>loseData</name>
+	</event>
+	<event id="4">
+		<properties>
+			<observable />
+		</properties>
+		<name>receiveData</name>
+	</event>
+	<transition id="6" source="1" target="2" event="1">
+	</transition>
+	<transition id="7" source="2" target="3" event="2">
+	</transition>
+	<transition id="10" source="3" target="1" event="4">
+	</transition>
+	<transition id="11" source="3" target="1" event="3">
+	</transition>
+</data>
+<meta tag="layout" version="2.1">
+	<font size="12"/>
+	<layout uniformnodes="false"/>
+	<state id="1">
+		<circle r="18.0" x="104.0" y="159.0" />
+		<arrow x="36.0" y="0.0" />
+	</state>
+	<state id="2">
+		<circle r="18.0" x="194.0" y="37.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<state id="3">
+		<circle r="18.0" x="293.0" y="161.0" />
+		<arrow x="1.0" y="0.0" />
+	</state>
+	<transition id="6">
+		<bezier x1="104.0" y1="159.0" x2="194.0" y2="37.0" ctrlx1="134.0" ctrly1="118.33332824707031" ctrlx2="164.0" ctrly2="77.66667175292969" />
+		<label x="-19.0" y="-18.0" />
+	</transition>
+	<transition id="7">
+		<bezier x1="194.0" y1="37.0" x2="293.0" y2="161.0" ctrlx1="227.0" ctrly1="78.33332824707031" ctrlx2="260.0" ctrly2="119.66667175292969" />
+		<label x="33.0" y="-13.0" />
+	</transition>
+	<transition id="10">
+		<bezier x1="293.0" y1="161.0" x2="104.0" y2="159.0" ctrlx1="238.77374267578125" ctrly1="128.9226531982422" ctrlx2="158.89292907714844" ctrly2="128.0773468017578" />
+		<label x="0.0" y="-12.0" />
+	</transition>
+	<transition id="11">
+		<bezier x1="293.0" y1="161.0" x2="104.0" y2="159.0" ctrlx1="238.10707092285156" ctrly1="191.9226531982422" ctrlx2="158.22625732421875" ctrly2="191.0773468017578" />
+		<label x="4.0" y="11.0" />
+	</transition>
+</meta>
+</model>
