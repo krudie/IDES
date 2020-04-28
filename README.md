@@ -27,9 +27,19 @@ this license with your own builds of IDES.
 
 ## Installation
 
+**Note: Currently, we do not provide builds of IDES on Github.**
+**To use the latest code, you need to build IDES yourself using Gradle 5.2 or later.**
+
+If you build IDES yourself, the generated package will be called "IDES-version.zip"
+and can be found under the "build" directory.
+
+If you do not wish to build IDES yourself, the legacy builds of IDES can be obtained
+from the [QDES website](https://www.ece.queensu.ca/people/K-Rudie/qdes.html#fndtn-software)
+under the "Previous releases" section.
+
 IDES is platform-independent. You must have installed Java version 8 or higher in order to run IDES.
 
-After the downloading the release package, extract it in any location on your hard drive.
+After downloading or building IDES, extract the package in any location on your hard drive.
 A folder, called "IDES-version", will be created which contains all program files.
 Double-click on the "IDES-version.jar" file inside this folder to launch the program.
 If "jar" files are not associated with Java on your machine, you may need to start a command prompt
