@@ -96,9 +96,9 @@ dependencies {
 ext.idesPlugins = [
     new PluginDependency(
         name: 'Template Design',
-        version: '3.0.1',
-        url: 'https://github.com/lenkog/IDES-TD/releases/download/v3.0.1/IDES-TD-3.0.1.zip',
-        apiVerAtLeast: '3.0',
+        version: '3.1.0',
+        url: 'https://github.com/lenkog/IDES-TD/releases/download/v3.1.0/IDES-TD-3.1.0.zip',
+        apiVerAtLeast: '3.1',
         apiVerBelow: '3.2',
     )
 ]

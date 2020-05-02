@@ -17,6 +17,9 @@ Sarah-Jane Whittaker, Mike Wood.
 
 See [this notice](NOTICE.txt) for more information about the libraries used by by IDES.
 
+IDES has support for extensions and is bundled with the following plugins:
+- [Template Design plugin](https://github.com/lenkog/IDES-TD)
+
 ## License
 
 Starting with version 3.1, IDES is released under the [AGPL-3.0 license](agpl-3.0.txt).

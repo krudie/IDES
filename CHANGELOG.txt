@@ -6,6 +6,7 @@ IDES Changelog
 Changed:
 * Code released under AGPL-3.0
 * Updated to Java 8
+* Updated the Template Design plugin to v3.1.0
 * Documentation generated from Markdown
 Removed:
 * Removed support for the TCT file format
