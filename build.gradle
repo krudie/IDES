@@ -3,12 +3,69 @@ plugins {
     id 'com.github.monosoul.markdown.page.generator' version '2.1.0.1'
 }
 
+import org.gradle.util.VersionNumber
+
+class PluginDependency {
+    String name
+    String version
+    String url
+    String apiVerAtLeast
+    String apiVerBelow
+
+    boolean isCompatible(apiVersion) {
+        def apiBase = VersionNumber.parse(apiVersion).getBaseVersion()
+        return apiBase.compareTo(VersionNumber.parse(apiVerAtLeast)) >= 0 && apiBase.compareTo(VersionNumber.parse(apiVerBelow)) < 0
+    }
+
+    String id() {
+        return "${name}-${version}"
+    }
+
+    String toString() {
+        return "${name} plugin v${version}"
+    }
+}
+
+class PluginIntegration extends DefaultTask {
+    PluginDependency plugin
+    File pluginsDir
+    File pluginsManifest
+    File releaseDir
+
+    @TaskAction
+    void integrate() {
+        def dst = project.file("${pluginsDir}/${plugin.id()}.zip")
+        if (dst.exists()) {
+            println("${plugin}: Already available as ${dst}")
+        } else {
+            project.mkdir dst.parent
+            println("${plugin}: Downloading as ${dst}...")
+            new URL(plugin.url).withInputStream{ i -> dst.withOutputStream{ it << i }}
+        }
+        def pluginDir = project.file("${pluginsDir}/${plugin.id()}")
+        project.copy {
+            from project.zipTree(dst)
+            into releaseDir
+            include "plugins/**"
+        }
+        project.copy {
+            from project.zipTree(dst)
+            into releaseDir
+            include "help/**"
+        }
+        pluginsManifest.append("${plugin}\n")
+    }
+}
+
 ext.releaseVersion = version.replace('SNAPSHOT', java.time.format.DateTimeFormatter.ofPattern('yyMMddHHmmss').format(LocalDateTime.now()))
 ext.releaseDate = java.time.format.DateTimeFormatter.ofPattern('MMMM, yyyy').withLocale(Locale.US).format(LocalDateTime.now())
 
 ext.releaseDir = file("${buildDir}/release/${project.name}-${version}")
 ext.releaseAPIDir = file("${buildDir}/release-api/${project.name}-${version}-api")
 ext.releaseAPIDocsDir = file("${releaseAPIDir}/docs")
+
+ext.pluginsDir = file("${buildDir}/plugin-downloads")
+ext.pluginsManifest = file("${buildDir}/plugins-included.txt")
 
 repositories {
     mavenCentral {
@@ -27,18 +84,24 @@ repositories {
 dependencies {
     compile 'commons-codec:commons-codec:1.3'
     compile 'commons-collections:commons-collections:3.2'
-    compile ('commons-logging:commons-logging:1.1') {
-        exclude group: 'avalon-framework'
-        exclude group: 'javax.servlet'
-        exclude group: 'log4j'
-        exclude group: 'logkit'
-    }
-    compile ('colt:colt:1.2.0') { exclude group: 'concurrent' }
+    compile ('commons-logging:commons-logging:1.1') { transitive = false }
+    compile ('colt:colt:1.2.0') { transitive = false }
     compile 'opensymphony:oscache:2.3'
     // If needed, the JUNG 1.7.4 JAR can be downloaded manually from: 
     // https://sourceforge.net/projects/jung/files/jung/jung-1.7.4/jung-1.7.4.jar
     compile 'net.sf.jung:jung:1.7.4'
 }
+
+// List of plugins and version compatibility
+ext.idesPlugins = [
+    new PluginDependency(
+        name: 'Template Design',
+        version: '3.0.1',
+        url: 'https://github.com/lenkog/IDES-TD/releases/download/v3.0.1/IDES-TD-3.0.1.zip',
+        apiVerAtLeast: '3.0',
+        apiVerBelow: '3.2',
+    )
+]
 
 java {
     sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
@@ -139,7 +202,44 @@ task generateLatexDoc(type: com.github.monosoul.markdown.page.generator.gradle.p
 
 task generateHelp(dependsOn: [generateTutorial, generateLatexDoc]){}
 
-task zipRelease(type: Zip, dependsOn: [jar, generateHelp]) {
+task removePluginsManifest() {
+    doLast{
+        delete pluginsManifest
+    }
+}
+
+task integratePlugins(dependsOn: removePluginsManifest) {
+    doLast {
+        if(pluginsManifest.exists()) {
+            println 'Plugins included:'
+            println '======================='
+            println pluginsManifest.text
+        }
+        def incompatiblePlugins = idesPlugins.findAll { !it.isCompatible(version) }
+        if(incompatiblePlugins.size() > 0) {
+            println 'WARNING'
+            println 'Plugins not compatible:'
+            println '======================='
+            incompatiblePlugins.each { println it }
+        }
+    }
+}
+
+// Register build tasks for each compatible plugin
+idesPlugins.each { idesPlugin ->
+    if(idesPlugin.isCompatible(version)) {
+        def integrationTask = tasks.register("integrate${idesPlugin.name}", PluginIntegration) {
+            plugin = idesPlugin
+            pluginsDir = project.pluginsDir
+            pluginsManifest = project.pluginsManifest
+            releaseDir = project.releaseDir
+        }
+        integrationTask.configure({ dependsOn(removePluginsManifest) })
+        integratePlugins.dependsOn(integrationTask)
+    }
+}
+
+task zipRelease(type: Zip, dependsOn: [jar, generateHelp, integratePlugins]) {
     from file("${buildDir}/release")
     destinationDir buildDir
 
