@@ -10,10 +10,9 @@ Discrete-Event System (DES) problems within the Ramadge & Wonham framework
 discrete event processes'. SIAM Journal on Control and Optimization 25(1), 206–230\].
 
 This tutorial will guide you through a simple DES problem based on the
-"Transfer line" problem presented in Chapter 4 of
-_Supervisory Control of Discrete-Event Systems_, by K. Cai and W.M. Wonham,
-Springer, 2019. The models and features of the problem that are required
-for the tutorial will be reproduced below.
+"Transfer line" problem [Al-Jaar and Desrochers, 1988] often used
+in DES literature as an example. The models and features of the problem
+that are required for the tutorial will be reproduced below.
 
 Before starting the tutorial, make sure that you have installed Java 8 (or greater)
 and IDES. You can obtain Java from [(here)](https://adoptopenjdk.net/)
@@ -54,9 +53,8 @@ Problem
 -------
 
 In this tutorial you will learn how to use IDES by solving a DES problem
-based on the "Transfer line" problem presented in Chapter 4 of
-_Supervisory Control of Discrete-Event Systems_, by K. Cai and W.M. Wonham,
-Springer, 2019.
+based on the "Transfer line" problem [Al-Jaar and Desrochers, 1988]
+often used in DES literature as an example.
 The description of the problem follows.
 
 ![](guide_html_31f1051c.png)
