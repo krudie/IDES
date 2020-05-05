@@ -317,8 +317,7 @@ At this point, you have finished modelling the plant. Next, you will model
 the control specifications. It is necessary to specify limits on the operation
 of the plant such that the two buffers do not underflow or overflow.
 
-Buffer 1
---------
+### Buffer 1
 
 Buffer 1 can hold a maximum of 3 parts. Thus, it has four states (0 to 3 parts).
 Machine 1 and the Testing unit can deposit parts into the buffer,
