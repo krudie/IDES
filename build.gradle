@@ -68,28 +68,14 @@ ext.pluginsDir = file("${buildDir}/plugin-downloads")
 ext.pluginsManifest = file("${buildDir}/plugins-included.txt")
 
 repositories {
-    mavenCentral {
-        content { excludeGroup('net.sf.jung') }
-    }
-    ivy {
-        url 'https://master.dl.sourceforge.net/project/jung/jung'
-        patternLayout {
-            artifact '/[module]-[revision]/[module]-[revision].jar'
-        }
-        metadataSources { artifact() }
-        content { includeGroup('net.sf.jung') }
-    }
+    mavenCentral()
 }
 
 dependencies {
     compile 'commons-codec:commons-codec:1.3'
-    compile 'commons-collections:commons-collections:3.2'
     compile ('commons-logging:commons-logging:1.1') { transitive = false }
-    compile ('colt:colt:1.2.0') { transitive = false }
     compile 'opensymphony:oscache:2.3'
-    // If needed, the JUNG 1.7.4 JAR can be downloaded manually from: 
-    // https://sourceforge.net/projects/jung/files/jung/jung-1.7.4/jung-1.7.4.jar
-    compile 'net.sf.jung:jung:1.7.4'
+    implementation 'com.github.vlsi.mxgraph:jgraphx:4.1.0'
 }
 
 // List of plugins and version compatibility

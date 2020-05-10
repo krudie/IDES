@@ -24,10 +24,6 @@ IDES has support for extensions and is bundled with the following plugins:
 
 Starting with version 3.1, IDES is released under the [AGPL-3.0 license](agpl-3.0.txt).
 
-Note: Currently, IDES makes use of the Java Universal Network/Graph Framework version 1.7.4
-which is licensed only for educational, research and non-profit purposes. Please respect
-this license with your own builds of IDES.
-
 ## Installation
 
 **Note: Currently, we do not provide builds of IDES on Github.**

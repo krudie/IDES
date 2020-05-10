@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import ides.api.model.fsa.FSAModel;
-import pluggable.layout.jung.JUNGLayouter;
+import pluggable.layout.jgraph.JGraphLayouter;
 
 /**
  * The manager of classes for the layout of {@link FSAModel}s. Some layout
@@ -20,7 +20,7 @@ import pluggable.layout.jung.JUNGLayouter;
 public class FSALayoutManager {
     // prevent instantiation
     private FSALayoutManager() {
-        setDefaultLayouter(new JUNGLayouter());
+        setDefaultLayouter(new JGraphLayouter());
     }
 
     @Override
