@@ -1,8 +1,10 @@
 package pluggable.layout.tree;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -76,14 +78,14 @@ public class TreeLayouter implements FSALayouter {
 
         float baseline = 0;
 
-        TreeSet<Long> wave = new TreeSet<Long>();
+        List<Long> wave = new ArrayList<Long>();
         wave.add(root);
         statesToProcess.remove(root);
 
         float nextX = 0;
 
         while (!wave.isEmpty()) {
-            TreeSet<Long> nextWave = new TreeSet<Long>();
+            List<Long> nextWave = new ArrayList<Long>();
             float nextY = baseline - (DELTA_Y * (wave.size() - 1) / 2);
             for (long id : wave) {
                 ret.put(id, new Point2D.Float(nextX, nextY));

@@ -13,6 +13,7 @@ Removed:
 * Removed support for the TCT file format
 Fixed:
 * Error message when settings file is missing
+* Simple tree layout produces less messy graphs in more cases
 
 
 Version: 3 beta 1, September 2010
