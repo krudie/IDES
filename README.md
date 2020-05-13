@@ -26,17 +26,14 @@ Starting with version 3.1, IDES is released under the [AGPL-3.0 license](agpl-3.
 
 ## Installation
 
-**Note: Currently, we do not provide builds of IDES on Github.**
-**To use the latest code, you need to build IDES yourself using Gradle 5.2 or later.**
+IDES is platform-independent. You must have installed Java version 8 or higher in order to run IDES.
+
+You can download the latest IDES release from the "Releases" tab in the Github project page.
+Download the **"IDES-version.zip"** file for the version you are interested in.
+The "IDES-version-api.zip" is for developer who want to develop a plugin for IDES.
 
 If you build IDES yourself, the generated package will be called "IDES-version.zip"
 and can be found under the "build" directory.
-
-If you do not wish to build IDES yourself, the legacy builds of IDES can be obtained
-from the [QDES website](https://www.ece.queensu.ca/people/K-Rudie/qdes.html#fndtn-software)
-under the "Previous releases" section.
-
-IDES is platform-independent. You must have installed Java version 8 or higher in order to run IDES.
 
 After downloading or building IDES, extract the package in any location on your hard drive.
 A folder, called "IDES-version", will be created which contains all program files.
