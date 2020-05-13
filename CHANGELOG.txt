@@ -1,7 +1,7 @@
 IDES Changelog
 
 
-[Unreleased]
+Version: 3.1.1, May 2020
 
 Changed:
 * Code released under AGPL-3.0
@@ -12,7 +12,7 @@ Changed:
 Removed:
 * Removed support for the TCT file format
 Fixed:
-* Error message when settings file is missing
+* More descriptive error message when the settings file is missing
 * Simple tree layout produces less messy graphs in more cases
 
 
