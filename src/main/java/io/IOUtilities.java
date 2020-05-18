@@ -3,7 +3,10 @@ package io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.function.Predicate;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -12,7 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import ides.api.core.Hub;
 
 /**
- * Some constants to be used in the rest of the program.
+ * I/O related utility functions.
  * 
  * @author Lenko Grigorov
  */
@@ -172,5 +175,98 @@ public class IOUtilities {
             }
             return false;
         }
+    }
+
+    public static int readAvailableSkip(InputStream in, int len) throws IOException {
+        return readSkip(in, len, false);
+    }
+
+    public static int readSkip(InputStream in, int len) throws IOException {
+        return readSkip(in, len, true);
+    }
+
+    private static int readSkip(InputStream in, int len, boolean throwOnEOF) throws IOException {
+        int count = 0;
+        while (count < len) {
+            if (in.read() < 0) {
+                if (throwOnEOF) {
+                    throw new IOException(Hub.string("errorUnexpectedEOF"));
+                }
+                break;
+            }
+            ++count;
+        }
+        return count;
+    }
+
+    public static int readAvailableSkipUntil(InputStream in, Predicate<Byte> p) throws IOException {
+        return readSkipUntil(in, p, false);
+    }
+
+    public static int readSkipUntil(InputStream in, Predicate<Byte> p) throws IOException {
+        return readSkipUntil(in, p, true);
+    }
+
+    private static int readSkipUntil(InputStream in, Predicate<Byte> p, boolean throwOnEOF) throws IOException {
+        int count = 0;
+        int b;
+        do {
+            b = in.read();
+            if (b < 0) {
+                if (throwOnEOF) {
+                    throw new IOException(Hub.string("errorUnexpectedEOF"));
+                }
+                break;
+            }
+            ++count;
+        } while (!p.test((byte) b));
+        return count;
+    }
+
+    public static int readAvailableInto(InputStream in, byte[] buf) throws IOException {
+        return readInto(in, buf, false);
+    }
+
+    public static int readInto(InputStream in, byte[] buf) throws IOException {
+        return readInto(in, buf, true);
+    }
+
+    private static int readInto(InputStream in, byte[] buf, boolean throwOnEOF) throws IOException {
+        int count = 0;
+        while (count < buf.length) {
+            int b = in.read();
+            if (b < 0) {
+                if (throwOnEOF) {
+                    throw new IOException(Hub.string("errorUnexpectedEOF"));
+                }
+                break;
+            }
+            buf[count] = (byte) b;
+            ++count;
+        }
+        return count;
+    }
+
+    public static int readIntLE(InputStream in) throws IOException {
+        byte[] buf = new byte[4];
+        readInto(in, buf);
+        return (buf[0] & 0xff) | ((buf[1] & 0xff) << 8) | ((buf[2] & 0xff) << 16) | ((buf[3] & 0xff) << 24);
+    }
+
+    public static short readShortLE(InputStream in) throws IOException {
+        byte[] buf = new byte[2];
+        readInto(in, buf);
+        return (short) ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8));
+    }
+
+    public static void writeIntLE(OutputStream out, int n) throws IOException {
+        byte[] buf = new byte[] { (byte) (n & 0xff), (byte) ((n >> 8) & 0xff), (byte) ((n >> 16) & 0xff),
+                (byte) ((n >> 24) & 0xff), };
+        out.write(buf);
+    }
+
+    public static void writeShortLE(OutputStream out, short n) throws IOException {
+        byte[] buf = new byte[] { (byte) (n & 0xff), (byte) ((n >> 8) & 0xff), };
+        out.write(buf);
     }
 }

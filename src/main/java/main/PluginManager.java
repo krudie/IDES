@@ -31,6 +31,7 @@ import io.fsa.ver2_1.GrailPlugin;
 import io.fsa.ver2_1.JPEGPlugin;
 import io.fsa.ver2_1.LatexPlugin;
 import io.fsa.ver2_1.PNGPlugin;
+import io.fsa.ver2_1.TCTPlugin;
 import io.supeventset.ver3.SupEventSetFileIOPlugin;
 import model.supeventset.ver3.SupervisoryEventSetDescriptor;
 import operations.fsa.ver2_1.Accessible;
@@ -130,6 +131,7 @@ public class PluginManager {
 
         // Import/Export plugins:
         new GrailPlugin().initialize();
+        new TCTPlugin().initialize();
         new EPSPlugin().initialize();
         new LatexPlugin().initialize();
         new PNGPlugin().initialize();
