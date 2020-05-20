@@ -320,13 +320,13 @@
 10. Select the unlabeled edge from "3.2.1" to "$\\alpha$" and assign "ConObs" and "UnconObs" to the edge
     1. The label "ConObs, UnconObs" must appear on the edge
     2. The edge must consist of a dashed line
-11. Select the unlabeled edge from "3.2.1" to "!@\#$%ˆ" and assign "ConObs" and "UnconUnobs" to the edge
+11. Select the unlabeled edge from "3.2.1" to "!@\#$%" and assign "ConObs" and "UnconUnobs" to the edge
     1. The label "ConObs, UnconUnobs" must appear on the edge
     2. The edge must consist of a dashed line
-12. Select the unlabeled edge from "!@\#$%ˆ" to "3.2.1" and assign "ConObs", "ConUnobs", "UnconObs" and "UnconUnobs" to the edge
+12. Select the unlabeled edge from "!@\#$%" to "3.2.1" and assign "ConObs", "ConUnobs", "UnconObs" and "UnconUnobs" to the edge
     1. The label "ConObs, ConUnobs, UnconObs, UnconUnobs" must appear on the edge
     2. The edge must consist of a dashed line
-13. Select the unlabeled edge from "!@\#$%ˆ" to "Ninety-nine" and assign "ConObs" and "ConUnobs" to the edge
+13. Select the unlabeled edge from "!@\#$%" to "Ninety-nine" and assign "ConObs" and "ConUnobs" to the edge
     1. The label "ConObs, ConUnobs" must appear on the edge
     2. The edge must consist of a solid line
 14. Select the unlabeled self-loop on "Ninety-nine" and assign "ConUnobs" and "UnconUnobs" to the edge
