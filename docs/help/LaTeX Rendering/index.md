@@ -36,10 +36,10 @@ Again, these files should be in the "bin" subdirectory of the installation path
 (this may be `C:\gs\gs8.xx\bin\gswin32c.exe` on Windows or `/usr/bin/gs` on Linux).
 
 Once you have the paths (directory for LaTeX, file for GhostScript),
-go to the **Options** menu and select *More Options*.
+go to the **Settings** menu and select *More settings...*.
 
 ![](Options_LaTeX.png)
 
 You'll be presented with the dialog shown above. Enter the paths into the appropriate
 text boxes (or select them using the "..." button to bring up a File dialog).
-The only things left to do is select the *Use LaTeX* option from the **Options** menu and enjoy!
+The only things left to do is select the *Use LaTeX* option from the **Settings** menu and enjoy!

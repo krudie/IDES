@@ -107,6 +107,7 @@ In addition, there is a [Manual test protocol](manual-test.md).
 
 When a release is getting readied, it necessary to ensure that:
 - The license and readme files are up to date with any new contributors and contain the current year.
+- The NOTICE.txt file is up to date with information about the licenses of all external libraries.
 - The help files and tutorials are up to date.
 - The Javadoc for the API is complete and up to date (i.e., for all classes in the `ides.*` package)
   and the plugin developers guide is up to date.
