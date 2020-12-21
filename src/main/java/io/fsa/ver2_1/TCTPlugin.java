@@ -219,8 +219,8 @@ public class TCTPlugin {
         int countStatesWithOutgoingTransitions = 0;
         int maxUsedControllableEventId = 1;
         int maxUsedUncontrollableEventId = 0;
-        int latestNewControllableEventId = -1;
-        int latestNewUncontrollableEventId = -2;
+        int latestGeneratedControllableEventId = -1;
+        int latestGeneratedUncontrollableEventId = -2;
         if (a.getStateCount() > maxStateId) {
             throw new FormatTranslationException(Hub.string("tctErrorExportTooManyStates"));
         }
@@ -255,20 +255,39 @@ public class TCTPlugin {
                 if (eventId == null) {
                     eventsNotInMap.add(t.getEvent().getSymbol());
                     if (t.getEvent().isControllable()) {
-                        latestNewControllableEventId = getNextFreeEventId(unavailableControllableIds,
-                                latestNewControllableEventId);
-                        eventMap.put(t.getEvent().getSymbol(), latestNewControllableEventId);
-                        reverseEventMap.put(String.valueOf(latestNewControllableEventId), t.getEvent().getSymbol());
-                        unavailableControllableIds.add(latestNewControllableEventId);
-                        maxUsedControllableEventId = Math.max(maxUsedControllableEventId, latestNewControllableEventId);
+                        try {
+                            eventId = Integer.parseInt(t.getEvent().getSymbol());
+                            // if the number is not odd (signifying a controllable event in TCT),
+                            // we have to generate a new event id
+                            if (eventId % 2 == 0) {
+                                throw new NumberFormatException();
+                            }
+                        } catch (NumberFormatException e) {
+                            eventId = getNextFreeEventId(unavailableControllableIds,
+                                    latestGeneratedControllableEventId);
+                            latestGeneratedControllableEventId = eventId;
+                        }
+                        eventMap.put(t.getEvent().getSymbol(), eventId);
+                        reverseEventMap.put(String.valueOf(eventId), t.getEvent().getSymbol());
+                        unavailableControllableIds.add(eventId);
+                        maxUsedControllableEventId = Math.max(maxUsedControllableEventId, eventId);
                     } else {
-                        latestNewUncontrollableEventId = getNextFreeEventId(unavailableUncontrollableIds,
-                                latestNewUncontrollableEventId);
-                        eventMap.put(t.getEvent().getSymbol(), latestNewUncontrollableEventId);
-                        reverseEventMap.put(String.valueOf(latestNewUncontrollableEventId), t.getEvent().getSymbol());
-                        unavailableUncontrollableIds.add(latestNewUncontrollableEventId);
-                        maxUsedUncontrollableEventId = Math.max(maxUsedUncontrollableEventId,
-                                latestNewUncontrollableEventId);
+                        try {
+                            eventId = Integer.parseInt(t.getEvent().getSymbol());
+                            // if the number is not even (signifying an uncontrollable event in TCT),
+                            // we have to generate a new event id
+                            if (eventId % 2 != 0) {
+                                throw new NumberFormatException();
+                            }
+                        } catch (NumberFormatException e) {
+                            eventId = getNextFreeEventId(unavailableUncontrollableIds,
+                                    latestGeneratedUncontrollableEventId);
+                            latestGeneratedUncontrollableEventId = eventId;
+                        }
+                        eventMap.put(t.getEvent().getSymbol(), eventId);
+                        reverseEventMap.put(String.valueOf(eventId), t.getEvent().getSymbol());
+                        unavailableUncontrollableIds.add(eventId);
+                        maxUsedUncontrollableEventId = Math.max(maxUsedUncontrollableEventId, eventId);
                     }
                 } else {
                     if (t.getEvent().isControllable()) {
