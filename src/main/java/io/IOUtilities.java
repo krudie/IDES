@@ -247,6 +247,14 @@ public class IOUtilities {
         return count;
     }
 
+    public static long readLongLE(InputStream in) throws IOException {
+        byte[] buf = new byte[8];
+        readInto(in, buf);
+        return (buf[0] & 0xffl) | ((buf[1] & 0xffl) << 8) | ((buf[2] & 0xffl) << 16) | ((buf[3] & 0xffl) << 24)
+                | ((buf[4] & 0xffl) << 32) | ((buf[5] & 0xffl) << 40) | ((buf[6] & 0xffl) << 48)
+                | ((buf[7] & 0xffl) << 56);
+    }
+
     public static int readIntLE(InputStream in) throws IOException {
         byte[] buf = new byte[4];
         readInto(in, buf);
@@ -257,6 +265,13 @@ public class IOUtilities {
         byte[] buf = new byte[2];
         readInto(in, buf);
         return (short) ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8));
+    }
+
+    public static void writeLongLE(OutputStream out, long n) throws IOException {
+        byte[] buf = new byte[] { (byte) (n & 0xff), (byte) ((n >> 8) & 0xff), (byte) ((n >> 16) & 0xff),
+                (byte) ((n >> 24) & 0xff), (byte) ((n >> 32) & 0xff), (byte) ((n >> 40) & 0xff),
+                (byte) ((n >> 48) & 0xff), (byte) ((n >> 56) & 0xff), };
+        out.write(buf);
     }
 
     public static void writeIntLE(OutputStream out, int n) throws IOException {

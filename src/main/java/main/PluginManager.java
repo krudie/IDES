@@ -131,7 +131,7 @@ public class PluginManager {
 
         // Import/Export plugins:
         new GrailPlugin().initialize();
-        new TCTPlugin().initialize();
+        TCTPlugin.initialize();
         new EPSPlugin().initialize();
         new LatexPlugin().initialize();
         new PNGPlugin().initialize();

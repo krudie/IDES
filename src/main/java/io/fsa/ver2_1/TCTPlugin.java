@@ -40,14 +40,64 @@ import io.IOUtilities;
 /**
  * @author christiansilvano, Lenko Grigorov
  */
-public class TCTPlugin implements ImportExportPlugin {
+public class TCTPlugin {
+    private static class TCTX86ImportExport implements ImportExportPlugin {
+        @Override
+        public void exportFile(File src, File dst) throws FormatTranslationException {
+            TCTPlugin.exportFile(src, dst, false);
+        }
+
+        @Override
+        public void importFile(File src, File dst) throws FormatTranslationException {
+            TCTPlugin.importFile(src, dst, false);
+        }
+
+        @Override
+        public String getFileDescription() {
+            return "TCT (32-bit version)";
+        }
+
+        @Override
+        public String getFileExtension() {
+            return "des";
+        }
+    }
+
+    private static class TCTX64ImportExport implements ImportExportPlugin {
+        @Override
+        public void exportFile(File src, File dst) throws FormatTranslationException {
+            TCTPlugin.exportFile(src, dst, true);
+        }
+
+        @Override
+        public void importFile(File src, File dst) throws FormatTranslationException {
+            TCTPlugin.importFile(src, dst, true);
+        }
+
+        @Override
+        public String getFileDescription() {
+            return "TCT (64-bit version)";
+        }
+
+        @Override
+        public String getFileExtension() {
+            return "des";
+        }
+    }
+
     private static final String DEFAULT_EVENTMAP_FILE = "tct-event-map.txt";
-    private static final String TCT_FILE_MARKER = "Z8^0L;1";
-    // The TCT format uses 10 bits to encode events
-    private static final int MAX_EVENT_ID = 0x3ff;
-    // The TCT format uses 22 bits to encode destination states of transitions
-    private static final int MAX_STATE_ID = 0x3fffff;
-    private static final int STATE_ID_BITS = 22;
+    // marker used by 32-bit CTCT
+    private static final String TCT_FILE_MARKER_X86 = "Z8^0L;1";
+    // marker used by 64-bit CTCT
+    private static final String TCT_FILE_MARKER_X64 = "Z8^0L;2";
+    // The 32-bit TCT format uses 10 bits to encode events
+    private static final int MAX_EVENT_ID_X86 = 0x3ff;
+    // The 64-bit TCT format uses 16 bits to encode events
+    private static final int MAX_EVENT_ID_X64 = 0xffff;
+    // The 32-bit TCT format uses 22 bits to encode destination states of
+    // transitions
+    private static final int MAX_STATE_ID_X86 = 0x3fffff;
+    private static final int STATE_ID_BITS_X86 = 22;
 
     private static enum ImportEventMapOptions {
         EXISTING_MAP(Hub.string("tctImportUseDefaultMap") + " " + DEFAULT_EVENTMAP_FILE),
@@ -84,24 +134,28 @@ public class TCTPlugin implements ImportExportPlugin {
     /**
      * Registers itself to the IOPluginManager
      */
-    public void initialize() {
-        IOPluginManager.instance().registerExport(this, FSAModel.class);
-        IOPluginManager.instance().registerImport(this);
-    }
-
-    /**
-     * Unregisters itself from the IOPluginManager
-     */
-    public void unload() {
+    public static void initialize() {
+        TCTX86ImportExport x86ImportExport = new TCTX86ImportExport();
+        IOPluginManager.instance().registerExport(x86ImportExport, FSAModel.class);
+        IOPluginManager.instance().registerImport(x86ImportExport);
+        TCTX64ImportExport x64ImportExport = new TCTX64ImportExport();
+        IOPluginManager.instance().registerExport(x64ImportExport, FSAModel.class);
+        IOPluginManager.instance().registerImport(x64ImportExport);
     }
 
     /**
      * Export to a TCT file
      * 
-     * @param src - the source file
-     * @param dst - the destination
+     * @param src         the source file
+     * @param dst         the destination
+     * @param isX64Format should the file be compatible with 64-bit TCT (when true)
+     *                    or 32-bit TCT (when false)
      */
-    public void exportFile(File src, File dst) throws FormatTranslationException {
+    private static void exportFile(File src, File dst, boolean isX64Format) throws FormatTranslationException {
+        final int maxEventId = isX64Format ? MAX_EVENT_ID_X64 : MAX_EVENT_ID_X86;
+        // note, Java collections have a limit of Integer.MAX_VALUE elements
+        final long maxStateId = isX64Format ? Integer.MAX_VALUE : MAX_STATE_ID_X86;
+
         File eventMapFile = new File(dst.getParentFile(), DEFAULT_EVENTMAP_FILE);
         List<ExportEventMapOptions> eventMappingOptions = new ArrayList<>();
         eventMappingOptions.add(ExportEventMapOptions.DEFAULT_MAP);
@@ -135,7 +189,7 @@ public class TCTPlugin implements ImportExportPlugin {
         for (Entry<Object, Object> entry : reverseEventMap.entrySet()) {
             try {
                 Integer id = Integer.valueOf((String) entry.getKey());
-                if (id < 0 || id > MAX_EVENT_ID) {
+                if (id < 0 || id > maxEventId) {
                     throw new NumberFormatException();
                 }
                 eventMap.put((String) entry.getValue(), id);
@@ -167,7 +221,7 @@ public class TCTPlugin implements ImportExportPlugin {
         int maxUsedUncontrollableEventId = 0;
         int latestNewControllableEventId = -1;
         int latestNewUncontrollableEventId = -2;
-        if (a.getStateCount() > MAX_STATE_ID) {
+        if (a.getStateCount() > maxStateId) {
             throw new FormatTranslationException(Hub.string("tctErrorExportTooManyStates"));
         }
         for (Iterator<FSAState> si = a.getStateIterator(); si.hasNext();) {
@@ -236,19 +290,32 @@ public class TCTPlugin implements ImportExportPlugin {
         if (!hasInitialState) {
             throw new FormatTranslationException(Hub.string("tctErrorExportNoInitial"));
         }
-        if (maxUsedControllableEventId > MAX_EVENT_ID || maxUsedUncontrollableEventId > MAX_EVENT_ID) {
+        if (maxUsedControllableEventId > maxEventId || maxUsedUncontrollableEventId > maxEventId) {
             throw new FormatTranslationException(Hub.string("tctErrorExportTooManyEvents"));
         }
 
-        long blockSize = 4 // 4 bytes state count
-                + 4 // 4 bytes initial state indicator
-                + 4 * markedStates.size() // 4 bytes * marked states
-                + 4 // 4 bytes marked states terminator
-                + 4 * countStatesWithOutgoingTransitions // 4 bytes state id * states with outgoing transitions
-                + 2 * countStatesWithOutgoingTransitions // 2 bytes transition count * states with outgoing transitions
-                + 4 * a.getTransitionCount() // 4 bytes * transitions
-                + 4 // 4 bytes states with outgoing transitions terminator
-                + 4; // 4 bytes vocal states terminator
+        long blockSize;
+        if (isX64Format) {
+            blockSize = 8 // 8 bytes state count
+                    + 8 // 8 bytes initial state indicator
+                    + 8 * markedStates.size() // 8 bytes * marked states
+                    + 8 // 8 bytes marked states terminator
+                    + 8 * countStatesWithOutgoingTransitions // 8 bytes state id * states with outgoing transitions
+                    + 2 * countStatesWithOutgoingTransitions // 2 bytes transition count * states with outgoing transit
+                    + 16 * a.getTransitionCount() // 16 bytes * transitions
+                    + 8 // 8 bytes states with outgoing transitions terminator
+                    + 8; // 8 bytes vocal states terminator
+        } else {
+            blockSize = 4 // 4 bytes state count
+                    + 4 // 4 bytes initial state indicator
+                    + 4 * markedStates.size() // 4 bytes * marked states
+                    + 4 // 4 bytes marked states terminator
+                    + 4 * countStatesWithOutgoingTransitions // 4 bytes state id * states with outgoing transitions
+                    + 2 * countStatesWithOutgoingTransitions // 2 bytes transition count * states with outgoing transit
+                    + 4 * a.getTransitionCount() // 4 bytes * transitions
+                    + 4 // 4 bytes states with outgoing transitions terminator
+                    + 4; // 4 bytes vocal states terminator
+        }
         // Total block size cannot exceed 0x7fffffff bytes
         if (blockSize < 0 || blockSize > Integer.MAX_VALUE) {
             throw new FormatTranslationException(Hub.string("tctErrorExportTooLarge"));
@@ -259,21 +326,37 @@ public class TCTPlugin implements ImportExportPlugin {
             // write header
             out.write(("CTCT DES file written by IDES v" + Hub.string("IDES_VER")).getBytes(StandardCharsets.US_ASCII));
             out.write(26);
-            out.write(TCT_FILE_MARKER.getBytes(StandardCharsets.US_ASCII));
+            out.write((isX64Format ? TCT_FILE_MARKER_X64 : TCT_FILE_MARKER_X86).getBytes(StandardCharsets.US_ASCII));
             IOUtilities.writeIntLE(out, 0xff00aa55);
 
             // block type and size
             IOUtilities.writeIntLE(out, 0);
             IOUtilities.writeIntLE(out, (int) blockSize);
             // state count
-            IOUtilities.writeIntLE(out, (int) a.getStateCount());
+            if (isX64Format) {
+                IOUtilities.writeLongLE(out, (int) a.getStateCount());
+            } else {
+                IOUtilities.writeIntLE(out, (int) a.getStateCount());
+            }
             // initial state indicator (0 for DES)
-            IOUtilities.writeIntLE(out, 0);
+            if (isX64Format) {
+                IOUtilities.writeLongLE(out, 0);
+            } else {
+                IOUtilities.writeIntLE(out, 0);
+            }
             // marked states
             for (long id : markedStates) {
-                IOUtilities.writeIntLE(out, stateMap.get(id));
+                if (isX64Format) {
+                    IOUtilities.writeLongLE(out, stateMap.get(id));
+                } else {
+                    IOUtilities.writeIntLE(out, stateMap.get(id));
+                }
             }
-            IOUtilities.writeIntLE(out, -1);
+            if (isX64Format) {
+                IOUtilities.writeLongLE(out, -1);
+            } else {
+                IOUtilities.writeIntLE(out, -1);
+            }
             // transitions
             for (Iterator<FSAState> si = a.getStateIterator(); si.hasNext();) {
                 FSAState s = si.next();
@@ -281,7 +364,11 @@ public class TCTPlugin implements ImportExportPlugin {
                 if (countOutgoingTransitions <= 0) {
                     continue;
                 }
-                IOUtilities.writeIntLE(out, stateMap.get(s.getId()));
+                if (isX64Format) {
+                    IOUtilities.writeLongLE(out, stateMap.get(s.getId()));
+                } else {
+                    IOUtilities.writeIntLE(out, stateMap.get(s.getId()));
+                }
                 IOUtilities.writeShortLE(out, (short) countOutgoingTransitions);
                 // event ids have to be written out in ascending order
                 Map<Integer, Integer> transitions = new TreeMap<>();
@@ -293,14 +380,27 @@ public class TCTPlugin implements ImportExportPlugin {
                     throw new FormatTranslationException(Hub.string("tctErrorExportMultipleTransitionsSameEvent"));
                 }
                 for (Entry<Integer, Integer> entry : transitions.entrySet()) {
-                    int transitionData = entry.getKey() << STATE_ID_BITS;
-                    transitionData |= entry.getValue() & MAX_STATE_ID;
-                    IOUtilities.writeIntLE(out, transitionData);
+                    if (isX64Format) {
+                        IOUtilities.writeLongLE(out, entry.getValue());
+                        IOUtilities.writeLongLE(out, entry.getKey());
+                    } else {
+                        int transitionData = entry.getKey() << STATE_ID_BITS_X86;
+                        transitionData |= entry.getValue() & MAX_STATE_ID_X86;
+                        IOUtilities.writeIntLE(out, transitionData);
+                    }
                 }
             }
-            IOUtilities.writeIntLE(out, -1);
+            if (isX64Format) {
+                IOUtilities.writeLongLE(out, -1);
+            } else {
+                IOUtilities.writeIntLE(out, -1);
+            }
             // vocal states
-            IOUtilities.writeIntLE(out, -1);
+            if (isX64Format) {
+                IOUtilities.writeLongLE(out, -1);
+            } else {
+                IOUtilities.writeIntLE(out, -1);
+            }
 
             // write termination block
             IOUtilities.writeIntLE(out, -1);
@@ -328,10 +428,12 @@ public class TCTPlugin implements ImportExportPlugin {
     /**
      * Import from a TCT file
      * 
-     * @param src the source file
-     * @param dst the destination file
+     * @param src         the source file
+     * @param dst         the destination file
+     * @param isX64Format is the file compatible with 64-bit TCT (when true) or
+     *                    32-bit TCT (when false)
      */
-    public void importFile(File src, File dst) throws FormatTranslationException {
+    private static void importFile(File src, File dst, boolean isX64Format) throws FormatTranslationException {
         File eventMapFile = new File(src.getParentFile(), DEFAULT_EVENTMAP_FILE);
         List<ImportEventMapOptions> eventMappingOptions = new ArrayList<>();
         if (eventMapFile.isFile()) {
@@ -370,7 +472,18 @@ public class TCTPlugin implements ImportExportPlugin {
             IOUtilities.readSkipUntil(in, b -> b == 26);
             byte[] authString = new byte[7];
             IOUtilities.readInto(in, authString);
-            if (!TCT_FILE_MARKER.equals(new String(authString))) {
+            switch (new String(authString)) {
+            case TCT_FILE_MARKER_X86:
+                if (isX64Format) {
+                    throw new FormatTranslationException(Hub.string("tctErrorImportNot64Bit"));
+                }
+                break;
+            case TCT_FILE_MARKER_X64:
+                if (!isX64Format) {
+                    throw new FormatTranslationException(Hub.string("tctErrorImportNot32Bit"));
+                }
+                break;
+            default:
                 throw new FormatTranslationException(Hub.string("tctErrorImportNotTCT"));
             }
             if (IOUtilities.readIntLE(in) != 0xff00aa55) {
@@ -387,8 +500,16 @@ public class TCTPlugin implements ImportExportPlugin {
             IOUtilities.readIntLE(in);
 
             // create states
-            int countStates = IOUtilities.readIntLE(in);
-            for (int i = 0; i < countStates; ++i) {
+            long countStates;
+            if (isX64Format) {
+                countStates = IOUtilities.readLongLE(in);
+            } else {
+                countStates = IOUtilities.readIntLE(in);
+            }
+            if (countStates < 0) {
+                throw new FormatTranslationException(Hub.string("tctErrorImportTooManyStates"));
+            }
+            for (long i = 0; i < countStates; ++i) {
                 FSAState s = a.assembleState();
                 s.setId(i);
                 s.setName(String.valueOf(i));
@@ -399,16 +520,34 @@ public class TCTPlugin implements ImportExportPlugin {
             }
 
             // ignore DAT indicator, will attempt to load file anyways
-            IOUtilities.readIntLE(in);
-
-            // set marked states
-            int nextMarkedStateId = IOUtilities.readIntLE(in);
-            while (nextMarkedStateId != -1) {
-                a.getState(nextMarkedStateId).setMarked(true);
-                nextMarkedStateId = IOUtilities.readIntLE(in);
+            if (isX64Format) {
+                IOUtilities.readLongLE(in);
+            } else {
+                IOUtilities.readIntLE(in);
             }
 
-            int nextTransitionSrc = IOUtilities.readIntLE(in);
+            // set marked states
+            long nextMarkedStateId;
+            if (isX64Format) {
+                nextMarkedStateId = IOUtilities.readLongLE(in);
+            } else {
+                nextMarkedStateId = IOUtilities.readIntLE(in);
+            }
+            while (nextMarkedStateId != -1) {
+                a.getState(nextMarkedStateId).setMarked(true);
+                if (isX64Format) {
+                    nextMarkedStateId = IOUtilities.readLongLE(in);
+                } else {
+                    nextMarkedStateId = IOUtilities.readIntLE(in);
+                }
+            }
+
+            long nextTransitionSrc;
+            if (isX64Format) {
+                nextTransitionSrc = IOUtilities.readLongLE(in);
+            } else {
+                nextTransitionSrc = IOUtilities.readIntLE(in);
+            }
             while (nextTransitionSrc != -1) {
                 if (nextTransitionSrc < 0 || nextTransitionSrc >= countStates) {
                     throw new FormatTranslationException(Hub.string("tctErrorImportInvalidState"));
@@ -416,9 +555,17 @@ public class TCTPlugin implements ImportExportPlugin {
                 // count is stored in 2 bytes (contrary to documentation which says 4 bytes)
                 int countTransitions = IOUtilities.readShortLE(in);
                 while (countTransitions > 0) {
-                    int transitionData = IOUtilities.readIntLE(in);
-                    int nextTransitionDst = transitionData & MAX_STATE_ID;
-                    int eventId = transitionData >>> STATE_ID_BITS;
+                    long nextTransitionDst;
+                    int eventId;
+                    if (isX64Format) {
+                        nextTransitionDst = IOUtilities.readLongLE(in);
+                        // even though event id is only 2 bytes, it's written out using 8 bytes
+                        eventId = (int) (IOUtilities.readLongLE(in) & 0xffff);
+                    } else {
+                        int transitionData = IOUtilities.readIntLE(in);
+                        nextTransitionDst = transitionData & MAX_STATE_ID_X86;
+                        eventId = transitionData >>> STATE_ID_BITS_X86;
+                    }
                     if (nextTransitionDst < 0 || nextTransitionDst >= countStates) {
                         throw new FormatTranslationException(Hub.string("tctErrorImportInvalidState"));
                     }
@@ -438,7 +585,11 @@ public class TCTPlugin implements ImportExportPlugin {
                     a.add(t);
                     countTransitions--;
                 }
-                nextTransitionSrc = IOUtilities.readIntLE(in);
+                if (isX64Format) {
+                    nextTransitionSrc = IOUtilities.readLongLE(in);
+                } else {
+                    nextTransitionSrc = IOUtilities.readIntLE(in);
+                }
             }
 
             // ignore vocal states because there is no corresponding construct in IDES
@@ -462,33 +613,6 @@ public class TCTPlugin implements ImportExportPlugin {
                     String.valueOf(eventsNotInMap.size()) + " " + Hub.string("tctWarnImportMapShort"),
                     Hub.string("tctWarnImportMapLong") + " " + String.join(", ", eventsNotInMap));
         }
-    }
-
-    /**
-     * Return a human readable description of the plugin
-     */
-    public String getFileDescription() {
-        return "TCT";
-    }
-
-    public String getCredits() {
-        return Hub.string("DEVELOPERS");
-    }
-
-    public String getDescription() {
-        return "part of IDES";
-    }
-
-    public String getLicense() {
-        return "same as IDES";
-    }
-
-    public String getName() {
-        return "TCT import and export";
-    }
-
-    public String getVersion() {
-        return Hub.string("IDES_VER");
     }
 
     private static int getNextFreeEventId(Set<Integer> ids, int startingAt) {
