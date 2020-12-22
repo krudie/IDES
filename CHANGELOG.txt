@@ -1,7 +1,7 @@
 IDES Changelog
 
 
-Version: unreleased
+Version: 3.1.3, December 2020
 
 Added:
 * Support for the TCT x64 file format
