@@ -131,7 +131,8 @@ task generateAPIDocs(type: com.github.monosoul.markdown.page.generator.gradle.pl
 }
 
 task zipAPI(type: Zip, dependsOn: [generateAPIJar, generateAPIDocs, generateAPIJavadoc]) {
-    from file("${buildDir}/release-api")
+    from releaseAPIDir
+    into releaseAPIDir.name
     destinationDir buildDir
     classifier 'api'
 
@@ -226,7 +227,8 @@ idesPlugins.each { idesPlugin ->
 }
 
 task zipRelease(type: Zip, dependsOn: [jar, generateHelp, integratePlugins]) {
-    from file("${buildDir}/release")
+    from releaseDir
+    into releaseDir.name
     destinationDir buildDir
 
     doFirst {
