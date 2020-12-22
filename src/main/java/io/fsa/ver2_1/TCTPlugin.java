@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,10 +127,6 @@ public class TCTPlugin {
         public String toString() {
             return label;
         }
-    }
-
-    public String getFileExtension() {
-        return "des";
     }
 
     /**
@@ -352,30 +350,14 @@ public class TCTPlugin {
             IOUtilities.writeIntLE(out, 0);
             IOUtilities.writeIntLE(out, (int) blockSize);
             // state count
-            if (isX64Format) {
-                IOUtilities.writeLongLE(out, (int) a.getStateCount());
-            } else {
-                IOUtilities.writeIntLE(out, (int) a.getStateCount());
-            }
+            writeNumber(out, (int) a.getStateCount(), isX64Format);
             // initial state indicator (0 for DES)
-            if (isX64Format) {
-                IOUtilities.writeLongLE(out, 0);
-            } else {
-                IOUtilities.writeIntLE(out, 0);
-            }
+            writeNumber(out, 0, isX64Format);
             // marked states
             for (long id : markedStates) {
-                if (isX64Format) {
-                    IOUtilities.writeLongLE(out, stateMap.get(id));
-                } else {
-                    IOUtilities.writeIntLE(out, stateMap.get(id));
-                }
+                writeNumber(out, stateMap.get(id), isX64Format);
             }
-            if (isX64Format) {
-                IOUtilities.writeLongLE(out, -1);
-            } else {
-                IOUtilities.writeIntLE(out, -1);
-            }
+            writeNumber(out, -1, isX64Format);
             // transitions
             for (Iterator<FSAState> si = a.getStateIterator(); si.hasNext();) {
                 FSAState s = si.next();
@@ -383,11 +365,7 @@ public class TCTPlugin {
                 if (countOutgoingTransitions <= 0) {
                     continue;
                 }
-                if (isX64Format) {
-                    IOUtilities.writeLongLE(out, stateMap.get(s.getId()));
-                } else {
-                    IOUtilities.writeIntLE(out, stateMap.get(s.getId()));
-                }
+                writeNumber(out, stateMap.get(s.getId()), isX64Format);
                 IOUtilities.writeShortLE(out, (short) countOutgoingTransitions);
                 // event ids have to be written out in ascending order
                 Map<Integer, Integer> transitions = new TreeMap<>();
@@ -409,17 +387,9 @@ public class TCTPlugin {
                     }
                 }
             }
-            if (isX64Format) {
-                IOUtilities.writeLongLE(out, -1);
-            } else {
-                IOUtilities.writeIntLE(out, -1);
-            }
+            writeNumber(out, -1, isX64Format);
             // vocal states
-            if (isX64Format) {
-                IOUtilities.writeLongLE(out, -1);
-            } else {
-                IOUtilities.writeIntLE(out, -1);
-            }
+            writeNumber(out, -1, isX64Format);
 
             // write termination block
             IOUtilities.writeIntLE(out, -1);
@@ -519,13 +489,9 @@ public class TCTPlugin {
             IOUtilities.readIntLE(in);
 
             // create states
-            long countStates;
-            if (isX64Format) {
-                countStates = IOUtilities.readLongLE(in);
-            } else {
-                countStates = IOUtilities.readIntLE(in);
-            }
-            if (countStates < 0) {
+            long countStates = readNumber(in, isX64Format);
+            // note, Java collections have a limit of Integer.MAX_VALUE elements
+            if (countStates < 0 || countStates > Integer.MAX_VALUE) {
                 throw new FormatTranslationException(Hub.string("tctErrorImportTooManyStates"));
             }
             for (long i = 0; i < countStates; ++i) {
@@ -539,34 +505,16 @@ public class TCTPlugin {
             }
 
             // ignore DAT indicator, will attempt to load file anyways
-            if (isX64Format) {
-                IOUtilities.readLongLE(in);
-            } else {
-                IOUtilities.readIntLE(in);
-            }
+            readNumber(in, isX64Format);
 
             // set marked states
-            long nextMarkedStateId;
-            if (isX64Format) {
-                nextMarkedStateId = IOUtilities.readLongLE(in);
-            } else {
-                nextMarkedStateId = IOUtilities.readIntLE(in);
-            }
+            long nextMarkedStateId = readNumber(in, isX64Format);
             while (nextMarkedStateId != -1) {
                 a.getState(nextMarkedStateId).setMarked(true);
-                if (isX64Format) {
-                    nextMarkedStateId = IOUtilities.readLongLE(in);
-                } else {
-                    nextMarkedStateId = IOUtilities.readIntLE(in);
-                }
+                nextMarkedStateId = readNumber(in, isX64Format);
             }
 
-            long nextTransitionSrc;
-            if (isX64Format) {
-                nextTransitionSrc = IOUtilities.readLongLE(in);
-            } else {
-                nextTransitionSrc = IOUtilities.readIntLE(in);
-            }
+            long nextTransitionSrc = readNumber(in, isX64Format);
             while (nextTransitionSrc != -1) {
                 if (nextTransitionSrc < 0 || nextTransitionSrc >= countStates) {
                     throw new FormatTranslationException(Hub.string("tctErrorImportInvalidState"));
@@ -604,11 +552,7 @@ public class TCTPlugin {
                     a.add(t);
                     countTransitions--;
                 }
-                if (isX64Format) {
-                    nextTransitionSrc = IOUtilities.readLongLE(in);
-                } else {
-                    nextTransitionSrc = IOUtilities.readIntLE(in);
-                }
+                nextTransitionSrc = readNumber(in, isX64Format);
             }
 
             // ignore vocal states because there is no corresponding construct in IDES
@@ -644,5 +588,17 @@ public class TCTPlugin {
             throw new RuntimeException(Hub.string("tctErrorExportNoMoreEventIds"));
         }
         return nextId;
+    }
+
+    private static long readNumber(InputStream in, boolean isX64Format) throws IOException {
+        return isX64Format ? IOUtilities.readLongLE(in) : IOUtilities.readIntLE(in);
+    }
+
+    private static void writeNumber(OutputStream out, int n, boolean isX64Format) throws IOException {
+        if (isX64Format) {
+            IOUtilities.writeLongLE(out, n);
+        } else {
+            IOUtilities.writeIntLE(out, n);
+        }
     }
 }
