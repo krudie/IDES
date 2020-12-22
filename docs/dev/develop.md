@@ -123,7 +123,7 @@ After confirming all items in the above checklist, follow these steps to release
 4.  Make sure that the all IDES plugins listed under `ext.idesPlugins` in `build.gradle` have the correct API compatibility information.
     If the release introduces API changes which are not backward-compatible, refer to the section below for more details.
 5.  Commit the changes above with the commit message `IDES Version` (where "Version" stands for the release version, e.g., `IDES 3.1.2`).
-6.  Run `gradle build` to generate the IDES release.
+6.  Run `gradle clean build` to generate the IDES release.
 7.  Perform the manual test and any other relevant testing with the build output.
 8.  If all tests succeed, push the commit.
 9.  In Github, create a new release with the tag `vVersion` (where "Version" stands for the release version, e.g., `v3.1.2`)
