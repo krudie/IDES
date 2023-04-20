@@ -72,9 +72,9 @@ repositories {
 }
 
 dependencies {
-    compile 'commons-codec:commons-codec:1.3'
-    compile ('commons-logging:commons-logging:1.1') { transitive = false }
-    compile 'opensymphony:oscache:2.3'
+    implementation 'commons-codec:commons-codec:1.3'
+    implementation ('commons-logging:commons-logging:1.1') { transitive = false }
+    implementation 'opensymphony:oscache:2.3'
     implementation 'com.github.vlsi.mxgraph:jgraphx:4.1.0'
 }
 
