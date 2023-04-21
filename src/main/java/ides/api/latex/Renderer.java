@@ -11,13 +11,16 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
 
@@ -90,6 +93,40 @@ public class Renderer {
         private boolean done = false;
 
         /**
+         * Utility class to read process output in a separate thread. Lightweight and
+         * disposable, without need for synchronization.
+         * 
+         * @author Lenko Grigorov
+         */
+        private class ProcessOutputReader extends Thread {
+            private InputStream stream;
+            /**
+             * container for the output of the process (lock-free weakly-consistent
+             * structure so we don't need to worry about thread synchronization when someone
+             * asks for the latest output)
+             */
+            private ConcurrentLinkedQueue<String> output = new ConcurrentLinkedQueue<>();
+
+            public ProcessOutputReader(InputStream stream) {
+                this.stream = stream;
+                this.setDaemon(true);
+            }
+
+            @Override
+            public void run() {
+                try (BufferedReader b = new BufferedReader(new InputStreamReader(stream))) {
+                    b.lines().forEach(output::add);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            public String getLatestOutput() {
+                return String.join("\n", output);
+            }
+        }
+
+        /**
          * Construct an Executor for the given command and startup directory.
          * 
          * @param cmd the command+parameters that will be called
@@ -112,10 +149,22 @@ public class Renderer {
             Runtime rt = Runtime.getRuntime();
             try {
                 Process proc = rt.exec(cmd, null, dir);
+                ProcessOutputReader stdOut = new ProcessOutputReader(proc.getInputStream());
+                stdOut.start();
+                ProcessOutputReader stdErr = new ProcessOutputReader(proc.getErrorStream());
+                stdErr.start();
                 try {
                     proc.waitFor();
                 } catch (InterruptedException e) {
                     proc.destroy();
+                }
+                if (proc.isAlive() || proc.exitValue() != 0) {
+                    // this shouldn't be happening but given that we don't have good visibility
+                    // about all the LaTeX implementations that users on different platforms
+                    // may use - we shouldn't be escalating non-zero exits as errors into the UI
+                    System.out.println(String.join(" ", cmd) + "\nEXIT: "
+                            + (proc.isAlive() ? "?" : String.valueOf(proc.exitValue())) + "\nSTDOUT\n"
+                            + stdOut.getLatestOutput() + "\nSTDERR\n" + stdErr.getLatestOutput());
                 }
                 synchronized (this) {
                     done = true;
@@ -735,16 +784,19 @@ public class Renderer {
         execute(dvips);
 
         // GhostScript
-        command = new String[9];
+        command = new String[10];
         command[0] = gsPath.getCanonicalPath();
         command[1] = "-dBATCH";
         command[2] = "-dNOPAUSE";
         command[3] = "-dTextAlphaBits=2";
         command[4] = "-dGraphicsAlphaBits=2";
-        command[5] = "-sDEVICE=pnggray";
-        command[6] = "-r" + dpi;
-        command[7] = "-sOutputFile=" + latexFile.getName().substring(0, latexFile.getName().lastIndexOf('.')) + ".png";
-        command[8] = latexFile.getName().substring(0, latexFile.getName().lastIndexOf('.')) + ".ps";
+        // ALLOWPSTRANSPARENCY is required as of GS v9.52
+        // (older releases seem work and just ignore this unknown option)
+        command[5] = "-dALLOWPSTRANSPARENCY";
+        command[6] = "-sDEVICE=pnggray";
+        command[7] = "-r" + dpi;
+        command[8] = "-sOutputFile=" + latexFile.getName().substring(0, latexFile.getName().lastIndexOf('.')) + ".png";
+        command[9] = latexFile.getName().substring(0, latexFile.getName().lastIndexOf('.')) + ".ps";
         Executor gs = new Executor(command, new File(latexFile.getParentFile().getCanonicalPath()));
         execute(gs);
 
