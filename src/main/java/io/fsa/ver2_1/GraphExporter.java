@@ -77,6 +77,11 @@ public class GraphExporter {
 
     public static final double DBL_PSTRICKS_FONT_BASELINE_FACTOR = 1.2;
 
+    // sometimes LaTeX thinks that text is wider than how it actually renders.
+    // we have width from renderings, so we add this margin to get LaTeX dimensions.
+    // determined the value from trial and error - and may need to be adjusted
+    public static final int INT_PSTRICKS_FONT_RENDER_MARGIN = 2;
+
     /** Export properties * */
     public static final String STR_EXPORT_PROP_USE_FRAME = "addFrameToExport";
 

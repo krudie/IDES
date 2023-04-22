@@ -489,7 +489,8 @@ public class GraphLabel extends GraphElement implements LatexElement {
         if (exportType == GraphExporter.INT_EXPORT_TYPE_PSTRICKS) {
             exportString = "  \\rput(" + (labelBounds.x - selectionBox.x + (labelBounds.width / 2.0)) + ","
                     + (selectionBox.y + selectionBox.height - labelBounds.y - (labelBounds.height / 2.0))
-                    + "){\\parbox{" + labelBounds.width + "pt}{\\fontsize{" + getFontSize() + "}{"
+                    + "){\\parbox{" + (labelBounds.width + GraphExporter.INT_PSTRICKS_FONT_RENDER_MARGIN)
+                    + "pt}{\\fontsize{" + getFontSize() + "}{"
                     + BentoBox.roundDouble(getFontSize() * GraphExporter.DBL_PSTRICKS_FONT_BASELINE_FACTOR, 2)
                     + "} \\selectfont \\begin{center}" + safeLabel + "\\end{center}}}\n";
         } else if (exportType == GraphExporter.INT_EXPORT_TYPE_EPS) {
