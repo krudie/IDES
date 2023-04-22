@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -438,6 +439,11 @@ public class EdgeLabellingDialog extends EscapeDialog {
             textField.setText("");
             // TODO clear out lists
         }
+        // it looks like a delayed repaint of the lists is needed in some corner cases
+        SwingUtilities.invokeLater(() -> {
+            listAvailableEvents.repaint();
+            listAssignedEvents.repaint();
+        });
     }
 
     @Override
