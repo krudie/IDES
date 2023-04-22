@@ -1,5 +1,5 @@
 Integrated Discrete-Event Systems Software (IDES)
-Copyright (C) 2003-2020  Helen Bretzke, Chris Dragert, Kristian Edlund,
+Copyright (C) 2003-2023  Helen Bretzke, Chris Dragert, Kristian Edlund,
                          Lenko Grigorov, Chris McAloney, Axel G. Michelsen,
                          Utsav Mital, Christian Silvano, Valerie Sugarman,
                          Sarah-Jane Whittaker, Mike Wood

@@ -2,7 +2,7 @@
 
 ## Building IDES
 
-IDES is built with Gradle 5.6, via the `gradle build` command. Later versions of Gradle may work but are not tested.
+IDES is built with Gradle 8, via the `gradle build` command. Later versions of Gradle may work but are not tested.
 
 The output of the build task produces two files: `IDES-version.zip` and `IDES-version-api.zip` directly under the `build` folder.
 The version string is taken from the `gradle.properties` file.

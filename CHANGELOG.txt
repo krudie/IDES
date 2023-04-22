@@ -1,6 +1,15 @@
 IDES Changelog
 
 
+Version: 3.1.4, April 2023
+
+Fixed:
+* Node labels should be centered properly when exporting to LaTeX or EPS
+* Compatibility with GhostScript 9.52 and later
+* Occasional rendering issue with events dialog
+* Compatibility with Gradle 8
+
+
 Version: 3.1.3, December 2020
 
 Added:

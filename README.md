@@ -72,7 +72,6 @@ information about how to build the project and for notes relevant to IDES develo
 * IDES fails to launch on newer macOS
 * Poor automatic placement of event labels on edges
 * Occasional poor automatic placement of edges
-* Node labels may not be centered properly when exporting to LaTeX or EPS
 * Potential problems when using the uniform node size option
 * DES operations are not formally verified
 * Automatic layout of the result of operations is slow
