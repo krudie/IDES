@@ -5,7 +5,7 @@ plugins {
 
 import org.gradle.util.VersionNumber
 
-class PluginDependency {
+class PluginDependency implements Serializable {
     String name
     String version
     String url
@@ -27,9 +27,13 @@ class PluginDependency {
 }
 
 class PluginIntegration extends DefaultTask {
+    @Input
     PluginDependency plugin
+    @InputDirectory
     File pluginsDir
+    @OutputFile
     File pluginsManifest
+    @OutputDirectory
     File releaseDir
 
     @TaskAction
@@ -104,8 +108,8 @@ jar {
 task generateAPIJar(type: Jar) {
     from sourceSets.main.output
     include 'ides/api/**'
-    classifier = 'api'
-    destinationDir = releaseAPIDir
+    archiveClassifier = 'api'
+    destinationDirectory = releaseAPIDir
 }
 
 task generateAPIJavadoc(type: Javadoc) {
@@ -133,8 +137,8 @@ task generateAPIDocs(type: com.github.monosoul.markdown.page.generator.gradle.pl
 task zipAPI(type: Zip, dependsOn: [generateAPIJar, generateAPIDocs, generateAPIJavadoc]) {
     from releaseAPIDir
     into releaseAPIDir.name
-    destinationDir buildDir
-    classifier 'api'
+    destinationDirectory = buildDir
+    archiveClassifier = 'api'
 
     doFirst {
         copy {
@@ -191,13 +195,14 @@ task generateLatexDoc(type: com.github.monosoul.markdown.page.generator.gradle.p
 
 task generateHelp(dependsOn: [generateTutorial, generateLatexDoc]){}
 
-task removePluginsManifest() {
+task preprareForPluginIntegration() {
     doLast{
+    	mkdir pluginsDir
         delete pluginsManifest
     }
 }
 
-task integratePlugins(dependsOn: removePluginsManifest) {
+task integratePlugins(dependsOn: preprareForPluginIntegration) {
     doLast {
         if(pluginsManifest.exists()) {
             println 'Plugins included:'
@@ -223,7 +228,7 @@ idesPlugins.each { idesPlugin ->
             pluginsManifest = project.pluginsManifest
             releaseDir = project.releaseDir
         }
-        integrationTask.configure({ dependsOn(removePluginsManifest) })
+        integrationTask.configure({ dependsOn(preprareForPluginIntegration) })
         integratePlugins.dependsOn(integrationTask)
     }
 }
@@ -231,7 +236,7 @@ idesPlugins.each { idesPlugin ->
 task zipRelease(type: Zip, dependsOn: [jar, generateHelp, integratePlugins]) {
     from releaseDir
     into releaseDir.name
-    destinationDir buildDir
+    destinationDirectory = buildDir
 
     doFirst {
         copy {
