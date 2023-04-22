@@ -805,11 +805,11 @@ public class Renderer {
 
         // if createImage() directly from file, file cannot be deleted
         byte[] pngData = new byte[(int) pngFile.length()];
-        FileInputStream in = new FileInputStream(pngFile);
-        if (in.read(pngData, 0, pngData.length) != pngData.length) {
-            throw new IOException("Unable to completely read intermediate image file.");
+        try (FileInputStream in = new FileInputStream(pngFile)) {
+            if (in.read(pngData, 0, pngData.length) != pngData.length) {
+                throw new IOException("Unable to completely read intermediate image file.");
+            }
         }
-        in.close();
 
         Toolkit awtTK = Toolkit.getDefaultToolkit();
         Image tempIm = awtTK.createImage(pngData);
