@@ -19,6 +19,7 @@ import java.io.Serializable;
  * the FSAGraph on save.
  * 
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
  */
 public class GraphicalLayout implements Serializable {
     /**
@@ -212,6 +213,12 @@ public class GraphicalLayout implements Serializable {
         return backgroundColor;
     }
 
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        dirty = true;
+
+    }
+
     /**
      * Returns the label text.
      * 
@@ -346,5 +353,32 @@ public class GraphicalLayout implements Serializable {
         highlightColor = (Color) in.readObject();
         selectionColor = (Color) in.readObject();
         text = (String) in.readObject();
+    }
+    
+    //Overloads for calling method with no defined thickness (return whatever the default is)
+    public static Stroke getDashedStroke() {
+        return DASHED_STROKE;
+    }
+
+        public static Stroke getWideStroke() {
+        return WIDE_STROKE;
+    }
+
+    
+    public static Stroke getWideStroke(float thickness) {
+        return new BasicStroke(
+                thickness,
+                BasicStroke.CAP_ROUND,
+                BasicStroke.JOIN_ROUND);
+    }
+
+    public static Stroke getDashedStroke(float thickness) {
+        return new BasicStroke(
+                Math.max(1.0f, thickness / 2.0f), // Scale arrows diffrently depending on the type.
+                BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER,
+                50,
+                new float[] { 5, 2 }, //revert to old dash 
+                0);
     }
 }

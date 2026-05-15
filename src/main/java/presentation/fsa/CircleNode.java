@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -127,7 +128,6 @@ public class CircleNode extends Node {
             refresh();
             getLayout().setDirty(false);
         }
-
         // only calls draw on all of the outgoing edges
         Iterator<GraphElement> c = children();
         while (c.hasNext()) {
@@ -136,14 +136,26 @@ public class CircleNode extends Node {
                 if (child.getSourceNode().equals(this)) {
                     child.draw(g);
                 }
-            } catch (ClassCastException cce) {
-                // skip the label and keep going
-                // HB says to self: Why am I skipping the label?
-                // Why did I decide to do it at the end?
+            // skip the label and keep going
+            // HB says to self: Why am I skipping the label?
+            // Why did I decide to do it at the end?
+            } catch (ClassCastException ignore) {
+                
             }
         }
 
         Graphics2D g2d = (Graphics2D) g;
+
+    
+        Color fillColor = getLayout().getBackgroundColor();
+        if (fillColor != null) {
+            Color old = g2d.getColor();
+            g2d.setColor(fillColor);
+            g2d.fill(circle);
+            g2d.setColor(old);
+           
+        }
+
 
         if (isSelected()) {
             g.setColor(getLayout().getSelectionColor());

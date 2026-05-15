@@ -9,6 +9,12 @@ import java.awt.geom.Point2D;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+
+import java.awt.Color;
+
+import presentation.fsa.CircleNode;
+import presentation.fsa.CircleNodeLayout;
+
 import presentation.fsa.FSAGraph;
 import presentation.fsa.FSAGraphMessage;
 import presentation.fsa.InitialArrow;
@@ -146,5 +152,45 @@ public class NodeActions {
             }
         }
     }
+
+
+    public static class SetNodeBackgroundColorAction extends AbstractGraphAction {
+    
+        protected FSAGraph graph;
+        protected CircleNode node;
+        protected CircleNodeLayout originalLayout;
+        protected Color color;
+
+        public SetNodeBackgroundColorAction(FSAGraph graph, CircleNode node, Color color) {
+            this.graph = graph;
+            this.node = node;
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent event) {
+
+
+
+            if (graph != null && node != null) {
+
+                // Could extend the original CircleNodeLayout to have its own clone method, but for now I will just do this 
+                CircleNodeLayout layout = (CircleNodeLayout) node.getLayout();
+                CircleNodeLayout originalLayout = new CircleNodeLayout();
+
+                originalLayout.setRadius(layout.getRadius());
+                originalLayout.setLocation(layout.getLocation().x,layout.getLocation().y);
+                originalLayout.setText(layout.getText());
+                originalLayout.setBackgroundColor(layout.getBackgroundColor());
+                originalLayout.setArrow(layout.getArrow());
+
+                node.getLayout().setBackgroundColor(color);
+                node.setNeedsRefresh(true);
+
+                UndoableEdit edit = new GraphUndoableEdits.UndoableModifyNode(graph, node, originalLayout);
+
+                postEditAdjustCanvas(graph, edit);
+            }
+        }
+}
 
 }

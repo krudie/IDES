@@ -14,6 +14,7 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
 import ides.api.model.supeventset.SupervisoryEvent;
 import presentation.GraphicalLayout;
+import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.FSAGraphMessage;
@@ -1157,6 +1158,62 @@ public class GraphUndoableEdits {
             return Hub.string("undoFontSize");
         }
 
+    }
+
+
+    public static class UndoableModifyNode extends AbstractGraphUndoableEdit {
+        /*
+        * Used for restoring the orignina
+        *
+        */
+
+        protected FSAGraph graph;
+
+        protected CircleNode node;
+
+        protected GraphicalLayout altLayout;
+
+        public UndoableModifyNode(FSAGraph graph, CircleNode node, GraphicalLayout originalLayout) {
+            this.graph = graph;
+            this.node = node;
+            altLayout = originalLayout;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            if (node == null) {
+                throw new CannotRedoException();
+            }
+            swapLayout();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            if (node == null) {
+                throw new CannotUndoException();
+            }
+            swapLayout();
+        }
+
+        protected void swapLayout() {
+            GraphicalLayout tLayout = node.getLayout();
+            node.setLayout(altLayout);
+            altLayout = tLayout;
+
+            node.refresh();
+
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,FSAGraphMessage.NODE,node.getId(),node.bounds(),graph));
+        }
+
+
+        @Override
+        public String getPresentationName() {
+            if (usePluralDescription) {
+                return Hub.string("undoModifyNodes");
+            } else {
+                return Hub.string("undoModifyNode");
+            }
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.awt.Color;
 
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
@@ -21,6 +22,7 @@ import presentation.GraphicalLayout;
  * Graphical data and operations for visual display of a BezierEdge.
  * 
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
  */
 public class BezierLayout extends GraphicalLayout implements Serializable {
 
@@ -43,6 +45,16 @@ public class BezierLayout extends GraphicalLayout implements Serializable {
 
     public static final int P2 = 3;
 
+    private Color edgeColor = null;
+
+    
+
+    public static final float DEFAULT_EDGE_THICKNESS = 2.0f;
+
+
+    private float edgeThickness = DEFAULT_EDGE_THICKNESS;
+
+
     protected long group = UNGROUPPED;
 
     public void setGroup(long i) {
@@ -51,6 +63,25 @@ public class BezierLayout extends GraphicalLayout implements Serializable {
 
     public long getGroup() {
         return group;
+    }
+
+
+    public Color getEdgeColor() {
+        return edgeColor;
+    }
+
+    public void setEdgeColor(Color c) {
+        this.edgeColor = c;
+        setDirty(true);
+    }
+
+    public float getEdgeThickness() {
+        return edgeThickness;
+    }
+
+    public void setEdgeThickness(float thickness) {
+        this.edgeThickness = thickness;
+        setDirty(true);
     }
 
     /* default displacement vector for the label from the midpoint of the edge */
@@ -839,6 +870,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable {
         out.writeDouble(angle2);
         out.writeDouble(s1);
         out.writeDouble(s2);
+        out.writeObject(edgeColor);
+        out.writeFloat(edgeThickness);
         out.writeInt(eventNames.size());
         for (int i = 0; i < eventNames.size(); ++i) {
             out.writeObject(eventNames.get(i));
@@ -861,6 +894,8 @@ public class BezierLayout extends GraphicalLayout implements Serializable {
         angle2 = in.readDouble();
         s1 = in.readDouble();
         s2 = in.readDouble();
+        edgeColor = (Color) in.readObject();
+        edgeThickness = in.readFloat();
         int eventCount = in.readInt();
         eventNames = new ArrayList<String>(eventCount);
         for (int i = 0; i < eventCount; ++i) {

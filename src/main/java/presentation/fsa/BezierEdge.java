@@ -10,8 +10,9 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
 import java.util.Iterator;
+import java.awt.BasicStroke;
 import java.util.Set;
-
+import java.awt.geom.Rectangle2D;
 import ides.api.model.fsa.FSATransition;
 import ides.api.model.supeventset.SupervisoryEvent;
 import io.fsa.ver2_1.GraphExporter;
@@ -19,6 +20,8 @@ import presentation.CubicParamCurve2D;
 import presentation.Geometry;
 import presentation.GraphicalLayout;
 import util.BentoBox;
+import java.awt.Color;
+
 
 /**
  * The graphical representation of a transition in a finite state automaton.
@@ -28,6 +31,7 @@ import util.BentoBox;
  * @author Helen Bretzke
  * @author Sarah-Jane Whittaker
  * @author Lenko Grigorov
+ * @author Liam Burns  - Color Extension 
  */
 public class BezierEdge extends Edge {
 
@@ -107,6 +111,7 @@ public class BezierEdge extends Edge {
         if (!isVisible()) {
             return;
         }
+        float thickness =  getBezierLayout().getEdgeThickness();
 
         // make sure the appearance is in sync with underlying data
         if (needsRefresh() || getBezierLayout().isDirty()) {
@@ -115,15 +120,17 @@ public class BezierEdge extends Edge {
         }
 
         Graphics2D g2d = (Graphics2D) g;
-
+        // if arrow doesnt allready have a color set said color to whatever the default is 
+        Color baseColor = (getBezierLayout().getEdgeColor() != null) ? getBezierLayout().getEdgeColor() : getLayout().getColor();
         // if either my source or target node is highlighted
         // then I am also hightlighted.
         if (highlighted || getSourceNode().isHighlighted()
-                || getTargetNode() != null && getTargetNode().isHighlighted()) {
+                || (getTargetNode() != null && getTargetNode().isHighlighted())) {
+            
             setHighlighted(true);
             g2d.setColor(getLayout().getHighlightColor());
         } else {
-            g2d.setColor(getLayout().getColor());
+            g2d.setColor(baseColor);
         }
 
         if (isSelected()) {
@@ -134,10 +141,12 @@ public class BezierEdge extends Edge {
         }
 
         if (hasUnobservableEvent()) {
-            g2d.setStroke(GraphicalLayout.DASHED_STROKE);
+            g2d.setStroke(GraphicalLayout.getDashedStroke(thickness));
         } else {
-            g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+            g2d.setStroke(GraphicalLayout.getWideStroke(thickness));
         }
+
+        
 
         // TODO should stop drawing at base of arrowhead and at outside of node
         // boundaries.
@@ -149,8 +158,31 @@ public class BezierEdge extends Edge {
             g2d.draw(curve);
         }
         if (!hasUncontrollableEvent() && getBezierLayout().getControllableMarker() != null) {
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
-            g2d.draw(getBezierLayout().getControllableMarker());
+            Line2D originalMarker = getBezierLayout().getControllableMarker();
+        
+            float lengthScale = Math.max(1.0f, thickness * 0.5f); // Adjust multiplier as needed
+          
+            double x1 = originalMarker.getX1();
+            double y1 = originalMarker.getY1();
+            double x2 = originalMarker.getX2();
+            double y2 = originalMarker.getY2();
+            
+            double midX = (x1 + x2) / 2;
+            double midY = (y1 + y2) / 2;
+         
+            double newX1 = midX + (x1 - midX) * lengthScale;
+            double newY1 = midY + (y1 - midY) * lengthScale;
+            double newX2 = midX + (x2 - midX) * lengthScale;
+            double newY2 = midY + (y2 - midY) * lengthScale;
+            
+            Line2D scaledMarker = new Line2D.Double(newX1, newY1, newX2, newY2);
+          
+            g2d.setStroke(new BasicStroke(
+                Math.max(1.0f, thickness), 
+                BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER
+            ));
+            g2d.draw(scaledMarker);
         }
 
         // Compute the direction and location of the arrow head
@@ -162,18 +194,31 @@ public class BezierEdge extends Edge {
         // Make certain that it points the right direction when nodes are
         // touching or overlapping.
         Point2D.Float unitArrowDir = computeArrowDirection();
+        float headScale;
+        double backoff;
 
-        arrowHead.reset();
+        if (thickness != BezierLayout.DEFAULT_EDGE_THICKNESS) {
+            headScale = 1.0f + (thickness - BezierLayout.DEFAULT_EDGE_THICKNESS) * 0.35f;
+            headScale = Math.max(1.0f, Math.min(2.5f, headScale));
+            arrowHead.rebuildScaled(headScale);
+            backoff = (ArrowHead.SHORT_HEAD_LENGTH * headScale) +2.0;
+        } else {
+            headScale = 1.0f;
+            arrowHead.reset();
+            backoff = ArrowHead.SHORT_HEAD_LENGTH + 2.0;
+        }
 
-        // If available, use point of intersection with target node boundary
-        Point2D basePt;
+        
         Point2D.Float tEndPt = getTargetEndPoint();
+        Point2D basePt;
         if (tEndPt != null) {
-            basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH + 2)));
+            basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -backoff));
         } else {
             basePt = Geometry.add(getBezierLayout().getCurve().getP2(),
-                    Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH + 2)));
+                    Geometry.scale(unitArrowDir, -backoff));
         }
+
+       
         at.setToTranslation(basePt.getX(), basePt.getY());
         g2d.transform(at);
 
@@ -188,12 +233,15 @@ public class BezierEdge extends Edge {
             at.setToRotation(-rho);
             g2d.transform(at);
         }
+
+        // undo translation ONCE
         at.setToTranslation(-basePt.getX(), -basePt.getY());
         g2d.transform(at);
 
         // draw label and handler
         super.draw(g);
     }
+
 
     /**
      * Updates the visualization of this curve, arrow and label from underlying

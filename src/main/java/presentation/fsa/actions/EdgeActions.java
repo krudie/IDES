@@ -3,6 +3,8 @@ package presentation.fsa.actions;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
+import java.awt.Color;
+
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
@@ -39,6 +41,7 @@ import presentation.fsa.FSAGraphMessage;
  * also, less usable.
  * 
  * @author Christian Silvano
+ * @author Liam Burns - Color Extension.
  */
 public class EdgeActions {
 
@@ -284,5 +287,66 @@ public class EdgeActions {
                 postEditAdjustCanvas(graph, edit);
             }
         }
+
     }
+    
+
+    public static class SetEdgeThicknessAction extends AbstractGraphAction {
+        protected Edge edge;
+        protected FSAGraph graph;
+        protected BezierLayout originalLayout;
+        protected Float thickness;
+
+        public SetEdgeThicknessAction(FSAGraph graph, Edge edge, Float thickness) {
+            this.graph = graph;
+            this.edge = edge;
+            this.thickness = thickness;
+        }
+
+        public void actionPerformed(ActionEvent evt) {
+            if (graph != null && edge != null) {
+                originalLayout = ((BezierLayout) edge.getLayout()).clone();
+
+                ((BezierLayout) edge.getLayout()).setEdgeThickness(thickness);
+                edge.setNeedsRefresh(true);
+
+                UndoableEdit edit = new GraphUndoableEdits.UndoableModifyEdge(graph, edge, originalLayout);
+                postEditAdjustCanvas(graph, edit);
+            }
+
+        }
+
+    }
+
+        
+    public static class SetEdgeColorAction extends AbstractGraphAction {
+
+        protected Edge edge;
+        protected FSAGraph graph;
+        protected BezierLayout originalLayout;
+        protected Color color;
+
+        public SetEdgeColorAction(FSAGraph graph, Edge edge, Color color) {
+            this.graph = graph;
+            this.edge = edge;
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent evt) {
+            if (graph != null && edge != null) {
+                originalLayout = ((BezierLayout) edge.getLayout()).clone();
+
+                ((BezierLayout) edge.getLayout()).setEdgeColor(color);
+                edge.setNeedsRefresh(true);
+
+                UndoableEdit edit = new GraphUndoableEdits.UndoableModifyEdge(graph, edge, originalLayout);
+                postEditAdjustCanvas(graph, edit);
+            }
+        }
+    }
+
+
 }
+
+
+

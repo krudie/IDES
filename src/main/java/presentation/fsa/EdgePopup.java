@@ -7,10 +7,14 @@ import java.awt.geom.Point2D.Float;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
+import java.awt.Color;
+import javax.swing.JColorChooser;
 import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import ides.api.core.Hub;
+import presentation.fsa.actions.EdgeActions;
 import presentation.fsa.actions.UIActions;
 
 /**
@@ -18,6 +22,7 @@ import presentation.fsa.actions.UIActions;
  * Symmetrize command after the command has been debugged and tested.
  * 
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
  */
 public class EdgePopup extends JPopupMenu {
 
@@ -46,6 +51,44 @@ public class EdgePopup extends JPopupMenu {
 
         miEditEvents = new JMenuItem(new UIActions.TextAction(edge));
         add(miEditEvents);
+
+
+        JMenuItem miArrowColor = new JMenuItem(Hub.string("comSetEdgeColor"));
+        miArrowColor.addActionListener(e -> {
+            Color chosen = JColorChooser.showDialog(
+                gdv,
+                "Choose Edge Color",
+                 Color.BLACK
+            );
+            if (chosen != null) {
+                new EdgeActions.SetEdgeColorAction(gdv.graphModel, edge, chosen).execute();
+                gdv.repaint();
+            }
+        });
+        add(miArrowColor);
+
+
+        JMenuItem miArrowSize = new JMenuItem(Hub.string("comSetEdgeThickness")); //Arrow thickness selector.
+        miArrowSize.addActionListener(e -> {
+            String s = javax.swing.JOptionPane.showInputDialog(
+                gdv,
+                "Edge thickness (e.g. 1.0 - 6.0):",
+                  ((BezierEdge) edge).getBezierLayout().getEdgeThickness()
+            );
+
+            if (s != null) {
+                try {
+                     java.lang.Float v =  java.lang.Float.parseFloat(s);
+                    if (v >= 1.0f && v <= 6.0f) {
+                        new EdgeActions.SetEdgeThicknessAction(gdv.graphModel, edge, v).execute();
+                        gdv.repaint();
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        });
+
+        add(miArrowSize);
+
 
         // if the edge can't be straightened, then we assume we cannot
         // otherwise tamper with its shape
