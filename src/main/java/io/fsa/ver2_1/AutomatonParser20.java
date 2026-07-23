@@ -22,7 +22,6 @@ import io.ParsingToolbox;
  * 
  * @author Axel Gottlieb Michelsen
  * @author Kristian Edlund
- * @author Liam Burns - Color Extension
  */
 public class AutomatonParser20 extends AbstractParser {
     private int state = STATE_IDLE;
@@ -292,4 +291,4 @@ public class AutomatonParser20 extends AbstractParser {
         lastLabel += new StringBuffer().append(ch, start, length).toString();
     }
 
-}   
+}

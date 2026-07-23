@@ -1,9 +1,8 @@
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
-
-import java.awt.Color;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
@@ -289,7 +288,6 @@ public class EdgeActions {
         }
 
     }
-    
 
     public static class SetEdgeThicknessAction extends AbstractGraphAction {
         protected Edge edge;
@@ -318,7 +316,6 @@ public class EdgeActions {
 
     }
 
-        
     public static class SetEdgeColorAction extends AbstractGraphAction {
 
         protected Edge edge;
@@ -345,8 +342,4 @@ public class EdgeActions {
         }
     }
 
-
 }
-
-
-

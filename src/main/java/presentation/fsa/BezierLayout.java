@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -12,7 +13,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
 
 import presentation.CubicParamCurve2D;
 import presentation.Geometry;
@@ -47,13 +47,9 @@ public class BezierLayout extends GraphicalLayout implements Serializable {
 
     private Color edgeColor = null;
 
-    
-
     public static final float DEFAULT_EDGE_THICKNESS = 2.0f;
 
-
     private float edgeThickness = DEFAULT_EDGE_THICKNESS;
-
 
     protected long group = UNGROUPPED;
 
@@ -64,7 +60,6 @@ public class BezierLayout extends GraphicalLayout implements Serializable {
     public long getGroup() {
         return group;
     }
-
 
     public Color getEdgeColor() {
         return edgeColor;

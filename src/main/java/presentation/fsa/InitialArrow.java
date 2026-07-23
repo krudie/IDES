@@ -135,7 +135,7 @@ public class InitialArrow extends Edge {
 
         g2d.setStroke(GraphicalLayout.WIDE_STROKE);
         g2d.draw(line);
-    
+
         // Compute the direction and location of the arrow head
         AffineTransform at = new AffineTransform();
         Point2D.Float unitArrowDir = Geometry.unit(direction); // Geometry.

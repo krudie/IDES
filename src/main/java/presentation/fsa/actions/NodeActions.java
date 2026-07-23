@@ -3,18 +3,15 @@
  */
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
-
-import java.awt.Color;
-
 import presentation.fsa.CircleNode;
 import presentation.fsa.CircleNodeLayout;
-
 import presentation.fsa.FSAGraph;
 import presentation.fsa.FSAGraphMessage;
 import presentation.fsa.InitialArrow;
@@ -38,6 +35,7 @@ import presentation.fsa.Node;
  * make this class be too big and more difficult to write.
  * 
  * @author Christian Silvano
+ * @author Liam Burns  - Color Extension
  */
 public class NodeActions {
 
@@ -153,9 +151,8 @@ public class NodeActions {
         }
     }
 
-
     public static class SetNodeBackgroundColorAction extends AbstractGraphAction {
-    
+
         protected FSAGraph graph;
         protected CircleNode node;
         protected CircleNodeLayout originalLayout;
@@ -169,16 +166,15 @@ public class NodeActions {
 
         public void actionPerformed(ActionEvent event) {
 
-
-
             if (graph != null && node != null) {
 
-                // Could extend the original CircleNodeLayout to have its own clone method, but for now I will just do this 
+                // Could extend the original CircleNodeLayout to have its own clone method, but
+                // for now I will just do this
                 CircleNodeLayout layout = (CircleNodeLayout) node.getLayout();
                 CircleNodeLayout originalLayout = new CircleNodeLayout();
 
                 originalLayout.setRadius(layout.getRadius());
-                originalLayout.setLocation(layout.getLocation().x,layout.getLocation().y);
+                originalLayout.setLocation(layout.getLocation().x, layout.getLocation().y);
                 originalLayout.setText(layout.getText());
                 originalLayout.setBackgroundColor(layout.getBackgroundColor());
                 originalLayout.setArrow(layout.getArrow());
@@ -191,6 +187,6 @@ public class NodeActions {
                 postEditAdjustCanvas(graph, edit);
             }
         }
-}
+    }
 
 }

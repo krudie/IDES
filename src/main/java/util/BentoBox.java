@@ -50,10 +50,10 @@ public class BentoBox {
         return floatNum.intValue();
     }
 
-
     public static String colorToHex(java.awt.Color c) {
-            if (c == null) c = java.awt.Color.WHITE; // Default
-            return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
+        if (c == null)
+            c = java.awt.Color.WHITE; // Default
+        return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
     }
 
     public static int convertDoubleToInt(double num) {

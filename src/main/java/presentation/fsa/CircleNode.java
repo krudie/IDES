@@ -1,11 +1,11 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -23,6 +23,7 @@ import util.BentoBox;
  * 
  * @see NodePopup#showPopup
  * @author Helen Bretzke
+ * @author Liam Burns  - Color Extension
  */
 public class CircleNode extends Node {
 
@@ -136,26 +137,24 @@ public class CircleNode extends Node {
                 if (child.getSourceNode().equals(this)) {
                     child.draw(g);
                 }
-            // skip the label and keep going
-            // HB says to self: Why am I skipping the label?
-            // Why did I decide to do it at the end?
+                // skip the label and keep going
+                // HB says to self: Why am I skipping the label?
+                // Why did I decide to do it at the end?
             } catch (ClassCastException ignore) {
-                
+
             }
         }
 
         Graphics2D g2d = (Graphics2D) g;
 
-    
         Color fillColor = getLayout().getBackgroundColor();
         if (fillColor != null) {
             Color old = g2d.getColor();
             g2d.setColor(fillColor);
             g2d.fill(circle);
             g2d.setColor(old);
-           
-        }
 
+        }
 
         if (isSelected()) {
             g.setColor(getLayout().getSelectionColor());

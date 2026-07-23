@@ -4,6 +4,7 @@
 package main;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +41,7 @@ public class GlobalExceptionHandler implements UncaughtExceptionHandler {
     private JDialog win;
 
     private void createWindow() {
-        win = new JDialog((java.awt.Frame) null, "Error");
+        win = new JDialog((Frame) null, "Error");
         win.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

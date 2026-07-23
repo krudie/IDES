@@ -23,6 +23,10 @@ import presentation.fsa.GraphLabel;
 import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 
+/**
+ * @author Lenko Grigorov
+ * @author Liam Burns  - Color Extension
+ */
 public class GraphUndoableEdits {
 
     public static class UndoableDummyLabel extends AbstractUndoableEdit {
@@ -1160,12 +1164,11 @@ public class GraphUndoableEdits {
 
     }
 
-
     public static class UndoableModifyNode extends AbstractGraphUndoableEdit {
         /*
-        * Used for restoring the orignina
-        *
-        */
+         * Used for restoring the orignina
+         *
+         */
 
         protected FSAGraph graph;
 
@@ -1202,9 +1205,9 @@ public class GraphUndoableEdits {
 
             node.refresh();
 
-            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY,FSAGraphMessage.NODE,node.getId(),node.bounds(),graph));
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.NODE, node.getId(),
+                    node.bounds(), graph));
         }
-
 
         @Override
         public String getPresentationName() {

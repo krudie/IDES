@@ -354,31 +354,24 @@ public class GraphicalLayout implements Serializable {
         selectionColor = (Color) in.readObject();
         text = (String) in.readObject();
     }
-    
-    //Overloads for calling method with no defined thickness (return whatever the default is)
+
+    // Overloads for calling method with no defined thickness (return whatever the
+    // default is)
     public static Stroke getDashedStroke() {
         return DASHED_STROKE;
     }
 
-        public static Stroke getWideStroke() {
+    public static Stroke getWideStroke() {
         return WIDE_STROKE;
     }
 
-    
     public static Stroke getWideStroke(float thickness) {
-        return new BasicStroke(
-                thickness,
-                BasicStroke.CAP_ROUND,
-                BasicStroke.JOIN_ROUND);
+        return new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     }
 
     public static Stroke getDashedStroke(float thickness) {
-        return new BasicStroke(
-                Math.max(1.0f, thickness / 2.0f), // Scale arrows diffrently depending on the type.
-                BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_MITER,
-                50,
-                new float[] { 5, 2 }, //revert to old dash 
+        return new BasicStroke(Math.max(1.0f, thickness / 2.0f), // Scale arrows diffrently depending on the type.
+                BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 50, new float[] { 5, 2 }, // revert to old dash
                 0);
     }
 }

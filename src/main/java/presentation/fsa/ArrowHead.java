@@ -26,7 +26,6 @@ public class ArrowHead extends Polygon {
     // distance from nock to tip
     public static final int SHORT_HEAD_LENGTH = 7;
 
-
     private static final int DEFAULT_HALF_WIDTH = 4;
     private static final int DEFAULT_BACK_Y = -3;
 
@@ -90,14 +89,13 @@ public class ArrowHead extends Polygon {
         }
     }
 
-
     public void rebuildScaled(float scale) {
         super.reset();
         basePt = new Point2D.Float(0, 0);
 
-        int tipY   = Math.round(HEAD_LENGTH * scale);
-        int halfW  = Math.round(DEFAULT_HALF_WIDTH * scale);
-        int backY  = Math.round(DEFAULT_BACK_Y * scale);
+        int tipY = Math.round(HEAD_LENGTH * scale);
+        int halfW = Math.round(DEFAULT_HALF_WIDTH * scale);
+        int backY = Math.round(DEFAULT_BACK_Y * scale);
 
         addPoint(0, tipY);
         addPoint(-halfW, backY);
