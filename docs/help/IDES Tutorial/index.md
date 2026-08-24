@@ -128,25 +128,20 @@ the desired shape. Undesired modifications can be undone by selecting "_Undo_".
 
 ![](guide_html_7a2ff655.png)
 
+If desired, edges can be customized further via the pop-up menu which
+appears when you right-click on the edge. Options include color, thickness
+and a set of tools to modify the edge shape.
+
+![](guide_html_56f69fa.png)
+
 You can reposition nodes by dragging them with the mouse cursor.
 
 ![](guide_html_4984efb.png)
 
-
-Node background colors can be customized by right-clicking on a node
-and selecting "_Set state color_".
-![](guide_html_color2.png)
-
-Edge colors and edge thicknesses can be customized by right-clicking
-on an edge and selecting "_Set edge color_" or
-"_Set edge thickness_".
-![](guide_html_color1.png)
-
-Note that LaTeX/EPS export does not currently support custom model colors
-or edge thicknesses.
-
 To make the first node initial and marked, right-click on the node
 and select "_Initial_" and "_Marked_" from the pop-up menu.
+If desired, nodes can be customized further via this menu,
+for example, by setting the node color.
 
 ![](guide_html_mcea1973.png)
 

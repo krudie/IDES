@@ -1,5 +1,6 @@
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -8,11 +9,14 @@ import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JColorChooser;
+import javax.swing.JOptionPane;
 
 import ides.api.core.Hub;
 import ides.api.model.fsa.FSAModel;
 import ides.api.plugin.layout.FSALayoutManager;
 import ides.api.plugin.layout.FSALayouter;
+import presentation.GraphicalLayout;
 import presentation.fsa.ContextAdaptorHack;
 import presentation.fsa.Edge;
 import presentation.fsa.EdgeLabellingDialog;
@@ -416,6 +420,39 @@ public class UIActions {
     }
 
     /**
+     * @author Lenko Grigorov
+     */
+    public static class SetNodeColorAction extends AbstractAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4916916353670114386L;
+
+        private static ImageIcon icon = new ImageIcon();
+
+        protected FSAGraph graph;
+
+        protected Node node;
+
+        public SetNodeColorAction(FSAGraph graph, Node node) {
+            super(Hub.string("comSetNodeColor"), icon);
+            icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getIDESResource("images/icons/pick_color.gif")));
+            putValue(SHORT_DESCRIPTION, Hub.string("comHintSetNodeColor"));
+            this.graph = graph;
+            this.node = node;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Color chosen = JColorChooser.showDialog(ContextAdaptorHack.context, Hub.string("colorSelectionTitle"),
+                    node.getLayout().getBackgroundColor());
+            if (chosen != null) {
+                new NodeActions.SetNodeBackgroundColorAction(graph, node, chosen).execute();
+            }
+        }
+    }
+
+    /**
      * If this edge is not straight, make it have a symmetrical appearance. Make the
      * two vectors - from P1 to CTRL1 and from P2 to CTRL2, be of the same length
      * and have the same angle. So the edge will look it has a symmetrical curve.
@@ -509,6 +546,87 @@ public class UIActions {
 
         public void actionPerformed(ActionEvent evt) {
             new EdgeActions.ArcLessAction(graph, edge).execute();
+        }
+    }
+
+    /**
+     * @author Lenko Grigorov
+     */
+    public static class SetEdgeColorAction extends AbstractAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 5307636408766937253L;
+
+        private static ImageIcon icon = new ImageIcon();
+
+        protected FSAGraph graph;
+
+        protected Edge edge;
+
+        public SetEdgeColorAction(FSAGraph graph, Edge edge) {
+            super(Hub.string("comSetEdgeColor"), icon);
+            icon.setImage(Toolkit.getDefaultToolkit().createImage(Hub.getIDESResource("images/icons/pick_color.gif")));
+            putValue(SHORT_DESCRIPTION, Hub.string("comHintSetEdgeColor"));
+            this.graph = graph;
+            this.edge = edge;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Color chosen = JColorChooser.showDialog(ContextAdaptorHack.context, Hub.string("colorSelectionTitle"),
+                    edge.getLayout().getColor());
+            if (chosen != null) {
+                new EdgeActions.SetEdgeColorAction(graph, edge, chosen).execute();
+            }
+        }
+    }
+
+    /**
+     * @author Lenko Grigorov
+     */
+    public static class SetEdgeThicknessAction extends AbstractAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7781868516976646166L;
+
+        private static ImageIcon icon = new ImageIcon();
+
+        protected FSAGraph graph;
+
+        protected Edge edge;
+
+        public SetEdgeThicknessAction(FSAGraph graph, Edge edge) {
+            super(Hub.string("comSetEdgeThickness"), icon);
+            icon.setImage(
+                    Toolkit.getDefaultToolkit().createImage(Hub.getIDESResource("images/icons/pick_thickness.gif")));
+            putValue(SHORT_DESCRIPTION, Hub.string("comHintSetEdgeThickness"));
+            this.graph = graph;
+            this.edge = edge;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String s = JOptionPane.showInputDialog(ContextAdaptorHack.context,
+                    Hub.string("thicknessEntryTitle1") + " " + GraphicalLayout.MIN_STROKE_THICKNESS + " "
+                            + Hub.string("thicknessEntryTitle2") + " " + GraphicalLayout.MAX_STROKE_THICKNESS
+                            + Hub.string("thicknessEntryTitle3"),
+                    edge.getLayout().getStrokeThickness());
+            if (s != null) {
+                try {
+                    float thickness = Float.parseFloat(s);
+                    if (thickness < GraphicalLayout.MIN_STROKE_THICKNESS
+                            || thickness > GraphicalLayout.MAX_STROKE_THICKNESS) {
+                        Hub.displayAlert(Hub.string("inputNotInRange1") + " " + GraphicalLayout.MIN_STROKE_THICKNESS
+                                + " " + Hub.string("inputNotInRange2") + " " + GraphicalLayout.MAX_STROKE_THICKNESS);
+                    } else {
+                        new EdgeActions.SetEdgeThicknessAction(graph, edge, thickness).execute();
+                    }
+                } catch (NumberFormatException ex) {
+                    Hub.displayAlert(Hub.string("inputNotANumber"));
+                }
+            }
         }
     }
 

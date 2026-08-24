@@ -298,10 +298,14 @@ public class EdgeActions {
 
         protected Edge edge;
         protected FSAGraph graph;
-        protected BezierLayout originalLayout;
-        protected Float thickness;
+        protected float thickness;
 
-        public SetEdgeThicknessAction(FSAGraph graph, Edge edge, Float thickness) {
+        public SetEdgeThicknessAction(FSAGraph graph, Edge edge, float thickness) {
+            this(null, graph, edge, thickness);
+        }
+
+        public SetEdgeThicknessAction(CompoundEdit parentEdit, FSAGraph graph, Edge edge, float thickness) {
+            this.parentEdit = parentEdit;
             this.graph = graph;
             this.edge = edge;
             this.thickness = thickness;
@@ -309,17 +313,12 @@ public class EdgeActions {
 
         public void actionPerformed(ActionEvent evt) {
             if (graph != null && edge != null) {
-                originalLayout = ((BezierLayout) edge.getLayout()).clone();
-
-                edge.getLayout().setStrokeThickness(thickness);
-                edge.setNeedsRefresh(true);
-
-                UndoableEdit edit = new GraphUndoableEdits.UndoableModifyEdge(graph, edge, originalLayout);
-                postEditAdjustCanvas(graph, edit);
+                UndoableEdit action = new GraphUndoableEdits.UndoableSetThicknessEdge(graph, edge, thickness);
+                // perform the action
+                action.redo();
+                postEditAdjustCanvas(graph, action);
             }
-
         }
-
     }
 
     public static class SetEdgeColorAction extends AbstractGraphAction {
@@ -334,6 +333,11 @@ public class EdgeActions {
         protected Color color;
 
         public SetEdgeColorAction(FSAGraph graph, Edge edge, Color color) {
+            this(null, graph, edge, color);
+        }
+
+        public SetEdgeColorAction(CompoundEdit parentEdit, FSAGraph graph, Edge edge, Color color) {
+            this.parentEdit = parentEdit;
             this.graph = graph;
             this.edge = edge;
             this.color = color;
@@ -341,15 +345,11 @@ public class EdgeActions {
 
         public void actionPerformed(ActionEvent evt) {
             if (graph != null && edge != null) {
-                originalLayout = ((BezierLayout) edge.getLayout()).clone();
-
-                edge.getLayout().setColor(color);
-                edge.setNeedsRefresh(true);
-
-                UndoableEdit edit = new GraphUndoableEdits.UndoableModifyEdge(graph, edge, originalLayout);
-                postEditAdjustCanvas(graph, edit);
+                UndoableEdit action = new GraphUndoableEdits.UndoableSetColorEdge(graph, edge, color);
+                // perform the action
+                action.redo();
+                postEditAdjustCanvas(graph, action);
             }
         }
     }
-
 }

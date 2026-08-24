@@ -1,22 +1,19 @@
 package presentation.fsa;
 
-import java.awt.Color;
 import java.awt.geom.Point2D.Float;
 
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import ides.api.core.Hub;
-import presentation.fsa.actions.NodeActions;
 import presentation.fsa.actions.UIActions;
 
 /**
  * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class NodePopup extends JPopupMenu {
     private static GraphDrawingView view;
@@ -55,16 +52,7 @@ public class NodePopup extends JPopupMenu {
         JMenuItem miSelfLoop = new JMenuItem(new UIActions.SelfLoopAction(gdv.getGraphModel(), n));
         JMenuItem miLabelNode = new JMenuItem(new UIActions.TextAction(n));
         // miDeleteNode.addActionListener(deleteCmd);
-
-        JMenuItem miSetColor = new JMenuItem(Hub.string("comSetStateColor"));
-        miSetColor.addActionListener(e -> {
-            Color chosen = JColorChooser.showDialog(gdv, "Choose State Color", n.getLayout().getBackgroundColor());
-            if (chosen != null) {
-                new NodeActions.SetNodeBackgroundColorAction(gdv.getGraphModel(), n, chosen).execute();
-                gdv.repaint();
-                gdv.repaint();
-            }
-        });
+        JMenuItem miSetColor = new JMenuItem(new UIActions.SetNodeColorAction(gdv.getGraphModel(), n));
 
         add(miSetMarked);
         add(miSetInitial);

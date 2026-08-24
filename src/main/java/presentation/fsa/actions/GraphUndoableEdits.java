@@ -1,5 +1,6 @@
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Vector;
@@ -14,7 +15,6 @@ import ides.api.model.fsa.FSAModel;
 import ides.api.model.fsa.FSATransition;
 import ides.api.model.supeventset.SupervisoryEvent;
 import presentation.GraphicalLayout;
-import presentation.fsa.CircleNode;
 import presentation.fsa.Edge;
 import presentation.fsa.FSAGraph;
 import presentation.fsa.FSAGraphMessage;
@@ -25,7 +25,7 @@ import presentation.fsa.Node;
 
 /**
  * @author Lenko Grigorov
- * @author Liam Burns  - Color Extension
+ * @author Liam Burns - Color Extension
  */
 public class GraphUndoableEdits {
 
@@ -1164,22 +1164,22 @@ public class GraphUndoableEdits {
 
     }
 
-    public static class UndoableModifyNode extends AbstractGraphUndoableEdit {
-        /*
-         * Used for restoring the orignina
-         *
+    public static class UndoableSetBgColorNode extends AbstractGraphUndoableEdit {
+        /**
+         * 
          */
+        private static final long serialVersionUID = 8381826917124515585L;
+
+        protected Node node;
 
         protected FSAGraph graph;
 
-        protected CircleNode node;
+        protected Color altColor;
 
-        protected GraphicalLayout altLayout;
-
-        public UndoableModifyNode(FSAGraph graph, CircleNode node, GraphicalLayout originalLayout) {
+        public UndoableSetBgColorNode(FSAGraph graph, Node node, Color color) {
             this.graph = graph;
             this.node = node;
-            altLayout = originalLayout;
+            this.altColor = color;
         }
 
         @Override
@@ -1187,7 +1187,7 @@ public class GraphUndoableEdits {
             if (node == null) {
                 throw new CannotRedoException();
             }
-            swapLayout();
+            swapColor();
         }
 
         @Override
@@ -1195,13 +1195,23 @@ public class GraphUndoableEdits {
             if (node == null) {
                 throw new CannotUndoException();
             }
-            swapLayout();
+            swapColor();
         }
 
-        protected void swapLayout() {
-            GraphicalLayout tLayout = node.getLayout();
-            node.setLayout(altLayout);
-            altLayout = tLayout;
+        @Override
+        public boolean canUndo() {
+            return node != null;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return node != null;
+        }
+
+        protected void swapColor() {
+            Color tColor = node.getLayout().getBackgroundColor();
+            node.getLayout().setBackgroundColor(altColor);
+            altColor = tColor;
 
             node.refresh();
 
@@ -1209,14 +1219,143 @@ public class GraphUndoableEdits {
                     node.bounds(), graph));
         }
 
+        /**
+         * Returns the name that should be displayed besides the Undo/Redo menu items,
+         * so the user knows which action will be undone/redone.
+         */
         @Override
         public String getPresentationName() {
-            if (usePluralDescription) {
-                return Hub.string("undoModifyNodes");
-            } else {
-                return Hub.string("undoModifyNode");
-            }
+            return Hub.string("undoSetBgColorNode");
         }
     }
 
+    public static class UndoableSetColorEdge extends AbstractGraphUndoableEdit {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 7309846020347553339L;
+
+        protected Edge edge;
+
+        protected FSAGraph graph;
+
+        protected Color altColor;
+
+        public UndoableSetColorEdge(FSAGraph graph, Edge edge, Color color) {
+            this.graph = graph;
+            this.edge = edge;
+            this.altColor = color;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            if (edge == null) {
+                throw new CannotRedoException();
+            }
+            swapColor();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            if (edge == null) {
+                throw new CannotUndoException();
+            }
+            swapColor();
+        }
+
+        @Override
+        public boolean canUndo() {
+            return edge != null;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return edge != null;
+        }
+
+        protected void swapColor() {
+            Color tColor = edge.getLayout().getColor();
+            edge.getLayout().setColor(altColor);
+            altColor = tColor;
+
+            edge.refresh();
+
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.EDGE, edge.getId(),
+                    edge.bounds(), graph));
+        }
+
+        /**
+         * Returns the name that should be displayed besides the Undo/Redo menu items,
+         * so the user knows which action will be undone/redone.
+         */
+        @Override
+        public String getPresentationName() {
+            return Hub.string("undoSetColorEdge");
+        }
+    }
+
+    public static class UndoableSetThicknessEdge extends AbstractGraphUndoableEdit {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -9101182343441166269L;
+
+        protected Edge edge;
+
+        protected FSAGraph graph;
+
+        protected float altThickness;
+
+        public UndoableSetThicknessEdge(FSAGraph graph, Edge edge, float thickness) {
+            this.graph = graph;
+            this.edge = edge;
+            this.altThickness = thickness;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            if (edge == null) {
+                throw new CannotRedoException();
+            }
+            swapThickness();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            if (edge == null) {
+                throw new CannotUndoException();
+            }
+            swapThickness();
+        }
+
+        @Override
+        public boolean canUndo() {
+            return edge != null;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return edge != null;
+        }
+
+        protected void swapThickness() {
+            float tThickness = edge.getLayout().getStrokeThickness();
+            edge.getLayout().setStrokeThickness(altThickness);
+            altThickness = tThickness;
+
+            edge.refresh();
+
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.EDGE, edge.getId(),
+                    edge.bounds(), graph));
+        }
+
+        /**
+         * Returns the name that should be displayed besides the Undo/Redo menu items,
+         * so the user knows which action will be undone/redone.
+         */
+        @Override
+        public String getPresentationName() {
+            return Hub.string("undoSetThicknessEdge");
+        }
+    }
 }
