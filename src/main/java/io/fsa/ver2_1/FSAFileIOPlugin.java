@@ -3,7 +3,6 @@
  */
 package io.fsa.ver2_1;
 
-import java.awt.Color;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
@@ -39,6 +38,7 @@ import ides.api.utilities.HeadTailInputStream;
 import io.AbstractParser;
 import io.IOUtilities;
 import presentation.CubicParamCurve2D;
+import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNodeLayout;
 import presentation.fsa.GraphLayout;
@@ -48,6 +48,7 @@ import util.BentoBox;
 /**
  * @author christiansilvano
  * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class FSAFileIOPlugin implements FileIOPlugin {
 
@@ -329,15 +330,15 @@ public class FSAFileIOPlugin implements FileIOPlugin {
             if (l != null) {
                 CubicParamCurve2D curve = l.getCurve();
 
-                String arrowAttr = "";
+                String optionalAttr = "";
 
                 // Opt-in arrow thickness and color
-                if (l.getEdgeColor() != null) {
-                    arrowAttr += " " + ATTR_COLOR + "=\"" + BentoBox.colorToHex(l.getEdgeColor()) + "\"";
+                if (!GraphicalLayout.DEFAULT_COLOR.equals(l.getColor())) {
+                    optionalAttr += " " + ATTR_COLOR + "=\"" + BentoBox.colorToHex(l.getColor()) + "\"";
                 }
 
-                if (l.getEdgeThickness() != 2.0f) {
-                    arrowAttr += " " + ATTR_THICKNESS + "=\"" + l.getEdgeThickness() + "\"";
+                if (l.getStrokeThickness() != GraphicalLayout.DEFAULT_STROKE_THICKNESS) {
+                    optionalAttr += " " + ATTR_THICKNESS + "=\"" + l.getStrokeThickness() + "\"";
                 }
 
                 ps.println(indent + "<transition" + " id=\"" + t.getId() + "\""
@@ -345,7 +346,7 @@ public class FSAFileIOPlugin implements FileIOPlugin {
                 ps.println(indent + indent + "<bezier x1=\"" + curve.getX1() + "\" y1=\"" + curve.getY1() + "\" x2=\""
                         + curve.getX2() + "\" y2=\"" + curve.getY2() + "\" ctrlx1=\"" + curve.getCtrlX1()
                         + "\" ctrly1=\"" + curve.getCtrlY1() + "\" ctrlx2=\"" + curve.getCtrlX2() + "\" ctrly2=\""
-                        + curve.getCtrlY2() + "\"" + arrowAttr + " />");
+                        + curve.getCtrlY2() + "\"" + optionalAttr + " />");
                 ps.println(indent + indent + "<label x=\"" + l.getLabelOffset().x + "\" y=\"" + l.getLabelOffset().y
                         + "\" />");
 
@@ -422,27 +423,6 @@ public class FSAFileIOPlugin implements FileIOPlugin {
                 parsingErrors += npe.getMessage() + "\n";
             }
             return model;
-        }
-
-        private Color parseHexColor(String hex) {
-            // Try catch fix
-            try {
-                if (hex == null)
-                    return null;
-                hex = hex.trim();
-                if (hex.startsWith("#"))
-                    hex = hex.substring(1);
-                if (hex.length() != 6)
-                    return null; // failed
-
-                int r = Integer.parseInt(hex.substring(0, 2), 16);
-                int g = Integer.parseInt(hex.substring(2, 4), 16);
-                int b = Integer.parseInt(hex.substring(4, 6), 16);
-                return new Color(r, g, b); // store this in XML file
-
-            } catch (Exception e) {
-                return null;
-            }
         }
 
         /**
@@ -706,7 +686,7 @@ public class FSAFileIOPlugin implements FileIOPlugin {
                         layout.setText(tmpState.getName());
                         String bg = atts.getValue("bgcolor"); // load the stored bg color in the xml file.
                         if (bg != null) {
-                            layout.setBackgroundColor(parseHexColor(bg));
+                            layout.setBackgroundColor(BentoBox.hexToColor(bg));
                         }
                     } else if (qName.equals(ARROW)) {
                         CircleNodeLayout layout = (CircleNodeLayout) tmpState.getAnnotation(AnnotationKeys.LAYOUT);
@@ -739,12 +719,16 @@ public class FSAFileIOPlugin implements FileIOPlugin {
                         l.setCurve(new CubicCurve2D.Float(x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2));
                         String color = atts.getValue(ATTR_COLOR);
                         if (color != null) {
-                            l.setEdgeColor(parseHexColor(color));
+                            l.setColor(BentoBox.hexToColor(color));
                         }
 
                         String thickness = atts.getValue(ATTR_THICKNESS);
                         if (thickness != null) {
-                            l.setEdgeThickness(Float.parseFloat(thickness));
+                            float thicknessVal = Float.parseFloat(thickness);
+                            if (thicknessVal >= GraphicalLayout.MIN_STROKE_THICKNESS
+                                    && thicknessVal <= GraphicalLayout.MAX_STROKE_THICKNESS) {
+                                l.setStrokeThickness(thicknessVal);
+                            }
                         }
                     }
 

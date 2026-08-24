@@ -1,5 +1,6 @@
 package util;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 
 /**
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
  * 
  * @author Sarah-Jane Whittaker
  * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class BentoBox {
     // /////////////////////////////////////////////////////////////////
@@ -50,12 +52,6 @@ public class BentoBox {
         return floatNum.intValue();
     }
 
-    public static String colorToHex(java.awt.Color c) {
-        if (c == null)
-            c = java.awt.Color.WHITE; // Default
-        return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
-    }
-
     public static int convertDoubleToInt(double num) {
         Double doubleNum = new Double(num);
         return doubleNum.intValue();
@@ -65,6 +61,35 @@ public class BentoBox {
         BigDecimal roundDecimal = new BigDecimal(value);
         roundDecimal = roundDecimal.setScale(numDigits, BigDecimal.ROUND_UP);
         return roundDecimal.doubleValue();
+    }
+
+    public static String colorToHex(Color c) {
+        if (c == null) {
+            c = Color.WHITE; // Default
+        }
+        return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
+    }
+
+    public static Color hexToColor(String hex) {
+        if (hex == null) {
+            return Color.WHITE; // Default
+        }
+        // Try catch fix
+        try {
+            hex = hex.trim();
+            if (hex.startsWith("#")) {
+                hex = hex.substring(1);
+            }
+            if (hex.length() != 6) {
+                return Color.WHITE; // Default
+            }
+            int r = Integer.parseInt(hex.substring(0, 2), 16);
+            int g = Integer.parseInt(hex.substring(2, 4), 16);
+            int b = Integer.parseInt(hex.substring(4, 6), 16);
+            return new Color(r, g, b);
+        } catch (Exception e) {
+            return Color.WHITE; // Default
+        }
     }
 
     /**

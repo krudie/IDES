@@ -1,7 +1,5 @@
 package presentation.fsa;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -110,7 +108,6 @@ public class BezierEdge extends Edge {
         if (!isVisible()) {
             return;
         }
-        float thickness = getBezierLayout().getEdgeThickness();
 
         // make sure the appearance is in sync with underlying data
         if (needsRefresh() || getBezierLayout().isDirty()) {
@@ -119,10 +116,7 @@ public class BezierEdge extends Edge {
         }
 
         Graphics2D g2d = (Graphics2D) g;
-        // if arrow doesnt allready have a color set said color to whatever the default
-        // is
-        Color baseColor = (getBezierLayout().getEdgeColor() != null) ? getBezierLayout().getEdgeColor()
-                : getLayout().getColor();
+
         // if either my source or target node is highlighted
         // then I am also hightlighted.
         if (highlighted || getSourceNode().isHighlighted()
@@ -131,7 +125,7 @@ public class BezierEdge extends Edge {
             setHighlighted(true);
             g2d.setColor(getLayout().getHighlightColor());
         } else {
-            g2d.setColor(baseColor);
+            g2d.setColor(getLayout().getColor());
         }
 
         if (isSelected()) {
@@ -142,9 +136,9 @@ public class BezierEdge extends Edge {
         }
 
         if (hasUnobservableEvent()) {
-            g2d.setStroke(GraphicalLayout.getDashedStroke(thickness));
+            g2d.setStroke(getLayout().getDashedStroke());
         } else {
-            g2d.setStroke(GraphicalLayout.getWideStroke(thickness));
+            g2d.setStroke(getLayout().getWideStroke());
         }
 
         // TODO should stop drawing at base of arrowhead and at outside of node
@@ -157,27 +151,8 @@ public class BezierEdge extends Edge {
             g2d.draw(curve);
         }
         if (!hasUncontrollableEvent() && getBezierLayout().getControllableMarker() != null) {
-            Line2D originalMarker = getBezierLayout().getControllableMarker();
-
-            float lengthScale = Math.max(1.0f, thickness * 0.5f); // Adjust multiplier as needed
-
-            double x1 = originalMarker.getX1();
-            double y1 = originalMarker.getY1();
-            double x2 = originalMarker.getX2();
-            double y2 = originalMarker.getY2();
-
-            double midX = (x1 + x2) / 2;
-            double midY = (y1 + y2) / 2;
-
-            double newX1 = midX + (x1 - midX) * lengthScale;
-            double newY1 = midY + (y1 - midY) * lengthScale;
-            double newX2 = midX + (x2 - midX) * lengthScale;
-            double newY2 = midY + (y2 - midY) * lengthScale;
-
-            Line2D scaledMarker = new Line2D.Double(newX1, newY1, newX2, newY2);
-
-            g2d.setStroke(new BasicStroke(Math.max(1.0f, thickness), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-            g2d.draw(scaledMarker);
+            g2d.setStroke(getLayout().getFineStroke());
+            g2d.draw(getBezierLayout().getControllableMarker());
         }
 
         // Compute the direction and location of the arrow head
@@ -189,28 +164,21 @@ public class BezierEdge extends Edge {
         // Make certain that it points the right direction when nodes are
         // touching or overlapping.
         Point2D.Float unitArrowDir = computeArrowDirection();
-        float headScale;
-        double backoff;
 
-        if (thickness != BezierLayout.DEFAULT_EDGE_THICKNESS) {
-            headScale = 1.0f + (thickness - BezierLayout.DEFAULT_EDGE_THICKNESS) * 0.35f;
-            headScale = Math.max(1.0f, Math.min(2.5f, headScale));
-            arrowHead.rebuildScaled(headScale);
-            backoff = (ArrowHead.SHORT_HEAD_LENGTH * headScale) + 2.0;
-        } else {
-            headScale = 1.0f;
-            arrowHead.reset();
-            backoff = ArrowHead.SHORT_HEAD_LENGTH + 2.0;
-        }
+        float headScale = 1.0f + (getLayout().getStrokeThickness() - GraphicalLayout.DEFAULT_STROKE_THICKNESS) * 0.35f;
+        headScale = Math.max(1.0f, Math.min(2.5f, headScale));
 
-        Point2D.Float tEndPt = getTargetEndPoint();
+        arrowHead.resetToDefault(headScale);
+
+        // If available, use point of intersection with target node boundary
         Point2D basePt;
+        Point2D.Float tEndPt = getTargetEndPoint();
         if (tEndPt != null) {
-            basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -backoff));
+            basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH * headScale + 2)));
         } else {
-            basePt = Geometry.add(getBezierLayout().getCurve().getP2(), Geometry.scale(unitArrowDir, -backoff));
+            basePt = Geometry.add(getBezierLayout().getCurve().getP2(),
+                    Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH * headScale + 2)));
         }
-
         at.setToTranslation(basePt.getX(), basePt.getY());
         g2d.transform(at);
 
@@ -219,7 +187,7 @@ public class BezierEdge extends Edge {
         if (!Double.isNaN(rho)) {
             at.setToRotation(rho);
             g2d.transform(at);
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
+            g2d.setStroke(getLayout().getFineStroke());
             g2d.draw(arrowHead);
             g2d.fill(arrowHead);
             at.setToRotation(-rho);

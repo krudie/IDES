@@ -140,7 +140,7 @@ public class GraphView extends JComponent
     public void paint(Graphics g, boolean doFill) {
         Graphics2D g2D = (Graphics2D) g;
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2D.setStroke(GraphicalLayout.WIDE_STROKE);
+        g2D.setStroke(GraphicalLayout.DEFAULT_STROKE);
 
         Rectangle r = getBounds();
         if (doFill) {

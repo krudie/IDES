@@ -26,6 +26,7 @@ import presentation.GraphicalLayout;
  * such that the midpoint set by the user remains fixed.
  * 
  * @author Helen Bretzke
+ * @author Lenko Grigorov
  */
 public class ReflexiveEdge extends BezierEdge {
     /**
@@ -418,7 +419,7 @@ public class ReflexiveEdge extends BezierEdge {
             Graphics2D g2d = (Graphics2D) g;
 
             g2d.setColor(Color.BLUE);
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
+            g2d.setStroke(getEdge().getLayout().getFineStroke());
             g2d.draw(anchor);
         }
 

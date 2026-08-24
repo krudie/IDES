@@ -41,6 +41,7 @@ import presentation.fsa.FSAGraphMessage;
  * 
  * @author Christian Silvano
  * @author Liam Burns - Color Extension.
+ * @author Lenko Grigorov
  */
 public class EdgeActions {
 
@@ -290,6 +291,11 @@ public class EdgeActions {
     }
 
     public static class SetEdgeThicknessAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -9045594124924336120L;
+
         protected Edge edge;
         protected FSAGraph graph;
         protected BezierLayout originalLayout;
@@ -305,7 +311,7 @@ public class EdgeActions {
             if (graph != null && edge != null) {
                 originalLayout = ((BezierLayout) edge.getLayout()).clone();
 
-                ((BezierLayout) edge.getLayout()).setEdgeThickness(thickness);
+                edge.getLayout().setStrokeThickness(thickness);
                 edge.setNeedsRefresh(true);
 
                 UndoableEdit edit = new GraphUndoableEdits.UndoableModifyEdge(graph, edge, originalLayout);
@@ -317,6 +323,10 @@ public class EdgeActions {
     }
 
     public static class SetEdgeColorAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4596442188420581261L;
 
         protected Edge edge;
         protected FSAGraph graph;
@@ -333,7 +343,7 @@ public class EdgeActions {
             if (graph != null && edge != null) {
                 originalLayout = ((BezierLayout) edge.getLayout()).clone();
 
-                ((BezierLayout) edge.getLayout()).setEdgeColor(color);
+                edge.getLayout().setColor(color);
                 edge.setNeedsRefresh(true);
 
                 UndoableEdit edit = new GraphUndoableEdits.UndoableModifyEdge(graph, edge, originalLayout);

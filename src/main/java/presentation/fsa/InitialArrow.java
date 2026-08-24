@@ -23,6 +23,7 @@ import presentation.GraphicalLayout;
  * in a finite state machine.
  * 
  * @author Helen Bretzke DES Lab, ECE Dept. Queen's University 2 August 2006
+ * @author Lenko Grigorov
  */
 public class InitialArrow extends Edge {
     /**
@@ -133,7 +134,7 @@ public class InitialArrow extends Edge {
             getHandler().setVisible(false);
         }
 
-        g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+        g2d.setStroke(getLayout().getWideStroke());
         g2d.draw(line);
 
         // Compute the direction and location of the arrow head
@@ -157,7 +158,7 @@ public class InitialArrow extends Edge {
         double rho = Geometry.angleFrom(ArrowHead.axis, unitArrowDir);
         at.setToRotation(rho);
         g2d.transform(at);
-        g2d.setStroke(GraphicalLayout.FINE_STROKE);
+        g2d.setStroke(getLayout().getFineStroke());
         g2d.draw(arrowHead);
         g2d.fill(arrowHead);
 
@@ -625,7 +626,7 @@ public class InitialArrow extends Edge {
             Graphics2D g2d = (Graphics2D) g;
 
             g2d.setColor(Color.BLUE);
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
+            g2d.setStroke(getLayout().getFineStroke());
             g2d.draw(anchor);
         }
     } // end Handler

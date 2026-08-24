@@ -24,6 +24,7 @@ import presentation.fsa.actions.UIActions;
  * 
  * @author Helen Bretzke
  * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class EdgePopup extends JPopupMenu {
 
@@ -66,7 +67,7 @@ public class EdgePopup extends JPopupMenu {
         JMenuItem miArrowSize = new JMenuItem(Hub.string("comSetEdgeThickness")); // Arrow thickness selector.
         miArrowSize.addActionListener(e -> {
             String s = JOptionPane.showInputDialog(gdv, "Edge thickness (e.g. 1.0 - 6.0):",
-                    ((BezierEdge) edge).getBezierLayout().getEdgeThickness());
+                    edge.getLayout().getStrokeThickness());
 
             if (s != null) {
                 try {

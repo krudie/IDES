@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import presentation.GraphicalLayout;
+import util.BentoBox;
 
 /**
  * Graphical layout data required to display a circular node.
@@ -146,6 +147,7 @@ public class CircleNodeLayout extends GraphicalLayout implements Serializable {
         out.writeFloat(this.getRadius());
         out.writeFloat(this.arrow.x);
         out.writeFloat(this.arrow.y);
+        out.writeUTF(BentoBox.colorToHex(getColor()));
     }
 
     /**
@@ -155,6 +157,7 @@ public class CircleNodeLayout extends GraphicalLayout implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         radius = in.readFloat();
         arrow = new Point2D.Float(in.readFloat(), in.readFloat());
+        setColor(BentoBox.hexToColor(in.readUTF()));
     }
 
     /**

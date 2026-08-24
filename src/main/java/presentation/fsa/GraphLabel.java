@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
@@ -28,6 +29,7 @@ import util.BentoBox;
 
 /**
  * @author helen bretzke
+ * @author Lenko Grigorov
  */
 
 public class GraphLabel extends GraphElement implements LatexElement {
@@ -43,6 +45,9 @@ public class GraphLabel extends GraphElement implements LatexElement {
     private int textMetricsWidth = 0;
 
     private int textMetricsHeight = 0;
+
+    private static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 50,
+            new float[] { 5, 2 }, 0);
 
     private static final double DBL_RENDERED_SCALE_WIDTH = 2.0;
 
@@ -200,7 +205,7 @@ public class GraphLabel extends GraphElement implements LatexElement {
         }
 
         Stroke s = ((Graphics2D) g).getStroke();
-        ((Graphics2D) g).setStroke(GraphicalLayout.DASHED_STROKE);
+        ((Graphics2D) g).setStroke(DASHED_STROKE);
 
         Rectangle bounds = bounds();
         bounds.x = bounds.x - TEXT_MARGIN_WIDTH;

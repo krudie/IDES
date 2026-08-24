@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 import ides.api.model.fsa.FSAState;
 import io.fsa.ver2_1.GraphExporter;
-import presentation.GraphicalLayout;
 import util.BentoBox;
 
 /**
@@ -23,7 +22,8 @@ import util.BentoBox;
  * 
  * @see NodePopup#showPopup
  * @author Helen Bretzke
- * @author Liam Burns  - Color Extension
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class CircleNode extends Node {
 
@@ -164,7 +164,7 @@ public class CircleNode extends Node {
             g.setColor(getLayout().getColor());
         }
 
-        g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+        g2d.setStroke(getLayout().getWideStroke());
         g2d.draw(circle);
 
         if (state.isMarked()) {

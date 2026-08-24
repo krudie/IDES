@@ -35,7 +35,8 @@ import presentation.fsa.Node;
  * make this class be too big and more difficult to write.
  * 
  * @author Christian Silvano
- * @author Liam Burns  - Color Extension
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class NodeActions {
 
@@ -152,6 +153,10 @@ public class NodeActions {
     }
 
     public static class SetNodeBackgroundColorAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 468113031083808913L;
 
         protected FSAGraph graph;
         protected CircleNode node;
