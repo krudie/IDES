@@ -1,9 +1,18 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.semver4j:semver4j:6.0.0'
+    }
+}
+
 plugins {
     id 'java'
     id 'com.github.monosoul.markdown.page.generator' version '2.1.0.1'
 }
 
-import org.gradle.util.VersionNumber
+import org.semver4j.Semver
 
 class PluginDependency implements Serializable {
     String name
@@ -13,8 +22,8 @@ class PluginDependency implements Serializable {
     String apiVerBelow
 
     boolean isCompatible(apiVersion) {
-        def apiBase = VersionNumber.parse(apiVersion).getBaseVersion()
-        return apiBase.compareTo(VersionNumber.parse(apiVerAtLeast)) >= 0 && apiBase.compareTo(VersionNumber.parse(apiVerBelow)) < 0
+        def apiBase = Semver.parse(apiVersion)
+        return apiBase.isGreaterThanOrEqualTo(apiVerAtLeast) && apiBase.isLowerThan(apiVerBelow)
     }
 
     String id() {
@@ -88,8 +97,8 @@ ext.idesPlugins = [
         name: 'Template Design',
         version: '3.1.0',
         url: 'https://github.com/lenkog/IDES-TD/releases/download/v3.1.0/IDES-TD-3.1.0.zip',
-        apiVerAtLeast: '3.1',
-        apiVerBelow: '3.2',
+        apiVerAtLeast: '3.1.0',
+        apiVerBelow: '3.2.0',
     )
 ]
 
@@ -199,6 +208,7 @@ task preprareForPluginIntegration() {
     doLast{
     	mkdir pluginsDir
         delete pluginsManifest
+        delete "${releaseDir}/plugins"
     }
 }
 
