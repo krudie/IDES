@@ -36,7 +36,7 @@ class PluginDependency implements Serializable {
     }
 }
 
-class PluginIntegration extends DefaultTask {
+abstract class PluginIntegration extends DefaultTask {
     @Input
     PluginDependency plugin
     @InputDirectory
@@ -45,25 +45,28 @@ class PluginIntegration extends DefaultTask {
     File pluginsManifest
     @OutputDirectory
     File releaseDir
+    
+    @Inject abstract FileSystemOperations getFs()
+    @Inject abstract ArchiveOperations getArchiveOps()
 
     @TaskAction
     void integrate() {
-        def dst = project.file("${pluginsDir}/${plugin.id()}.zip")
+        def dst = new File("${pluginsDir}/${plugin.id()}.zip")
         if (dst.exists()) {
             println("${plugin}: Already available as ${dst}")
         } else {
-            project.mkdir dst.parent
+            dst.parentFile.mkdirs()
             println("${plugin}: Downloading as ${dst}...")
             new URL(plugin.url).withInputStream{ i -> dst.withOutputStream{ it << i }}
         }
-        def pluginDir = project.file("${pluginsDir}/${plugin.id()}")
-        project.copy {
-            from project.zipTree(dst)
+        def pluginDir = new File("${pluginsDir}/${plugin.id()}")
+        fs.copy {
+            from archiveOps.zipTree(dst)
             into releaseDir
             include "plugins/**"
         }
-        project.copy {
-            from project.zipTree(dst)
+        fs.copy {
+            from archiveOps.zipTree(dst)
             into releaseDir
             include "help/**"
         }
@@ -116,7 +119,7 @@ jar {
 }
 
 spotless {
-    lineEndings 'PRESERVE'
+    lineEndings = 'PRESERVE'
     java {
         eclipse().configFile(file('IDES-code-style.xml'))
     }
