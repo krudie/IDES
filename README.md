@@ -6,7 +6,7 @@ IDES (Integrated Discrete-Event Systems) Software is designed to assist you with
 discrete-event problem-solving and with input and output of DES models.
 IDES allows you to mimic pen-and-paper drawing of state-transition diagrams,
 export your drawings to EPS, PNG, JPEG, LaTeX, Grail+, or TCT formats and perform DES operations.
-It was created in the [QDES Lab](https://www.ece.queensu.ca/people/K-Rudie/qdes.html)
+It was created in the [QDES Lab](https://qdes.engineering.queensu.ca/)
 at Queen's University, Kingston, Canada under the supervision of Prof. Karen Rudie.
 
 Contributors:
@@ -70,6 +70,7 @@ information about how to build the project and for notes relevant to IDES develo
 ## Known issues
 
 * IDES fails to launch on newer macOS
+* Color and edge thickness are not reflected in LaTeX/EPS exports
 * Poor automatic placement of event labels on edges
 * Occasional poor automatic placement of edges
 * Potential problems when using the uniform node size option
