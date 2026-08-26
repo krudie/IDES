@@ -16,8 +16,9 @@ public interface FSATransition extends DESElement {
     public abstract void setSource(FSAState s);
 
     /**
-     * Sets a new source, i.e., state from which this transition originates, for
-     * this transition.
+     * returns the state from which this transition originates.
+     * 
+     * @return the source state
      */
     public abstract FSAState getSource();
 

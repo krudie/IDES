@@ -24,6 +24,9 @@ import javax.swing.UIManager;
  * @author Lenko Grigorov
  */
 public class GeneralUtils {
+    private GeneralUtils() {
+    }
+
     /**
      * Truncates to 10 lines and every line to 250 chars. Ellipses (...) are
      * appended to denote truncation.
@@ -106,6 +109,9 @@ public class GeneralUtils {
      * @author Lenko Grigorov
      */
     public static class JOptionPaneKeyBinder {
+        private JOptionPaneKeyBinder() {
+        }
+
         /**
          * ID for Yes button.
          */

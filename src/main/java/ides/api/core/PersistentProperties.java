@@ -11,6 +11,12 @@ import java.util.Properties;
  */
 @SuppressWarnings("serial")
 public class PersistentProperties extends Properties {
+    /**
+     * Create a new {@link PersistentProperties} object.
+     */
+    public PersistentProperties() {
+        super();
+    }
 
     /**
      * Searches for the property with the specified key in this property list and

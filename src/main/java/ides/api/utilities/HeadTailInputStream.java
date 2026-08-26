@@ -68,9 +68,6 @@ public class HeadTailInputStream extends FilterInputStream {
         }
     }
 
-    public void mark() {
-    }
-
     @Override
     public void reset() {
     }

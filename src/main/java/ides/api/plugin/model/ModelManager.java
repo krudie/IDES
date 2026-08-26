@@ -60,6 +60,7 @@ public class ModelManager {
      * Creates and returns a DES model for the supplied perspective, e.g.,
      * {@link FSAModel}, with the given display name.
      * 
+     * @param <T>         the type of the perspective
      * @param perspective the perspective for which a model has to be created
      * @param name        the display name for the new model
      * @return a new DES model for the given perspective. If no model was registered
@@ -84,6 +85,7 @@ public class ModelManager {
      * Creates and returns a DES model for the supplied perspective, e.g.,
      * {@link FSAModel}, with an empty display name.
      * 
+     * @param <T>         the type of the perspective
      * @param perspective the perspectivee for which a model has to be created
      * @return a new DES model for the given perspective. If no model was registered
      *         for this perspective, returns <code>null</code>.

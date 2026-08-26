@@ -26,7 +26,7 @@ public abstract class FSAPublisherAdaptor implements FSAPublisher {
      * Attaches the given subscriber to this publisher. The given subscriber will
      * receive notifications of changes from this publisher.
      * 
-     * @param subscriber
+     * @param subscriber the subscriber
      */
     public void addSubscriber(FSASubscriber subscriber) {
         subscribers.add(subscriber);
@@ -36,7 +36,7 @@ public abstract class FSAPublisherAdaptor implements FSAPublisher {
      * Removes the given subscriber to this publisher. The given subscriber will no
      * longer receive notifications of changes from this publisher.
      * 
-     * @param subscriber
+     * @param subscriber the subscriber
      */
     public void removeSubscriber(FSASubscriber subscriber) {
         subscribers.remove(subscriber);

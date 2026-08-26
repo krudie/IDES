@@ -10,7 +10,7 @@ public interface DESModelPublisher {
      * Attaches the given subscriber to this publisher. The given subscriber will
      * receive notifications of changes from this publisher.
      * 
-     * @param subscriber
+     * @param subscriber the subscriber
      */
     public void addSubscriber(DESModelSubscriber subscriber);
 
@@ -18,7 +18,7 @@ public interface DESModelPublisher {
      * Removes the given subscriber to this publisher. The given subscriber will no
      * longer receive notifications of changes from this publisher.
      * 
-     * @param subscriber
+     * @param subscriber the subscriber
      */
     public void removeSubscriber(DESModelSubscriber subscriber);
 

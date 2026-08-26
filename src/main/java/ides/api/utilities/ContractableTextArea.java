@@ -13,6 +13,11 @@ import javax.swing.JTextArea;
 public class ContractableTextArea extends JTextArea {
     private static final long serialVersionUID = 6803315264387461529L;
 
+    /**
+     * Create an text area which gets more narrow automatically.
+     * 
+     * @param s the text to display
+     */
     public ContractableTextArea(String s) {
         super(s);
     }

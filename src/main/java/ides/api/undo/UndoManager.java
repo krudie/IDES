@@ -17,6 +17,8 @@ import ides.api.plugin.model.DESModel;
 public interface UndoManager {
     /**
      * Adds an UndoableEdit to the undo stack of the active model.
+     * 
+     * @param edit the edit to be added in the undo stack
      */
     public void addEdit(UndoableEdit edit);
 

@@ -14,6 +14,8 @@ import util.AnnotationKeys;
  * @author Lenko Grigorov
  */
 public class FSAStateLabeller {
+    private FSAStateLabeller() {
+    }
 
     /**
      * Labels in a human-readable way the states in models obtained by composing a
