@@ -233,8 +233,7 @@ public class BezierEdge extends Edge {
             float tTarget = intersectionWithBoundary(getTargetNode().getShape(), targetEndPt, TARGET_NODE);
             ((BezierLayout) getLayout()).setTargetT(tTarget);
         }
-        ////////////////////////////////////////////////////////////////////////
-        // /////////
+        // //////////////////////////////////////////////////////////////////////
         if (!isSelected()) {
             getHandler().setVisible(false);
             getHandler().refresh();

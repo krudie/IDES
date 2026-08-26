@@ -141,7 +141,7 @@ public interface Workspace {
     /**
      * Returns all models of the given type opened in the workspace.
      * 
-     * @param      <T> the type of model
+     * @param <T>  the type of model
      * @param type the class type of model
      * @return all models of the given type opened in the workspace
      */
@@ -160,7 +160,7 @@ public interface Workspace {
      * Selects the presentation of the given type from the set of all presentations
      * used as the UI for the currently active model.
      * 
-     * @param      <T> the type of presentation to be selected
+     * @param <T>  the type of presentation to be selected
      * @param type the class type of presentation to be selected
      * @return the subset of presentations of the given type, from all presentations
      *         used as the UI for the currently active model

@@ -10,6 +10,7 @@ buildscript {
 plugins {
     id 'java'
     id 'com.github.monosoul.markdown.page.generator' version '2.1.0.1'
+    id("com.diffplug.spotless") version "8.10.0"
 }
 
 import org.semver4j.Semver
@@ -111,6 +112,13 @@ jar {
     manifest {
         attributes 'Main-Class': 'main.Main'
         attributes 'Class-Path': configurations.runtimeClasspath.files.collect { 'lib/' + it.name }.join(' ')
+    }
+}
+
+spotless {
+    lineEndings 'PRESERVE'
+    java {
+        eclipse().configFile(file('IDES-code-style.xml'))
     }
 }
 

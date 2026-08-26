@@ -104,6 +104,7 @@ public class TCTPlugin {
     private static enum ImportEventMapOptions {
         EXISTING_MAP(Hub.string("tctImportUseDefaultMap") + " " + DEFAULT_EVENTMAP_FILE),
         SELECTED_MAP(Hub.string("tctImportUseCustomMap"));
+
         private final String label;
 
         private ImportEventMapOptions(String label) {
@@ -118,6 +119,7 @@ public class TCTPlugin {
     private static enum ExportEventMapOptions {
         DEFAULT_MAP(Hub.string("tctExportUseDefaultMap") + " " + DEFAULT_EVENTMAP_FILE),
         SELECTED_MAP(Hub.string("tctExportUseCustomMap"));
+
         private final String label;
 
         private ExportEventMapOptions(String label) {

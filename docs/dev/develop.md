@@ -2,7 +2,7 @@
 
 ## Building IDES
 
-IDES is built with Gradle 8, via the `gradle build` command. Later versions of Gradle may work but are not tested.
+IDES is built with Java 17 and Gradle 8, via the `gradle build` command. Later versions of Java and Gradle may work but are not tested.
 
 The output of the build task produces two files: `IDES-version.zip` and `IDES-version-api.zip` directly under the `build` folder.
 The version string is taken from the `gradle.properties` file.
@@ -17,6 +17,8 @@ The following is a brief summary:
 - Max line width is 120 characters
 - Curly braces open on the same line
 - Single-line **if** statements must be enclosed in curly braces
+
+Code formatting is enforced via the Spotless Gradle plugin which is configured via `IDES-code-style.xml`.
 
 ## Architecture
 

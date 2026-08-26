@@ -602,7 +602,7 @@ public class WorkspaceBackend implements DESModelSubscriber, Workspace {
      * Selects the presentation of the given type from the set of all presentations
      * used as the UI for the currently active model.
      * 
-     * @param      <T> the type of presentation to be selected
+     * @param <T>  the type of presentation to be selected
      * @param type the class type of presentation to be selected
      * @return the subset of presentations of the given type, from all presentations
      *         used as the UI for the currently active model

@@ -499,8 +499,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
         return set;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // /
+    // //////////////////////////////////////////////////////////////////////////
 
     /**
      * Creates a new node with centre at the given point and a adds a new state to
