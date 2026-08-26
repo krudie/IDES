@@ -45,16 +45,16 @@ public class Controllable extends AbstractOperation {
                 specification = (FSAModel) inputs[1];
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         } else {
             warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (FSAToolbox.hasControllabilityConflict(new FSAModel[] { plant, specification })) {
             warnings.add(FSAToolbox.ERROR_CONTROL);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (!FSAToolbox.isDeterministic(plant)) {
@@ -71,7 +71,7 @@ public class Controllable extends AbstractOperation {
         boolean result = SuperVisory.controllable(plant, specification);
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (result) {
@@ -81,7 +81,7 @@ public class Controllable extends AbstractOperation {
         }
         outputDesc = new String[] { resultMessage };
 
-        return new Object[] { new Boolean(result) };
+        return new Object[] { Boolean.valueOf(result) };
     }
 
 }

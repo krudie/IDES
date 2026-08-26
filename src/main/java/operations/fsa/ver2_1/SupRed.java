@@ -51,7 +51,7 @@ public class SupRed extends AbstractOperation {
             }
         }
         try {
-            Process p = Runtime.getRuntime().exec("fmsupred PLT SUP");
+            Process p = Runtime.getRuntime().exec(new String[] { "fmsupred", "PLT", "SUP" });
             InputStream stdin = p.getInputStream();
             InputStreamReader isr = new InputStreamReader(stdin);
             BufferedReader br = new BufferedReader(isr);
@@ -164,7 +164,7 @@ public class SupRed extends AbstractOperation {
                         e.setControllable(true);
                         // eCount++;
                         a.add(e);
-                        events.put(parts[1], new Long(e.getId()));
+                        events.put(parts[1], Long.valueOf(e.getId()));
                     } else {
                         e = a.getEvent(eId.longValue());
                     }

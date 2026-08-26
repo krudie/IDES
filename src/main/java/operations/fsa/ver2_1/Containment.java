@@ -45,11 +45,11 @@ public class Containment extends AbstractOperation {
                 b = (FSAModel) inputs[1];
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         } else {
             warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (!FSAToolbox.isDeterministic(a)) {
@@ -64,7 +64,7 @@ public class Containment extends AbstractOperation {
         boolean contained = Subset.subset(a, b);
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (contained) {
@@ -74,7 +74,7 @@ public class Containment extends AbstractOperation {
         }
         outputDesc = new String[] { resultMessage };
 
-        return new Object[] { new Boolean(contained) };
+        return new Object[] { Boolean.valueOf(contained) };
     }
 
 }

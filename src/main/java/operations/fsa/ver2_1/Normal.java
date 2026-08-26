@@ -81,11 +81,11 @@ public class Normal implements Operation {
                 sublanguage = ((FSAModel) arg0[1]);
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         } else {
             warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         // don't want epsilon transitions, and want determinized for subset
@@ -103,7 +103,7 @@ public class Normal implements Operation {
 
         if (FSAToolbox.hasObservabilityConflict(new FSAModel[] { plant, sublanguage })) {
             warnings.add(FSAToolbox.ERROR_OBSERVE);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         // Double check that sublanguage is in fact a sublanguage of the
@@ -113,7 +113,7 @@ public class Normal implements Operation {
 
         if (!isSublanguage) {
             warnings.add(Hub.string("errorNotSublanguage"));
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         // Done checking, start the actual operation here.
@@ -153,7 +153,7 @@ public class Normal implements Operation {
         isNormal = Subset.subset(intersection, kBar);
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (isNormal) {
@@ -162,7 +162,7 @@ public class Normal implements Operation {
             resultMessage = "Sublanguage is NOT normal with respect to the plant.";
         }
 
-        return new Object[] { new Boolean(isNormal) };
+        return new Object[] { Boolean.valueOf(isNormal) };
 
     }
 

@@ -2,6 +2,7 @@ package util;
 
 import java.awt.Color;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * This class is designed to hold simple, generic static methods that may be
@@ -48,18 +49,18 @@ public class BentoBox {
     }
 
     public static int convertFloatToInt(float num) {
-        Float floatNum = new Float(num);
+        Float floatNum = Float.valueOf(num);
         return floatNum.intValue();
     }
 
     public static int convertDoubleToInt(double num) {
-        Double doubleNum = new Double(num);
+        Double doubleNum = Double.valueOf(num);
         return doubleNum.intValue();
     }
 
     public static double roundDouble(double value, int numDigits) {
         BigDecimal roundDecimal = new BigDecimal(value);
-        roundDecimal = roundDecimal.setScale(numDigits, BigDecimal.ROUND_UP);
+        roundDecimal = roundDecimal.setScale(numDigits, RoundingMode.UP);
         return roundDecimal.doubleValue();
     }
 

@@ -168,7 +168,7 @@ public class ControlMap extends AbstractOperation implements FilterOperation {
      * @param stateId the id to set
      */
     private static void setStateId(FSAState[] s, long stateId) {
-        pairIds.put("" + s[0].getId() + "," + s[1].getId(), new Long(stateId));
+        pairIds.put("" + s[0].getId() + "," + s[1].getId(), Long.valueOf(stateId));
     }
 
     /**

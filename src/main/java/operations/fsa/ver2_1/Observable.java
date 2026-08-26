@@ -93,11 +93,11 @@ public class Observable implements Operation {
                 sublanguage = (FSAModel) arg0[1];
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         } else {
             warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (!FSAToolbox.isDeterministic(plant)) {
@@ -113,7 +113,7 @@ public class Observable implements Operation {
 
         if (FSAToolbox.hasObservabilityConflict(new FSAModel[] { plant, sublanguage })) {
             warnings.add(FSAToolbox.ERROR_OBSERVE);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         // Double check that sublanguage is in fact a sublanguage of the
@@ -131,7 +131,7 @@ public class Observable implements Operation {
 
         if (!isSublanguage) {
             warnings.add(Hub.string("errorNotSublanguage"));
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         FSAModel obsTest = ModelManager.instance().createModel(FSAModel.class);
@@ -139,7 +139,7 @@ public class Observable implements Operation {
         boolean observable = obsTest(sublanguage, plant, obsTest);
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (observable) {
@@ -148,7 +148,7 @@ public class Observable implements Operation {
             resultMessage = "Sublanguage is not observable with respect to the plant.";
         }
 
-        return new Object[] { new Boolean(observable) };
+        return new Object[] { Boolean.valueOf(observable) };
     }
 
     /**
@@ -448,7 +448,7 @@ public class Observable implements Operation {
      * @param n the new id
      */
     private static void setIn(FSAState[] s, long n) {
-        pairIds.put(id(s), new Long(n));
+        pairIds.put(id(s), Long.valueOf(n));
     }
 
     /**

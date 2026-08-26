@@ -103,14 +103,14 @@ public class SupEventSetView extends JPanel
             });
             for (int i = 0; i < events.size(); ++i) {
                 if (events.elementAt(i).isControllable()) {
-                    controllable.add(new Boolean(true));
+                    controllable.add(Boolean.TRUE);
                 } else {
-                    controllable.add(new Boolean(false));
+                    controllable.add(Boolean.FALSE);
                 }
                 if (events.elementAt(i).isObservable()) {
-                    observable.add(new Boolean(true));
+                    observable.add(Boolean.TRUE);
                 } else {
-                    observable.add(new Boolean(false));
+                    observable.add(Boolean.FALSE);
                 }
             }
         }

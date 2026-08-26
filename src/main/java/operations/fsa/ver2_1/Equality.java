@@ -74,11 +74,11 @@ public class Equality implements Operation {
                 b = (FSAModel) inputs[1];
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         } else {
             warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (!FSAToolbox.isDeterministic(a)) {
@@ -97,7 +97,7 @@ public class Equality implements Operation {
         equals &= Subset.subset(b, a);
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (equals) {
@@ -106,7 +106,7 @@ public class Equality implements Operation {
             resultMessage = "The languages are not equal.";
         }
 
-        return new Object[] { new Boolean(equals) };
+        return new Object[] { Boolean.valueOf(equals) };
 
     }
 

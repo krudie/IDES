@@ -262,7 +262,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
     }
 
     public Node getNode(long id) {
-        return nodes.get(new Long(id));
+        return nodes.get(Long.valueOf(id));
     }
 
     /**
@@ -519,7 +519,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
         fsa.addSubscriber(this);
 
         CircleNode n = new CircleNode(s, layout);
-        nodes.put(new Long(s.getId()), n);
+        nodes.put(Long.valueOf(s.getId()), n);
         insert(n);
         setNeedsRefresh(true);
 
@@ -550,7 +550,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
         fsa.addSubscriber(this);
 
         // Insert the new node to the graph
-        nodes.put(new Long(node.getId()), node);
+        nodes.put(Long.valueOf(node.getId()), node);
         insert(node);
 
         if (node.getState().isInitial()) {
@@ -614,7 +614,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
         s.setAnnotation(AnnotationKeys.LAYOUT, layout);
 
         CircleNode n = new CircleNode(s, layout);
-        nodes.put(new Long(s.getId()), n);
+        nodes.put(Long.valueOf(s.getId()), n);
         insert(n);
 
         if (n.getState().isInitial()) {
@@ -684,8 +684,8 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
 
         Iterator<FSATransition> i = ts.iterator();
         FSATransition t = i.next();
-        Node n1 = nodes.get(new Long(t.getSource().getId()));
-        Node n2 = nodes.get(new Long(t.getTarget().getId()));
+        Node n1 = nodes.get(Long.valueOf(t.getSource().getId()));
+        Node n2 = nodes.get(Long.valueOf(t.getTarget().getId()));
         BezierEdge e;
         if (n1.equals(n2)) {
             // let e figure out how to place itself among its neighbours
@@ -936,7 +936,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
         if (n instanceof CircleNode) {
             ((CircleNodeLayout) n.getLayout()).dispose();
         }
-        nodes.remove(new Long(n.getId()));
+        nodes.remove(Long.valueOf(n.getId()));
         setNeedsRefresh(true);
         fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.REMOVE, FSAGraphMessage.NODE, n.getId(),
                 n.adjacentBounds(), this, ""));
@@ -1496,7 +1496,7 @@ public class FSAGraph extends GraphElement implements FSASubscriber, Annotable {
         protected float r = CircleNodeLayout.DEFAULT_RADIUS;
 
         protected void updateUniformRadius(CircleNodeLayout n, float radius) {
-            put(n, new Float(radius));
+            put(n, Float.valueOf(radius));
             updateUniformRadius();
         }
 

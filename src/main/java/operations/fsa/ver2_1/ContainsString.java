@@ -73,11 +73,11 @@ public class ContainsString implements Operation {
                 input = (List<?>) inputs[1];
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         } else {
             warnings.add(FSAToolbox.ILLEGAL_NUMBER_OF_ARGUMENTS);
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         for (Iterator<?> i = input.iterator(); i.hasNext();) {
@@ -86,7 +86,7 @@ public class ContainsString implements Operation {
                 events.add((DESEvent) o);
             } else {
                 warnings.add(FSAToolbox.ILLEGAL_ARGUMENT);
-                return new Object[] { new Boolean(false) };
+                return new Object[] { Boolean.FALSE };
             }
         }
 
@@ -97,7 +97,7 @@ public class ContainsString implements Operation {
         warnings.addAll(OperationManager.instance().getOperation("subset").getWarnings());
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (contained) {
@@ -106,7 +106,7 @@ public class ContainsString implements Operation {
             resultMessage = "The string is not contained in the model.";
         }
 
-        return new Object[] { new Boolean(contained) };
+        return new Object[] { Boolean.valueOf(contained) };
     }
 
 }

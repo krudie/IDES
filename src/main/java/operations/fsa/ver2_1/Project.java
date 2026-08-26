@@ -270,7 +270,7 @@ public class Project {
      * @param n   the new id
      */
     private static void setIn(LinkedList<FSAState> sll, long n) {
-        pairIds.put(id(sll), new Long(n));
+        pairIds.put(id(sll), Long.valueOf(n));
     }
 
     /**

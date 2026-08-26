@@ -163,7 +163,7 @@ public class GrailPlugin implements ImportExportPlugin {
                         e.setControllable(true);
                         // eCount++;
                         a.add(e);
-                        events.put(parts[1], new Long(e.getId()));
+                        events.put(parts[1], Long.valueOf(e.getId()));
                     } else {
                         e = a.getEvent(eId.longValue());
                     }

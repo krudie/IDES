@@ -330,7 +330,7 @@ public class OperationDialog extends EscapeDialog {
         if (inputs.elementAt(inputIdx) instanceof ItemSelectable) {
             values = ((ItemSelectable) inputs.elementAt(inputIdx)).getSelectedObjects();
         } else if (inputs.elementAt(inputIdx) instanceof JList) {
-            values = ((JList) inputs.elementAt(inputIdx)).getSelectedValues();
+            values = ((JList) inputs.elementAt(inputIdx)).getSelectedValuesList().toArray();
         } else if (inputs.elementAt(inputIdx) instanceof JTextField) {
             if (!"".equals(((JTextField) inputs.elementAt(inputIdx)).getText())) {
                 values = new Object[] { ((JTextField) inputs.elementAt(inputIdx)).getText() };

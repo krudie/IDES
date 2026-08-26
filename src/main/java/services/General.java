@@ -21,7 +21,7 @@ public class General {
      * @return a random string
      */
     public static String getRandomId() {
-        String data = new Double(Math.random()).toString() + new Long(System.currentTimeMillis()).toString()
+        String data = Double.valueOf(Math.random()).toString() + Long.valueOf(System.currentTimeMillis()).toString()
                 + Hub.getWorkspace().size() + System.getProperty("user.name");
         for (Iterator<FSAModel> i = Hub.getWorkspace().getModelsOfType(FSAModel.class).iterator(); i.hasNext();) {
             FSAModel a = i.next();

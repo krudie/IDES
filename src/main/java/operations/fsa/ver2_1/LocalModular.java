@@ -67,7 +67,7 @@ public class LocalModular extends AbstractOperation {
             resultMessage = "The two automata are not locally modular.";
         }
         outputDesc = new String[] { resultMessage };
-        return new Object[] { new Boolean(equal) };
+        return new Object[] { Boolean.valueOf(equal) };
     }
 
 }

@@ -61,7 +61,7 @@ public class Nonconflicting extends AbstractOperation {
         warnings.addAll(OperationManager.instance().getOperation("subset").getWarnings());
 
         if (warnings.size() != 0) {
-            return new Object[] { new Boolean(false) };
+            return new Object[] { Boolean.FALSE };
         }
 
         if (equal) {
@@ -72,6 +72,6 @@ public class Nonconflicting extends AbstractOperation {
 
         outputDesc = new String[] { resultMessage };
 
-        return new Object[] { new Boolean(equal) };
+        return new Object[] { Boolean.valueOf(equal) };
     }
 }
