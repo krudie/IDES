@@ -58,7 +58,8 @@ Document Type Definition (DTD):
 <!ELEMENT circle EMPTY>
 <!ATTLIST circle x CDATA #REQUIRED
                   y CDATA #REQUIRED
-                  r CDATA #REQUIRED>
+                  r CDATA #REQUIRED
+                  bgcolor CDATA #IMPLIED>
 
 <!ELEMENT bezier EMPTY>
 <!ATTLIST bezier x1 CDATA #REQUIRED
@@ -68,7 +69,9 @@ Document Type Definition (DTD):
                 ctrlx2 CDATA #REQUIRED
                 ctrly2 CDATA #REQUIRED
                 x2 CDATA #REQUIRED
-                y2 CDATA #REQUIRED>
+                y2 CDATA #REQUIRED
+                color CDATA #IMPLIED
+                thickness CDATA #IMPLIED>
 
 <!ELEMENT arrow EMPTY>
 <!ATTLIST arrow x CDATA #REQUIRED
@@ -336,6 +339,7 @@ There are, for an FSA, two internal tags for a state: `<arrow>` and `<circle>`.
         * `r` is the radius of the node.
         * `x` is the x coordinate of the node in the graph.
         * `y` is the y coordinate of the node in the graph.
+        * `bgcolor` is an optional hexadecimal RGB value for the node background color, of the form "#aa00ff".
     * `<arrow>` contains the coordinates for the directional vector that tells
     the direction of the initial arrow. This tag is required for every state, however,
     it is only used when the arrow belongs to the representation of an initial state.
@@ -367,6 +371,8 @@ A transition contains two sub-tags, `<label>` and `<bezier>`:
         * `ctrly1`, the y coordinate for the point ctrl1 in the graph.
         * `ctrlx2`, the x coordinate for the point ctrl2 in the graph.
         * `ctrly2`, the y coordinate for the point ctrl2 in the graph.
+        * `color`, an optional hexadecimal RGB value for the edge color, of the form "#aa00ff".
+        * `thickness`, an optional decimal for the edge thickness, can be between 1.0 and 6.0, and 2.0 is the default.
 
 ## Workpace representation
 

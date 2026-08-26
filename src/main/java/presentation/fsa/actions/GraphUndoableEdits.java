@@ -1,5 +1,6 @@
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Vector;
@@ -22,6 +23,10 @@ import presentation.fsa.GraphLabel;
 import presentation.fsa.InitialArrow;
 import presentation.fsa.Node;
 
+/**
+ * @author Lenko Grigorov
+ * @author Liam Burns - Color Extension
+ */
 public class GraphUndoableEdits {
 
     public static class UndoableDummyLabel extends AbstractUndoableEdit {
@@ -1159,4 +1164,198 @@ public class GraphUndoableEdits {
 
     }
 
+    public static class UndoableSetBgColorNode extends AbstractGraphUndoableEdit {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 8381826917124515585L;
+
+        protected Node node;
+
+        protected FSAGraph graph;
+
+        protected Color altColor;
+
+        public UndoableSetBgColorNode(FSAGraph graph, Node node, Color color) {
+            this.graph = graph;
+            this.node = node;
+            this.altColor = color;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            if (node == null) {
+                throw new CannotRedoException();
+            }
+            swapColor();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            if (node == null) {
+                throw new CannotUndoException();
+            }
+            swapColor();
+        }
+
+        @Override
+        public boolean canUndo() {
+            return node != null;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return node != null;
+        }
+
+        protected void swapColor() {
+            Color tColor = node.getLayout().getBackgroundColor();
+            node.getLayout().setBackgroundColor(altColor);
+            altColor = tColor;
+
+            node.refresh();
+
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.NODE, node.getId(),
+                    node.bounds(), graph));
+        }
+
+        /**
+         * Returns the name that should be displayed besides the Undo/Redo menu items,
+         * so the user knows which action will be undone/redone.
+         */
+        @Override
+        public String getPresentationName() {
+            return Hub.string("undoSetBgColorNode");
+        }
+    }
+
+    public static class UndoableSetColorEdge extends AbstractGraphUndoableEdit {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 7309846020347553339L;
+
+        protected Edge edge;
+
+        protected FSAGraph graph;
+
+        protected Color altColor;
+
+        public UndoableSetColorEdge(FSAGraph graph, Edge edge, Color color) {
+            this.graph = graph;
+            this.edge = edge;
+            this.altColor = color;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            if (edge == null) {
+                throw new CannotRedoException();
+            }
+            swapColor();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            if (edge == null) {
+                throw new CannotUndoException();
+            }
+            swapColor();
+        }
+
+        @Override
+        public boolean canUndo() {
+            return edge != null;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return edge != null;
+        }
+
+        protected void swapColor() {
+            Color tColor = edge.getLayout().getColor();
+            edge.getLayout().setColor(altColor);
+            altColor = tColor;
+
+            edge.refresh();
+
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.EDGE, edge.getId(),
+                    edge.bounds(), graph));
+        }
+
+        /**
+         * Returns the name that should be displayed besides the Undo/Redo menu items,
+         * so the user knows which action will be undone/redone.
+         */
+        @Override
+        public String getPresentationName() {
+            return Hub.string("undoSetColorEdge");
+        }
+    }
+
+    public static class UndoableSetThicknessEdge extends AbstractGraphUndoableEdit {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -9101182343441166269L;
+
+        protected Edge edge;
+
+        protected FSAGraph graph;
+
+        protected float altThickness;
+
+        public UndoableSetThicknessEdge(FSAGraph graph, Edge edge, float thickness) {
+            this.graph = graph;
+            this.edge = edge;
+            this.altThickness = thickness;
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            if (edge == null) {
+                throw new CannotRedoException();
+            }
+            swapThickness();
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            if (edge == null) {
+                throw new CannotUndoException();
+            }
+            swapThickness();
+        }
+
+        @Override
+        public boolean canUndo() {
+            return edge != null;
+        }
+
+        @Override
+        public boolean canRedo() {
+            return edge != null;
+        }
+
+        protected void swapThickness() {
+            float tThickness = edge.getLayout().getStrokeThickness();
+            edge.getLayout().setStrokeThickness(altThickness);
+            altThickness = tThickness;
+
+            edge.refresh();
+
+            graph.fireFSAGraphChanged(new FSAGraphMessage(FSAGraphMessage.MODIFY, FSAGraphMessage.EDGE, edge.getId(),
+                    edge.bounds(), graph));
+        }
+
+        /**
+         * Returns the name that should be displayed besides the Undo/Redo menu items,
+         * so the user knows which action will be undone/redone.
+         */
+        @Override
+        public String getPresentationName() {
+            return Hub.string("undoSetThicknessEdge");
+        }
+    }
 }

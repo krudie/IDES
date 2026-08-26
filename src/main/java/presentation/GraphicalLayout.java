@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Encapsulates the basic position and appearance characteristics of graphical
@@ -19,6 +21,8 @@ import java.io.Serializable;
  * the FSAGraph on save.
  * 
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class GraphicalLayout implements Serializable {
     /**
@@ -39,15 +43,22 @@ public class GraphicalLayout implements Serializable {
 
     public static final Color DEFAULT_BG_COLOR = Color.WHITE;
 
-    public static final Stroke FINE_STROKE = new BasicStroke(1);
+    public static final Stroke DEFAULT_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
 
-    public static final Stroke WIDE_STROKE = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+    /**
+     * caches for fine strokes, keyed on thickness
+     */
+    public static final Map<Float, Stroke> FINE_STROKES_CACHE = new HashMap<>();
 
-    public static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 50,
-            new float[] { 5, 2 }, 0);
+    /**
+     * caches for wide strokes, keyed on thickness
+     */
+    public static final Map<Float, Stroke> WIDE_STROKES_CACHE = new HashMap<>();
 
-    public static final Stroke WIDE_DASHED_STROKE = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 50,
-            new float[] { 5, 2 }, 0);
+    /**
+     * caches for dashed strokes, keyed on thickness
+     */
+    public static final Map<Float, Stroke> DASHED_STROKES_CACHE = new HashMap<>();
 
     /** x and y coordinates of the associated element on the graph canvas */
     private Point2D.Float location;
@@ -76,6 +87,12 @@ public class GraphicalLayout implements Serializable {
      * behind the text)
      */
     private Color backgroundColor = DEFAULT_BG_COLOR;
+
+    public static final float DEFAULT_STROKE_THICKNESS = 2.0f;
+    public static final float MIN_STROKE_THICKNESS = 1.0f;
+    public static final float MAX_STROKE_THICKNESS = 6.0f;
+
+    private float strokeThickness = DEFAULT_STROKE_THICKNESS;
 
     /**
      * Creates a graphical layout instance with empty string as text.
@@ -183,6 +200,7 @@ public class GraphicalLayout implements Serializable {
      */
     public void setColor(Color color) {
         this.color = color;
+        dirty = true;
     }
 
     /**
@@ -201,6 +219,7 @@ public class GraphicalLayout implements Serializable {
      */
     public void setHighlightColor(Color highlightColor) {
         this.highlightColor = highlightColor;
+        dirty = true;
     }
 
     /**
@@ -210,6 +229,30 @@ public class GraphicalLayout implements Serializable {
      */
     public Color getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        dirty = true;
+    }
+
+    /**
+     * Returns the stroke thickness.
+     * 
+     * @return the stroke thickness
+     */
+    public float getStrokeThickness() {
+        return strokeThickness;
+    }
+
+    /**
+     * Sets the stroke thickness.
+     * 
+     * @param strokeThickness the stroke thickness to be set
+     */
+    public void setStrokeThickness(float strokeThickness) {
+        this.strokeThickness = strokeThickness;
+        dirty = true;
     }
 
     /**
@@ -247,6 +290,7 @@ public class GraphicalLayout implements Serializable {
      */
     public void setSelectionColor(Color selectionColor) {
         this.selectionColor = selectionColor;
+        dirty = true;
     }
 
     /**
@@ -331,6 +375,7 @@ public class GraphicalLayout implements Serializable {
         out.writeObject(this.highlightColor);
         out.writeObject(this.selectionColor);
         out.writeObject(this.text);
+        out.writeFloat(this.strokeThickness);
     }
 
     /**
@@ -346,5 +391,23 @@ public class GraphicalLayout implements Serializable {
         highlightColor = (Color) in.readObject();
         selectionColor = (Color) in.readObject();
         text = (String) in.readObject();
+        strokeThickness = in.readFloat();
+    }
+
+    public Stroke getFineStroke() {
+        // for now it's not clear if the fine stroke should depend on this object's
+        // stroke thickness
+        return FINE_STROKES_CACHE.computeIfAbsent(1f, thickness -> new BasicStroke(thickness));
+    }
+
+    public Stroke getWideStroke() {
+        return WIDE_STROKES_CACHE.computeIfAbsent(strokeThickness,
+                thickness -> new BasicStroke(thickness, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+    }
+
+    public Stroke getDashedStroke() {
+        return DASHED_STROKES_CACHE.computeIfAbsent(strokeThickness,
+                thickness -> new BasicStroke(Math.max(1.0f, thickness / 2.0f), BasicStroke.CAP_BUTT,
+                        BasicStroke.JOIN_MITER, 50, new float[] { 5, 2 }, 0));
     }
 }

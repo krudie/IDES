@@ -26,6 +26,7 @@ import presentation.fsa.FSAGraph;
 
 /**
  * @author christiansilvano
+ * @author Lenko Grigorov
  */
 public class JPEGPlugin implements ImportExportPlugin {
 
@@ -79,7 +80,7 @@ public class JPEGPlugin implements ImportExportPlugin {
         BufferedImage image = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2D = image.createGraphics();
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2D.setStroke(GraphicalLayout.WIDE_STROKE);
+        g2D.setStroke(GraphicalLayout.DEFAULT_STROKE);
         g2D.setColor(Color.WHITE);
         g2D.fillRect(0, 0, bounds.width, bounds.height);
         if (useFrame) {

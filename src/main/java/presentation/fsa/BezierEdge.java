@@ -28,6 +28,7 @@ import util.BentoBox;
  * @author Helen Bretzke
  * @author Sarah-Jane Whittaker
  * @author Lenko Grigorov
+ * @author Liam Burns - Color Extension
  */
 public class BezierEdge extends Edge {
 
@@ -119,7 +120,8 @@ public class BezierEdge extends Edge {
         // if either my source or target node is highlighted
         // then I am also hightlighted.
         if (highlighted || getSourceNode().isHighlighted()
-                || getTargetNode() != null && getTargetNode().isHighlighted()) {
+                || (getTargetNode() != null && getTargetNode().isHighlighted())) {
+
             setHighlighted(true);
             g2d.setColor(getLayout().getHighlightColor());
         } else {
@@ -134,9 +136,9 @@ public class BezierEdge extends Edge {
         }
 
         if (hasUnobservableEvent()) {
-            g2d.setStroke(GraphicalLayout.DASHED_STROKE);
+            g2d.setStroke(getLayout().getDashedStroke());
         } else {
-            g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+            g2d.setStroke(getLayout().getWideStroke());
         }
 
         // TODO should stop drawing at base of arrowhead and at outside of node
@@ -149,7 +151,7 @@ public class BezierEdge extends Edge {
             g2d.draw(curve);
         }
         if (!hasUncontrollableEvent() && getBezierLayout().getControllableMarker() != null) {
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
+            g2d.setStroke(getLayout().getFineStroke());
             g2d.draw(getBezierLayout().getControllableMarker());
         }
 
@@ -163,16 +165,19 @@ public class BezierEdge extends Edge {
         // touching or overlapping.
         Point2D.Float unitArrowDir = computeArrowDirection();
 
-        arrowHead.reset();
+        float headScale = 1.0f + (getLayout().getStrokeThickness() - GraphicalLayout.DEFAULT_STROKE_THICKNESS) * 0.35f;
+        headScale = Math.max(1.0f, Math.min(2.5f, headScale));
+
+        arrowHead.resetToDefault(headScale);
 
         // If available, use point of intersection with target node boundary
         Point2D basePt;
         Point2D.Float tEndPt = getTargetEndPoint();
         if (tEndPt != null) {
-            basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH + 2)));
+            basePt = Geometry.add(tEndPt, Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH * headScale + 2)));
         } else {
             basePt = Geometry.add(getBezierLayout().getCurve().getP2(),
-                    Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH + 2)));
+                    Geometry.scale(unitArrowDir, -(ArrowHead.SHORT_HEAD_LENGTH * headScale + 2)));
         }
         at.setToTranslation(basePt.getX(), basePt.getY());
         g2d.transform(at);
@@ -182,12 +187,14 @@ public class BezierEdge extends Edge {
         if (!Double.isNaN(rho)) {
             at.setToRotation(rho);
             g2d.transform(at);
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
+            g2d.setStroke(getLayout().getFineStroke());
             g2d.draw(arrowHead);
             g2d.fill(arrowHead);
             at.setToRotation(-rho);
             g2d.transform(at);
         }
+
+        // undo translation ONCE
         at.setToTranslation(-basePt.getX(), -basePt.getY());
         g2d.transform(at);
 

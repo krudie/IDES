@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -7,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -74,6 +76,9 @@ public class GraphDrawingView extends GraphView
 
         public float zoom = 1;
     }
+
+    private static final Stroke DASHED_STROKE = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 50,
+            new float[] { 5, 2 }, 0);
 
     protected final static String CANVAS_SETTINGS = "canvasSettings";
 
@@ -342,7 +347,7 @@ public class GraphDrawingView extends GraphView
         }
 
         if (selectionArea.height > 0 && selectionArea.width > 0) {
-            g2D.setStroke(GraphicalLayout.DASHED_STROKE);
+            g2D.setStroke(DASHED_STROKE);
             g2D.setColor(Color.DARK_GRAY);
 
             // DEBUG

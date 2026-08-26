@@ -18,6 +18,8 @@ import presentation.fsa.actions.UIActions;
  * Symmetrize command after the command has been debugged and tested.
  * 
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class EdgePopup extends JPopupMenu {
 
@@ -46,6 +48,11 @@ public class EdgePopup extends JPopupMenu {
 
         miEditEvents = new JMenuItem(new UIActions.TextAction(edge));
         add(miEditEvents);
+
+        JMenuItem miEdgeColor = new JMenuItem(new UIActions.SetEdgeColorAction(gdv.getGraphModel(), edge));
+        add(miEdgeColor);
+        JMenuItem miEdgeThickness = new JMenuItem(new UIActions.SetEdgeThicknessAction(gdv.getGraphModel(), edge));
+        add(miEdgeThickness);
 
         // if the edge can't be straightened, then we assume we cannot
         // otherwise tamper with its shape

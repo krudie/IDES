@@ -38,19 +38,27 @@ import ides.api.utilities.HeadTailInputStream;
 import io.AbstractParser;
 import io.IOUtilities;
 import presentation.CubicParamCurve2D;
+import presentation.GraphicalLayout;
 import presentation.fsa.BezierLayout;
 import presentation.fsa.CircleNodeLayout;
 import presentation.fsa.GraphLayout;
 import util.AnnotationKeys;
+import util.BentoBox;
 
 /**
  * @author christiansilvano
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class FSAFileIOPlugin implements FileIOPlugin {
 
     protected final static String MODEL_TYPE = "FSA";
 
     protected final static String META_TAG = "layout";
+
+    private static final String ATTR_BGCOLOR = "bgcolor";
+    private static final String ATTR_COLOR = "color";
+    private static final String ATTR_THICKNESS = "thickness";
 
     public Set<String> getMetaTags() {
         Set<String> tags = new HashSet<String>();
@@ -294,9 +302,16 @@ public class FSAFileIOPlugin implements FileIOPlugin {
         private static void stateLayoutToXML(FSAState s, PrintStream ps, String indent) {
             CircleNodeLayout c = (CircleNodeLayout) s.getAnnotation(AnnotationKeys.LAYOUT);
             if (c != null) {
+                // Opt-in coloring
+                String bgAttr = "";
+                if (!BentoBox.colorToHex(c.getBackgroundColor()).equals("#FFFFFF")) {
+                    bgAttr = " " + ATTR_BGCOLOR + "=\"" + BentoBox.colorToHex(c.getBackgroundColor()) + "\"";
+                }
                 ps.println(indent + "<state" + " id=\"" + s.getId() + "\">");
+
                 ps.println(indent + indent + "<circle r=\"" + String.valueOf(c.getRadius()) + "\" x=\""
-                        + String.valueOf(c.getLocation().x) + "\" y=\"" + String.valueOf(c.getLocation().y) + "\" />");
+                        + String.valueOf(c.getLocation().x) + "\" y=\"" + String.valueOf(c.getLocation().y) + "\""
+                        + bgAttr + " />");
                 ps.println(indent + indent + "<arrow x=\"" + String.valueOf(c.getArrow().x) + "\" y=\""
                         + String.valueOf(c.getArrow().y) + "\" />");
                 ps.println(indent + "</state>");
@@ -314,14 +329,27 @@ public class FSAFileIOPlugin implements FileIOPlugin {
             BezierLayout l = (BezierLayout) t.getAnnotation(AnnotationKeys.LAYOUT);
             if (l != null) {
                 CubicParamCurve2D curve = l.getCurve();
+
+                String optionalAttr = "";
+
+                // Opt-in arrow thickness and color
+                if (!GraphicalLayout.DEFAULT_COLOR.equals(l.getColor())) {
+                    optionalAttr += " " + ATTR_COLOR + "=\"" + BentoBox.colorToHex(l.getColor()) + "\"";
+                }
+
+                if (l.getStrokeThickness() != GraphicalLayout.DEFAULT_STROKE_THICKNESS) {
+                    optionalAttr += " " + ATTR_THICKNESS + "=\"" + l.getStrokeThickness() + "\"";
+                }
+
                 ps.println(indent + "<transition" + " id=\"" + t.getId() + "\""
                         + (l.getGroup() != BezierLayout.UNGROUPPED ? " group=\"" + l.getGroup() + "\"" : "") + ">");
                 ps.println(indent + indent + "<bezier x1=\"" + curve.getX1() + "\" y1=\"" + curve.getY1() + "\" x2=\""
                         + curve.getX2() + "\" y2=\"" + curve.getY2() + "\" ctrlx1=\"" + curve.getCtrlX1()
                         + "\" ctrly1=\"" + curve.getCtrlY1() + "\" ctrlx2=\"" + curve.getCtrlX2() + "\" ctrly2=\""
-                        + curve.getCtrlY2() + "\" />");
+                        + curve.getCtrlY2() + "\"" + optionalAttr + " />");
                 ps.println(indent + indent + "<label x=\"" + l.getLabelOffset().x + "\" y=\"" + l.getLabelOffset().y
                         + "\" />");
+
                 ps.println(indent + "</transition>");
             }
         }
@@ -656,16 +684,14 @@ public class FSAFileIOPlugin implements FileIOPlugin {
                         layout.setLocation(Float.parseFloat(atts.getValue(COORD_X)),
                                 Float.parseFloat(atts.getValue(COORD_Y)));
                         layout.setText(tmpState.getName());
-                    }
-
-                    else if (qName.equals(ARROW)) {
+                        String bg = atts.getValue("bgcolor"); // load the stored bg color in the xml file.
+                        if (bg != null) {
+                            layout.setBackgroundColor(BentoBox.hexToColor(bg));
+                        }
+                    } else if (qName.equals(ARROW)) {
                         CircleNodeLayout layout = (CircleNodeLayout) tmpState.getAnnotation(AnnotationKeys.LAYOUT);
                         layout.setArrow(new Point2D.Float(Float.parseFloat(atts.getValue(COORD_X)),
                                 Float.parseFloat(atts.getValue(COORD_Y))));
-                    }
-
-                    else {
-                        parsingErrors += Hub.string("xmlParsingUnrecogized") + "\n";
                     }
                 }
 
@@ -691,6 +717,19 @@ public class FSAFileIOPlugin implements FileIOPlugin {
                         // paramethers
                         BezierLayout l = (BezierLayout) tmpTransition.getAnnotation(AnnotationKeys.LAYOUT);
                         l.setCurve(new CubicCurve2D.Float(x1, y1, ctrlx1, ctrly1, ctrlx2, ctrly2, x2, y2));
+                        String color = atts.getValue(ATTR_COLOR);
+                        if (color != null) {
+                            l.setColor(BentoBox.hexToColor(color));
+                        }
+
+                        String thickness = atts.getValue(ATTR_THICKNESS);
+                        if (thickness != null) {
+                            float thicknessVal = Float.parseFloat(thickness);
+                            if (thicknessVal >= GraphicalLayout.MIN_STROKE_THICKNESS
+                                    && thicknessVal <= GraphicalLayout.MAX_STROKE_THICKNESS) {
+                                l.setStrokeThickness(thicknessVal);
+                            }
+                        }
                     }
 
                     // Setting the label for the edge:

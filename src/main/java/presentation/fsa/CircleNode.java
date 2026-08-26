@@ -1,5 +1,6 @@
 package presentation.fsa;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,7 +14,6 @@ import java.util.Iterator;
 
 import ides.api.model.fsa.FSAState;
 import io.fsa.ver2_1.GraphExporter;
-import presentation.GraphicalLayout;
 import util.BentoBox;
 
 /**
@@ -22,6 +22,8 @@ import util.BentoBox;
  * 
  * @see NodePopup#showPopup
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class CircleNode extends Node {
 
@@ -127,7 +129,6 @@ public class CircleNode extends Node {
             refresh();
             getLayout().setDirty(false);
         }
-
         // only calls draw on all of the outgoing edges
         Iterator<GraphElement> c = children();
         while (c.hasNext()) {
@@ -136,14 +137,24 @@ public class CircleNode extends Node {
                 if (child.getSourceNode().equals(this)) {
                     child.draw(g);
                 }
-            } catch (ClassCastException cce) {
                 // skip the label and keep going
                 // HB says to self: Why am I skipping the label?
                 // Why did I decide to do it at the end?
+            } catch (ClassCastException ignore) {
+
             }
         }
 
         Graphics2D g2d = (Graphics2D) g;
+
+        Color fillColor = getLayout().getBackgroundColor();
+        if (fillColor != null) {
+            Color old = g2d.getColor();
+            g2d.setColor(fillColor);
+            g2d.fill(circle);
+            g2d.setColor(old);
+
+        }
 
         if (isSelected()) {
             g.setColor(getLayout().getSelectionColor());
@@ -153,7 +164,7 @@ public class CircleNode extends Node {
             g.setColor(getLayout().getColor());
         }
 
-        g2d.setStroke(GraphicalLayout.WIDE_STROKE);
+        g2d.setStroke(getLayout().getWideStroke());
         g2d.draw(circle);
 
         if (state.isMarked()) {

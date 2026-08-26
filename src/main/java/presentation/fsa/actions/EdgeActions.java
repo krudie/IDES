@@ -1,5 +1,6 @@
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
@@ -39,6 +40,8 @@ import presentation.fsa.FSAGraphMessage;
  * also, less usable.
  * 
  * @author Christian Silvano
+ * @author Liam Burns - Color Extension.
+ * @author Lenko Grigorov
  */
 public class EdgeActions {
 
@@ -282,6 +285,70 @@ public class EdgeActions {
                 // no need to "redo" the edit since the edge has already been
                 // modified
                 postEditAdjustCanvas(graph, edit);
+            }
+        }
+
+    }
+
+    public static class SetEdgeThicknessAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -9045594124924336120L;
+
+        protected Edge edge;
+        protected FSAGraph graph;
+        protected float thickness;
+
+        public SetEdgeThicknessAction(FSAGraph graph, Edge edge, float thickness) {
+            this(null, graph, edge, thickness);
+        }
+
+        public SetEdgeThicknessAction(CompoundEdit parentEdit, FSAGraph graph, Edge edge, float thickness) {
+            this.parentEdit = parentEdit;
+            this.graph = graph;
+            this.edge = edge;
+            this.thickness = thickness;
+        }
+
+        public void actionPerformed(ActionEvent evt) {
+            if (graph != null && edge != null) {
+                UndoableEdit action = new GraphUndoableEdits.UndoableSetThicknessEdge(graph, edge, thickness);
+                // perform the action
+                action.redo();
+                postEditAdjustCanvas(graph, action);
+            }
+        }
+    }
+
+    public static class SetEdgeColorAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4596442188420581261L;
+
+        protected Edge edge;
+        protected FSAGraph graph;
+        protected BezierLayout originalLayout;
+        protected Color color;
+
+        public SetEdgeColorAction(FSAGraph graph, Edge edge, Color color) {
+            this(null, graph, edge, color);
+        }
+
+        public SetEdgeColorAction(CompoundEdit parentEdit, FSAGraph graph, Edge edge, Color color) {
+            this.parentEdit = parentEdit;
+            this.graph = graph;
+            this.edge = edge;
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent evt) {
+            if (graph != null && edge != null) {
+                UndoableEdit action = new GraphUndoableEdits.UndoableSetColorEdge(graph, edge, color);
+                // perform the action
+                action.redo();
+                postEditAdjustCanvas(graph, action);
             }
         }
     }

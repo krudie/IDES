@@ -9,13 +9,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
-import presentation.GraphicalLayout;
-
 /**
  * A draggable representation of the control points and tangent lines for the
  * bezier curve of an edge. Used to modify the shape of a bezier edge.
  * 
  * @author Helen Bretzke
+ * @author Lenko Grigorov
  */
 
 public class BezierHandler extends EdgeHandler {
@@ -81,7 +80,7 @@ public class BezierHandler extends EdgeHandler {
             Graphics2D g2d = (Graphics2D) g;
 
             g2d.setColor(Color.BLUE);
-            g2d.setStroke(GraphicalLayout.FINE_STROKE);
+            g2d.setStroke(getEdge().getLayout().getFineStroke());
 
             // don't display end point circles since they are not moveable.
             for (int i = 1; i < 3; i++) {

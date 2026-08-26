@@ -3,6 +3,7 @@
  */
 package presentation.fsa.actions;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
 
@@ -32,6 +33,8 @@ import presentation.fsa.Node;
  * make this class be too big and more difficult to write.
  * 
  * @author Christian Silvano
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 public class NodeActions {
 
@@ -147,4 +150,34 @@ public class NodeActions {
         }
     }
 
+    public static class SetNodeBackgroundColorAction extends AbstractGraphAction {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 468113031083808913L;
+
+        protected FSAGraph graph;
+        protected Node node;
+        protected Color color;
+
+        public SetNodeBackgroundColorAction(FSAGraph graph, Node node, Color color) {
+            this(null, graph, node, color);
+        }
+
+        public SetNodeBackgroundColorAction(CompoundEdit parentEdit, FSAGraph graph, Node node, Color color) {
+            this.parentEdit = parentEdit;
+            this.graph = graph;
+            this.node = node;
+            this.color = color;
+        }
+
+        public void actionPerformed(ActionEvent event) {
+            if (graph != null && node != null) {
+                UndoableEdit action = new GraphUndoableEdits.UndoableSetBgColorNode(graph, node, color);
+                // perform the action
+                action.redo();
+                postEditAdjustCanvas(graph, action);
+            }
+        }
+    }
 }

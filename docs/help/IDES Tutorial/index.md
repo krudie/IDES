@@ -128,12 +128,20 @@ the desired shape. Undesired modifications can be undone by selecting "_Undo_".
 
 ![](guide_html_7a2ff655.png)
 
+If desired, edges can be customized further via the pop-up menu which
+appears when you right-click on the edge. Options include color, thickness
+and a set of tools to modify the edge shape.
+
+![](guide_html_56f69fa.png)
+
 You can reposition nodes by dragging them with the mouse cursor.
 
-![](guide_html_4984efb.png)  
+![](guide_html_4984efb.png)
 
 To make the first node initial and marked, right-click on the node
 and select "_Initial_" and "_Marked_" from the pop-up menu.
+If desired, nodes can be customized further via this menu,
+for example, by setting the node color.
 
 ![](guide_html_mcea1973.png)
 

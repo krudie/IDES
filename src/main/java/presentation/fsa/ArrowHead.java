@@ -12,6 +12,8 @@ import presentation.Geometry;
  * A filled polygon in the shape of an arrowhead.
  * 
  * @author Helen Bretzke
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
  */
 @SuppressWarnings("serial")
 public class ArrowHead extends Polygon {
@@ -25,6 +27,9 @@ public class ArrowHead extends Polygon {
     // distance from nock to tip
     public static final int SHORT_HEAD_LENGTH = 7;
 
+    private static final int DEFAULT_HALF_WIDTH = 4;
+    private static final int DEFAULT_BACK_Y = -3;
+
     /**
      * Centre axis vector of default direction.
      */
@@ -35,7 +40,7 @@ public class ArrowHead extends Polygon {
      * (0,1) ie. pointing down.
      */
     public ArrowHead() {
-        reset();
+        resetToDefault(1);
     }
 
     /**
@@ -74,7 +79,7 @@ public class ArrowHead extends Polygon {
      * @param dir  unit direction vector
      */
     public void setLocationAndDirection(Point2D.Float base, Point2D.Float dir) {
-        reset();
+        resetToDefault(1);
         this.basePt = base;
         double alpha = Geometry.angleFrom(axis, dir);
         for (int i = 0; i < npoints; i++) {
@@ -88,16 +93,17 @@ public class ArrowHead extends Polygon {
     /**
      * Sets arrowhead to default location (0,0) and orientation in direction (0,1)
      * ie. pointing down.
+     * 
+     * @param scale the scaling that needs to be done to the default representation
      */
-    @Override
-    public void reset() {
+    public void resetToDefault(float scale) {
         super.reset();
         basePt = new Point2D.Float(0, 0);
         // compute default arrowhead pointing down
-        addPoint(0, HEAD_LENGTH);
-        addPoint(-4, -3);
+        addPoint(0, Math.round(HEAD_LENGTH * scale));
+        addPoint(-Math.round(DEFAULT_HALF_WIDTH * scale), Math.round(DEFAULT_BACK_Y * scale));
         addPoint((int) basePt.x, (int) basePt.y);
-        addPoint(4, -3);
+        addPoint(Math.round(DEFAULT_HALF_WIDTH * scale), Math.round(DEFAULT_BACK_Y * scale));
     }
 
     /**

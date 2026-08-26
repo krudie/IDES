@@ -11,6 +11,10 @@ import javax.swing.event.PopupMenuListener;
 
 import presentation.fsa.actions.UIActions;
 
+/**
+ * @author Liam Burns - Color Extension
+ * @author Lenko Grigorov
+ */
 public class NodePopup extends JPopupMenu {
     private static GraphDrawingView view;
 
@@ -48,11 +52,13 @@ public class NodePopup extends JPopupMenu {
         JMenuItem miSelfLoop = new JMenuItem(new UIActions.SelfLoopAction(gdv.getGraphModel(), n));
         JMenuItem miLabelNode = new JMenuItem(new UIActions.TextAction(n));
         // miDeleteNode.addActionListener(deleteCmd);
+        JMenuItem miSetColor = new JMenuItem(new UIActions.SetNodeColorAction(gdv.getGraphModel(), n));
 
         add(miSetMarked);
         add(miSetInitial);
         add(new JPopupMenu.Separator());
         add(miLabelNode);
+        add(miSetColor);
         add(miSelfLoop);
         add(new JPopupMenu.Separator());
         add(deleteCmd);
