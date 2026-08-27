@@ -10,7 +10,7 @@ It was created in the [QDES Lab](https://qdes.engineering.queensu.ca/)
 at Queen's University, Kingston, Canada under the supervision of Prof. Karen Rudie.
 
 Contributors:
-Helen Bretzke, Chris Dragert, Kristian Edlund,
+Helen Bretzke, Liam Burns, Chris Dragert, Kristian Edlund,
 Lenko Grigorov, Chris McAloney, Axel G. Michelsen, Utsav Mital,
 Philippe Nguyen, Christian Silvano, Valerie Sugarman,
 Sarah-Jane Whittaker, Mike Wood.
